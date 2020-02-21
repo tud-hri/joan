@@ -23,6 +23,3 @@ __pycache__/
 LICENCE.md
 *.ui
 
-# play around
-tryandplay*
-signals

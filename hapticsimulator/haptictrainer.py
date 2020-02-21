@@ -1,5 +1,5 @@
 
-from states import States
+from .states import States
 
 class HapticTrainer():
     '''
