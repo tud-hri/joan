@@ -21,5 +21,5 @@ Use PyQt5 and NOT PySide2 because PyQt5 is (more) platform independent.<br>
 
 * pulsar.py (very early stage)<br>
 purpose is to use 2 threads, beside the main process
-1. polling of signals (hopefully 1 msec)
+1. communication with input devices (Sensodrive Steering wheel through PCAN) (hopefully 1 msec)
 2. spread data around (200msec or so)
