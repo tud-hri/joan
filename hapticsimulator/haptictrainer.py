@@ -1,5 +1,4 @@
 
-from .states import States
 
 class HapticTrainer():
     '''
@@ -25,6 +24,7 @@ class HapticTrainer():
         return (self.args, self.kwargs)
 
 if __name__ == '__main__':
+    from states import States
     try:
         h1 = HapticTrainer(23,6, e='1')
         print (h1, h1.result())

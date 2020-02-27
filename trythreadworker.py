@@ -150,42 +150,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.counter +=1
         self.l.setText("Counter: %d" % self.counter)
 
-class Pulsar:
-    """
-    Gives a regular pulse in a seperate Thread
-    """
-    def __init__(self, millis=1000):
-        self.millis = millis 
-        self.thread = QtCore.QThread()
-        self.timer = QtCore.QTimer()
-        self._isRunning = False
-
-        # make this class run as daemon?
-
-    def start(self):
-        self.thread.start()
-        self._isRunning = True
-        self.timer.setInterval(self.millis)
-        self.timer.timeout.connect(self.stop)
-        self.timer.start()
-        print ("started")
-
-    def stop(self):
-        self.timer.stop()
-        self._isRunning = False
-        self.thread.terminate()
-        while not self.thread.isFinished():
-            self.thread.terminate()
-            self.thread.wait(200)
-            print("trying to stop")
-        #self.thread.wait()
-        print ("stopped")
-
-    def isRunning(self):
-        return self._isRunning
-
-    def setInterval(self, millis=1000):
-        self.millis = millis
 
 
 if __name__ == '__main__':
@@ -194,15 +158,6 @@ if __name__ == '__main__':
         app = QtWidgets.QApplication([])
         window = MainWindow()
         app.exec_()
-
-
-        """
-        app = QtWidgets.QApplication(sys.argv)
-
-        p = Pulsar()
-        p.start()
-        print(sys.exit(app.exec()))
-        """
 
     except Exception as inst:
         print(inst)
