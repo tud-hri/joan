@@ -74,19 +74,12 @@ class Worker(QtCore.QRunnable):
 
         # Add the callback to our kwargs
         self.kwargs['progress_callback'] = self.signals.progress   
-<<<<<<< HEAD
-<<<<<<< HEAD:signals/pulsar.py
-=======
+
         self.kwargs['another_callback'] = 'dit dus'  
         print("kwargs in Worker", kwargs)  
->>>>>>> dba645355813e10483e90bf24861769a596be193:trythreadworker.py
-=======
-<<<<<<<< HEAD:trythreadworker.py
+
         self.kwargs['another_callback'] = 'dit dus'  
         print("kwargs in Worker", kwargs)  
-========
->>>>>>>> dba645355813e10483e90bf24861769a596be193:signals/pulsar.py
->>>>>>> dba645355813e10483e90bf24861769a596be193
 
     @QtCore.pyqtSlot()
     def run(self):
@@ -115,10 +108,6 @@ class PulsarThread():
         self.threadpool.setMaxThreadCount(2)
         self.threadpool.autoDelete = True
 
-<<<<<<< HEAD
-<<<<<<< HEAD:signals/pulsar.py
-=======
-<<<<<<<< HEAD:trythreadworker.py
         self.timer = QtCore.QTimer()
         self.timer.setInterval(1000)
         self.timer.timeout.connect(self.recurring_timer)
@@ -154,8 +143,7 @@ class Worker(QtCore.QThread):
     def __init__(self, parent=None):
         QtCore.QThread.__init__(self, parent)
         self.parent = parent  # = pulsar object
-<<<<<<< HEAD
-=======
+
         self.timer = QtCore.QTimer()
         self.timer.setInterval(1000)
         self.timer.timeout.connect(self.recurring_timer)
@@ -170,11 +158,7 @@ class Worker(QtCore.QThread):
             progress_callback.emit(n*100/4)
             
         return "Done."
->>>>>>> dba645355813e10483e90bf24861769a596be193:trythreadworker.py
-=======
->>>>>>>> dba645355813e10483e90bf24861769a596be193:signals/pulsar.py
->>>>>>> dba645355813e10483e90bf24861769a596be193
- 
+
     def __del__(self):
         try:
             self.wait()   # until thread stops
@@ -193,12 +177,6 @@ class Worker(QtCore.QThread):
         pass
 
 
-<<<<<<< HEAD
-<<<<<<< HEAD:signals/pulsar.py
-=======
-<<<<<<<< HEAD:trythreadworker.py
-========
->>>>>>> dba645355813e10483e90bf24861769a596be193
 class Pulsar(QtCore.QThread):
     """
     Gives a regular pulse in a seperate Thread
@@ -230,12 +208,6 @@ class Pulsar(QtCore.QThread):
 
         #emit the signal
         self.trigger.emit()
-<<<<<<< HEAD
-=======
->>>>>>> dba645355813e10483e90bf24861769a596be193:trythreadworker.py
-=======
->>>>>>>> dba645355813e10483e90bf24861769a596be193:signals/pulsar.py
->>>>>>> dba645355813e10483e90bf24861769a596be193
 
     #@QtCore.pyqtSlot()
     def handle_trigger(self):
@@ -268,12 +240,6 @@ if __name__ == '__main__':
     try:
         app = QtWidgets.QApplication(sys.argv)
 
-<<<<<<< HEAD
-<<<<<<< HEAD:signals/pulsar.py
-=======
-<<<<<<<< HEAD:trythreadworker.py
-========
->>>>>>> dba645355813e10483e90bf24861769a596be193
         #thread1 = QtCore.QThread(Pulsar(id="2",millis=2))
         #thread2 = QtCore.QThread(Pulsar(id="1",millis=2))
         finished_counter = 0
@@ -323,14 +289,7 @@ if __name__ == '__main__':
         """
         #
         print(sys.exit(app.exec()))
-        
 
-<<<<<<< HEAD
-=======
->>>>>>> dba645355813e10483e90bf24861769a596be193:trythreadworker.py
-=======
->>>>>>>> dba645355813e10483e90bf24861769a596be193:signals/pulsar.py
->>>>>>> dba645355813e10483e90bf24861769a596be193
     except Exception as inst:
         print(inst)
         exit(0)
