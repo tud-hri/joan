@@ -2,7 +2,7 @@ import sys
 from PyQt5 import QtWidgets, uic
 import threading
 from PyQt5 import QtCore
-
+from time import sleep
 from PyQt5 import QtGui
 #from PyQt5.QtCore import pyqtSlot
 
@@ -10,9 +10,18 @@ from PyQt5 import QtGui
 import time
 import traceback, sys
 
+from signal import signal, SIGINT
+from sys import exit
+
+def handler(signal_received, frame):
+    # Handle any cleanup here
+    print('SIGINT or CTRL-C detected. Exiting gracefully')
+    exit(0)
+
+
 # See: https://www.learnpyqt.com/courses/concurrent-execution/multithreading-pyqt-applications-qthreadpool/
 
-
+"""
 class WorkerSignals(QtCore.QObject):
     '''
     Defines the signals available from a running worker thread.
@@ -36,8 +45,8 @@ class WorkerSignals(QtCore.QObject):
     error = QtCore.pyqtSignal(tuple)
     result = QtCore.pyqtSignal(object)
     progress = QtCore.pyqtSignal(int)
-
-
+"""
+"""
 class Worker(QtCore.QRunnable):
     '''
     Worker thread
@@ -59,10 +68,12 @@ class Worker(QtCore.QRunnable):
         self.fn = fn
         self.args = args
         self.kwargs = kwargs
-        self.signals = WorkerSignals()    
+        self.signals = WorkerSignals() 
+
+        print(args, kwargs)   
 
         # Add the callback to our kwargs
-        self.kwargs['progress_callback'] = self.signals.progress        
+        self.kwargs['progress_callback'] = self.signals.progress   
 
     @QtCore.pyqtSlot()
     def run(self):
@@ -82,126 +93,168 @@ class Worker(QtCore.QRunnable):
         finally:
             self.signals.finished.emit()  # Done
         
+"""
 
-
-class MainWindow(QtWidgets.QMainWindow):
-
-
-    def __init__(self, *args, **kwargs):
-        super(MainWindow, self).__init__(*args, **kwargs)
-    
-        self.counter = 0
-    
-        layout = QtWidgets.QVBoxLayout()
-        
-        self.l = QtWidgets.QLabel("Start")
-        b = QtWidgets.QPushButton("DANGER!")
-        b.pressed.connect(self.oh_no)
-    
-        layout.addWidget(self.l)
-        layout.addWidget(b)
-    
-        w = QtWidgets.QWidget()
-        w.setLayout(layout)
-    
-        self.setCentralWidget(w)
-    
-        self.show()
-
+'''
+class PulsarThread():
+    def __init__(self):
         self.threadpool = QtCore.QThreadPool()
-        print("Multithreading with maximum %d threads" % self.threadpool.maxThreadCount())
+        self.threadpool.setMaxThreadCount(2)
+        self.threadpool.autoDelete = True
 
-        self.timer = QtCore.QTimer()
-        self.timer.setInterval(1000)
-        self.timer.timeout.connect(self.recurring_timer)
-        self.timer.start()
-    
-    def progress_fn(self, n):
-        print("%d%% done" % n)
+    def start(self):
+        #self.getData()
+        getDataWorker = Worker(self.getData)
+        #getDataWorker.autoDelete = True
+        #spreadDataWorker = Worker(self.spreadData)
+        getDataWorker.signals.result.connect(self.getDataResult)
+        #getDataWorker.signals.progress.connect(self.pollData)
 
-    def execute_this_fn(self, progress_callback):
-        for n in range(0, 5):
-            time.sleep(1)
-            progress_callback.emit(n*100/4)
-            
-        return "Done."
+        self.threadpool.start(getDataWorker)
+        #self.threadpool.start(spreadDataWorker)
+        self.threadpool.waitForDone()
+        #self.threadpool.clear()
+        #exit(0)
+'''
+
+class Worker(QtCore.QThread):
+    def __init__(self, parent=None):
+        QtCore.QThread.__init__(self, parent)
+        self.parent = parent  # = pulsar object
  
-    def print_output(self, s):
-        print(s)
-        
-    def thread_complete(self):
-        print("THREAD COMPLETE!")
+    def __del__(self):
+        try:
+            self.wait()   # until thread stops
+            self.exit()
+        except Exception as inst:
+            print (inst)
+
+
+    def _act(self):
+        print("1_act method")
+        print("2_act method")
  
-    def oh_no(self):
-        # Pass the function to execute
-        worker = Worker(self.execute_this_fn) # Any other args, kwargs are passed to the run function
-        worker.signals.result.connect(self.print_output)
-        worker.signals.finished.connect(self.thread_complete)
-        worker.signals.progress.connect(self.progress_fn)
-        
-        # Execute
-        print(worker.autoDelete())
-        self.threadpool.start(worker) 
+    def run(self):
+        self.parent(*self.args, **self.kwargs)
+        #self._act()
+        pass
 
-        
-    def recurring_timer(self):
-        self.counter +=1
-        self.l.setText("Counter: %d" % self.counter)
 
-class Pulsar:
+class Pulsar(QtCore.QThread):
     """
     Gives a regular pulse in a seperate Thread
     """
-    def __init__(self, millis=1000):
-        self.millis = millis 
-        self.thread = QtCore.QThread()
+    # Define signals as attributes
+    trigger = QtCore.pyqtSignal()
+    status = "created"
+
+    def __init__(self, *args, **kwargs):
+        QtCore.QThread.__init__(self)
+        self.status = "instantiated"
+        self.poll_counter = 0
+        self.millis = kwargs['millis'] or 100
+        self.id= kwargs['id']
+        
         self.timer = QtCore.QTimer()
-        self._isRunning = False
-
-        # make this class run as daemon?
-
-    def start(self):
-        self.thread.start()
-        self._isRunning = True
+        #self.timer.moveToThread(self.worker)
+        self.timer.timeout.connect(self.poll_data)
         self.timer.setInterval(self.millis)
-        self.timer.timeout.connect(self.stop)
         self.timer.start()
-        print ("started")
+        self.status = "running"
 
-    def stop(self):
-        self.timer.stop()
-        self._isRunning = False
-        self.thread.terminate()
-        while not self.thread.isFinished():
-            self.thread.terminate()
-            self.thread.wait(200)
-            print("trying to stop")
-        #self.thread.wait()
-        print ("stopped")
+        #self.trigger.connect(self.handle_trigger)
+        #self.trigger.emit()
 
-    def isRunning(self):
-        return self._isRunning
+    def connect_trigger(self):
+        # Connect a signal to a slot
+        self.trigger.connect(self.handle_trigger)
 
-    def setInterval(self, millis=1000):
-        self.millis = millis
+        #emit the signal
+        self.trigger.emit()
 
+    #@QtCore.pyqtSlot()
+    def handle_trigger(self):
+        print("this slot reveived the trigger connect signal")
+        #sleep(2)
+        try:
+            self.trigger.disconnect()
+            #exit(0)
+        except Exception as inst:
+            print(inst) 
+     
+    #@QtCore.pyqtSlot()
+    def poll_data(self):
+        self.poll_counter += 1
+        print("Polling %s %d %d id: %s" % (self.id, self.millis, self.poll_counter, self.timer.timerId()))
+        if self.poll_counter == 30:
+            self.timer.stop()
+            try:
+                self.timer.disconnect()
+                if (self.timer.timerId() == -1):
+                    self.status = "finished"
+                    raise Exception("finished")
+
+            except Exception as inst:
+                print(inst)
+    
 
 if __name__ == '__main__':
 
     try:
-        app = QtWidgets.QApplication([])
-        window = MainWindow()
-        app.exec_()
-
-
-        """
         app = QtWidgets.QApplication(sys.argv)
 
-        p = Pulsar()
-        p.start()
-        print(sys.exit(app.exec()))
+        #thread1 = QtCore.QThread(Pulsar(id="2",millis=2))
+        #thread2 = QtCore.QThread(Pulsar(id="1",millis=2))
+        finished_counter = 0
+        try:
+            p1 = Pulsar(id="2",millis=200)
+            p2 = Pulsar(id="1",millis=100)
+        except:
+            finished_counter += 1
+            print ("finished")
+
+        #    pass
+        #exit(0)
+        #print (thread1.currentThreadId())
+        # Tell Python to run the handler() function when SIGINT is recieved
+        
+        #signal(SIGINT, handler)
+
+        #print('Running. Press CTRL-C to exit.')
+        #while True:
+            # Do nothing and hog CPU forever until SIGINT received.
+        #    pass
+       
+        #for i in range(0, 20):
+        #    print ("p1", i, p1.status)
+        #    print ("p2", i, p2.status)
+        #    sleep(1)
+        #exit(0)
+
+
         """
+        threadpool = QtCore.QThreadPool()
+        threadpool.setMaxThreadCount(2)
+        threadpool.autoDelete = True
+
+        p1 = Pulsar(id="2",millis=2)
+        p2 = Pulsar(id="1",millis=1)
+
+        threadpool.start(p1)
+        threadpool.start(p2)
+        threadpool.waitForDone()
+        threadpool.clear()
+        #exit(0)
+        #p.go()
+        #pt.start()
+        #p.connect_trigger()
+        #p.start()
+        """
+        #
+        print(sys.exit(app.exec()))
+        
 
     except Exception as inst:
         print(inst)
+        exit(0)
 
