@@ -40,8 +40,8 @@ class StateHandler(QtCore.QObject):
         QtCore.QObject.__init__(self, *args, **kwargs)
         #self._haptictrainer = haptictrainer # keep a reference to haptic trainer (our umbrella)
         
-        myStates = States()
-        self._state = myStates.VOID
+        self.myStates = States()
+        self._state = self.myStates.VOID
         #self._state = STATES.VOID
         self._state_c_int = ctypes.c_int(int(self._state))
         self._state_pointer = ctypes.addressof(self._state_c_int)
@@ -51,8 +51,7 @@ class StateHandler(QtCore.QObject):
         # check if the change of state is allowed 
         # (check for the allowed transitions)
         
-        myStates = States()
-        if myStates.isStateTransitionAllowed(self._state, requestedstate):
+        if self.myStates.isStateTransitionAllowed(self._state, requestedstate):
         #if STATES.isStateTransitionAllowed(self._state, requestedstate):
             self._setState(requestedstate)
         else:

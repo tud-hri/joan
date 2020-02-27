@@ -74,6 +74,11 @@ class Worker(QtCore.QRunnable):
 
         # Add the callback to our kwargs
         self.kwargs['progress_callback'] = self.signals.progress   
+<<<<<<< HEAD:signals/pulsar.py
+=======
+        self.kwargs['another_callback'] = 'dit dus'  
+        print("kwargs in Worker", kwargs)  
+>>>>>>> dba645355813e10483e90bf24861769a596be193:trythreadworker.py
 
     @QtCore.pyqtSlot()
     def run(self):
@@ -102,6 +107,7 @@ class PulsarThread():
         self.threadpool.setMaxThreadCount(2)
         self.threadpool.autoDelete = True
 
+<<<<<<< HEAD:signals/pulsar.py
     def start(self):
         #self.getData()
         getDataWorker = Worker(self.getData)
@@ -121,6 +127,22 @@ class Worker(QtCore.QThread):
     def __init__(self, parent=None):
         QtCore.QThread.__init__(self, parent)
         self.parent = parent  # = pulsar object
+=======
+        self.timer = QtCore.QTimer()
+        self.timer.setInterval(1000)
+        self.timer.timeout.connect(self.recurring_timer)
+        self.timer.start()
+    
+    def progress_fn(self, n):
+        print("%d%% done" % n)
+
+    def execute_this_fn(self, progress_callback, another_callback):
+        for n in range(0, 5):
+            time.sleep(1)
+            progress_callback.emit(n*100/4)
+            
+        return "Done."
+>>>>>>> dba645355813e10483e90bf24861769a596be193:trythreadworker.py
  
     def __del__(self):
         try:
@@ -140,6 +162,7 @@ class Worker(QtCore.QThread):
         pass
 
 
+<<<<<<< HEAD:signals/pulsar.py
 class Pulsar(QtCore.QThread):
     """
     Gives a regular pulse in a seperate Thread
@@ -171,6 +194,8 @@ class Pulsar(QtCore.QThread):
 
         #emit the signal
         self.trigger.emit()
+=======
+>>>>>>> dba645355813e10483e90bf24861769a596be193:trythreadworker.py
 
     #@QtCore.pyqtSlot()
     def handle_trigger(self):
@@ -203,6 +228,7 @@ if __name__ == '__main__':
     try:
         app = QtWidgets.QApplication(sys.argv)
 
+<<<<<<< HEAD:signals/pulsar.py
         #thread1 = QtCore.QThread(Pulsar(id="2",millis=2))
         #thread2 = QtCore.QThread(Pulsar(id="1",millis=2))
         finished_counter = 0
@@ -254,6 +280,8 @@ if __name__ == '__main__':
         print(sys.exit(app.exec()))
         
 
+=======
+>>>>>>> dba645355813e10483e90bf24861769a596be193:trythreadworker.py
     except Exception as inst:
         print(inst)
         exit(0)
