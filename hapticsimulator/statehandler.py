@@ -9,15 +9,16 @@ HLC is the 'boss' of the state (i.e. other classes request the interface for cha
 """
 
 from PyQt5 import QtCore
-from states import State, States
-import ctypes
+from .states import State, States
+#import ctypes
 
 class StateHandler(QtCore.QObject):
     """
     """
     
     ## signals
-    stateChanged = QtCore.Signal(int) #: Signal(int), emitted when the Lopes state has changed
+    #stateChanged = QtCore.Signal(int) #: Signal(int), emitted when the Lopes state has changed
+    stateChanged = QtCore.pyqtSignal(int)
     
     ## properties
     @property
@@ -25,6 +26,8 @@ class StateHandler(QtCore.QObject):
         """Property: get the current state"""
         return self._state
 
+
+    '''
     @property   
     def state_c_int(self):
         return self._state_c_int
@@ -32,6 +35,7 @@ class StateHandler(QtCore.QObject):
     @property
     def state_pointer(self):
         return self._state_pointer
+    '''
 
     ## Methods
     def __init__(self, *args, **kwargs):
@@ -42,9 +46,8 @@ class StateHandler(QtCore.QObject):
         
         self.myStates = States()
         self._state = self.myStates.VOID
-        #self._state = STATES.VOID
-        self._state_c_int = ctypes.c_int(int(self._state))
-        self._state_pointer = ctypes.addressof(self._state_c_int)
+        #self._state_c_int = ctypes.c_int(int(self._state))
+        #self._state_pointer = ctypes.addressof(self._state_c_int)
         
     def requestStateChange(self, requestedstate):
         """ Process requests for state change from outside """
@@ -60,7 +63,7 @@ class StateHandler(QtCore.QObject):
     def _setState(self, s):
         """ Set the current state. """
         self._state = s
-        self._state_c_int.value = int(self._state)
+        #self._state_c_int.value = int(self._state)
 
         # state is changed, emit signal to other objects
         self.stateChanged.emit(int(self._state))

@@ -1,4 +1,5 @@
-
+from .states import States
+from .statehandler import StateHandler
 
 class HapticTrainer():
     '''
@@ -17,13 +18,16 @@ class HapticTrainer():
     def __init__(self, *args, **kwargs):
         self.args = args
         self.kwargs = kwargs
+        self.statehandler = StateHandler()
         self.states = States()
+        self.gui = 'gui' in kwargs.keys() and kwargs['gui'] or None                       
         print ("init")
 
     def result(self):
         return (self.args, self.kwargs)
 
 if __name__ == '__main__':
+    from statehandler import StateHandler
     from states import States
     try:
         h1 = HapticTrainer(23,6, e='1')
@@ -33,6 +37,11 @@ if __name__ == '__main__':
         print (h2, h2.result())
         assert h1 == h2, "no singleton"
 
-        print (h2.states.getState(150))
+        
+        print (h2.statehandler.state)
+        #statehandler= StateHandler()
+        states = States()
+        print (h2.statehandler.requestStateChange(states.ERROR))
+        print (h2.statehandler.requestStateChange(states.EXPERIMENT))
     except Exception as inst:
         print (inst)
