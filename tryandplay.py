@@ -12,7 +12,7 @@ from PyQt5 import QtWidgets, uic
 from hapticsimulator.states import States
 from hapticsimulator.statehandler import StateHandler
 from hapticsimulator.haptictrainer import HapticTrainer
-from signals.pulsar import GetData
+from signals.pulsar import ActOnData
 
 class Gui():
     def __init__(self, uiName):
@@ -54,7 +54,7 @@ if __name__ == '__main__':
     try:
         # lees widgets in van een directory
         # maak de widgets met Gui (en dus ook met haptichandler en states)
-        # maak GetData(Pulsar) met widgets
+        # maak ActOnData(Pulsar) met widgets
         # maak SpreadData(Pulsar) met widgets 
 
         '''
@@ -83,11 +83,11 @@ if __name__ == '__main__':
         menuWidget.show()
         
         #time.sleep(1)
-        getData = GetData(millis=20)
+        getData = ActOnData(millis=20)
         pollWindow = Gui("interfacewidget.ui")
         print ('type:', type(pollWindow))
         pollWidget = pollWindow.getGui()
-        pollWidget.btnLoadInterface.clicked.connect(getData.startTimer)
+        pollWidget.btnLoadInterface.clicked.connect(getData.startPulsar)
         h4 = HapticTrainer(gui=menuWidget)
         #pollWidget.btnLoadInterface.clicked.connect(laad)
         #h4.statehandler.stateChanged.emit(h4.statehandler.state)

@@ -46,14 +46,14 @@ class Pulsar(QtCore.QThread):
 
 
     @QtCore.pyqtSlot()
-    def startTimer(self):
+    def startPulsar(self):
         for method in self.callback:
             self.timer.timeout.connect(method)
         self.timer.setInterval(self.millis)
         self.timer.start()
 
     @QtCore.pyqtSlot()
-    def stopTimer(self):
+    def stopPulsar(self):
         # For later use
         self.timer.stop()
         try:
@@ -62,6 +62,20 @@ class Pulsar(QtCore.QThread):
             pass
 
 
+class ActOnData(Pulsar):
+    def __init__(self, *args, **kwargs):
+        kwargs['millis'] = 'millis' in kwargs.keys() and kwargs['millis'] or 1
+        kwargs['callback'] = 'callback' in kwargs.keys() and kwargs['callback'] or []
+        #kwargs['callback'] = [self.do]
+        Pulsar.__init__(self, *args, **kwargs)
+
+    '''
+    def do(self):
+        print('Getting data')
+        print('timerId %d' % self.timer.timerId())
+    '''
+
+'''
 class GetData(Pulsar):
     def __init__(self, *args, **kwargs):
         kwargs['millis'] = 'millis' in kwargs.keys() and kwargs['millis'] or 1
@@ -71,7 +85,7 @@ class GetData(Pulsar):
     def do(self):
         print('Getting data')
         print('timerId %d' % self.timer.timerId())
-
+'''
 '''
 class Win(QtCore.QObject):
     finished = QtCore.pyqtSignal()
@@ -86,7 +100,7 @@ class Win(QtCore.QObject):
         pass
         self.finished.emit()
 '''    
-
+'''
 class SpreadData(Pulsar):
     def __init__(self, *args, **kwargs):
         kwargs['millis'] = 'millis' in kwargs.keys() and kwargs['millis'] or 10
@@ -98,7 +112,7 @@ class SpreadData(Pulsar):
         print('timerId %d' % self.timer.timerId())
 
     def do2(self):
-        '''
+        """
         objThread = QtCore.QThread()
         obj = Win()
         obj.moveToThread(objThread)
@@ -106,12 +120,12 @@ class SpreadData(Pulsar):
         objThread.started.connect(obj.trigger)
         #objThread.finished.connect(app.exit)
         objThread.start()
-        '''
+        """
         print('2 here the data should be connected and emitted to several methods')
 
     def do3(self):
         print('3 here the data should be connected and emitted to several methods')
-
+'''
 
 
 if __name__ == '__main__':
@@ -143,15 +157,15 @@ if __name__ == '__main__':
 
 
         try:
-            getData = GetData(millis=500)
-            spreadData = SpreadData(millis=300)
-            spreadData2 = SpreadData(millis=300)
+            getData = ActOnData(millis=500)
+            spreadData = ActOnData(millis=300)
+            spreadData2 = ActOnData(millis=300)
 
-            start_get_btn.clicked.connect(getData.startTimer)
-            stop_get_btn.clicked.connect(getData.stopTimer)
+            start_get_btn.clicked.connect(getData.startPulsar)
+            stop_get_btn.clicked.connect(getData.stopPulsar)
 
-            start_spread_btn.clicked.connect(spreadData.startTimer)
-            stop_spread_btn.clicked.connect(spreadData.stopTimer)
+            start_spread_btn.clicked.connect(spreadData.startPulsar)
+            stop_spread_btn.clicked.connect(spreadData.stopPulsar)
 
 
         except Exception as inst:

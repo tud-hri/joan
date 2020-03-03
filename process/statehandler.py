@@ -8,10 +8,9 @@ This approach is slightly different from the lopes app, where the interface with
 HLC is the 'boss' of the state (i.e. other classes request the interface for changes)
 """
 
-print ('Deprecated, see process directory')
-exit(0)
 from PyQt5 import QtCore
 from .states import State, States
+#from .states import State, States
 #import ctypes
 
 class StateHandler(QtCore.QObject):

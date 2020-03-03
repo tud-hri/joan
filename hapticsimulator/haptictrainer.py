@@ -27,6 +27,8 @@ class HapticTrainer():
         return (self.args, self.kwargs)
 
 if __name__ == '__main__':
+    print ('Deprecated, see process directory')
+    exit(0)
     from statehandler import StateHandler
     from states import States
     try:

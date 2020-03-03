@@ -292,5 +292,5 @@ if __name__ == '__main__':
 
     except Exception as inst:
         print(inst)
-        exit(0)
+
 

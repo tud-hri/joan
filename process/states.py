@@ -6,8 +6,7 @@ The GUI is always in a certain state.
 
 """
 
-print ('Deprecated, see process directory')
-exit(0)
+
 #from util import QtCore#, translate
 from PyQt5 import QtCore
 translate = QtCore.QCoreApplication.translate
@@ -108,6 +107,8 @@ class States:
     ERROR.EXPERIMENT                = State(155,  translate('ErrorStates', 'Error - Experiment'), -1, 150)
     
 
+    '''
+    States is only used by SingletonControl
     __instance = None
 
     def __new__(klass, *args, **kwargs):
@@ -115,7 +116,7 @@ class States:
             klass.__instance = object.__new__(States)
             print('new instance of States')
         return klass.__instance
-
+    '''
 
     # Dict of integers to state objects, filled in during __init__
     states = {}
