@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>FormInterface</class>
+ <widget class="QWidget" name="FormInterface">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>825</width>
+    <height>174</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>0</width>
+    <height>0</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <item alignment="Qt::AlignTop">
+    <widget class="QGroupBox" name="grpBoxInterface">
+     <property name="title">
+      <string>Template</string>
+     </property>
+    </widget>
+   </item>
+     <item>
+      <widget class="QLabel" name="lblState">
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>STATE</string>
+       </property>
+      </widget>
+     </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
