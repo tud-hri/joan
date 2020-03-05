@@ -25,22 +25,11 @@ ActOnData(Pulsar) <br>
 DataRecorderWidget(Control) <br>
 MenuWidget(Control) <br>
 
-```dot
-graph classInheritance {
-    //State_1 [label="State"];
-    State_n [label="State ...", shape="box"];
-    States [label="States", shape="box"];
-    StateHandler [label="StateHandler(QtCore.QObject)", shape="box"]
-    Status [label="Status, is a singleton", shape="box"]
-
-    //State_1 -- States
-    State_n -- States
-    States -- StateHandler
-    StateHandler -- Status
-    States -- Status
-
-}
-
+```mermaid
+  graph LR
+      A --- B
+      B-->C[fa:fa-ban forbidden]
+      B-->D(fa:fa-spinner);
 ```
 ## Directories
 
