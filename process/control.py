@@ -1,4 +1,4 @@
-from signals import ActOnData
+from signals import Pulsar
 from .statehandler import StateHandler, States
 from PyQt5 import uic, QtCore
 
@@ -25,12 +25,12 @@ class Status():
         
 
 
-class Control(ActOnData):
+class Control(Pulsar):
 
     def __init__(self, *args, **kwargs):
         kwargs['millis'] = 'millis' in kwargs.keys() and kwargs['millis'] or 1
         kwargs['callback'] = 'callback' in kwargs.keys() and kwargs['callback'] or []
-        ActOnData.__init__(self, *args, **kwargs)
+        Pulsar.__init__(self, *args, **kwargs)
 
         self.ui = 'ui' in kwargs.keys() and kwargs['ui'] or ''
         assert self.ui != '', 'keyword argument should contain key "ui" with a PyQt ui file as value (e.g. ui=<absolute path>menu.ui)' 

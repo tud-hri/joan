@@ -16,20 +16,35 @@ Use PyQt5 and NOT PySide2 because PyQt5 is (more) platform independent.<br>
 
 ## Classes
 Status() is a singleton class <br>
-Control(ActOnData) <br>
+Control(Pulsar) <br>
 StateHandler(QtCore.QObject) <br>
 State <br>
 States <br>
 Pulsar(QtCore.QThread) <br>
-ActOnData(Pulsar) <br>
 DataRecorderWidget(Control) <br>
 MenuWidget(Control) <br>
 
 ```mermaid
-  graph LR
-      A --- B
-      B-->C[fa:fa-ban forbidden]
-      B-->D(fa:fa-spinner);
+    classDiagram
+        class Status
+        class State
+        class States
+        class StateHandler
+        class Pulsar
+        class QObject
+        class QThread
+        class MenuWidget
+        class DataRecorderWidget
+
+        States "1" ..|> "*" State : Realization
+        QObject --|> StateHandler : Inheritance
+        QThread --|> Pulsar : Inheritance
+        Pulsar --|> Control : Inheritance
+        Control ..|> Status : Realization
+        Control --|> MenuWidget : Inheritance
+        Control  --|> DataRecorderWidget : Inheritance
+      
+
 ```
 ## Directories
 
