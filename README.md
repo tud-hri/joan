@@ -25,6 +25,23 @@ ActOnData(Pulsar) <br>
 DataRecorderWidget(Control) <br>
 MenuWidget(Control) <br>
 
+```dot
+graph classInheritance {
+    //State_1 [label="State"];
+    State_n [label="State ...", shape="box"];
+    States [label="States", shape="box"];
+    StateHandler [label="StateHandler(QtCore.QObject)", shape="box"]
+    Status [label="Status, is a singleton", shape="box"]
+
+    //State_1 -- States
+    State_n -- States
+    States -- StateHandler
+    StateHandler -- Status
+    States -- Status
+
+}
+
+```
 ## Directories
 
 ### hapticsimulator (deprecated)
