@@ -37,6 +37,8 @@ MenuWidget(Control) <br>
         class DataRecorderWidget
 
         States "1" ..|> "*" State : Realization
+        Status ..|> States : Realization
+        Status ..|> StateHandler : Realization
         QObject --|> StateHandler : Inheritance
         QThread --|> Pulsar : Inheritance
         Pulsar --|> Control : Inheritance
