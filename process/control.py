@@ -4,25 +4,24 @@ from PyQt5 import uic, QtCore
 
 import os 
 
-class Status():
+class Status:
     '''
     The Status class is a singleton that handles all states as defined in the States class
     To change states the StateHandler class is used
     '''
-    __instance = None
+    instance = None
 
     def __new__(klass, *args, **kwargs):
-        if not klass.__instance:
-            klass.__instance = object.__new__(Status)
+        if not klass.instance:
+            klass.instance = object.__new__(Status)
             klass.gui = {}
             klass.statehandler = StateHandler()
             klass.states = States()
-        return klass.__instance
+        return klass.instance
 
     def __init__(self, guiDict, *args, **kwargs):
         # TODO find out if self.gui is necessary, also see klass.gui
         self.gui.update(guiDict)
-        
 
 
 class Control(Pulsar):
@@ -62,4 +61,6 @@ class Control(Pulsar):
             print(inst)
             return None
 
+    def getAllGui(self):
+        return self.singletonControl.gui
 

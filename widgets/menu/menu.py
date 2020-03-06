@@ -14,37 +14,48 @@ class MenuWidget(Control):
 
         #self.widget = self.getGui()
         self.counter = 0
-        self.millis = kwargs['millis']
 
         #self.statehandler.stateChanged.connect(self.finish)
         self.statehandler.stateChanged.connect(self.handlestate)
         self.ts = None
         self.te = None
 
-
     def do(self):
         self.counter += 1
         #print(" counter %d" % self.counter)
+        if (self.counter == 40):
+            self.setInterval(1000)
         if (self.counter == 500):
             self.statehandler.stateChanged.emit(self.statehandler.state)
 
-            self.statehandler.requestStateChange(self.states.ERROR.INTERFACE.INIT_SIMENDO)
+            self.statehandler.requestStateChange(self.states.ERROR)
         self.widget.label_1.setText(str(self.counter))
 
-    def show(self):
-        self.startPulsar()
+    @QtCore.pyqtSlot(str)
+    def setmillis(self, millis):
+        try:
+            millis = int(millis)
+            self.setInterval(millis)
+        except:
+            pass
 
-        self.widget.btnQuit.clicked.connect(self.finish)
+    def start(self):
+        self.startPulsar()
+        self.widget.btnQuit.clicked.connect(self.laatguidictzien)
         self.widget.show()
         self.ts = time.time()
 
 
-    def finish(self):
-        self.stopPulsar
+    def stop(self):
+        self.stopPulsar()
         self.te = time.time()
-        print('millis %d, counter %d,  time: %f ms, verhouding: %f ' % (self.millis, self.counter * self.millis, (self.te - self.ts) * 1000, (self.counter * self.millis) / ((self.te - self.ts) * 1000)))
-        sleep(2)
-        exit(0)
+        try:
+            print('millis %d, counter %d,  time: %f ms, verhouding: %f ' % (self.millis, self.counter * self.millis, (self.te - self.ts) * 1000, (self.counter * self.millis) / ((self.te - self.ts) * 1000)))
+        except Exception as inst:
+            print(inst)
+    
+    def close(self):
+        self.widget.close()
 
     def handlestate(self, state):
         """ 
@@ -52,15 +63,23 @@ class MenuWidget(Control):
         GUI reflect the possibilities of the current state.
         """
 
-        print("gedaan", state, self.gui)
+        print("gedaan in menu", state, self.gui)
         #self.statehandler.stateChanged
         try:
             stateAsState = self.states.getState(state) # ensure we have the State object (not the int)
             
+            # emergency stop
+            if stateAsState == self.states.ERROR:
+                self.stop()
+
             # update the state label
             self.widget.lblState.setText(str(stateAsState))
+
         except Exception as inst:
             print (inst)
+
+    def laatguidictzien(self):
+        print ('      guiDict        ', self.getAllGui())
 
         '''
         menuWidget = self.menuWindow.getGui()

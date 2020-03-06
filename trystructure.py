@@ -1,5 +1,5 @@
 from widgets import MenuWidget 
-from widgets import DataRecorderWidget
+from widgets import DatarecorderWidget
 from widgets import InterfaceWidget
 from widgets import TemplateWidget
 
@@ -10,7 +10,7 @@ from time import sleep
 
 
 class WorkerSignals(QtCore.QObject):
-    result = QtCore.pyqtSignal([MenuWidget], [DataRecorderWidget])
+    result = QtCore.pyqtSignal([MenuWidget], [DatarecorderWidget])
 
 class Worker(QtCore.QRunnable):
     def __init__(self, task):
@@ -32,7 +32,7 @@ class Tasks(QtCore.QObject):
         #self.pool.setMaxThreadCount(4)
 
     @QtCore.pyqtSlot(MenuWidget)
-    @QtCore.pyqtSlot(DataRecorderWidget)
+    @QtCore.pyqtSlot(DatarecorderWidget)
     def process_result(self, task):
         print ('Receiving', task)
 
@@ -41,7 +41,7 @@ class Tasks(QtCore.QObject):
     def start(self):
         #for task in range(10):
         m = MenuWidget()
-        d = DataRecorderWidget()
+        d = DatarecorderWidget()
         tasks = (m, d)
         for task in tasks:
             worker = Worker(task)

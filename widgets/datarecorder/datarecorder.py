@@ -3,9 +3,9 @@ import os
 from PyQt5 import QtCore
 from time import sleep
 
-class DataRecorderWidget(Control):
+class DatarecorderWidget(Control):
     """ 
-    DataRecorderWidget 
+    DatarecorderWidget 
     """    
     
     ## Methods
@@ -15,7 +15,7 @@ class DataRecorderWidget(Control):
 
         kwargs['ui'] = os.path.join(os.path.dirname(os.path.realpath(__file__)),"datarecorder.ui")
         Control.__init__(self, *args, **kwargs)
-
+        self.millis = kwargs['millis']
         self.counter = 0
         
         self.statehandler.stateChanged.connect(self.handlestate)
@@ -72,15 +72,34 @@ class DataRecorderWidget(Control):
         #self.statehandler.stateChanged
         try:
             stateAsState = self.states.getState(state) # ensure we have the State object (not the int)
+
+             # emergency stop
+            if stateAsState == self.states.ERROR:
+                self.stop()
+
             # update the state label
-            self.widget.lblDataFilename.setText(str(stateAsState))
+            self.widget.lblState.setText(str(stateAsState))
+
         except Exception as inst:
             print (inst)
 
+    @QtCore.pyqtSlot(str)
+    def setmillis(self, millis):
+        try:
+            millis = int(millis)
+            self.setInterval(millis)
+        except:
+            pass
 
-    def show(self):
+    def start(self):
         self.startPulsar()
         self.widget.show()
+
+    def stop(self):
+        self.stopPulsar()
+
+    def close(self):
+        self.widget.close()
 
 
     def _clickedBtnInitialize(self):

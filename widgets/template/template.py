@@ -1,4 +1,5 @@
 from process import Control
+from PyQt5 import QtCore
 import os
 
 class TemplateWidget(Control):
@@ -15,14 +16,25 @@ class TemplateWidget(Control):
     def do(self):
         pass
 
-    def show(self):
+    @QtCore.pyqtSlot(str)
+    def setmillis(self, millis):
+        try:
+            millis = int(millis)
+            self.setInterval(millis)
+        except:
+            pass
+
+    def start(self):
         print(self.widget.windowTitle())
         self.widget.setWindowTitle("Template title")
         self.widget.show()
         self.startPulsar()
 
-    def finish(self):
-        self.stopPulsar
+    def stop(self):
+        self.stopPulsar()
+
+    def close(self):
+        self.widget.close()
 
     def handlestate(self, state):
         """ 
@@ -30,11 +42,15 @@ class TemplateWidget(Control):
         GUI reflect the possibilities of the current state.
         """
 
-        print("gedaan", state, self.gui)
         try:
             stateAsState = self.states.getState(state) # ensure we have the State object (not the int)
             
+            # emergency stop
+            if stateAsState == self.states.ERROR:
+                self.stop()
+
             # update the state label
             self.widget.lblState.setText(str(stateAsState))
+
         except Exception as inst:
             print (inst)

@@ -15,14 +15,19 @@ notation of methods is camelCase to conform the already existing code
 Use PyQt5 and NOT PySide2 because PyQt5 is (more) platform independent.<br>
 
 ## Classes
-Status() is a singleton class <br>
+Status is a singleton class <br>
 Control(Pulsar) <br>
 StateHandler(QtCore.QObject) <br>
 State <br>
 States <br>
 Pulsar(QtCore.QThread) <br>
 DataRecorderWidget(Control) <br>
-MenuWidget(Control) <br>
+MenuWidget(Control) <br><br>
+
+trying threads from trystructure.__main__ with <br>
+WorkerSignals(QtCore.QObject) <br>
+Worker(QtCore.QRunnable) <br>
+Tasks(QtCore.QObject) <br>
 
 ```mermaid
     classDiagram
@@ -37,7 +42,7 @@ MenuWidget(Control) <br>
         class DataRecorderWidget
 
         States "1" ..|> "*" State : Realization
-        Status ..|> States : Realization
+        Status ..|> States : Realization of singleton
         Status ..|> StateHandler : Realization
         QObject --|> StateHandler : Inheritance
         QThread --|> Pulsar : Inheritance
@@ -45,8 +50,6 @@ MenuWidget(Control) <br>
         Control ..|> Status : Realization
         Control --|> MenuWidget : Inheritance
         Control  --|> DataRecorderWidget : Inheritance
-      
-
 ```
 ## Directories
 
