@@ -78,7 +78,7 @@ class DatarecorderWidget(Control):
                 self.stop()
 
             # update the state label
-            self.widget.lblState.setText(str(stateAsState))
+            self.widget.lblStatusRecorder.setText(str(stateAsState))
 
         except Exception as inst:
             print (inst)
@@ -91,9 +91,13 @@ class DatarecorderWidget(Control):
         except:
             pass
 
-    def start(self):
-        self.startPulsar()
+    def show(self):
         self.widget.show()
+
+    def star(self):
+        if not self.widget.isVisible():
+            self.show()
+        self.startPulsar()
 
     def stop(self):
         self.stopPulsar()

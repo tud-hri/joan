@@ -29,6 +29,11 @@ class Pulsar(QtCore.QThread):
     @QtCore.pyqtSlot()
     def startPulsar(self):
         for method in self.callback:
+            try:
+                # prevent connecting the same methods more than once 
+                self.timer.disconnect()
+            except:
+                pass
             self.timer.timeout.connect(method)
         self.timer.setInterval(self.millis)
         self.timer.start()

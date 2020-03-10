@@ -24,10 +24,6 @@ Pulsar(QtCore.QThread) <br>
 DataRecorderWidget(Control) <br>
 MenuWidget(Control) <br><br>
 
-trying threads from trystructure.__main__ with <br>
-WorkerSignals(QtCore.QObject) <br>
-Worker(QtCore.QRunnable) <br>
-Tasks(QtCore.QObject) <br>
 
 ```mermaid
     classDiagram
@@ -53,12 +49,6 @@ Tasks(QtCore.QObject) <br>
 ```
 ## Directories
 
-### hapticsimulator (deprecated)
-
-* haptictrainer.py (1 instance of HapticTrainer class) 
-* states.py (State class, 1 instance of States class)
-* statehandler.py
-
 ## process
 
 * control.py <br>
@@ -76,33 +66,30 @@ It turns out that the QTimer object are running in seperate threads but the meth
 1. communication with input devices (Sensodrive Steering wheel through PCAN) (as fast as possible, hopefully 1 msec)
 2. spread data around to whatever module want to listen; datarecorder, plotter, GUI (200msec or so)
 
-## widgets
-## widgets.datarecorder
-* datarecorder.py
+## modules
+### modules.datarecorder.widget.datarecorder.py
 reads the corresponding .ui file and does all the action needed for this widget
-* datarecorder.ui
+### modules.datarecorder.widget.datarecorder.ui
+definition of the gui
+### modules.datarecorder.action.datarecorder.py
+does all the action needed, like getting and writing data (not yet implemented)
+
+### modules.menu.widget.menu.py
+reads the corresponding .ui file and does all the action needed for this widget
+### modules.menu.widget.menu.ui
 definition of the gui
 
-## widgets.menu
-* menu.py
+### modules.interface.widget.interface.py (not used yet)
 reads the corresponding .ui file and does all the action needed for this widget
-* menu.ui
+### modules.interface.widget.interface.ui
 definition of the gui
 
-## widgets.interface (not used yet)
-* interface.py
-reads the corresponding .ui file and does all the action needed for this widget
-* interface.ui
-definition of the gui
-
-## widgets.template
-* template.py
+### modules.template.widget.template.py
 Template to create other widgets, has predefined connection with the Control class
 reads the corresponding .ui file and does all the action needed for this widget
-* template.ui
+### modules.template.widget.template.ui
 definition of the gui
 
 
 <br>
-For now trystructure.py is an early versions of how the program might work. <br>
-trystructure.py is using a threadpool
+For now main.py is an early versions of how the program might work. <br>

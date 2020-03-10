@@ -19,12 +19,13 @@ class MenuWidget(Control):
         self.statehandler.stateChanged.connect(self.handlestate)
         self.ts = None
         self.te = None
+        self.millis = kwargs['millis']
 
     def do(self):
         self.counter += 1
         #print(" counter %d" % self.counter)
-        if (self.counter == 40):
-            self.setInterval(1000)
+        #if (self.counter == 40):
+        #    self.setInterval(1000)
         if (self.counter == 500):
             self.statehandler.stateChanged.emit(self.statehandler.state)
 
@@ -34,20 +35,26 @@ class MenuWidget(Control):
     @QtCore.pyqtSlot(str)
     def setmillis(self, millis):
         try:
-            millis = int(millis)
-            self.setInterval(millis)
+            self.millis = int(millis)
+            self.setInterval(self.millis)
         except:
             pass
 
+    def show(self):
+        self.widget.show()
+
     def start(self):
+        if not self.widget.isVisible():
+            self.show()
         self.startPulsar()
         self.widget.btnQuit.clicked.connect(self.laatguidictzien)
-        self.widget.show()
         self.ts = time.time()
 
 
     def stop(self):
         self.stopPulsar()
+        if not self.ts:
+            self.ts = time.time()
         self.te = time.time()
         try:
             print('millis %d, counter %d,  time: %f ms, verhouding: %f ' % (self.millis, self.counter * self.millis, (self.te - self.ts) * 1000, (self.counter * self.millis) / ((self.te - self.ts) * 1000)))
@@ -76,10 +83,10 @@ class MenuWidget(Control):
             self.widget.lblState.setText(str(stateAsState))
 
         except Exception as inst:
-            print (inst)
+            print (' in menu.py' ,inst)
 
     def laatguidictzien(self):
-        print ('      guiDict        ', self.getAllGui())
+        print ('      guiDict in menu.py       ', self.getAllGui())
 
         '''
         menuWidget = self.menuWindow.getGui()

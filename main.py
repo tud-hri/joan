@@ -1,7 +1,7 @@
 # Intantiates classes by name. The classes, however MUST already exist in globals.
 # That is why classes have already been imported using a wildcard (*)
 # Make sure that the requested class are also in widgets/__init__.py 
-from widgets import *
+from modules import *
 #from widgets import MenuWidget
 #from widgets import DatarecorderWidget
 
@@ -14,19 +14,14 @@ import sys
 import traceback
 import os
 
-
-from PyQt5 import QtGui
-
 class Instantiate():
     '''
     Intantiates classes by name. The classes, however MUST already exist in globals.
     That is why classes have already been imported using a wildcard (*)
 
     @param className is the class that will be instantiated
-    @param millis is used for the Pulsar class, each millisecond one or more methods from the instantiated class will be called
-    default: 100 ms
     '''
-    def __init__(self, className): #, millis=100):
+    def __init__(self, className):
         self.class_ = className in globals().keys() and globals()[className] or None
         #self.millis = millis
 
@@ -34,11 +29,10 @@ class Instantiate():
         try:
             if self.class_:
                 print('class_', self.class_)
-                #instantiatedClass = self.class_(millis=self.millis)
                 instantiatedClass = self.class_()
                 return instantiatedClass
             else:
-                print("Make sure that %s is lowercasename and that the class ends with 'Widget' (e.g. name is 'menu' and class is called MenuWidget" % self.class_)
+                print("Make sure that '%s' is lowercasename and that the class ends with 'Widget' (e.g. the widget directory 'menu' contains a class in 'menu.py' called 'MenuWidget'" % self.class_)
         except Exception as inst:
             print(inst, self.class_)
         return None
@@ -88,10 +82,9 @@ class Tasks(QtCore.QObject):
 
         self.pool.waitForDone()
 '''
-
 if __name__ == '__main__':
 
-    def statehandler():
+    def emergency():
         status = Status({})
         states = status.states
         statehandler = status.statehandler
@@ -118,8 +111,7 @@ if __name__ == '__main__':
         grid.addWidget(emergency_btn, 1, 0)
 
         emergency_btn.setIconSize(QtCore.QSize(100,100))
-
-        emergency_btn.clicked.connect(statehandler)
+        emergency_btn.clicked.connect(emergency)
 
 
         layout = QtWidgets.QVBoxLayout()
@@ -130,16 +122,16 @@ if __name__ == '__main__':
         layout.addWidget(quit_btn)
         win.setLayout(grid)
 
-        path = os.path.join(os.path.dirname(os.path.realpath(__file__)),'widgets')
+        path = os.path.join(os.path.dirname(os.path.realpath(__file__)),'modules')
 
-        print ('globals',globals)
         widgetfolders = os.listdir(path)
         for widgetfolder in widgetfolders:
-            if '__' not in widgetfolder:
+            if widgetfolder not in ('__pycache__', 'template', '__init__.py'):
                 module = '%s%s' % (widgetfolder.title(), 'Widget')
                 if module:
                     instantiated = Instantiate(module)
                     instantiatedClass = instantiated.getInstantiatedClass()
+                    # get default millis which should be defined in the class that is just instantiated
                     defaultMillis = 0
                     try:
                         defaultMillis = instantiatedClass.millis
@@ -156,7 +148,20 @@ if __name__ == '__main__':
                         editClass.textChanged.connect(instantiatedClass.setmillis)
                         layout.addWidget(editClass)
                     except Exception as inst:
-                        print(inst,"No action on button '%s', because method %s in %s does noet exist" % ('editClass', 'setmillis()', module))
+                        editLabel.__add__(' no action defined in %s' % module)
+                        print(inst,"No action on button '%s', because method %s in %s does not exist" % ('editClass', 'setmillis()', module))
+
+                    # show
+                    buttonClass = None
+                    buttonText = '%s %s' % ('Show', widgetfolder)
+                    try:
+                        buttonClass = QtWidgets.QPushButton(buttonText)
+                        buttonClass.clicked.connect(instantiatedClass.show)
+                        layout.addWidget(buttonClass)
+                    except Exception as inst:
+                        traceback.print_exc(file=sys.stdout)
+                        buttonText.__add__(' no action defined in %s' % module)
+                        print(inst, "No action on button '%s', because method %s in %s does not exist" % (buttonText, 'show()', module))
 
                     # start
                     buttonClass = None
@@ -164,11 +169,12 @@ if __name__ == '__main__':
                     try:
                         buttonClass = QtWidgets.QPushButton(buttonText)
                         buttonClass.clicked.connect(instantiatedClass.start)
-                        layout.addWidget(buttonClass)
+                        layout.addWidget(buttonClass)               
                     except Exception as inst:
                         traceback.print_exc(file=sys.stdout)
-                        print(inst, "No action on button '%s', because method %s in %s does noet exist" % (buttonText, 'start()', module))
-
+                        print(inst, "- - - - -No action on button '%s', because method %s in %s does not exist" % (buttonText, 'start()', module))
+                        #layout.removeWidget(buttonClass)
+ 
                     # stop
                     buttonClass = None
                     buttonText = '%s %s' % ('Stop', widgetfolder)
@@ -177,7 +183,8 @@ if __name__ == '__main__':
                         buttonClass.clicked.connect(instantiatedClass.stop)
                         layout.addWidget(buttonClass)
                     except Exception as inst:
-                        print("No action on button '%s', because method %s in %s does noet exist" % (buttonText, 'stop()', module))
+                        buttonText.__add__(' no action defined in %s' % module)
+                        print("No action on button '%s', because method %s in %s does not exist" % (buttonText, 'stop()', module))
 
                     # close widget
                     buttonClass = None
@@ -187,7 +194,8 @@ if __name__ == '__main__':
                         buttonClass.clicked.connect(instantiatedClass.close)
                         layout.addWidget(buttonClass)
                     except Exception as inst:
-                        print("No action on button '%s', because method %s in %s does noet exist" % (buttonText, 'close()', module))
+                        buttonText.__add__(' no action defined in %s' % module)
+                        print("No action on button '%s', because method %s in %s does not exist" % (buttonText, 'close()', module))
         win.show()
 
         print(sys.exit(app.exec()))
