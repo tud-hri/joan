@@ -11,6 +11,7 @@ class TemplateWidget(Control):
         Control.__init__(self, *args, **kwargs)
 
         self.statehandler.stateChanged.connect(self.handlestate)
+        
 
     # callback class is called each time a pulse has come from the Pulsar class instance
     def do(self):

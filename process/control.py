@@ -5,7 +5,7 @@ from PyQt5 import uic, QtCore
 
 import os 
 
-class Recent:
+class News:
     '''
     The Recent class is a singleton that holds all most recent status data
     Every class has its own writing area; the key of the class
@@ -15,13 +15,13 @@ class Recent:
 
     def __new__(klass, *args, **kwargs):
         if not klass.instance:
-            klass.instance = object.__new__(Recent)
-            klass.recent = {}
-            klass.availableKeys = klass.recent.keys()
+            klass.instance = object.__new__(News)
+            klass.news = {}
+            klass.availableKeys = klass.news.keys()
         return klass.instance
 
-    def __init__(self, recentDataDict, *args, **kwargs):
-        self.recent.update(recentDataDict)
+    def __init__(self, recentNewsDict, *args, **kwargs):
+        self.news.update(recentNewsDict)
 
 
 class Status:
@@ -53,7 +53,7 @@ class Control(Pulsar):
 
         # start gui and status stuff
         self.ui = 'ui' in kwargs.keys() and kwargs['ui'] or ''
-        assert self.ui != '', 'keyword argument should contain key "ui" with a PyQt ui file as value (e.g. ui=<absolute path>menu.ui)' 
+        #assert self.ui != '', 'keyword argument should contain key "ui" with a PyQt ui file as value (e.g. ui=<absolute path>menu.ui)' 
         self.widget = self._getGui()
         assert self.widget != None, 'could not create a widget, is %s the correct filename?' % self.ui
 
@@ -62,10 +62,10 @@ class Control(Pulsar):
         self.singletonStatus = Status({uiKey: self.widget})
         # end gui and status stuff
 
-        # start queue stuff
-        self.queueKey = 'queue' in kwargs.keys() and kwargs['queue'] or ''
-        self.singletonQueue = SQueue({self.queueKey: Queue()})
-        # end queue stuff
+        # start recent stuff
+        self.writerKey = 'writingClass' in kwargs.keys() and kwargs['writingClass'] or ''
+        self.singletonNews = News({self.writerKey: News()})
+        # end recent stuff
 
 
         self.statehandler = self.singletonStatus.statehandler
@@ -92,5 +92,8 @@ class Control(Pulsar):
     def getAllGui(self):
         return self.singletonStatus.gui
 
-    def getAllQueus(self):
-        return self.singletonQueue.queues
+    def getAllNews(self):
+        return self.singletonRecent.news
+
+    def getAvailableNewsChannels(self):
+        return self.singletonRecent.availableKeys

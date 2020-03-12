@@ -92,6 +92,16 @@ class States:
     EXPERIMENT.SUBJECTIDENTERED     = State(139, translate('ExperimentState', 'Experiment subject ID entered'), -1, 150)
     EXPERIMENT.WAITING              = State(1310, translate('ExperimentState', 'Experiment waiting'), -1, 150)
 
+    # SensoDrive states
+    STEERINGWHEEL                   = State(200, translate('SteeringwheelState', 'Steering wheel State'), -1,150)
+    STEERINGWHEEL.OFF               = State(201, translate('SteeringwheelState', 'Steeringwheel Off'), -1,150, 202, 204,2040)
+    STEERINGWHEEL.READY             = State(202, translate('SteeringwheelState', 'Steeringwheel Ready'), -1,150, 201, 203,204)
+    STEERINGWHEEL.ON                = State(203, translate('SteeringwheelState', 'Steeringwheel On'), -1,150, 202, 204)
+    STEERINGWHEEL.ERROR             = State(204, translate('SteeringwheelState', 'Steeringhweel Error'), -1, 150, 201)
+    STEERINGWHEEL.ERROR.INIT        = State(2040, translate('SteeringwheelState', 'Steeringhweel Error'), -1, 150, 201)
+    STEERINGWHEEL.INITIALIZED       = State(205, translate('SteeringwheelState', 'Steeringhweel Error'), -1, 150, 201, 202, 203, 204,2040)
+
+
 
     # Debug / developing
     DEBUG                           = State(140, translate('DebugStates', 'Debugging'), -1)
