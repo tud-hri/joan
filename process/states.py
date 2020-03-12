@@ -108,7 +108,7 @@ class States:
     
 
     '''
-    States is only used by SingletonControl
+    States is only used by SingletonStatus
     __instance = None
 
     def __new__(klass, *args, **kwargs):

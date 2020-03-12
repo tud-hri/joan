@@ -75,7 +75,7 @@ class DatarecorderWidget(Control):
 
              # emergency stop
             if stateAsState == self.states.ERROR:
-                self.stop()
+                self._stop()
 
             # update the state label
             self.widget.lblStatusRecorder.setText(str(stateAsState))
@@ -93,6 +93,8 @@ class DatarecorderWidget(Control):
 
     def _show(self):
         self.widget.show()
+        self.widget.btnInitialize.clicked.connect(self._clickedBtnInitialize)
+
 
     def _start(self):
         if not self.widget.isVisible():

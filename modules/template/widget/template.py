@@ -51,7 +51,7 @@ class TemplateWidget(Control):
             
             # emergency stop
             if stateAsState == self.states.ERROR:
-                self.stop()
+                self._stop()
 
             # update the state label
             self.widget.lblState.setText(str(stateAsState))
