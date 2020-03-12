@@ -143,9 +143,9 @@ if __name__ == '__main__':
                     editLabel = '%s %s' % ('Start', widgetfolder)
                     try:
                         editClass = QtWidgets.QLineEdit()
+                        editClass.textChanged.connect(instantiatedClass._setmillis)
                         #editClass.setValidator()
                         editClass.setPlaceholderText(str(defaultMillis))
-                        editClass.textChanged.connect(instantiatedClass.setmillis)
                         layout.addWidget(editClass)
                     except Exception as inst:
                         editLabel.__add__(' no action defined in %s' % module)
@@ -156,7 +156,7 @@ if __name__ == '__main__':
                     buttonText = '%s %s' % ('Show', widgetfolder)
                     try:
                         buttonClass = QtWidgets.QPushButton(buttonText)
-                        buttonClass.clicked.connect(instantiatedClass.show)
+                        buttonClass.clicked.connect(instantiatedClass._show)
                         layout.addWidget(buttonClass)
                     except Exception as inst:
                         traceback.print_exc(file=sys.stdout)
@@ -168,7 +168,7 @@ if __name__ == '__main__':
                     buttonText = '%s %s' % ('Start', widgetfolder)
                     try:
                         buttonClass = QtWidgets.QPushButton(buttonText)
-                        buttonClass.clicked.connect(instantiatedClass.start)
+                        buttonClass.clicked.connect(instantiatedClass._start)
                         layout.addWidget(buttonClass)               
                     except Exception as inst:
                         traceback.print_exc(file=sys.stdout)
@@ -180,7 +180,7 @@ if __name__ == '__main__':
                     buttonText = '%s %s' % ('Stop', widgetfolder)
                     try:
                         buttonClass = QtWidgets.QPushButton(buttonText)
-                        buttonClass.clicked.connect(instantiatedClass.stop)
+                        buttonClass.clicked.connect(instantiatedClass._stop)
                         layout.addWidget(buttonClass)
                     except Exception as inst:
                         buttonText.__add__(' no action defined in %s' % module)
@@ -191,7 +191,7 @@ if __name__ == '__main__':
                     buttonText = '%s %s' % ('Close', widgetfolder)
                     try:
                         buttonClass = QtWidgets.QPushButton(buttonText)
-                        buttonClass.clicked.connect(instantiatedClass.close)
+                        buttonClass.clicked.connect(instantiatedClass._close)
                         layout.addWidget(buttonClass)
                     except Exception as inst:
                         buttonText.__add__(' no action defined in %s' % module)

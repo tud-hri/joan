@@ -18,27 +18,27 @@ class InterfaceWidget(Control):
         pass
 
     @QtCore.pyqtSlot(str)
-    def setmillis(self, millis):
+    def _setmillis(self, millis):
         try:
             millis = int(millis)
             self.setInterval(millis)
         except:
             pass
 
-    def show(self):
+    def _show(self):
         self.widget.show()
 
-    def start(self):
+    def _start(self):
         if not self.widget.isVisible():
-            self.show()
+            self._show()
         print(self.widget.windowTitle())
         self.widget.setWindowTitle("Template title")
         self.startPulsar()
 
-    def stop(self):
+    def _stop(self):
         self.stopPulsar()
 
-    def close(self):
+    def _close(self):
         self.widget.close()
 
     def handlestate(self, state):

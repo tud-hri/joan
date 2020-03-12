@@ -33,25 +33,25 @@ class MenuWidget(Control):
         self.widget.label_1.setText(str(self.counter))
 
     @QtCore.pyqtSlot(str)
-    def setmillis(self, millis):
+    def _setmillis(self, millis):
         try:
             self.millis = int(millis)
             self.setInterval(self.millis)
         except:
             pass
 
-    def show(self):
+    def _show(self):
         self.widget.show()
 
-    def start(self):
+    def _start(self):
         if not self.widget.isVisible():
-            self.show()
+            self._show()
         self.startPulsar()
         self.widget.btnQuit.clicked.connect(self.laatguidictzien)
         self.ts = time.time()
 
 
-    def stop(self):
+    def _stop(self):
         self.stopPulsar()
         if not self.ts:
             self.ts = time.time()
@@ -61,7 +61,7 @@ class MenuWidget(Control):
         except Exception as inst:
             print(inst)
     
-    def close(self):
+    def _close(self):
         self.widget.close()
 
     def handlestate(self, state):

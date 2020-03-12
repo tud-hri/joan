@@ -84,25 +84,25 @@ class DatarecorderWidget(Control):
             print (inst)
 
     @QtCore.pyqtSlot(str)
-    def setmillis(self, millis):
+    def _setmillis(self, millis):
         try:
             millis = int(millis)
             self.setInterval(millis)
         except:
             pass
 
-    def show(self):
+    def _show(self):
         self.widget.show()
 
-    def star(self):
+    def _start(self):
         if not self.widget.isVisible():
-            self.show()
+            self._show()
         self.startPulsar()
 
-    def stop(self):
+    def _stop(self):
         self.stopPulsar()
 
-    def close(self):
+    def _close(self):
         self.widget.close()
 
 
