@@ -41,12 +41,7 @@ class SteeringcommunicationWidget(Control):
         self.widget.btnInitialize.clicked.connect(self.action.initialize)
         self.widget.btnStart.clicked.connect(self.action.start)
         self.widget.btnStop.clicked.connect(self.action.stop)
-
-        try:
-            self.action.initialize()
-            self.widget.btnInitialize.setEnabled(False)
-        except:
-            self.widget.btnInitialize.setEnabled(True)
+        self.action.initialize()
         
 
     def start(self):
@@ -73,7 +68,13 @@ class SteeringcommunicationWidget(Control):
             if stateAsState == self.states.STEERINGWHEEL.INITIALIZED:
                 self.start()
 
-            
+            # Reinitialize available if exception
+            if stateAsState == self.states.STEERINGWHEEL.ERROR.INIT:
+                self.widget.btnInitialize.setEnabled(True)
+            else:
+                self.widget.btnInitialize.setEnabled(False)
+
+
             # emergency stop
             if stateAsState == self.states.ERROR:
                 self.stop()
