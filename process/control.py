@@ -63,8 +63,9 @@ class Control(Pulsar):
         # end gui and status stuff
 
         # start recent stuff
-        self.writerKey = 'writingClass' in kwargs.keys() and kwargs['writingClass'] or ''
-        self.singletonNews = News({self.writerKey: News()})
+        #self.writerKey = 'writingClass' in kwargs.keys() and kwargs['writingClass'] or ''
+        #self.news = News()
+        #self.singletonNews = News({self.writerKey: self.news})
         # end recent stuff
 
 
