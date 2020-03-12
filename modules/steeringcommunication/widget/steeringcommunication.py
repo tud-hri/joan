@@ -1,20 +1,31 @@
 from process import Control
 from PyQt5 import QtCore
 import os
+from modules.steeringcommunication import SteeringcommunicationAction
+#from steeringcommunication import SteeringcommunicationAction
 
-class TemplateWidget(Control):
+class SteeringcommunicationWidget(Control):
     def __init__(self, *args, **kwargs):
-        kwargs['millis'] = 'millis' in kwargs.keys() and kwargs['millis'] or 20
+        kwargs['millis'] = 'millis' in kwargs.keys() and kwargs['millis'] or 1
         kwargs['callback'] = [self.do]  # method will run each given millis
 
-        kwargs['ui'] = os.path.join(os.path.dirname(os.path.realpath(__file__)),"template.ui")
+        kwargs['ui'] = os.path.join(os.path.dirname(os.path.realpath(__file__)),"steeringcommunication.ui")
         Control.__init__(self, *args, **kwargs)
 
         self.statehandler.stateChanged.connect(self.handlestate)
-        
+        try:
+            self.action = SteeringcommunicationAction()
+        except Exception as inst:
+            print('De error bij de constructor van de widget is:    ', inst)
+        self.i = 0
 
     # callback class is called each time a pulse has come from the Pulsar class instance
     def do(self):
+        self.i  = self.i + 1
+
+        if(self.statehandler._state is self.states.STEERINGWHEEL.ON):
+            print(self.statehandler._state)
+            print(self.i)
         pass
 
     @QtCore.pyqtSlot(str)
@@ -27,15 +38,23 @@ class TemplateWidget(Control):
 
     def _show(self):
         self.widget.show()
+        self.widget.btnInitialize.clicked.connect(self.action.initialize)
+        self.widget.btnStart.clicked.connect(self.action.start)
+        self.widget.btnStop.clicked.connect(self.action.stop)
 
-    def _start(self):
+        try:
+            self.action.initialize()
+            self.widget.btnInitialize.setEnabled(False)
+        except:
+            self.widget.btnInitialize.setEnabled(True)
+        
+
+    def start(self):
         if not self.widget.isVisible():
             self._show()
-        print(self.widget.windowTitle())
-        self.widget.setWindowTitle("Template title")
         self.startPulsar()
 
-    def _stop(self):
+    def stop(self):
         self.stopPulsar()
 
     def _close(self):
@@ -49,6 +68,11 @@ class TemplateWidget(Control):
 
         try:
             stateAsState = self.states.getState(state) # ensure we have the State object (not the int)
+            
+            # Start if the system is initialized
+            if stateAsState == self.states.STEERINGWHEEL.INITIALIZED:
+                self.start()
+
             
             # emergency stop
             if stateAsState == self.states.ERROR:

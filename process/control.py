@@ -32,9 +32,9 @@ class Control(Pulsar):
         Pulsar.__init__(self, *args, **kwargs)
 
         self.ui = 'ui' in kwargs.keys() and kwargs['ui'] or ''
-        assert self.ui != '', 'keyword argument should contain key "ui" with a PyQt ui file as value (e.g. ui=<absolute path>menu.ui)' 
+        #assert self.ui != '', 'keyword argument should contain key "ui" with a PyQt ui file as value (e.g. ui=<absolute path>menu.ui)' 
         self.widget = self._getGui()
-        assert self.widget != None, 'could not create a widget, is %s the correct filename?' % self.ui
+        #assert self.widget != None, 'could not create a widget, is %s the correct filename?' % self.ui
         
         
         uiKey = os.path.basename(os.path.realpath(self.ui))
