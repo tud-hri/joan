@@ -22,4 +22,5 @@ __pycache__/
 # LICENCE, for now
 LICENCE.md
 out.txt
+previous_*
 

@@ -14,16 +14,6 @@ class TemplateWidget(Control):
 
         self.statehandler.stateChanged.connect(self.handlestate)
         
-            # SensoDrive states
-        self.states.STEERINGWHEEL                   = State(200, translate('SteeringwheelState', 'Steering wheel State'), -1,150)
-        self.states.STEERINGWHEEL.OFF               = State(201, translate('SteeringwheelState', 'Steeringwheel Off'), -1,150, 202, 204,2040)
-        self.states.STEERINGWHEEL.READY             = State(202, translate('SteeringwheelState', 'Steeringwheel Ready'), -1,150, 201, 203,204)
-        self.states.STEERINGWHEEL.ON                = State(203, translate('SteeringwheelState', 'Steeringwheel On'), -1,150, 202, 204)
-        self.states.STEERINGWHEEL.ERROR             = State(204, translate('SteeringwheelState', 'Steeringhweel Error'), -1, 150, 201)
-        self.states.STEERINGWHEEL.ERROR.INIT        = State(2040, translate('SteeringwheelState', 'Steeringhweel Error'), -1, 150, 201)
-        self.states.STEERINGWHEEL.INITIALIZED       = State(205, translate('SteeringwheelState', 'Steeringhweel Error'), -1, 150, 201, 202, 203, 204,2040)
-
-
     # callback class is called each time a pulse has come from the Pulsar class instance
     def do(self):
         pass

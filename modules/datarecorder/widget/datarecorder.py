@@ -2,6 +2,7 @@ from process import Control
 import os
 from PyQt5 import QtCore
 from time import sleep
+from modules.datarecorder.action.datarecorder import DatarecorderAction
 
 class DatarecorderWidget(Control):
     """ 
@@ -19,20 +20,38 @@ class DatarecorderWidget(Control):
         self.writeNews(channel=self, news=self.data)
 
         self.millis = kwargs['millis']
-        self.counter = 0
         
         self.statehandler.stateChanged.connect(self.handlestate)
-        self.statehandler.stateChanged.emit(self.statehandler.state)
-        #self.statehandler.requestStateChange(self.states.IDLE)
+ 
+        try:
+            self.action = DatarecorderAction()
+        except Exception as inst:
+            print('De error bij de constructor van de widget is:    ', inst)
+       
+    def do(self):
+        #print(" counter %d" % self.counter)
+        print("news from steeringcommunication", self.readNews('modules.steeringcommunication.widget.steeringcommunication.SteeringcommunicationWidget'))
+
+    @QtCore.pyqtSlot(str)
+    def _setmillis(self, millis):
+        try:
+            millis = int(millis)
+            self.setInterval(millis)
+        except:
+            pass
+
+    def _show(self):
+        self.widget.show()
+        self.statehandler.requestStateChange(self.states.IDLE)
 
 
         # ref, so we can find ourselves
         #self._haptictrainer = haptictrainer
 
         # connect buttons
-        self.widget.btnInitialize.clicked.connect(self._clickedBtnInitialize)
-        self.widget.btnStartRecorder.clicked.connect(self._clickedBtnStartRecorder)
-        self.widget.btnStopRecorder.clicked.connect(self._clickedBtnStopRecorder)
+        self.widget.btnInitialize.clicked.connect(self.action._clickedBtnInitialize)
+        self.widget.btnStartRecorder.clicked.connect(self.action._clickedBtnStartRecorder)
+        self.widget.btnStopRecorder.clicked.connect(self.action._clickedBtnStopRecorder)
 
         # disable the start and stop buttons
         self.widget.btnStartRecorder.setEnabled(False)
@@ -56,15 +75,17 @@ class DatarecorderWidget(Control):
         self.widget.lblStatusRecorder.setText("not initialized")
         self.widget.lblStatusRecorder.setStyleSheet('color: orange')
 
-    def do(self):
-        self.counter += 1
-        #print(" counter %d" % self.counter)
-        print("news from steeringcommunication", self.readNews('modules.steeringcommunication.widget.steeringcommunication.SteeringcommunicationWidget'))
-        if (self.counter == 100):
-            self.statehandler.stateChanged.emit(self.statehandler.state)
 
-            self.statehandler.requestStateChange(self.states.INITIALIZED)
-        self.widget.btnInitialize.setText(str(self.counter))
+    def start(self):
+        if not self.widget.isVisible():
+            self._show()
+        self.startPulsar()
+
+    def stop(self):
+        self.stopPulsar()
+
+    def _close(self):
+        self.widget.close()
 
     def handlestate(self, state):
         """ 
@@ -78,89 +99,15 @@ class DatarecorderWidget(Control):
 
              # emergency stop
             if stateAsState == self.states.ERROR:
-                self._stop()
+                self.stop()
+
+            if stateAsState == self.states.INITIALIZED.DATARECORDER:
+                self.widget.btnStartRecorder.setEnabled(True)
+                self.widget.btnStopRecorder.setEnabled(True)
+                #self.start()
 
             # update the state label
-            self.widget.lblStatusRecorder.setText(str(stateAsState))
+            self.widget.lblStatusRecorder.setText(stateAsState.name)
 
         except Exception as inst:
             print (inst)
-
-    @QtCore.pyqtSlot(str)
-    def _setmillis(self, millis):
-        try:
-            millis = int(millis)
-            self.setInterval(millis)
-        except:
-            pass
-
-    def _show(self):
-        self.widget.show()
-        self.widget.btnInitialize.clicked.connect(self._clickedBtnInitialize)
-
-
-    def _start(self):
-        if not self.widget.isVisible():
-            self._show()
-        self.startPulsar()
-
-    def _stop(self):
-        self.stopPulsar()
-
-    def _close(self):
-        self.widget.close()
-
-
-    def _clickedBtnInitialize(self):
-        """initialize the data recorder (mainly setting the data directory and data file prefix"""
-        self._haptictrainer.datarecorder.initialize()
-
-    def _clickedBtnStartRecorder(self):
-        """ btnStartRecorder clicked. """
-        if self._haptictrainer.datarecorder.initialized:
-            # request state change to DEBUG.DATARECORDER
-            self._haptictrainer.statehandler.requestStateChange(self.states.DEBUG.DATARECORDER.START)
-
-        # To-do: check whether State change has been made and state is actually running without errors If not,
-        # go back to previous state
-
-    def _clickedBtnStopRecorder(self):
-        """ btnStopRecorder clicked. """
-        self._haptictrainer.statehandler.requestStateChange(self.states.INITIALIZED.INTERFACE)
-
-        # set current data file name
-        # self.lblDataFilename.setText('< none >')
-
-    def _onStateChanged(self, state):
-        """ state changed """
-        if self._haptictrainer.datarecorder.initialized:
-            self.btnStartRecorder.setEnabled(True)
-            self.btnStopRecorder.setEnabled(True)
-            self.lblStatusRecorder.setText("initialized")
-            self.lblStatusRecorder.setStyleSheet('color: green')
-        else:
-            self.lblStatusRecorder.setText("not initialized")
-            self.lblStatusRecorder.setStyleSheet('color: orange')
-
-    def _recordingStarted(self):
-        """
-        Recording started, change messages and current data file label.
-        This function is called when a _recordingStarted signal has been emitted (by the datarecorder class)
-        """
-
-        # set current data file name
-        self.lblDataFilename.setText(self._haptictrainer.datarecorder.currentFilename)
-
-        # show message
-        self.lblMessageRecorder.setText("recording")
-        self.lblMessageRecorder.setStyleSheet('color: green')
-        
-    def _recordingFinished(self):
-        """ recording has finished, change messages """
-
-        # set current data file name
-        self.lblDataFilename.setText("< none >")
-
-        # show message
-        self.lblMessageRecorder.setText("not recording")
-        self.lblMessageRecorder.setStyleSheet('color: orange')
