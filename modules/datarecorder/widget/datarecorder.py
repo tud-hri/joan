@@ -59,6 +59,7 @@ class DatarecorderWidget(Control):
     def do(self):
         self.counter += 1
         #print(" counter %d" % self.counter)
+        print("news from steeringcommunication", self.readNews('modules.steeringcommunication.widget.steeringcommunication.SteeringcommunicationWidget'))
         if (self.counter == 100):
             self.statehandler.stateChanged.emit(self.statehandler.state)
 

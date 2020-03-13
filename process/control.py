@@ -79,8 +79,8 @@ class Control(Pulsar):
         assert type(news) == dict, 'argument "news" should be of type dict'
         try:
             channelKey = '%s.%s' % (channel.__class__.__module__ , channel.__class__.__name__)
-            if channelKey not in self.getAvailableNewsChannels():
-                self.singletonNews = News({channelKey: news})
+            #if channelKey not in self.getAvailableNewsChannels():
+            self.singletonNews = News({channelKey: news})
         except Exception as inst:
             print(inst)
 

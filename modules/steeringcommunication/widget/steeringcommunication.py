@@ -16,6 +16,7 @@ class SteeringcommunicationWidget(Control):
         self.writeNews(channel=self, news=self.data)
 
         self.statehandler.stateChanged.connect(self.handlestate)
+
         try:
             self.action = SteeringcommunicationAction()
         except Exception as inst:
@@ -25,6 +26,10 @@ class SteeringcommunicationWidget(Control):
     # callback class is called each time a pulse has come from the Pulsar class instance
     def do(self):
         self.i  = self.i + 1
+
+        self.data['throttle'] = self.i
+        self.data['damping'] = 0
+        self.writeNews(channel=self, news=self.data)
 
         if(self.statehandler._state is self.states.STEERINGWHEEL.ON):
             print(self.statehandler._state)
@@ -83,7 +88,7 @@ class SteeringcommunicationWidget(Control):
                 self.stop()
 
             # update the state label
-            self.widget.lblState.setText(str(stateAsState))
+            self.widget.lblState.setText(stateAsState.name)
 
         except Exception as inst:
             print (inst)
