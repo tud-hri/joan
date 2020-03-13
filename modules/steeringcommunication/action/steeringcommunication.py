@@ -11,6 +11,8 @@ class SteeringcommunicationAction(Control):
         self.initMSG = None
         self.controlMSG = None
 
+
+
     
 
 
@@ -66,6 +68,6 @@ class SteeringcommunicationAction(Control):
             self.statehandler.requestStateChange(self.states.STEERINGWHEEL.ON)
 
     def stop(self):
-        print('Pressed Stop')
+        #print('Pressed Stop')
         if(self.statehandler._state is self.states.STEERINGWHEEL.ON):
             self.statehandler.requestStateChange(self.states.STEERINGWHEEL.READY)
