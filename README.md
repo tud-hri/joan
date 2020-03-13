@@ -95,6 +95,11 @@ reads the corresponding .ui file and does all the action needed for this widget
 ### modules.template.widget.template.ui
 definition of the gui
 
+### modules.template.widget.steeringcommunication.py
+Widget that handles all communication with the sensodrive wheel, utilizes the PCANBasic
+library made by PEAK-SYSTEMS. Widget also shows current state of the wheel.
+
+
 
 <br>
 For now main.py is an early versions of how the program might work. <br>
