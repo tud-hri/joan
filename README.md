@@ -16,6 +16,7 @@ Use PyQt5 and NOT PySide2 because PyQt5 is (more) platform independent.<br>
 
 ## Classes
 Status is a singleton class <br>
+New is a singleton class <br>
 Control(Pulsar) <br>
 StateHandler(QtCore.QObject) <br>
 State <br>
@@ -28,6 +29,7 @@ MenuWidget(Control) <br><br>
 ```mermaid
     classDiagram
         class Status
+        class News
         class State
         class States
         class StateHandler
@@ -44,6 +46,7 @@ MenuWidget(Control) <br><br>
         QThread --|> Pulsar : Inheritance
         Pulsar --|> Control : Inheritance
         Control ..|> Status : Realization
+        Control ..|> News : Realization
         Control --|> MenuWidget : Inheritance
         Control  --|> DataRecorderWidget : Inheritance
 ```
@@ -52,7 +55,9 @@ MenuWidget(Control) <br><br>
 ## process
 
 * control.py <br>
-holds the Control class that takes care of loading widgets <br> holds the singleton Status class
+holds the Control class that takes care of loading widgets<br>
+holds the singleton News class<br>
+holds the singleton Status class
 * statehandler.py <br>
 handles the available states as part of the Status class
 * states.py <br>

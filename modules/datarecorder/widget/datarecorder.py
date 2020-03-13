@@ -13,8 +13,11 @@ class DatarecorderWidget(Control):
         kwargs['millis'] = 'millis' in kwargs.keys() and kwargs['millis'] or 200
         kwargs['callback'] = [self.do]  # method will run each given millis
 
-        kwargs['ui'] = os.path.join(os.path.dirname(os.path.realpath(__file__)),"datarecorder.ui")
         Control.__init__(self, *args, **kwargs)
+        self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)),"datarecorder.ui"))
+        self.data = {}
+        self.writeNews(channel=self, news=self.data)
+
         self.millis = kwargs['millis']
         self.counter = 0
         
@@ -68,7 +71,6 @@ class DatarecorderWidget(Control):
         GUI reflect the possibilities of the current state.
         """
 
-        print("gedaan in datarecorder", state, self.gui)
         #self.statehandler.stateChanged
         try:
             stateAsState = self.states.getState(state) # ensure we have the State object (not the int)

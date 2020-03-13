@@ -9,8 +9,10 @@ class MenuWidget(Control):
         kwargs['millis'] = 'millis' in kwargs.keys() and kwargs['millis'] or 20
         kwargs['callback'] = [self.do]  # method will run each given millis
 
-        kwargs['ui'] = os.path.join(os.path.dirname(os.path.realpath(__file__)),"menu.ui")
         Control.__init__(self, *args, **kwargs)
+        self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)),"menu.ui"))
+        self.data = {}
+        self.writeNews(channel=self, news=self.data)
 
         #self.widget = self.getGui()
         self.counter = 0
@@ -70,7 +72,6 @@ class MenuWidget(Control):
         GUI reflect the possibilities of the current state.
         """
 
-        print("gedaan in menu", state, self.gui)
         #self.statehandler.stateChanged
         try:
             stateAsState = self.states.getState(state) # ensure we have the State object (not the int)

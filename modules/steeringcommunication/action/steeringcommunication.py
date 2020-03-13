@@ -3,8 +3,8 @@ from modules.steeringcommunication.action.PCANBasic import *
 
 class SteeringcommunicationAction(Control):
     def __init__(self, *args, **kwargs):
-        kwargs['ui'] = None
         Control.__init__(self,*args, **kwargs)
+        print('News', self.getAllNews())
 
         # Declare variables
         self.objPCAN = None

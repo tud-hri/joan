@@ -28,7 +28,6 @@ class Instantiate():
     def getInstantiatedClass(self):
         try:
             if self.class_:
-                print('class_', self.class_)
                 instantiatedClass = self.class_()
                 return instantiatedClass
             else:
@@ -149,7 +148,7 @@ if __name__ == '__main__':
                         layout.addWidget(editClass)
                     except Exception as inst:
                         editLabel.__add__(' no action defined in %s' % module)
-                        print(inst,"No action on button '%s', because method %s in %s does not exist" % ('editClass', 'setmillis()', module))
+                        print(inst,"No action on button '%s', because method %s in %s does not exist" % ('editClass', '_setmillis()', module))
 
                     # show
                     buttonClass = None
@@ -159,9 +158,9 @@ if __name__ == '__main__':
                         buttonClass.clicked.connect(instantiatedClass._show)
                         layout.addWidget(buttonClass)
                     except Exception as inst:
-                        traceback.print_exc(file=sys.stdout)
+                        #traceback.print_exc(file=sys.stdout)
                         buttonText.__add__(' no action defined in %s' % module)
-                        print(inst, "No action on button '%s', because method %s in %s does not exist" % (buttonText, 'show()', module))
+                        print(inst, "Warning: No action on button '%s', because method %s in %s does not exist" % (buttonText, '_show()', module))
 
                     # start
                     buttonClass = None
@@ -171,8 +170,8 @@ if __name__ == '__main__':
                         buttonClass.clicked.connect(instantiatedClass._start)
                         layout.addWidget(buttonClass)               
                     except Exception as inst:
-                        traceback.print_exc(file=sys.stdout)
-                        print(inst, "- - - - -No action on button '%s', because method %s in %s does not exist" % (buttonText, 'start()', module))
+                        #traceback.print_exc(file=sys.stdout)
+                        print(inst, "Warning: No action on button '%s', because method %s in %s does not exist" % (buttonText, '_start()', module))
                         #layout.removeWidget(buttonClass)
  
                     # stop
@@ -184,7 +183,7 @@ if __name__ == '__main__':
                         layout.addWidget(buttonClass)
                     except Exception as inst:
                         buttonText.__add__(' no action defined in %s' % module)
-                        print("No action on button '%s', because method %s in %s does not exist" % (buttonText, 'stop()', module))
+                        print("Warning: No action on button '%s', because method %s in %s does not exist" % (buttonText, '_stop()', module))
 
                     # close widget
                     buttonClass = None
@@ -195,9 +194,10 @@ if __name__ == '__main__':
                         layout.addWidget(buttonClass)
                     except Exception as inst:
                         buttonText.__add__(' no action defined in %s' % module)
-                        print("No action on button '%s', because method %s in %s does not exist" % (buttonText, 'close()', module))
+                        print("Warning: No action on button '%s', because method %s in %s does not exist" % (buttonText, '_close()', module))
         win.show()
 
         print(sys.exit(app.exec()))
     except Exception as inst:
+        traceback.print_exc(file=sys.stdout)
         print('Error:', inst)

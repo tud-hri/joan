@@ -7,8 +7,10 @@ class TemplateWidget(Control):
         kwargs['millis'] = 'millis' in kwargs.keys() and kwargs['millis'] or 20
         kwargs['callback'] = [self.do]  # method will run each given millis
 
-        kwargs['ui'] = os.path.join(os.path.dirname(os.path.realpath(__file__)),"template.ui")
         Control.__init__(self, *args, **kwargs)
+        self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)),"template.ui"))
+        self.data = {}
+        self.writeNews(channel=self, news=self.data)
 
         self.statehandler.stateChanged.connect(self.handlestate)
         

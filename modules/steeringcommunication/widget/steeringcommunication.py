@@ -1,16 +1,19 @@
 from process import Control
 from PyQt5 import QtCore
 import os
-from modules.steeringcommunication import SteeringcommunicationAction
-#from steeringcommunication import SteeringcommunicationAction
+from modules.steeringcommunication.action.steeringcommunication import SteeringcommunicationAction
 
 class SteeringcommunicationWidget(Control):
     def __init__(self, *args, **kwargs):
         kwargs['millis'] = 'millis' in kwargs.keys() and kwargs['millis'] or 1
         kwargs['callback'] = [self.do]  # method will run each given millis
 
-        kwargs['ui'] = os.path.join(os.path.dirname(os.path.realpath(__file__)),"steeringcommunication.ui")
         Control.__init__(self, *args, **kwargs)
+        self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)),"steeringcommunication.ui"))
+        self.data = {}
+        self.data['throttle'] = 0
+        self.data['damping'] = 0
+        self.writeNews(channel=self, news=self.data)
 
         self.statehandler.stateChanged.connect(self.handlestate)
         try:
