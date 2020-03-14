@@ -55,7 +55,7 @@ class SteeringcommunicationAction(Control):
         except Exception as inst:
             self.statehandler.requestStateChange(self.states.STEERINGWHEEL.ERROR.INIT)
             
-            print(inst)
+            print("FAILED TO INITIALIZE STEERING WHEEL ERROR GIVEN = " ,inst)
 
 
     def ready(self):
