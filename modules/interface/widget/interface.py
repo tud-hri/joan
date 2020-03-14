@@ -17,6 +17,9 @@ class InterfaceWidget(Control):
         pass
     # callback class is called each time a pulse has come from the Pulsar class instance
     def do(self):
+        self.data = self.readNews('modules.feedbackcontroller.widget.feedbackcontroller.FeedbackcontrollerWidget')
+        joe = self.data['Theta']
+        print(type(joe))
         pass
 
     @QtCore.pyqtSlot(str)

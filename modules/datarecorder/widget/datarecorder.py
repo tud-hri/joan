@@ -30,7 +30,7 @@ class DatarecorderWidget(Control):
        
     def do(self):
         #print(" counter %d" % self.counter)
-        print("news from steeringcommunication", self.readNews('modules.steeringcommunication.widget.steeringcommunication.SteeringcommunicationWidget'))
+        print("news from feedback controller", self.readNews('modules.feedbackcontroller.widget.feedbackcontroller.FeedbackcontrollerWidget'))
 
     @QtCore.pyqtSlot(str)
     def _setmillis(self, millis):
@@ -104,7 +104,7 @@ class DatarecorderWidget(Control):
             if stateAsState == self.states.INITIALIZED.DATARECORDER:
                 self.widget.btnStartRecorder.setEnabled(True)
                 self.widget.btnStopRecorder.setEnabled(True)
-                #self.start()
+                self.start()
 
             # update the state label
             self.widget.lblStatusRecorder.setText(stateAsState.name)

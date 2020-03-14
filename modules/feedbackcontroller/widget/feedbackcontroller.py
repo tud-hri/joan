@@ -4,19 +4,26 @@ import os
 
 class FeedbackcontrollerWidget(Control):
     def __init__(self, *args, **kwargs):
-        kwargs['millis'] = 'millis' in kwargs.keys() and kwargs['millis'] or 20
+        kwargs['millis'] = 'millis' in kwargs.keys() and kwargs['millis'] or 500
         kwargs['callback'] = [self.do]  # method will run each given millis
 
         Control.__init__(self, *args, **kwargs)
         self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)),"feedbackcontroller.ui"))
         self.data = {}
+        self.data['Theta'] = 'hey hallo'
+        self.data['ThetaDot'] = 0
         self.writeNews(channel=self, news=self.data)
+        self.counter = 0
 
         self.statehandler.stateChanged.connect(self.handlestate)
         
     # callback class is called each time a pulse has come from the Pulsar class instance
     def do(self):
-        pass
+        self.counter = self.counter + 1
+        self.data['Theta'] = 'waddup'
+        #self.data['ThetaDot'] = self.data['Theta'] + self.counter
+        self.writeNews(channel=self, news= self.data)
+        #print(self.counter)
 
     @QtCore.pyqtSlot(str)
     def _setmillis(self, millis):
@@ -28,14 +35,14 @@ class FeedbackcontrollerWidget(Control):
 
     def _show(self):
         self.widget.show()
-        self.statehandler.requestStateChange(self.states.FEEDBACKCONTROLLER)
+        #self.statehandler.requestStateChange(self.states.FEEDBACKCONTROLLER)
 
     def _start(self):
         if not self.widget.isVisible():
             self._show()
         print(self.widget.windowTitle())
-        self.widget.setWindowTitle("Template title")
         self.startPulsar()
+        
 
     def _stop(self):
         self.stopPulsar()
