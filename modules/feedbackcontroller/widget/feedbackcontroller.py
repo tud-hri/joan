@@ -1,5 +1,6 @@
 from process import Control, State, translate
-from PyQt5 import QtCore
+from PyQt5 import QtCore, QtWidgets, uic
+from PyQt5.QtWidgets import QWidget
 import os
 from modules.feedbackcontroller.action.feedbackcontroller import *
 
@@ -18,6 +19,9 @@ class FeedbackcontrollerWidget(Control):
         self.counter = 0
 
         self.statehandler.stateChanged.connect(self.handlestate)
+
+        self.newtab = uic.loadUi(uifile = os.path.join(os.path.dirname(os.path.realpath(__file__)),"basic.ui"))
+        self.widget.tabWidget.addTab(self.newtab,'hai')
         
     # callback class is called each time a pulse has come from the Pulsar class instance
     def do(self):
