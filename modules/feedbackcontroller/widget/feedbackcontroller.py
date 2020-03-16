@@ -25,6 +25,8 @@ class FeedbackcontrollerWidget(Control):
 
         self.Controllers =  [Manualcontrol(self), FDCAcontrol(self)]
         
+        #initialize controller with first one in the list
+        self._controller = self.Controllers[0]
         
 
         self.widget.tabWidget.currentChanged.connect(self.changedControl)
