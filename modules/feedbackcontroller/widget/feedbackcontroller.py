@@ -70,8 +70,6 @@ class FeedbackcontrollerWidget(Control):
     def _close(self):
         self.widget.close()
 
-    def printshit(self):
-        print('shit')
 
     def handlestate(self, state):
         """ 

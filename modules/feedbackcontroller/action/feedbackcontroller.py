@@ -8,9 +8,6 @@ class Basecontroller():
 
     def process(self):
         return self.data
-    
-    def printshit(self):
-        print('basecontrollershit')
 
 class Manualcontrol(Basecontroller):
     def __init__(self, FeedbackcontrollerWidget):
@@ -33,13 +30,6 @@ class Manualcontrol(Basecontroller):
         self.newtab.lblDamping.setText(str(self.newtab.sliderDamping.value())+ "mNm/rev/min")
         self.newtab.lblSpring.setText(str(self.newtab.sliderSpring.value())+ "mNm/deg")
         self.newtab.lblFriction.setText(str(self.newtab.sliderFriction.value())+ "mNm")
-
-
-    def printshit(self):
-        print('Manual Control Shit')
-
-
-    
     
     def process(self):
         "Processes all information and returns parameters needed for steeringcommunication"
@@ -55,9 +45,6 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
         newtab = uic.loadUi(uifile = os.path.join(os.path.dirname(os.path.realpath(__file__)),"FDCA.ui"))
         FeedbackcontrollerWidget.widget.tabWidget.addTab(newtab,'FDCA')
         self.data = {}
-
-    def printshit(self):
-        print('FDCA Control Shit')
 
     def process(self):
         return self.data
