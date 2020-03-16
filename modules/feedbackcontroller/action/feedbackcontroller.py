@@ -47,4 +47,5 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
         self.data = {}
 
     def process(self):
+        self.data['FDCA Data Dingetje'] = 'hey hallo ik ben awesome'
         return self.data
