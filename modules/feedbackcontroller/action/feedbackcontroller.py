@@ -34,9 +34,6 @@ class Manualcontrol(Basecontroller):
         self.newtab.lblSpring.setText(str(self.newtab.sliderSpring.value())+ "mNm/deg")
         self.newtab.lblFriction.setText(str(self.newtab.sliderFriction.value())+ "mNm")
 
-        self.data['Damping']  = self.newtab.sliderDamping.value()
-        self.data['Friction'] = self.newtab.sliderFriction.value()
-        self.data['Spring']   = self.newtab.sliderSpring.value()
 
     def printshit(self):
         print('Manual Control Shit')
@@ -46,7 +43,9 @@ class Manualcontrol(Basecontroller):
     
     def process(self):
         "Processes all information and returns parameters needed for steeringcommunication"
-        
+        self.data['Damping']  = self.newtab.sliderDamping.value()
+        self.data['Friction'] = self.newtab.sliderFriction.value()
+        self.data['Spring']   = self.newtab.sliderSpring.value()
         return self.data
 
     

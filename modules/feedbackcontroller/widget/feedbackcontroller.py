@@ -34,13 +34,10 @@ class FeedbackcontrollerWidget(Control):
 
     # callback class is called each time a pulse has come from the Pulsar class instance
     def do(self):
-        self.data = self._controller.process()
-        self.writeNews(channel=self, news= self.data)
+        data = {}
+        data = self._controller.process()
+        self.writeNews(channel=self, news= data)
         print('FeedbackcontrollerTick')
-
-    def process(self):
-        "Hier kijken welke tab is geselecteerd en dan de juiste Process methode van de controller klasse pakken"
-        #self.data = self._controller.process
     
     def changedControl(self):
         self._controller = self.Controllers[self.widget.tabWidget.currentIndex()]
