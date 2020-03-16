@@ -20,19 +20,35 @@ class FeedbackcontrollerWidget(Control):
 
         self.statehandler.stateChanged.connect(self.handlestate)
         
-        # Initiate the different classes you want:
-        Manual = Manualcontrol(self)
-        FDCA = FDCAcontrol(self)
-        blehh = Manualcontrol(self)
+        # Initiate the different classes (controllers) you want:
+        self._controller = Basecontroller()
+        #self.FDCA = FDCAControl(self)
+        #self._controller = Manualcontrol(self)
+
+        self.Controllers =  [Manualcontrol(self), FDCAcontrol(self)]
+        
+        
+
+        self.widget.tabWidget.currentChanged.connect(self.changedControl)
+
+
+
 
     # callback class is called each time a pulse has come from the Pulsar class instance
     def do(self):
-        self.counter = self.counter + 1
-        self.data['Theta'] = 'waddup'
-        #self.data['ThetaDot'] = self.data['Theta'] + self.counter
+        self.process()
+        self._controller.process()
         self.writeNews(channel=self, news= self.data)
-        #print(self.counter)
 
+    def process(self):
+        "Hier kijken welke tab is geselecteerd en dan de juiste Process methode van de controller klasse pakken"
+        self._controller.printshit()
+    
+    def changedControl(self):
+        self._controller = self.Controllers[self.widget.tabWidget.currentIndex()]
+        print('control changed!')
+
+        
     @QtCore.pyqtSlot(str)
     def _setmillis(self, millis):
         try:
@@ -44,6 +60,7 @@ class FeedbackcontrollerWidget(Control):
     def _show(self):
         self.widget.show()
         #self.statehandler.requestStateChange(self.states.FEEDBACKCONTROLLER)
+        
 
     def _start(self):
         if not self.widget.isVisible():
@@ -57,6 +74,9 @@ class FeedbackcontrollerWidget(Control):
 
     def _close(self):
         self.widget.close()
+
+    def printshit(self):
+        print('shit')
 
     def handlestate(self, state):
         """ 
