@@ -1,14 +1,13 @@
 from PyQt5 import QtCore
-from PyQt5.QtCore import QObject
 from PyQt5 import QtCore, QtWidgets, uic
 import os
 
 class Basecontroller():
     def __init__(self):
-        pass
+        self.data = {}
 
     def process(self):
-        pass
+        return self.data
     
     def printshit(self):
         print('basecontrollershit')
@@ -24,12 +23,20 @@ class Manualcontrol(Basecontroller):
         self.newtab.sliderDamping.valueChanged.connect(self.updatesliders)
         self.newtab.sliderFriction.valueChanged.connect(self.updatesliders)
         self.newtab.sliderSpring.valueChanged.connect(self.updatesliders)
+        self.data = {}
+        self.data['Damping']  = self.newtab.sliderDamping.value()
+        self.data['Friction'] = self.newtab.sliderFriction.value()
+        self.data['Spring']   = self.newtab.sliderSpring.value()
 
         
     def updatesliders(self):
         self.newtab.lblDamping.setText(str(self.newtab.sliderDamping.value())+ "mNm/rev/min")
         self.newtab.lblSpring.setText(str(self.newtab.sliderSpring.value())+ "mNm/deg")
         self.newtab.lblFriction.setText(str(self.newtab.sliderFriction.value())+ "mNm")
+
+        self.data['Damping']  = self.newtab.sliderDamping.value()
+        self.data['Friction'] = self.newtab.sliderFriction.value()
+        self.data['Spring']   = self.newtab.sliderSpring.value()
 
     def printshit(self):
         print('Manual Control Shit')
@@ -38,8 +45,9 @@ class Manualcontrol(Basecontroller):
     
     
     def process(self):
-        "Processes all information and returns calculated torque"
-        pass
+        "Processes all information and returns parameters needed for steeringcommunication"
+        
+        return self.data
 
     
 
@@ -47,7 +55,10 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
     def __init__(self, FeedbackcontrollerWidget):
         newtab = uic.loadUi(uifile = os.path.join(os.path.dirname(os.path.realpath(__file__)),"FDCA.ui"))
         FeedbackcontrollerWidget.widget.tabWidget.addTab(newtab,'FDCA')
-        pass
+        self.data = {}
 
     def printshit(self):
         print('FDCA Control Shit')
+
+    def process(self):
+        return self.data

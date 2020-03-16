@@ -13,8 +13,6 @@ class FeedbackcontrollerWidget(Control):
         self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)),"feedbackcontroller.ui"))
         
         self.data = {}
-        self.data['Theta'] = 'hey hallo'
-        self.data['ThetaDot'] = 0
         self.writeNews(channel=self, news=self.data)
         self.counter = 0
 
@@ -36,13 +34,13 @@ class FeedbackcontrollerWidget(Control):
 
     # callback class is called each time a pulse has come from the Pulsar class instance
     def do(self):
-        self.process()
-        self._controller.process()
+        self.data = self._controller.process()
         self.writeNews(channel=self, news= self.data)
+        print('FeedbackcontrollerTick')
 
     def process(self):
         "Hier kijken welke tab is geselecteerd en dan de juiste Process methode van de controller klasse pakken"
-        self._controller.printshit()
+        #self.data = self._controller.process
     
     def changedControl(self):
         self._controller = self.Controllers[self.widget.tabWidget.currentIndex()]

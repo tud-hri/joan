@@ -9,17 +9,16 @@ class InterfaceWidget(Control):
 
         Control.__init__(self, *args, **kwargs)
         self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)),"interface.ui"))
-        self.data = {}
-        self.writeNews(channel=self, news=self.data)
+        self.datas = {}
+        self.writeNews(channel=self, news=self.datas)
 
         self.statehandler.stateChanged.connect(self.handlestate)
 
         pass
     # callback class is called each time a pulse has come from the Pulsar class instance
     def do(self):
-        self.data = self.readNews('modules.feedbackcontroller.widget.feedbackcontroller.FeedbackcontrollerWidget')
-        joe = self.data['Theta']
-        print(type(joe))
+        self.datas = self.readNews('modules.feedbackcontroller.widget.feedbackcontroller.FeedbackcontrollerWidget')
+        self.widget.lblStatusInterface.setText(str(self.datas))
         pass
 
     @QtCore.pyqtSlot(str)
