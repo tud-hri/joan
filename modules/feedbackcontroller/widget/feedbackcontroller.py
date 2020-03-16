@@ -1,6 +1,7 @@
 from process import Control, State, translate
 from PyQt5 import QtCore
 import os
+from modules.feedbackcontroller.action.feedbackcontroller import *
 
 class FeedbackcontrollerWidget(Control):
     def __init__(self, *args, **kwargs):
@@ -9,6 +10,7 @@ class FeedbackcontrollerWidget(Control):
 
         Control.__init__(self, *args, **kwargs)
         self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)),"feedbackcontroller.ui"))
+        
         self.data = {}
         self.data['Theta'] = 'hey hallo'
         self.data['ThetaDot'] = 0
