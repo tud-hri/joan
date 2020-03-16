@@ -1,14 +1,7 @@
-from process import Control
+from PyQt5 import QtCore
 
-class Manualcontrol(Control):
-    def __init__(self, *args, **kwargs):
-        Control.__init__(self,*args, **kwargs)
-        print('News', self.getAllNews())
+class Manualcontrol():
+    def __init__(self, FeedbackcontrollerWidget):
+        FeedbackcontrollerWidget.widget.lblState.setText('hoi')
+        pass
 
-class FDCAcontrol(Control):
-    def __init__(self, *args, **kwargs):
-        Control.__init__(self,*args, **kwargs)
-        print('News', self.getAllNews())
-    
-
-    

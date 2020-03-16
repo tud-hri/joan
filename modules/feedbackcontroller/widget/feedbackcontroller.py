@@ -22,7 +22,8 @@ class FeedbackcontrollerWidget(Control):
 
         self.newtab = uic.loadUi(uifile = os.path.join(os.path.dirname(os.path.realpath(__file__)),"basic.ui"))
         self.widget.tabWidget.addTab(self.newtab,'hai')
-        
+        Manual = Manualcontrol(self)
+
     # callback class is called each time a pulse has come from the Pulsar class instance
     def do(self):
         self.counter = self.counter + 1
