@@ -19,10 +19,11 @@ class FeedbackcontrollerWidget(Control):
         self.counter = 0
 
         self.statehandler.stateChanged.connect(self.handlestate)
-
-        self.newtab = uic.loadUi(uifile = os.path.join(os.path.dirname(os.path.realpath(__file__)),"basic.ui"))
-        self.widget.tabWidget.addTab(self.newtab,'hai')
+        
+        # Initiate the different classes you want:
         Manual = Manualcontrol(self)
+        FDCA = FDCAcontrol(self)
+        blehh = Manualcontrol(self)
 
     # callback class is called each time a pulse has come from the Pulsar class instance
     def do(self):

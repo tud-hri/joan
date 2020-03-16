@@ -15,22 +15,6 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_2">
-    <item row="3" column="0">
-     <widget class="QLabel" name="lblState">
-      <property name="frameShape">
-       <enum>QFrame::Box</enum>
-      </property>
-      <property name="lineWidth">
-       <number>2</number>
-      </property>
-      <property name="text">
-       <string>TextLabel</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-    </item>
     <item row="0" column="0">
      <widget class="QLabel" name="lblControltype">
       <property name="font">
@@ -47,129 +31,33 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="0">
-     <widget class="QTabWidget" name="tabWidget">
-      <property name="currentIndex">
-       <number>0</number>
+    <item row="3" column="0">
+     <widget class="QLabel" name="lblState">
+      <property name="frameShape">
+       <enum>QFrame::Box</enum>
       </property>
-      <widget class="QWidget" name="tab">
-       <attribute name="title">
-        <string>Manual</string>
-       </attribute>
-       <layout class="QGridLayout" name="gridLayout_3">
-        <item row="1" column="0">
-         <layout class="QGridLayout" name="gridLayout">
-          <item row="1" column="0">
-           <widget class="QLabel" name="lblSpringtitle">
-            <property name="text">
-             <string>Spring Stiffness</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QLabel" name="lblSpring">
-            <property name="text">
-             <string>30 mNm/deg</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="0">
-           <widget class="QSlider" name="sliderDamping">
-            <property name="maximum">
-             <number>250</number>
-            </property>
-            <property name="sliderPosition">
-             <number>22</number>
-            </property>
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QSlider" name="sliderSpring">
-            <property name="maximum">
-             <number>100</number>
-            </property>
-            <property name="sliderPosition">
-             <number>30</number>
-            </property>
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="0">
-           <widget class="QLabel" name="lblFrictiontitle">
-            <property name="text">
-             <string>Friction</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="QLabel" name="lblDampingtitle">
-            <property name="text">
-             <string>Damping:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0">
-           <widget class="QLabel" name="lblAutocentertitle">
-            <property name="font">
-             <font>
-              <weight>75</weight>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string>Autocenter Parameters</string>
-            </property>
-           </widget>
-          </item>
-          <item row="6" column="0">
-           <widget class="QSlider" name="sliderFriction">
-            <property name="maximum">
-             <number>500</number>
-            </property>
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="1">
-           <widget class="QLabel" name="lblDamping">
-            <property name="text">
-             <string>22 mNm/rev/min</string>
-            </property>
-           </widget>
-          </item>
-          <item row="6" column="1">
-           <widget class="QLabel" name="lblFriction">
-            <property name="text">
-             <string>0 mNm</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="tab_2">
-       <attribute name="title">
-        <string>FDCA</string>
-       </attribute>
-      </widget>
-      <widget class="QWidget" name="tab_3">
-       <attribute name="title">
-        <string>PID</string>
-       </attribute>
-      </widget>
+      <property name="lineWidth">
+       <number>2</number>
+      </property>
+      <property name="text">
+       <string>TextLabel</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
      </widget>
     </item>
     <item row="2" column="0">
      <widget class="QLabel" name="lblStatetitle">
       <property name="text">
        <string>Current State:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="currentIndex">
+       <number>-1</number>
       </property>
      </widget>
     </item>
