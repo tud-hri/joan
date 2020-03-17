@@ -17,25 +17,11 @@ class Manualcontrol(Basecontroller):
         FeedbackcontrollerWidget.widget.tabWidget.addTab(self.newtab,'Manual')
 
         #attach sliders and inputs to functions within this class
-        self.newtab.sliderDamping.valueChanged.connect(self.updatesliders)
-        self.newtab.sliderFriction.valueChanged.connect(self.updatesliders)
-        self.newtab.sliderSpring.valueChanged.connect(self.updatesliders)
         self.data = {}
-        self.data['Damping']  = self.newtab.sliderDamping.value()
-        self.data['Friction'] = self.newtab.sliderFriction.value()
-        self.data['Spring']   = self.newtab.sliderSpring.value()
 
-        
-    def updatesliders(self):
-        self.newtab.lblDamping.setText(str(self.newtab.sliderDamping.value())+ "mNm/rev/min")
-        self.newtab.lblSpring.setText(str(self.newtab.sliderSpring.value())+ "mNm/deg")
-        self.newtab.lblFriction.setText(str(self.newtab.sliderFriction.value())+ "mNm")
     
     def process(self):
         "Processes all information and returns parameters needed for steeringcommunication"
-        self.data['Damping']  = self.newtab.sliderDamping.value()
-        self.data['Friction'] = self.newtab.sliderFriction.value()
-        self.data['Spring']   = self.newtab.sliderSpring.value()
         return self.data
 
     

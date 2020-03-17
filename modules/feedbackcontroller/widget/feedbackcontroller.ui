@@ -19,6 +19,7 @@
      <widget class="QLabel" name="lblControltype">
       <property name="font">
        <font>
+        <pointsize>15</pointsize>
         <weight>75</weight>
         <bold>true</bold>
        </font>
@@ -33,11 +34,18 @@
     </item>
     <item row="3" column="0">
      <widget class="QLabel" name="lblState">
+      <property name="font">
+       <font>
+        <pointsize>20</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
       <property name="frameShape">
        <enum>QFrame::Box</enum>
       </property>
       <property name="lineWidth">
-       <number>2</number>
+       <number>3</number>
       </property>
       <property name="text">
        <string>TextLabel</string>
