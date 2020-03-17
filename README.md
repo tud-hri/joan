@@ -58,7 +58,7 @@ MenuWidget(Control) <br><br>
         FeedbackcontrollerWidget --|> Basecontroller: Inheritance
         Basecontroller --|> Arbitrarycontroller: Inheritance
 
-        SteeringcommunicationWidget <|--|> FeedbackcontrollerWidget : Torque Data
+        SteeringcommunicationWidget <|..|> FeedbackcontrollerWidget : Torque Data
 
 ```
 ## Directories
