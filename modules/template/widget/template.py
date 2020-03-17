@@ -4,16 +4,17 @@ import os
 
 class TemplateWidget(Control):
     def __init__(self, *args, **kwargs):
-        kwargs['millis'] = 'millis' in kwargs.keys() and kwargs['millis'] or 20
+        kwargs['millis'] = 'millis' in kwargs.keys() and kwargs['millis'] or 500
         kwargs['callback'] = [self.do]  # method will run each given millis
 
         Control.__init__(self, *args, **kwargs)
         self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)),"template.ui"))
+        
         self.data = {}
         self.writeNews(channel=self, news=self.data)
+        self.counter = 0
 
         self.statehandler.stateChanged.connect(self.handlestate)
-        
     # callback class is called each time a pulse has come from the Pulsar class instance
     def do(self):
         pass

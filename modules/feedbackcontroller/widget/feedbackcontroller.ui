@@ -57,6 +57,11 @@
     </item>
     <item row="2" column="0">
      <widget class="QLabel" name="lblStatetitle">
+      <property name="font">
+       <font>
+        <pointsize>20</pointsize>
+       </font>
+      </property>
       <property name="text">
        <string>Current State:</string>
       </property>
