@@ -23,8 +23,11 @@ State <br>
 States <br>
 Pulsar(QtCore.QThread) <br>
 DataRecorderWidget(Control) <br>
-MenuWidget(Control) <br><br>
-
+MenuWidget(Control) <br>
+FeedbackcontrollerWidget(Control) <br>
+SteeringcommunicationWidget(Control)<br>
+Basecontroller(FeedbackcontrollerWidget)<br>
+Arbitrarycontroller(Basecontroller)<br><br>
 
 ```mermaid
     classDiagram
