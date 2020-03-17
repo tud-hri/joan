@@ -38,6 +38,9 @@ MenuWidget(Control) <br><br>
         class QThread
         class MenuWidget
         class DataRecorderWidget
+        class FeedbackcontrollerWidget
+        class Basecontroller
+        class Arbitrarycontroller
 
         States "1" ..|> "*" State : Realization
         Status ..|> States : Realization of singleton
@@ -49,6 +52,11 @@ MenuWidget(Control) <br><br>
         Control ..|> News : Realization
         Control --|> MenuWidget : Inheritance
         Control  --|> DataRecorderWidget : Inheritance
+        Control --|> FeedbackcontrollerWidget: Inheritance
+
+        FeedbackcontrollerWidget --|> Basecontroller: Inheritance
+        Arbitrarycontroller --|> Basecontroller: Inheritance
+
 ```
 ## Directories
 
