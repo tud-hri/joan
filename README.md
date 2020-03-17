@@ -100,6 +100,8 @@ definition of the gui
 
 ### modules.interface.widget.interface.py (not used yet)
 reads the corresponding .ui file and does all the action needed for this widget
+For now this widget is a 'testing' widget to see whether communication between
+modules works properly
 ### modules.interface.widget.interface.ui
 definition of the gui
 
@@ -112,6 +114,8 @@ definition of the gui
 ### modules.template.widget.steeringcommunication.py
 Widget that handles all communication with the sensodrive wheel, utilizes the PCANBasic
 library made by PEAK-SYSTEMS. Widget also shows current state of the wheel.
+### modules.template.widget.steeringcommunication.ui
+definition of the gui
 
 ### modules.template.widget.feedbackcontroller.py
 Widget that contains the different controllers that can be used for the car in the carsimulation,
@@ -119,6 +123,9 @@ communicates with steeringcommunication the torques that should be inputted on t
 Has an empty 'Basecontroller' class of which added arbitratry controllers will inherit.
 This makes sure that we always calculate the selected controller values and send these to 
 steeringcommunication.
+
+### modules.template.widget.feedbackcontroller.ui
+definition of the gui
 
 <br>
 For now main.py is an early versions of how the program might work. <br>
