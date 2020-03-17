@@ -55,7 +55,7 @@ MenuWidget(Control) <br><br>
         Control --|> FeedbackcontrollerWidget: Inheritance
 
         FeedbackcontrollerWidget --|> Basecontroller: Inheritance
-        Arbitrarycontroller --|> Basecontroller: Inheritance
+        Basecontroller --|> Arbitrarycontroller: Inheritance
 
 ```
 ## Directories
