@@ -53,9 +53,12 @@ MenuWidget(Control) <br><br>
         Control --|> MenuWidget : Inheritance
         Control  --|> DataRecorderWidget : Inheritance
         Control --|> FeedbackcontrollerWidget: Inheritance
+        Control --|> SteeringcommunicationWidget: Inheritance
 
         FeedbackcontrollerWidget --|> Basecontroller: Inheritance
         Basecontroller --|> Arbitrarycontroller: Inheritance
+
+        SteeringcommunicationWidget <|-*-|> FeedbackcontrollerWidget : Torque Data
 
 ```
 ## Directories
@@ -107,7 +110,12 @@ definition of the gui
 Widget that handles all communication with the sensodrive wheel, utilizes the PCANBasic
 library made by PEAK-SYSTEMS. Widget also shows current state of the wheel.
 
-
+### modules.template.widget.feedbackcontroller.py
+Widget that contains the different controllers that can be used for the car in the carsimulation,
+communicates with steeringcommunication the torques that should be inputted on the wheel.
+Has an empty 'Basecontroller' class of which added arbitratry controllers will inherit.
+This makes sure that we always calculate the selected controller values and send these to 
+steeringcommunication.
 
 <br>
 For now main.py is an early versions of how the program might work. <br>
