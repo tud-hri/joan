@@ -20,7 +20,7 @@ New is a singleton class <br>
 Control(Pulsar) <br>
 StateHandler(QtCore.QObject) <br>
 State <br>
-States <br>
+MasterStates <br>
 Pulsar(QtCore.QThread) <br>
 DataRecorderWidget(Control) <br>
 MenuWidget(Control) <br><br>
@@ -31,7 +31,7 @@ MenuWidget(Control) <br><br>
         class Status
         class News
         class State
-        class States
+        class MasterStates
         class StateHandler
         class Pulsar
         class QObject
@@ -39,8 +39,8 @@ MenuWidget(Control) <br><br>
         class MenuWidget
         class DataRecorderWidget
 
-        States "1" ..|> "*" State : Realization
-        Status ..|> States : Realization of singleton
+        MasterStates "1" ..|> "*" State : Realization
+        Status ..|> MasterStates : Realization of singleton
         Status ..|> StateHandler : Realization
         QObject --|> StateHandler : Inheritance
         QThread --|> Pulsar : Inheritance

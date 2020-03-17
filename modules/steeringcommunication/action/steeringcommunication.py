@@ -48,24 +48,24 @@ class SteeringcommunicationAction(Control):
             
 
 
-            self.statehandler.requestStateChange(self.states.STEERINGWHEEL.INITIALIZED)
+            self.masterStateHandler.requestStateChange(self.states.STEERINGWHEEL.INITIALIZED)
             self.ready()
         except Exception as inst:
-            self.statehandler.requestStateChange(self.states.STEERINGWHEEL.ERROR.INIT)
+            self.masterStateHandler.requestStateChange(self.states.STEERINGWHEEL.ERROR.INIT)
             
             print(inst)
 
 
     def ready(self):
-        if(self.statehandler._state is self.states.STEERINGWHEEL.INITIALIZED):
-            self.statehandler.requestStateChange(self.states.STEERINGWHEEL.READY)
+        if(self.masterStateHandler._state is self.states.STEERINGWHEEL.INITIALIZED):
+            self.masterStateHandler.requestStateChange(self.states.STEERINGWHEEL.READY)
 
     def start(self):
         print('Pressed Start')
-        if(self.statehandler._state is self.states.STEERINGWHEEL.READY):
-            self.statehandler.requestStateChange(self.states.STEERINGWHEEL.ON)
+        if(self.masterStateHandler._state is self.states.STEERINGWHEEL.READY):
+            self.masterStateHandler.requestStateChange(self.states.STEERINGWHEEL.ON)
 
     def stop(self):
         print('Pressed Stop')
-        if(self.statehandler._state is self.states.STEERINGWHEEL.ON):
-            self.statehandler.requestStateChange(self.states.STEERINGWHEEL.READY)
+        if(self.masterStateHandler._state is self.states.STEERINGWHEEL.ON):
+            self.masterStateHandler.requestStateChange(self.states.STEERINGWHEEL.READY)

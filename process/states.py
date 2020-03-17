@@ -19,7 +19,7 @@ class State:
     * nr: the integer state number, can be obtaine by calling int() on the object.
     * parent: the integer state number for the parent state
     * name: a short description of the state
-    * key: the uppercase name by which the state is stored in the States class
+    * key: the uppercase name by which the state is stored in the MasterStates class and in the ModuleStates class
     * transitions: tuple of possible state transitions
     
     """
@@ -34,6 +34,7 @@ class State:
     def __int__(self):
         return int(self.nr)
     
+    ''' 20200316 not used
     def __contains__(self, state):
         """ Returns true if s is a child state. For convenience, this state is
         contained by itself, so that `s in STATE.X` returns true if s happens to
@@ -48,7 +49,7 @@ class State:
         state = str(state)
         return state in myStates.getChildren(self.key) + [self.key]
         #return state in STATES.getChildren(self.key) + [self.key]
-    
+    '''
     def __eq__(self, other):
         return self.nr == int(other)
     
@@ -65,8 +66,11 @@ class State:
         return '<State "%s" (%i)>' % (self.key, self.nr)
 
 
-class States:
-    """ States collection class. """
+class MasterStates:
+    """ 
+    The MasterStates collection class should only contain the global singleton MasterStates
+    Each module has its own moduleStates that inherits this global MasterStates class
+    """
     
     # void state. The program starts in VOID
     VOID                            = State(0, translate('BootStates', 'Null state'), -1,150)
@@ -92,7 +96,7 @@ class States:
     EXPERIMENT.SUBJECTIDENTERED     = State(139, translate('ExperimentState', 'Experiment subject ID entered'), -1, 150)
     EXPERIMENT.WAITING              = State(1310, translate('ExperimentState', 'Experiment waiting'), -1, 150)
 
-
+    '''
     # SensoDrive states
     STEERINGWHEEL                   = State(200, translate('SteeringwheelState', 'Steering wheel State'), -1,150)
     STEERINGWHEEL.OFF               = State(201, translate('SteeringwheelState', 'Steeringwheel Off'), -1,150, 202, 204,2040)
@@ -101,7 +105,7 @@ class States:
     STEERINGWHEEL.ERROR             = State(204, translate('SteeringwheelState', 'Steeringwheel Error'), -1, 150, 201)
     STEERINGWHEEL.ERROR.INIT        = State(2040, translate('SteeringwheelState', 'Steeringwheel Initialization Error'), -1, 150, 201)
     STEERINGWHEEL.INITIALIZED       = State(205, translate('SteeringwheelState', 'Steeringwheel Initialized'), -1, 150, 201, 202, 203, 204,2040)
-    
+    '''
 
 
     # Debug / developing
@@ -135,7 +139,7 @@ class States:
     def __init__(self):
         # Get states and clear just to be sure
         states = self.states
-        states.clear()
+        #states.clear()
         
         def tagStates(baseState, baseKey):
             #print(baseKey, baseState)
@@ -161,6 +165,7 @@ class States:
         tagStates(self, '')
     
     
+    ''' not used 20200316
     def untagState(self, key):
         """ Returns a state object for a given key. """
         
@@ -171,7 +176,9 @@ class States:
             state = getattr(state, substate)
         
         return state
-    
+    '''
+        
+    ''' not used 20200316
     def getChildren(self, key):
         """ Returns a list of child states, or an empty list.
         
@@ -188,13 +195,17 @@ class States:
                 children += self.getChildren(child)
         
         return children
+    '''
 
+    ''' not used 20200316
     def getChildrenAsState(self,state):
         """ See getChildren(). This function returns a list of states instead
         of a list of tags. Also, the input is a state, not a key.
         """
         return [self.untagState(s) for s in self.getChildren(state.key)]
+    '''
 
+    ''' 20200316: moved to statehandler
     def getState(self,no):
         """Given a state number (as an int), it returns the state object.
         Raises a KeyError if no state with the given number exists.
@@ -210,7 +221,7 @@ class States:
                 raise KeyError("No state with number %d"%no)
         else:
             raise TypeError("variable 'no' should be an int (or State).")
-     
+
     def allowedTransitions(self, currentstate):
         """ Return allowed state transitions for current state. """
         state = currentstate
@@ -234,7 +245,7 @@ class States:
             return True
         else:
             return False
-
+    '''
 # STATES object as singleton state collection
 #STATES = States()
 
