@@ -1,6 +1,6 @@
 from process import Control, State, translate
 from PyQt5 import QtCore, QtWidgets, uic
-from PyQt5.QtWidgets import QWidget
+# from PyQt5.QtWidgets import QWidget
 import os
 from modules.feedbackcontroller.action.feedbackcontroller import *
 
@@ -23,12 +23,13 @@ class FeedbackcontrollerWidget(Control):
  
  
         #self.Controllers = {}
-        #self.Controllers = dict([("Manual",Manualcontrol()), ("FDCA", FDCAcontrol())])
+        self.Controllers = dict([("Manual",Manualcontrol(self)), ("FDCA", FDCAcontrol(self))])
         
         
         #initialize controller with first one in the dict
         #self._controller = self.Controllers["Manual"]
-        self._controller = Manualcontrol()
+        #self._controller = Manualcontrol(self)
+    
 
         self.widget.tabWidget.currentChanged.connect(self.changedControl)
 

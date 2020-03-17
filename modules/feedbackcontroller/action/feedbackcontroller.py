@@ -1,10 +1,9 @@
-from PyQt5 import QtCore
 from PyQt5 import QtCore, QtWidgets, uic
 import os
 from process import Control
 
 class Basecontroller():
-    def __init__(self,FeedbackControllerWidget):
+    def __init__(self, FeedbackControllerWidget):
         self._parentWidget = FeedbackControllerWidget
         self.data = {}
 
@@ -12,14 +11,15 @@ class Basecontroller():
         return self.data
 
 class Manualcontrol(Basecontroller):
-    def __init__(self):
+    def __init__(self, FeedbackcontrollerWidget):
+        Basecontroller.__init__(self, FeedbackcontrollerWidget)
+
         #Load the appropriate UI file
         self.newtab = uic.loadUi(uifile = os.path.join(os.path.dirname(os.path.realpath(__file__)),"Manual.ui"))
         #Add ui file to a new tab
         self._parentWidget.widget.tabWidget.addTab(self.newtab,'Manual')
 
         #attach sliders and inputs to functions within this class
-        self.data = {}
 
     
     def process(self):
@@ -29,12 +29,14 @@ class Manualcontrol(Basecontroller):
     
 
 class FDCAcontrol(Basecontroller): #NOG NIET AF
-    def __init__(self):
+    def __init__(self, FeedbackcontrollerWidget):
+        # call super __init__
+        Basecontroller.__init__(self, FeedbackcontrollerWidget)
+
         newtab = uic.loadUi(uifile = os.path.join(os.path.dirname(os.path.realpath(__file__)),"FDCA.ui"))
         self._parentWidget.widget.tabWidget.addTab(newtab,'FDCA')
-        self.data = {}
 
-    def getNews(self,):
+    def getNews(self):
         self._parentWidget.readNews('modules.feedbackcontroller.widget.feedbackcontroller.FeedbackcontrollerWidget')
 
     def process(self):
