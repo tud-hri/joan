@@ -58,7 +58,7 @@ Arbitrarycontroller(Basecontroller)<br><br>
         Control --|> FeedbackcontrollerWidget: Inheritance
         Control --|> SteeringcommunicationWidget: Inheritance
 
-        FeedbackcontrollerWidget --|> Basecontroller: Instance of
+        FeedbackcontrollerWidget ..|> Basecontroller: Instance of
         Basecontroller --|> Arbitrarycontroller: Inheritance
 
         SteeringcommunicationWidget <|..|> FeedbackcontrollerWidget : Torque Data
