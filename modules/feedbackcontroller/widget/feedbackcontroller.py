@@ -20,13 +20,14 @@ class FeedbackcontrollerWidget(Control):
         
         # Initiate the different classes (controllers) you want:
         self._controller = Basecontroller()
-        #self.FDCA = FDCAControl(self)
-        #self._controller = Manualcontrol(self)
-
-        self.Controllers =  [Manualcontrol(self), FDCAcontrol(self)]
+ 
+ 
+        self.Controllers = {}
+        self.Controllers = dict([("Manual",Manualcontrol(self)), ("FDCA", FDCAcontrol(self))])
         
-        #initialize controller with first one in the list
-        self._controller = self.Controllers[0]
+        
+        #initialize controller with first one in the dict
+        self._controller = self.Controllers["Manual"]
         
 
         self.widget.tabWidget.currentChanged.connect(self.changedControl)
@@ -42,7 +43,7 @@ class FeedbackcontrollerWidget(Control):
         print('FeedbackcontrollerTick')
     
     def changedControl(self):
-        self._controller = self.Controllers[self.widget.tabWidget.currentIndex()]
+        self._controller = self.Controllers[self.widget.tabWidget.currentWidget().windowTitle()]
         print('control changed!')
 
         
