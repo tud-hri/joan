@@ -17,8 +17,8 @@ class MenuWidget(Control):
         #self.widget = self.getGui()
         self.counter = 0
 
-        #self.statehandler.stateChanged.connect(self.finish)
-        self.statehandler.stateChanged.connect(self.handlestate)
+        #self.masterStateHandler.stateChanged.connect(self.finish)
+        self.masterStateHandler.stateChanged.connect(self.handlestate)
         self.ts = None
         self.te = None
         self.millis = kwargs['millis']
@@ -29,9 +29,9 @@ class MenuWidget(Control):
         #if (self.counter == 40):
         #    self.setInterval(1000)
         if (self.counter == 500):
-            self.statehandler.stateChanged.emit(self.statehandler.state)
+            self.masterStateHandler.stateChanged.emit(self.masterStateHandler.state)
 
-            self.statehandler.requestStateChange(self.states.ERROR)
+            self.masterStateHandler.requestStateChange(self.states.ERROR)
         self.widget.label_1.setText(str(self.counter))
 
     @QtCore.pyqtSlot(str)
@@ -72,9 +72,10 @@ class MenuWidget(Control):
         GUI reflect the possibilities of the current state.
         """
 
-        #self.statehandler.stateChanged
+        #self.masterStateHandler.stateChanged
         try:
-            stateAsState = self.states.getState(state) # ensure we have the State object (not the int)
+            #stateAsState = self.states.getState(state) # ensure we have the State object (not the int)
+            stateAsState = self.masterStateHandler.getState(state) # ensure we have the State object (not the int)
             
             # emergency stop
             if stateAsState == self.states.ERROR:
@@ -87,7 +88,8 @@ class MenuWidget(Control):
             print (' in menu.py' ,inst)
 
     def laatguidictzien(self):
-        print ('      guiDict in menu.py       ', self.getAllGui())
+        pass
+        #print ('      guiDict in menu.py       ', self.getAllGui())
 
         '''
         menuWidget = self.menuWindow.getGui()

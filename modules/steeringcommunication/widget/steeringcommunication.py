@@ -15,7 +15,7 @@ class SteeringcommunicationWidget(Control):
         self.data['damping'] = 0
         self.writeNews(channel=self, news=self.data)
 
-        self.statehandler.stateChanged.connect(self.handlestate)
+        self.masterStateHandler.stateChanged.connect(self.handlestate)
 
         try:
             self.action = SteeringcommunicationAction()
@@ -31,8 +31,8 @@ class SteeringcommunicationWidget(Control):
         self.data['damping'] = 0
         self.writeNews(channel=self, news=self.data)
 
-        if(self.statehandler._state is self.states.STEERINGWHEEL.ON):
-            print(self.statehandler._state)
+        if(self.masterStateHandler._state is self.states.STEERINGWHEEL.ON):
+            print(self.masterStateHandler._state)
             print(self.i)
         pass
 
@@ -70,7 +70,8 @@ class SteeringcommunicationWidget(Control):
         """
 
         try:
-            stateAsState = self.states.getState(state) # ensure we have the State object (not the int)
+            #stateAsState = self.states.getState(state) # ensure we have the State object (not the int)
+            stateAsState = self.masterStateHandler.getState(state) # ensure we have the State object (not the int)
             
             # Start if the system is initialized
             if stateAsState == self.states.STEERINGWHEEL.INITIALIZED:
