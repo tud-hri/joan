@@ -26,7 +26,7 @@ DataRecorderWidget(Control) <br>
 MenuWidget(Control) <br>
 FeedbackcontrollerWidget(Control) <br>
 SteeringcommunicationWidget(Control)<br>
-Basecontroller(FeedbackcontrollerWidget)<br>
+Basecontroller<br>
 Arbitrarycontroller(Basecontroller)<br><br>
 
 ```mermaid
@@ -58,7 +58,7 @@ Arbitrarycontroller(Basecontroller)<br><br>
         Control --|> FeedbackcontrollerWidget: Inheritance
         Control --|> SteeringcommunicationWidget: Inheritance
 
-        FeedbackcontrollerWidget --|> Basecontroller: Inheritance
+        FeedbackcontrollerWidget --|> Basecontroller: Instance of
         Basecontroller --|> Arbitrarycontroller: Inheritance
 
         SteeringcommunicationWidget <|..|> FeedbackcontrollerWidget : Torque Data
