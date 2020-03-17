@@ -19,16 +19,16 @@ class FeedbackcontrollerWidget(Control):
         self.statehandler.stateChanged.connect(self.handlestate)
         
         # Initiate the different classes (controllers) you want:
-        self._controller = Basecontroller()
+        self._controller = Basecontroller(self)
  
  
-        self.Controllers = {}
-        self.Controllers = dict([("Manual",Manualcontrol(self)), ("FDCA", FDCAcontrol(self))])
+        #self.Controllers = {}
+        #self.Controllers = dict([("Manual",Manualcontrol()), ("FDCA", FDCAcontrol())])
         
         
         #initialize controller with first one in the dict
-        self._controller = self.Controllers["Manual"]
-        
+        #self._controller = self.Controllers["Manual"]
+        self._controller = Manualcontrol()
 
         self.widget.tabWidget.currentChanged.connect(self.changedControl)
 
@@ -43,7 +43,7 @@ class FeedbackcontrollerWidget(Control):
         print('FeedbackcontrollerTick')
     
     def changedControl(self):
-        self._controller = self.Controllers[self.widget.tabWidget.currentWidget().windowTitle()]
+        #self._controller = self.Controllers[self.widget.tabWidget.currentWidget().windowTitle()]
         print('control changed!')
 
         

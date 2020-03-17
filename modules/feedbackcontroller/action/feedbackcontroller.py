@@ -4,18 +4,19 @@ import os
 from process import Control
 
 class Basecontroller():
-    def __init__(self):
+    def __init__(self,FeedbackControllerWidget):
+        self._parentWidget = FeedbackControllerWidget
         self.data = {}
 
     def process(self):
         return self.data
 
 class Manualcontrol(Basecontroller):
-    def __init__(self, FeedbackcontrollerWidget):
+    def __init__(self):
         #Load the appropriate UI file
         self.newtab = uic.loadUi(uifile = os.path.join(os.path.dirname(os.path.realpath(__file__)),"Manual.ui"))
         #Add ui file to a new tab
-        FeedbackcontrollerWidget.widget.tabWidget.addTab(self.newtab,'Manual')
+        self._parentWidget.widget.tabWidget.addTab(self.newtab,'Manual')
 
         #attach sliders and inputs to functions within this class
         self.data = {}
@@ -28,10 +29,9 @@ class Manualcontrol(Basecontroller):
     
 
 class FDCAcontrol(Basecontroller): #NOG NIET AF
-    def __init__(self, FeedbackcontrollerWidget):
-        self._parentWidget = FeedbackcontrollerWidget
+    def __init__(self):
         newtab = uic.loadUi(uifile = os.path.join(os.path.dirname(os.path.realpath(__file__)),"FDCA.ui"))
-        FeedbackcontrollerWidget.widget.tabWidget.addTab(newtab,'FDCA')
+        self._parentWidget.widget.tabWidget.addTab(newtab,'FDCA')
         self.data = {}
 
     def getNews(self,):
