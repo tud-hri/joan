@@ -44,6 +44,7 @@ Arbitrarycontroller(Basecontroller)<br><br>
         class FeedbackcontrollerWidget
         class Basecontroller
         class Arbitrarycontroller
+        class CarlainterfaceWidget
 
         States "1" ..|> "*" State : Realization
         Status ..|> States : Realization of singleton
@@ -57,11 +58,13 @@ Arbitrarycontroller(Basecontroller)<br><br>
         Control  --|> DataRecorderWidget : Inheritance
         Control --|> FeedbackcontrollerWidget: Inheritance
         Control --|> SteeringcommunicationWidget: Inheritance
+        Control --|> CarlainterfaceWidget: Inheritance
 
         FeedbackcontrollerWidget ..|> Basecontroller: Instance of
         Basecontroller --|> Arbitrarycontroller: Inheritance
 
         SteeringcommunicationWidget <|..|> FeedbackcontrollerWidget : Torque Data
+        CarlainterfaceWidget <|..|> FeedbackcontrollerWidget: Sim Data
 
 ```
 ## Directories
