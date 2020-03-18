@@ -17,6 +17,10 @@ class Carlacommunication:
     def __init__(self):  # Initialize the variables needed to connect, and data structure to put collected data in
         print('Carla Communication constructed')
         self.carlaData = {}
+        self.carlaData['egoCarLocation']     = [0, 0, 0]
+        self.carlaData['egoCarVelocity']     = [0, 0, 0]
+        self.carlaData['egoCarAcceleration'] = [0, 0, 0]
+
         self.host = 'localhost'
         self.port = 2000
         
@@ -33,9 +37,9 @@ class Carlacommunication:
         print('stopped')
 
     def getData(self):
-        self.carlaData['egoCarLocation'] = [0, 0, 0]
-        self.carlaData['egoCarVelocity'] = [0, 0, 0]
-        self.carlaData['egoCarVelocity'] = [0, 0, 0]
+        # self.carlaData['egoCarLocation']     = self.egoCar.get_velocity()
+        # self.carlaData['egoCarVelocity']     = self.egoCar.get_transform()
+        # self.carlaData['egoCarAcceleration'] = self.egoCar.get_acceleration()
 
 
         return self.carlaData
