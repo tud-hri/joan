@@ -6,7 +6,7 @@ from modules.feedbackcontroller.action.feedbackcontroller import *
 
 class FeedbackcontrollerWidget(Control):
     def __init__(self, *args, **kwargs):
-        kwargs['millis'] = 'millis' in kwargs.keys() and kwargs['millis'] or 20
+        kwargs['millis'] = 'millis' in kwargs.keys() and kwargs['millis'] or 200
         kwargs['callback'] = [self.do]  # method will run each given millis
 
         Control.__init__(self, *args, **kwargs)

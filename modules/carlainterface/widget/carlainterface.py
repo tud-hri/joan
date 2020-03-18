@@ -5,7 +5,7 @@ from modules.carlainterface.action.carlainterface import Carlacommunication
 
 class CarlainterfaceWidget(Control):
     def __init__(self, *args, **kwargs):
-        kwargs['millis'] = 'millis' in kwargs.keys() and kwargs['millis'] or 50
+        kwargs['millis'] = 'millis' in kwargs.keys() and kwargs['millis'] or 500
         kwargs['callback'] = [self.do]  # method will run each given millis
 
         Control.__init__(self, *args, **kwargs)
@@ -17,8 +17,8 @@ class CarlainterfaceWidget(Control):
 
         self.statehandler.stateChanged.connect(self.handlestate)
 
-        self.widget.btnStart.clicked.connect(self.start)
-        self.widget.btnStop.clicked.connect(self.stop)
+        #self.widget.btnStart.clicked.connect(self.start)
+        #self.widget.btnStop.clicked.connect(self.stop)
 
     
     # callback class is called each time a pulse has come from the Pulsar class instance
@@ -39,18 +39,19 @@ class CarlainterfaceWidget(Control):
         self.widget.show()
         #Carlacommunication.print(self)
 
-    def start(self):
+    def _start(self):
         if not self.widget.isVisible():
             self._show()
         #Connect to the server
         self.Carlacomm.start()
         self.startPulsar()
 
-    def stop(self):
+    def _stop(self):
         self.Carlacomm.stop()
         self.stopPulsar()
 
     def _close(self):
+        self.Carlacomm.stop()
         self.stopPulsar()
         del self.Carlacomm
         self.widget.close()

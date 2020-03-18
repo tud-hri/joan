@@ -2,13 +2,13 @@ from PyQt5 import QtCore, QtWidgets, uic
 import os, sys, glob
 from process import Control
 
-try:
-    sys.path.append(glob.glob('../../carla/PythonAPI/carla/dist/carla-*%d.%d-%s.egg' % (
-        sys.version_info.major,
-        sys.version_info.minor,
-        'win-amd64' if os.name == 'nt' else 'linux-x86_64'))[0])
-except IndexError:
-    pass
+# try:
+#     sys.path.append(glob.glob('../../carla/PythonAPI/carla/dist/carla-*%d.%d-%s.egg' % (
+#         sys.version_info.major,
+#         sys.version_info.minor,
+#         'win-amd64' if os.name == 'nt' else 'linux-x86_64'))[0])
+# except IndexError:
+#     pass
 
 #import carla Hier heb ik dus de PC voor nodig 
 
