@@ -169,31 +169,31 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
 
         return Temp
 
-    def FeedForwardController(self, t_ahead):
-        if(hasattr(self,'egoCar')):
-            self.egoCarLocation = self.egoCar.get_location()
-            self.egoCarVelocity = self.egoCar.get_velocity()
-            self.egoCarTransform = self.egoCar.get_transform()
+    # def FeedForwardController(self, t_ahead):
+    #     if(hasattr(self,'egoCar')):
+    #         self.egoCarLocation = self.egoCar.get_location()
+    #         self.egoCarVelocity = self.egoCar.get_velocity()
+    #         self.egoCarTransform = self.egoCar.get_transform()
 
-            egoLocation = np.array([self.egoCarLocation.x, self.egoCarLocation.y])
-            egoVel = np.array([self.egoCarVelocity.x , self.egoCarVelocity.y])
-            ExtraDistance = egoVel * t_ahead
+    #         egoLocation = np.array([self.egoCarLocation.x, self.egoCarLocation.y])
+    #         egoVel = np.array([self.egoCarVelocity.x , self.egoCarVelocity.y])
+    #         ExtraDistance = egoVel * t_ahead
 
-            FutureLocation = egoLocation + ExtraDistance
+    #         FutureLocation = egoLocation + ExtraDistance
 
-            FeedForwardIndex = self.closestNode(FutureLocation, self.Traj1XY)
-            if(FeedForwardIndex >= len(self.Traj1XY)-20):
-                FeedForwardIndexPlus1 = 0
-            else:
-                FeedForwardIndexPlus1 = FeedForwardIndex + 20
+    #         FeedForwardIndex = self.closestNode(FutureLocation, self.Traj1XY)
+    #         if(FeedForwardIndex >= len(self.Traj1XY)-20):
+    #             FeedForwardIndexPlus1 = 0
+    #         else:
+    #             FeedForwardIndexPlus1 = FeedForwardIndex + 20
 
 
-            SWangle_FFdes = math.radians(self.Trajectory1[FeedForwardIndexPlus1, 3]*450)
+    #         SWangle_FFdes = math.radians(self.Trajectory1[FeedForwardIndexPlus1, 3]*450)
 
-            return SWangle_FFdes
+    #         return SWangle_FFdes
 
-        else:
-            return 0
+    #     else:
+    #         return 0
 
     def LoHSFunc(self,LoHS,SWangle_FFDES):
         SWangle_FF = SWangle_FFDES * LoHS

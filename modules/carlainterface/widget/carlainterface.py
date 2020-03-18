@@ -5,7 +5,7 @@ from modules.carlainterface.action.carlainterface import Carlacommunication
 
 class CarlainterfaceWidget(Control):
     def __init__(self, *args, **kwargs):
-        kwargs['millis'] = 'millis' in kwargs.keys() and kwargs['millis'] or 500
+        kwargs['millis'] = 'millis' in kwargs.keys() and kwargs['millis'] or 10
         kwargs['callback'] = [self.do]  # method will run each given millis
 
         Control.__init__(self, *args, **kwargs)
@@ -25,7 +25,6 @@ class CarlainterfaceWidget(Control):
     def do(self):
         self.data = self.Carlacomm.getData()
         self.writeNews(channel=self, news=self.data)
-        print(self)
 
     @QtCore.pyqtSlot(str)
     def _setmillis(self, millis):

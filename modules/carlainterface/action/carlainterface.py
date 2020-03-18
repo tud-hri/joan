@@ -17,7 +17,7 @@ class Carlacommunication:
     def __init__(self):  # Initialize the variables needed to connect, and data structure to put collected data in
         print('Carla Communication constructed')
         self.carlaData = {}
-        self.carlaData['egoLocation']     = [0, 0, 0]
+        self.carlaData['egoLocation']     = [12, 51.512, 20]
         self.carlaData['egoVelocity']     = [0, 0, 0]
         self.carlaData['egoTransform'] = [0, 0, 0, 0 ,0,0]
 
