@@ -36,12 +36,10 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
         newtab = uic.loadUi(uifile = os.path.join(os.path.dirname(os.path.realpath(__file__)),"FDCA.ui"))
         self._parentWidget.widget.tabWidget.addTab(newtab,'FDCA')
 
-    def getNews(self):
-        self._parentWidget.readNews('modules.feedbackcontroller.widget.feedbackcontroller.FeedbackcontrollerWidget')
 
     def process(self):
-        self.data['FDCA Data Dingetje'] = 'hey hallo ik ben awesome'
-        
+        self.data = self._parentWidget.readNews('modules.carlainterface.widget.carlainterface.CarlainterfaceWidget')
+        print(self.data)
         # self.Error = self.Error_Calc_wrt_HCR(self.T_aheadFF)
 
         # ## GAINS  (FDCA as in SIMULINK)

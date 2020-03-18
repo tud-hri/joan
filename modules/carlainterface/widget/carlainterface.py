@@ -1,53 +1,32 @@
 from process import Control, State, translate
-from PyQt5 import QtCore, QtWidgets, uic
-# from PyQt5.QtWidgets import QWidget
+from PyQt5 import QtCore
 import os
-from modules.feedbackcontroller.action.feedbackcontroller import *
+from modules.carlainterface.action.carlainterface import Carlacommunication
 
-class FeedbackcontrollerWidget(Control):
+class CarlainterfaceWidget(Control):
     def __init__(self, *args, **kwargs):
         kwargs['millis'] = 'millis' in kwargs.keys() and kwargs['millis'] or 500
         kwargs['callback'] = [self.do]  # method will run each given millis
 
         Control.__init__(self, *args, **kwargs)
-        self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)),"feedbackcontroller.ui"))
+        self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)),"carlainterface.ui"))
         
         self.data = {}
         self.writeNews(channel=self, news=self.data)
         self.counter = 0
 
         self.statehandler.stateChanged.connect(self.handlestate)
-        
-        # Initiate the different classes (controllers) you want:
-        self._controller = Basecontroller(self)
- 
- 
-        #self.Controllers = {}
-        self.Controllers = dict([("Manual",Manualcontrol(self)), ("FDCA", FDCAcontrol(self))])
-        
-        
-        #initialize controller with first one in the dict
-        self._controller = self.Controllers["Manual"]
-        #self._controller = Manualcontrol(self)
+
+        self.widget.btnStart.clicked.connect(self.start)
+        self.widget.btnStop.clicked.connect(self.stop)
+
     
-
-        self.widget.tabWidget.currentChanged.connect(self.changedControl)
-
-
-
-
     # callback class is called each time a pulse has come from the Pulsar class instance
     def do(self):
-        data = {}
-        data = self._controller.process()
-        
-        
-    
-    def changedControl(self):
-        self._controller = self.Controllers[self.widget.tabWidget.currentWidget().windowTitle()]
-        print('control changed!')
+        self.data = self.Carlacomm.getData()
+        self.writeNews(channel=self, news=self.data)
+        print(self)
 
-        
     @QtCore.pyqtSlot(str)
     def _setmillis(self, millis):
         try:
@@ -57,23 +36,25 @@ class FeedbackcontrollerWidget(Control):
             pass
 
     def _show(self):
+        self.Carlacomm = Carlacommunication()
         self.widget.show()
-        #self.statehandler.requestStateChange(self.states.FEEDBACKCONTROLLER)
-        
+        #Carlacommunication.print(self)
 
-    def _start(self):
+    def start(self):
         if not self.widget.isVisible():
             self._show()
-        print(self.widget.windowTitle())
+        #Connect to the server
+        self.Carlacomm.start()
         self.startPulsar()
-        
 
-    def _stop(self):
+    def stop(self):
+        self.Carlacomm.stop()
         self.stopPulsar()
 
     def _close(self):
+        self.stopPulsar()
+        del self.Carlacomm
         self.widget.close()
-
 
     def handlestate(self, state):
         """ 
@@ -89,7 +70,7 @@ class FeedbackcontrollerWidget(Control):
                 self._stop()
 
             # update the state label
-            self.widget.lblState.setText(stateAsState.name)
+            self.widget.lblState.setText(str(stateAsState))
 
         except Exception as inst:
             print (inst)
