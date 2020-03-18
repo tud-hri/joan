@@ -11,6 +11,13 @@ notation of methods is camelCase to conform the already existing code
 ## Software<br>
 * PyQt5-5.13.2<br>
 * Python 3.8.1 64-bit<br>
+* NumPy<br>
+
+Python packages (e.g. PyQt5 and numpy) can be installed through pip:
+```
+pip install pyqt5
+pip install numpy
+```
 
 Use PyQt5 and NOT PySide2 because PyQt5 is (more) platform independent.<br>
 
