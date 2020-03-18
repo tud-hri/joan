@@ -30,7 +30,7 @@ State <br>
 States <br>
 Pulsar(QtCore.QThread) <br>
 DataRecorderWidget(Control) <br>
-MenuWidget(Control) <br>
+CarlainterfaceWidget(Control) <br>
 FeedbackcontrollerWidget(Control) <br>
 SteeringcommunicationWidget(Control)<br>
 Basecontroller<br>
@@ -51,6 +51,7 @@ Arbitrarycontroller(Basecontroller)<br><br>
         class Basecontroller
         class Arbitrarycontroller
         class CarlainterfaceWidget
+        class SteeringcommunicationWidget
 
         States "1" ..|> "*" State : Realization
         Status ..|> States : Realization of singleton
