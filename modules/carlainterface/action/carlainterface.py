@@ -1,4 +1,4 @@
-from PyQt5 import QtCore, QtWidgets, uic
+from PyQt5 import QtCore, QtWidgets
 import os, sys, glob
 from process import Control
 
