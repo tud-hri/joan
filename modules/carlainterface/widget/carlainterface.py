@@ -17,8 +17,8 @@ class CarlainterfaceWidget(Control):
 
         self.statehandler.stateChanged.connect(self.handlestate)
 
-        #self.widget.btnStart.clicked.connect(self.start)
-        #self.widget.btnStop.clicked.connect(self.stop)
+        self.widget.btnStart.clicked.connect(self._start)
+        self.widget.btnStop.clicked.connect(self._stop)
 
     
     # callback class is called each time a pulse has come from the Pulsar class instance
@@ -70,7 +70,7 @@ class CarlainterfaceWidget(Control):
                 self._stop()
 
             # update the state label
-            self.widget.lblState.setText(str(stateAsState))
+            self.widget.lblMasterstate.setText(str(stateAsState))
 
         except Exception as inst:
             print (inst)
