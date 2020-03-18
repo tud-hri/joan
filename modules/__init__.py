@@ -5,4 +5,4 @@
 from .datarecorder.widget.datarecorder import DatarecorderWidget
 from .feedbackcontroller.widget.feedbackcontroller import FeedbackcontrollerWidget
 from .steeringcommunication.widget.steeringcommunication import SteeringcommunicationWidget
-from .carlainterface.widget.carlainterface import CarlainterfaceWidget
+from .siminterface.widget.siminterface import SiminterfaceWidget
