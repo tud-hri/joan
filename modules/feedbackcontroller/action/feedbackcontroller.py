@@ -54,7 +54,7 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
 
 
     def process(self):
-        self.data = self._parentWidget.readNews('modules.carlainterface.widget.carlainterface.CarlainterfaceWidget')
+        self.data = self._parentWidget.readNews('modules.siminterface.widget.siminterface.SiminterfaceWidget')
 
         self.Error = self.Error_Calc(self.t_aheadFF, self.HCR[self.HCRIndex], self.data)
         print(self.Error)
