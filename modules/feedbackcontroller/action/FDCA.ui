@@ -218,17 +218,7 @@
              </property>
              <item>
               <property name="text">
-               <string>Average Human Trajectory</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Omaatje</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Max Verstappen</string>
+               <string>None</string>
               </property>
              </item>
             </widget>

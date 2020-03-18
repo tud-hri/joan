@@ -1,6 +1,7 @@
 from PyQt5 import QtCore, QtWidgets, uic
-import os
+import os, glob
 from process import Control
+import numpy as np
 
 class Basecontroller():
     def __init__(self, FeedbackControllerWidget):
@@ -15,12 +16,9 @@ class Manualcontrol(Basecontroller):
         Basecontroller.__init__(self, FeedbackcontrollerWidget)
 
         #Load the appropriate UI file
-        self.newtab = uic.loadUi(uifile = os.path.join(os.path.dirname(os.path.realpath(__file__)),"Manual.ui"))
+        self.manualTab = uic.loadUi(uifile = os.path.join(os.path.dirname(os.path.realpath(__file__)),"Manual.ui"))
         #Add ui file to a new tab
-        self._parentWidget.widget.tabWidget.addTab(self.newtab,'Manual')
-
-        #attach sliders and inputs to functions within this class
-
+        self._parentWidget.widget.tabWidget.addTab(self.manualTab,'Manual')
     
     def process(self):
         "Processes all information and returns parameters needed for steeringcommunication"
@@ -33,8 +31,22 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
         # call super __init__
         Basecontroller.__init__(self, FeedbackcontrollerWidget)
 
-        newtab = uic.loadUi(uifile = os.path.join(os.path.dirname(os.path.realpath(__file__)),"FDCA.ui"))
-        self._parentWidget.widget.tabWidget.addTab(newtab,'FDCA')
+        self.FDCATab = uic.loadUi(uifile = os.path.join(os.path.dirname(os.path.realpath(__file__)),"FDCA.ui"))
+        self._parentWidget.widget.tabWidget.addTab(self.FDCATab,'FDCA')
+        self.HCR = {}
+        self.HCR[0] = "None"
+        i = 1
+
+        path = os.path.join(os.path.dirname(os.path.realpath(__file__)),'HCRTrajectories/*.csv')
+        #Laadt alle trajectories in uit de map HCR Trajectories
+        for fname in glob.glob(path):
+            self.FDCATab.comboHCR.addItem(os.path.basename(fname))
+            self.HCR[i] = np.genfromtxt(fname, delimiter=',')
+            i = i +1
+
+
+        #connect change of HCR
+        self.FDCATab.comboHCR.currentIndexChanged.connect(self.selectHCR)
 
 
     def process(self):
@@ -72,3 +84,7 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
         # TorqueBytes = int.to_bytes(intTorque,2, byteorder = 'little',signed= True)
 
         return self.data
+
+    def selectHCR(self):
+        self.HCRIndex = self.FDCATab.comboHCR.currentIndex()
+        print(self.HCR[self.HCRIndex])
