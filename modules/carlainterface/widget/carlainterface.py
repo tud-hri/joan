@@ -5,7 +5,7 @@ from modules.carlainterface.action.carlainterface import Carlacommunication
 
 class CarlainterfaceWidget(Control):
     def __init__(self, *args, **kwargs):
-        kwargs['millis'] = 'millis' in kwargs.keys() and kwargs['millis'] or 10
+        kwargs['millis'] = 'millis' in kwargs.keys() and kwargs['millis'] or 50
         kwargs['callback'] = [self.do]  # method will run each given millis
 
         Control.__init__(self, *args, **kwargs)

@@ -13,11 +13,11 @@ except IndexError:
 #import carla Hier heb ik dus de PC voor nodig 
 
 # This class will always be constructed whenever you decide to use (show) the widget
-class Carlacommunication:
+class Carlacommunication():
     def __init__(self):  # Initialize the variables needed to connect, and data structure to put collected data in
         print('Carla Communication constructed')
         self.carlaData = {}
-        self.carlaData['egoLocation']     = [12, 51.512, 20]
+        self.carlaData['egoLocation']     = [0, 0, 0]
         self.carlaData['egoVelocity']     = [0, 0, 0]
         self.carlaData['egoTransform'] = [0, 0, 0, 0 ,0,0]
 
@@ -37,6 +37,8 @@ class Carlacommunication:
         print('stopped')
 
     def getData(self):
+        self.carlaData['egoLocation'][0]  = self.carlaData['egoLocation'][0] - 0.01
+        self.carlaData['egoLocation'][1]  = self.carlaData['egoLocation'][1] - 0.01
         #self.carlaData['egoCar']     = self.egoCar
         # self.carlaData['egoCarVelocity']     = self.egoCar.get_transform()
         # self.carlaData['egoCarAcceleration'] = self.egoCar.get_acceleration()
