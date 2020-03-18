@@ -97,7 +97,6 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
         CarVelocity = car['egoVelocity']
         CarTransform = car['egoTransform']
 
-        print(CarLocation[0],CarLocation[1])
 
         egoLocation = np.array([CarLocation[0], CarLocation[1]])
 
