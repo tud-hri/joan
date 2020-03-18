@@ -46,7 +46,6 @@ Arbitrarycontroller(Basecontroller)<br><br>
         class Pulsar
         class QObject
         class QThread
-        class MenuWidget
         class DataRecorderWidget
         class FeedbackcontrollerWidget
         class Basecontroller
@@ -61,7 +60,6 @@ Arbitrarycontroller(Basecontroller)<br><br>
         Pulsar --|> Control : Inheritance
         Control ..|> Status : Realization
         Control ..|> News : Realization
-        Control --|> MenuWidget : Inheritance
         Control  --|> DataRecorderWidget : Inheritance
         Control --|> FeedbackcontrollerWidget: Inheritance
         Control --|> SteeringcommunicationWidget: Inheritance
@@ -108,11 +106,11 @@ reads the corresponding .ui file and does all the action needed for this widget
 ### modules.menu.widget.menu.ui
 definition of the gui
 
-### modules.interface.widget.interface.py (not used yet)
-reads the corresponding .ui file and does all the action needed for this widget
-For now this widget is a 'testing' widget to see whether communication between
-modules works properly
-### modules.interface.widget.interface.ui
+### modules.carlainterface.widget.interface.py (not used yet)
+Carla interface handles all communication between carla and unreal by making use of the 
+carla PYTHONAPI. Here we have to extract all the info we want to use and can send it 
+over the news channel
+### modules.carlainterface.widget.interface.ui
 definition of the gui
 
 ### modules.template.widget.template.py
