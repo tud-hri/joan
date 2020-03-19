@@ -2,7 +2,10 @@
 # That is why classes have already been imported using a wildcard (*)
 # Make sure that the requested class are also in widgets/__init__.py 
 from modules import *
+<<<<<<< HEAD
 #import qdarkgraystyle
+=======
+>>>>>>> 7018d4ae90da224e798b07d0299d4d065933c69f
 import qdarkgraystyle
 #from widgets import MenuWidget
 #from widgets import DatarecorderWidget
@@ -94,6 +97,10 @@ if __name__ == '__main__':
  
     try:
         app = QtWidgets.QApplication(sys.argv)
+<<<<<<< HEAD
+=======
+        app.setStyle('fusion')
+>>>>>>> 7018d4ae90da224e798b07d0299d4d065933c69f
         app.setStyleSheet(qdarkgraystyle.load_stylesheet())
         win = QtWidgets.QWidget() #QMainWindow()
         win.resize(600, 400)
