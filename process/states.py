@@ -107,13 +107,7 @@ class MasterStates:
     STEERINGWHEEL.ERROR             = State(204, translate('SteeringwheelState', 'Steeringwheel Error'), -1, 150, 201)
     STEERINGWHEEL.ERROR.INIT        = State(2040, translate('SteeringwheelState', 'Steeringwheel Initialization Error'), -1, 150, 201)
     STEERINGWHEEL.INITIALIZED       = State(205, translate('SteeringwheelState', 'Steeringwheel Initialized'), -1, 150, 201, 202, 203, 204,2040)
-    
-    # Feedback Controller States
-    FEEDBACKCONTROLLER              = State(300, translate('FeedbackcontrollerState', 'Feedbackcontroller State'), -1,150)
-    FEEDBACKCONTROLLER.INITIALIZED  = State(301, translate('FeedbackcontrollerState', 'Feedbackcontroller Initialized'), -1,150,302)
-    FEEDBACKCONTROLLER.RUNNING      = State(302, translate('FeedbackcontrollerState', 'Feedbackcontroller Running'), -1,150, 303, 304)
-    FEEDBACKCONTROLLER.STOPPED      = State(303, translate('FeedbackcontrollerState', 'Feedbackcontroller Stopped'), -1,150, 301,302)
-    FEEDBACKCONTROLLER.ERROR        = State(304, translate('FeedbackcontrollerState', 'Feedbackcontroller Error'), -1,150,301,303)
+    '''
 
     '''
     # Debug / developing

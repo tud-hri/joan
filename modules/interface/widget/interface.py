@@ -42,6 +42,7 @@ class InterfaceWidget(Control):
 
     def _show(self):
         self.widget.show()
+        print(self.moduleStates)
 
     def _start(self):
         if not self.widget.isVisible():
