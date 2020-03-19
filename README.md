@@ -13,10 +13,11 @@ notation of methods is camelCase to conform the already existing code
 * Python 3.8.1 64-bit<br>
 * NumPy<br>
 
-Python packages (e.g. PyQt5 and numpy) can be installed through pip:
+Python packages (e.g. PyQt5 and numpy) can be installed through pip3 (use pip3 to make sure you have the python3 versions!):
 ```
 pip install pyqt5
 pip install numpy
+pip install qdarkgraystyle
 ```
 
 Use PyQt5 and NOT PySide2 because PyQt5 is (more) platform independent.<br>
