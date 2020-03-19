@@ -15,7 +15,7 @@ class TrajectoryrecorderWidget(Control):
         self.writeNews(channel=self, news=self.data)
         self.counter = 0
 
-        self.statehandler.stateChanged.connect(self.handlestate)
+        self.masterStateHandler.stateChanged.connect(self.handlestate)
         #self.Action = TrajectorygeneratorAction()
 
         #self.widget.btnStartrecord.clicked.connect(self.start())

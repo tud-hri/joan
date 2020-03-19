@@ -16,7 +16,7 @@ class FeedbackcontrollerWidget(Control):
         self.writeNews(channel=self, news=self.data)
         self.counter = 0
 
-        self.statehandler.stateChanged.connect(self.handlestate)
+        self.masterStateHandler.stateChanged.connect(self.handlestate)
         
         # Initiate the different classes (controllers) you want:
         self._controller = Basecontroller(self)

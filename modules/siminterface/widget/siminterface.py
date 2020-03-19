@@ -15,15 +15,20 @@ class SiminterfaceWidget(Control):
         self.writeNews(channel=self, news=self.data)
         self.counter = 0
 
-        self.statehandler.stateChanged.connect(self.handlestate)
+        self.masterStateHandler.stateChanged.connect(self.handlestate)
 
         self.widget.btnStart.clicked.connect(self._start)
         self.widget.btnStop.clicked.connect(self._stop)
 
+        try:
+            self.action = Simcommunication()
+        except Exception as inst:
+            print('De error bij de constructor van de widget is:    ', inst)
+
     
     # callback class is called each time a pulse has come from the Pulsar class instance
     def do(self):
-        self.data = self.Carlacomm.getData()
+        self.data = self.action.getData()
         self.writeNews(channel=self, news=self.data)
 
     @QtCore.pyqtSlot(str)
@@ -35,25 +40,24 @@ class SiminterfaceWidget(Control):
             pass
 
     def _show(self):
-        self.Carlacomm = Simcommunication()
+        # self.action = Simcommunication() # @ JORIS: ik denk dat je dit in the init moet zetten; stel dat je nu op close drukt voor deze widget voordat je op open klikt, dan loopt ie vast. 
         self.widget.show()
-        #Carlacommunication.print(self)
 
     def _start(self):
         if not self.widget.isVisible():
             self._show()
         #Connect to the server
-        self.Carlacomm.start()
+        self.action.start()
         self.startPulsar()
 
     def _stop(self):
-        self.Carlacomm.stop()
+        self.action.stop()
         self.stopPulsar()
 
     def _close(self):
-        self.Carlacomm.stop()
+        self.action.stop()
         self.stopPulsar()
-        del self.Carlacomm
+        del self.action
         self.widget.close()
 
     def handlestate(self, state):
