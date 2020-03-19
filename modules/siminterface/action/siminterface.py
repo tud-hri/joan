@@ -2,15 +2,17 @@ from PyQt5 import QtCore, QtWidgets
 import os, sys, glob
 from process import Control
 
-# try:
-#     sys.path.append(glob.glob('../../carla/PythonAPI/carla/dist/carla-*%d.%d-%s.egg' % (
-#         sys.version_info.major,
-#         sys.version_info.minor,
-#         'win-amd64' if os.name == 'nt' else 'linux-x86_64'))[0])
-# except IndexError:
-#     pass
+try:
+    sys.path.append(glob.glob('../../carla/PythonAPI/carla/dist/carla-*%d.%d-%s.egg' % (
+        sys.version_info.major,
+        sys.version_info.minor,
+        'win-amd64' if os.name == 'nt' else 'linux-x86_64'))[0])
+except IndexError:
+     pass
 
-#import carla Hier heb ik dus de PC voor nodig 
+
+import carla #Hier heb ik dus de PC voor nodig error is onzin!
+    
 
 # This class will always be constructed whenever you decide to use (show) the widget
 class Simcommunication():
@@ -28,7 +30,16 @@ class Simcommunication():
     def start(self):
         try:
             print(' connecting')
-            #self.client = carla.Client(self.host,self.port) #connecting to server
+            self.client = carla.Client(self.host,self.port) #connecting to server
+            self.world = self.client.get_world() ## get world object (contains everything)
+            ## JUST TO SHOW THAT THE CLIENT CONNECTS (weather has no other uses)
+            self.weather = self.world.get_weather()
+            self.weather.cloudyness = 30
+            self.weather.sun_azimuth_angle = 180
+            self.weather.sun_altitude_angle = 90
+            self.weather.precipitation = 0
+            self.weather.precipitation_deposits = 0
+            self.world.set_weather(self.weather)
         except:
             print('could not connect')
         pass

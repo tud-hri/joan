@@ -21,8 +21,8 @@ class SiminterfaceWidget(Control):
         self.moduleStateHandler.stateChanged.connect(self.handlemodulestate)
         self.masterStateHandler.stateChanged.connect(self.handlemasterstate)
 
-        self.widget.btnStart.clicked.connect(self._start)
-        self.widget.btnStop.clicked.connect(self._stop)
+        self.widget.btnStart.clicked.connect(self.start)
+        self.widget.btnStop.clicked.connect(self.stop)
 
         try:
             self.action = Simcommunication()
@@ -47,14 +47,14 @@ class SiminterfaceWidget(Control):
         # self.action = Simcommunication() # @ JORIS: ik denk dat je dit in the init moet zetten; stel dat je nu op close drukt voor deze widget voordat je op open klikt, dan loopt ie vast. 
         self.widget.show()
 
-    def _start(self):
+    def start(self):
         if not self.widget.isVisible():
             self._show()
         #Connect to the server
         self.action.start()
         self.startPulsar()
 
-    def _stop(self):
+    def stop(self):
         self.action.stop()
         self.stopPulsar()
 
