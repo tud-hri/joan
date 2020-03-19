@@ -26,7 +26,7 @@ moduleWidget(Control) <br>
 moduleAction(Control) <br>
 moduleStates(MasterStates)<br><br>
 
-module is bijvoorbeeld DataRecorder
+module is something like DataRecorder
 
 
 ```mermaid

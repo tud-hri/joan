@@ -1,7 +1,7 @@
 from process import Control, State, translate
 from PyQt5 import QtCore
 from modules.template.action.states import TemplateStates
-from modules.steeringcommunication.action.template import TemplateAction
+from modules.template.action.template import TemplateAction
 import os
 
 class TemplateWidget(Control):
@@ -20,7 +20,8 @@ class TemplateWidget(Control):
         
         # use Action with state handling, using only this widgets state changes
         try:
-            self.action = TemplateAction()
+            self.action = TemplateAction(moduleStates = self.moduleStates,
+                                         moduleStateHandler = self.moduleStateHandler)
         except Exception as inst:
             print(inst)
 

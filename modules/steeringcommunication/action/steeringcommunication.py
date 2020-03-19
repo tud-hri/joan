@@ -10,7 +10,7 @@ class SteeringcommunicationAction(Control):
     def __init__(self, *args, **kwargs):
         Control.__init__(self,*args, **kwargs)
         # get state information from module Widget
-        self.moduleStates = 'moduleStates' in kwargs.keys() and kwargs['moduleStates'] or {}
+        self.moduleStates = 'moduleStates' in kwargs.keys() and kwargs['moduleStates'] or None
         self.moduleStateHandler = 'moduleStateHandler' in kwargs.keys() and kwargs['moduleStateHandler'] or None
 
         #self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)),"steeringcommunication.ui"))
