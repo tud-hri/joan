@@ -93,6 +93,7 @@ if __name__ == '__main__':
     try:
         app = QtWidgets.QApplication(sys.argv)
         win = QtWidgets.QWidget() #QMainWindow()
+        QtWidgets.QApplication.setStyle('macintosh')
         win.resize(600, 400)
 
         resources = os.path.join(os.path.dirname(os.path.realpath(__file__)),'resources')

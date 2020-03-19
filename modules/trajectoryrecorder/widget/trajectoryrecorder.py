@@ -34,7 +34,6 @@ class TrajectoryrecorderWidget(Control):
         if not self.widget.isVisible():
             self._show()
         print(self.widget.windowTitle())
-        self.widget.setWindowTitle("Template title")
         self.startPulsar()
 
     def _stop(self):
