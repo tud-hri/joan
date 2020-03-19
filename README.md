@@ -39,9 +39,9 @@ Pulsar(QtCore.QThread) <br>
         class Pulsar
         class QObject
         class QThread
-        class &lt;module&gt;Widget
-        class &lt;module&gt;Action
-        class &lt;module&gt;States
+        class <module>Widget
+        class <module>Action
+        class <module>States
 
         MasterStates "1" ..|> "*" State : Realization
         Status ..|> MasterStates : Realization of singleton
