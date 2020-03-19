@@ -1,6 +1,7 @@
 from process import Control, State, translate
 from PyQt5 import QtCore
 import os
+from modules.trajectoryrecorder.action.trajectorygenerator import TrajectorygeneratorAction
 
 class TrajectoryrecorderWidget(Control):
     def __init__(self, *args, **kwargs):
@@ -15,8 +16,15 @@ class TrajectoryrecorderWidget(Control):
         self.counter = 0
 
         self.statehandler.stateChanged.connect(self.handlestate)
+        #self.Action = TrajectorygeneratorAction()
+
+        #self.widget.btnStartrecord.clicked.connect(self.start())
+        #self.widget.btnStoprecord.clicked.connect(self.stop())
+
     # callback class is called each time a pulse has come from the Pulsar class instance
     def do(self):
+        ## Roep elke tick de recorder op om te processen, schrijf de data alleen weg als het positieverschil bepaald interval is
+        #  Schrijf ook een andere versie weg om te visualizeren in unreal (deze heeft minder punten nodig)
         pass
 
     @QtCore.pyqtSlot(str)
@@ -29,6 +37,7 @@ class TrajectoryrecorderWidget(Control):
 
     def _show(self):
         self.widget.show()
+
 
     def start(self):
         if not self.widget.isVisible():
