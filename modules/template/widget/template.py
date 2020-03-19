@@ -11,10 +11,9 @@ class TemplateWidget(Control):
         self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)),"template.ui"))
         self.data = {}
         self.writeNews(channel=self, news=self.data)
-        moduleStates = TemplateStates()
 
         # creating a self.moduleStateHandler which also has the moduleStates in self.moduleStateHandler.states
-        self.defineModuleStateHandler(self, moduleStates.states)
+        self.defineModuleStateHandler(module=self, moduleStates=TemplateStates())
         self.moduleStateHandler.stateChanged.connect(self.handlemodulestate)
         self.masterStateHandler.stateChanged.connect(self.handlemasterstate)
         
@@ -33,8 +32,10 @@ class TemplateWidget(Control):
     def _show(self):
         self.widget.show()
         print('in widget/template.py', self.moduleStateHandler)
-        for state in self.moduleStateHandler.states:
-            print('in TemplateStates bij show', state, self.moduleStateHandler.states[state])
+        print('in widget/template.py', self.moduleStates)
+        moduleStatesDict = self.moduleStates.getStates()
+        for state in moduleStatesDict:
+            print('in TemplateStates bij show', state, moduleStatesDict[state])
 
 
     def _start(self):
@@ -61,7 +62,7 @@ class TemplateWidget(Control):
             stateAsState = self.masterStateHandler.getState(state) # ensure we have the State object (not the int)
             
             # emergency stop
-            if stateAsState == self.states.ERROR:
+            if stateAsState == self.moduleStates.ERROR:
                 self._stop()
 
             # update the state label
@@ -81,7 +82,7 @@ class TemplateWidget(Control):
             stateAsState = self.moduleStateHandler.getState(state) # ensure we have the State object (not the int)
             
             # emergency stop
-            if stateAsState == self.states.ERROR:
+            if stateAsState == self.moduleStates.ERROR:
                 self._stop()
 
             # update the state label

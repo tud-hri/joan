@@ -1,6 +1,6 @@
 from process import State, MasterStates, translate
 
-class SteeringCommunicationStates(MasterStates):
+class SteeringcommunicationStates(MasterStates):
     # SensoDrive states
     STEERINGWHEEL                   = State(200, translate('SteeringwheelState', 'Steering wheel State'), -1,150)
     STEERINGWHEEL.OFF               = State(201, translate('SteeringwheelState', 'Steeringwheel Off'), -1,150, 202, 204,2040)

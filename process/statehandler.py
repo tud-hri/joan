@@ -45,8 +45,10 @@ class StateHandler(QtCore.QObject):
         #self._haptictrainer = haptictrainer # keep a reference to haptic trainer (our umbrella)
         
         # MasterStates (there is a MasterStates class and each module has its own ModuleStates)
-        self._state = MasterStates.VOID
-        self.states = MasterStates.states   # TODO voor moduleStates via arguments
+        #self._state = MasterStates.VOID
+        #self.states = MasterStates.states   # TODO voor moduleStates via arguments
+        self._state = 'firstState' in kwargs.keys() and kwargs['firstState'] or {}
+        self.states = 'states' in kwargs.keys() and kwargs['states'] or {}
 
         #self._state_c_int = ctypes.c_int(int(self._state))
         #self._state_pointer = ctypes.addressof(self._state_c_int)

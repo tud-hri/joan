@@ -67,6 +67,7 @@ class State:
 
 
 class MasterStates:
+    instance = None
     """ 
     The MasterStates collection class should only contain the global singleton MasterStates
     Each module has its own moduleStates that inherits this global MasterStates class
@@ -134,12 +135,14 @@ class MasterStates:
     '''
 
     # Dict of integers to state objects, filled in during __init__
-    states = {}
-    
+    #states = {}
+
     def __init__(self):
         # Get states and clear just to be sure
-        states = self.states
+        #states = self.states
         #states.clear()
+        # Dict of integers to state objects, filled in during __init__
+        self.states = {}
         
         def tagStates(baseState, baseKey):
             #print(baseKey, baseState)
@@ -155,15 +158,18 @@ class MasterStates:
                     else:
                         state.parent = baseState
                     # Store state number
-                    if state.nr in states:
+                    if state.nr in self.states:
                         raise RuntimeError('Duplicate state: ', state.nr)
-                    states[state.nr] = state
+                    self.states[state.nr] = state
                     # Look into state
                     tagStates(state, '%s%s.' % (baseKey, key))
         
         # Tag whole tree
         tagStates(self, '')
+        #self.states = states
     
+    def getStates(self):
+        return self.states
     
     ''' not used 20200316
     def untagState(self, key):

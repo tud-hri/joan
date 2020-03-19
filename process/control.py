@@ -35,8 +35,9 @@ class Status:
         if not klass.instance:
             klass.instance = object.__new__(Status)
             #klass.gui = {}
-            klass.masterStateHandler = StateHandler()
-            #klass.states = None #MasterStates()
+            klass.masterStates = MasterStates()
+            klass.masterStateHandler = StateHandler(firstState=MasterStates.VOID, statesDict=klass.masterStates.getStates())
+            #klass.masterStates = MasterStates()
             klass.moduleStateHandlers = {}
         return klass.instance
 
@@ -56,11 +57,12 @@ class Control(Pulsar):
         self.singletonStatus = Status({})
         self.singletonNews = News({})
         self.masterStateHandler = self.singletonStatus.masterStateHandler
-        #self.states = self.singletonStatus.states
+        self.masterStates = self.singletonStatus.masterStates
 
         
         self.widget = None  # will contain a value after calling createWidget
         self.moduleStateHandler = None # will contain  a value after calling defineModuleStateHandler
+        self.moduleStates = None # will contain  a value after calling defineModuleStateHandler
 
    
     def createWidget(self, ui=''):       
@@ -79,8 +81,12 @@ class Control(Pulsar):
     def defineModuleStateHandler(self, module='', moduleStates=None):
         assert module != '', 'argument "module" should containt the name of the module, which is the calling class'
         # states example:     VOID = State(0, translate('BootStates', 'Null state'), -1,150)
-        self.moduleStateHandler = StateHandler(firstState=MasterStates.VOID, moduleStates=moduleStates)
-        assert type(moduleStates) == dict, 'argument "moduleStates" should be of type StateHandler (key = State())'
+        moduleStatesDict = moduleStates.getStates()
+        self.moduleStateHandler = StateHandler(firstState=MasterStates.VOID, statesDict=moduleStatesDict)
+        self.moduleStates = moduleStates
+        print(type(moduleStates))
+        #assert type(moduleStates) == dict, 'argument "moduleStates" should be of type StateHandler (key = State())'
+        #self.moduleStates = self.moduleStateHandler.states
         try:
             moduleKey = '%s.%s' % (module.__class__.__module__ , module.__class__.__name__)
             self.singletonStatus = Status({moduleKey: self.moduleStateHandler})
