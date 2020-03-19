@@ -55,9 +55,9 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
 
     def process(self):
         self.data = self._parentWidget.readNews('modules.siminterface.widget.siminterface.SiminterfaceWidget')
-        print(self.data['egoTransform'].location)
-        #self.Error = self.Error_Calc(self.t_aheadFF, self.HCR[self.HCRIndex], self.data)
-        #print(self.Error)
+        egoCar = self.data['egoCar']
+        self.Error = self.Error_Calc(self.t_aheadFF, self.HCR[self.HCRIndex], egoCar)
+        print(self.Error)
 
         # ## GAINS  (FDCA as in SIMULINK)
         # SWAngle_FB = self.SoHFFunc(self.K_y,self.K_psi,self.SoHF,self.Error[0],self.Error[1])
@@ -93,14 +93,13 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
 
     def Error_Calc(self, t_ahead, trajectory, car):
         # The error contains both the lateral error and the heading error(t_ahead is how many seconds we look forward)
-        CarLocation = car['egoLocation']
-        CarVelocity = car['egoVelocity']
-        CarTransform = car['egoTransform']
+        CarLocation = car.get_location()
+        CarVelocity = car.get_velocity()
+        CarTransform = car.get_transform()
 
+        egoLocation = np.array([CarLocation.x, CarLocation.y])
 
-        egoLocation = np.array([CarLocation[0], CarLocation[1]])
-
-        egoVel = np.array([CarVelocity[0] , CarVelocity[1]])
+        egoVel = np.array([CarVelocity.x , CarVelocity.y])
         ExtraDistance = egoVel * t_ahead
 
         FutureLocation = egoLocation + ExtraDistance
@@ -139,7 +138,7 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
 
         #ForwardVector = CarTransform.rotation.get_forward_vector()
         
-        PsiCar = CarTransform[2]
+        PsiCar = CarTransform.rotation.yaw
         PsiTraj = trajectory[NWPFutureIndex, 6]
         
 
@@ -158,42 +157,9 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
         #Error[0] = DeltaPsi + DeltaDist
 
         
-
+        #print(Error)
 
         return Error
-
-        #### FDCA WITH SAME NOMENCLATURE AS SIMULINK
-
-    def SoHFFunc(self, Ky, Kpsi,SoHF, DeltaY, DeltaPsi):
-        Temp = SoHF* (Ky * DeltaY + Kpsi * DeltaPsi)
-
-        return Temp
-
-    # def FeedForwardController(self, t_ahead):
-    #     if(hasattr(self,'egoCar')):
-    #         self.egoCarLocation = self.egoCar.get_location()
-    #         self.egoCarVelocity = self.egoCar.get_velocity()
-    #         self.egoCarTransform = self.egoCar.get_transform()
-
-    #         egoLocation = np.array([self.egoCarLocation.x, self.egoCarLocation.y])
-    #         egoVel = np.array([self.egoCarVelocity.x , self.egoCarVelocity.y])
-    #         ExtraDistance = egoVel * t_ahead
-
-    #         FutureLocation = egoLocation + ExtraDistance
-
-    #         FeedForwardIndex = self.closestNode(FutureLocation, self.Traj1XY)
-    #         if(FeedForwardIndex >= len(self.Traj1XY)-20):
-    #             FeedForwardIndexPlus1 = 0
-    #         else:
-    #             FeedForwardIndexPlus1 = FeedForwardIndex + 20
-
-
-    #         SWangle_FFdes = math.radians(self.Trajectory1[FeedForwardIndexPlus1, 3]*450)
-
-    #         return SWangle_FFdes
-
-    #     else:
-    #         return 0
 
     def LoHSFunc(self,LoHS,SWangle_FFDES):
         SWangle_FF = SWangle_FFDES * LoHS

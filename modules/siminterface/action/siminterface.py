@@ -23,6 +23,7 @@ class Simcommunication():
         self.carlaData['egoLocation']     = [0, 0, 0]
         self.carlaData['egoVelocity']     = [0, 0, 0]
         self.carlaData['egoTransform'] = [0, 0, 0, 0 ,0,0]
+    
 
         self.host = 'localhost'
         self.port = 2000
@@ -56,7 +57,7 @@ class Simcommunication():
             self.egoCar = self.world.spawn_actor(self.egoCarBP,self.spawnPoints[0])
             self._parentWidget.lblModulestate.setText('Car Spawned')
 
-            Speed = carla.Vector3D(10, 0, 0)
+            Speed = carla.Vector3D(-5, 0, 0)
 
             self.egoCar.set_velocity(Speed)
             return True
@@ -69,7 +70,6 @@ class Simcommunication():
         print('stopped')
 
     def getData(self):
-        self.carlaData['egoLocation']  = self.egoCar.get_velocity()
-        self.carlaData['egoTransform']  = self.egoCar.get_transform()
-
+        self.carlaData['egoCar'] = self.egoCar
+        
         return self.carlaData
