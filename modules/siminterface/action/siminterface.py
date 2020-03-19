@@ -2,16 +2,16 @@ from PyQt5 import QtCore, QtWidgets
 import os, sys, glob
 from process import Control
 
-try:
-    sys.path.append(glob.glob('../../carla/PythonAPI/carla/dist/carla-*%d.%d-%s.egg' % (
-        sys.version_info.major,
-        sys.version_info.minor,
-        'win-amd64' if os.name == 'nt' else 'linux-x86_64'))[0])
-except IndexError:
-     pass
+# try:
+#     sys.path.append(glob.glob('../../carla/PythonAPI/carla/dist/carla-*%d.%d-%s.egg' % (
+#         sys.version_info.major,
+#         sys.version_info.minor,
+#         'win-amd64' if os.name == 'nt' else 'linux-x86_64'))[0])
+# except IndexError:
+#      pass
 
 
-import carla #Hier heb ik dus de PC voor nodig error is onzin!
+# import carla #Hier heb ik dus de PC voor nodig error is onzin!
 import random
 
 
@@ -20,9 +20,8 @@ class Simcommunication():
         print('Carla Communication constructed')
         self._parentWidget = SiminterfaceWidget.widget
         self.carlaData = {}
-        self.carlaData['egoLocation']     = [0, 0, 0]
-        self.carlaData['egoVelocity']     = [0, 0, 0]
-        self.carlaData['egoTransform'] = [0, 0, 0, 0 ,0,0]
+        self.carlaData['egoCar'] = None
+        self.carlaData['simRunning'] = False
     
 
         self.host = 'localhost'
@@ -57,11 +56,14 @@ class Simcommunication():
             self.egoCar = self.world.spawn_actor(self.egoCarBP,self.spawnPoints[0])
             self._parentWidget.lblModulestate.setText('Car Spawned')
 
-            Speed = carla.Vector3D(-5, 0, 0)
+            Speed = carla.Vector3D(0, 0, 0)
 
             self.egoCar.set_velocity(Speed)
+            self.carlaData['simRunning'] = True
             return True
         except Exception as inst:
+            self.carlaData['simRunning'] = True
+            self.egoCar = None
             print('Could not connect error given:', inst)
             return False
 
@@ -71,5 +73,6 @@ class Simcommunication():
 
     def getData(self):
         self.carlaData['egoCar'] = self.egoCar
+
         
         return self.carlaData

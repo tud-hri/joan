@@ -13,6 +13,7 @@ class SiminterfaceWidget(Control):
         self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)),"siminterface.ui"))
         
         self.data = {}
+        self.data['simRunning'] = False
         self.writeNews(channel=self, news=self.data)
         self.counter = 0
 
@@ -45,7 +46,6 @@ class SiminterfaceWidget(Control):
             pass
 
     def _show(self):
-        # self.action = Simcommunication() # @ JORIS: ik denk dat je dit in the init moet zetten; stel dat je nu op close drukt voor deze widget voordat je op open klikt, dan loopt ie vast. 
         self.widget.show()
 
     def start(self):
@@ -53,6 +53,8 @@ class SiminterfaceWidget(Control):
             self._show()
         #Connect to the server
         Connected = self.action.start()
+        self.data = self.action.getData()
+        self.writeNews(channel=self, news=self.data)
         if Connected is True:
             self.startPulsar()
             print('STARTED CARLA PULSAR!!')

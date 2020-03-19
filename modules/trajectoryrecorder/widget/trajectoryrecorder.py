@@ -2,6 +2,7 @@ from process import Control, State, translate
 from PyQt5 import QtCore
 import os
 from modules.trajectoryrecorder.action.trajectorygenerator import TrajectorygeneratorAction
+from modules.trajectoryrecorder.action.states import TrajectorygeneratorStates
 
 class TrajectoryrecorderWidget(Control):
     def __init__(self, *args, **kwargs):
@@ -15,8 +16,11 @@ class TrajectoryrecorderWidget(Control):
         self.writeNews(channel=self, news=self.data)
         self.counter = 0
 
-        self.masterStateHandler.stateChanged.connect(self.handlestate)
-        #self.Action = TrajectorygeneratorAction()
+
+        self.defineModuleStateHandler(module=self, moduleStates=TrajectorygeneratorStates())
+        self.moduleStateHandler.stateChanged.connect(self.handlemodulestate)
+        self.masterStateHandler.stateChanged.connect(self.handlemasterstate)
+
 
         #self.widget.btnStartrecord.clicked.connect(self.start())
         #self.widget.btnStoprecord.clicked.connect(self.stop())
@@ -36,7 +40,9 @@ class TrajectoryrecorderWidget(Control):
             pass
 
     def _show(self):
-        self.widget.show()
+        self.data = self.readNews('modules.siminterface.widget.siminterface.SiminterfaceWidget')
+        if(self.data['simRunning'] is True):
+            self.widget.show()
 
 
     def start(self):
@@ -51,17 +57,38 @@ class TrajectoryrecorderWidget(Control):
     def _close(self):
         self.widget.close()
 
-    def handlestate(self, state):
+    def handlemasterstate(self, state):
         """ 
         Handle the state transition by updating the status label and have the
         GUI reflect the possibilities of the current state.
         """
 
         try:
-            stateAsState = self.states.getState(state) # ensure we have the State object (not the int)
+            #stateAsState = self.states.getState(state) # ensure we have the State object (not the int)
+            stateAsState = self.masterStateHandler.getState(state) # ensure we have the State object (not the int)
             
             # emergency stop
-            if stateAsState == self.states.ERROR:
+            if stateAsState == self.moduleStates.ERROR:
+                self._stop()
+
+            # update the state label
+            self.widget.lblState.setText(str(stateAsState))
+
+        except Exception as inst:
+            print (inst)
+
+    def handlemodulestate(self, state):
+        """ 
+        Handle the state transition by updating the status label and have the
+        GUI reflect the possibilities of the current state.
+        """
+
+        try:
+            #stateAsState = self.states.getState(state) # ensure we have the State object (not the int)
+            stateAsState = self.moduleStateHandler.getState(state) # ensure we have the State object (not the int)
+            
+            # emergency stop
+            if stateAsState == self.moduleStates.ERROR:
                 self._stop()
 
             # update the state label
