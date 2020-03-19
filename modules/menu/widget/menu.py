@@ -84,6 +84,7 @@ class MenuWidget(Control):
 
             # update the state label
             self.widget.lblState.setText(str(stateAsState))
+            self.widget.repaint()
 
         except Exception as inst:
             print (' in menu.py' ,inst)

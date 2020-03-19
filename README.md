@@ -22,8 +22,11 @@ StateHandler(QtCore.QObject) <br>
 State <br>
 MasterStates <br>
 Pulsar(QtCore.QThread) <br>
-DataRecorderWidget(Control) <br>
-MenuWidget(Control) <br><br>
+&lt;module&gt;Widget(Control) <br>
+&lt;module&gt;Action(Control) <br>
+&lt;module&gt;States(MasterStates)<br><br>
+
+&lt;module&gt; is bijvoorbeeld DataRecorder
 
 
 ```mermaid
@@ -36,8 +39,9 @@ MenuWidget(Control) <br><br>
         class Pulsar
         class QObject
         class QThread
-        class MenuWidget
-        class DataRecorderWidget
+        class &lt;module&gt;Widget
+        class &lt;module&gt;Action
+        class &lt;module&gt;States
 
         MasterStates "1" ..|> "*" State : Realization
         Status ..|> MasterStates : Realization of singleton
@@ -47,8 +51,9 @@ MenuWidget(Control) <br><br>
         Pulsar --|> Control : Inheritance
         Control ..|> Status : Realization
         Control ..|> News : Realization
-        Control --|> MenuWidget : Inheritance
-        Control  --|> DataRecorderWidget : Inheritance
+        Control --|> &lt;module&gt;Action : Inheritance
+        Control  --|> &lt;module&gt;Widget : Inheritance
+        &lt;module&gt;States --|> MasterStates
 ```
 ## Directories
 
@@ -61,7 +66,7 @@ holds the singleton Status class
 * statehandler.py <br>
 handles the available states as part of the Status class
 * states.py <br>
-holds the available states as part of the Status class
+holds the class MasterStates and an __init__ method that handles the (attribute)states
 
 ## signals
 

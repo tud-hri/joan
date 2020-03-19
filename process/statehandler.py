@@ -47,8 +47,8 @@ class StateHandler(QtCore.QObject):
         # MasterStates (there is a MasterStates class and each module has its own ModuleStates)
         #self._state = MasterStates.VOID
         #self.states = MasterStates.states   # TODO voor moduleStates via arguments
-        self._state = 'firstState' in kwargs.keys() and kwargs['firstState'] or {}
-        self.states = 'states' in kwargs.keys() and kwargs['states'] or {}
+        self._state = 'firstState' in kwargs.keys() and kwargs['firstState'] or MasterStates.VOID
+        self.states = 'statesDict' in kwargs.keys() and kwargs['statesDict'] or {}
 
         #self._state_c_int = ctypes.c_int(int(self._state))
         #self._state_pointer = ctypes.addressof(self._state_c_int)
