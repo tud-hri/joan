@@ -28,12 +28,8 @@ class FeedbackcontrollerWidget(Control):
         
         #initialize controller with first one in the dict
         self._controller = self.Controllers["Manual"]
-        #self._controller = Manualcontrol(self)
-    
 
         self.widget.tabWidget.currentChanged.connect(self.changedControl)
-
-
 
 
     # callback class is called each time a pulse has come from the Pulsar class instance
