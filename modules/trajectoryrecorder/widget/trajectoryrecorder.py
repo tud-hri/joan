@@ -30,13 +30,13 @@ class TrajectoryrecorderWidget(Control):
     def _show(self):
         self.widget.show()
 
-    def _start(self):
+    def start(self):
         if not self.widget.isVisible():
             self._show()
         print(self.widget.windowTitle())
         self.startPulsar()
 
-    def _stop(self):
+    def stop(self):
         self.stopPulsar()
 
     def _close(self):
