@@ -1,9 +1,22 @@
 from process import Control
 from modules.steeringcommunication.action.PCANBasic import *
+from modules.steeringcommunication.action.states import SteeringcommunicationStates
 
 class SteeringcommunicationAction(Control):
     def __init__(self, *args, **kwargs):
         Control.__init__(self,*args, **kwargs)
+        #self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)),"steeringcommunication.ui"))
+        self.data = {}
+        self.data['throttle'] = 0
+        self.data['damping'] = 0
+        self.writeNews(channel=self, news=self.data)
+
+       # creating a self.moduleStateHandler which also has the moduleStates in self.moduleStateHandler.states
+        self.defineModuleStateHandler(module=self, moduleStates=SteeringcommunicationStates())
+        #self.moduleStateHandler.stateChanged.connect(self.handlemodulestate)
+        #self.masterStateHandler.stateChanged.connect(self.handlemasterstate)
+
+
         print('News', self.getAllNews())
 
         # Declare variables
@@ -50,24 +63,25 @@ class SteeringcommunicationAction(Control):
             
 
 
-            self.statehandler.requestStateChange(self.states.STEERINGWHEEL.INITIALIZED)
+            self.moduleStateHandler.requestStateChange(self.moduleStates.STEERINGWHEEL.INITIALIZED)
             self.ready()
         except Exception as inst:
-            self.statehandler.requestStateChange(self.states.STEERINGWHEEL.ERROR.INIT)
+            print(self.moduleStates)
+            self.moduleStateHandler.requestStateChange(self.moduleStates.STEERINGWHEEL.ERROR.INIT)
             
-            print("FAILED TO INITIALIZE STEERING WHEEL ERROR GIVEN = " ,inst)
+            print('In initialize of action/steeringcommunication',inst)
 
 
     def ready(self):
-        if(self.statehandler._state is self.states.STEERINGWHEEL.INITIALIZED):
-            self.statehandler.requestStateChange(self.states.STEERINGWHEEL.READY)
+        if(self.moduleStateHandler._state is self.moduleStates.STEERINGWHEEL.INITIALIZED):
+            self.moduleStateHandler.requestStateChange(self.moduleStates.STEERINGWHEEL.READY)
 
     def start(self):
         print('Pressed Start')
-        if(self.statehandler._state is self.states.STEERINGWHEEL.READY):
-            self.statehandler.requestStateChange(self.states.STEERINGWHEEL.ON)
+        if(self.moduleStateHandler._state is self.moduleStates.STEERINGWHEEL.READY):
+            self.moduleStateHandler.requestStateChange(self.moduleStates.STEERINGWHEEL.ON)
 
     def stop(self):
-        #print('Pressed Stop')
-        if(self.statehandler._state is self.states.STEERINGWHEEL.ON):
-            self.statehandler.requestStateChange(self.states.STEERINGWHEEL.READY)
+        print('Pressed Stop')
+        if(self.moduleStateHandler._state is self.moduleStates.STEERINGWHEEL.ON):
+            self.moduleStateHandler.requestStateChange(self.moduleStates.STEERINGWHEEL.READY)

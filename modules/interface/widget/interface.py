@@ -12,7 +12,7 @@ class InterfaceWidget(Control):
         self.data = {}
         self.writeNews(channel=self, news=self.data)
 
-        self.statehandler.stateChanged.connect(self.handlestate)
+        self.masterStateHandler.stateChanged.connect(self.handlestate)
 
         pass
     # callback class is called each time a pulse has come from the Pulsar class instance
@@ -50,7 +50,8 @@ class InterfaceWidget(Control):
         """
 
         try:
-            stateAsState = self.states.getState(state) # ensure we have the State object (not the int)
+            #stateAsState = self.states.getState(state) # ensure we have the State object (not the int)
+            stateAsState = self.masterStateHandler.getState(state) # ensure we have the State object (not the int)
             
             # emergency stop
             if stateAsState == self.states.ERROR:

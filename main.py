@@ -7,6 +7,7 @@ import qdarkgraystyle
 #from widgets import DatarecorderWidget
 
 from process import Status
+from process import MasterStates
 
 from PyQt5 import QtCore
 from PyQt5 import QtWidgets
@@ -35,6 +36,7 @@ class Instantiate():
             else:
                 print("Make sure that '%s' is lowercasename and that the class ends with 'Widget' (e.g. the widget directory 'menu' contains a class in 'menu.py' called 'MenuWidget'" % self.class_)
         except Exception as inst:
+            traceback.print_exc(file=sys.stdout)
             print(inst, self.class_)
         return None
 
@@ -85,11 +87,18 @@ class Tasks(QtCore.QObject):
 '''
 if __name__ == '__main__':
 
+    #from modules.template.action.states import TemplateStates
+    #templateStates = TemplateStates()
+    #for state in templateStates.states:
+    #    print(state, templateStates.states[state])
+    #exit(0)
+
+
     def emergency():
         status = Status({})
-        states = status.states
-        statehandler = status.statehandler
-        statehandler.requestStateChange(states.ERROR)
+        #states = status.states
+        masterStateHandler = status.masterStateHandler
+        masterStateHandler.requestStateChange(MasterStates.ERROR)
  
     try:
         app = QtWidgets.QApplication(sys.argv)
@@ -128,7 +137,8 @@ if __name__ == '__main__':
 
         widgetfolders = os.listdir(path)
         for widgetfolder in widgetfolders:
-            if widgetfolder not in ('__pycache__', 'template', '__init__.py'):
+            #if widgetfolder not in ('__pycache__', 'template', '__init__.py'):
+            if widgetfolder not in ('__pycache__', '__init__.py'):
                 module = '%s%s' % (widgetfolder.title(), 'Widget')
                 if module:
                     instantiated = Instantiate(module)

@@ -21,7 +21,7 @@ class DatarecorderWidget(Control):
 
         self.millis = kwargs['millis']
         
-        self.statehandler.stateChanged.connect(self.handlestate)
+        self.masterStateHandler.stateChanged.connect(self.handlestate)
  
         try:
             self.action = DatarecorderAction()
@@ -42,7 +42,7 @@ class DatarecorderWidget(Control):
 
     def _show(self):
         self.widget.show()
-        self.statehandler.requestStateChange(self.states.IDLE)
+        self.masterStateHandler.requestStateChange(self.states.IDLE)
 
 
         # ref, so we can find ourselves
@@ -93,10 +93,11 @@ class DatarecorderWidget(Control):
         GUI reflect the possibilities of the current state.
         """
 
-        #self.statehandler.stateChanged
+        #self.masterStateHandler.stateChanged
         try:
-            stateAsState = self.states.getState(state) # ensure we have the State object (not the int)
-
+            #stateAsState = self.states.getState(state) # ensure we have the State object (not the int)
+            stateAsState = self.masterStateHandler.getState(state) # ensure we have the State object (not the int)
+ 
              # emergency stop
             if stateAsState == self.states.ERROR:
                 self.stop()

@@ -7,7 +7,7 @@ class DatarecorderAction(Control):
 
     def _clickedBtnInitialize(self):
         """initialize the data recorder (mainly setting the data directory and data file prefix"""
-        self.statehandler.requestStateChange(self.states.INITIALIZED.DATARECORDER)
+        self.masterStateHandler.requestStateChange(self.states.INITIALIZED.DATARECORDER)
         pass
         #self._haptictrainer.datarecorder.initialize()
 
@@ -15,7 +15,7 @@ class DatarecorderAction(Control):
         """ btnStartRecorder clicked. """
         #if self._haptictrainer.datarecorder.initialized:
             # request state change to DEBUG.DATARECORDER
-        self.statehandler.requestStateChange(self.states.INITIALIZED.INTERFACE)
+        self.masterStateHandler.requestStateChange(self.states.INITIALIZED.INTERFACE)
 
         # To-do: check whether State change has been made and state is actually running without errors If not,
         # go back to previous state
@@ -23,7 +23,7 @@ class DatarecorderAction(Control):
     def _clickedBtnStopRecorder(self):
         """ btnStopRecorder clicked. """
         print('Pressed Stop')
-        self.statehandler.requestStateChange(self.states.ERROR)
+        self.masterStateHandler.requestStateChange(self.states.ERROR)
 
         # set current data file name
         # self.lblDataFilename.setText('< none >')

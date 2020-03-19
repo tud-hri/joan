@@ -9,8 +9,7 @@ HLC is the 'boss' of the state (i.e. other classes request the interface for cha
 """
 
 from PyQt5 import QtCore
-from .states import State, States
-#from .states import State, States
+from .states import State, MasterStates
 #import ctypes
 
 class StateHandler(QtCore.QObject):
@@ -42,25 +41,71 @@ class StateHandler(QtCore.QObject):
     def __init__(self, *args, **kwargs):
     #def __init__(self, haptictrainer, *args, **kwargs):
         """ Initialize StateHandler. """
-        QtCore.QObject.__init__(self, *args, **kwargs)
+        QtCore.QObject.__init__(self)
         #self._haptictrainer = haptictrainer # keep a reference to haptic trainer (our umbrella)
         
-        self.myStates = States()
-        self._state = self.myStates.VOID
+        # MasterStates (there is a MasterStates class and each module has its own ModuleStates)
+        #self._state = MasterStates.VOID
+        #self.states = MasterStates.states   # TODO voor moduleStates via arguments
+        self._state = 'firstState' in kwargs.keys() and kwargs['firstState'] or {}
+        self.states = 'states' in kwargs.keys() and kwargs['states'] or {}
+
         #self._state_c_int = ctypes.c_int(int(self._state))
         #self._state_pointer = ctypes.addressof(self._state_c_int)
-        
+
+    def getState(self,no):
+        """Given a state number (as an int), it returns the state object.
+        Raises a KeyError if no state with the given number exists.
+        If a state itself is given (i.e., an object of type State, it is
+        returned immediately."""
+        if isinstance(no, State):
+            return no
+        elif isinstance(no, int):
+            try:
+                return self.states[no]
+            except KeyError:
+                # Raise a key error with better description
+                raise KeyError("No state with number %d"%no)
+        else:
+            raise TypeError("variable 'no' should be an int (or State).")
+
     def requestStateChange(self, requestedstate):
         """ Process requests for state change from outside """
         # check if the change of state is allowed 
         # (check for the allowed transitions)
         
-        if self.myStates.isStateTransitionAllowed(self._state, requestedstate):
+        if self.isStateTransitionAllowed(self._state, requestedstate):
+        #if self.myStates.isStateTransitionAllowed(self._state, requestedstate):
         #if STATES.isStateTransitionAllowed(self._state, requestedstate):
             self._setState(requestedstate)
         else:
             raise RuntimeError('State change not allowed.')
         
+    def allowedTransitions(self, currentstate):
+        """ Return allowed state transitions for current state. """
+        state = currentstate
+        
+        allowed_transitions = state.transitions
+        
+        allowed_transitions += (int(state),) # change to the same state is also allowed
+        
+        while state.parent:
+            allowed_transitions += state.parent.transitions
+            state = state.parent
+
+        return allowed_transitions
+        
+    def isStateTransitionAllowed(self, currentstate, requestedstate):
+        """ Return true/false if state transition is allowed """
+        
+        allowed_transitions = self.allowedTransitions(currentstate)
+
+        if (requestedstate in allowed_transitions) or (-1 in allowed_transitions):
+            return True
+        else:
+            return False
+
+
     def _setState(self, s):
         """ Set the current state. """
         self._state = s

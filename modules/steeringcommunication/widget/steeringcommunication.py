@@ -1,6 +1,7 @@
 from process import Control
 from PyQt5 import QtCore
 import os
+from modules.steeringcommunication.action.states import SteeringcommunicationStates
 from modules.steeringcommunication.action.steeringcommunication import SteeringcommunicationAction
 
 class SteeringcommunicationWidget(Control):
@@ -15,7 +16,10 @@ class SteeringcommunicationWidget(Control):
         self.data['damping'] = 0
         self.writeNews(channel=self, news=self.data)
 
-        self.statehandler.stateChanged.connect(self.handlestate)
+        # creating a self.moduleStateHandler which also has the moduleStates in self.moduleStateHandler.states
+        self.defineModuleStateHandler(module=self, moduleStates=SteeringcommunicationStates())
+        self.moduleStateHandler.stateChanged.connect(self.handlemodulestate)
+        self.masterStateHandler.stateChanged.connect(self.handlemasterstate)
 
         try:
             self.action = SteeringcommunicationAction()
@@ -31,8 +35,8 @@ class SteeringcommunicationWidget(Control):
         self.data['damping'] = 0
         self.writeNews(channel=self, news=self.data)
 
-        if(self.statehandler._state is self.states.STEERINGWHEEL.ON):
-            print(self.statehandler._state)
+        if(self.moduleStateHandler._state is self.moduleStates.STEERINGWHEEL.ON):
+            print(self.masterStateHandler._state)
             print(self.i)
         pass
 
@@ -63,28 +67,49 @@ class SteeringcommunicationWidget(Control):
     def _close(self):
         self.widget.close()
 
-    def handlestate(self, state):
+    def handlemodulestate(self, state):
         """ 
         Handle the state transition by updating the status label and have the
         GUI reflect the possibilities of the current state.
         """
 
         try:
-            stateAsState = self.states.getState(state) # ensure we have the State object (not the int)
+            #stateAsState = self.states.getState(state) # ensure we have the State object (not the int)
+            stateAsState = self.moduleStateHandler.getState(state) # ensure we have the State object (not the int)
             
             # Start if the system is initialized
-            if stateAsState == self.states.STEERINGWHEEL.INITIALIZED:
+            if stateAsState == self.moduleStates.STEERINGWHEEL.INITIALIZED:
                 self.start()
 
             # Reinitialize available if exception
-            if stateAsState == self.states.STEERINGWHEEL.ERROR.INIT:
+            if stateAsState == self.moduleStates.STEERINGWHEEL.ERROR.INIT:
                 self.widget.btnInitialize.setEnabled(True)
             else:
                 self.widget.btnInitialize.setEnabled(False)
 
 
             # emergency stop
-            if stateAsState == self.states.ERROR:
+            if stateAsState == self.moduleStates.ERROR:
+                self.stop()
+
+            # update the state label
+            self.widget.lblState.setText(stateAsState.name)
+
+        except Exception as inst:
+            print (inst)
+
+    def handlemasterstate(self, state):
+        """ 
+        Handle the state transition by updating the status label and have the
+        GUI reflect the possibilities of the current state.
+        """
+
+        try:
+            #stateAsState = self.states.getState(state) # ensure we have the State object (not the int)
+            stateAsState = self.masterStateHandler.getState(state) # ensure we have the State object (not the int)
+            
+           # emergency stop
+            if stateAsState == self.moduleStates.ERROR:
                 self.stop()
 
             # update the state label
