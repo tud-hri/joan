@@ -6,3 +6,4 @@ from .datarecorder.widget.datarecorder import DatarecorderWidget
 from .feedbackcontroller.widget.feedbackcontroller import FeedbackcontrollerWidget
 from .steeringcommunication.widget.steeringcommunication import SteeringcommunicationWidget
 from .siminterface.widget.siminterface import SiminterfaceWidget
+from .trajectoryrecorder.widget.trajectoryrecorder import TrajectoryrecorderWidget
