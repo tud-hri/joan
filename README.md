@@ -53,7 +53,7 @@ module is bijvoorbeeld DataRecorder
         Control ..|> News : Realization
         Control --|> moduleAction : Inheritance
         Control  --|> moduleWidget : Inheritance
-        moduleStates --|> MasterStates
+        MasterStates --|> moduleStates
 ```
 ## Directories
 
