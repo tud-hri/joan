@@ -2,6 +2,8 @@
 # That is why classes have already been imported using a wildcard (*)
 # Make sure that the requested class are also in widgets/__init__.py 
 from modules import *
+#import qdarkgraystyle
+import qdarkgraystyle
 #from widgets import MenuWidget
 #from widgets import DatarecorderWidget
 
@@ -92,8 +94,8 @@ if __name__ == '__main__':
  
     try:
         app = QtWidgets.QApplication(sys.argv)
+        app.setStyleSheet(qdarkgraystyle.load_stylesheet())
         win = QtWidgets.QWidget() #QMainWindow()
-        QtWidgets.QApplication.setStyle('macintosh')
         win.resize(600, 400)
 
         resources = os.path.join(os.path.dirname(os.path.realpath(__file__)),'resources')
