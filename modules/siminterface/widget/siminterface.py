@@ -6,7 +6,7 @@ from modules.siminterface.action.siminterface import Simcommunication
 
 class SiminterfaceWidget(Control):
     def __init__(self, *args, **kwargs):
-        kwargs['millis'] = 'millis' in kwargs.keys() and kwargs['millis'] or 500
+        kwargs['millis'] = 'millis' in kwargs.keys() and kwargs['millis'] or 100
         kwargs['callback'] = [self.do]  # method will run each given millis
 
         Control.__init__(self, *args, **kwargs)
@@ -25,7 +25,7 @@ class SiminterfaceWidget(Control):
         self.widget.btnStop.clicked.connect(self.stop)
 
         try:
-            self.action = Simcommunication()
+            self.action = Simcommunication(self)
         except Exception as inst:
             print('De error bij de constructor van de widget is:    ', inst)
 
@@ -34,6 +34,7 @@ class SiminterfaceWidget(Control):
     def do(self):
         self.data = self.action.getData()
         self.writeNews(channel=self, news=self.data)
+        #print(self.data['egoTransform'].location.x)
 
     @QtCore.pyqtSlot(str)
     def _setmillis(self, millis):
@@ -51,8 +52,10 @@ class SiminterfaceWidget(Control):
         if not self.widget.isVisible():
             self._show()
         #Connect to the server
-        self.action.start()
-        self.startPulsar()
+        Connected = self.action.start()
+        if Connected is True:
+            self.startPulsar()
+            print('STARTED CARLA PULSAR!!')
 
     def stop(self):
         self.action.stop()

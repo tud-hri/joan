@@ -12,12 +12,13 @@ except IndexError:
 
 
 import carla #Hier heb ik dus de PC voor nodig error is onzin!
-    
+import random
 
-# This class will always be constructed whenever you decide to use (show) the widget
+
 class Simcommunication():
-    def __init__(self):  # Initialize the variables needed to connect, and data structure to put collected data in
+    def __init__(self, SiminterfaceWidget):  # Initialize the variables needed to connect, and data structure to put collected data in
         print('Carla Communication constructed')
+        self._parentWidget = SiminterfaceWidget.widget
         self.carlaData = {}
         self.carlaData['egoLocation']     = [0, 0, 0]
         self.carlaData['egoVelocity']     = [0, 0, 0]
@@ -31,6 +32,8 @@ class Simcommunication():
         try:
             print(' connecting')
             self.client = carla.Client(self.host,self.port) #connecting to server
+            self._parentWidget.lblModulestate.setText('Connecting')
+            self.client.set_timeout(2.0)
             self.world = self.client.get_world() ## get world object (contains everything)
             ## JUST TO SHOW THAT THE CLIENT CONNECTS (weather has no other uses)
             self.weather = self.world.get_weather()
@@ -40,19 +43,33 @@ class Simcommunication():
             self.weather.precipitation = 0
             self.weather.precipitation_deposits = 0
             self.world.set_weather(self.weather)
-        except:
-            print('could not connect')
-        pass
+
+            self.BlueprintLibrary = self.world.get_blueprint_library()
+            self.vehicleBPlibrary = self.BlueprintLibrary.filter('vehicle.*')
+            self.walkerBPlibrary = self.BlueprintLibrary.filter('walker.pedestrian.*')
+            self.worldMap = self.world.get_map()
+            self.spawnPoints = self.worldMap.get_spawn_points()
+            self.nrSpawnPoints = len(self.spawnPoints)
+            self.control = carla.VehicleControl()
+
+            self.egoCarBP = random.choice(self.BlueprintLibrary.filter("vehicle.HapticsLab.*"))
+            self.egoCar = self.world.spawn_actor(self.egoCarBP,self.spawnPoints[0])
+            self._parentWidget.lblModulestate.setText('Car Spawned')
+
+            Speed = carla.Vector3D(10, 0, 0)
+
+            self.egoCar.set_velocity(Speed)
+            return True
+        except Exception as inst:
+            print('Could not connect error given:', inst)
+            return False
+
 
     def stop(self):
         print('stopped')
 
     def getData(self):
-        self.carlaData['egoLocation'][0]  = self.carlaData['egoLocation'][0] - 0.01
-        self.carlaData['egoLocation'][1]  = self.carlaData['egoLocation'][1] - 0.01
-        #self.carlaData['egoCar']     = self.egoCar
-        # self.carlaData['egoCarVelocity']     = self.egoCar.get_transform()
-        # self.carlaData['egoCarAcceleration'] = self.egoCar.get_acceleration()
-
+        self.carlaData['egoLocation']  = self.egoCar.get_velocity()
+        self.carlaData['egoTransform']  = self.egoCar.get_transform()
 
         return self.carlaData

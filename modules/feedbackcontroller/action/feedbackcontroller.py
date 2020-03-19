@@ -55,9 +55,9 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
 
     def process(self):
         self.data = self._parentWidget.readNews('modules.siminterface.widget.siminterface.SiminterfaceWidget')
-
-        self.Error = self.Error_Calc(self.t_aheadFF, self.HCR[self.HCRIndex], self.data)
-        print(self.Error)
+        print(self.data['egoTransform'].location)
+        #self.Error = self.Error_Calc(self.t_aheadFF, self.HCR[self.HCRIndex], self.data)
+        #print(self.Error)
 
         # ## GAINS  (FDCA as in SIMULINK)
         # SWAngle_FB = self.SoHFFunc(self.K_y,self.K_psi,self.SoHF,self.Error[0],self.Error[1])
