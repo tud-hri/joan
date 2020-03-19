@@ -97,7 +97,6 @@ class MasterStates:
     EXPERIMENT.SUBJECTIDENTERED     = State(139, translate('ExperimentState', 'Experiment subject ID entered'), -1, 150)
     EXPERIMENT.WAITING              = State(1310, translate('ExperimentState', 'Experiment waiting'), -1, 150)
 
-    '''
     # SensoDrive states
     STEERINGWHEEL                   = State(200, translate('SteeringwheelState', 'Steering wheel State'), -1,150)
     STEERINGWHEEL.OFF               = State(201, translate('SteeringwheelState', 'Steeringwheel Off'), -1,150, 202, 204,2040)
