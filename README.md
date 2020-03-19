@@ -51,9 +51,9 @@ Pulsar(QtCore.QThread) <br>
         Pulsar --|> Control : Inheritance
         Control ..|> Status : Realization
         Control ..|> News : Realization
-        Control --|> &lt;module&gt;Action : Inheritance
-        Control  --|> &lt;module&gt;Widget : Inheritance
-        &lt;module&gt;States --|> MasterStates
+        Control --|> <module>Action : Inheritance
+        Control  --|> <module>Widget : Inheritance
+        <module>States --|> MasterStates
 ```
 ## Directories
 
