@@ -22,11 +22,11 @@ StateHandler(QtCore.QObject) <br>
 State <br>
 MasterStates <br>
 Pulsar(QtCore.QThread) <br>
-&lt;module&gt;Widget(Control) <br>
-&lt;module&gt;Action(Control) <br>
-&lt;module&gt;States(MasterStates)<br><br>
+moduleWidget(Control) <br>
+moduleAction(Control) <br>
+moduleStates(MasterStates)<br><br>
 
-&lt;module&gt; is bijvoorbeeld DataRecorder
+module is bijvoorbeeld DataRecorder
 
 
 ```mermaid
@@ -39,9 +39,9 @@ Pulsar(QtCore.QThread) <br>
         class Pulsar
         class QObject
         class QThread
-        class "<module>Widget"
-        class "<module>Action"
-        class "<module>States"
+        class moduleWidget
+        class moduleAction
+        class moduleStates
 
         MasterStates "1" ..|> "*" State : Realization
         Status ..|> MasterStates : Realization of singleton
@@ -51,9 +51,9 @@ Pulsar(QtCore.QThread) <br>
         Pulsar --|> Control : Inheritance
         Control ..|> Status : Realization
         Control ..|> News : Realization
-        Control --|> "<module>Action" : Inheritance
-        Control  --|> "<module>Widget" : Inheritance
-        "<module>States" --|> MasterStates
+        Control --|> moduleAction : Inheritance
+        Control  --|> moduleWidget : Inheritance
+        module>tates --|> MasterStates
 ```
 ## Directories
 
