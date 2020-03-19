@@ -22,7 +22,8 @@ class SteeringcommunicationWidget(Control):
         self.masterStateHandler.stateChanged.connect(self.handlemasterstate)
 
         try:
-            self.action = SteeringcommunicationAction()
+            self.action = SteeringcommunicationAction(moduleStates = self.moduleStates,
+                                                      moduleStateHandler = self.moduleStateHandler)
         except Exception as inst:
             print('De error bij de constructor van de widget is:   ', inst)
         self.i = 0
@@ -53,7 +54,7 @@ class SteeringcommunicationWidget(Control):
         self.widget.btnInitialize.clicked.connect(self.action.initialize)
         self.widget.btnStart.clicked.connect(self.action.start)
         self.widget.btnStop.clicked.connect(self.action.stop)
-        self.action.initialize()
+        #self.action.initialize()
         
 
     def start(self):
@@ -94,6 +95,7 @@ class SteeringcommunicationWidget(Control):
 
             # update the state label
             self.widget.lblState.setText(stateAsState.name)
+            self.widget.repaint()
 
         except Exception as inst:
             print (inst)
@@ -114,6 +116,8 @@ class SteeringcommunicationWidget(Control):
 
             # update the state label
             self.widget.lblState.setText(stateAsState.name)
+            self.widget.repaint()
+
 
         except Exception as inst:
             print (inst)

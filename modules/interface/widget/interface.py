@@ -2,6 +2,7 @@ from process import Control
 from PyQt5 import QtCore
 import os
 from modules.interface.action.states import InterfaceStates
+from modules.interface.action.interface import InterfaceAction
 
 class InterfaceWidget(Control):
     def __init__(self, *args, **kwargs):
@@ -13,9 +14,16 @@ class InterfaceWidget(Control):
         self.data = {}
         self.writeNews(channel=self, news=self.data)
 
+        # creating a self.moduleStateHandler which also has the moduleStates in self.moduleStateHandler.states
         self.defineModuleStateHandler(module=self, moduleStates=InterfaceStates())
         self.moduleStateHandler.stateChanged.connect(self.handlemodulestate)
         self.masterStateHandler.stateChanged.connect(self.handlemasterstate)
+
+        try:
+            self.action = InterfaceAction(moduleStates = self.moduleStates,
+                                          moduleStateHandler = self.moduleStateHandler)
+        except Exception as inst:
+            print('De error bij de constructor van de widget is:    ', inst)
 
         pass
     # callback class is called each time a pulse has come from the Pulsar class instance
@@ -46,7 +54,7 @@ class InterfaceWidget(Control):
     def _close(self):
         self.widget.close()
 
-    def handlemasterstate(self, state):
+    def handlemodulestate(self, state):
         """ 
         Handle the state transition by updating the status label and have the
         GUI reflect the possibilities of the current state.
@@ -66,7 +74,7 @@ class InterfaceWidget(Control):
         except Exception as inst:
             print (inst)
 
-    def handlemodulestate(self, state):
+    def handlemasterstate(self, state):
         """ 
         Handle the state transition by updating the status label and have the
         GUI reflect the possibilities of the current state.
@@ -74,14 +82,14 @@ class InterfaceWidget(Control):
 
         try:
             #stateAsState = self.states.getState(state) # ensure we have the State object (not the int)
-            stateAsState = self.moduleStateHandler.getState(state) # ensure we have the State object (not the int)
+            stateAsState = self.masterStateHandler.getState(state) # ensure we have the State object (not the int)
             
             # emergency stop
             if stateAsState == self.moduleStates.ERROR:
                 self._stop()
 
             # update the state label
-            self.widget.lblState.setText(str(stateAsState))
+            self.widget.lblStatusInterface.setText(str(stateAsState))
 
         except Exception as inst:
             print (inst)

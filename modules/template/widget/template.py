@@ -1,6 +1,7 @@
 from process import Control, State, translate
 from PyQt5 import QtCore
 from modules.template.action.states import TemplateStates
+from modules.template.action.template import TemplateAction
 import os
 
 class TemplateWidget(Control):
@@ -18,6 +19,13 @@ class TemplateWidget(Control):
         self.moduleStateHandler.stateChanged.connect(self.handlemodulestate)
         self.masterStateHandler.stateChanged.connect(self.handlemasterstate)
         
+        # use Action with state handling, using only this widgets state changes
+        try:
+            self.action = TemplateAction(moduleStates = self.moduleStates,
+                                         moduleStateHandler = self.moduleStateHandler)
+        except Exception as inst:
+            print(inst)
+
     # callback class is called each time a pulse has come from the Pulsar class instance
     def do(self):
         pass
@@ -68,6 +76,7 @@ class TemplateWidget(Control):
 
             # update the state label
             self.widget.lblState.setText(str(stateAsState))
+            self.widget.repaint()
 
         except Exception as inst:
             print (inst)
@@ -88,6 +97,7 @@ class TemplateWidget(Control):
 
             # update the state label
             self.widget.lblState.setText(str(stateAsState))
+            self.widget.repaint()
 
         except Exception as inst:
             print (inst)

@@ -36,6 +36,12 @@ FeedbackcontrollerWidget(Control) <br>
 SteeringcommunicationWidget(Control)<br>
 Basecontroller<br>
 Arbitrarycontroller(Basecontroller)<br><br>
+moduleWidget(Control) <br>
+moduleAction(Control) <br>
+moduleStates(MasterStates)<br><br>
+
+module is something like DataRecorder
+
 
 ```mermaid
     classDiagram
@@ -47,6 +53,9 @@ Arbitrarycontroller(Basecontroller)<br><br>
         class Pulsar
         class QObject
         class QThread
+        class moduleWidget
+        class moduleAction
+        class moduleStates
         class DataRecorderWidget
         class FeedbackcontrollerWidget
         class Basecontroller
@@ -73,6 +82,9 @@ Arbitrarycontroller(Basecontroller)<br><br>
         SteeringcommunicationWidget <|..|> FeedbackcontrollerWidget : Torque Data
         CarlainterfaceWidget <|..|> FeedbackcontrollerWidget: Sim Data
 
+        Control --|> moduleAction : Inheritance
+        Control  --|> moduleWidget : Inheritance
+        MasterStates --|> moduleStates
 ```
 ## Directories
 
@@ -85,7 +97,7 @@ holds the singleton Status class
 * statehandler.py <br>
 handles the available states as part of the Status class
 * states.py <br>
-holds the available states as part of the Status class
+holds the class MasterStates and an __init__ method that handles the (attribute)states
 
 ## signals
 

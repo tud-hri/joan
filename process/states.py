@@ -85,6 +85,7 @@ class MasterStates:
     INITIALIZED.INTERFACE           = State(112, translate('InitStates', 'Interface initialized'), -1,150)
     INITIALIZED.DATARECORDER        = State(113, translate('InitStates', 'Datarecorder initialized'), -1,112)
     
+    '''
     # Experiment running states
     EXPERIMENT                      = State(130, translate('ExperimentState', 'Experiment mode'), -1,150)
     EXPERIMENT.TRIAL                = State(131, translate('ExperimentState', 'Experiment-trial mode'), -1,150)
@@ -96,7 +97,8 @@ class MasterStates:
     EXPERIMENT.PAUSED               = State(138, translate('ExperimentState', 'Experiment paused'), -1, 150)
     EXPERIMENT.SUBJECTIDENTERED     = State(139, translate('ExperimentState', 'Experiment subject ID entered'), -1, 150)
     EXPERIMENT.WAITING              = State(1310, translate('ExperimentState', 'Experiment waiting'), -1, 150)
-
+    '''
+    '''
     # SensoDrive states
     STEERINGWHEEL                   = State(200, translate('SteeringwheelState', 'Steering wheel State'), -1,150)
     STEERINGWHEEL.OFF               = State(201, translate('SteeringwheelState', 'Steeringwheel Off'), -1,150, 202, 204,2040)
@@ -113,10 +115,12 @@ class MasterStates:
     FEEDBACKCONTROLLER.STOPPED      = State(303, translate('FeedbackcontrollerState', 'Feedbackcontroller Stopped'), -1,150, 301,302)
     FEEDBACKCONTROLLER.ERROR        = State(304, translate('FeedbackcontrollerState', 'Feedbackcontroller Error'), -1,150,301,303)
 
+    '''
     # Debug / developing
     DEBUG                           = State(140, translate('DebugStates', 'Debugging'), -1)
     DEBUG.DATARECORDER              = State(141, translate('DebugStates', 'Debugging - Datarecorder'), -1)
     DEBUG.DATARECORDER.START        = State(142, translate('DebugStates', 'Debugging - Datarecorder started'), -1)
+    '''
 
     # Exceptions
     ERROR                           = State(150,  translate('ErrorStates', 'Error'), 100,110)
@@ -124,8 +128,7 @@ class MasterStates:
     ERROR.INTERFACE.INIT_NIDAQ      = State(152,  translate('ErrorStates', 'Error - Interface initialization, NIDAQ'), 100,111,151,153,154)
     ERROR.INTERFACE.INIT_SIMENDO    = State(153,  translate('ErrorStates', 'Error - Interface initialization, SIMENDO'), 100,111,151,152,154)
     ERROR.INTERFACE.INIT_DEV        = State(154,  translate('ErrorStates', 'Error - Interface initialization, DEV'), 100,111,151,152,153)
-    ERROR.EXPERIMENT                = State(155,  translate('ErrorStates', 'Error - Experiment'), -1, 150)
-    
+    ERROR.EXPERIMENT                = State(155,  translate('ErrorStates', 'Error - Experiment'), -1, 150) 
 
     '''
     States is only used by SingletonStatus
