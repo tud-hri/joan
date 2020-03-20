@@ -40,9 +40,8 @@ class TrajectoryrecorderWidget(Control):
             pass
 
     def _show(self):
-        self.data = self.readNews('modules.siminterface.widget.siminterface.SiminterfaceWidget')
-        if(self.data['simRunning'] is True):
-            self.widget.show()
+        self.widget.show()
+
 
 
     def start(self):

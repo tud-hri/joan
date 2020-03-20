@@ -26,7 +26,6 @@ class Simcommunication():
         self._parentWidget = SiminterfaceWidget.widget
         self.carlaData = {}
         self.carlaData['egoCar'] = None
-        self.carlaData['simRunning'] = False
     
 
         self.host = 'localhost'
@@ -64,10 +63,8 @@ class Simcommunication():
             Speed = carla.Vector3D(0, 0, 0)
 
             self.egoCar.set_velocity(Speed)
-            self.carlaData['simRunning'] = True
             return True
         except Exception as inst:
-            self.carlaData['simRunning'] = True
             self.egoCar = None
             print('Could not connect error given:', inst)
             return False

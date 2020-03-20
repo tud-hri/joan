@@ -13,7 +13,6 @@ class SiminterfaceWidget(Control):
         self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)),"siminterface.ui"))
         
         self.data = {}
-        self.data['simRunning'] = False
         self.writeNews(channel=self, news=self.data)
         self.counter = 0
 
@@ -29,6 +28,9 @@ class SiminterfaceWidget(Control):
             self.action = Simcommunication(self)
         except Exception as inst:
             print('De error bij de constructor van de widget is:    ', inst)
+
+        self.moduleStateHandler.requestStateChange(self.moduleStates.SIMULATION)
+        
 
     
     # callback class is called each time a pulse has come from the Pulsar class instance
@@ -97,14 +99,15 @@ class SiminterfaceWidget(Control):
 
         try:
             #stateAsState = self.states.getState(state) # ensure we have the State object (not the int)
-            stateAsState = self.moduleStateHandler.getState(state) # ensure we have the State object (not the int)
+            stateAsState = self.moduleStateHandler.getState(state) # ensure we have the State object (not the int)]
+            self.writeNews(channel=self, news=self.data)
             
             # emergency stop
             if stateAsState == self.moduleStates.ERROR:
                 self._stop()
 
             # update the state label
-            self.widget.lblState.setText(str(stateAsState))
+            self.widget.lblModulestate.setText(str(stateAsState.name))
 
         except Exception as inst:
             print (inst)
