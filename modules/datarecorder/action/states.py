@@ -1,10 +1,11 @@
 from process import State, MasterStates, translate
 
 class DatarecorderStates(MasterStates):
-    # SensoDrive states
-    DEBUG                           = State(140, translate('DebugStates', 'Debugging'), -1)
-    DEBUG.DATARECORDER              = State(141, translate('DebugStates', 'Debugging - Datarecorder'), -1)
-    DEBUG.DATARECORDER.START        = State(142, translate('DebugStates', 'Debugging - Datarecorder started'), -1)
+    # Datarecorder states
+    DATARECORDER                    = State(200, translate('Data Recorder', 'Data Recorder'), -1)
+    DATARECORDER.NOTINITIALIZED     = State(210, translate('Data Recorder', 'Not initialized'), -1)
+    DATARECORDER.START              = State(220, translate('Data Recorder', 'Data Recorder started'), -1)
+    DATARECORDER.STOP               = State(230, translate('Data Recorder', 'Data Recorder stopped'), -1)
 
     def __init__(self, *args, **kwargs):
         MasterStates.__init__(self) 

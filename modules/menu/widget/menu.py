@@ -20,9 +20,11 @@ class MenuWidget(Control):
         #self.masterStateHandler.stateChanged.connect(self.finish)
         self.masterStateHandler.stateChanged.connect(self.handlemasterstate)
         #self.moduleStateHandler.stateChanged.connect(self.handlemodulestate)
-        self.ts = None
-        self.te = None
+        #self.ts = None
+        #self.te = None
         self.millis = kwargs['millis']
+
+        self.widget.btnQuit.clicked.connect(self._close)
 
     def do(self):
         self.counter += 1
@@ -50,19 +52,18 @@ class MenuWidget(Control):
         if not self.widget.isVisible():
             self._show()
         self.startPulsar()
-        self.widget.btnQuit.clicked.connect(self.laatguidictzien)
-        self.ts = time.time()
+        #self.ts = time.time()
 
 
     def _stop(self):
         self.stopPulsar()
-        if not self.ts:
-            self.ts = time.time()
-        self.te = time.time()
-        try:
-            print('millis %d, counter %d,  time: %f ms, verhouding: %f ' % (self.millis, self.counter * self.millis, (self.te - self.ts) * 1000, (self.counter * self.millis) / ((self.te - self.ts) * 1000)))
-        except Exception as inst:
-            print(inst)
+        #if not self.ts:
+        #    self.ts = time.time()
+        #self.te = time.time()
+        #try:
+        #    print('millis %d, counter %d,  time: %f ms, verhouding: %f ' % (self.millis, self.counter * self.millis, (self.te - self.ts) * 1000, (self.counter * self.millis) / ((self.te - self.ts) * 1000)))
+        #except Exception as inst:
+        #    print(inst)
     
     def _close(self):
         self.widget.close()
@@ -110,22 +111,3 @@ class MenuWidget(Control):
         except Exception as inst:
             print (' in menu.py' ,inst)
     '''
-    
-    def laatguidictzien(self):
-        pass
-        #print ('      guiDict in menu.py       ', self.getAllGui())
-
-        '''
-        menuWidget = self.menuWindow.getGui()
-        menuWidget.btnQuit.clicked.connect(app.quit)
-        h3 = HapticTrainer(gui=menuWidget)
-
-
-        h3.statehandler.stateChanged.connect(stateChanged)
-        print (h3.statehandler.state)
-        h3.statehandler.stateChanged.emit(h3.statehandler.state)
-        print (h3.statehandler.requestStateChange(h3.statehandler.state))
-
-
-        menuWidget.show()
-        '''

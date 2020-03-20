@@ -1,4 +1,5 @@
 from process import Control
+#from queue import Queue
 
 class DatarecorderAction(Control):
     def __init__(self, *args, **kwargs):
@@ -6,11 +7,23 @@ class DatarecorderAction(Control):
         # get state information from module Widget
         self.moduleStates = 'moduleStates' in kwargs.keys() and kwargs['moduleStates'] or None
         self.moduleStateHandler = 'moduleStateHandler' in kwargs.keys() and kwargs['moduleStateHandler'] or None
-        print('News', self.getAllNews())
 
+    def initialize(self):
+        print('Initialize in action/datarecorder')
+        # search for filename
+        # create threaded filehandler(s)
+
+    def write(self, news):
+        #print('write the news data')
+        print('in action/datarecorder', news)
+        
+
+    def stop(self):
+        print('close the threaded filehandle(s)')
+    '''
     def _clickedBtnInitialize(self):
         """initialize the data recorder (mainly setting the data directory and data file prefix"""
-        self.masterStateHandler.requestStateChange(self.moduleStates.INITIALIZED.DATARECORDER)
+        self.moduleStateHandler.requestStateChange(self.moduleStates.INITIALIZED.DATARECORDER)
         pass
         #self._haptictrainer.datarecorder.initialize()
 
@@ -18,7 +31,7 @@ class DatarecorderAction(Control):
         """ btnStartRecorder clicked. """
         #if self._haptictrainer.datarecorder.initialized:
             # request state change to DEBUG.DATARECORDER
-        self.masterStateHandler.requestStateChange(self.moduleStates.INITIALIZED.INTERFACE)
+        self.moduleStateHandler.requestStateChange(self.moduleStates.INITIALIZED.INTERFACE)
 
         # To-do: check whether State change has been made and state is actually running without errors If not,
         # go back to previous state
@@ -26,10 +39,11 @@ class DatarecorderAction(Control):
     def _clickedBtnStopRecorder(self):
         """ btnStopRecorder clicked. """
         print('Pressed Stop')
-        self.masterStateHandler.requestStateChange(self.moduleStates.ERROR)
+        self.moduleStateHandler.requestStateChange(self.moduleStates.ERROR)
 
         # set current data file name
         # self.lblDataFilename.setText('< none >')
+    '''
 
     '''
     def _onStateChanged(self, state):
