@@ -55,10 +55,10 @@ class SiminterfaceWidget(Control):
             self._show()
         #Connect to the server
         Connected = self.action.start()
-        self.moduleStateHandler.requestStateChange(self.moduleStates.SIMULATION.RUNNING)
         self.data = self.action.getData()
         self.writeNews(channel=self, news=self.data)
         if Connected is True:
+            self.moduleStateHandler.requestStateChange(self.moduleStates.SIMULATION.RUNNING)
             self.startPulsar()
             print('STARTED CARLA PULSAR!!')
 
