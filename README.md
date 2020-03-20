@@ -53,7 +53,8 @@ module is something like DataRecorder
         Control ..|> News : Realization
         Control --|> moduleAction : Inheritance
         Control  --|> moduleWidget : Inheritance
-        MasterStates --|> moduleStates
+        MasterStates --|> moduleStates : Inheritance
+        moduleStates "1" ..|> "*" State : Realization
 ```
 ## Directories
 

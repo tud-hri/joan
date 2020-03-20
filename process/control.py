@@ -17,7 +17,7 @@ class News:
         if not klass.instance:
             klass.instance = object.__new__(News)
             klass.news = {}
-            klass.availableKeys = klass.news.keys()
+            #klass.availableKeys = klass.news.keys()
         return klass.instance
 
     def __init__(self, recentNewsDict, *args, **kwargs):
@@ -38,13 +38,13 @@ class Status:
             klass.masterStates = MasterStates()
             klass.masterStateHandler = StateHandler(firstState=MasterStates.VOID, statesDict=klass.masterStates.getStates())
             #klass.masterStates = MasterStates()
-            klass.moduleStateHandlers = {}
+            klass.moduleStatePackages = {}
         return klass.instance
 
-    def __init__(self, moduleStateHandlers, *args, **kwargs):
+    def __init__(self, moduleStatePackages, *args, **kwargs):
         # TODO find out if self.gui is necessary, also see klass.gui
         #self.gui.update(guiDict)
-        self.moduleStateHandlers.update(moduleStateHandlers)
+        self.moduleStatePackages.update(moduleStatePackages)
 
 class Control(Pulsar):
 
@@ -89,7 +89,10 @@ class Control(Pulsar):
         #self.moduleStates = self.moduleStateHandler.states
         try:
             moduleKey = '%s.%s' % (module.__class__.__module__ , module.__class__.__name__)
-            self.singletonStatus = Status({moduleKey: self.moduleStateHandler})
+            moduleStatePackage = {}
+            moduleStatePackage['moduleStates'] = moduleStates
+            moduleStatePackage['moduleStateHandler'] = self.moduleStateHandler
+            self.singletonStatus = Status({moduleKey: moduleStatePackage})
         except Exception as inst:
             print(inst)
 
@@ -126,7 +129,16 @@ class Control(Pulsar):
         return self.singletonNews.news
 
     def getAvailableNewsChannels(self):
-        return self.singletonNews.availableKeys
+        return self.singletonNews.news.keys()
 
     def readNews(self, channel=''):
-        return channel in self.getAvailableNewsChannels() and self.singletonNews.news[channel] or None
+        return channel in self.getAvailableNewsChannels() and self.singletonNews.news[channel] or {}
+
+    def getAllModuleStatePackages(self):
+        return self.singletonStatus.moduleStatePackages
+
+    def getAvailableModuleStatePackages(self):
+        return self.singletonStatus.moduleStatePackages.keys()
+
+    def getModuleStatePackage(self, module=''):
+        return module in self.getAvailableModuleStatePackages() and self.singletonStatus.moduleStatePackages[module] or {}
