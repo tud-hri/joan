@@ -82,23 +82,28 @@ class TrajectoryrecorderWidget(Control):
         path = os.path.dirname(os.path.dirname(curpath))
         HCRPath = os.path.join(path,'feedbackcontroller/action/HCRTrajectories/*.csv')  #Dit moet handiger kunnen
         
-        TrajectoryName = self.widget.lineTrajectoryname.text()
+        self.TrajectoryName = self.widget.lineTrajectoryname.text()
         
 
         for fname in glob.glob(HCRPath):
-            if (TrajectoryName == (os.path.basename(fname)[:-4]) or TrajectoryName == ''):
+            if (self.TrajectoryName == (os.path.basename(fname)[:-4]) or self.TrajectoryName == ''):
                 self.widget.lblModulestate.setText('Filename Invalid! (empty or already exists)')
                 self.widget.btnSavetrajectory.setEnabled(False)
                 break
             else:
                 self.widget.btnSavetrajectory.setEnabled(True)
-                self.widget.lblModulestate.setText('Will save file as: '+ TrajectoryName + '.csv')
+                self.widget.lblModulestate.setText('Will save file as: '+ self.TrajectoryName + '.csv')
 
 
 
 
     def savefiles(self):
-        pass
+        curpath = os.path.dirname(os.path.realpath(__file__))
+        path = os.path.dirname(os.path.dirname(curpath))
+        HCRPath = os.path.join(path,'feedbackcontroller/action/HCRTrajectories/*.csv')  #Dit moet handiger kunnen
+
+        
+
 
     def _close(self):
         if(self.Siminterface['moduleStateHandler'].state != self.Siminterface['moduleStates'].SIMULATION.RUNNING): 
