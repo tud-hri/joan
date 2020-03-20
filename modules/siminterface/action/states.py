@@ -10,6 +10,7 @@ class SiminterfaceStates(MasterStates):
     SIMULATION.ERROR.INIT         = State(405, translate('SiminterfaceState', 'Simulation Error'), -1,150,406)
     SIMULATION.ERROR.CLEARED      = State(406, translate('SiminterfaceState', 'Simulation Error'), -1,150,400)
     
+    
 
     def __init__(self, *args, **kwargs):
         MasterStates.__init__(self) 

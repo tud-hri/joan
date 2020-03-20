@@ -1,6 +1,6 @@
 from process import Control, State, translate
 from PyQt5 import QtCore
-import os
+import os, glob
 from modules.trajectoryrecorder.action.trajectoryrecorder import TrajectoryrecorderAction
 from modules.trajectoryrecorder.action.states import TrajectoryrecorderStates
 
@@ -29,15 +29,21 @@ class TrajectoryrecorderWidget(Control):
 
         self.Siminterface = self.getModuleStatePackage('modules.siminterface.widget.siminterface.SiminterfaceWidget')
         
+        self.widget.btnStartrecord.setEnabled(True)
+        self.widget.btnStoprecord.setEnabled(False)
+        self.widget.btnSavetrajectory.setEnabled(False)
+        self.widget.lineTrajectoryname.setEnabled(False)
 
-
-        #self.widget.btnStartrecord.clicked.connect(self.start())
-        #self.widget.btnStoprecord.clicked.connect(self.stop())
+        self.widget.btnStartrecord.clicked.connect(self.start)
+        self.widget.btnStoprecord.clicked.connect(self.stop)
+        self.widget.btnSavetrajectory.clicked.connect(self.savefiles)
+        self.widget.lineTrajectoryname.textEdited.connect(self.checkfilename)
+        
 
     # callback class is called each time a pulse has come from the Pulsar class instance
     def do(self):
-        ## Roep elke tick de recorder op om te processen, schrijf de data alleen weg als het positieverschil bepaald interval is
-        #  Schrijf ook een andere versie weg om te visualizeren in unreal (deze heeft minder punten nodig)
+        self.data = self.readNews('modules.siminterface.widget.siminterface.SiminterfaceWidget')
+        #self.action.process(self.data)
         pass
 
     @QtCore.pyqtSlot(str)
@@ -56,13 +62,43 @@ class TrajectoryrecorderWidget(Control):
 
 
     def start(self):
-        if not self.widget.isVisible():
-            self._show()
-        print(self.widget.windowTitle())
-        self.startPulsar()
+        if(self.Siminterface['moduleStateHandler'].state == self.Siminterface['moduleStates'].SIMULATION.RUNNING): 
+            self.startPulsar()
+            self.widget.btnStartrecord.setEnabled(False)
+            self.widget.btnSavetrajectory.setEnabled(False)
+            self.widget.lineTrajectoryname.setEnabled(False)
+            self.widget.btnStoprecord.setEnabled(True)
+
 
     def stop(self):
-        self.stopPulsar()
+            self.stopPulsar()
+            self.widget.btnStoprecord.setEnabled(False)
+            #self.action.generate()
+            self.widget.lineTrajectoryname.setEnabled(True)
+            self.widget.lblModulestate.setText('Please enter a valid Filename for Trajectory')
+
+    def checkfilename(self):
+        curpath = os.path.dirname(os.path.realpath(__file__))
+        path = os.path.dirname(os.path.dirname(curpath))
+        HCRPath = os.path.join(path,'feedbackcontroller/action/HCRTrajectories/*.csv')  #Dit moet handiger kunnen
+        
+        TrajectoryName = self.widget.lineTrajectoryname.text()
+        
+
+        for fname in glob.glob(HCRPath):
+            if (TrajectoryName == (os.path.basename(fname)[:-4]) or TrajectoryName == ''):
+                self.widget.lblModulestate.setText('Filename Invalid! (empty or already exists)')
+                self.widget.btnSavetrajectory.setEnabled(False)
+                break
+            else:
+                self.widget.btnSavetrajectory.setEnabled(True)
+                self.widget.lblModulestate.setText('Will save file as: '+ TrajectoryName + '.csv')
+
+
+
+
+    def savefiles(self):
+        pass
 
     def _close(self):
         if(self.Siminterface['moduleStateHandler'].state != self.Siminterface['moduleStates'].SIMULATION.RUNNING): 
@@ -103,7 +139,7 @@ class TrajectoryrecorderWidget(Control):
                 self._stop()
 
             # update the state label
-            self.widget.lblState.setText(str(stateAsState))
+            self.widget.lblModulestate.setText(str(stateAsState.name))
 
         except Exception as inst:
             print (inst)
