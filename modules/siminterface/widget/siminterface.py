@@ -55,6 +55,7 @@ class SiminterfaceWidget(Control):
             self._show()
         #Connect to the server
         Connected = self.action.start()
+        self.moduleStateHandler.requestStateChange(self.moduleStates.SIMULATION.RUNNING)
         self.data = self.action.getData()
         self.writeNews(channel=self, news=self.data)
         if Connected is True:
@@ -62,10 +63,12 @@ class SiminterfaceWidget(Control):
             print('STARTED CARLA PULSAR!!')
 
     def stop(self):
+        self.moduleStateHandler.requestStateChange(self.moduleStates.SIMULATION.STOPPED)
         self.action.stop()
         self.stopPulsar()
 
     def _close(self):
+        self.moduleStateHandler.requestStateChange(self.moduleStates.SIMULATION.STOPPED)
         self.action.stop()
         self.stopPulsar()
         del self.action

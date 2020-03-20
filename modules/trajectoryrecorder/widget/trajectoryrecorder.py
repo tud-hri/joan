@@ -1,8 +1,8 @@
 from process import Control, State, translate
 from PyQt5 import QtCore
 import os
-from modules.trajectoryrecorder.action.trajectorygenerator import TrajectorygeneratorAction
-from modules.trajectoryrecorder.action.states import TrajectorygeneratorStates
+from modules.trajectoryrecorder.action.trajectoryrecorder import TrajectoryrecorderAction
+from modules.trajectoryrecorder.action.states import TrajectoryrecorderStates
 
 class TrajectoryrecorderWidget(Control):
     def __init__(self, *args, **kwargs):
@@ -17,9 +17,18 @@ class TrajectoryrecorderWidget(Control):
         self.counter = 0
 
 
-        self.defineModuleStateHandler(module=self, moduleStates=TrajectorygeneratorStates())
+        self.defineModuleStateHandler(module=self, moduleStates=TrajectoryrecorderStates())
         self.moduleStateHandler.stateChanged.connect(self.handlemodulestate)
         self.masterStateHandler.stateChanged.connect(self.handlemasterstate)
+
+        try:
+            self.action = TrajectoryrecorderAction(moduleStates = self.moduleStates,
+                                          moduleStateHandler = self.moduleStateHandler)
+        except Exception as inst:
+            print('De error bij de constructor van de widget is:    ', inst)
+
+        self.Siminterface = self.getModuleStatePackage('modules.siminterface.widget.siminterface.SiminterfaceWidget')
+        
 
 
         #self.widget.btnStartrecord.clicked.connect(self.start())
@@ -40,7 +49,9 @@ class TrajectoryrecorderWidget(Control):
             pass
 
     def _show(self):
-        self.widget.show()
+        if(self.Siminterface['moduleStateHandler'].state == self.Siminterface['moduleStates'].SIMULATION.RUNNING): 
+            self.widget.show()
+        
 
 
 
@@ -54,7 +65,8 @@ class TrajectoryrecorderWidget(Control):
         self.stopPulsar()
 
     def _close(self):
-        self.widget.close()
+        if(self.Siminterface['moduleStateHandler'].state != self.Siminterface['moduleStates'].SIMULATION.RUNNING): 
+            self.widget.close()
 
     def handlemasterstate(self, state):
         """ 

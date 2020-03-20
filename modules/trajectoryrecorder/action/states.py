@@ -1,8 +1,9 @@
 from process import State, MasterStates, translate
 
-class TrajectorygeneratorStates(MasterStates):
+class TrajectoryrecorderStates(MasterStates):
     # SensoDrive states
     TRAJECTORYGENERATOR                  = State(500, translate('TemplateState', 'Template State'), -1,150)
+ 
     
 
     def __init__(self, *args, **kwargs):
