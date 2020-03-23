@@ -105,7 +105,19 @@ class TrajectoryrecorderWidget(Control):
 
         	
         # Save 2D numpy array to csv file
-        np.savetxt(HCRPath + self.TrajectoryName + '.csv', self.Trajectory, delimiter=',', fmt='%d')
+        try:
+            np.savetxt(HCRPath + self.TrajectoryName + '.csv', self.Trajectory, delimiter=',', fmt='%d')
+            self.widget.lblModulestate.setText('Saved trajectory as: '+ self.TrajectoryName + '.csv')
+            self.widget.lineTrajectoryname.clear()
+            self.widget.lineTrajectoryname.setEnabled(False)
+            self.widget.btnSavetrajectory.setEnabled(False)
+            self.widget.btnStartrecord.setEnabled(True)
+        except:
+            self.widget.lblModulestate.setText('Could not save File please try again')
+            self.widget.btnSavetrajectory.setEnabled(True)
+            self.widget.btnStartrecord.setEnabled(False)
+
+
 
 
 
