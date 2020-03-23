@@ -75,7 +75,7 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
         self.t_aheadFF = 0
 
         # path to HCR trajectory dir and add to list
-        self._nameCurrentHCR = 'defaultHCRTrajectory'
+        self._nameCurrentHCR = 'defaultHCRTrajectory.csv'
         self._pathHCRDirectory = os.path.join(os.path.dirname(os.path.realpath(__file__)),'HCRTrajectories/')
         try:
             self.updateAvailableTrajectoryList()
@@ -107,7 +107,13 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
             if l not in files:
                 idx = self.FDCATab.comboHCR.findText(l)
                 if idx >= 0:
+                    # removing item, check if this is the currently loaded trajectory; this is probably a user mistake. For now, load the default trajectory, but probably this is a cause to stop the feedbackcontroller (incorrect trajectory can lead to weird SW torques)
+                    if l == self._nameCurrentHCR: 
+                        self.FDCATab.comboHCR.setCurrentIndex(self.FDCATab.comboHCR.findText('defaultHCRTrajectory.csv'))    
+                    
+                    # remove
                     self.FDCATab.comboHCR.removeItem(idx)
+
 
 
         # self.FDCATab.comboHCR.clear() # we don't want this for reasons: (1) it resets the currentIndex(), which triggers a reload of a new trajectory, something we don't want to occur 'randomly'
