@@ -5,6 +5,7 @@ import numpy as np
 import math
 import copy
 import pandas as pd
+from pathlib import Path
 # #overriding the showpopup so that we can add new trajectories in the combobox on the go
 # class ComboBox(QtWidgets.QComboBox):
 #     popupAboutToBeShown = QtCore.pyqtSignal()
@@ -75,9 +76,11 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
         self.t_aheadFF = 0
 
         # path to HCR trajectory dir and add to list
-        self._nameCurrentHCR = 'defaultHCRTrajectory'
-        self._pathHCRDirectory = os.path.join(os.path.dirname(os.path.realpath(__file__)),'HCRTrajectories/')
+        
         try:
+            self._nameCurrentHCR = 'defaultHCRTrajectory'
+            self._pathHCRDirectory = os.path.join(os.path.dirname(os.path.realpath(__file__)),'HCRTrajectories')
+            print(self._pathHCRDirectory)
             self.updateAvailableTrajectoryList()
             # load a default trajectory first
             idx = self.FDCATab.comboHCR.findText(self._nameCurrentHCR)

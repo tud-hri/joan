@@ -1,6 +1,7 @@
 from signals import Pulsar
 from .statehandler import StateHandler, MasterStates
 from PyQt5 import uic, QtCore
+from pathlib import Path
 #from queue import Queue
 
 import os 

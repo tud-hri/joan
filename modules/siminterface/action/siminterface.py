@@ -2,6 +2,7 @@ from PyQt5 import QtCore, QtWidgets
 import os, sys
 from process import Control
 
+
 # try:
 #     sys.path.append(glob.glob('../../carla/PythonAPI/carla/dist/carla-*%d.%d-%s.egg' % (
 #         sys.version_info.major,

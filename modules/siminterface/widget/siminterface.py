@@ -48,7 +48,10 @@ class SiminterfaceWidget(Control):
             pass
 
     def _show(self):
-        self.widget.show()
+        try:
+            self.widget.show()
+        except Exception as e:
+            print(' ############## Exception was: #########')
 
     def start(self):
         if not self.widget.isVisible():
@@ -58,7 +61,7 @@ class SiminterfaceWidget(Control):
         Connected = self.action.start()
         self.data = self.action.getData()
         self.writeNews(channel=self, news=self.data)
-        # self.moduleStateHandler.requestStateChange(self.moduleStates.SIMULATION.RUNNING)
+        self.moduleStateHandler.requestStateChange(self.moduleStates.SIMULATION.RUNNING)
         
         if Connected is True:
             self.moduleStateHandler.requestStateChange(self.moduleStates.SIMULATION.RUNNING)
