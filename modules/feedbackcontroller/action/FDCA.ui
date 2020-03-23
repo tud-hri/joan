@@ -318,7 +318,7 @@
            <item row="1" column="3">
             <widget class="QLabel" name="label">
              <property name="text">
-              <string>           </string>
+              <string/>
              </property>
             </widget>
            </item>
@@ -357,10 +357,16 @@
             <widget class="QComboBox" name="comboHCR">
              <property name="font">
               <font>
-               <pointsize>15</pointsize>
                <weight>50</weight>
                <bold>false</bold>
               </font>
+             </property>
+            </widget>
+           </item>
+           <item row="7" column="3">
+            <widget class="QPushButton" name="btnUpdate">
+             <property name="text">
+              <string>Update List</string>
              </property>
             </widget>
            </item>
@@ -418,7 +424,7 @@
      <x>0</x>
      <y>0</y>
      <width>917</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>

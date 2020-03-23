@@ -1,5 +1,5 @@
 from PyQt5 import QtCore, QtWidgets
-import os, sys, glob
+import os, sys
 from process import Control
 
 # try:

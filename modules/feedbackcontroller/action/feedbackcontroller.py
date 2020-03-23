@@ -3,15 +3,15 @@ import os, glob
 from process import Control
 import numpy as np
 import math
+import copy
+from pandas import read_csv
+# #overriding the showpopup so that we can add new trajectories in the combobox on the go
+# class ComboBox(QtWidgets.QComboBox):
+#     popupAboutToBeShown = QtCore.pyqtSignal()
 
-#overriding the showpopup so that we can add new trajectories in the combobox on the go
-class ComboBox(QtWidgets.QComboBox):
-    popupAboutToBeShown = QtCore.pyqtSignal()
-
-    def showPopup(self):
-        print('showing')
-        self.popupAboutToBeShown.emit()
-        super(ComboBox, self).showPopup()
+#     def showPopup(self):
+#         self.popupAboutToBeShown.emit()
+#         super(ComboBox, self).showPopup()
 
 class FeedbackcontrollerAction(Control):
     def __init__(self, *args, **kwargs):
@@ -54,12 +54,12 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
         self._parentWidget.widget.tabWidget.addTab(self.FDCATab,'FDCA')
 
         #Add the new popup signal so and adjust layout accordingly
-        self.FDCATab.comboHCRnew = ComboBox(self.FDCATab.comboHCR)
-        self.FDCATab.comboHCRnew.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
-        self.ExtraLayout = QtWidgets.QGridLayout()
-        self.ExtraLayout.setContentsMargins(0,0,0,0)
-        self.ExtraLayout.addWidget(self.FDCATab.comboHCRnew)
-        self.FDCATab.comboHCR.setLayout(self.ExtraLayout)
+        # self.FDCATab.comboHCRnew = ComboBox(self.FDCATab.comboHCR)
+        # self.FDCATab.comboHCRnew.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        # self.ExtraLayout = QtWidgets.QGridLayout()
+        # self.ExtraLayout.setContentsMargins(0,0,0,0)
+        # self.ExtraLayout.addWidget(self.FDCATab.comboHCRnew)
+        # self.FDCATab.comboHCR.setLayout(self.ExtraLayout)
         
         
         
@@ -70,36 +70,48 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
 
         #Load all available Human Compatible References
         i = 0
-        path = os.path.join(os.path.dirname(os.path.realpath(__file__)),'HCRTrajectories/*.csv')
+        # path = os.path.join(os.path.dirname(os.path.realpath(__file__)),'HCRTrajectories/*.csv')
+        mypath =os.path.join(os.path.dirname(os.path.realpath(__file__)),'HCRTrajectories/')
+        files = os.listdir(mypath)
+      
+    
+        # for fname in files:
+        #     self.FDCATab.comboHCR.addItem(fname)
+        #     FileName = os.path.join(mypath, fname)
+        #     Temp = read_csv(FileName)
+        #     self.HCR[i] = Temp.values
+        #     i = i +1
+            
 
-        
-
-
-        for fname in glob.glob(path):
-            self.FDCATab.comboHCRnew.addItem(os.path.basename(fname))
-            self.HCR[i] = np.genfromtxt(fname, delimiter=',')
-            i = i +1
 
 
         #connect change of HCR
         #self.FDCATab.comboHCRJoe.setFocus()
-        self.FDCATab.comboHCRnew.popupAboutToBeShown.connect(self.addallavailabletrajectories)
-        self.FDCATab.comboHCRnew.currentIndexChanged.connect(self.selectHCR)
+        self.FDCATab.btnUpdate.clicked.connect(self.addallavailabletrajectories)
+        self.FDCATab.btnApply.clicked.connect(self.printshit)
+        self.FDCATab.comboHCR.currentIndexChanged.connect(self.selectHCR)
 
+    def printshit(self):
+        print(self.HCRIndex)
 
     def addallavailabletrajectories(self):
-        self.FDCATab.comboHCRnew.clear()
+
         i = 0
-        path = os.path.join(os.path.dirname(os.path.realpath(__file__)),'HCRTrajectories/*.csv')
-        for fname in glob.glob(path):
-            self.FDCATab.comboHCRnew.addItem(os.path.basename(fname))
-            self.HCR[i] = np.genfromtxt(fname, delimiter=',')
+        self.FDCATab.comboHCR.clear()
+        path = os.path.join(os.path.dirname(os.path.realpath(__file__)),'HCRTrajectories/')
+        files = os.listdir(path)
+        for fname in files:
+            self.FDCATab.comboHCR.addItem(fname)
+            FileName = os.path.join(path, fname)
+            Temp = read_csv(FileName)
+            self.HCR[i] = Temp.values
             i = i +1
 
+    
     def selectHCR(self):
         self.HCRIndex = self.FDCATab.comboHCR.currentIndex()
-        print(len(self.HCR))
-        
+
+
 
     def process(self):
         self.data = self._parentWidget.readNews('modules.siminterface.widget.siminterface.SiminterfaceWidget')
