@@ -75,11 +75,12 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
         self.t_aheadFF = 0
 
         # path to HCR trajectory dir and add to list
+        self._nameCurrentHCR = 'defaultHCRTrajectory'
         self._pathHCRDirectory = os.path.join(os.path.dirname(os.path.realpath(__file__)),'HCRTrajectories/')
         try:
             self.updateAvailableTrajectoryList()
             # load a default trajectory first
-            idx = self.FDCATab.comboHCR.findText('defaultHCRTrajectory')
+            idx = self.FDCATab.comboHCR.findText(self._nameCurrentHCR)
             if idx < 0:
                 idx = 0 # in case the default trajectory file is not found, load the first one
             
@@ -95,49 +96,48 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
         print(self.HCRIndex)
 
     def updateAvailableTrajectoryList(self):
+        # get list of csv files in directory
+        os.chdir(self._pathHCRDirectory)
+        files = glob.glob('*.{}'.format('csv'))
 
-        # @joris: I changed this around a little bit. The current solutions checks for additional (new) trajectory files and adds those to 
-        # the list. However, it does (not yet) detect if files are missing. But the advantage of the current method is that we are not constantly reloading a trajectory (which happens if we clear the combobox... See the commented stuff for a solution (beun) that works with deleting stuff, but it's a bit beun.)
-        
-        # in case a trajectory was already selected previously, store that name, so we can relaod that trajectory later.
-        # selectedName = None
-        # if self.FDCATab.comboHCR.count() > 0:
-        #     selectedName = self.FDCATab.comboHCR.itemText(self.FDCATab.comboHCR.currentIndex())
 
-        # self.FDCATab.comboHCR.clear()
-        files = os.listdir(self._pathHCRDirectory)
+        # run through the combobox to check for files that are in the list, but not in the directory anymore
+        listitems = [self.FDCATab.comboHCR.itemText(i) for i in range(self.FDCATab.comboHCR.count())]
+        for l in listitems:
+            if l not in files:
+                idx = self.FDCATab.comboHCR.findText(l)
+                if idx >= 0:
+                    self.FDCATab.comboHCR.removeItem(idx)
+
+
+        # self.FDCATab.comboHCR.clear() # we don't want this for reasons: (1) it resets the currentIndex(), which triggers a reload of a new trajectory, something we don't want to occur 'randomly'
+
+        # add items that are in files but not yet in the combobox
         for fname in files:
-            if fname.endswith( ".csv" ):
-                idx = self.FDCATab.comboHCR.findText(fname)
-                if idx < 0:
-                    self.FDCATab.comboHCR.addItem(fname)
-        
-        # # in case we already selected a trajectory, load that one again
-        # # related to the note above: this is not ideal, as we are reloading the trajectories unnecesarily
-        # if selectedName is not None:
-        #     idx = self.FDCATab.comboHCR.findText(selectedName)
-        #     print('Reloading updatedAvailableTrajectorylist')
-        #     if idx >= 0:
-        #         self.FDCATab.comboHCR.setCurrentIndex(idx)
-
+            idx = self.FDCATab.comboHCR.findText(fname)
+            if idx < 0:
+                self.FDCATab.comboHCR.addItem(fname)
     
 
     def newHCRSelected(self):
         # new index selected
 
+        # load based on filename, not index. Index can change if we remove items from the combobox list, which could yield undesired loading of HCR trajectories
         fname = self.FDCATab.comboHCR.itemText(self.FDCATab.comboHCR.currentIndex())
-        print('Trying to load HCR trajectory: ' + fname)
 
-        # add path (to absolute path)
-        fname = os.path.join(self._pathHCRDirectory, fname)
+        if fname != self._nameCurrentHCR:
+            # fname is different from _nameCurrentHCR, load it!
+            print('Loading HCR trajectory: ' + fname)
 
-        try:
-            tmp = pd.read_csv(fname)
-            self.HCR = tmp.values
-        except Exception as e:
-            print('Error loading HCR trajectory file (newHCRSelected): ', e)
+            try:
+                tmp = pd.read_csv(os.path.join(self._pathHCRDirectory, fname))
+                self.HCR = tmp.values
+            except Exception as e:
+                print('Error loading HCR trajectory file (newHCRSelected): ', e)
+
+            self._nameCurrentHCR = fname
+
         
-
     def process(self):
         self.data = self._parentWidget.readNews('modules.siminterface.widget.siminterface.SiminterfaceWidget')
         egoCar = self.data['egoCar']
