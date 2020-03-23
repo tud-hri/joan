@@ -3,6 +3,7 @@ from PyQt5 import QtCore
 import os, glob
 from modules.trajectoryrecorder.action.trajectoryrecorder import TrajectoryrecorderAction
 from modules.trajectoryrecorder.action.states import TrajectoryrecorderStates
+import numpy as np
 
 class TrajectoryrecorderWidget(Control):
     def __init__(self, *args, **kwargs):
@@ -73,7 +74,7 @@ class TrajectoryrecorderWidget(Control):
     def stop(self):
             self.stopPulsar()
             self.widget.btnStoprecord.setEnabled(False)
-            #self.action.generate()
+            self.Trajectory = self.action.generate()
             self.widget.lineTrajectoryname.setEnabled(True)
             self.widget.lblModulestate.setText('Please enter a valid Filename for Trajectory')
 
@@ -100,7 +101,13 @@ class TrajectoryrecorderWidget(Control):
     def savefiles(self):
         curpath = os.path.dirname(os.path.realpath(__file__))
         path = os.path.dirname(os.path.dirname(curpath))
-        HCRPath = os.path.join(path,'feedbackcontroller/action/HCRTrajectories/*.csv')  #Dit moet handiger kunnen
+        HCRPath = os.path.join(path,'feedbackcontroller/action/HCRTrajectories/')  #Dit moet handiger kunnen
+
+        	
+        # Save 2D numpy array to csv file
+        np.savetxt(HCRPath + self.TrajectoryName + '.csv', self.Trajectory, delimiter=',', fmt='%d')
+
+
 
         
 

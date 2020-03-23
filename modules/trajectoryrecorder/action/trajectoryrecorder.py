@@ -8,7 +8,7 @@ class TrajectoryrecorderAction(Control):
         self.moduleStates = 'moduleStates' in kwargs.keys() and kwargs['moduleStates'] or None
         self.moduleStateHandler = 'moduleStateHandler' in kwargs.keys() and kwargs['moduleStateHandler'] or None
         self.data = [0, 0, 0, 0, 0, 0]
-        self.trajData = []
+        self.TrajData = ([1,2,3,4,5,6],[2,3,4,5,6,7])
         self.Traveled = 0
         self.OverallDist = 0
 
@@ -38,6 +38,7 @@ class TrajectoryrecorderAction(Control):
 
     def generate(self):
         return self.TrajData
+        print(self.TrajData)
 
 
         

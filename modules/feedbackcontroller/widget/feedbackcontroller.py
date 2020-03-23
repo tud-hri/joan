@@ -50,6 +50,7 @@ class FeedbackcontrollerWidget(Control):
     
     def changedControl(self):
         self._controller = self.Controllers[self.widget.tabWidget.currentWidget().windowTitle()]
+
         print('control changed!')
 
         
@@ -63,6 +64,11 @@ class FeedbackcontrollerWidget(Control):
 
     def _show(self):
         self.widget.show()
+        try:
+            self._controller.addallavailabletrajectories()
+        except:
+            pass
+
         #self.statehandler.requestStateChange(self.states.FEEDBACKCONTROLLER)
         
 

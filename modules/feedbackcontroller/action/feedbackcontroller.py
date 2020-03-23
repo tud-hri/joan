@@ -4,6 +4,15 @@ from process import Control
 import numpy as np
 import math
 
+#overriding the showpopup so that we can add new trajectories in the combobox on the go
+class ComboBox(QtWidgets.QComboBox):
+    popupAboutToBeShown = QtCore.pyqtSignal()
+
+    def showPopup(self):
+        print('showing')
+        self.popupAboutToBeShown.emit()
+        super(ComboBox, self).showPopup()
+
 class FeedbackcontrollerAction(Control):
     def __init__(self, *args, **kwargs):
         Control.__init__(self, *args, **kwargs)
@@ -41,7 +50,18 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
         Basecontroller.__init__(self, FeedbackcontrollerWidget)
         #Add the GUI Tab
         self.FDCATab = uic.loadUi(uifile = os.path.join(os.path.dirname(os.path.realpath(__file__)),"FDCA.ui"))
+        #self.FDCATab.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         self._parentWidget.widget.tabWidget.addTab(self.FDCATab,'FDCA')
+
+        #Add the new popup signal so and adjust layout accordingly
+        self.FDCATab.comboHCRnew = ComboBox(self.FDCATab.comboHCR)
+        self.FDCATab.comboHCRnew.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        self.ExtraLayout = QtWidgets.QGridLayout()
+        self.ExtraLayout.setContentsMargins(0,0,0,0)
+        self.ExtraLayout.addWidget(self.FDCATab.comboHCRnew)
+        self.FDCATab.comboHCR.setLayout(self.ExtraLayout)
+        
+        
         
         #Initialize local Variables
         self.HCR = {}
@@ -51,15 +71,35 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
         #Load all available Human Compatible References
         i = 0
         path = os.path.join(os.path.dirname(os.path.realpath(__file__)),'HCRTrajectories/*.csv')
+
+        
+
+
         for fname in glob.glob(path):
-            self.FDCATab.comboHCR.addItem(os.path.basename(fname))
+            self.FDCATab.comboHCRnew.addItem(os.path.basename(fname))
             self.HCR[i] = np.genfromtxt(fname, delimiter=',')
             i = i +1
 
 
         #connect change of HCR
-        self.FDCATab.comboHCR.currentIndexChanged.connect(self.selectHCR)
+        #self.FDCATab.comboHCRJoe.setFocus()
+        self.FDCATab.comboHCRnew.popupAboutToBeShown.connect(self.addallavailabletrajectories)
+        self.FDCATab.comboHCRnew.currentIndexChanged.connect(self.selectHCR)
 
+
+    def addallavailabletrajectories(self):
+        self.FDCATab.comboHCRnew.clear()
+        i = 0
+        path = os.path.join(os.path.dirname(os.path.realpath(__file__)),'HCRTrajectories/*.csv')
+        for fname in glob.glob(path):
+            self.FDCATab.comboHCRnew.addItem(os.path.basename(fname))
+            self.HCR[i] = np.genfromtxt(fname, delimiter=',')
+            i = i +1
+
+    def selectHCR(self):
+        self.HCRIndex = self.FDCATab.comboHCR.currentIndex()
+        print(len(self.HCR))
+        
 
     def process(self):
         self.data = self._parentWidget.readNews('modules.siminterface.widget.siminterface.SiminterfaceWidget')
@@ -193,6 +233,3 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
         return np.argmin(dist_2)
 
 
-    def selectHCR(self):
-        self.HCRIndex = self.FDCATab.comboHCR.currentIndex()
-        print(self.HCR[self.HCRIndex])

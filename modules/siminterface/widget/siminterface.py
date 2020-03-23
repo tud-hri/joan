@@ -57,6 +57,7 @@ class SiminterfaceWidget(Control):
         Connected = self.action.start()
         self.data = self.action.getData()
         self.writeNews(channel=self, news=self.data)
+        self.moduleStateHandler.requestStateChange(self.moduleStates.SIMULATION.RUNNING)
         if Connected is True:
             self.moduleStateHandler.requestStateChange(self.moduleStates.SIMULATION.RUNNING)
             self.startPulsar()
