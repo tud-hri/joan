@@ -104,7 +104,7 @@ class DatarecorderWidget(Control):
             #stateAsState = self.states.getState(state) # ensure we have the State object (not the int)
             stateAsState = self.moduleStateHandler.getState(state) # ensure we have the State object (not the int)
 
-            if stateAsState == self.moduleStates.INITIALIZED.DATARECORDER:
+            if stateAsState == self.moduleStates.DATARECORDER.INITIALIZED:
                 self.widget.btnStartRecorder.setEnabled(True)
                 self.widget.lblStatusRecorder.setStyleSheet('color: green')
                 self.action.initialize()
@@ -113,6 +113,9 @@ class DatarecorderWidget(Control):
                 self.widget.btnStartRecorder.setEnabled(False)
                 self.widget.btnStopRecorder.setEnabled(False)
                 self.widget.lblStatusRecorder.setStyleSheet('color: orange')
+
+            if stateAsState == self.moduleStates.DATARECORDER.INITIALIZED:
+                self.widget.lblDataFilename.setText(self.action.getFilename())
 
             if stateAsState == self.moduleStates.DATARECORDER.START:
                 self.widget.btnStartRecorder.setEnabled(False)
@@ -169,9 +172,10 @@ class DatarecorderWidget(Control):
 
     def _clickedBtnInitialize(self):
         """initialize the data recorder (mainly setting the data directory and data file prefix"""
-        self.moduleStateHandler.requestStateChange(self.moduleStates.INITIALIZED.DATARECORDER)
+        self.moduleStateHandler.requestStateChange(self.moduleStates.DATARECORDER.INITIALIZING)
         pass
-        #if self.action.initialize():
+        if self.action.initialize():
+            self.moduleStateHandler.requestStateChange(self.moduleStates.DATARECORDER.INITIALIZED)
         # set current data file name
         # self.lblDataFilename.setText('< none >')        #self._haptictrainer.datarecorder.initialize()
 

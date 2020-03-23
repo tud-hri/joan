@@ -1,4 +1,6 @@
 from process import Control
+from PyQt5 import QtCore
+#from datetime import datetime
 #from queue import Queue
 
 class DatarecorderAction(Control):
@@ -7,16 +9,20 @@ class DatarecorderAction(Control):
         self.moduleStates = None
         self.moduleStateHandler = None
         try:
-            statePackage = self.getModuleStatePackages(module='module.datarecorder.widget.daterecorder.DatarecorderWidget')
+            statePackage = self.getModuleStatePackage(module='module.datarecorder.widget.daterecorder.DatarecorderWidget')
             self.moduleStates = statePackage['moduleStates']
             self.moduleStateHandler = statePackage['moduleStateHandler']
         except:
             pass
+        #self.filename = ''
 
     def initialize(self):
         print('Initialize in action/datarecorder')
+        self.filename = self._createFilename()
+        print(self.filename)
         # search for filename
         # create threaded filehandler(s)
+        return True
 
     def write(self, news):
         #print('write the news data')
@@ -25,6 +31,20 @@ class DatarecorderAction(Control):
 
     def stop(self):
         print('close the threaded filehandle(s)')
+
+    
+    def _createFilename(self, extension=''):
+        now = QtCore.QDateTime.currentDateTime()
+        nowString = now.toString('yyyyMMdd_hhmmss')
+        filename = '%s_%s' % ('data', nowString)
+        if extension != '':
+            extension = extension[0] == '.' or '.%s' % extension
+            filename = '%s%s' % (filename, extension)
+        return filename
+
+    def getFilename(self):
+        return self.filename
+    
     '''
     def _clickedBtnInitialize(self):
         """initialize the data recorder (mainly setting the data directory and data file prefix"""

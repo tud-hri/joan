@@ -84,7 +84,7 @@ class Control(Pulsar):
         moduleStatesDict = moduleStates.getStates()
         self.moduleStateHandler = StateHandler(firstState=MasterStates.VOID, statesDict=moduleStatesDict)
         self.moduleStates = moduleStates
-        print(type(moduleStates))
+        #print(type(moduleStates))
         #assert type(moduleStates) == dict, 'argument "moduleStates" should be of type StateHandler (key = State())'
         #self.moduleStates = self.moduleStateHandler.states
         try:

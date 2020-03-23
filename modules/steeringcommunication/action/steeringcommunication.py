@@ -12,7 +12,7 @@ class SteeringcommunicationAction(Control):
         self.moduleStates = None
         self.moduleStateHandler = None
         try:
-            statePackage = self.getModuleStatePackages(module='module.steeringcommunication.widget.steeringcommunication.SteeringcommunicationWidget')
+            statePackage = self.getModuleStatePackage(module='module.steeringcommunication.widget.steeringcommunication.SteeringcommunicationWidget')
             self.moduleStates = statePackage['moduleStates']
             self.moduleStateHandler = statePackage['moduleStateHandler']
         except:
@@ -34,7 +34,7 @@ class SteeringcommunicationAction(Control):
         #self.masterStateHandler.stateChanged.connect(self.handlemasterstate)
 
 
-        print('News', self.getAllNews())
+        #print('News in action/steeringcommunication.py', self.getAllNews())
 
         # Declare variables
         self.objPCAN = None
