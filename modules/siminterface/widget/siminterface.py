@@ -53,11 +53,13 @@ class SiminterfaceWidget(Control):
     def start(self):
         if not self.widget.isVisible():
             self._show()
-        #Connect to the server
+
+        # Connect to the server
         Connected = self.action.start()
         self.data = self.action.getData()
         self.writeNews(channel=self, news=self.data)
-        self.moduleStateHandler.requestStateChange(self.moduleStates.SIMULATION.RUNNING)
+        # self.moduleStateHandler.requestStateChange(self.moduleStates.SIMULATION.RUNNING)
+        
         if Connected is True:
             self.moduleStateHandler.requestStateChange(self.moduleStates.SIMULATION.RUNNING)
             self.startPulsar()
@@ -70,9 +72,9 @@ class SiminterfaceWidget(Control):
 
     def _close(self):
         self.moduleStateHandler.requestStateChange(self.moduleStates.SIMULATION.STOPPED)
-        self.action.stop()
-        self.stopPulsar()
-        del self.action
+        # self.action.stop()
+        # self.stopPulsar()
+        # del self.action
         self.widget.close()
 
     def handlemasterstate(self, state):

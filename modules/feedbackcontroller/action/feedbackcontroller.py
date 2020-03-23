@@ -4,7 +4,7 @@ from process import Control
 import numpy as np
 import math
 import copy
-from pandas import read_csv
+import pandas as pd
 # #overriding the showpopup so that we can add new trajectories in the combobox on the go
 # class ComboBox(QtWidgets.QComboBox):
 #     popupAboutToBeShown = QtCore.pyqtSignal()
@@ -53,6 +53,12 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
         #self.FDCATab.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         self._parentWidget.widget.tabWidget.addTab(self.FDCATab,'FDCA')
 
+
+        # connect to widgets
+        self.FDCATab.btnUpdate.clicked.connect(self.updateAvailableTrajectoryList)
+        self.FDCATab.btnApply.clicked.connect(self.printshit)
+        self.FDCATab.comboHCR.currentIndexChanged.connect(self.newHCRSelected)
+
         #Add the new popup signal so and adjust layout accordingly
         # self.FDCATab.comboHCRnew = ComboBox(self.FDCATab.comboHCR)
         # self.FDCATab.comboHCRnew.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
@@ -68,55 +74,74 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
         self.HCRIndex = 0
         self.t_aheadFF = 0
 
-        #Load all available Human Compatible References
-        i = 0
-        # path = os.path.join(os.path.dirname(os.path.realpath(__file__)),'HCRTrajectories/*.csv')
-        mypath =os.path.join(os.path.dirname(os.path.realpath(__file__)),'HCRTrajectories/')
-        files = os.listdir(mypath)
-      
-    
-        # for fname in files:
-        #     self.FDCATab.comboHCR.addItem(fname)
-        #     FileName = os.path.join(mypath, fname)
-        #     Temp = read_csv(FileName)
-        #     self.HCR[i] = Temp.values
-        #     i = i +1
+        # path to HCR trajectory dir and add to list
+        self._pathHCRDirectory = os.path.join(os.path.dirname(os.path.realpath(__file__)),'HCRTrajectories/')
+        try:
+            self.updateAvailableTrajectoryList()
+            # load a default trajectory first
+            idx = self.FDCATab.comboHCR.findText('defaultHCRTrajectory')
+            if idx < 0:
+                idx = 0 # in case the default trajectory file is not found, load the first one
             
+            self.FDCATab.comboHCR.setCurrentIndex(idx) # this will also trigger the function newHCRSelected
 
+        except Exception as e:
+            print('Error loading list of available HCR trajectories: ', e)
+        
 
-
-        #connect change of HCR
-        #self.FDCATab.comboHCRJoe.setFocus()
-        self.FDCATab.btnUpdate.clicked.connect(self.addallavailabletrajectories)
-        self.FDCATab.btnApply.clicked.connect(self.printshit)
-        self.FDCATab.comboHCR.currentIndexChanged.connect(self.selectHCR)
+        
 
     def printshit(self):
         print(self.HCRIndex)
 
-    def addallavailabletrajectories(self):
+    def updateAvailableTrajectoryList(self):
 
-        i = 0
-        self.FDCATab.comboHCR.clear()
-        path = os.path.join(os.path.dirname(os.path.realpath(__file__)),'HCRTrajectories/')
-        files = os.listdir(path)
+        # @joris: I changed this around a little bit. The current solutions checks for additional (new) trajectory files and adds those to 
+        # the list. However, it does (not yet) detect if files are missing. But the advantage of the current method is that we are not constantly reloading a trajectory (which happens if we clear the combobox... See the commented stuff for a solution (beun) that works with deleting stuff, but it's a bit beun.)
+        
+        # in case a trajectory was already selected previously, store that name, so we can relaod that trajectory later.
+        # selectedName = None
+        # if self.FDCATab.comboHCR.count() > 0:
+        #     selectedName = self.FDCATab.comboHCR.itemText(self.FDCATab.comboHCR.currentIndex())
+
+        # self.FDCATab.comboHCR.clear()
+        files = os.listdir(self._pathHCRDirectory)
         for fname in files:
-            self.FDCATab.comboHCR.addItem(fname)
-            FileName = os.path.join(path, fname)
-            Temp = read_csv(FileName)
-            self.HCR[i] = Temp.values
-            i = i +1
+            if fname.endswith( ".csv" ):
+                idx = self.FDCATab.comboHCR.findText(fname)
+                if idx < 0:
+                    self.FDCATab.comboHCR.addItem(fname)
+        
+        # # in case we already selected a trajectory, load that one again
+        # # related to the note above: this is not ideal, as we are reloading the trajectories unnecesarily
+        # if selectedName is not None:
+        #     idx = self.FDCATab.comboHCR.findText(selectedName)
+        #     print('Reloading updatedAvailableTrajectorylist')
+        #     if idx >= 0:
+        #         self.FDCATab.comboHCR.setCurrentIndex(idx)
 
     
-    def selectHCR(self):
-        self.HCRIndex = self.FDCATab.comboHCR.currentIndex()
 
+    def newHCRSelected(self):
+        # new index selected
 
+        fname = self.FDCATab.comboHCR.itemText(self.FDCATab.comboHCR.currentIndex())
+        print('Trying to load HCR trajectory: ' + fname)
+
+        # add path (to absolute path)
+        fname = os.path.join(self._pathHCRDirectory, fname)
+
+        try:
+            tmp = pd.read_csv(fname)
+            self.HCR = tmp.values
+        except Exception as e:
+            print('Error loading HCR trajectory file (newHCRSelected): ', e)
+        
 
     def process(self):
         self.data = self._parentWidget.readNews('modules.siminterface.widget.siminterface.SiminterfaceWidget')
         egoCar = self.data['egoCar']
-        self.Error = self.Error_Calc(self.t_aheadFF, self.HCR[self.HCRIndex], egoCar)
+        self.Error = self.Error_Calc(self.t_aheadFF, self.HCR, egoCar)
         print(self.Error)
 
         # ## GAINS  (FDCA as in SIMULINK)
@@ -206,9 +231,9 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
         DeltaPsi = -((math.radians(PsiCar) - math.radians(PsiTraj)))
 
         #Make sure you dont get jumps (basically unwrap the angle with a threshold of pi radians (180 degrees))
-        if(DeltaPsi > math.pi):
+        if (DeltaPsi > math.pi):
             DeltaPsi = DeltaPsi - 2*math.pi
-        if(DeltaPsi < -math.pi):
+        if (DeltaPsi < -math.pi):
             DeltaPsi = DeltaPsi + 2*math.pi
 
         #print(DeltaDist, math.degrees(DeltaPsi))

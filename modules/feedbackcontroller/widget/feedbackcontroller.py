@@ -24,8 +24,8 @@ class FeedbackcontrollerWidget(Control):
         try:
             self.action = FeedbackcontrollerAction(moduleStates = self.moduleStates,
                                           moduleStateHandler = self.moduleStateHandler)
-        except Exception as inst:
-            print('De error bij de constructor van de widget is:    ', inst)
+        except Exception as e:
+            print('De error bij de constructor van de widget is: ', e)
         
         # Initiate the different classes (controllers) you want:
         self._controller = Basecontroller(self)
@@ -33,10 +33,11 @@ class FeedbackcontrollerWidget(Control):
  
         #self.Controllers = {}
         self.Controllers = dict([("Manual",Manualcontrol(self)), ("FDCA", FDCAcontrol(self))])
-        
-        
+
         #initialize controller with first one in the dict
         self._controller = self.Controllers["Manual"]
+
+        
 
         self.widget.tabWidget.currentChanged.connect(self.changedControl)
 
@@ -64,10 +65,10 @@ class FeedbackcontrollerWidget(Control):
 
     def _show(self):
         self.widget.show()
-        try:
-            self._controller.addallavailabletrajectories()
-        except:
-            pass
+        # try:
+        #     self._controller.updateAvailableTrajectoryList()
+        # except Exception as e:
+        #     print('Error _show loading add available trajectories: ', e)
 
         #self.statehandler.requestStateChange(self.states.FEEDBACKCONTROLLER)
         
@@ -103,8 +104,8 @@ class FeedbackcontrollerWidget(Control):
             # update the state label
             self.widget.lblState.setText(str(stateAsState))
 
-        except Exception as inst:
-            print (inst)
+        except Exception as e:
+            print (e)
 
     def handlemodulestate(self, state):
         """ 
@@ -123,5 +124,5 @@ class FeedbackcontrollerWidget(Control):
             # update the state label
             self.widget.lblState.setText(str(stateAsState))
 
-        except Exception as inst:
-            print (inst)
+        except Exception as e:
+            print(e)
