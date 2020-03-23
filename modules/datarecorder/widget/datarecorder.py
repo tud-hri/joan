@@ -28,8 +28,7 @@ class DatarecorderWidget(Control):
         self.masterStateHandler.stateChanged.connect(self.handlemasterstate)
 
         try:
-            self.action = DatarecorderAction(moduleStates = self.moduleStates,
-                                             moduleStateHandler = self.moduleStateHandler)
+            self.action = DatarecorderAction()
         except Exception as inst:
             print('De error bij de constructor van de widget is:    ', inst)
        

@@ -20,8 +20,7 @@ class TemplateWidget(Control):
         
         # use Action with state handling, using only this widgets state changes
         try:
-            self.action = TemplateAction(moduleStates = self.moduleStates,
-                                         moduleStateHandler = self.moduleStateHandler)
+            self.action = TemplateAction()
         except Exception as inst:
             print(inst)
 

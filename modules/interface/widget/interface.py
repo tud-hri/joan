@@ -20,8 +20,7 @@ class InterfaceWidget(Control):
         self.masterStateHandler.stateChanged.connect(self.handlemasterstate)
 
         try:
-            self.action = InterfaceAction(moduleStates = self.moduleStates,
-                                          moduleStateHandler = self.moduleStateHandler)
+            self.action = InterfaceAction()
         except Exception as inst:
             print('De error bij de constructor van de widget is:    ', inst)
 

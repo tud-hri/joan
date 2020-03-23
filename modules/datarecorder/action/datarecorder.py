@@ -3,10 +3,15 @@ from process import Control
 
 class DatarecorderAction(Control):
     def __init__(self, *args, **kwargs):
-        Control.__init__(self,*args, **kwargs)
-        # get state information from module Widget
-        self.moduleStates = 'moduleStates' in kwargs.keys() and kwargs['moduleStates'] or None
-        self.moduleStateHandler = 'moduleStateHandler' in kwargs.keys() and kwargs['moduleStateHandler'] or None
+        Control.__init__(self, *args, **kwargs)
+        self.moduleStates = None
+        self.moduleStateHandler = None
+        try:
+            statePackage = self.getModuleStatePackages(module='module.datarecorder.widget.daterecorder.DatarecorderWidget')
+            self.moduleStates = statePackage['moduleStates']
+            self.moduleStateHandler = statePackage['moduleStateHandler']
+        except:
+            pass
 
     def initialize(self):
         print('Initialize in action/datarecorder')

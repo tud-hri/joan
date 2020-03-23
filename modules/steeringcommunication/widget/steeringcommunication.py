@@ -22,8 +22,7 @@ class SteeringcommunicationWidget(Control):
         self.masterStateHandler.stateChanged.connect(self.handlemasterstate)
 
         try:
-            self.action = SteeringcommunicationAction(moduleStates = self.moduleStates,
-                                                      moduleStateHandler = self.moduleStateHandler)
+            self.action = SteeringcommunicationAction()
         except Exception as inst:
             print('De error bij de constructor van de widget is:    ', inst)
         self.i = 0
