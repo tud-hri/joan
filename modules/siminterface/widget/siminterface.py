@@ -27,7 +27,7 @@ class SiminterfaceWidget(Control):
         try:
             self.action = Simcommunication(self)
         except Exception as inst:
-            print('De error bij de constructor van de widget is:    ', inst)
+            print('De error bij de constructor van de siminterface widget is:    ', inst)
 
         self.moduleStateHandler.requestStateChange(self.moduleStates.SIMULATION)
         
@@ -35,9 +35,13 @@ class SiminterfaceWidget(Control):
     
     # callback class is called each time a pulse has come from the Pulsar class instance
     def do(self):
-        self.data = self.action.getData()
-        self.writeNews(channel=self, news=self.data)
-        #print(self.data['egoTransform'].location.x)
+        self.data = self.action.getData() #get data from carla
+        self.writeNews(channel=self, news=self.data)  #write away this data to news channel
+
+        FeedbackControllerData = self.readNews('modules.feedbackcontroller.widget.feedbackcontroller.FeedbackcontrollerWidget')
+        self.action.handleFeedbackcontrollerdata(FeedbackControllerData)
+        
+
 
     @QtCore.pyqtSlot(str)
     def _setmillis(self, millis):
@@ -61,7 +65,7 @@ class SiminterfaceWidget(Control):
         Connected = self.action.start()
         self.data = self.action.getData()
         self.writeNews(channel=self, news=self.data)
-        self.moduleStateHandler.requestStateChange(self.moduleStates.SIMULATION.RUNNING)
+        #self.moduleStateHandler.requestStateChange(self.moduleStates.SIMULATION.RUNNING)
         
         if Connected is True:
             self.moduleStateHandler.requestStateChange(self.moduleStates.SIMULATION.RUNNING)

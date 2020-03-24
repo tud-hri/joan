@@ -61,9 +61,6 @@ class Simcommunication():
             self.egoCar = self.world.spawn_actor(self.egoCarBP,self.spawnPoints[0])
             self._parentWidget.lblModulestate.setText('Car Spawned')
 
-            Speed = carla.Vector3D(0, 0, 0)
-
-            self.egoCar.set_velocity(Speed)
             return True
         except Exception as inst:
             self.egoCar = None
@@ -76,6 +73,15 @@ class Simcommunication():
 
     def getData(self):
         self.carlaData['egoCar'] = self.egoCar
-
-        
         return self.carlaData
+
+    def handleFeedbackcontrollerdata(self, data):
+        try:
+            SWangle = data['SteeringWheelAngle']
+            self.control.steer = SWangle
+            self.control.throttle = 0.6
+        except:
+            pass
+
+        self.egoCar.applyControls(self.control)
+

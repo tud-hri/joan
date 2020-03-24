@@ -32,7 +32,7 @@ class FeedbackcontrollerWidget(Control):
  
  
         #self.Controllers = {}
-        self.Controllers = dict([("Manual",Manualcontrol(self)), ("FDCA", FDCAcontrol(self))])
+        self.Controllers = dict([("Manual",Manualcontrol(self)), ("FDCA", FDCAcontrol(self)), ("PD", PDcontrol(self))])
 
         #initialize controller with first one in the dict
         self._controller = self.Controllers["Manual"]
@@ -44,8 +44,11 @@ class FeedbackcontrollerWidget(Control):
 
     # callback class is called each time a pulse has come from the Pulsar class instance
     def do(self):
-        data = {}
-        data = self._controller.process()
+        SWangle = self._controller.process()
+
+        self.data['SteeringWheelAngle'] = SWangle
+        self.writeNews(channel=self, news=self.data)
+
         
         
     
