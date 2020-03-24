@@ -30,6 +30,82 @@ class Basecontroller():
     def process(self):
         return self._data
 
+    def Error_Calc(self, t_ahead, trajectory, car):
+        # The error contains both the lateral error and the heading error(t_ahead is how many seconds we look forward)
+        CarLocation = car.get_location()
+        CarVelocity = car.get_velocity()
+        CarTransform = car.get_transform()
+
+        egoLocation = np.array([CarLocation.x, CarLocation.y])
+
+        egoVel = np.array([CarVelocity.x , CarVelocity.y])
+        ExtraDistance = egoVel * t_ahead
+
+        FutureLocation = egoLocation + ExtraDistance
+
+        
+        
+        # Find waypoint index of the point that the car would be in the future (compared to own driven trajectory)
+        NWPFutureIndex = self.closestNode(FutureLocation, trajectory[:, 1:3])
+        if(NWPFutureIndex >= len(trajectory)-3):
+            NWPFutureIndexPlus1 = 0
+        else:
+            NWPFutureIndexPlus1 = NWPFutureIndex + 3
+            
+        ## Calculate Lateral Error (DeltaDist)
+        FutureLocationOnTrajectory = trajectory[NWPFutureIndex, 1:3]
+        FutureLocationOnTrajectoryNext = trajectory[NWPFutureIndexPlus1, 1:3]
+
+       
+
+        FutLocVec = FutureLocation - FutureLocationOnTrajectory
+        FutDirVec = FutureLocationOnTrajectoryNext - FutureLocationOnTrajectory
+
+        
+
+        Sign = np.math.atan2(np.linalg.det([FutDirVec,FutLocVec]),np.dot(FutDirVec,FutLocVec))
+
+        DeltaDist = np.sqrt(FutLocVec.dot(FutLocVec))
+        
+        if (Sign < 0):
+            DeltaDist = -DeltaDist
+
+        #print("FutureLocation On Trajectory = " ,  FutureLocationOnTrajectory, "Future Location Next= " ,FutureLocationOnTrajectoryNext, "FutDirVec = ", FutDirVec, "FutLocVec =", FutLocVec , "Angle Between =" , Sign, "Lat Error=", DeltaDist)        
+
+
+        #Calculate Heading Error (DeltaPsi)
+
+        #ForwardVector = CarTransform.rotation.get_forward_vector()
+        
+        PsiCar = CarTransform.rotation.yaw
+        PsiTraj = trajectory[NWPFutureIndex, 6]
+        
+
+     
+        DeltaPsi = -((math.radians(PsiCar) - math.radians(PsiTraj)))
+
+        #Make sure you dont get jumps (basically unwrap the angle with a threshold of pi radians (180 degrees))
+        if (DeltaPsi > math.pi):
+            DeltaPsi = DeltaPsi - 2*math.pi
+        if (DeltaPsi < -math.pi):
+            DeltaPsi = DeltaPsi + 2*math.pi
+
+        #print(DeltaDist, math.degrees(DeltaPsi))
+
+        Error = np.array([DeltaDist, DeltaPsi])
+        #Error[0] = DeltaPsi + DeltaDist
+
+        
+        #print(Error)
+
+        return Error
+
+    def closestNode(self, node, nodes):
+        nodes = np.asarray(nodes)
+        deltas = nodes - node
+        dist_2 = np.einsum('ij,ij->i', deltas, deltas)
+        return np.argmin(dist_2)
+
 class Manualcontrol(Basecontroller):
     def __init__(self, FeedbackcontrollerWidget):
         Basecontroller.__init__(self, FeedbackcontrollerWidget)
@@ -132,7 +208,6 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
         self._Error = self.Error_Calc(self._t_aheadFF, self._HCR, egoCar)
         print(self._Error)
 
-        # ## GAINS  (FDCA as in SIMULINK)
         # SWAngle_FB = self.SoHFFunc(self.K_y,self.K_psi,self.SoHF,self.Error[0],self.Error[1])
          
         # SWAngle_FFdes = self.FeedForwardController(0)
@@ -163,99 +238,18 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
 
         return self._data
 
-
-    def Error_Calc(self, t_ahead, trajectory, car):
-        # The error contains both the lateral error and the heading error(t_ahead is how many seconds we look forward)
-        CarLocation = car.get_location()
-        CarVelocity = car.get_velocity()
-        CarTransform = car.get_transform()
-
-        egoLocation = np.array([CarLocation.x, CarLocation.y])
-
-        egoVel = np.array([CarVelocity.x , CarVelocity.y])
-        ExtraDistance = egoVel * t_ahead
-
-        FutureLocation = egoLocation + ExtraDistance
-
-        
-        
-        # Find waypoint index of the point that the car would be in the future (compared to own driven trajectory)
-        NWPFutureIndex = self.closestNode(FutureLocation, trajectory[:, 1:3])
-        if(NWPFutureIndex >= len(trajectory)-3):
-            NWPFutureIndexPlus1 = 0
-        else:
-            NWPFutureIndexPlus1 = NWPFutureIndex + 3
-            
-        ## Calculate Lateral Error (DeltaDist)
-        FutureLocationOnTrajectory = trajectory[NWPFutureIndex, 1:3]
-        FutureLocationOnTrajectoryNext = trajectory[NWPFutureIndexPlus1, 1:3]
-
-       
-
-        FutLocVec = FutureLocation - FutureLocationOnTrajectory
-        FutDirVec = FutureLocationOnTrajectoryNext - FutureLocationOnTrajectory
-
-        
-
-        Sign = np.math.atan2(np.linalg.det([FutDirVec,FutLocVec]),np.dot(FutDirVec,FutLocVec))
-
-        DeltaDist = np.sqrt(FutLocVec.dot(FutLocVec))
-        
-        if (Sign < 0):
-            DeltaDist = -DeltaDist
-
-        #print("FutureLocation On Trajectory = " ,  FutureLocationOnTrajectory, "Future Location Next= " ,FutureLocationOnTrajectoryNext, "FutDirVec = ", FutDirVec, "FutLocVec =", FutLocVec , "Angle Between =" , Sign, "Lat Error=", DeltaDist)        
-
-
-        #Calculate Heading Error (DeltaPsi)
-
-        #ForwardVector = CarTransform.rotation.get_forward_vector()
-        
-        PsiCar = CarTransform.rotation.yaw
-        PsiTraj = trajectory[NWPFutureIndex, 6]
-        
-
-     
-        DeltaPsi = -((math.radians(PsiCar) - math.radians(PsiTraj)))
-
-        #Make sure you dont get jumps (basically unwrap the angle with a threshold of pi radians (180 degrees))
-        if (DeltaPsi > math.pi):
-            DeltaPsi = DeltaPsi - 2*math.pi
-        if (DeltaPsi < -math.pi):
-            DeltaPsi = DeltaPsi + 2*math.pi
-
-        #print(DeltaDist, math.degrees(DeltaPsi))
-
-        Error = np.array([DeltaDist, DeltaPsi])
-        #Error[0] = DeltaPsi + DeltaDist
-
-        
-        #print(Error)
-
-        return Error
-
     def LoHSFunc(self,LoHS,SWangle_FFDES):
         SWangle_FF = SWangle_FFDES * LoHS
-
         return SWangle_FF
 
     def LoHAFunc(self, LoHA, delta_SW):
         Torque_LoHA = LoHA * delta_SW
-
-        
         return Torque_LoHA
 
     def InverseSteeringDyn(self, SWangle,K_Stiffness):
         Torque = SWangle * 1/(1.0/K_Stiffness)
-
         return Torque
 
-        # Method to find the closest waypoint to predefined list
-    def closestNode(self, node, nodes):
-        nodes = np.asarray(nodes)
-        deltas = nodes - node
-        dist_2 = np.einsum('ij,ij->i', deltas, deltas)
-        return np.argmin(dist_2)
 
 
 class PDcontrol(Basecontroller):
@@ -366,79 +360,5 @@ class PDcontrol(Basecontroller):
         
         return SWangle
 
-    def Error_Calc(self, t_ahead, trajectory, car):
-        # The error contains both the lateral error and the heading error(t_ahead is how many seconds we look forward)
-        CarLocation = car.get_location()
-        CarVelocity = car.get_velocity()
-        CarTransform = car.get_transform()
-
-        egoLocation = np.array([CarLocation.x, CarLocation.y])
-
-        egoVel = np.array([CarVelocity.x , CarVelocity.y])
-        ExtraDistance = egoVel * t_ahead
-
-        FutureLocation = egoLocation + ExtraDistance
-
-        
-        
-        # Find waypoint index of the point that the car would be in the future (compared to own driven trajectory)
-        NWPFutureIndex = self.closestNode(FutureLocation, trajectory[:, 1:3])
-        if(NWPFutureIndex >= len(trajectory)-3):
-            NWPFutureIndexPlus1 = 0
-        else:
-            NWPFutureIndexPlus1 = NWPFutureIndex + 3
-            
-        ## Calculate Lateral Error (DeltaDist)
-        FutureLocationOnTrajectory = trajectory[NWPFutureIndex, 1:3]
-        FutureLocationOnTrajectoryNext = trajectory[NWPFutureIndexPlus1, 1:3]
-
-       
-
-        FutLocVec = FutureLocation - FutureLocationOnTrajectory
-        FutDirVec = FutureLocationOnTrajectoryNext - FutureLocationOnTrajectory
-
-        
-
-        Sign = np.math.atan2(np.linalg.det([FutDirVec,FutLocVec]),np.dot(FutDirVec,FutLocVec))
-
-        DeltaDist = np.sqrt(FutLocVec.dot(FutLocVec))
-        
-        if (Sign < 0):
-            DeltaDist = -DeltaDist
-
-        #print("FutureLocation On Trajectory = " ,  FutureLocationOnTrajectory, "Future Location Next= " ,FutureLocationOnTrajectoryNext, "FutDirVec = ", FutDirVec, "FutLocVec =", FutLocVec , "Angle Between =" , Sign, "Lat Error=", DeltaDist)        
-
-
-        #Calculate Heading Error (DeltaPsi)
-
-        #ForwardVector = CarTransform.rotation.get_forward_vector()
-        
-        PsiCar = CarTransform.rotation.yaw
-        PsiTraj = trajectory[NWPFutureIndex, 6]
-        
-
-     
-        DeltaPsi = -((math.radians(PsiCar) - math.radians(PsiTraj)))
-
-        #Make sure you dont get jumps (basically unwrap the angle with a threshold of pi radians (180 degrees))
-        if (DeltaPsi > math.pi):
-            DeltaPsi = DeltaPsi - 2*math.pi
-        if (DeltaPsi < -math.pi):
-            DeltaPsi = DeltaPsi + 2*math.pi
-
-        #print(DeltaDist, math.degrees(DeltaPsi))
-
-        Error = np.array([DeltaDist, DeltaPsi])
-        #Error[0] = DeltaPsi + DeltaDist
-
-        
-        #print(Error)
-
-        return Error
-
-    def closestNode(self, node, nodes):
-        nodes = np.asarray(nodes)
-        deltas = nodes - node
-        dist_2 = np.einsum('ij,ij->i', deltas, deltas)
-        return np.argmin(dist_2)
+    
     

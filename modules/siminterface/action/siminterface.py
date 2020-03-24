@@ -8,11 +8,12 @@ try:
         sys.version_info.major,
         sys.version_info.minor,
         'win-amd64' if os.name == 'nt' else 'linux-x86_64'))[0])
+    import carla #Hier heb ik dus de PC voor nodig error is onzin!
+    
 except IndexError:
      pass
 
 
-import carla #Hier heb ik dus de PC voor nodig error is onzin!
 import random
 class SiminterfaceAction(Control):
     def __init__(self, *args, **kwargs):
