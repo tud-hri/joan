@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>917</width>
-    <height>432</height>
+    <width>742</width>
+    <height>326</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -32,68 +32,7 @@
         <layout class="QGridLayout" name="gridLayout_6">
          <item row="0" column="0">
           <layout class="QGridLayout" name="gridLayout_5">
-           <item row="4" column="1">
-            <widget class="QLineEdit" name="lineKlohs">
-             <property name="font">
-              <font>
-               <pointsize>15</pointsize>
-              </font>
-             </property>
-            </widget>
-           </item>
-           <item row="8" column="1">
-            <widget class="QSlider" name="sliderKloha">
-             <property name="maximum">
-              <number>100</number>
-             </property>
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="6" column="0" colspan="2">
-            <widget class="QLabel" name="lblKlohatitle">
-             <property name="font">
-              <font>
-               <pointsize>15</pointsize>
-               <weight>50</weight>
-               <bold>false</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>Level of Haptic Authority</string>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="0">
-            <widget class="QLabel" name="lblKlohs">
-             <property name="font">
-              <font>
-               <pointsize>15</pointsize>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>K_LoHS:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0" colspan="3">
-            <widget class="Line" name="line_2">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="0" colspan="3">
-            <widget class="Line" name="line_3">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0" colspan="2">
+           <item row="0" column="0" colspan="3">
             <widget class="QLabel" name="lblKsohftitle">
              <property name="font">
               <font>
@@ -107,6 +46,51 @@
              </property>
              <property name="alignment">
               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QLineEdit" name="lineKlohs">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>15</pointsize>
+              </font>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="1">
+            <widget class="QSlider" name="sliderKloha">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="maximum">
+              <number>100</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="lblKlohs">
+             <property name="font">
+              <font>
+               <pointsize>15</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>K_LoHS:</string>
              </property>
             </widget>
            </item>
@@ -124,7 +108,7 @@
              </property>
             </widget>
            </item>
-           <item row="8" column="0">
+           <item row="6" column="0">
             <widget class="QLabel" name="lblKloha">
              <property name="font">
               <font>
@@ -138,8 +122,8 @@
              </property>
             </widget>
            </item>
-           <item row="8" column="2">
-            <widget class="QLabel" name="lblKlohapercentage">
+           <item row="6" column="2">
+            <widget class="QLabel" name="lblKlohavalue">
              <property name="font">
               <font>
                <pointsize>15</pointsize>
@@ -148,12 +132,21 @@
               </font>
              </property>
              <property name="text">
-              <string>0%</string>
+              <string>0</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
              </property>
             </widget>
            </item>
            <item row="1" column="1">
             <widget class="QLineEdit" name="lineKsohf">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="font">
               <font>
                <pointsize>15</pointsize>
@@ -161,7 +154,21 @@
              </property>
             </widget>
            </item>
-           <item row="3" column="0" colspan="2">
+           <item row="4" column="0" colspan="3">
+            <widget class="QLabel" name="lblKlohatitle">
+             <property name="font">
+              <font>
+               <pointsize>15</pointsize>
+               <weight>50</weight>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Level of Haptic Authority</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0" colspan="3">
             <widget class="QLabel" name="lblKlohstitle">
              <property name="font">
               <font>
@@ -172,6 +179,36 @@
              </property>
              <property name="text">
               <string>Level of Haptic Support:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2">
+            <widget class="QLabel" name="lblKsohfvalue">
+             <property name="font">
+              <font>
+               <pointsize>15</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>0</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="2">
+            <widget class="QLabel" name="lblKlohsvalue">
+             <property name="font">
+              <font>
+               <pointsize>15</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>0</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -208,8 +245,14 @@
         <layout class="QGridLayout" name="gridLayout_4">
          <item row="0" column="1">
           <layout class="QGridLayout" name="gridLayout_3">
-           <item row="4" column="2">
+           <item row="4" column="1">
             <widget class="QLineEdit" name="lineKpsi">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="font">
               <font>
                <pointsize>15</pointsize>
@@ -217,7 +260,7 @@
              </property>
             </widget>
            </item>
-           <item row="7" column="1">
+           <item row="6" column="0">
             <widget class="QLabel" name="lblHcr">
              <property name="font">
               <font>
@@ -231,15 +274,14 @@
              </property>
             </widget>
            </item>
-           <item row="2" column="0" colspan="3">
-            <widget class="Line" name="line">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="2">
+           <item row="2" column="1">
             <widget class="QLineEdit" name="lineKy">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="font">
               <font>
                <pointsize>15</pointsize>
@@ -250,28 +292,7 @@
              </property>
             </widget>
            </item>
-           <item row="6" column="1" colspan="2">
-            <widget class="Line" name="line_4">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="1" colspan="2">
-            <widget class="QLabel" name="lblKpsititle">
-             <property name="font">
-              <font>
-               <pointsize>15</pointsize>
-               <weight>50</weight>
-               <bold>false</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>Proportional gain of the heading error:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
+           <item row="2" column="0">
             <widget class="QLabel" name="lblKy">
              <property name="font">
               <font>
@@ -285,7 +306,7 @@
              </property>
             </widget>
            </item>
-           <item row="9" column="1" colspan="2">
+           <item row="8" column="0" colspan="2">
             <spacer name="verticalSpacer">
              <property name="orientation">
               <enum>Qt::Vertical</enum>
@@ -298,7 +319,7 @@
              </property>
             </spacer>
            </item>
-           <item row="4" column="1">
+           <item row="4" column="0">
             <widget class="QLabel" name="lblKpsi">
              <property name="font">
               <font>
@@ -315,14 +336,58 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="3">
-            <widget class="QLabel" name="label">
-             <property name="text">
-              <string/>
+           <item row="6" column="1">
+            <widget class="QComboBox" name="comboHCR">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <weight>50</weight>
+               <bold>false</bold>
+              </font>
              </property>
             </widget>
            </item>
-           <item row="0" column="1" colspan="3">
+           <item row="6" column="2">
+            <widget class="QPushButton" name="btnUpdate">
+             <property name="text">
+              <string>Update List</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="0" colspan="3">
+            <widget class="QLabel" name="lblHcrtitle">
+             <property name="font">
+              <font>
+               <pointsize>15</pointsize>
+               <weight>50</weight>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Human Compatible Reference:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0" colspan="3">
+            <widget class="QLabel" name="lblKpsititle">
+             <property name="font">
+              <font>
+               <pointsize>15</pointsize>
+               <weight>50</weight>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Proportional gain of the heading error:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0" colspan="3">
             <widget class="QLabel" name="lblKytitle">
              <property name="font">
               <font>
@@ -339,34 +404,33 @@
              </property>
             </widget>
            </item>
-           <item row="5" column="1" colspan="2">
-            <widget class="QLabel" name="lblHcrtitle">
+           <item row="2" column="2">
+            <widget class="QLabel" name="lblKyvalue">
              <property name="font">
               <font>
                <pointsize>15</pointsize>
-               <weight>50</weight>
-               <bold>false</bold>
               </font>
              </property>
              <property name="text">
-              <string>Human Compatible Reference:</string>
+              <string>0</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
              </property>
             </widget>
            </item>
-           <item row="7" column="2">
-            <widget class="QComboBox" name="comboHCR">
+           <item row="4" column="2">
+            <widget class="QLabel" name="lblKpsivalue">
              <property name="font">
               <font>
-               <weight>50</weight>
-               <bold>false</bold>
+               <pointsize>15</pointsize>
               </font>
              </property>
-            </widget>
-           </item>
-           <item row="7" column="3">
-            <widget class="QPushButton" name="btnUpdate">
              <property name="text">
-              <string>Update List</string>
+              <string>0</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -418,17 +482,6 @@
     </item>
    </layout>
   </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>917</width>
-     <height>22</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>
  <connections/>

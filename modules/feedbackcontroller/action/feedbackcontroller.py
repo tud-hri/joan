@@ -134,11 +134,17 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
         # connect to widgets
         self._FDCATab.btnUpdate.clicked.connect(self.updateAvailableTrajectoryList)
         self._FDCATab.comboHCR.currentIndexChanged.connect(self.newHCRSelected)
+        self._FDCATab.btnApply.clicked.connect(self.updateParameters)
 
         #Initialize local Variables
         self._HCR = []
         self._HCRIndex = 0
         self._t_aheadFF = 0
+        self._Ky = 0.1
+        self._Kpsi = 0.4
+        self._LoHS = 1
+        self._SoHF = 1
+        self._LoHA = 0
 
         # path to HCR trajectory dir and add to list
         self._nameCurrentHCR = 'defaultHCRTrajectory.csv'
@@ -157,7 +163,30 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
 
         except Exception as e:
             print('Error loading list of available HCR trajectories: ', e)
-        
+
+    def updateParameters(self):
+        try:
+            self._Ky = float(self._FDCATab.lineKy.text())
+        except:
+            pass
+        try:
+            self._Kpsi = float(self._FDCATab.lineKpsi.text())
+        except:
+            pass
+        try:
+            self._LoHS = float(self._FDCATab.lineKlohs.text())
+        except:
+            pass
+        try:
+            self._SoHF = float(self._FDCATab.lineKsohf.text())
+        except:
+            pass
+
+        self._FDCATab.lineKy.clear()
+        self._FDCATab.lineKpsi.clear()
+        self._FDCATab.lineKlohs.clear()
+        self._FDCATab.lineKsohf.clear()
+
 
     def updateAvailableTrajectoryList(self):
         # get list of csv files in directory
@@ -257,13 +286,13 @@ class PDcontrol(Basecontroller):
         Basecontroller.__init__(self, FeedbackcontrollerWidget)
 
         #Load the appropriate UI file
-        self.PDTab = uic.loadUi(uifile = os.path.join(os.path.dirname(os.path.realpath(__file__)),"PD.ui"))
+        self._PDTab = uic.loadUi(uifile = os.path.join(os.path.dirname(os.path.realpath(__file__)),"PD.ui"))
         #Add ui file to a new tab
-        self._parentWidget.widget.tabWidget.addTab(self.PDTab,'PD')
+        self._parentWidget.widget.tabWidget.addTab(self._PDTab,'PD')
 
         #Attach apply button to variables
-        self.PDTab.btnApply.clicked.connect(self.updateParameters)
-        self.PDTab.btnReset.clicked.connect(self.resetParameters)
+        self._PDTab.btnApply.clicked.connect(self.updateParameters)
+        self._PDTab.btnReset.clicked.connect(self.resetParameters)
 
 
         #intialize class variables
@@ -281,52 +310,52 @@ class PDcontrol(Basecontroller):
         self._HCR = tmp.values
 
         # Show default values
-        self.PDTab.lblPropgainvalue.setText(str(self._Kp))
-        self.PDTab.lblDerivgainvalue.setText(str(self._Kd))
-        self.PDTab.lblWeightlatvalue.setText(str(self._Wlat))
-        self.PDTab.lblWeightheadingvalue.setText(str(self._Whead))
-        self.PDTab.lblTaheadvalue.setText(str(self._t_ahead))
+        self._PDTab.lblPropgainvalue.setText(str(self._Kp))
+        self._PDTab.lblDerivgainvalue.setText(str(self._Kd))
+        self._PDTab.lblWeightlatvalue.setText(str(self._Wlat))
+        self._PDTab.lblWeightheadingvalue.setText(str(self._Whead))
+        self._PDTab.lblTaheadvalue.setText(str(self._t_ahead))
         
         
     def updateParameters(self):
         try:
-            self._Kp = float(self.PDTab.linePropgain.text())
+            self._Kp = float(self._PDTab.linePropgain.text())
         except:
             pass
         try:
-            self._Kd = float(self.PDTab.lineDerivgain.text())
+            self._Kd = float(self._PDTab.lineDerivgain.text())
         except:
             pass
         try:
-            self._Wlat = float(self.PDTab.lineWeightlat.text())
+            self._Wlat = float(self._PDTab.lineWeightlat.text())
         except:
             pass
         try:
-            self._Whead = float(self.PDTab.lineWeightheading.text())
+            self._Whead = float(self._PDTab.lineWeightheading.text())
         except:
             pass
         try:
-            self._t_ahead = float(self.PDTab.lineTahead.text())
+            self._t_ahead = float(self._PDTab.lineTahead.text())
         except:
             pass
        
 
-        self.PDTab.lblPropgainvalue.setText(str(self._Kp))
-        self.PDTab.lblDerivgainvalue.setText(str(self._Kd))
-        self.PDTab.lblWeightlatvalue.setText(str(self._Wlat))
-        self.PDTab.lblWeightheadingvalue.setText(str(self._Whead))
-        self.PDTab.lblTaheadvalue.setText(str(self._t_ahead))
+        self._PDTab.lblPropgainvalue.setText(str(self._Kp))
+        self._PDTab.lblDerivgainvalue.setText(str(self._Kd))
+        self._PDTab.lblWeightlatvalue.setText(str(self._Wlat))
+        self._PDTab.lblWeightheadingvalue.setText(str(self._Whead))
+        self._PDTab.lblTaheadvalue.setText(str(self._t_ahead))
 
-        self.PDTab.linePropgain.clear()
-        self.PDTab.lineDerivgain.clear()
-        self.PDTab.lineWeightlat.clear()
-        self.PDTab.lineWeightheading.clear()
-        self.PDTab.lineTahead.clear()
+        self._PDTab.linePropgain.clear()
+        self._PDTab.lineDerivgain.clear()
+        self._PDTab.lineWeightlat.clear()
+        self._PDTab.lineWeightheading.clear()
+        self._PDTab.lineTahead.clear()
 
     def resetParameters(self):
         self._t_ahead = 0.6
-        self._Kp = 0.1
-        self._Kd = 0.4
+        self._Kp = 8
+        self._Kd = 1
         self._Wlat = 1
         self._Whead = 2
 
