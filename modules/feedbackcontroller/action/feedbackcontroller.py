@@ -135,6 +135,8 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
         self._FDCATab.btnUpdate.clicked.connect(self.updateAvailableTrajectoryList)
         self._FDCATab.comboHCR.currentIndexChanged.connect(self.newHCRSelected)
         self._FDCATab.btnApply.clicked.connect(self.updateParameters)
+        self._FDCATab.btnReset.clicked.connect(self.resetParameters)
+        self._FDCATab.sliderKloha.valueChanged.connect(self.updateLoHA)
 
         #Initialize local Variables
         self._HCR = []
@@ -146,6 +148,12 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
         self._SoHF = 1
         self._LoHA = 0
 
+        #Set values on widget labels
+        self._FDCATab.lblKyvalue.setText(str(self._Ky))
+        self._FDCATab.lblKpsivalue.setText(str(self._Kpsi))
+        self._FDCATab.lblKlohsvalue.setText(str(self._LoHS))
+        self._FDCATab.lblKsohfvalue.setText(str(self._SoHF))
+        self._FDCATab.lblKlohavalue.setText(str(self._LoHA))
         # path to HCR trajectory dir and add to list
         self._nameCurrentHCR = 'defaultHCRTrajectory.csv'
         self._pathHCRDirectory = os.path.join(os.path.dirname(os.path.realpath(__file__)),'HCRTrajectories')
@@ -163,6 +171,10 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
 
         except Exception as e:
             print('Error loading list of available HCR trajectories: ', e)
+
+    def updateLoHA(self):
+        self._LoHA = self._FDCATab.sliderKloha.value()/100
+        self._FDCATab.lblKlohavalue.setText(str(self._LoHA))
 
     def updateParameters(self):
         try:
@@ -182,10 +194,24 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
         except:
             pass
 
+        self._FDCATab.lblKyvalue.setText(str(self._Ky))
+        self._FDCATab.lblKpsivalue.setText(str(self._Kpsi))
+        self._FDCATab.lblKlohsvalue.setText(str(self._LoHS))
+        self._FDCATab.lblKsohfvalue.setText(str(self._SoHF))
+
         self._FDCATab.lineKy.clear()
         self._FDCATab.lineKpsi.clear()
         self._FDCATab.lineKlohs.clear()
         self._FDCATab.lineKsohf.clear()
+
+    def resetParameters(self):
+        self._Ky = 0.1
+        self._Kpsi = 0.4
+        self._LoHS = 1
+        self._SoHF = 1
+        self._FDCATab.sliderKloha.setValue(0)
+
+        self.updateParameters()
 
 
     def updateAvailableTrajectoryList(self):
@@ -300,8 +326,8 @@ class PDcontrol(Basecontroller):
         self._T2 = 0
         self._ErrorT2  = [0,0]
         self._t_ahead = 0.6
-        self._Kp = 0.1
-        self._Kd = 0.4
+        self._Kp = 8
+        self._Kd = 1
         self._Wlat = 1
         self._Whead = 2
         self._defaultHCR = 'defaultHCRTrajectory.csv'
