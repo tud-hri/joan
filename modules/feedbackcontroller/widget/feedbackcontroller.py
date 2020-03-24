@@ -37,7 +37,6 @@ class FeedbackcontrollerWidget(Control):
         #initialize controller with first one in the dict
         self._controller = self.Controllers["Manual"]
 
-        
 
         self.widget.tabWidget.currentChanged.connect(self.changedControl)
 
@@ -49,6 +48,10 @@ class FeedbackcontrollerWidget(Control):
         self.data['SteeringWheelAngle'] = SWangle
         self.data['Throttle'] = 0.5
         self.writeNews(channel=self, news=self.data)
+
+
+
+
 
         
         
@@ -69,13 +72,7 @@ class FeedbackcontrollerWidget(Control):
 
     def _show(self):
         self.widget.show()
-        # try:
-        #     self._controller.updateAvailableTrajectoryList()
-        # except Exception as e:
-        #     print('Error _show loading add available trajectories: ', e)
 
-        #self.statehandler.requestStateChange(self.states.FEEDBACKCONTROLLER)
-        
 
     def _start(self):
         if not self.widget.isVisible():
