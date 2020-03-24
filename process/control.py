@@ -42,10 +42,10 @@ class Status:
             klass.moduleStatePackages = {}
         return klass.instance
 
-    def __init__(self, moduleStatePackages, *args, **kwargs):
+    def __init__(self, moduleStatePackage, *args, **kwargs):
         # TODO find out if self.gui is necessary, also see klass.gui
         #self.gui.update(guiDict)
-        self.moduleStatePackages.update(moduleStatePackages)
+        self.moduleStatePackages.update(moduleStatePackage)
 
 class Control(Pulsar):
 
@@ -85,7 +85,7 @@ class Control(Pulsar):
         moduleStatesDict = moduleStates.getStates()
         self.moduleStateHandler = StateHandler(firstState=MasterStates.VOID, statesDict=moduleStatesDict)
         self.moduleStates = moduleStates
-        print(type(moduleStates))
+        #print(type(moduleStates))
         #assert type(moduleStates) == dict, 'argument "moduleStates" should be of type StateHandler (key = State())'
         #self.moduleStates = self.moduleStateHandler.states
         try:

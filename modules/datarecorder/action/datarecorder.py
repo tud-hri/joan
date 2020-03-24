@@ -1,16 +1,54 @@
 from process import Control
+from PyQt5 import QtCore
+#from datetime import datetime
+#from queue import Queue
 
 class DatarecorderAction(Control):
     def __init__(self, *args, **kwargs):
-        Control.__init__(self,*args, **kwargs)
-        # get state information from module Widget
-        self.moduleStates = 'moduleStates' in kwargs.keys() and kwargs['moduleStates'] or None
-        self.moduleStateHandler = 'moduleStateHandler' in kwargs.keys() and kwargs['moduleStateHandler'] or None
-        print('News', self.getAllNews())
+        Control.__init__(self, *args, **kwargs)
+        self.moduleStates = None
+        self.moduleStateHandler = None
+        try:
+            statePackage = self.getModuleStatePackage(module='module.datarecorder.widget.daterecorder.DatarecorderWidget')
+            self.moduleStates = statePackage['moduleStates']
+            self.moduleStateHandler = statePackage['moduleStateHandler']
+        except:
+            pass
+        #self.filename = ''
 
+    def initialize(self):
+        print('Initialize in action/datarecorder')
+        self.filename = self._createFilename()
+        print(self.filename)
+        # search for filename
+        # create threaded filehandler(s)
+        return True
+
+    def write(self, news):
+        #print('write the news data')
+        print('in action/datarecorder', news)
+        
+
+    def stop(self):
+        print('close the threaded filehandle(s)')
+
+    
+    def _createFilename(self, extension=''):
+        now = QtCore.QDateTime.currentDateTime()
+        nowString = now.toString('yyyyMMdd_hhmmss')
+        filename = '%s_%s' % ('data', nowString)
+        if extension != '':
+            extension = extension[0] == '.' or '.%s' % extension
+            filename = '%s%s' % (filename, extension)
+        return filename
+
+    def getFilename(self):
+        return self.filename
+    
+    '''
     def _clickedBtnInitialize(self):
         """initialize the data recorder (mainly setting the data directory and data file prefix"""
-        self.masterStateHandler.requestStateChange(self.moduleStates.INITIALIZED.DATARECORDER)
+        self.moduleStateHandler.requestStateChange(self.moduleStates.INITIALIZED.DATARECORDER)
         pass
         #self._haptictrainer.datarecorder.initialize()
 
@@ -18,7 +56,7 @@ class DatarecorderAction(Control):
         """ btnStartRecorder clicked. """
         #if self._haptictrainer.datarecorder.initialized:
             # request state change to DEBUG.DATARECORDER
-        self.masterStateHandler.requestStateChange(self.moduleStates.INITIALIZED.INTERFACE)
+        self.moduleStateHandler.requestStateChange(self.moduleStates.INITIALIZED.INTERFACE)
 
         # To-do: check whether State change has been made and state is actually running without errors If not,
         # go back to previous state
@@ -26,10 +64,11 @@ class DatarecorderAction(Control):
     def _clickedBtnStopRecorder(self):
         """ btnStopRecorder clicked. """
         print('Pressed Stop')
-        self.masterStateHandler.requestStateChange(self.moduleStates.ERROR)
+        self.moduleStateHandler.requestStateChange(self.moduleStates.ERROR)
 
         # set current data file name
         # self.lblDataFilename.setText('< none >')
+    '''
 
     '''
     def _onStateChanged(self, state):

@@ -82,7 +82,7 @@ class MasterStates:
     # Initialize
     INITIALIZING                    = State(110, translate('InitStates', 'System initializing'), -1,150)
     INITIALIZED                     = State(111, translate('InitStates', 'System initialized'), -1,150)
-    INITIALIZED.INTERFACE           = State(112, translate('InitStates', 'Interface initialized'), -1,150)
+    #INITIALIZED.INTERFACE           = State(112, translate('InitStates', 'Interface initialized'), -1,150)
     INITIALIZED.DATARECORDER        = State(113, translate('InitStates', 'Datarecorder initialized'), -1,112)
     
     '''

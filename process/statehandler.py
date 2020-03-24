@@ -113,3 +113,6 @@ class StateHandler(QtCore.QObject):
 
         # state is changed, emit signal to other objects
         self.stateChanged.emit(int(self._state))
+
+    def getCurrentState(self):
+        return self._state
