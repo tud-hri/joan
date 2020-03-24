@@ -76,7 +76,7 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
         self.t_aheadFF = 0
 
         # path to HCR trajectory dir and add to list
-        self._nameCurrentHCR = 'defaultHCRTrajectory'
+        self._nameCurrentHCR = 'defaultHCRTrajectory.csv'
         self._pathHCRDirectory = os.path.join(os.path.dirname(os.path.realpath(__file__)),'HCRTrajectories')
         
         try:
