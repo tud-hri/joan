@@ -145,7 +145,7 @@ Widget that contains the different controllers that can be used for the car in t
 communicates with steeringcommunication the torques that should be inputted on the wheel.
 Has an empty 'Basecontroller' class of which added arbitratry controllers will inherit.
 This makes sure that we always calculate the selected controller values and send these to 
-steeringcommunication.
+steeringcommunication. (for now we also send the steering gain directly to sim to test)
 
 ### modules.template.widget.feedbackcontroller.ui
 definition of the gui
