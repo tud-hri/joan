@@ -25,10 +25,10 @@ class FeedbackcontrollerAction(Control):
 class Basecontroller():
     def __init__(self, FeedbackControllerWidget):
         self._parentWidget = FeedbackControllerWidget
-        self.data = {}
+        self._data= {}
 
     def process(self):
-        return self.data
+        return self._data
 
 class Manualcontrol(Basecontroller):
     def __init__(self, FeedbackcontrollerWidget):
@@ -41,7 +41,7 @@ class Manualcontrol(Basecontroller):
     
     def process(self):
         "Processes all information and returns parameters needed for steeringcommunication"
-        return self.data
+        return self._data
 
     
 
@@ -50,30 +50,19 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
         # call super __init__
         Basecontroller.__init__(self, FeedbackcontrollerWidget)
         #Add the GUI Tab
-        self.FDCATab = uic.loadUi(uifile = os.path.join(os.path.dirname(os.path.realpath(__file__)),"FDCA.ui"))
-        #self.FDCATab.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        self._parentWidget.widget.tabWidget.addTab(self.FDCATab,'FDCA')
+        self._FDCATab = uic.loadUi(uifile = os.path.join(os.path.dirname(os.path.realpath(__file__)),"FDCA.ui"))
+        #self._FDCATab.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        self._parentWidget.widget.tabWidget.addTab(self._FDCATab,'FDCA')
 
 
         # connect to widgets
-        self.FDCATab.btnUpdate.clicked.connect(self.updateAvailableTrajectoryList)
-        self.FDCATab.btnApply.clicked.connect(self.printshit)
-        self.FDCATab.comboHCR.currentIndexChanged.connect(self.newHCRSelected)
+        self._FDCATab.btnUpdate.clicked.connect(self.updateAvailableTrajectoryList)
+        self._FDCATab.comboHCR.currentIndexChanged.connect(self.newHCRSelected)
 
-        #Add the new popup signal so and adjust layout accordingly
-        # self.FDCATab.comboHCRnew = ComboBox(self.FDCATab.comboHCR)
-        # self.FDCATab.comboHCRnew.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
-        # self.ExtraLayout = QtWidgets.QGridLayout()
-        # self.ExtraLayout.setContentsMargins(0,0,0,0)
-        # self.ExtraLayout.addWidget(self.FDCATab.comboHCRnew)
-        # self.FDCATab.comboHCR.setLayout(self.ExtraLayout)
-        
-        
-        
         #Initialize local Variables
-        self.HCR = {}
-        self.HCRIndex = 0
-        self.t_aheadFF = 0
+        self._HCR = {}
+        self._HCRIndex = 0
+        self._t_aheadFF = 0
 
         # path to HCR trajectory dir and add to list
         self._nameCurrentHCR = 'defaultHCRTrajectory.csv'
@@ -84,20 +73,15 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
             print(self._pathHCRDirectory)
             self.updateAvailableTrajectoryList()
             # load a default trajectory first
-            idx = self.FDCATab.comboHCR.findText(self._nameCurrentHCR)
+            idx = self._FDCATab.comboHCR.findText(self._nameCurrentHCR)
             if idx < 0:
                 idx = 0 # in case the default trajectory file is not found, load the first one
             
-            self.FDCATab.comboHCR.setCurrentIndex(idx) # this will also trigger the function newHCRSelected
+            self._FDCATab.comboHCR.setCurrentIndex(idx) # this will also trigger the function newHCRSelected
 
         except Exception as e:
             print('Error loading list of available HCR trajectories: ', e)
         
-
-        
-
-    def printshit(self):
-        print(self.HCRIndex)
 
     def updateAvailableTrajectoryList(self):
         # get list of csv files in directory
@@ -106,28 +90,28 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
 
 
         # run through the combobox to check for files that are in the list, but not in the directory anymore
-        listitems = [self.FDCATab.comboHCR.itemText(i) for i in range(self.FDCATab.comboHCR.count())]
+        listitems = [self._FDCATab.comboHCR.itemText(i) for i in range(self._FDCATab.comboHCR.count())]
         for l in listitems:
             if l not in files:
-                idx = self.FDCATab.comboHCR.findText(l)
+                idx = self._FDCATab.comboHCR.findText(l)
                 if idx >= 0:
-                    self.FDCATab.comboHCR.removeItem(idx)
+                    self._FDCATab.comboHCR.removeItem(idx)
 
 
-        # self.FDCATab.comboHCR.clear() # we don't want this for reasons: (1) it resets the currentIndex(), which triggers a reload of a new trajectory, something we don't want to occur 'randomly'
+        # self._FDCATab.comboHCR.clear() # we don't want this for reasons: (1) it resets the currentIndex(), which triggers a reload of a new trajectory, something we don't want to occur 'randomly'
 
         # add items that are in files but not yet in the combobox
         for fname in files:
-            idx = self.FDCATab.comboHCR.findText(fname)
+            idx = self._FDCATab.comboHCR.findText(fname)
             if idx < 0:
-                self.FDCATab.comboHCR.addItem(fname)
+                self._FDCATab.comboHCR.addItem(fname)
     
 
     def newHCRSelected(self):
         # new index selected
 
         # load based on filename, not index. Index can change if we remove items from the combobox list, which could yield undesired loading of HCR trajectories
-        fname = self.FDCATab.comboHCR.itemText(self.FDCATab.comboHCR.currentIndex())
+        fname = self._FDCATab.comboHCR.itemText(self._FDCATab.comboHCR.currentIndex())
 
         if fname != self._nameCurrentHCR:
             # fname is different from _nameCurrentHCR, load it!
@@ -143,10 +127,10 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
 
         
     def process(self):
-        self.data = self._parentWidget.readNews('modules.siminterface.widget.siminterface.SiminterfaceWidget')
-        egoCar = self.data['egoCar']
-        self.Error = self.Error_Calc(self.t_aheadFF, self.HCR, egoCar)
-        print(self.Error)
+        self._data= self._parentWidget.readNews('modules.siminterface.widget.siminterface.SiminterfaceWidget')
+        egoCar = self._data['egoCar']
+        self._Error = self.Error_Calc(self._t_aheadFF, self._HCR, egoCar)
+        print(self._Error)
 
         # ## GAINS  (FDCA as in SIMULINK)
         # SWAngle_FB = self.SoHFFunc(self.K_y,self.K_psi,self.SoHF,self.Error[0],self.Error[1])
@@ -177,7 +161,7 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
 
         # TorqueBytes = int.to_bytes(intTorque,2, byteorder = 'little',signed= True)
 
-        return self.data
+        return self._data
 
 
     def Error_Calc(self, t_ahead, trajectory, car):
@@ -274,3 +258,20 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
         return np.argmin(dist_2)
 
 
+class PDcontrol(Basecontroller):
+    def __init__(self, FeedbackcontrollerWidget):
+            Basecontroller.__init__(self, FeedbackcontrollerWidget)
+
+            #Load the appropriate UI file
+            self.manualTab = uic.loadUi(uifile = os.path.join(os.path.dirname(os.path.realpath(__file__)),"PD.ui"))
+            #Add ui file to a new tab
+            self._parentWidget.widget.tabWidget.addTab(self.manualTab,'PD')
+
+
+    def process(self, Error, DeltaError, DeltaT, WeightLat, WeightHeading, Kp, Kd):
+        GainLat = WeightLat * (Kp * Error[0] + Kd*(DeltaError[0]/DeltaT))
+        GainHeading = -WeightHeading * (Kp * Error[1] + Kd*(DeltaError[1]/DeltaT))
+
+        SWGain = -(GainLat + GainHeading)/450
+        
+        return SWGain
