@@ -60,7 +60,7 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
         self._FDCATab.comboHCR.currentIndexChanged.connect(self.newHCRSelected)
 
         #Initialize local Variables
-        self._HCR = {}
+        self._HCR = []
         self._HCRIndex = 0
         self._t_aheadFF = 0
 
@@ -119,7 +119,7 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
 
             try:
                 tmp = pd.read_csv(os.path.join(self._pathHCRDirectory, fname))
-                self.HCR = tmp.values
+                self._HCR = tmp.values
             except Exception as e:
                 print('Error loading HCR trajectory file (newHCRSelected): ', e)
 
@@ -283,7 +283,8 @@ class PDcontrol(Basecontroller):
         self._Whead = 2
         self._defaultHCR = 'defaultHCRTrajectory.csv'
         self._pathHCRDirectory = os.path.join(os.path.dirname(os.path.realpath(__file__)),'HCRTrajectories')
-        self._HCR = pd.read_csv(os.path.join(self._pathHCRDirectory, self._defaultHCR))
+        tmp = pd.read_csv(os.path.join(self._pathHCRDirectory, self._defaultHCR))
+        self._HCR = tmp.values
 
         # Show default values
         self.PDTab.lblPropgainvalue.setText(str(self._Kp))
@@ -344,17 +345,16 @@ class PDcontrol(Basecontroller):
             egoCar = self._data['egoCar']
             self._T1 = time.time()
             self._Error = self.Error_Calc(self._t_ahead, self._HCR, egoCar)
-            
             DeltaT = self._T1 - self._T2
             DeltaError = self._Error - self._ErrorT2
-            
             SWangle = self.PD(self._Error, DeltaError, DeltaT, self._Wlat, self._Whead, self._Kp, self._Kd)
 
             self._ErrorT2 = self._Error
             self._T2 = self._T1
-
+            print(SWangle)
             return SWangle
-        except:
+        except Exception as e:
+            print(e)
             return 0
 
 
