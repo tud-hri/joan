@@ -205,6 +205,11 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
         self._FDCATab.lineKsohf.clear()
 
     def resetParameters(self):
+        self._FDCATab.lineKy.clear()
+        self._FDCATab.lineKpsi.clear()
+        self._FDCATab.lineKlohs.clear()
+        self._FDCATab.lineKsohf.clear()
+        
         self._Ky = 0.1
         self._Kpsi = 0.4
         self._LoHS = 1
@@ -379,6 +384,12 @@ class PDcontrol(Basecontroller):
         self._PDTab.lineTahead.clear()
 
     def resetParameters(self):
+        self._PDTab.linePropgain.clear()
+        self._PDTab.lineDerivgain.clear()
+        self._PDTab.lineWeightlat.clear()
+        self._PDTab.lineWeightheading.clear()
+        self._PDTab.lineTahead.clear()
+
         self._t_ahead = 0.6
         self._Kp = 8
         self._Kd = 1
