@@ -23,4 +23,5 @@ __pycache__/
 LICENCE.md
 out.txt
 previous_*
+*.csv
 

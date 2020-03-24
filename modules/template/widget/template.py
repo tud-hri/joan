@@ -22,7 +22,7 @@ class TemplateWidget(Control):
         try:
             self.action = TemplateAction()
         except Exception as inst:
-            print(inst)
+            print('Exception in TemplateWidget', inst)
 
     # callback class is called each time a pulse has come from the Pulsar class instance
     def do(self):
@@ -77,7 +77,7 @@ class TemplateWidget(Control):
             self.widget.repaint()
 
         except Exception as inst:
-            print (inst)
+            print ('Exception in TemplateWidget', inst)
 
     def handlemodulestate(self, state):
         """ 

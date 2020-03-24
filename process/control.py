@@ -94,7 +94,7 @@ class Control(Pulsar):
             moduleStatePackage['moduleStateHandler'] = self.moduleStateHandler
             self.singletonStatus = Status({moduleKey: moduleStatePackage})
         except Exception as inst:
-            print(inst)
+            print('Exception in Control',inst)
 
 
     def writeNews(self, channel='', news={}):

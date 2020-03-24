@@ -5,6 +5,8 @@ from time import sleep
 from modules.datarecorder.action.states import DatarecorderStates
 from modules.datarecorder.action.datarecorder import DatarecorderAction
 
+from datetime import datetime
+
 class DatarecorderWidget(Control):
     """ 
     DatarecorderWidget 
@@ -34,8 +36,40 @@ class DatarecorderWidget(Control):
        
     def do(self):
         #if self.moduleStateHandler.getCurrentState() == self.moduleStates.DATARECORDER.START:
-        print("news from steeringcommunication", self.readNews('modules.steeringcommunication.widget.steeringcommunication.SteeringcommunicationWidget'))
-        self.action.write(self.readNews('modules.steeringcommunication.widget.steeringcommunication.SteeringcommunicationWidget'))
+        #print("news from steeringcommunication", self.readNews('modules.steeringcommunication.widget.steeringcommunication.SteeringcommunicationWidget'))
+        steeringcommunicationNews = self.readNews('modules.steeringcommunication.widget.steeringcommunication.SteeringcommunicationWidget')
+        if steeringcommunicationNews != {}:
+            steerincommunicationData = {}
+            steerincommunicationData['time'] = datetime.now()
+            steerincommunicationData.update(steeringcommunicationNews)
+        
+            self.action.write(steerincommunicationData)
+        else:
+            print('No news from steeringcommunication')
+        # self.readNews('modules.steeringcommunication.widget.steeringcommunication.SteeringcommunicationWidget'))
+
+        ''' test
+met pulsar van datarecorder op 2 ms:
+2020-03-24 16:11:50.743416,0,0
+2020-03-24 16:11:41.927696,0,0
+4407 regels, met print, 8.815720 / 4407 = 0.002 sec per record
+4407 / 8.815720 = 500 records per seconde 
+
+2020-03-24 16:15:46.834025,0,0
+2020-03-24 16:15:57.525550,0,0
+5341 regels, zonder print: 10.691525 / 5341 = 0.002 sec per record
+5341 / 10.691525 = 500 records per seconde
+
+
+met pulsar van datarecorder op 1 ms:
+head: 2020-03-24 17:10:47.943303,0,0
+tail: 2020-03-24 17:11:01.884533,0,0
+10803 regels, zonder print: 13.41230 / 10803 = 0.00124 sec per record
+10803 / 13.41230 =  805 records per seconde  (dit zouden er in het ideale geval 1000 moeten zijn)
+
+2 msec is dus de onderwaarde voor de datarecorder
+        '''
+
 
     @QtCore.pyqtSlot(str)
     def _setmillis(self, millis):
@@ -83,6 +117,7 @@ class DatarecorderWidget(Control):
     def start(self):
         if not self.widget.isVisible():
             self._show()
+        self.action.start()
         self.startPulsar()
 
     def stop(self):
@@ -107,7 +142,7 @@ class DatarecorderWidget(Control):
             if stateAsState == self.moduleStates.DATARECORDER.INITIALIZED:
                 self.widget.btnStartRecorder.setEnabled(True)
                 self.widget.lblStatusRecorder.setStyleSheet('color: green')
-                self.action.initialize()
+                #self.action.initialize()
 
             if stateAsState == self.moduleStates.DATARECORDER.NOTINITIALIZED:
                 self.widget.btnStartRecorder.setEnabled(False)
