@@ -263,10 +263,11 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
 
         
     def process(self):
-        self._data= self._parentWidget.readNews('modules.siminterface.widget.siminterface.SiminterfaceWidget')
-        egoCar = self._data['egoCar']
-        self._Error = self.Error_Calc(self._t_aheadFF, self._HCR, egoCar)
-        print(self._Error)
+        try:
+            self._data= self._parentWidget.readNews('modules.siminterface.widget.siminterface.SiminterfaceWidget')
+            egoCar = self._data['egoCar']
+            self._Error = self.Error_Calc(self._t_aheadFF, self._HCR, egoCar)
+            print(self._Error)
 
         # SWAngle_FB = self.SoHFFunc(self.K_y,self.K_psi,self.SoHF,self.Error[0],self.Error[1])
          
@@ -296,7 +297,10 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
 
         # TorqueBytes = int.to_bytes(intTorque,2, byteorder = 'little',signed= True)
 
-        return self._data
+            return self._data
+        except Exception as e:
+            print(e)
+            return 0
 
     def LoHSFunc(self,LoHS,SWangle_FFDES):
         SWangle_FF = SWangle_FFDES * LoHS
