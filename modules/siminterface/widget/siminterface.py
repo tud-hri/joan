@@ -74,6 +74,7 @@ class SiminterfaceWidget(Control):
         self.data = self.action.getData()
         self.writeNews(channel=self, news=self.data)
         self.moduleStateHandler.requestStateChange(self.moduleStates.SIMULATION.RUNNING)
+        
 
         if Connected is True:
             self.moduleStateHandler.requestStateChange(self.moduleStates.SIMULATION.RUNNING)
@@ -83,6 +84,7 @@ class SiminterfaceWidget(Control):
     def stop(self):
         self.moduleStateHandler.requestStateChange(self.moduleStates.SIMULATION.STOPPED)
         self.action.stop()
+        
         self.stopPulsar()
 
     def _close(self):
@@ -129,6 +131,11 @@ class SiminterfaceWidget(Control):
 
             # update the state label
             self.mainwidget.lblModulestate.setText(str(stateAsState.name))
+
+            if stateAsState == self.moduleStates.SIMULATION.RUNNING:
+                self.mainwidget.btnStart.setStyleSheet("background-color: green")
+            else:
+                self.mainwidget.btnStart.setStyleSheet("background-color: none")
             
 
         except Exception as inst:
