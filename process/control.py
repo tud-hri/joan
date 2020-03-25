@@ -74,9 +74,22 @@ class Control(Pulsar):
         self.widget = self._getGui(ui)
 
         self.mainwidget.vLayout.addWidget(self.widget)
+        self.mainwidget.lineTick.setPlaceholderText(str(self.millis))
 
         self.mainwidget.btnStart.clicked.connect(self.start)
         self.mainwidget.btnStop.clicked.connect(self.stop)
+
+        self.mainwidget.btnStop.clicked.connect(self.mainwidget.lineTick.clear)
+        self.mainwidget.btnStart.clicked.connect(self.mainwidget.lineTick.clear)
+        self.mainwidget.btnStart.clicked.connect(self.mainwidget.lineTick.clearFocus)
+        
+        
+        self.mainwidget.btnStart.clicked.connect(self.setTicktext)
+        self.mainwidget.btnStop.clicked.connect(self.setTicktext)
+        
+        self.mainwidget.lineTick.textChanged.connect(self._setmillis)
+        
+        
         
         assert self.widget != None, 'could not create a widget, is %s the correct filename?' % ui
 
@@ -107,6 +120,8 @@ class Control(Pulsar):
         except Exception as inst:
             print(inst)
 
+    def setTicktext(self):
+        self.mainwidget.lineTick.setPlaceholderText(str(self.millis))
 
     def writeNews(self, channel='', news={}):
         assert channel != '', 'argument "channel" should be the writer class'

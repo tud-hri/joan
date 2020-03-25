@@ -44,10 +44,11 @@ class FeedbackcontrollerWidget(Control):
     # callback class is called each time a pulse has come from the Pulsar class instance
     def do(self):
         SWangle = self._controller.process()
-
+        self.counter = self.counter + 1
         self.data['SteeringWheelAngle'] = SWangle
         self.data['Throttle'] = 0.5
         self.writeNews(channel=self, news=self.data)
+        print(self.counter)
 
 
 
