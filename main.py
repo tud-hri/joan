@@ -116,8 +116,8 @@ if __name__ == '__main__':
         emergency_btn.setIcon(image)
 
         quit_btn = QtWidgets.QPushButton('Quit')
+        quit_btn.setStyleSheet("background-color: darkred")
         quit_btn.clicked.connect(app.quit)
-        checkbox = QtWidgets.QCheckBox('checkbox 1')
 
         grid = QtWidgets.QGridLayout()
         grid.addWidget(emergency_btn, 1, 0)
@@ -127,11 +127,11 @@ if __name__ == '__main__':
 
 
         layout = QtWidgets.QVBoxLayout()
-        layout.addWidget(checkbox)
+
         
         grid.addLayout(layout, 1, 1)
 
-        layout.addWidget(quit_btn)
+
         win.setLayout(grid)
 
         path = os.path.join(os.path.dirname(os.path.realpath(__file__)),'modules')
@@ -154,15 +154,15 @@ if __name__ == '__main__':
                     # millis
                     editClass = None
                     editLabel = '%s %s' % ('Start', widgetfolder)
-                    try:
-                        editClass = QtWidgets.QLineEdit()
-                        editClass.textChanged.connect(instantiatedClass._setmillis)
-                        #editClass.setValidator()
-                        editClass.setPlaceholderText(str(defaultMillis))
-                        layout.addWidget(editClass)
-                    except Exception as inst:
-                        editLabel.__add__(' no action defined in %s' % module)
-                        print(inst,"No action on button '%s', because method %s in %s does not exist" % ('editClass', '_setmillis()', module))
+                    # try:
+                    #     editClass = QtWidgets.QLineEdit()
+                    #     editClass.textChanged.connect(instantiatedClass._setmillis)
+                    #     #editClass.setValidator()
+                    #     editClass.setPlaceholderText(str(defaultMillis))
+                    #     layout.addWidget(editClass)
+                    # except Exception as inst:
+                    #     editLabel.__add__(' no action defined in %s' % module)
+                    #     print(inst,"No action on button '%s', because method %s in %s does not exist" % ('editClass', '_setmillis()', module))
 
                     # show
                     buttonClass = None
@@ -209,7 +209,10 @@ if __name__ == '__main__':
                     except Exception as inst:
                         buttonText.__add__(' no action defined in %s' % module)
                         print("Warning: No action on button '%s', because method %s in %s does not exist" % (buttonText, '_close()', module))
+        
+        layout.addWidget(quit_btn)
         win.show()
+
 
         print(sys.exit(app.exec()))
     except Exception as inst:

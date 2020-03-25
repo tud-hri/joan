@@ -20,7 +20,7 @@ class FeedbackcontrollerWidget(Control):
         self.defineModuleStateHandler(module=self, moduleStates=FeedbackcontrollerStates())
         self.moduleStateHandler.stateChanged.connect(self.handlemodulestate)
         self.masterStateHandler.stateChanged.connect(self.handlemasterstate)
-        
+
         try:
             self.action = FeedbackcontrollerAction(moduleStates = self.moduleStates,
                                           moduleStateHandler = self.moduleStateHandler)
@@ -44,10 +44,11 @@ class FeedbackcontrollerWidget(Control):
     # callback class is called each time a pulse has come from the Pulsar class instance
     def do(self):
         SWangle = self._controller.process()
-
+        self.counter = self.counter + 1
         self.data['SteeringWheelAngle'] = SWangle
         self.data['Throttle'] = 0.5
         self.writeNews(channel=self, news=self.data)
+        print(self.counter)
 
 
 
@@ -71,21 +72,22 @@ class FeedbackcontrollerWidget(Control):
             pass
 
     def _show(self):
-        self.widget.show()
+        self.mainwidget.show()
 
 
-    def _start(self):
-        if not self.widget.isVisible():
+    def start(self):
+        if not self.mainwidget.isVisible():
             self._show()
-        print(self.widget.windowTitle())
         self.startPulsar()
+        self.moduleStateHandler.requestStateChange(self.moduleStates.FEEDBACKCONTROLLER.RUNNING)
         
 
-    def _stop(self):
+    def stop(self):
+        self.moduleStateHandler.requestStateChange(self.moduleStates.FEEDBACKCONTROLLER.STOPPED)
         self.stopPulsar()
 
     def _close(self):
-        self.widget.close()
+        self.mainwidget.close()
 
 
     def handlemasterstate(self, state):
@@ -123,7 +125,12 @@ class FeedbackcontrollerWidget(Control):
                 self._stop()
 
             # update the state label
-            self.widget.lblState.setText(str(stateAsState))
+            self.mainwidget.lblModulestate.setText(str(stateAsState.name))
+
+            if stateAsState == self.moduleStates.FEEDBACKCONTROLLER.RUNNING:
+                self.mainwidget.btnStart.setStyleSheet("background-color: green")
+            else:
+                self.mainwidget.btnStart.setStyleSheet("background-color: none")
 
         except Exception as e:
             print(e)
