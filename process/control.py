@@ -8,7 +8,7 @@ import os
 
 class News:
     '''
-    The Recent class is a singleton that holds all most recent status data
+    The News class is a singleton that holds all most recent status data
     Every class has its own writing area; the key of the class
     Oll other classes may read the value
     '''
@@ -143,3 +143,13 @@ class Control(Pulsar):
 
     def getModuleStatePackage(self, module=''):
         return module in self.getAvailableModuleStatePackages() and self.singletonStatus.moduleStatePackages[module] or {}
+
+
+class MainWidget:
+    '''
+    The Mainwidget class holds the widget that has a start and stop button that every module
+    will load its own UI inside off
+    '''
+
+    def __init__(self):
+        pass
