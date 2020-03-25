@@ -24,9 +24,6 @@ class SiminterfaceWidget(Control):
         self.moduleStateHandler.stateChanged.connect(self.handlemodulestate)
         self.masterStateHandler.stateChanged.connect(self.handlemasterstate)
 
-        self.mainwidget.btnStart.clicked.connect(self.start)
-        self.mainwidget.btnStop.clicked.connect(self.stop)
-
         self.widget.comboScenario.currentIndexChanged.connect(self.printshit)
 
         try:

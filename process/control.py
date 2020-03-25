@@ -72,8 +72,11 @@ class Control(Pulsar):
         
         self.mainwidget = self._getGui((os.path.join(os.path.dirname(os.path.realpath(__file__)),"MainWindowWidget.ui")))
         self.widget = self._getGui(ui)
-        
+
         self.mainwidget.vLayout.addWidget(self.widget)
+
+        self.mainwidget.btnStart.clicked.connect(self.start)
+        self.mainwidget.btnStop.clicked.connect(self.stop)
         
         assert self.widget != None, 'could not create a widget, is %s the correct filename?' % ui
 

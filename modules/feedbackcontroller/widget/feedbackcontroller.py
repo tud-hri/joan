@@ -21,9 +21,6 @@ class FeedbackcontrollerWidget(Control):
         self.moduleStateHandler.stateChanged.connect(self.handlemodulestate)
         self.masterStateHandler.stateChanged.connect(self.handlemasterstate)
 
-        self.mainwidget.btnStart.clicked.connect(self.start)
-        self.mainwidget.btnStop.clicked.connect(self.stop)
-        
         try:
             self.action = FeedbackcontrollerAction(moduleStates = self.moduleStates,
                                           moduleStateHandler = self.moduleStateHandler)
