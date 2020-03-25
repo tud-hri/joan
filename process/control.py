@@ -62,13 +62,19 @@ class Control(Pulsar):
 
         
         self.widget = None  # will contain a value after calling createWidget
+        self.mainwidget= None
         self.moduleStateHandler = None # will contain  a value after calling defineModuleStateHandler
         self.moduleStates = None # will contain  a value after calling defineModuleStateHandler
 
    
     def createWidget(self, ui=''):       
         assert ui != '', 'argument "ui" should point to a PyQt ui file (e.g. ui=<absolute path>menu.ui)' 
+        
+        self.mainwidget = self._getGui((os.path.join(os.path.dirname(os.path.realpath(__file__)),"MainWindowWidget.ui")))
         self.widget = self._getGui(ui)
+        
+        self.mainwidget.vLayout.addWidget(self.widget)
+        
         assert self.widget != None, 'could not create a widget, is %s the correct filename?' % ui
 
         '''
@@ -79,6 +85,7 @@ class Control(Pulsar):
         # put widgets in SingletonStatus object for setting state of widgets 
         self.singletonStatus = Status({uiKey: self.widget})
         '''
+
     def defineModuleStateHandler(self, module='', moduleStates=None):
         assert module != '', 'argument "module" should containt the name of the module, which is the calling class'
         # states example:     VOID = State(0, translate('BootStates', 'Null state'), -1,150)
@@ -145,11 +152,3 @@ class Control(Pulsar):
         return module in self.getAvailableModuleStatePackages() and self.singletonStatus.moduleStatePackages[module] or {}
 
 
-class MainWidget:
-    '''
-    The Mainwidget class holds the widget that has a start and stop button that every module
-    will load its own UI inside off
-    '''
-
-    def __init__(self):
-        pass

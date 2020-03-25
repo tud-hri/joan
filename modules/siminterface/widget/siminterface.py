@@ -10,7 +10,10 @@ class SiminterfaceWidget(Control):
         kwargs['callback'] = [self.do]  # method will run each given millis
 
         Control.__init__(self, *args, **kwargs)
-        self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)),"siminterface.ui"))
+        self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)),"siminterfaceWidget.ui"))
+    
+        print(self.widget)
+        print(self.mainwidget)
         
         self.data = {}
         self.writeNews(channel=self, news=self.data)
@@ -21,8 +24,10 @@ class SiminterfaceWidget(Control):
         self.moduleStateHandler.stateChanged.connect(self.handlemodulestate)
         self.masterStateHandler.stateChanged.connect(self.handlemasterstate)
 
-        self.widget.btnStart.clicked.connect(self.start)
-        self.widget.btnStop.clicked.connect(self.stop)
+        self.mainwidget.btnStart.clicked.connect(self.start)
+        self.mainwidget.btnStop.clicked.connect(self.stop)
+
+        self.widget.comboScenario.currentIndexChanged.connect(self.printshit)
 
         try:
             self.action = Simcommunication(self)
@@ -42,6 +47,9 @@ class SiminterfaceWidget(Control):
         self.action.handleFeedbackcontrollerdata(FeedbackControllerData)
         
 
+    def printshit(self):
+        print('shit')
+
 
     @QtCore.pyqtSlot(str)
     def _setmillis(self, millis):
@@ -53,20 +61,20 @@ class SiminterfaceWidget(Control):
 
     def _show(self):
         try:
-            self.widget.show()
+            self.mainwidget.show()
         except Exception as e:
             print(' ############## Exception was: #########')
 
     def start(self):
-        if not self.widget.isVisible():
+        if not self.mainwidget.isVisible():
             self._show()
 
         # Connect to the server
         Connected = self.action.start()
         self.data = self.action.getData()
         self.writeNews(channel=self, news=self.data)
-        #self.moduleStateHandler.requestStateChange(self.moduleStates.SIMULATION.RUNNING)
-        
+        self.moduleStateHandler.requestStateChange(self.moduleStates.SIMULATION.RUNNING)
+
         if Connected is True:
             self.moduleStateHandler.requestStateChange(self.moduleStates.SIMULATION.RUNNING)
             self.startPulsar()
@@ -82,7 +90,7 @@ class SiminterfaceWidget(Control):
         # self.action.stop()
         # self.stopPulsar()
         # del self.action
-        self.widget.close()
+        self.mainwidget.close()
 
     def handlemasterstate(self, state):
         """ 
@@ -99,7 +107,7 @@ class SiminterfaceWidget(Control):
                 self._stop()
 
             # update the state label
-            self.widget.lblState.setText(str(stateAsState))
+            self.mainwidget.lblState.setText(str(stateAsState))
 
         except Exception as inst:
             print (inst)
@@ -120,7 +128,8 @@ class SiminterfaceWidget(Control):
                 self._stop()
 
             # update the state label
-            self.widget.lblModulestate.setText(str(stateAsState.name))
+            self.mainwidget.lblModulestate.setText(str(stateAsState.name))
+            
 
         except Exception as inst:
             print (inst)

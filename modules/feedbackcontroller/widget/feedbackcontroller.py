@@ -20,6 +20,9 @@ class FeedbackcontrollerWidget(Control):
         self.defineModuleStateHandler(module=self, moduleStates=FeedbackcontrollerStates())
         self.moduleStateHandler.stateChanged.connect(self.handlemodulestate)
         self.masterStateHandler.stateChanged.connect(self.handlemasterstate)
+
+        self.mainwidget.btnStart.clicked.connect(self.start)
+        self.mainwidget.btnStop.clicked.connect(self.stop)
         
         try:
             self.action = FeedbackcontrollerAction(moduleStates = self.moduleStates,
@@ -71,21 +74,21 @@ class FeedbackcontrollerWidget(Control):
             pass
 
     def _show(self):
-        self.widget.show()
+        self.mainwidget.show()
 
 
-    def _start(self):
-        if not self.widget.isVisible():
+    def start(self):
+        if not self.mainwidget.isVisible():
             self._show()
-        print(self.widget.windowTitle())
+        print(self.mainwidget.windowTitle())
         self.startPulsar()
         
 
-    def _stop(self):
+    def stop(self):
         self.stopPulsar()
 
     def _close(self):
-        self.widget.close()
+        self.mainwidget.close()
 
 
     def handlemasterstate(self, state):
@@ -123,7 +126,7 @@ class FeedbackcontrollerWidget(Control):
                 self._stop()
 
             # update the state label
-            self.widget.lblState.setText(str(stateAsState))
+            self.mainwidget.lblModulestate.setText(str(stateAsState))
 
         except Exception as e:
             print(e)
