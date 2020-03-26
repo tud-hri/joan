@@ -5,5 +5,5 @@
 from .feedbackcontroller.widget.feedbackcontroller import FeedbackcontrollerWidget
 from .siminterface.widget.siminterface import SiminterfaceWidget
 from .trajectoryrecorder.widget.trajectoryrecorder import TrajectoryrecorderWidget
-#from .steeringcommunication.widget.steeringcommunication import SteeringcommunicationWidget
+from .steeringcommunication.widget.steeringcommunication import SteeringcommunicationWidget
 #from .interface.widget.interface import InterfaceWidget
