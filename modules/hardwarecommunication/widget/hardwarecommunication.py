@@ -1,7 +1,7 @@
 from process import Control, State, translate
 from PyQt5 import QtCore
 from modules.hardwarecommunication.action.states import HardwarecommunicationStates
-from modules.hardwarecommunication.action.hardwarecommunication import HardwarecommunicationAction
+from modules.hardwarecommunication.action.hardwarecommunication import *
 import os
 
 class HardwarecommunicationWidget(Control):
@@ -24,6 +24,16 @@ class HardwarecommunicationWidget(Control):
             self.action = HardwarecommunicationAction()
         except Exception as inst:
             print(inst)
+
+
+        self._input = BaseInput(self)
+ 
+ 
+        #self.Controllers = {}
+        self.Inputs = dict([("Keyboard",Keyboard(self)),("Mouse",Mouse(self))])
+
+        #initialize controller with first one in the dict
+        self._input = self.Inputs["Keyboard"]
 
     # callback class is called each time a pulse has come from the Pulsar class instance
     def do(self):
