@@ -10,7 +10,6 @@ class HardwarecommunicationWidget(Control):
         kwargs['callback'] = [self.do]  # method will run each given millis
         Control.__init__(self, *args, **kwargs)
         self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)),"hardwarecommunication.ui"))
-        
         self.data = {}
         self.writeNews(channel=self, news=self.data)
 
@@ -28,16 +27,18 @@ class HardwarecommunicationWidget(Control):
 
         self._input = BaseInput(self)
  
- 
-        #self.Controllers = {}
         self.Inputs = dict([("Keyboard",Keyboard(self)),("Mouse",Mouse(self))])
 
-        #initialize controller with first one in the dict
-        self._input = self.Inputs["Keyboard"]
+        #initialize input with none (not catching any inputs)
+        self._input = None
 
     # callback class is called each time a pulse has come from the Pulsar class instance
     def do(self):
-        pass
+        try:
+            self._input.displayInputs()
+            self._input.process()
+        except Exception as e:
+            print(e)
 
     @QtCore.pyqtSlot(str)
     def _setmillis(self, millis):

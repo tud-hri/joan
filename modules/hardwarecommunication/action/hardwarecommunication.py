@@ -1,6 +1,10 @@
 from process import Control
-from PyQt5 import uic
+from PyQt5 import uic, QtCore, QtGui
 import os
+
+
+
+
 
 class HardwarecommunicationAction(Control):
     def __init__(self, *args, **kwargs):
@@ -13,15 +17,32 @@ class HardwarecommunicationAction(Control):
 class BaseInput():
     def __init__(self, HardwarecommunicationWidget):
         self._parentWidget = HardwarecommunicationWidget
-        self._data= {}
+        self._data = {}
+        self._data['SteeringAngleInput'] = 0
+        self._data['ThrottleInput']      = 0
+        self._data['GearShiftInput']     = 0
+        self._data['BrakeInput']         = 0
+        self._data['Reverse']            = False
+
         self.usingText = 'None'
         self.setUsingtext()
 
     def process(self):
-        return self._data
+        pass
+
+    def changeInputSource(self):
+        self._parentWidget._input = self._parentWidget.Inputs[self.usingText]
+        self.setUsingtext()
 
     def setUsingtext(self):
         self._parentWidget.widget.lblSource.setText(self.usingText)
+
+    def displayInputs(self):
+        self._parentWidget.widget.sliderSteering.setValue(self._data['SteeringAngleInput'])
+
+    def keyPressEvent(self,event):
+        if(self.usingText == 'Keyboard'):
+            print(event.key())
 
 
 class Keyboard(BaseInput):
@@ -33,7 +54,33 @@ class Keyboard(BaseInput):
         #Add ui file to a new tab
         self._parentWidget.widget.tabInputs.addTab(self._keyboardTab,'Keyboard')
 
-        self._keyboardTab.btnUse.clicked.connect(self.setUsingtext)
+        self._keyboardTab.btnUse.clicked.connect(self.changeInputSource)
+
+        self._parentWidget.mainwidget.keyPressEvent = self.keyPressEvent
+        #self._parentWidget.widget.keyPressEvent = self.keyPressEvent
+
+    
+        #self._keyboardTab.keyPressEvent = self.keyPressEvent
+        ## initialize pygame
+
+        # FIRE = 123
+        # self.pevent = pygame.event.Event(FIRE, message="Bad cat!")
+
+    
+
+    def displayInputs(self):
+        self._data['SteeringAngleInput'] = 180
+        self._parentWidget.widget.sliderSteering.setValue(self._data['SteeringAngleInput'])
+        #print('keyboard')
+
+    def process(self):
+        pass
+
+    
+
+        
+
+    
 
         
 
@@ -46,4 +93,9 @@ class Mouse(BaseInput):
         #Add ui file to a new tab
         self._parentWidget.widget.tabInputs.addTab(self._mouseTab,'Mouse')
 
-        self._mouseTab.btnUse.clicked.connect(self.setUsingtext)
+        self._mouseTab.btnUse.clicked.connect(self.changeInputSource)
+
+    def displayInputs(self):
+        self._data['SteeringAngleInput'] = -180
+        self._parentWidget.widget.sliderSteering.setValue(self._data['SteeringAngleInput'])
+        print('mouse')
