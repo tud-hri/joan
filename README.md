@@ -27,7 +27,7 @@ moduleAction(Control) <br>
 moduleStates(MasterStates)<br><br>
 
 module is something like DataRecorder
-
+# Main class diagram
 
 ```mermaid
     classDiagram
@@ -55,6 +55,21 @@ module is something like DataRecorder
         Control  --|> moduleWidget : Inheritance
         MasterStates --|> moduleStates : Inheritance
         moduleStates "1" ..|> "*" State : Realization
+```
+
+# datarecorder class diagram
+Datarecorder consist of a moduleWidget called DatarecorderWidget and a moduleAction called Datarecorderaction
+
+```mermaid
+    classDiagram
+        class QThread
+        class DatarecorderWidget
+        class DatarecorderAction
+        class DataWriter
+
+        QThread --|> DataWriter : Inheritance
+        DatarecorderWidget ..|> DatarecorderAction : Realization
+        DatarecorderAction ..|> DataWriter : Realization
 ```
 ## Directories
 
