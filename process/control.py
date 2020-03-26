@@ -79,6 +79,9 @@ class Control(Pulsar):
         self.mainwidget.btnStart.clicked.connect(self.start)
         self.mainwidget.btnStop.clicked.connect(self.stop)
 
+        self.mainwidget.btnStart.clicked.connect(self.disableLineTick)
+        self.mainwidget.btnStop.clicked.connect(self.enableLineTick)
+
         self.mainwidget.btnStop.clicked.connect(self.mainwidget.lineTick.clear)
         self.mainwidget.btnStart.clicked.connect(self.mainwidget.lineTick.clear)
         self.mainwidget.btnStart.clicked.connect(self.mainwidget.lineTick.clearFocus)
@@ -101,6 +104,11 @@ class Control(Pulsar):
         # put widgets in SingletonStatus object for setting state of widgets 
         self.singletonStatus = Status({uiKey: self.widget})
         '''
+    def disableLineTick(self):
+        self.mainwidget.lineTick.setEnabled(False)
+
+    def enableLineTick(self):
+        self.mainwidget.lineTick.setEnabled(True)
 
     def defineModuleStateHandler(self, module='', moduleStates=None):
         assert module != '', 'argument "module" should containt the name of the module, which is the calling class'
