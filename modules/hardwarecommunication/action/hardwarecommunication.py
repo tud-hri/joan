@@ -18,7 +18,7 @@ class BaseInput():
     def __init__(self, HardwarecommunicationWidget):
         self._parentWidget = HardwarecommunicationWidget
         self._data = {}
-        self._data['SteeringAngleInput'] = 0
+        self._data['SteeringInput'] = 0
         self._data['ThrottleInput']      = 0
         self._data['GearShiftInput']     = 0
         self._data['BrakeInput']         = 0
@@ -26,6 +26,10 @@ class BaseInput():
 
         self.currentInput = 'None'
         self.setUsingtext()
+
+        self._parentWidget.widget.sliderThrottle.setEnabled(False)
+        self._parentWidget.widget.sliderSteering.setEnabled(False)
+        self._parentWidget.widget.sliderBrake.setEnabled(False)
 
 
     def process(self):
@@ -39,7 +43,7 @@ class BaseInput():
         self._parentWidget.widget.lblSource.setText(self.currentInput)
 
     def displayInputs(self):
-        self._parentWidget.widget.sliderSteering.setValue(self._data['SteeringAngleInput'])
+        pass
 
 
 
@@ -55,30 +59,95 @@ class Keyboard(BaseInput):
         self._keyboardTab.btnUse.clicked.connect(self.setCurrentInput)
 
         self._parentWidget.mainwidget.keyPressEvent = self.keyPressEvent
+        self._parentWidget.mainwidget.keyReleaseEvent = self.keyReleaseEvent
+        self.steerLeft = False
+        self.steerRight = False
+        self.throttle = False
+        self.brake = False
+        self.reverse = False
 
-    
-        #self._keyboardTab.keyPressEvent = self.keyPressEvent
-        ## initialize pygame
-
-        # FIRE = 123
-        # self.pevent = pygame.event.Event(FIRE, message="Bad cat!")
 
     def keyPressEvent(self,event):
         if(self._parentWidget.widget.lblSource.text() == 'Keyboard'):
-            print(event.key())
+            key = event.key()
+            if key == QtCore.Qt.Key_Up: 
+                self.throttle = True
+            elif key == QtCore.Qt.Key_Down:
+                self.brake = True
+            elif key == QtCore.Qt.Key_Left:
+                self.steerLeft = True
+                self.steerRight = False
+            elif key == QtCore.Qt.Key_Right:
+                self.steerRight = True
+                self.steerLeft = False
+
+    def keyReleaseEvent(self,event):
+        if(self._parentWidget.widget.lblSource.text() == 'Keyboard'):
+            key = event.key()
+            if key == QtCore.Qt.Key_Up: 
+                self.throttle = False
+            elif key == QtCore.Qt.Key_Down:
+                self.brake = False
+            elif key == QtCore.Qt.Key_Left:
+                self.steerLeft = False
+                self.steerRight = False
+            elif key == QtCore.Qt.Key_Right:
+                self.steerRight = False
+                self.steerLeft = False
+            elif key == QtCore.Qt.Key_R:
+                if(self.reverse == False):
+                    self.reverse = True
+                elif(self.reverse == True):
+                    self.reverse = False
+
 
     def setCurrentInput(self):
         self.currentInput = 'Keyboard'
+        self._parentWidget.widget.sliderThrottle.setEnabled(False)
+        self._parentWidget.widget.sliderSteering.setEnabled(False)
+        self._parentWidget.widget.sliderBrake.setEnabled(False)
         self.changeInputSource()
 
     def displayInputs(self):
-        self._data['SteeringAngleInput'] = 180
-        self._parentWidget.widget.sliderSteering.setValue(self._data['SteeringAngleInput'])
-        #print('keyboard')
+        #update sliders and reverse label
+        self._parentWidget.widget.sliderThrottle.setValue(self._data['ThrottleInput'])
+        self._parentWidget.widget.sliderSteering.setValue(self._data['SteeringInput'])
+        self._parentWidget.widget.sliderBrake.setValue(self._data['BrakeInput'])
+        self._parentWidget.widget.lblReverse.setText(str(self.reverse))
+
+        #set values next to sliders:
+        self._parentWidget.widget.lblThrottle.setText(str(self._data['ThrottleInput']))
+        self._parentWidget.widget.lblSteering.setText(str(self._data['SteeringInput']))
+        self._parentWidget.widget.lblBrake.setText(str(self._data['BrakeInput']))
 
     def process(self):
-        #print(self.currentInput)
-        pass
+        #Throttle:
+        if(self.throttle == True and self._data['ThrottleInput'] < 100 ):
+            self._data['ThrottleInput'] = self._data['ThrottleInput'] +2.5
+        elif(self._data['ThrottleInput'] > 0 and self.throttle == False):
+            self._data['ThrottleInput'] = self._data['ThrottleInput'] - 2.5
+
+        #Brake:
+        if(self.brake == True and self._data['BrakeInput'] < 100 ):
+            self._data['BrakeInput'] = self._data['BrakeInput'] +5
+        elif(self._data['BrakeInput'] > 0 and self.brake == False):
+            self._data['BrakeInput'] = self._data['BrakeInput'] -5
+
+        #Steering:
+        if(self.steerLeft == True and self._data['SteeringInput'] < 450):
+            self._data['SteeringInput'] = self._data['SteeringInput'] - 2
+        elif(self.steerRight == True and self._data['SteeringInput'] > -450):
+            self._data['SteeringInput'] = self._data['SteeringInput'] + 2
+        elif(self._data['SteeringInput'] > 0):
+            self._data['SteeringInput'] = self._data['SteeringInput'] -1
+        elif(self._data['SteeringInput'] < 0):
+            self._data['SteeringInput'] = self._data['SteeringInput'] +1
+
+        self.displayInputs()
+        
+
+        
+        
 
 
         
@@ -99,14 +168,27 @@ class Mouse(BaseInput):
         self._mouseTab.btnUse.clicked.connect(self.setCurrentInput)
 
     def displayInputs(self):
-        self._data['SteeringAngleInput'] = -180
-        self._parentWidget.widget.sliderSteering.setValue(self._data['SteeringAngleInput'])
-        print(self.currentInput)
+        #update sliders
+        self._parentWidget.widget.sliderThrottle.setValue(self._data['ThrottleInput'])
+        self._parentWidget.widget.sliderSteering.setValue(self._data['SteeringInput'])
+        self._parentWidget.widget.sliderBrake.setValue(self._data['BrakeInput'])
+
+        #set values next to sliders:
+        self._parentWidget.widget.lblThrottle.setText(str(self._data['ThrottleInput']))
+        self._parentWidget.widget.lblSteering.setText(str(self._data['SteeringInput']))
+        self._parentWidget.widget.lblBrake.setText(str(self._data['BrakeInput']))
+        
 
     def setCurrentInput(self):
+        self._parentWidget.widget.sliderThrottle.setEnabled(True)
+        self._parentWidget.widget.sliderSteering.setEnabled(True)
+        self._parentWidget.widget.sliderBrake.setEnabled(True)
         self.currentInput = 'Mouse'
         self.changeInputSource()
         
     def process(self):
-        #print(self.currentInput)
+        self._data['BrakeInput']    = self._parentWidget.widget.sliderBrake.value()
+        self._data['ThrottleInput'] = self._parentWidget.widget.sliderThrottle.value()
+        self._data['SteeringInput'] = self._parentWidget.widget.sliderSteering.value()
+        self.displayInputs()
         pass

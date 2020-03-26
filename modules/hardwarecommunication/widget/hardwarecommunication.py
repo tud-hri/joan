@@ -6,7 +6,7 @@ import os
 
 class HardwarecommunicationWidget(Control):
     def __init__(self, *args, **kwargs):
-        kwargs['millis'] = 'millis' in kwargs.keys() and kwargs['millis'] or 500
+        kwargs['millis'] = 'millis' in kwargs.keys() and kwargs['millis'] or 5
         kwargs['callback'] = [self.do]  # method will run each given millis
         Control.__init__(self, *args, **kwargs)
         self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)),"hardwarecommunication.ui"))
@@ -30,12 +30,11 @@ class HardwarecommunicationWidget(Control):
         self.Inputs = dict([("Keyboard",Keyboard(self)),("Mouse",Mouse(self))])
 
         #initialize input with none (not catching any inputs)
-        self._input = None
+
 
     # callback class is called each time a pulse has come from the Pulsar class instance
     def do(self):
         try:
-            self._input.displayInputs()
             self._input.process()
         except Exception as e:
             print(e)
