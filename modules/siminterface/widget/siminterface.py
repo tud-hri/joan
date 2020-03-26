@@ -60,7 +60,7 @@ class SiminterfaceWidget(Control):
         try:
             self.mainwidget.show()
         except Exception as e:
-            print(' ############## Exception was: #########')
+            print(' ############## Exception was: #########',e)
 
     def start(self):
         if not self.mainwidget.isVisible():

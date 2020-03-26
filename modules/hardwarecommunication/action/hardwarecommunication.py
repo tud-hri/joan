@@ -3,11 +3,6 @@ from process import Control
 class HardwarecommunicationAction(Control):
     def __init__(self, *args, **kwargs):
         Control.__init__(self, *args, **kwargs)
-        self.moduleStates = None
-        self.moduleStateHandler = None
-        try:
-            statePackage = self.getModuleStatePackage(module='module.hardwarecommunication.widget.Hardwarecommunication.TemplateWidget')
-            self.moduleStates = statePackage['moduleStates']
-            self.moduleStateHandler = statePackage['moduleStateHandler']
-        except Exception as inst:
-            print(inst)
+        # get state information from module Widget
+        self.moduleStates = 'moduleStates' in kwargs.keys() and kwargs['moduleStates'] or None
+        self.moduleStateHandler = 'moduleStateHandler' in kwargs.keys() and kwargs['moduleStateHandler'] or None
