@@ -11,10 +11,7 @@ class SiminterfaceWidget(Control):
 
         Control.__init__(self, *args, **kwargs)
         self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)),"siminterfaceWidget.ui"))
-    
-        print(self.widget)
-        print(self.mainwidget)
-        
+
         self.data = {}
         self.writeNews(channel=self, news=self.data)
         self.counter = 0
