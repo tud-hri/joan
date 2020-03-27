@@ -30,10 +30,12 @@ class BaseInput():
         self._parentWidget.widget.sliderThrottle.setEnabled(False)
         self._parentWidget.widget.sliderSteering.setEnabled(False)
         self._parentWidget.widget.sliderBrake.setEnabled(False)
+        self.steerRange = 180 #range until
 
 
     def process(self):
-        pass
+        return self._data
+        
 
     def changeInputSource(self):
         self._parentWidget._input = self._parentWidget.Inputs[self.currentInput]
@@ -65,14 +67,15 @@ class Keyboard(BaseInput):
         self.throttle = False
         self.brake = False
         self.reverse = False
+        
 
 
     def keyPressEvent(self,event):
         if(self._parentWidget.widget.lblSource.text() == 'Keyboard'):
             key = event.key()
-            if key == QtCore.Qt.Key_W: 
+            if key == QtCore.Qt.Key_Up: 
                 self.throttle = True
-            elif key == QtCore.Qt.Key_S:
+            elif key == QtCore.Qt.Key_Space:
                 self.brake = True
             elif key == QtCore.Qt.Key_A:
                 self.steerLeft = True
@@ -84,9 +87,9 @@ class Keyboard(BaseInput):
     def keyReleaseEvent(self,event):
         if(self._parentWidget.widget.lblSource.text() == 'Keyboard'):
             key = event.key()
-            if key == QtCore.Qt.Key_W: 
+            if key == QtCore.Qt.Key_Up: 
                 self.throttle = False
-            elif key == QtCore.Qt.Key_S:
+            elif key == QtCore.Qt.Key_Space:
                 self.brake = False
             elif key == QtCore.Qt.Key_A:
                 self.steerLeft = False
@@ -134,9 +137,9 @@ class Keyboard(BaseInput):
             self._data['BrakeInput'] = self._data['BrakeInput'] -5
 
         #Steering:
-        if(self.steerLeft == True and self._data['SteeringInput'] < 450):
+        if(self.steerLeft == True and self._data['SteeringInput'] < self.steerRange and self._data['SteeringInput'] > -self.steerRange):
             self._data['SteeringInput'] = self._data['SteeringInput'] - 2
-        elif(self.steerRight == True and self._data['SteeringInput'] > -450):
+        elif(self.steerRight == True and self._data['SteeringInput'] > -self.steerRange and self._data['SteeringInput'] < self.steerRange):
             self._data['SteeringInput'] = self._data['SteeringInput'] + 2
         elif(self._data['SteeringInput'] > 0):
             self._data['SteeringInput'] = self._data['SteeringInput'] -1
@@ -144,6 +147,8 @@ class Keyboard(BaseInput):
             self._data['SteeringInput'] = self._data['SteeringInput'] +1
 
         self.displayInputs()
+
+        return self._data
         
 
         
@@ -191,4 +196,6 @@ class Mouse(BaseInput):
         self._data['ThrottleInput'] = self._parentWidget.widget.sliderThrottle.value()
         self._data['SteeringInput'] = self._parentWidget.widget.sliderSteering.value()
         self.displayInputs()
-        pass
+        
+
+        return self._data

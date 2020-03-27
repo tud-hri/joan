@@ -38,7 +38,9 @@ class SiminterfaceWidget(Control):
         self.writeNews(channel=self, news=self.data)  #write away this data to news channel
 
         FeedbackControllerData = self.readNews('modules.feedbackcontroller.widget.feedbackcontroller.FeedbackcontrollerWidget')
-        self.action.handleFeedbackcontrollerdata(FeedbackControllerData)
+        InputData = self.readNews('modules.hardwarecommunication.widget.hardwarecommunication.HardwarecommunicationWidget')
+        print(InputData)
+        #self.action.handleFeedbackcontrollerdata(FeedbackControllerData)
         
 
     def printshit(self):

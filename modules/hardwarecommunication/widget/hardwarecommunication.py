@@ -10,8 +10,7 @@ class HardwarecommunicationWidget(Control):
         kwargs['callback'] = [self.do]  # method will run each given millis
         Control.__init__(self, *args, **kwargs)
         self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)),"hardwarecommunication.ui"))
-        self.data = {}
-        self.writeNews(channel=self, news=self.data)
+        self.Inputdata = {}
 
         # creating a self.moduleStateHandler which also has the moduleStates in self.moduleStateHandler.states
         self.defineModuleStateHandler(module=self, moduleStates=HardwarecommunicationStates())
@@ -30,12 +29,15 @@ class HardwarecommunicationWidget(Control):
         self.Inputs = dict([("Keyboard",Keyboard(self)),("Mouse",Mouse(self))])
 
         #initialize input with none (not catching any inputs)
+        self.Inputdata = self._input.process
+        self.writeNews(channel=self, news=self.Inputdata)
 
 
     # callback class is called each time a pulse has come from the Pulsar class instance
     def do(self):
         try:
-            self._input.process()
+            self.Inputdata = self._input.process()
+            self.writeNews(channel=self, news=self.Inputdata)
         except Exception as e:
             print(e)
 
