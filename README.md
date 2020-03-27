@@ -98,7 +98,11 @@ reads the corresponding .ui file and does all the action needed for this widget
 ### modules.datarecorder.widget.datarecorder.ui
 definition of the gui
 ### modules.datarecorder.action.datarecorder.py
-does all the action needed, like getting and writing data (not yet implemented)
+does all the action to get the datarecorder initializing and working
+### modules.datarecorder.action.datawriter.py
+actually writes data (from News), every time a pulse calls the do-method in datarecorderWidget
+### modules.datarecorder.action.datarecordersettings.py
+reads and writes settings in json format which items should be recorded (default: all)
 
 ### modules.menu.widget.menu.py
 reads the corresponding .ui file and does all the action needed for this widget

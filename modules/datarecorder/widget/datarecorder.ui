@@ -27,6 +27,10 @@
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="0" column="3">
+       <layout class="QVBoxLayout" name="verticalLayout_items">
+       </layout>
+      </item>      
+      <item row="0" column="4">
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item alignment="Qt::AlignRight">
          <widget class="QLabel" name="lblStatusRecorder">
