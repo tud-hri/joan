@@ -70,12 +70,12 @@ class SiminterfaceWidget(Control):
         self.data = self.action.getData()
         self.writeNews(channel=self, news=self.data)
         self.moduleStateHandler.requestStateChange(self.moduleStates.SIMULATION.RUNNING)
-        
+        self.startPulsar()
 
-        if Connected is True:
-            self.moduleStateHandler.requestStateChange(self.moduleStates.SIMULATION.RUNNING)
-            self.startPulsar()
-            print('STARTED CARLA PULSAR!!')
+        #if Connected is True:
+        #    self.moduleStateHandler.requestStateChange(self.moduleStates.SIMULATION.RUNNING)
+        #    self.startPulsar()
+        #    print('STARTED CARLA PULSAR!!')
 
     def stop(self):
         self.moduleStateHandler.requestStateChange(self.moduleStates.SIMULATION.STOPPED)

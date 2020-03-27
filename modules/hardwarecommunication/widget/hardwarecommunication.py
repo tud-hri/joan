@@ -29,7 +29,7 @@ class HardwarecommunicationWidget(Control):
         self.Inputs = dict([("Keyboard",Keyboard(self)),("Mouse",Mouse(self))])
 
         #initialize input with none (not catching any inputs)
-        self.Inputdata = self._input.process
+        #self.Inputdata = self._input.process
         self.writeNews(channel=self, news=self.Inputdata)
 
 
