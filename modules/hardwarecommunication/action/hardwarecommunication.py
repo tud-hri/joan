@@ -70,28 +70,28 @@ class Keyboard(BaseInput):
     def keyPressEvent(self,event):
         if(self._parentWidget.widget.lblSource.text() == 'Keyboard'):
             key = event.key()
-            if key == QtCore.Qt.Key_Up: 
+            if key == QtCore.Qt.Key_W: 
                 self.throttle = True
-            elif key == QtCore.Qt.Key_Down:
+            elif key == QtCore.Qt.Key_S:
                 self.brake = True
-            elif key == QtCore.Qt.Key_Left:
+            elif key == QtCore.Qt.Key_A:
                 self.steerLeft = True
                 self.steerRight = False
-            elif key == QtCore.Qt.Key_Right:
+            elif key == QtCore.Qt.Key_D:
                 self.steerRight = True
                 self.steerLeft = False
 
     def keyReleaseEvent(self,event):
         if(self._parentWidget.widget.lblSource.text() == 'Keyboard'):
             key = event.key()
-            if key == QtCore.Qt.Key_Up: 
+            if key == QtCore.Qt.Key_W: 
                 self.throttle = False
-            elif key == QtCore.Qt.Key_Down:
+            elif key == QtCore.Qt.Key_S:
                 self.brake = False
-            elif key == QtCore.Qt.Key_Left:
+            elif key == QtCore.Qt.Key_A:
                 self.steerLeft = False
                 self.steerRight = False
-            elif key == QtCore.Qt.Key_Right:
+            elif key == QtCore.Qt.Key_D:
                 self.steerRight = False
                 self.steerLeft = False
             elif key == QtCore.Qt.Key_R:
