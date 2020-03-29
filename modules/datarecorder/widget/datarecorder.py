@@ -80,7 +80,7 @@ tail: 2020-03-24 17:11:01.884533,0,0
             pass
 
     def _show(self):
-        self.widget.show()
+        self.window.show()
         self.moduleStateHandler.requestStateChange(self.moduleStates.DATARECORDER.NOTINITIALIZED)
 
        # ref, so we can find ourselves
@@ -115,7 +115,7 @@ tail: 2020-03-24 17:11:01.884533,0,0
 
 
     def start(self):
-        if not self.widget.isVisible():
+        if not self.window.isVisible():
             self._show()
         self.action.start()
         self.startPulsar()
@@ -126,7 +126,8 @@ tail: 2020-03-24 17:11:01.884533,0,0
 
     def _close(self):
         self.moduleStateHandler.requestStateChange(self.moduleStates.DATARECORDER.STOP)
-        self.widget.close()
+        if self.window.isVisible():
+            self.window.close()
 
     def handlemodulestate(self, state):
         """ 

@@ -22,7 +22,7 @@ StateHandler(QtCore.QObject) <br>
 State <br>
 MasterStates <br>
 Pulsar(QtCore.QThread) <br>
-moduleWidget(Control) <br>
+MainModuleWidget(Control) <br>
 moduleAction(Control) <br>
 moduleStates(MasterStates)<br><br>
 
@@ -39,7 +39,7 @@ module is something like DataRecorder
         class Pulsar
         class QObject
         class QThread
-        class moduleWidget
+        class MainModuleWidget
         class moduleAction
         class moduleStates
 
@@ -52,7 +52,7 @@ module is something like DataRecorder
         Control ..|> Status : Realization
         Control ..|> News : Realization
         Control --|> moduleAction : Inheritance
-        Control  --|> moduleWidget : Inheritance
+        Control  --|> MainModuleWidget : Inheritance
         MasterStates --|> moduleStates : Inheritance
         moduleStates "1" ..|> "*" State : Realization
 ```
