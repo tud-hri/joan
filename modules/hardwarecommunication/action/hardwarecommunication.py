@@ -77,10 +77,10 @@ class Keyboard(BaseInput):
                 self.throttle = True
             elif key == QtCore.Qt.Key_Space:
                 self.brake = True
-            elif key == QtCore.Qt.Key_A:
+            elif key == QtCore.Qt.Key_A or key == QtCore.Qt.Key_Left:
                 self.steerLeft = True
                 self.steerRight = False
-            elif key == QtCore.Qt.Key_D:
+            elif key == QtCore.Qt.Key_D or key == QtCore.Qt.Key_Right:
                 self.steerRight = True
                 self.steerLeft = False
 
@@ -91,10 +91,10 @@ class Keyboard(BaseInput):
                 self.throttle = False
             elif key == QtCore.Qt.Key_Space:
                 self.brake = False
-            elif key == QtCore.Qt.Key_A:
+            elif key == QtCore.Qt.Key_A or key == QtCore.Qt.Key_Left:
                 self.steerLeft = False
                 self.steerRight = False
-            elif key == QtCore.Qt.Key_D:
+            elif key == QtCore.Qt.Key_D or key == QtCore.Qt.Key_Right:
                 self.steerRight = False
                 self.steerLeft = False
             elif key == QtCore.Qt.Key_R:
