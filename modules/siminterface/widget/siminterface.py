@@ -11,10 +11,7 @@ class SiminterfaceWidget(Control):
 
         Control.__init__(self, *args, **kwargs)
         self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)),"siminterfaceWidget.ui"))
-    
-        print(self.widget)
-        print(self.mainwidget)
-        
+
         self.data = {}
         self.writeNews(channel=self, news=self.data)
         self.counter = 0
@@ -41,7 +38,9 @@ class SiminterfaceWidget(Control):
         self.writeNews(channel=self, news=self.data)  #write away this data to news channel
 
         FeedbackControllerData = self.readNews('modules.feedbackcontroller.widget.feedbackcontroller.FeedbackcontrollerWidget')
-        self.action.handleFeedbackcontrollerdata(FeedbackControllerData)
+        InputData = self.readNews('modules.hardwarecommunication.widget.hardwarecommunication.HardwarecommunicationWidget')
+        print(InputData)
+        #self.action.handleFeedbackcontrollerdata(FeedbackControllerData)
         
 
     def printshit(self):
@@ -60,7 +59,7 @@ class SiminterfaceWidget(Control):
         try:
             self.mainwidget.show()
         except Exception as e:
-            print(' ############## Exception was: #########')
+            print(' ############## Exception was: #########',e)
 
     def start(self):
         if not self.mainwidget.isVisible():
@@ -71,12 +70,12 @@ class SiminterfaceWidget(Control):
         self.data = self.action.getData()
         self.writeNews(channel=self, news=self.data)
         self.moduleStateHandler.requestStateChange(self.moduleStates.SIMULATION.RUNNING)
-        
+        self.startPulsar()
 
-        if Connected is True:
-            self.moduleStateHandler.requestStateChange(self.moduleStates.SIMULATION.RUNNING)
-            self.startPulsar()
-            print('STARTED CARLA PULSAR!!')
+        #if Connected is True:
+        #    self.moduleStateHandler.requestStateChange(self.moduleStates.SIMULATION.RUNNING)
+        #    self.startPulsar()
+        #    print('STARTED CARLA PULSAR!!')
 
     def stop(self):
         self.moduleStateHandler.requestStateChange(self.moduleStates.SIMULATION.STOPPED)
