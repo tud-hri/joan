@@ -79,8 +79,7 @@ class Control(Pulsar):
         self.widget = self._getGui(ui)
         assert self.widget != None, 'could not create a widget, is %s the correct filename?' % ui
 
-
-        self.stateWidget = self._getGui(os.path.join(os.path.dirname(os.path.realpath(__file__)),"statewidget.ui"))
+        self.stateWidget = self._getGui(os.path.join(os.path.dirname(os.path.realpath(__file__)),"../resources/statewidget.ui"))
         
         self.window.addWidget(self.stateWidget, name='State widget')
         self.window.addWidget(self.widget, name='Module widget')
