@@ -45,7 +45,21 @@ class DatarecorderAction(Control):
     def write(self, news):
         #print('write the news data')
         #print('in action/datarecorder', news)
+        '''
         self.dataWriter.write(news)
+                #if self.moduleStateHandler.getCurrentState() == self.moduleStates.DATARECORDER.START:
+        #print("news from steeringcommunication", self.readNews('modules.steeringcommunication.widget.steeringcommunication.SteeringcommunicationWidget'))
+        steeringcommunicationNews = self.readNews('modules.steeringcommunication.widget.steeringcommunication.SteeringcommunicationWidget')
+        if steeringcommunicationNews != {}:
+            steerincommunicationData = {}
+            steerincommunicationData['time'] = datetime.now()
+            steerincommunicationData.update(steeringcommunicationNews)
+        
+            self.action.write(steerincommunicationData)
+        else:
+            print('No news from steeringcommunication')
+        # self.readNews('modules.steeringcommunication.widget.steeringcommunication.SteeringcommunicationWidget'))
+        '''
         
 
     def stop(self):

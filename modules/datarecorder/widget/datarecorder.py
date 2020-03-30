@@ -55,6 +55,7 @@ class DatarecorderWidget(Control):
             print('No news from steeringcommunication')
         # self.readNews('modules.steeringcommunication.widget.steeringcommunication.SteeringcommunicationWidget'))
 
+
     def editWidget(self):
         # TODO: make it compact (folding, tabs?)
 
@@ -84,7 +85,6 @@ class DatarecorderWidget(Control):
 
                         # start set checkboxes from currentSettings
                         if item not in currentSettings['modules'][channel].keys():
-                            print('key zetten moet hier gebeuren')
                             itemWidget[item].setChecked(True)
                             itemWidget[item].stateChanged.emit(True)
                         else:
