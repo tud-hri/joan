@@ -82,8 +82,8 @@ class Control(Pulsar):
 
         self.stateWidget = self._getGui(os.path.join(os.path.dirname(os.path.realpath(__file__)),"statewidget.ui"))
         
-        self.window.addWidget(self.stateWidget, 'State widget')
-        self.window.addWidget(self.widget, 'Module widget')
+        self.window.addWidget(self.stateWidget, name='State widget')
+        self.window.addWidget(self.widget, name='Module widget')
         
         # connect self.window close signal to the widget's _close function (if defined): this will also call self._close in case the user closes the window
         try:
@@ -91,17 +91,19 @@ class Control(Pulsar):
         except:
             pass
 
+        # connect stateWidget widgets (buttons, line edit)
         self.stateWidget.lineTick.setPlaceholderText(str(self.millis))
+        self.stateWidget.lineTick.textChanged.connect(lambda: self._setmillis(self.millis))
         self.stateWidget.btnStart.clicked.connect(self.start)
         self.stateWidget.btnStop.clicked.connect(self.stop)
-        self.stateWidget.btnStart.clicked.connect(self.disableLineTick)
-        self.stateWidget.btnStop.clicked.connect(self.enableLineTick)
-        self.stateWidget.btnStop.clicked.connect(self.stateWidget.lineTick.clear)
-        self.stateWidget.btnStart.clicked.connect(self.stateWidget.lineTick.clear)
-        self.stateWidget.btnStart.clicked.connect(self.stateWidget.lineTick.clearFocus)
-        self.stateWidget.btnStart.clicked.connect(self.setTicktext)
-        self.stateWidget.btnStop.clicked.connect(self.setTicktext)
-        self.stateWidget.lineTick.textChanged.connect(self._setmillis)
+        # self.stateWidget.btnStart.clicked.connect(self.stateWidget.lineTick.setEnabled(False))
+        # self.stateWidget.btnStop.clicked.connect(self.stateWidget.lineTick.setEnabled(True))
+        # self.stateWidget.btnStop.clicked.connect(self.stateWidget.lineTick.clear)
+        # self.stateWidget.btnStart.clicked.connect(self.stateWidget.lineTick.clear)
+        # self.stateWidget.btnStart.clicked.connect(self.stateWidget.lineTick.clearFocus)
+        # self.stateWidget.btnStart.clicked.connect(self.setTicktext)
+        # self.stateWidget.btnStop.clicked.connect(self.setTicktext)
+        
         
         '''
         # TODO find out if Status needs to have a dictionary with widgets
@@ -111,12 +113,6 @@ class Control(Pulsar):
         # put widgets in SingletonStatus object for setting state of widgets 
         self.singletonStatus = Status({uiKey: self.widget})
         '''
-    def disableLineTick(self):
-        self.stateWidget.lineTick.setEnabled(False)
-
-    def enableLineTick(self):
-        self.stateWidget.lineTick.setEnabled(True)
-
 
     def _getGui(self, ui=''):
         '''
