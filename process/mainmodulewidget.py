@@ -59,11 +59,15 @@ class MainModuleWidget(QtWidgets.QMainWindow):
         self.layout.addWidget(widget)
 
     def processShowMenuTrigger(self, action):
-        '''Using action.text(), you can process the action that is triggered in the file menu, like Save settings or close'''
+        '''
+        Using action.text(), you can process the action that is triggered in the show menu (check/uncheck of widget visibility). Find the widget based on name, and toggle its visibility
+        '''
         widget = self.mainWidget.findChild(QtWidgets.QWidget, action.text())
         if widget is not None:
             widget.setVisible(action.isChecked())
-            self.centralWidget().adjustSize()
+            # adjust the size of the window
+            self.mainWidget.adjustSize()
+            self.adjustSize()
 
     def closeEvent(self, event):
         # window is closed, emit closed signal and accept the event
