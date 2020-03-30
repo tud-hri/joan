@@ -4,6 +4,11 @@ from PyQt5 import QtCore
 from time import sleep
 from modules.datarecorder.action.states import DatarecorderStates
 from modules.datarecorder.action.datarecorder import DatarecorderAction
+from modules.datarecorder.action.datarecordersettings import DatarecorderSettings
+
+# for editWidgets
+from PyQt5 import QtWidgets
+from functools import partial
 
 from datetime import datetime
 
@@ -33,6 +38,8 @@ class DatarecorderWidget(Control):
             self.action = DatarecorderAction()
         except Exception as inst:
             print('De error bij de constructor van de widget is:    ', inst)
+
+        self.settings = DatarecorderSettings()
        
     def do(self):
         #if self.moduleStateHandler.getCurrentState() == self.moduleStates.DATARECORDER.START:
@@ -48,28 +55,46 @@ class DatarecorderWidget(Control):
             print('No news from steeringcommunication')
         # self.readNews('modules.steeringcommunication.widget.steeringcommunication.SteeringcommunicationWidget'))
 
-        ''' test
-met pulsar van datarecorder op 2 ms:
-2020-03-24 16:11:50.743416,0,0
-2020-03-24 16:11:41.927696,0,0
-4407 regels, met print, 8.815720 / 4407 = 0.002 sec per record
-4407 / 8.815720 = 500 records per seconde 
 
-2020-03-24 16:15:46.834025,0,0
-2020-03-24 16:15:57.525550,0,0
-5341 regels, zonder print: 10.691525 / 5341 = 0.002 sec per record
-5341 / 10.691525 = 500 records per seconde
+    def editWidget(self):
+        # TODO: make it compact (folding, tabs?)
 
+        currentSettings = self.settings.read()
 
-met pulsar van datarecorder op 1 ms:
-head: 2020-03-24 17:10:47.943303,0,0
-tail: 2020-03-24 17:11:01.884533,0,0
-10803 regels, zonder print: 13.41230 / 10803 = 0.00124 sec per record
-10803 / 13.41230 =  805 records per seconde  (dit zouden er in het ideale geval 1000 moeten zijn)
+        try:
+            layout = self.widget.verticalLayout_items
+            # cleanup previous widgets
+            for i in reversed(range(layout.count())):
+                markedWidget = layout.takeAt(i).widget()
+                layout.removeWidget(markedWidget)
+                markedWidget.setParent(None)
 
-2 msec is dus de onderwaarde voor de datarecorder
-        '''
+            newsCheckbox = {}
+            moduleKey = '%s.%s' % (self.__class__.__module__ , self.__class__.__name__)
+            itemWidget = {}
+            for channel in self.getAvailableNewsChannels():
+                if channel != moduleKey:
+                    newsCheckbox[channel] = QtWidgets.QLabel(channel.split('.')[1])
+                    layout.addWidget(newsCheckbox[channel])
+                    news = self.readNews(channel)
+                    for item in news:
+                        itemWidget[item] = QtWidgets.QCheckBox(item)
+                        #lambda will not deliver what you expect: itemWidget[item].clicked.connect(lambda: self.handlemodulesettings(itemWidget[item].text(), itemWidget[item].isChecked()))
+                        itemWidget[item].stateChanged.connect(partial(self.handlemodulesettings, channel, itemWidget[item]))
+                        layout.addWidget(itemWidget[item])
 
+                        # start set checkboxes from currentSettings
+                        if item not in currentSettings['modules'][channel].keys():
+                            itemWidget[item].setChecked(True)
+                            itemWidget[item].stateChanged.emit(True)
+                        else:
+                            itemWidget[item].setChecked(currentSettings['modules'][channel][item])
+                            itemWidget[item].stateChanged.emit(currentSettings['modules'][channel][item])
+                        # end set checkboxes from currentSettings
+
+            self.widget.resize(800, 300) #TODO make this dynamic
+        except Exception as inst:
+            print (inst)
 
     @QtCore.pyqtSlot(str)
     def _setmillis(self, millis):
@@ -113,6 +138,9 @@ tail: 2020-03-24 17:11:01.884533,0,0
         self.widget.lblStatusRecorder.setText("not initialized")
         self.widget.lblStatusRecorder.setStyleSheet('color: orange')
 
+        # reads settings if available and expands the datarecorder widget
+        self.editWidget()
+
 
     def start(self):
         if not self.window.isVisible():
@@ -128,6 +156,10 @@ tail: 2020-03-24 17:11:01.884533,0,0
         self.moduleStateHandler.requestStateChange(self.moduleStates.DATARECORDER.STOP)
         if self.window.isVisible():
             self.window.close()
+
+    def handlemodulesettings(self, moduleKey, item):
+        datarecorderSettings = DatarecorderSettings()
+        datarecorderSettings.write(moduleKey=moduleKey, item=item)
 
     def handlemodulestate(self, state):
         """ 

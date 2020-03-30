@@ -31,6 +31,8 @@ class DataWriter(threading.Thread):
         self.filehandle.close()
 
     def write(self, data={}):
+        # get ALL news here, filter in self.filter and write
+        # this class is a thread, so the main thread should continue while filtering and writing
         row = {}
         row['time'] = 'fixed' #datetime.now()
         row.update(data)

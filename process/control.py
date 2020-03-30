@@ -4,13 +4,14 @@ from PyQt5 import uic, QtCore
 from PyQt5 import QtWidgets
 from PyQt5 import QtGui
 from .mainmodulewidget import MainModuleWidget
+from pathlib import Path
 #from queue import Queue
 
 import os 
 
 class News:
     '''
-    The Recent class is a singleton that holds all most recent status data
+    The News class is a singleton that holds all most recent status data
     Every class has its own writing area; the key of the class
     Oll other classes may read the value
     '''
@@ -70,11 +71,15 @@ class Control(Pulsar):
    
     def createWidget(self, ui=''):       
         assert ui != '', 'argument "ui" should point to a PyQt ui file (e.g. ui=<absolute path>menu.ui)' 
-        self.widget = self._getGui(ui)
-        assert self.widget != None, 'could not create a widget, is %s the correct filename?' % ui
 
         # window is a QMainWindow, and the container for all widgets
         self.window = MainModuleWidget()
+
+        # load widget UI ()
+        self.widget = self._getGui(ui)
+        assert self.widget != None, 'could not create a widget, is %s the correct filename?' % ui
+
+
         self.stateWidget = self._getGui(os.path.join(os.path.dirname(os.path.realpath(__file__)),"statewidget.ui"))
         
         self.window.addWidget(self.stateWidget, 'State widget')
@@ -86,6 +91,18 @@ class Control(Pulsar):
         except:
             pass
 
+        self.stateWidget.lineTick.setPlaceholderText(str(self.millis))
+        self.stateWidget.btnStart.clicked.connect(self.start)
+        self.stateWidget.btnStop.clicked.connect(self.stop)
+        self.stateWidget.btnStart.clicked.connect(self.disableLineTick)
+        self.stateWidget.btnStop.clicked.connect(self.enableLineTick)
+        self.stateWidget.btnStop.clicked.connect(self.stateWidget.lineTick.clear)
+        self.stateWidget.btnStart.clicked.connect(self.stateWidget.lineTick.clear)
+        self.stateWidget.btnStart.clicked.connect(self.stateWidget.lineTick.clearFocus)
+        self.stateWidget.btnStart.clicked.connect(self.setTicktext)
+        self.stateWidget.btnStop.clicked.connect(self.setTicktext)
+        self.stateWidget.lineTick.textChanged.connect(self._setmillis)
+        
         '''
         # TODO find out if Status needs to have a dictionary with widgets
         # self.singletonStatus = Status()
@@ -94,6 +111,11 @@ class Control(Pulsar):
         # put widgets in SingletonStatus object for setting state of widgets 
         self.singletonStatus = Status({uiKey: self.widget})
         '''
+    def disableLineTick(self):
+        self.stateWidget.lineTick.setEnabled(False)
+
+    def enableLineTick(self):
+        self.stateWidget.lineTick.setEnabled(True)
 
 
     def _getGui(self, ui=''):
@@ -125,6 +147,8 @@ class Control(Pulsar):
         except Exception as inst:
             print('Exception in Control',inst)
 
+    def setTicktext(self):
+        self.stateWidget.lineTick.setPlaceholderText(str(self.millis))
 
     def writeNews(self, channel='', news={}):
         assert channel != '', 'argument "channel" should be the writer class'
@@ -159,3 +183,5 @@ class Control(Pulsar):
 
     def getModuleStatePackage(self, module=''):
         return module in self.getAvailableModuleStatePackages() and self.singletonStatus.moduleStatePackages[module] or {}
+
+
