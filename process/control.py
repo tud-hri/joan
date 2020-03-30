@@ -65,42 +65,21 @@ class Control(Pulsar):
 
         self.window = None # main widget (container for widget and controlWidget)
         self.widget = None  # will contain a value after calling createWidget
-        self.mainwidget= None
         self.moduleStateHandler = None # will contain  a value after calling defineModuleStateHandler
         self.moduleStates = None # will contain  a value after calling defineModuleStateHandler
 
    
     def createWidget(self, ui=''):       
         assert ui != '', 'argument "ui" should point to a PyQt ui file (e.g. ui=<absolute path>menu.ui)' 
-        
-        self.mainwidget = self._getGui((os.path.join(os.path.dirname(os.path.realpath(__file__)),"MainWindowWidget.ui")))
-        self.widget = self._getGui(ui)
-
-        self.mainwidget.vLayout.addWidget(self.widget)
-        self.mainwidget.lineTick.setPlaceholderText(str(self.millis))
-
-        self.mainwidget.btnStart.clicked.connect(self.start)
-        self.mainwidget.btnStop.clicked.connect(self.stop)
-
-        self.mainwidget.btnStart.clicked.connect(self.disableLineTick)
-        self.mainwidget.btnStop.clicked.connect(self.enableLineTick)
-
-        self.mainwidget.btnStop.clicked.connect(self.mainwidget.lineTick.clear)
-        self.mainwidget.btnStart.clicked.connect(self.mainwidget.lineTick.clear)
-        self.mainwidget.btnStart.clicked.connect(self.mainwidget.lineTick.clearFocus)
-        
-        
-        self.mainwidget.btnStart.clicked.connect(self.setTicktext)
-        self.mainwidget.btnStop.clicked.connect(self.setTicktext)
-        
-        self.mainwidget.lineTick.textChanged.connect(self._setmillis)
-        
-        
-        
-        assert self.widget != None, 'could not create a widget, is %s the correct filename?' % ui
 
         # window is a QMainWindow, and the container for all widgets
         self.window = MainModuleWidget()
+
+        # load widget UI ()
+        self.widget = self._getGui(ui)
+        assert self.widget != None, 'could not create a widget, is %s the correct filename?' % ui
+
+
         self.stateWidget = self._getGui(os.path.join(os.path.dirname(os.path.realpath(__file__)),"statewidget.ui"))
         
         self.window.addWidget(self.stateWidget, 'State widget')
@@ -112,6 +91,18 @@ class Control(Pulsar):
         except:
             pass
 
+        self.stateWidget.lineTick.setPlaceholderText(str(self.millis))
+        self.stateWidget.btnStart.clicked.connect(self.start)
+        self.stateWidget.btnStop.clicked.connect(self.stop)
+        self.stateWidget.btnStart.clicked.connect(self.disableLineTick)
+        self.stateWidget.btnStop.clicked.connect(self.enableLineTick)
+        self.stateWidget.btnStop.clicked.connect(self.stateWidget.lineTick.clear)
+        self.stateWidget.btnStart.clicked.connect(self.stateWidget.lineTick.clear)
+        self.stateWidget.btnStart.clicked.connect(self.stateWidget.lineTick.clearFocus)
+        self.stateWidget.btnStart.clicked.connect(self.setTicktext)
+        self.stateWidget.btnStop.clicked.connect(self.setTicktext)
+        self.stateWidget.lineTick.textChanged.connect(self._setmillis)
+        
         '''
         # TODO find out if Status needs to have a dictionary with widgets
         # self.singletonStatus = Status()
@@ -121,10 +112,10 @@ class Control(Pulsar):
         self.singletonStatus = Status({uiKey: self.widget})
         '''
     def disableLineTick(self):
-        self.mainwidget.lineTick.setEnabled(False)
+        self.stateWidget.lineTick.setEnabled(False)
 
     def enableLineTick(self):
-        self.mainwidget.lineTick.setEnabled(True)
+        self.stateWidget.lineTick.setEnabled(True)
 
 
     def _getGui(self, ui=''):
@@ -157,7 +148,7 @@ class Control(Pulsar):
             print('Exception in Control',inst)
 
     def setTicktext(self):
-        self.mainwidget.lineTick.setPlaceholderText(str(self.millis))
+        self.stateWidget.lineTick.setPlaceholderText(str(self.millis))
 
     def writeNews(self, channel='', news={}):
         assert channel != '', 'argument "channel" should be the writer class'

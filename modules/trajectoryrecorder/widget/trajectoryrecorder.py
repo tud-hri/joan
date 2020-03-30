@@ -57,7 +57,7 @@ class TrajectoryrecorderWidget(Control):
 
     def _show(self):
         if(self.Siminterface['moduleStateHandler'].state == self.Siminterface['moduleStates'].SIMULATION.RUNNING): 
-            self.mainwidget.show()
+            self.window.show()
         
 
 
@@ -126,7 +126,7 @@ class TrajectoryrecorderWidget(Control):
 
     def _close(self):
         if(self.Siminterface['moduleStateHandler'].state != self.Siminterface['moduleStates'].SIMULATION.RUNNING): 
-            self.mainwidget.close()
+            self.window.close()
 
     def handlemasterstate(self, state):
         """ 

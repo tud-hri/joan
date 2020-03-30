@@ -38,7 +38,7 @@ class TemplateWidget(Control):
             pass
 
     def _show(self):
-        self.mainwidget.show()
+        self.window.show()
         print('in widget/template.py', self.moduleStateHandler)
         print('in widget/template.py', self.moduleStates)
         moduleStatesDict = self.moduleStates.getStates()
@@ -47,7 +47,7 @@ class TemplateWidget(Control):
 
 
     def start(self):
-        if not self.mainwidget.isVisible():
+        if not self.window.isVisible():
             self._show()
         print(self.widget.windowTitle())
         self.widget.setWindowTitle("Template title")
@@ -59,7 +59,7 @@ class TemplateWidget(Control):
         self.stopPulsar()
 
     def _close(self):
-        self.mainwidget.close()
+        self.window.close()
 
     def handlemasterstate(self, state):
         """ 
@@ -97,13 +97,13 @@ class TemplateWidget(Control):
                 self._stop()
 
             # update the state label
-            self.mainwidget.lblModulestate.setText(str(stateAsState.name))
-            self.mainwidget.repaint()
+            self.stateWidget.lblModulestate.setText(str(stateAsState.name))
+            self.window.repaint()
 
             if stateAsState == self.moduleStates.TEMPLATE.RUNNING:
-                self.mainwidget.btnStart.setStyleSheet("background-color: green")
+                self.stateWidget.btnStart.setStyleSheet("background-color: green")
             else:
-                self.mainwidget.btnStart.setStyleSheet("background-color: none")
+                self.stateWidget.btnStart.setStyleSheet("background-color: none")
 
         except Exception as inst:
             print (inst)
