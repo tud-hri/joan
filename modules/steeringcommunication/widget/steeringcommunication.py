@@ -24,7 +24,7 @@ class SteeringcommunicationWidget(Control):
         try:
             self.action = SteeringcommunicationAction()
         except Exception as inst:
-            print('De error bij de constructor van de widget is:    ', inst)
+            print('De error bij de constructor van de widget is:   ', inst)
         self.i = 0
 
     # callback class is called each time a pulse has come from the Pulsar class instance
