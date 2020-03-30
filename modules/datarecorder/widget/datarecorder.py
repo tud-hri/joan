@@ -42,19 +42,8 @@ class DatarecorderWidget(Control):
         self.settings = DatarecorderSettings()
        
     def do(self):
-        #if self.moduleStateHandler.getCurrentState() == self.moduleStates.DATARECORDER.START:
-        #print("news from steeringcommunication", self.readNews('modules.steeringcommunication.widget.steeringcommunication.SteeringcommunicationWidget'))
-        steeringcommunicationNews = self.readNews('modules.steeringcommunication.widget.steeringcommunication.SteeringcommunicationWidget')
-        if steeringcommunicationNews != {}:
-            steerincommunicationData = {}
-            steerincommunicationData['time'] = datetime.now()
-            steerincommunicationData.update(steeringcommunicationNews)
-        
-            self.action.write(steerincommunicationData)
-        else:
-            print('No news from steeringcommunication')
-        # self.readNews('modules.steeringcommunication.widget.steeringcommunication.SteeringcommunicationWidget'))
-
+        # handling is done in the action part
+        self.action.write()
 
     def editWidget(self):
         # TODO: make it compact (folding, tabs?)
