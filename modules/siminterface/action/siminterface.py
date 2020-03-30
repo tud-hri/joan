@@ -4,7 +4,7 @@ from process import Control
 
 
 try:
-    sys.path.append(glob.glob('../../carla/PythonAPI/carla/dist/carla-*%d.%d-%s.egg' % (
+    sys.path.append(glob.glob('../../carla2/carla/PythonAPI/carla/dist/carla-*%d.%d-%s.egg' % (
         sys.version_info.major,
         sys.version_info.minor,
         'win-amd64' if os.name == 'nt' else 'linux-x86_64'))[0])
@@ -38,7 +38,7 @@ class Simcommunication():
         try:
             print(' connecting')
             self.client = carla.Client(self.host,self.port) #connecting to server
-            self._parentWidget.lblModulestate.setText('Connecting')
+            #self._parentWidget.lblModulestate.setText('Connecting')
             self.client.set_timeout(2.0)
             self.world = self.client.get_world() ## get world object (contains everything)
             ## JUST TO SHOW THAT THE CLIENT CONNECTS (weather has no other uses)
@@ -60,7 +60,7 @@ class Simcommunication():
 
             self.egoCarBP = random.choice(self.BlueprintLibrary.filter("vehicle.HapticsLab.*"))
             self.egoCar = self.world.spawn_actor(self.egoCarBP,self.spawnPoints[0])
-            self._parentWidget.lblModulestate.setText('Car Spawned')
+            #self._parentWidget.lblModulestate.setText('Car Spawned')
 
             return True
         except Exception as inst:
@@ -86,4 +86,16 @@ class Simcommunication():
             pass
 
         self.egoCar.apply_control(self.control)
+
+    def setInputs(self, inputs):
+        steering = inputs['SteeringInput'] / 450
+        throttle = inputs['ThrottleInput'] / 100
+        brake = inputs['BrakeInput'] / 100
+
+        self.control.steer = steering
+        self.control.throttle = throttle
+        self.control.brake = brake
+
+        self.egoCar.apply_control(self.control)
+
 

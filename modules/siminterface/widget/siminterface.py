@@ -40,6 +40,12 @@ class SiminterfaceWidget(Control):
         FeedbackControllerData = self.readNews('modules.feedbackcontroller.widget.feedbackcontroller.FeedbackcontrollerWidget')
         InputData = self.readNews('modules.hardwarecommunication.widget.hardwarecommunication.HardwarecommunicationWidget')
         print(InputData)
+
+        try:
+            self.action.setInputs(InputData)
+        except:
+            pass
+        #print(InputData)
         #self.action.handleFeedbackcontrollerdata(FeedbackControllerData)
         
 
