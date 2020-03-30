@@ -172,3 +172,29 @@ definition of the gui
 
 <br>
 For now main.py is an early versions of how the program might work. <br>
+
+
+## mkdocs
+
+We are using mkdocs and ReadTheDocs for our documentation. 
+
+To install mkdocs, run:
+```
+pip install mkdocs
+```
+
+You can edit the index.md file to add more details about your project (add more pages, for example). The CARLA readthedocs is a nice example. See their `docs` folder and `mkdocs.yml` on their [CARLA GitHub](https://github.com/carla-simulator/carla).
+
+You can build your documentation _locally_ through:
+
+```
+mkdocs serve
+```
+
+This command builds your Markdown files into HTML and starts a development server to browse your documentation. Open up [http://127.0.0.1:8000/](http://127.0.0.1:8000/) in your web browser to see your documentation. You can make changes to your Markdown files and your docs will automatically rebuild. 
+
+We will also link the documentation to [ReadTheDocs.org](https://readthedocs.org), which provides an online platform for this documentation. More on this will follow soon.
+
+## Git flow
+
+We try to use the Git flow workflow in terms of branching, feature implementation and testing and releases. For more information, visit this [link](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow)
