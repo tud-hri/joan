@@ -176,7 +176,7 @@ For now main.py is an early versions of how the program might work. <br>
 
 ## mkdocs
 
-We are using mkdocs and ReadTheDocs for our documentation. 
+We are using mkdocs and ReadTheDocs for our documentation. For more information on mkdocs, visit [this link](https://www.mkdocs.org).
 
 To install mkdocs, run:
 ```
