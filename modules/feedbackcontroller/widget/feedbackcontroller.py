@@ -72,11 +72,11 @@ class FeedbackcontrollerWidget(Control):
             pass
 
     def _show(self):
-        self.mainwidget.show()
+        self.window.show()
 
 
     def start(self):
-        if not self.mainwidget.isVisible():
+        if not self.window.isVisible():
             self._show()
         self.startPulsar()
         self.moduleStateHandler.requestStateChange(self.moduleStates.FEEDBACKCONTROLLER.RUNNING)
@@ -87,7 +87,7 @@ class FeedbackcontrollerWidget(Control):
         self.stopPulsar()
 
     def _close(self):
-        self.mainwidget.close()
+        self.window.close()
 
 
     def handlemasterstate(self, state):
@@ -125,12 +125,12 @@ class FeedbackcontrollerWidget(Control):
                 self._stop()
 
             # update the state label
-            self.mainwidget.lblModulestate.setText(str(stateAsState.name))
+            self.stateWidget.lblModulestate.setText(str(stateAsState.name))
 
             if stateAsState == self.moduleStates.FEEDBACKCONTROLLER.RUNNING:
-                self.mainwidget.btnStart.setStyleSheet("background-color: green")
+                self.stateWidget.btnStart.setStyleSheet("background-color: green")
             else:
-                self.mainwidget.btnStart.setStyleSheet("background-color: none")
+                self.stateWidget.btnStart.setStyleSheet("background-color: none")
 
         except Exception as e:
             print(e)

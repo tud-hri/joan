@@ -60,8 +60,8 @@ class Keyboard(BaseInput):
 
         self._keyboardTab.btnUse.clicked.connect(self.setCurrentInput)
 
-        self._parentWidget.mainwidget.keyPressEvent = self.keyPressEvent
-        self._parentWidget.mainwidget.keyReleaseEvent = self.keyReleaseEvent
+        self._parentWidget.window.keyPressEvent = self.keyPressEvent
+        self._parentWidget.window.keyReleaseEvent = self.keyReleaseEvent
         self.steerLeft = False
         self.steerRight = False
         self.throttle = False

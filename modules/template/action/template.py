@@ -6,8 +6,8 @@ class TemplateAction(Control):
         self.moduleStates = None
         self.moduleStateHandler = None
         try:
-            statePackage = self.getModuleStatePackage(module='module.template.widget.template.TemplateWidget')
+            statePackage = self.getModuleStatePackage(module='modules.template.widget.template.TemplateWidget')
             self.moduleStates = statePackage['moduleStates']
             self.moduleStateHandler = statePackage['moduleStateHandler']
         except Exception as inst:
-            print(inst)
+            print('Exception in TemplateAction', inst)
