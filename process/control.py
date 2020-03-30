@@ -64,7 +64,7 @@ class Control(Pulsar):
         self.masterStates = self.singletonStatus.masterStates
 
         self.window = None # main widget (container for widget and controlWidget)
-        self.widget = None  # will contain a value after calling createWidget
+        self.widget = None # will contain a value after calling createWidget
         self.moduleStateHandler = None # will contain  a value after calling defineModuleStateHandler
         self.moduleStates = None # will contain  a value after calling defineModuleStateHandler
 
@@ -75,13 +75,12 @@ class Control(Pulsar):
         # window is a QMainWindow, and the container for all widgets
         self.window = MainModuleWidget()
 
+        self.stateWidget = self._getGui(os.path.join(os.path.dirname(os.path.realpath(__file__)),"../resources/statewidget.ui"))
+        self.window.addWidget(self.stateWidget, name='State widget')
+
         # load widget UI ()
         self.widget = self._getGui(ui)
         assert self.widget != None, 'could not create a widget, is %s the correct filename?' % ui
-
-        self.stateWidget = self._getGui(os.path.join(os.path.dirname(os.path.realpath(__file__)),"../resources/statewidget.ui"))
-        
-        self.window.addWidget(self.stateWidget, name='State widget')
         self.window.addWidget(self.widget, name='Module widget')
         
         # connect self.window close signal to the widget's _close function (if defined): this will also call self._close in case the user closes the window
@@ -92,7 +91,7 @@ class Control(Pulsar):
 
         # connect stateWidget widgets (buttons, line edit)
         self.stateWidget.lineTick.setPlaceholderText(str(self.millis))
-        self.stateWidget.lineTick.textChanged.connect(lambda: self._setmillis(self.millis))
+        self.stateWidget.lineTick.textChanged.connect(lambda x=self.millis: self._setmillis(x))
         self.stateWidget.btnStart.clicked.connect(self.start)
         self.stateWidget.btnStop.clicked.connect(self.stop)
         # self.stateWidget.btnStart.clicked.connect(self.stateWidget.lineTick.setEnabled(False))
@@ -122,6 +121,23 @@ class Control(Pulsar):
         except Exception as inst:
             print(inst)
             return None
+    
+    @QtCore.pyqtSlot(str)
+    def _setmillis(self, millis):
+        try:
+            millis = int(millis)
+            assert millis > 0, 'QTimer tick interval needs to be larger than 0'
+            self.setInterval(millis)
+        except:
+            pass
+
+
+    def _show(self):
+        self.window.show()
+
+
+    def _close(self):
+        self.window.close()
 
 
     def defineModuleStateHandler(self, module='', moduleStates=None):
@@ -142,8 +158,6 @@ class Control(Pulsar):
         except Exception as inst:
             print('Exception in Control',inst)
 
-    def setTicktext(self):
-        self.stateWidget.lineTick.setPlaceholderText(str(self.millis))
 
     def writeNews(self, channel='', news={}):
         assert channel != '', 'argument "channel" should be the writer class'
