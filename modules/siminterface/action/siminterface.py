@@ -97,5 +97,3 @@ class Simcommunication():
         self.control.brake = brake
 
         self.egoCar.apply_control(self.control)
-
-

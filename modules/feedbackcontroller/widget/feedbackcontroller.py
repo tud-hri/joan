@@ -67,6 +67,7 @@ class FeedbackcontrollerWidget(Control):
     def _setmillis(self, millis):
         try:
             millis = int(millis)
+            assert millis > 0, 'QTimer tick interval needs to be larger than 0'
             self.setInterval(millis)
         except:
             pass

@@ -221,8 +221,11 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
 
     def updateAvailableTrajectoryList(self):
         # get list of csv files in directory
-        os.chdir(self._pathHCRDirectory)
-        files = glob.glob('*.{}'.format('csv'))
+        filenames = os.listdir(self._pathHCRDirectory)
+        files = [ filename for filename in filenames if filename.endswith('csv') ]
+
+        # os.chdir() # undesired change dir. 
+        # files = glob.glob('*.{}'.format('csv'))
 
 
         # run through the combobox to check for files that are in the list, but not in the directory anymore
