@@ -61,7 +61,7 @@ class DataWriter(threading.Thread):
 
         # open file and write the first row
         print('buffersize', buffersize)
-        self.filehandle = open(filename, 'w', buffering=buffersize)
+        self.filehandle = open(filename, 'w', buffering=buffersize, newline='')
         self.dictWriter = csv.DictWriter(self.filehandle, fieldnames=self.getFirstRow())
         self.dictWriter.writeheader()
 
@@ -71,7 +71,7 @@ class DataWriter(threading.Thread):
     def write(self, timestamp=None, news=None, channels=[]):
         # get ALL news here, filter in self.filter and write
         # this class is a thread, so the main thread should continue while filtering and writing
-        time = timestamp.strftime('%Y%m%d_%H%M%S')
+        time = timestamp.strftime('%Y%m%d_%H%M%S%f')
         row = {}
         row['time'] = time #datetime.now()
         print(row)

@@ -1,6 +1,7 @@
 from process import Control
 import os
 import json
+import copy
 from json import JSONDecoder, JSONDecodeError, JSONEncoder
 
 '''
@@ -24,10 +25,21 @@ class DatarecorderSettings(Control):
         self.file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'modulesettings.json')
         self.settings = None
 
+    def _cleanup(self):
+        copySettings = copy.deepcopy(self.settings)
+        for channel in self.settings['modules'].keys():
+            if channel not in self.getAvailableNewsChannels():
+                del copySettings['modules'][channel]
+        self.settings = copy.deepcopy(copySettings)
+
+    
     def write(self, moduleKey=None, item=None):
         print('settings write')
         self.read()
         # add/remove/change content to self.settings
+        # remove settings from removed modules
+        self._cleanup()
+        # add/change content of self.settings
         if moduleKey:
             try:
                 moduleData = {}

@@ -63,6 +63,8 @@ class DatarecorderWidget(Control):
             itemWidget = {}
             for channel in self.getAvailableNewsChannels():
                 if channel != moduleKey:
+                    if channel not in currentSettings['modules'].keys():
+                        currentSettings['modules'].update({channel: {}})
                     newsCheckbox[channel] = QtWidgets.QLabel(channel.split('.')[1])
                     layout.addWidget(newsCheckbox[channel])
                     news = self.readNews(channel)
@@ -73,8 +75,6 @@ class DatarecorderWidget(Control):
                         layout.addWidget(itemWidget[item])
 
                         # start set checkboxes from currentSettings
-                        if channel not in currentSettings['modules'].keys():
-                            currentSettings['modules'].update({channel: {}})
                         if item not in currentSettings['modules'][channel].keys():
                             itemWidget[item].setChecked(True)
                             itemWidget[item].stateChanged.emit(True)
