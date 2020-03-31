@@ -29,7 +29,7 @@ class MainModuleWidget(QtWidgets.QMainWindow):
         # show menu
         # Enables the user to set the visibility of all widgets loaded in the window.
         self.showMenu = self.menuBar().addMenu('Show')
-        self.showMenu.triggered.connect(self.processShowMenuTrigger)
+        self.showMenu.triggered.connect(self.processTriggerShowMenu)
         
         # self.askConfirmClose = 'askCloseConfirm' in kwargs.keys() and kwargs['askCloseConfirm'] or False
         # self.showStateWidget = 'showStateWidget' in kwargs.keys() and kwargs['showStateWidget'] or False
@@ -58,7 +58,7 @@ class MainModuleWidget(QtWidgets.QMainWindow):
         # and finally add the widget to the layout of the mainWidget
         self.layout.addWidget(widget)
 
-    def processShowMenuTrigger(self, action):
+    def processTriggerShowMenu(self, action):
         '''
         Using action.text(), you can process the action that is triggered in the show menu (check/uncheck of widget visibility). Find the widget based on name, and toggle its visibility
         '''
@@ -70,6 +70,15 @@ class MainModuleWidget(QtWidgets.QMainWindow):
             self.adjustSize()
 
     def closeEvent(self, event):
+
+        # reply = QtGui.QMessageBox.question(self, 'Close window?', 
+        #                 'Are you sure?', QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
+
+        # if reply == QtGui.QMessageBox.Yes:
+        #     event.accept()
+        # else:
+        #     event.ignore()
+
         # window is closed, emit closed signal and accept the event
         self.closed.emit()
         event.accept()
