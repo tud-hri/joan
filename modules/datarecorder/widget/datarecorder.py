@@ -4,6 +4,13 @@ from PyQt5 import QtCore
 from time import sleep
 from modules.datarecorder.action.states import DatarecorderStates
 from modules.datarecorder.action.datarecorder import DatarecorderAction
+from modules.datarecorder.action.datarecordersettings import DatarecorderSettings
+
+# for editWidgets
+from PyQt5 import QtWidgets
+from functools import partial
+
+from datetime import datetime
 
 class DatarecorderWidget(Control):
     """ 
@@ -31,11 +38,63 @@ class DatarecorderWidget(Control):
             self.action = DatarecorderAction()
         except Exception as inst:
             print('De error bij de constructor van de widget is:    ', inst)
+
+        self.settings = DatarecorderSettings()
        
     def do(self):
         #if self.moduleStateHandler.getCurrentState() == self.moduleStates.DATARECORDER.START:
-        print("news from steeringcommunication", self.readNews('modules.steeringcommunication.widget.steeringcommunication.SteeringcommunicationWidget'))
-        self.action.write(self.readNews('modules.steeringcommunication.widget.steeringcommunication.SteeringcommunicationWidget'))
+        #print("news from steeringcommunication", self.readNews('modules.steeringcommunication.widget.steeringcommunication.SteeringcommunicationWidget'))
+        steeringcommunicationNews = self.readNews('modules.steeringcommunication.widget.steeringcommunication.SteeringcommunicationWidget')
+        if steeringcommunicationNews != {}:
+            steerincommunicationData = {}
+            steerincommunicationData['time'] = datetime.now()
+            steerincommunicationData.update(steeringcommunicationNews)
+        
+            self.action.write(steerincommunicationData)
+        else:
+            print('No news from steeringcommunication')
+        # self.readNews('modules.steeringcommunication.widget.steeringcommunication.SteeringcommunicationWidget'))
+
+
+    def editWidget(self):
+        # TODO: make it compact (folding, tabs?)
+
+        currentSettings = self.settings.read()
+
+        try:
+            layout = self.widget.verticalLayout_items
+            # cleanup previous widgets
+            for i in reversed(range(layout.count())):
+                markedWidget = layout.takeAt(i).widget()
+                layout.removeWidget(markedWidget)
+                markedWidget.setParent(None)
+
+            newsCheckbox = {}
+            moduleKey = '%s.%s' % (self.__class__.__module__ , self.__class__.__name__)
+            itemWidget = {}
+            for channel in self.getAvailableNewsChannels():
+                if channel != moduleKey:
+                    newsCheckbox[channel] = QtWidgets.QLabel(channel.split('.')[1])
+                    layout.addWidget(newsCheckbox[channel])
+                    news = self.readNews(channel)
+                    for item in news:
+                        itemWidget[item] = QtWidgets.QCheckBox(item)
+                        #lambda will not deliver what you expect: itemWidget[item].clicked.connect(lambda: self.handlemodulesettings(itemWidget[item].text(), itemWidget[item].isChecked()))
+                        itemWidget[item].stateChanged.connect(partial(self.handlemodulesettings, channel, itemWidget[item]))
+                        layout.addWidget(itemWidget[item])
+
+                        # start set checkboxes from currentSettings
+                        if item not in currentSettings['modules'][channel].keys():
+                            itemWidget[item].setChecked(True)
+                            itemWidget[item].stateChanged.emit(True)
+                        else:
+                            itemWidget[item].setChecked(currentSettings['modules'][channel][item])
+                            itemWidget[item].stateChanged.emit(currentSettings['modules'][channel][item])
+                        # end set checkboxes from currentSettings
+
+            self.widget.resize(800, 300) #TODO make this dynamic
+        except Exception as inst:
+            print (inst)
 
     @QtCore.pyqtSlot(str)
     def _setmillis(self, millis):
@@ -46,7 +105,7 @@ class DatarecorderWidget(Control):
             pass
 
     def _show(self):
-        self.widget.show()
+        self.window.show()
         self.moduleStateHandler.requestStateChange(self.moduleStates.DATARECORDER.NOTINITIALIZED)
 
        # ref, so we can find ourselves
@@ -79,10 +138,14 @@ class DatarecorderWidget(Control):
         self.widget.lblStatusRecorder.setText("not initialized")
         self.widget.lblStatusRecorder.setStyleSheet('color: orange')
 
+        # reads settings if available and expands the datarecorder widget
+        self.editWidget()
+
 
     def start(self):
-        if not self.widget.isVisible():
+        if not self.window.isVisible():
             self._show()
+        self.action.start()
         self.startPulsar()
 
     def stop(self):
@@ -91,7 +154,12 @@ class DatarecorderWidget(Control):
 
     def _close(self):
         self.moduleStateHandler.requestStateChange(self.moduleStates.DATARECORDER.STOP)
-        self.widget.close()
+        if self.window.isVisible():
+            self.window.close()
+
+    def handlemodulesettings(self, moduleKey, item):
+        datarecorderSettings = DatarecorderSettings()
+        datarecorderSettings.write(moduleKey=moduleKey, item=item)
 
     def handlemodulestate(self, state):
         """ 
@@ -107,7 +175,7 @@ class DatarecorderWidget(Control):
             if stateAsState == self.moduleStates.DATARECORDER.INITIALIZED:
                 self.widget.btnStartRecorder.setEnabled(True)
                 self.widget.lblStatusRecorder.setStyleSheet('color: green')
-                self.action.initialize()
+                #self.action.initialize()
 
             if stateAsState == self.moduleStates.DATARECORDER.NOTINITIALIZED:
                 self.widget.btnStartRecorder.setEnabled(False)

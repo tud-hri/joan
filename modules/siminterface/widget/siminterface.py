@@ -57,12 +57,12 @@ class SiminterfaceWidget(Control):
 
     def _show(self):
         try:
-            self.mainwidget.show()
+            self.window.show()
         except Exception as e:
             print(' ############## Exception was: #########',e)
 
     def start(self):
-        if not self.mainwidget.isVisible():
+        if not self.window.isVisible():
             self._show()
 
         # Connect to the server
@@ -88,7 +88,7 @@ class SiminterfaceWidget(Control):
         # self.action.stop()
         # self.stopPulsar()
         # del self.action
-        self.mainwidget.close()
+        self.window.close()
 
     def handlemasterstate(self, state):
         """ 
@@ -105,7 +105,7 @@ class SiminterfaceWidget(Control):
                 self._stop()
 
             # update the state label
-            self.mainwidget.lblState.setText(str(stateAsState))
+            self.stateWidget.lblState.setText(str(stateAsState))
 
         except Exception as inst:
             print (inst)
@@ -126,12 +126,12 @@ class SiminterfaceWidget(Control):
                 self._stop()
 
             # update the state label
-            self.mainwidget.lblModulestate.setText(str(stateAsState.name))
+            self.stateWidget.lblModulestate.setText(str(stateAsState.name))
 
             if stateAsState == self.moduleStates.SIMULATION.RUNNING:
-                self.mainwidget.btnStart.setStyleSheet("background-color: green")
+                self.stateWidget.btnStart.setStyleSheet("background-color: green")
             else:
-                self.mainwidget.btnStart.setStyleSheet("background-color: none")
+                self.stateWidget.btnStart.setStyleSheet("background-color: none")
             
 
         except Exception as inst:

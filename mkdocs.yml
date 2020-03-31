@@ -1,0 +1,7 @@
+site_name: JOAN Simulator Documentation
+theme: readthedocs
+
+nav:
+    - Home: home.md
+    - Setup on Windows: winsetup.md
+    - Setup on Linux: linsetup.md

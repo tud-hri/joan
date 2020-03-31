@@ -19,8 +19,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# LICENCE, for now
-LICENCE.md
 out.txt
 previous_*
+*.csv
+collapse.py
 

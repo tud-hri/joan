@@ -30,6 +30,7 @@ StateHandler(QtCore.QObject) <br>
 State <br>
 MasterStates <br>
 Pulsar(QtCore.QThread) <br>
+MainModuleWidget(Control) <br>
 DataRecorderWidget(Control) <br>
 CarlainterfaceWidget(Control) <br>
 FeedbackcontrollerWidget(Control) <br>
@@ -41,7 +42,7 @@ moduleAction(Control) <br>
 moduleStates(MasterStates)<br><br>
 
 module is something like DataRecorder
-
+# Main class diagram
 
 ```mermaid
     classDiagram
@@ -53,7 +54,7 @@ module is something like DataRecorder
         class Pulsar
         class QObject
         class QThread
-        class moduleWidget
+        class MainModuleWidget
         class moduleAction
         class moduleStates
         class DataRecorderWidget
@@ -83,9 +84,24 @@ module is something like DataRecorder
         CarlainterfaceWidget <|..|> FeedbackcontrollerWidget: Sim Data
 
         Control --|> moduleAction : Inheritance
-        Control  --|> moduleWidget : Inheritance
+        Control  --|> MainModuleWidget : Inheritance
         MasterStates --|> moduleStates : Inheritance
         moduleStates "1" ..|> "*" State : Realization
+```
+
+# datarecorder class diagram
+Datarecorder consist of a moduleWidget called DatarecorderWidget and a moduleAction called Datarecorderaction
+
+```mermaid
+    classDiagram
+        class QThread
+        class DatarecorderWidget
+        class DatarecorderAction
+        class DataWriter
+
+        QThread --|> DataWriter : Inheritance
+        DatarecorderWidget ..|> DatarecorderAction : Realization
+        DatarecorderAction ..|> DataWriter : Realization
 ```
 ## Directories
 
@@ -114,7 +130,11 @@ reads the corresponding .ui file and does all the action needed for this widget
 ### modules.datarecorder.widget.datarecorder.ui
 definition of the gui
 ### modules.datarecorder.action.datarecorder.py
-does all the action needed, like getting and writing data (not yet implemented)
+does all the action to get the datarecorder initializing and working
+### modules.datarecorder.action.datawriter.py
+actually writes data (from News), every time a pulse calls the do-method in datarecorderWidget
+### modules.datarecorder.action.datarecordersettings.py
+reads and writes settings in json format which items should be recorded (default: all)
 
 ### modules.menu.widget.menu.py
 reads the corresponding .ui file and does all the action needed for this widget
@@ -152,3 +172,29 @@ definition of the gui
 
 <br>
 For now main.py is an early versions of how the program might work. <br>
+
+
+## mkdocs
+
+We are using mkdocs and ReadTheDocs for our documentation. For more information on mkdocs, visit [this link](https://www.mkdocs.org).
+
+To install mkdocs, run:
+```
+pip install mkdocs
+```
+
+You can edit the index.md file to add more details about your project (add more pages, for example). The CARLA readthedocs is a nice example. See their `docs` folder and `mkdocs.yml` on their [CARLA GitHub](https://github.com/carla-simulator/carla).
+
+You can build your documentation _locally_ through:
+
+```
+mkdocs serve
+```
+
+This command builds your Markdown files into HTML and starts a development server to browse your documentation. Open up [http://127.0.0.1:8000/](http://127.0.0.1:8000/) in your web browser to see your documentation. You can make changes to your Markdown files and your docs will automatically rebuild. 
+
+We will also link the documentation to [ReadTheDocs.org](https://readthedocs.org), which provides an online platform for this documentation. More on this will follow soon.
+
+## Git flow
+
+We try to use the Git flow workflow in terms of branching, feature implementation and testing and releases. For more information, visit this [link](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow)

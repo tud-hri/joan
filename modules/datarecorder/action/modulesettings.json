@@ -1,0 +1,8 @@
+{
+    "modules": {
+        "modules.steeringcommunication.widget.steeringcommunication.SteeringcommunicationWidget": {
+            "damping": true,
+            "throttle": true
+        }
+    }
+}
