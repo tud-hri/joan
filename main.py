@@ -217,4 +217,4 @@ if __name__ == '__main__':
         print(sys.exit(app.exec()))
     except Exception as inst:
         traceback.print_exc(file=sys.stdout)
-        print('Error:', inst)
+        print('Error:', inst) 

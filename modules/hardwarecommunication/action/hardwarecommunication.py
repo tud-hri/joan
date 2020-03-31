@@ -222,8 +222,9 @@ class Joystick(BaseInput):
 
         # Open the desired device to read (find the device and vendor ID from printed list!!)
         self._joystick = hid.device()
-        #self._joystick.open(121, 6) # VendorID/ProductID
-        self._joystick.open(1155, 22288)
+        #self._joystick.open(121, 6) #  Playstation controller Zierikzee
+        self._joystick.open(1133, 49760) #logitech wheel CoRlab
+        #self._joystick.open(16700, 8467) #Taranis Zierikzee
 
     def displayInputs(self):
         #update sliders
@@ -248,17 +249,18 @@ class Joystick(BaseInput):
 
     def process(self):
         joystickdata = []
-        joystickdata = self._joystick.read(16,16)
-        throttle = round((((joystickdata[3]) + (joystickdata[4])*256)/2047)*100)
-        brake = round((((joystickdata[7]) + (joystickdata[8])*256)/1023)*100 - 100)
-        if brake < 0:
-            brake = 0
+        joystickdata = self._joystick.read(64,64)
+        # throttle = round((((joystickdata[3]) + (joystickdata[4])*256)/2047)*100)
+        # brake = round((((joystickdata[7]) + (joystickdata[8])*256)/1023)*100 - 100)
+        # if brake < 0:
+        #     brake = 0
 
-        steer = round((((joystickdata[5]) + (joystickdata[6])*256)/2047)*360 - 180)
+        # steer = round((((joystickdata[5]) + (joystickdata[6])*256)/2047)*360 - 180)
 
-        self._data['BrakeInput']    = brake
-        self._data['ThrottleInput'] = throttle
-        self._data['SteeringInput'] = steer
+        # self._data['BrakeInput']    = brake
+        # self._data['ThrottleInput'] = throttle
+        # self._data['SteeringInput'] = steer
 
-        self.displayInputs()
+        # self.displayInputs()
+        print(joystickdata)
         return self._data
