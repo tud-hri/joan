@@ -57,7 +57,7 @@ class DatarecorderAction(Control):
         ##now = QtCore.QDateTime.currentDateTime()
         ##nowString = now.toString('yyyyMMdd_hhmmss')
         now = datetime.now()
-        nowString = now.strftime('%Y%m%d_%H%M%s')
+        nowString = now.strftime('%Y%m%d_%H%M%S')
         filename = '%s_%s' % ('data', nowString)
         if extension != '':
             extension = extension[0] == '.' or '.%s' % extension

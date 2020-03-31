@@ -71,7 +71,7 @@ class DataWriter(threading.Thread):
     def write(self, timestamp=None, news=None, channels=[]):
         # get ALL news here, filter in self.filter and write
         # this class is a thread, so the main thread should continue while filtering and writing
-        time = timestamp.strftime('%Y%m%d_%H%M%s')
+        time = timestamp.strftime('%Y%m%d_%H%M%S')
         row = {}
         row['time'] = time #datetime.now()
         print(row)
