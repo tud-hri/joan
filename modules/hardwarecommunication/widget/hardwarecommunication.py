@@ -1,33 +1,45 @@
 from process import Control, State, translate
 from PyQt5 import QtCore
-from modules.template.action.states import TemplateStates
-from modules.template.action.template import TemplateAction
+from modules.hardwarecommunication.action.states import HardwarecommunicationStates
+from modules.hardwarecommunication.action.hardwarecommunication import *
 import os
 
-class TemplateWidget(Control):
+class HardwarecommunicationWidget(Control):
     def __init__(self, *args, **kwargs):
-        kwargs['millis'] = 'millis' in kwargs.keys() and kwargs['millis'] or 500
+        kwargs['millis'] = 'millis' in kwargs.keys() and kwargs['millis'] or 5
         kwargs['callback'] = [self.do]  # method will run each given millis
         Control.__init__(self, *args, **kwargs)
-        self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)),"template.ui"))
-        
-        self.data = {}
-        self.writeNews(channel=self, news=self.data)
+        self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)),"hardwarecommunication.ui"))
+        self.Inputdata = {}
 
         # creating a self.moduleStateHandler which also has the moduleStates in self.moduleStateHandler.states
-        self.defineModuleStateHandler(module=self, moduleStates=TemplateStates())
+        self.defineModuleStateHandler(module=self, moduleStates=HardwarecommunicationStates())
         self.moduleStateHandler.stateChanged.connect(self.handlemodulestate)
         self.masterStateHandler.stateChanged.connect(self.handlemasterstate)
         
         # use Action with state handling, using only this widgets state changes
         try:
-            self.action = TemplateAction()
+            self.action = HardwarecommunicationAction()
         except Exception as inst:
-            print('Exception in TemplateWidget', inst)
+            print(inst)
+
+
+        self._input = BaseInput(self)
+ 
+        self.Inputs = dict([("Keyboard",Keyboard(self)),("Mouse",Mouse(self))])
+
+        #initialize input with none (not catching any inputs)
+        #self.Inputdata = self._input.process
+        self.writeNews(channel=self, news=self.Inputdata)
+
 
     # callback class is called each time a pulse has come from the Pulsar class instance
     def do(self):
-        pass
+        try:
+            self.Inputdata = self._input.process()
+            self.writeNews(channel=self, news=self.Inputdata)
+        except Exception as e:
+            print(e)
 
     @QtCore.pyqtSlot(str)
     def _setmillis(self, millis):
@@ -39,23 +51,23 @@ class TemplateWidget(Control):
 
     def _show(self):
         self.window.show()
-        print('in widget/template.py', self.moduleStateHandler)
-        print('in widget/template.py', self.moduleStates)
+        print('in widget/hardwarecommunication.py', self.moduleStateHandler)
+        print('in widget/hardwarecommunication.py', self.moduleStates)
         moduleStatesDict = self.moduleStates.getStates()
         for state in moduleStatesDict:
-            print('in TemplateStates bij show', state, moduleStatesDict[state])
+            print('in HardwarecommunicationStates bij show', state, moduleStatesDict[state])
 
 
     def start(self):
         if not self.window.isVisible():
             self._show()
         print(self.widget.windowTitle())
-        self.widget.setWindowTitle("Template title")
-        self.moduleStateHandler.requestStateChange(self.moduleStates.TEMPLATE.RUNNING)
+        self.widget.setWindowTitle("Hardwarecommunication title")
+        self.moduleStateHandler.requestStateChange(self.moduleStates.HARDWARECOMMUNICATION.RUNNING)
         self.startPulsar()
 
     def stop(self):
-        self.moduleStateHandler.requestStateChange(self.moduleStates.TEMPLATE.STOPPED)
+        self.moduleStateHandler.requestStateChange(self.moduleStates.HARDWARECOMMUNICATION.STOPPED)
         self.stopPulsar()
 
     def _close(self):
@@ -80,7 +92,7 @@ class TemplateWidget(Control):
             self.widget.repaint()
 
         except Exception as inst:
-            print ('Exception in TemplateWidget', inst)
+            print (inst)
 
     def handlemodulestate(self, state):
         """ 
@@ -98,9 +110,9 @@ class TemplateWidget(Control):
 
             # update the state label
             self.stateWidget.lblModulestate.setText(str(stateAsState.name))
-            self.window.repaint()
+            self.stateWidget.repaint()
 
-            if stateAsState == self.moduleStates.TEMPLATE.RUNNING:
+            if stateAsState == self.moduleStates.HARDWARECOMMUNICATION.RUNNING:
                 self.stateWidget.btnStart.setStyleSheet("background-color: green")
             else:
                 self.stateWidget.btnStart.setStyleSheet("background-color: none")

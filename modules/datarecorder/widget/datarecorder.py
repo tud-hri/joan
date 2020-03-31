@@ -94,7 +94,7 @@ class DatarecorderWidget(Control):
             pass
 
     def _show(self):
-        self.widget.show()
+        self.window.show()
         self.moduleStateHandler.requestStateChange(self.moduleStates.DATARECORDER.NOTINITIALIZED)
 
        # ref, so we can find ourselves
@@ -132,7 +132,7 @@ class DatarecorderWidget(Control):
 
 
     def start(self):
-        if not self.widget.isVisible():
+        if not self.window.isVisible():
             self._show()
         self.action.start()
         self.startPulsar()
@@ -143,7 +143,8 @@ class DatarecorderWidget(Control):
 
     def _close(self):
         self.moduleStateHandler.requestStateChange(self.moduleStates.DATARECORDER.STOP)
-        self.widget.close()
+        if self.window.isVisible():
+            self.window.close()
 
     def handlemodulesettings(self, moduleKey, item):
         datarecorderSettings = DatarecorderSettings()
