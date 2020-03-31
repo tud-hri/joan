@@ -26,7 +26,7 @@ class HardwarecommunicationWidget(Control):
 
         self._input = BaseInput(self)
  
-        self.Inputs = dict([("Keyboard",Keyboard(self)),("Mouse",Mouse(self))])
+        self.Inputs = dict([("Keyboard",Keyboard(self)),("Mouse",Mouse(self)),("Joystick",Joystick(self))])
 
         #initialize input with none (not catching any inputs)
         #self.Inputdata = self._input.process
