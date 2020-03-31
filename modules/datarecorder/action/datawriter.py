@@ -40,10 +40,10 @@ class DataWriter(threading.Thread):
         for channel in channels:
             latestNews = news[channel]
             for key in latestNews:
-                print('setting', self.settings['modules'][channel][key], type(self.settings['modules'][channel][key]))
+                #print('setting', self.settings['modules'][channel][key], type(self.settings['modules'][channel][key]))
                 if self.settings['modules'][channel][key] == True:
                     row.update({'%s.%s' % (channel.split('.')[1], key): latestNews[key]})
-                print('filter row', row)
+                #print('filter row', row)
         return row
 
 
@@ -74,7 +74,7 @@ class DataWriter(threading.Thread):
         time = timestamp.strftime('%Y%m%d_%H%M%S%f')
         row = {}
         row['time'] = time #datetime.now()
-        print(row)
+        #print(row)
         #print(self.filterRow(news=news, channels=channels))
         row.update(self.filterRow(news=news, channels=channels))
         self.dictWriter.writerow(row)
