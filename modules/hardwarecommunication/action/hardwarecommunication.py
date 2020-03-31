@@ -222,9 +222,13 @@ class Joystick(BaseInput):
 
         # Open the desired device to read (find the device and vendor ID from printed list!!)
         self._joystick = hid.device()
-        #self._joystick.open(121, 6) #  Playstation controller Zierikzee
-        self._joystick.open(1133, 49760) #logitech wheel CoRlab
-        #self._joystick.open(16700, 8467) #Taranis Zierikzee
+
+        try:
+            # self._joystick.open(121, 6) #  Playstation controller Zierikzee
+            self._joystick.open(1133, 49760) #logitech wheel CoRlab
+            # self._joystick.open(16700, 8467) #Taranis Zierikzee
+        except:
+            print('Could not open joystick. Is it plugged in? Are the IDs correct?')
 
     def displayInputs(self):
         #update sliders
