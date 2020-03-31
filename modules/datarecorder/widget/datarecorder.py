@@ -10,7 +10,7 @@ from modules.datarecorder.action.datarecordersettings import DatarecorderSetting
 from PyQt5 import QtWidgets
 from functools import partial
 
-from datetime import datetime
+#from datetime import datetime
 
 class DatarecorderWidget(Control):
     """ 
@@ -23,6 +23,7 @@ class DatarecorderWidget(Control):
         kwargs['callback'] = [self.do]  # method will run each given millis
 
         Control.__init__(self, *args, **kwargs)
+
         self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)),"datarecorder.ui"))
         self.data = {}
         self.writeNews(channel=self, news=self.data)
@@ -47,7 +48,6 @@ class DatarecorderWidget(Control):
 
     def editWidget(self):
         # TODO: make it compact (folding, tabs?)
-
         currentSettings = self.settings.read()
 
         try:
@@ -73,6 +73,8 @@ class DatarecorderWidget(Control):
                         layout.addWidget(itemWidget[item])
 
                         # start set checkboxes from currentSettings
+                        if channel not in currentSettings['modules'].keys():
+                            currentSettings['modules'].update({channel: {}})
                         if item not in currentSettings['modules'][channel].keys():
                             itemWidget[item].setChecked(True)
                             itemWidget[item].stateChanged.emit(True)
@@ -80,8 +82,7 @@ class DatarecorderWidget(Control):
                             itemWidget[item].setChecked(currentSettings['modules'][channel][item])
                             itemWidget[item].stateChanged.emit(currentSettings['modules'][channel][item])
                         # end set checkboxes from currentSettings
-
-            self.widget.resize(800, 300) #TODO make this dynamic
+            self.widget.resize(800, 600) #TODO make this dynamic
         except Exception as inst:
             print (inst)
 
@@ -128,7 +129,12 @@ class DatarecorderWidget(Control):
         self.widget.lblStatusRecorder.setStyleSheet('color: orange')
 
         # reads settings if available and expands the datarecorder widget
-        self.editWidget()
+        try:
+            for y in self.getAvailableModuleStatePackages():
+                print(y)
+            self.editWidget()
+        except Exception as inst:
+            print(inst)
 
 
     def start(self):
@@ -147,8 +153,11 @@ class DatarecorderWidget(Control):
             self.window.close()
 
     def handlemodulesettings(self, moduleKey, item):
-        datarecorderSettings = DatarecorderSettings()
-        datarecorderSettings.write(moduleKey=moduleKey, item=item)
+        try:
+            datarecorderSettings = DatarecorderSettings()
+            datarecorderSettings.write(moduleKey=moduleKey, item=item)
+        except Exception as inst:
+            print(inst)
 
     def handlemodulestate(self, state):
         """ 

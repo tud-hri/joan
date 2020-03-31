@@ -11,7 +11,7 @@ class DatarecorderAction(Control):
         self.moduleStates = None
         self.moduleStateHandler = None
         try:
-            statePackage = self.getModuleStatePackage(module='module.datarecorder.widget.daterecorder.DatarecorderWidget')
+            statePackage = self.getModuleStatePackage(module='modules.datarecorder.widget.daterecorder.DatarecorderWidget')
             self.moduleStates = statePackage['moduleStates']
             self.moduleStateHandler = statePackage['moduleStateHandler']
         except:

@@ -14,6 +14,9 @@ class FeedbackcontrollerWidget(Control):
         self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)),"feedbackcontroller.ui"))
         
         self.data = {}
+        self.data['SteeringWheelAngle'] = 0
+        self.data['Throttle'] = 0
+
         self.writeNews(channel=self, news=self.data)
         self.counter = 0
 
@@ -22,8 +25,7 @@ class FeedbackcontrollerWidget(Control):
         self.masterStateHandler.stateChanged.connect(self.handlemasterstate)
 
         try:
-            self.action = FeedbackcontrollerAction(moduleStates = self.moduleStates,
-                                          moduleStateHandler = self.moduleStateHandler)
+            self.action = FeedbackcontrollerAction()
         except Exception as e:
             print('De error bij de constructor van de widget is: ', e)
         

@@ -1,5 +1,9 @@
 {
     "modules": {
+        "modules.feedbackcontroller.widget.feedbackcontroller.FeedbackcontrollerWidget": {
+            "SteeringWheelAngle": false,
+            "Throttle": true
+        },
         "modules.steeringcommunication.widget.steeringcommunication.SteeringcommunicationWidget": {
             "damping": false,
             "throttle": false

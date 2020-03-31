@@ -25,6 +25,7 @@ class DatarecorderSettings(Control):
         self.settings = None
 
     def write(self, moduleKey=None, item=None):
+        print('settings write')
         self.read()
         # add/remove/change content to self.settings
         if moduleKey:
