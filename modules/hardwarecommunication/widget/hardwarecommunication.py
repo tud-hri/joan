@@ -26,7 +26,7 @@ class HardwarecommunicationWidget(Control):
 
         self._input = BaseInput(self)
  
-        self.Inputs = dict([("Keyboard",Keyboard(self)),("Mouse",Mouse(self))])
+        self.Inputs = dict([("Keyboard",Keyboard(self)),("Mouse",Mouse(self)),("Joystick",Joystick(self))])
 
         #initialize input with none (not catching any inputs)
         #self.Inputdata = self._input.process
@@ -50,7 +50,7 @@ class HardwarecommunicationWidget(Control):
             pass
 
     def _show(self):
-        self.mainwidget.show()
+        self.window.show()
         print('in widget/hardwarecommunication.py', self.moduleStateHandler)
         print('in widget/hardwarecommunication.py', self.moduleStates)
         moduleStatesDict = self.moduleStates.getStates()
@@ -59,7 +59,7 @@ class HardwarecommunicationWidget(Control):
 
 
     def start(self):
-        if not self.mainwidget.isVisible():
+        if not self.window.isVisible():
             self._show()
         print(self.widget.windowTitle())
         self.widget.setWindowTitle("Hardwarecommunication title")
@@ -71,7 +71,7 @@ class HardwarecommunicationWidget(Control):
         self.stopPulsar()
 
     def _close(self):
-        self.mainwidget.close()
+        self.window.close()
 
     def handlemasterstate(self, state):
         """ 
@@ -109,13 +109,13 @@ class HardwarecommunicationWidget(Control):
                 self._stop()
 
             # update the state label
-            self.mainwidget.lblModulestate.setText(str(stateAsState.name))
-            self.mainwidget.repaint()
+            self.stateWidget.lblModulestate.setText(str(stateAsState.name))
+            self.stateWidget.repaint()
 
             if stateAsState == self.moduleStates.HARDWARECOMMUNICATION.RUNNING:
-                self.mainwidget.btnStart.setStyleSheet("background-color: green")
+                self.stateWidget.btnStart.setStyleSheet("background-color: green")
             else:
-                self.mainwidget.btnStart.setStyleSheet("background-color: none")
+                self.stateWidget.btnStart.setStyleSheet("background-color: none")
 
         except Exception as inst:
             print (inst)

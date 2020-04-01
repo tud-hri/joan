@@ -6,7 +6,7 @@ class InterfaceAction(Control):
         self.moduleStates = None
         self.moduleStateHandler = None
         try:
-            statePackage = self.getModuleStatePackage(module='module.interface.widget.interface.InterfaceWidget')
+            statePackage = self.getModuleStatePackage(module='modules.interface.widget.interface.InterfaceWidget')
             self.moduleStates = statePackage['moduleStates']
             self.moduleStateHandler = statePackage['moduleStateHandler']
         except:

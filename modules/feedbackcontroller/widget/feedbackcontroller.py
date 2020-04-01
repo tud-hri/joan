@@ -14,6 +14,9 @@ class FeedbackcontrollerWidget(Control):
         self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)),"feedbackcontroller.ui"))
         
         self.data = {}
+        self.data['SteeringWheelAngle'] = 0
+        self.data['Throttle'] = 0
+
         self.writeNews(channel=self, news=self.data)
         self.counter = 0
 
@@ -22,8 +25,7 @@ class FeedbackcontrollerWidget(Control):
         self.masterStateHandler.stateChanged.connect(self.handlemasterstate)
 
         try:
-            self.action = FeedbackcontrollerAction(moduleStates = self.moduleStates,
-                                          moduleStateHandler = self.moduleStateHandler)
+            self.action = FeedbackcontrollerAction()
         except Exception as e:
             print('De error bij de constructor van de widget is: ', e)
         
@@ -67,16 +69,17 @@ class FeedbackcontrollerWidget(Control):
     def _setmillis(self, millis):
         try:
             millis = int(millis)
+            assert millis > 0, 'QTimer tick interval needs to be larger than 0'
             self.setInterval(millis)
         except:
             pass
 
     def _show(self):
-        self.mainwidget.show()
+        self.window.show()
 
 
     def start(self):
-        if not self.mainwidget.isVisible():
+        if not self.window.isVisible():
             self._show()
         self.startPulsar()
         self.moduleStateHandler.requestStateChange(self.moduleStates.FEEDBACKCONTROLLER.RUNNING)
@@ -87,7 +90,7 @@ class FeedbackcontrollerWidget(Control):
         self.stopPulsar()
 
     def _close(self):
-        self.mainwidget.close()
+        self.window.close()
 
 
     def handlemasterstate(self, state):
@@ -125,12 +128,12 @@ class FeedbackcontrollerWidget(Control):
                 self._stop()
 
             # update the state label
-            self.mainwidget.lblModulestate.setText(str(stateAsState.name))
+            self.stateWidget.lblModulestate.setText(str(stateAsState.name))
 
             if stateAsState == self.moduleStates.FEEDBACKCONTROLLER.RUNNING:
-                self.mainwidget.btnStart.setStyleSheet("background-color: green")
+                self.stateWidget.btnStart.setStyleSheet("background-color: green")
             else:
-                self.mainwidget.btnStart.setStyleSheet("background-color: none")
+                self.stateWidget.btnStart.setStyleSheet("background-color: none")
 
         except Exception as e:
             print(e)
