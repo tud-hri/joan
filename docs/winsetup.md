@@ -2,7 +2,8 @@
 
 ## Introduction
 In order to properly setup the simulation software on Windows several packages and steps are required, which will be elaborated upon in this section.
-
+!!! Note
+    This setup guide is extensive, if you are familiar with building software and installing new libraries etc it might be easier to just scan through this guide instead of going through it thoroughly. However, if you dont, please follow the guide step by step.
 ## Hardware Requirements
 * __x64 system.__ The simulator should run in any 64 bits Windows system.  
 * __50GB disk space.__ Installing all the software needed and CARLA will require quite a lot of space. Make sure to have about 50gb of space (especially since you will also need a visual studio 2017 install)
@@ -29,7 +30,10 @@ Go to __[Unreal Engine](https://www.unrealengine.com/download)__ and download th
 Download Unreal Engine 4.24.x. Make sure to run it in order to check that everything was properly installed.
 
 ### Python3 x64
-Use python3!! Cannot stress this enough, if you try and use python2 it will just not work in any way. Also __make sure you get the x64 version__ else it will not work, there is even some speculation that if you have a x32 version installed it can cause conflicts so its best to only have x64. At the time of writing this guide the working version of python is __[Python 3.8.2](https://www.python.org/downloads/release/python-382/)__
+ Install python 3 and __make sure you get the x64 version__ else it will not work, there is even some speculation that if you have a x32 version installed it can cause conflicts so its best to only have x64. At the time of writing this guide the working version of python is __[Python 3.8.2](https://www.python.org/downloads/release/python-382/)__
+
+!!! Important
+    Really do use python 3, do not try and use python 2 it will just not work.
 
 ### Visual Code (Optional)
 Ofcourse you are free to use any IDE you are comfortable with (pycharm, spyder, anaconda), however the authors and creators of the JOAN simulator have consistently used __[Visual Studio Code](https://code.visualstudio.com/)__ due to easy source control functionality.
@@ -52,11 +56,17 @@ To clone the repository either go to this link and download the zip, copy the li
     #Clone the CARLA repository (will clone in the folder you are currently in in your terminal)
     git clone https://github.com/carla-simulator/carla
 
-!!! Important
-    After cloning verify that you have the following map with these contents:
+After cloning verify that you have actually cloned the repository, it should look like this:
+![alt text](Images/gitClone.png "cloned repository")
+
+### Step 2, getting latest CARLA assets
+To get the latest CARLA assets open up the folder 'Utils' in the 'carla' folder that you have just created in step 1, and open the file 'contentversions.txt', see below:
+![alt text](Images/utilScreenshot.png "cloned repository")
+
+This text file contains the instructions of what to do to download the latest assets, for now get the 0.9.8 version, you can also click this link: 
+__[Carla Assets Link](http://carla-assets.s3.amazonaws.com/20200306_06b6cb1.tar.gz)__
 
 
-### Step 2, 
 
 ## Setting up JOAN
 To get JOAN to work you will need several python packages (and if you want to use a sensodrive wheel with CAN interface also a specific DLL). The list of required pip installs will be shown here. For your convenience we also compiled a setup.py file which should install all the necessary python libraries automatically.

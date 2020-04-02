@@ -5,3 +5,6 @@ nav:
     - Home: home.md
     - Setup on Windows: winsetup.md
     - Setup on Linux: linsetup.md
+
+markdown_extensions:
+  - admonition
