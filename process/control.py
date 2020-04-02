@@ -94,15 +94,24 @@ class Control(Pulsar):
         self.stateWidget.lineTick.textChanged.connect(lambda x=self.millis: self._setmillis(x))
         self.stateWidget.btnStart.clicked.connect(self.start)
         self.stateWidget.btnStop.clicked.connect(self.stop)
-        # self.stateWidget.btnStart.clicked.connect(self.stateWidget.lineTick.setEnabled(False))
-        # self.stateWidget.btnStop.clicked.connect(self.stateWidget.lineTick.setEnabled(True))
-        # self.stateWidget.btnStop.clicked.connect(self.stateWidget.lineTick.clear)
-        # self.stateWidget.btnStart.clicked.connect(self.stateWidget.lineTick.clear)
-        # self.stateWidget.btnStart.clicked.connect(self.stateWidget.lineTick.clearFocus)
-        # self.stateWidget.btnStart.clicked.connect(self.setTicktext)
-        # self.stateWidget.btnStop.clicked.connect(self.setTicktext)
+        self.stateWidget.btnStart.clicked.connect(self.disableLineTick)
+        self.stateWidget.btnStop.clicked.connect(self.enableLineTick)
+        self.stateWidget.btnStop.clicked.connect(self.stateWidget.lineTick.clear)
+        self.stateWidget.btnStart.clicked.connect(self.stateWidget.lineTick.clear)
+        self.stateWidget.btnStart.clicked.connect(self.stateWidget.lineTick.clearFocus)
+        self.stateWidget.btnStart.clicked.connect(self.setTicktext)
+        self.stateWidget.btnStop.clicked.connect(self.setTicktext)
         
-        
+    def setTicktext(self):
+        self.stateWidget.lineTick.setPlaceholderText(str(self.millis))
+
+
+    def disableLineTick(self):
+        self.stateWidget.lineTick.setEnabled(False)
+
+    def enableLineTick(self):
+        self.stateWidget.lineTick.setEnabled(True)
+
         '''
         # TODO find out if Status needs to have a dictionary with widgets
         # self.singletonStatus = Status()

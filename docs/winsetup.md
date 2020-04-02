@@ -20,7 +20,7 @@ In order to properly setup the simulation software on Windows several packages a
 [Visual studio 2017](https://visualstudio.microsoft.com/vs/older-downloads/) is used as main building tool for the CARLA simulator. Make sure you install it with the following properties:
 
 * __Windows 8.1 SDK.__ You can select this from the installation details tab
-* __x64 Visual C++) Toolset__ Choose the __Desktop development with C++__, enabling a x64 command prompt that will be needed. To access this prompt type in x64 in the search bar of windows 10. If properly installed it should show up like this:
+* __x64 Visual C++ Toolset__ Choose the __Desktop development with C++__, enabling a x64 command prompt that will be needed. To access this prompt type in x64 in the search bar of windows 10. If properly installed it should show up like this:
 ![alt text](Images/commandPrompt.png "x64 Command prompt")
 
 ### Unreal Engine 4.24
@@ -47,6 +47,17 @@ The build and install of the barebones CARLA simulator can be divided in the fol
 
 The steps will be explained 1 step at the time with screenshots and command line commands you can easily copy paste.
 ### Step 1, Cloning the repository
+To clone the repository either go to this link and download the zip, copy the link and clone it with git the way you prefer, or type in the following command in the command line:
+
+    #Clone the CARLA repository (will clone in the folder you are currently in in your terminal)
+    git clone https://github.com/carla-simulator/carla
+
+!!! Important
+    After cloning verify that you have the following map with these contents:
+
+
+### Step 2, 
+
 ## Setting up JOAN
 To get JOAN to work you will need several python packages (and if you want to use a sensodrive wheel with CAN interface also a specific DLL). The list of required pip installs will be shown here. For your convenience we also compiled a setup.py file which should install all the necessary python libraries automatically.
 
