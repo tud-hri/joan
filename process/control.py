@@ -91,26 +91,9 @@ class Control(Pulsar):
 
         # connect stateWidget widgets (buttons, line edit)
         self.stateWidget.lineTick.setPlaceholderText(str(self.millis))
-        self.stateWidget.lineTick.textChanged.connect(lambda x=self.millis: self._setmillis(x))
-        self.stateWidget.btnStart.clicked.connect(self.start)
-        self.stateWidget.btnStop.clicked.connect(self.stop)
-        self.stateWidget.btnStart.clicked.connect(self.disableLineTick)
-        self.stateWidget.btnStop.clicked.connect(self.enableLineTick)
-        self.stateWidget.btnStop.clicked.connect(self.stateWidget.lineTick.clear)
-        self.stateWidget.btnStart.clicked.connect(self.stateWidget.lineTick.clear)
-        self.stateWidget.btnStart.clicked.connect(self.stateWidget.lineTick.clearFocus)
-        self.stateWidget.btnStart.clicked.connect(self.setTicktext)
-        self.stateWidget.btnStop.clicked.connect(self.setTicktext)
-        
-    def setTicktext(self):
-        self.stateWidget.lineTick.setPlaceholderText(str(self.millis))
-
-
-    def disableLineTick(self):
-        self.stateWidget.lineTick.setEnabled(False)
-
-    def enableLineTick(self):
-        self.stateWidget.lineTick.setEnabled(True)
+        self.stateWidget.lineTick.textChanged.connect(lambda dt=self.millis: self._setmillis(dt))
+        self.stateWidget.btnStart.clicked.connect(self._btnStartClicked)
+        self.stateWidget.btnStop.clicked.connect(self._btnStopClicked)
 
         '''
         # TODO find out if Status needs to have a dictionary with widgets
@@ -120,6 +103,21 @@ class Control(Pulsar):
         # put widgets in SingletonStatus object for setting state of widgets 
         self.singletonStatus = Status({uiKey: self.widget})
         '''
+
+    def _btnStartClicked(self):
+        self.start()
+        self.stateWidget.lineTick.setEnabled(False)
+        # self.stateWidget.lineTick.clear
+        self.stateWidget.lineTick.clearFocus()
+        # self.stateWidget.lineTick.setPlaceholderText(str(self.millis))
+
+
+    def _btnStopClicked(self):
+        self.stop()
+        self.stateWidget.lineTick.setEnabled(True)
+        # self.stateWidget.lineTick.clear
+        # self.stateWidget.lineTick.setPlaceholderText(str(self.millis))
+
 
     def _getGui(self, ui=''):
         '''

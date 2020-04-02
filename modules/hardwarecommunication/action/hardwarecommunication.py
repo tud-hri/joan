@@ -80,9 +80,9 @@ class Keyboard(BaseInput):
     def keyPressEvent(self,event):
         if(self._parentWidget.widget.lblSource.text() == 'Keyboard'):
             key = event.key()
-            if key == QtCore.Qt.Key_Up: 
+            if key == QtCore.Qt.Key_Up or key == QtCore.Qt.Key_W: 
                 self.throttle = True
-            elif key == QtCore.Qt.Key_Space:
+            elif key == QtCore.Qt.Key_Space or key == QtCore.Qt.Key_S:
                 self.brake = True
             elif key == QtCore.Qt.Key_A or key == QtCore.Qt.Key_Left:
                 self.steerLeft = True
@@ -94,9 +94,9 @@ class Keyboard(BaseInput):
     def keyReleaseEvent(self,event):
         if(self._parentWidget.widget.lblSource.text() == 'Keyboard'):
             key = event.key()
-            if key == QtCore.Qt.Key_Up: 
+            if key == QtCore.Qt.Key_Up or key == QtCore.Qt.Key_W:
                 self.throttle = False
-            elif key == QtCore.Qt.Key_Space:
+            elif key == QtCore.Qt.Key_Space or key == QtCore.Qt.Key_S:
                 self.brake = False
             elif key == QtCore.Qt.Key_A or key == QtCore.Qt.Key_Left:
                 self.steerLeft = False
