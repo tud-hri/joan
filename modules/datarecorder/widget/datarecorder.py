@@ -7,7 +7,7 @@ from modules.datarecorder.action.datarecorder import DatarecorderAction
 from modules.datarecorder.action.datarecordersettings import DatarecorderSettings
 
 # for editWidgets
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtGui
 from functools import partial
 
 #from datetime import datetime
@@ -50,14 +50,56 @@ class DatarecorderWidget(Control):
         # TODO: make it compact (folding, tabs?)
         currentSettings = self.settings.read()
 
+        '''
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="2" column="0">
+         <widget class="QLabel" name="lblMessageRecorder">
+          <property name="text">
+           <string>&lt;Message&gt;</string>
+          </property>
+         </widget>
+      </item>
+
+
+				<widget class="QGroupBox" name="grpBoxDataRecorderSettings">
+					<property name="title">
+						<string>
+							Data Recoder Settings
+						</string>
+					</property>
+					<layout class="QHBoxLayout" name="module_settings">
+					</layout>
+				</widget>
+        '''
+
         try:
             layout = self.widget.verticalLayout_items
-            # cleanup previous widgets
+
+            content = QtWidgets.QWidget()
+            #vlay = QtWidgets.QVBoxLayout(content)
+            vlay = QtWidgets.QVBoxLayout(content)
+
+            # cleanup previous widgets from scroll area
+            for i in reversed(range(vlay.count())):
+                markedWidget = vlay.takeAt(i).widget()
+                vlay.removeWidget(markedWidget)
+                markedWidget.setParent(None)
+            # cleanup previous widgets from verticalLayout_items
             for i in reversed(range(layout.count())):
                 markedWidget = layout.takeAt(i).widget()
                 layout.removeWidget(markedWidget)
                 markedWidget.setParent(None)
 
+
+            scroll = QtWidgets.QScrollArea()
+            layout.addWidget(scroll)
+            scroll.setWidget(content)
+            scroll.setWidgetResizable(True)
+
+            labelFont = QtGui.QFont()
+            labelFont.setPointSize(12)
+            itemFont = QtGui.QFont()
+            itemFont.setPointSize(10)
             newsCheckbox = {}
             moduleKey = '%s.%s' % (self.__class__.__module__ , self.__class__.__name__)
             itemWidget = {}
@@ -66,23 +108,33 @@ class DatarecorderWidget(Control):
                     if channel not in currentSettings['modules'].keys():
                         currentSettings['modules'].update({channel: {}})
                     newsCheckbox[channel] = QtWidgets.QLabel(channel.split('.')[1])
-                    layout.addWidget(newsCheckbox[channel])
+                    newsCheckbox[channel].setFont(labelFont)
                     news = self.readNews(channel)
-                    for item in news:
-                        itemWidget[item] = QtWidgets.QCheckBox(item)
-                        #lambda will not deliver what you expect: itemWidget[item].clicked.connect(lambda: self.handlemodulesettings(itemWidget[item].text(), itemWidget[item].isChecked()))
-                        itemWidget[item].stateChanged.connect(partial(self.handlemodulesettings, channel, itemWidget[item]))
-                        layout.addWidget(itemWidget[item])
+                    if news:
+                        vlay.addWidget(newsCheckbox[channel])
 
-                        # start set checkboxes from currentSettings
-                        if item not in currentSettings['modules'][channel].keys():
-                            itemWidget[item].setChecked(True)
-                            itemWidget[item].stateChanged.emit(True)
-                        else:
-                            itemWidget[item].setChecked(currentSettings['modules'][channel][item])
-                            itemWidget[item].stateChanged.emit(currentSettings['modules'][channel][item])
-                        # end set checkboxes from currentSettings
-            self.widget.resize(800, 600) #TODO make this dynamic
+                        for item in news:
+                            itemWidget[item] = QtWidgets.QCheckBox(item)
+                            itemWidget[item].setFont(itemFont)
+                            #lambda will not deliver what you expect: itemWidget[item].clicked.connect(lambda: self.handlemodulesettings(itemWidget[item].text(), itemWidget[item].isChecked()))
+                            itemWidget[item].stateChanged.connect(partial(self.handlemodulesettings, channel, itemWidget[item]))
+                            vlay.addWidget(itemWidget[item])
+
+                            # start set checkboxes from currentSettings
+                            if item not in currentSettings['modules'][channel].keys():
+                                itemWidget[item].setChecked(True)
+                                itemWidget[item].stateChanged.emit(True)
+                            else:
+                                itemWidget[item].setChecked(currentSettings['modules'][channel][item])
+                                itemWidget[item].stateChanged.emit(currentSettings['modules'][channel][item])
+                            # end set checkboxes from currentSettings
+
+            vlay.addStretch()
+
+
+            content.adjustSize()
+            self.window.mainWidget.adjustSize()
+            #self.widget.resize(800, 800) #TODO make this dynamic
         except Exception as inst:
             print (inst)
 
@@ -103,12 +155,12 @@ class DatarecorderWidget(Control):
 
         # connect buttons
         self.widget.btnInitialize.clicked.connect(self._clickedBtnInitialize)
-        self.widget.btnStartRecorder.clicked.connect(self._clickedBtnStartRecorder)
-        self.widget.btnStopRecorder.clicked.connect(self._clickedBtnStopRecorder)
+        #self.widget.btnStartRecorder.clicked.connect(self._clickedBtnStartRecorder)
+        #self.widget.btnStopRecorder.clicked.connect(self._clickedBtnStopRecorder)
 
         # disable the start and stop buttons
-        self.widget.btnStartRecorder.setEnabled(False)
-        self.widget.btnStopRecorder.setEnabled(False)
+        #self.widget.btnStartRecorder.setEnabled(False)
+        #self.widget.btnStopRecorder.setEnabled(False)
         
         '''
         # connect the signals from the data recorder; to be used to show messages or something
@@ -125,8 +177,8 @@ class DatarecorderWidget(Control):
         self.widget.lblMessageRecorder.setText("not recording")
         self.widget.lblMessageRecorder.setStyleSheet('color: orange')
 
-        self.widget.lblStatusRecorder.setText("not initialized")
-        self.widget.lblStatusRecorder.setStyleSheet('color: orange')
+        #self.widget.lblStatusRecorder.setText("not initialized")
+        #self.widget.lblStatusRecorder.setStyleSheet('color: orange')
 
         # reads settings if available and expands the datarecorder widget
         try:
@@ -138,12 +190,16 @@ class DatarecorderWidget(Control):
 
 
     def start(self):
+        print('start in datarecorder')
         if not self.window.isVisible():
             self._show()
+        self.moduleStateHandler.requestStateChange(self.moduleStates.DATARECORDER.START)      
         self.action.start()
         self.startPulsar()
 
     def stop(self):
+        self.moduleStateHandler.requestStateChange(self.moduleStates.DATARECORDER.STOP)
+        print('stop in datarecorder')
         self.stopPulsar()
         self.action.stop()
 
@@ -171,41 +227,55 @@ class DatarecorderWidget(Control):
             stateAsState = self.moduleStateHandler.getState(state) # ensure we have the State object (not the int)
 
             if stateAsState == self.moduleStates.DATARECORDER.INITIALIZED:
-                self.widget.btnStartRecorder.setEnabled(True)
-                self.widget.lblStatusRecorder.setStyleSheet('color: green')
+                self.stateWidget.btnStart.setEnabled(True)
+                self.widget.lblDataFilename.setText(self.action.getFilename())
+                #self.moduleStateHandler.requestStateChange(self.moduleStates.DATARECORDER.START)
+                #self.widget.btnStartRecorder.setEnabled(True)
+                #self.widget.lblStatusRecorder.setStyleSheet('color: green')
                 #self.action.initialize()
 
-            if stateAsState == self.moduleStates.DATARECORDER.NOTINITIALIZED:
-                self.widget.btnStartRecorder.setEnabled(False)
-                self.widget.btnStopRecorder.setEnabled(False)
-                self.widget.lblStatusRecorder.setStyleSheet('color: orange')
 
-            if stateAsState == self.moduleStates.DATARECORDER.INITIALIZED:
-                self.widget.lblDataFilename.setText(self.action.getFilename())
+            if stateAsState == self.moduleStates.DATARECORDER.NOTINITIALIZED:
+                self.stateWidget.btnStart.setEnabled(False)
+                self.stateWidget.btnStop.setEnabled(False)
+                #self.widget.btnStartRecorder.setEnabled(False)
+                #self.widget.btnStopRecorder.setEnabled(False)
+                #self.widget.lblStatusRecorder.setStyleSheet('color: orange')
 
             if stateAsState == self.moduleStates.DATARECORDER.START:
-                self.widget.btnStartRecorder.setEnabled(False)
+                self.stateWidget.btnStart.setEnabled(False)
+                self.stateWidget.btnStop.setEnabled(True)
+                #self.widget.btnStartRecorder.setEnabled(False)
                 self.widget.btnInitialize.setEnabled(False)
-                self.widget.btnStopRecorder.setEnabled(True)
+                #self.widget.btnStopRecorder.setEnabled(True)
                 # set message text
                 self.widget.lblMessageRecorder.setText("Busy Recording ...")
-                self.widget.lblMessageRecorder.setStyleSheet('color: green')
+                self.widget.lblMessageRecorder.setStyleSheet('color: red')
 
-                self.start()  # Pulsar
+                #self.start()  # Pulsar
 
             if stateAsState == self.moduleStates.DATARECORDER.STOP:
-                self.stop()   # Pulsar
-                self.widget.btnStartRecorder.setEnabled(False)
-                self.widget.btnStopRecorder.setEnabled(False)
+                #self.stop()   # Pulsar
+                self.stateWidget.btnStart.setEnabled(False)
+                self.stateWidget.btnStop.setEnabled(False)
+                #self.widget.btnStartRecorder.setEnabled(False)
+                #self.widget.btnStopRecorder.setEnabled(False)
                 self.widget.btnInitialize.setEnabled(True)
-                self.widget.lblStatusRecorder.setStyleSheet('color: orange')
+                #self.widget.lblStatusRecorder.setStyleSheet('color: orange')
                 # set message text
                 self.widget.lblMessageRecorder.setText("not recording")
                 self.widget.lblMessageRecorder.setStyleSheet('color: orange')
 
             # update the state label
-            self.widget.lblStatusRecorder.setText(stateAsState.name)
+            self.stateWidget.lblModulestate.setText(stateAsState.name)
+            #self.widget.lblStatusRecorder.setText(stateAsState.name)
             self.widget.repaint()
+
+            if stateAsState == self.moduleStates.DATARECORDER.START:
+                self.stateWidget.btnStart.setStyleSheet("background-color: green")
+            else:
+                self.stateWidget.btnStart.setStyleSheet("background-color: none")
+
 
         except Exception as inst:
             print (inst)
@@ -224,13 +294,14 @@ class DatarecorderWidget(Control):
              # emergency stop
             if stateAsState == self.masterStates.ERROR:
                 self.stop()
-                self.widget.btnStartRecorder.setEnabled(False)
-                self.widget.btnStopRecorder.setEnabled(False)
+                #self.widget.btnStartRecorder.setEnabled(False)
+                #self.widget.btnStopRecorder.setEnabled(False)
                 self.widget.btnInitialize.setEnabled(True)
-                self.widget.lblStatusRecorder.setStyleSheet('color: orange')
+                #self.widget.lblStatusRecorder.setStyleSheet('color: orange')
 
             # update the state label
-            self.widget.lblStatusRecorder.setText(stateAsState.name)
+            self.stateWidget.lblModulestate.setText(stateAsState.name)
+            #self.widget.lblStatusRecorder.setText(stateAsState.name)
             self.widget.repaint()
 
         except Exception as inst:
@@ -245,6 +316,7 @@ class DatarecorderWidget(Control):
         # set current data file name
         # self.lblDataFilename.setText('< none >')        #self._haptictrainer.datarecorder.initialize()
 
+    '''
     def _clickedBtnStartRecorder(self):
         """ btnStartRecorder clicked. """
         if self.moduleStateHandler.getCurrentState() != self.moduleStates.DATARECORDER.START:
@@ -261,5 +333,5 @@ class DatarecorderWidget(Control):
         if self.moduleStateHandler.getCurrentState() != self.moduleStates.DATARECORDER.STOP:
             self.moduleStateHandler.requestStateChange(self.moduleStates.DATARECORDER.STOP)
             #self.action.stopRecording()
-
+    '''
 

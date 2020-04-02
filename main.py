@@ -1,6 +1,6 @@
 # Intantiates classes by name. The classes, however MUST already exist in globals.
 # That is why classes have already been imported using a wildcard (*)
-# Make sure that the requested class are also in widgets/__init__.py 
+# Make sure that the requested class are also in widgets/__init__.py
 from modules import *
 import qdarkgraystyle
 #from widgets import MenuWidget
@@ -17,7 +17,6 @@ import traceback
 import os
 
 
-
 class Instantiate():
     '''
     Intantiates classes by name. The classes, however MUST already exist in globals.
@@ -25,8 +24,10 @@ class Instantiate():
 
     @param className is the class that will be instantiated
     '''
+
     def __init__(self, className):
-        self.class_ = className in globals().keys() and globals()[className] or None
+        self.class_ = className in globals().keys() and globals()[
+            className] or None
         #self.millis = millis
 
     def getInstantiatedClass(self):
@@ -90,27 +91,26 @@ if __name__ == '__main__':
 
     #from modules.template.action.states import TemplateStates
     #templateStates = TemplateStates()
-    #for state in templateStates.states:
+    # for state in templateStates.states:
     #    print(state, templateStates.states[state])
-    #exit(0)
-
+    # exit(0)
 
     def emergency():
         status = Status({})
         #states = status.states
         masterStateHandler = status.masterStateHandler
         masterStateHandler.requestStateChange(MasterStates.ERROR)
- 
+
     try:
         app = QtWidgets.QApplication(sys.argv)
         app.setStyleSheet(qdarkgraystyle.load_stylesheet())
-        win = QtWidgets.QWidget() #QMainWindow()
+        win = QtWidgets.QWidget()  # QMainWindow()
         win.resize(300, 200)
 
-        resources = os.path.join(os.path.dirname(os.path.realpath(__file__)),'resources')
+        resources = os.path.join(os.path.dirname(
+            os.path.realpath(__file__)), 'resources')
         imageName = os.path.join(resources, "stop.png")
-        
-        
+
         emergency_btn = QtWidgets.QToolButton()
         image = QtGui.QIcon(QtGui.QPixmap(imageName))
         emergency_btn.setIcon(image)
@@ -122,23 +122,21 @@ if __name__ == '__main__':
         grid = QtWidgets.QGridLayout()
         grid.addWidget(emergency_btn, 1, 0)
 
-        emergency_btn.setIconSize(QtCore.QSize(100,100))
+        emergency_btn.setIconSize(QtCore.QSize(100, 100))
         emergency_btn.clicked.connect(emergency)
-
 
         layout = QtWidgets.QVBoxLayout()
 
-        
         grid.addLayout(layout, 1, 1)
-
 
         win.setLayout(grid)
 
-        path = os.path.join(os.path.dirname(os.path.realpath(__file__)),'modules')
+        path = os.path.join(os.path.dirname(
+            os.path.realpath(__file__)), 'modules')
 
         widgetfolders = os.listdir(path)
         for widgetfolder in widgetfolders:
-            #if widgetfolder not in ('__pycache__', 'template', '__init__.py'):
+            # if widgetfolder not in ('__pycache__', 'template', '__init__.py'):
             if widgetfolder not in ('__pycache__', 'interface', 'template', 'menu', '__init__.py'):
                 module = '%s%s' % (widgetfolder.title(), 'Widget')
                 if module:
@@ -150,7 +148,7 @@ if __name__ == '__main__':
                         defaultMillis = instantiatedClass.millis
                     except:
                         pass
-                    
+
                     # millis
                     editClass = None
                     editLabel = '%s %s' % ('Start', widgetfolder)
@@ -172,9 +170,10 @@ if __name__ == '__main__':
                         buttonClass.clicked.connect(instantiatedClass._show)
                         layout.addWidget(buttonClass)
                     except Exception as inst:
-                        #traceback.print_exc(file=sys.stdout)
+                        # traceback.print_exc(file=sys.stdout)
                         buttonText.__add__(' no action defined in %s' % module)
-                        print(inst, "Warning: No action on button '%s', because method %s in %s does not exist" % (buttonText, '_show()', module))
+                        print(inst, "Warning: No action on button '%s', because method %s in %s does not exist" % (
+                            buttonText, '_show()', module))
 
                     # start
                     buttonClass = None
@@ -182,12 +181,13 @@ if __name__ == '__main__':
                     try:
                         buttonClass = QtWidgets.QPushButton(buttonText)
                         buttonClass.clicked.connect(instantiatedClass._start)
-                        layout.addWidget(buttonClass)               
+                        layout.addWidget(buttonClass)
                     except Exception as inst:
-                        #traceback.print_exc(file=sys.stdout)
-                        print(inst, "Warning: No action on button '%s', because method %s in %s does not exist" % (buttonText, '_start()', module))
-                        #layout.removeWidget(buttonClass)
- 
+                        # traceback.print_exc(file=sys.stdout)
+                        print(inst, "Warning: No action on button '%s', because method %s in %s does not exist" % (
+                            buttonText, '_start()', module))
+                        # layout.removeWidget(buttonClass)
+
                     # stop
                     buttonClass = None
                     buttonText = '%s %s' % ('Stop', widgetfolder)
@@ -197,7 +197,8 @@ if __name__ == '__main__':
                         layout.addWidget(buttonClass)
                     except Exception as inst:
                         buttonText.__add__(' no action defined in %s' % module)
-                        print("Warning: No action on button '%s', because method %s in %s does not exist" % (buttonText, '_stop()', module))
+                        print("Warning: No action on button '%s', because method %s in %s does not exist" % (
+                            buttonText, '_stop()', module))
 
                     # close widget
                     buttonClass = None
@@ -208,11 +209,11 @@ if __name__ == '__main__':
                         layout.addWidget(buttonClass)
                     except Exception as inst:
                         buttonText.__add__(' no action defined in %s' % module)
-                        print("Warning: No action on button '%s', because method %s in %s does not exist" % (buttonText, '_close()', module))
-        
+                        print("Warning: No action on button '%s', because method %s in %s does not exist" % (
+                            buttonText, '_close()', module))
+
         layout.addWidget(quit_btn)
         win.show()
-
 
         print(sys.exit(app.exec()))
     except Exception as inst:
