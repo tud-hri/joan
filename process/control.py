@@ -107,7 +107,7 @@ class Control(Pulsar):
     def _btnStartClicked(self):
         self.start()
         self.stateWidget.lineTick.setEnabled(False)
-        self.stateWidget.lineTick.clear
+        self.stateWidget.lineTick.clear()
         self.stateWidget.lineTick.clearFocus()
         self.stateWidget.lineTick.setPlaceholderText(str(self.millis))
 
@@ -115,7 +115,7 @@ class Control(Pulsar):
     def _btnStopClicked(self):
         self.stop()
         self.stateWidget.lineTick.setEnabled(True)
-        self.stateWidget.lineTick.clear
+        self.stateWidget.lineTick.clear()
         self.stateWidget.lineTick.setPlaceholderText(str(self.millis))
 
 
