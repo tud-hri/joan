@@ -18,7 +18,7 @@ In order to properly setup the simulation software on Windows several packages a
 * __[Make](http://gnuwin32.sourceforge.net/packages/make.htm)__ Generates the executables.  
 
 !!! Important
-    When you install the above mentioned software make sure you add the binary maps to the system path! If you dont know how to do this please click this link:
+    When you install the above mentioned software make sure you add the binary maps to the system path! If you dont know how to do so, please click this link: [Adding to System Variables](/sysPath)
 
 ### Visual Studio 2017
 [Visual studio 2017](https://visualstudio.microsoft.com/vs/older-downloads/) is used as main building tool for the CARLA simulator. Make sure you install it with the following properties:
