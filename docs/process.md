@@ -22,6 +22,7 @@ MainModuleWidget(Control) <br>
         class QObject
         class QThread
         class MainModuleWidget
+        class moduleWidget
         class moduleAction
         class moduleStates
 
@@ -33,7 +34,7 @@ MainModuleWidget(Control) <br>
         Pulsar --|> Control : Inheritance
         Control ..|> Status : Realization
         Control ..|> News : Realization
-
+        Control --|> moduleWidget : Inheritance
         Control --|> moduleAction : Inheritance
         Control  --|> MainModuleWidget : Inheritance
         MasterStates --|> moduleStates : Inheritance
