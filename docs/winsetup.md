@@ -69,7 +69,7 @@ To get the latest CARLA assets open up the folder 'Utils' in the 'carla' folder 
 This text file contains the instructions of what to do to download the latest assets, for now get the 0.9.8 version, you can also click this link: 
 __[Carla Assets Link](http://carla-assets.s3.amazonaws.com/20200306_06b6cb1.tar.gz)__
 
-### Step 3, get speficic JOAN Assets__
+### Step 3, get speficic JOAN Assets
 To have a nice car interior which also turns the wheel if you turn it some extra assets are required. You can download them from this link: __[Dropboxlink](https://www.dropbox.com/s/7cboucrb81sdlxq/JOAN_Assets.zip?dl=0)__ It contains:
 
 * JOAN_Blueprints 
@@ -85,7 +85,22 @@ Lastly copy the contents of JOAN_Map to the __..\carla\Unreal\CarlaUE4\Content\C
 !!! Note
     Copy the .xodr file into the opendrive folder
 
+### Step 4, build the PythonAPI
+In order to build the python API open the 'x64 Native Tools Command Prompt for VS 2017' terminal. 
 
+!!! Important
+    Make sure you open the terminal as __Administrator__!
+
+Cd into the directory where you cloned carla and run the following:
+
+    make PythonAPI
+
+You can see what should happen below:
+![alt text](gifs/makePythonAPI.gif "Making PythonAPI")
+
+If everything was succesful the carla.egg file should be in __..\carla\PythonAPI\carla\dist__ :
+
+![alt text](Images/eggfile.png "eggfile")
 
 ## Setting up JOAN
 To get JOAN to work you will need several python packages (and if you want to use a sensodrive wheel with CAN interface also a specific DLL). The list of required pip installs will be shown here. For your convenience we also compiled a setup.py file which should install all the necessary python libraries automatically.
