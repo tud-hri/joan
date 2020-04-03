@@ -17,6 +17,9 @@ In order to properly setup the simulation software on Windows several packages a
 * __[Git](https://git-scm.com/downloads)__ Ensures version control of both the python software and CARLA
 * __[Make](http://gnuwin32.sourceforge.net/packages/make.htm)__ Generates the executables.  
 
+!!! Important
+    When you install the above mentioned software make sure you add the binary maps to the system path! If you dont know how to do this please click this link:
+
 ### Visual Studio 2017
 [Visual studio 2017](https://visualstudio.microsoft.com/vs/older-downloads/) is used as main building tool for the CARLA simulator. Make sure you install it with the following properties:
 
@@ -65,6 +68,22 @@ To get the latest CARLA assets open up the folder 'Utils' in the 'carla' folder 
 
 This text file contains the instructions of what to do to download the latest assets, for now get the 0.9.8 version, you can also click this link: 
 __[Carla Assets Link](http://carla-assets.s3.amazonaws.com/20200306_06b6cb1.tar.gz)__
+
+### Step 3, get speficic JOAN Assets__
+To have a nice car interior which also turns the wheel if you turn it some extra assets are required. You can download them from this link: __[Dropboxlink](https://www.dropbox.com/s/7cboucrb81sdlxq/JOAN_Assets.zip?dl=0)__ It contains:
+
+* JOAN_Blueprints 
+* JOAN_Static
+* JOAN_Map
+
+Please copy the contents of JOAN_Blueprints to __..\carla\Unreal\CarlaUE4\Content\Carla\Blueprints__ to be neat copy the vehicles in the vehicles blueprint map.
+
+Copy the contents of JOAN_Static (only cars) to the __..\carla\Unreal\CarlaUE4\Content\Carla\Static\Vehicles\4Wheeled__ folder.
+
+Lastly copy the contents of JOAN_Map to the __..\carla\Unreal\CarlaUE4\Content\Carla\Maps__ folder. 
+
+!!! Note
+    Copy the .xodr file into the opendrive folder
 
 
 
