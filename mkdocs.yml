@@ -11,5 +11,9 @@ nav:
     - Extra Instructions:
       - Adding to system variables: sysPath.md
 
+    - Contributing:
+      - Guidelines: contributing-guidelines.md
+      - Coding Standard: contributing-coding-standard.md
+
 markdown_extensions:
   - admonition
