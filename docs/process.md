@@ -9,7 +9,7 @@ MasterStates <br>
 Pulsar(QtCore.QThread) <br>
 MainModuleWidget(Control) <br>
 
-# Main class diagram
+# Main process class diagram
 
 ```mermaid
     classDiagram

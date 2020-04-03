@@ -12,15 +12,23 @@ moduleStates(MasterStates)<br><br>
         class QThread
         class moduleWidget
         class moduleAction
+        class modulestates
+        class DatarecorderStates
         class DatarecorderWidget
         class DatarecorderAction
         class DataWriter
+        class DatarecorderSettings
+        class State
 
         QThread --|> DataWriter : Inheritance
         moduleWidget --> DatarecorderWidget
         moduleAction --> DatarecorderAction
+        modulestates --> State : Realization
+        DatarecorderWidget ..|> DatarecorderStates : Realization
         DatarecorderWidget ..|> DatarecorderAction : Realization
         DatarecorderAction ..|> DataWriter : Realization
+        DatarecorderWidget ..|> DatarecorderSettings : Realization
+        DataWriter ..|> DatarecorderSettings : Realization
 ```
 
 
