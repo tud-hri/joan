@@ -2,7 +2,6 @@ from process import Control
 import os
 import json
 import copy
-from json import JSONDecoder, JSONDecodeError, JSONEncoder
 
 '''
 { "modules": {
@@ -17,8 +16,9 @@ from json import JSONDecoder, JSONDecodeError, JSONEncoder
         }
     }
 }
-
 '''
+
+
 class DatarecorderSettings(Control):
     def __init__(self, *args, **kwargs):
         Control.__init__(self, *args, **kwargs)
@@ -32,7 +32,6 @@ class DatarecorderSettings(Control):
                 del copySettings['modules'][channel]
         self.settings = copy.deepcopy(copySettings)
 
-    
     def write(self, moduleKey=None, item=None):
         print('settings write')
         self.read()
@@ -64,7 +63,7 @@ class DatarecorderSettings(Control):
             with open(self.file, 'r') as settingsFile:
                 self.settings = json.load(settingsFile)
         except Exception as inst:
-            if self.settings == None:
+            if self.settings is None:
                 self.settings = {}
                 self.settings['modules'] = {}
             print('reading', inst)

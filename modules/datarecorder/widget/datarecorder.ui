@@ -19,7 +19,6 @@
         <property name="windowTitle">
             <string>Data Recorder</string>
         </property>
-        
         <layout class="QVBoxLayout" name="verticalLayout_0">
             <item>
                 <widget class="QGroupBox" name="grpBoxDataRecorder">
@@ -28,7 +27,7 @@
                     </property>
                     <layout class="QGridLayout" name="gridLayout_2">
                         <item row="0" column="3">
-                           <layout class="QVBoxLayout" name="verticalLayout_2">
+                            <layout class="QVBoxLayout" name="verticalLayout_2">
                                 <item alignment="Qt::AlignRight|Qt::AlignCenter">
                                     <widget class="QLabel" name="lblMessageRecorder">
                                         <property name="text">
@@ -85,21 +84,14 @@
                     </layout>
                 </widget>
             </item>
-
             <item>
                 <widget class="QGroupBox" name="grpBoxDataRecorderSettings">
                     <property name="title">
                         <string>Data Recoder Settings</string>
                     </property>
-
-                        <layout class="QVBoxLayout" name="verticalLayout_items">
-                        </layout>
-   
+                    <layout class="QVBoxLayout" name="verticalLayout_items"></layout>
                 </widget>
             </item>
-
-
-
         </layout>
     </widget>
     <resources/>

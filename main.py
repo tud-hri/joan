@@ -3,8 +3,6 @@
 # Make sure that the requested class are also in widgets/__init__.py
 from modules import *
 import qdarkgraystyle
-#from widgets import MenuWidget
-#from widgets import DatarecorderWidget
 
 from process import Status
 from process import MasterStates
@@ -28,7 +26,6 @@ class Instantiate():
     def __init__(self, className):
         self.class_ = className in globals().keys() and globals()[
             className] or None
-        #self.millis = millis
 
     def getInstantiatedClass(self):
         try:
@@ -36,7 +33,9 @@ class Instantiate():
                 instantiatedClass = self.class_()
                 return instantiatedClass
             else:
-                print("Make sure that '%s' is lowercasename and that the class ends with 'Widget' (e.g. the widget directory 'menu' contains a class in 'menu.py' called 'MenuWidget'" % self.class_)
+                print("Make sure that '%s' is lowercasename and that the class ends with 'Widget' \
+                      (e.g. the widget directory 'menu' contains a class in 'menu.py' called 'MenuWidget'"
+                      % self.class_)
         except Exception as inst:
             traceback.print_exc(file=sys.stdout)
             print(inst, self.class_)
@@ -89,15 +88,8 @@ class Tasks(QtCore.QObject):
 '''
 if __name__ == '__main__':
 
-    #from modules.template.action.states import TemplateStates
-    #templateStates = TemplateStates()
-    # for state in templateStates.states:
-    #    print(state, templateStates.states[state])
-    # exit(0)
-
     def emergency():
         status = Status({})
-        #states = status.states
         masterStateHandler = status.masterStateHandler
         masterStateHandler.requestStateChange(MasterStates.ERROR)
 
@@ -146,21 +138,12 @@ if __name__ == '__main__':
                     defaultMillis = 0
                     try:
                         defaultMillis = instantiatedClass.millis
-                    except:
+                    except Exception:
                         pass
 
                     # millis
                     editClass = None
                     editLabel = '%s %s' % ('Start', widgetfolder)
-                    # try:
-                    #     editClass = QtWidgets.QLineEdit()
-                    #     editClass.textChanged.connect(instantiatedClass._setmillis)
-                    #     #editClass.setValidator()
-                    #     editClass.setPlaceholderText(str(defaultMillis))
-                    #     layout.addWidget(editClass)
-                    # except Exception as inst:
-                    #     editLabel.__add__(' no action defined in %s' % module)
-                    #     print(inst,"No action on button '%s', because method %s in %s does not exist" % ('editClass', '_setmillis()', module))
 
                     # show
                     buttonClass = None
@@ -169,10 +152,10 @@ if __name__ == '__main__':
                         buttonClass = QtWidgets.QPushButton(buttonText)
                         buttonClass.clicked.connect(instantiatedClass._show)
                         layout.addWidget(buttonClass)
-                    except Exception as inst:
+                    except Exception:
                         # traceback.print_exc(file=sys.stdout)
                         buttonText.__add__(' no action defined in %s' % module)
-                        print(inst, "Warning: No action on button '%s', because method %s in %s does not exist" % (
+                        print("Warning: No action on button '%s', because method %s in %s does not exist" % (
                             buttonText, '_show()', module))
 
                     # start
@@ -182,9 +165,9 @@ if __name__ == '__main__':
                         buttonClass = QtWidgets.QPushButton(buttonText)
                         buttonClass.clicked.connect(instantiatedClass._start)
                         layout.addWidget(buttonClass)
-                    except Exception as inst:
+                    except Exception:
                         # traceback.print_exc(file=sys.stdout)
-                        print(inst, "Warning: No action on button '%s', because method %s in %s does not exist" % (
+                        print("Warning: No action on button '%s', because method %s in %s does not exist" % (
                             buttonText, '_start()', module))
                         # layout.removeWidget(buttonClass)
 
@@ -195,7 +178,7 @@ if __name__ == '__main__':
                         buttonClass = QtWidgets.QPushButton(buttonText)
                         buttonClass.clicked.connect(instantiatedClass._stop)
                         layout.addWidget(buttonClass)
-                    except Exception as inst:
+                    except Exception:
                         buttonText.__add__(' no action defined in %s' % module)
                         print("Warning: No action on button '%s', because method %s in %s does not exist" % (
                             buttonText, '_stop()', module))
@@ -207,7 +190,7 @@ if __name__ == '__main__':
                         buttonClass = QtWidgets.QPushButton(buttonText)
                         buttonClass.clicked.connect(instantiatedClass._close)
                         layout.addWidget(buttonClass)
-                    except Exception as inst:
+                    except Exception:
                         buttonText.__add__(' no action defined in %s' % module)
                         print("Warning: No action on button '%s', because method %s in %s does not exist" % (
                             buttonText, '_close()', module))
