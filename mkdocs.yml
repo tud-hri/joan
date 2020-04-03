@@ -5,8 +5,12 @@ theme: readthedocs
 nav:
     - Home: 'index.md'
     - Setup:
-      - Setup on Windows: winsetup.md
-      - Setup on Linux: linsetup.md
+      - Setup on Windows: setup-windows.md
+      - Setup on Linux: setup-linux.md
+
+    - JOAN:
+      - Workflow: joan-workflow.md
+      - Adding modules: joan-adding-modules.md
 
     - Extra Instructions:
       - Adding to system variables: sysPath.md

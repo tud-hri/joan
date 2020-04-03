@@ -51,6 +51,7 @@ The build and install of the barebones CARLA simulator can be divided in the fol
 4. __Build PythonAPI__
 5. __Build & Launch CARLA__
 6. __Wait and pray that your PC is fast enough to compile all the shaders in Unreal in a reasonable amount of time__
+7. __Adding JOAN Assets inside Unreal__
 
 The steps will be explained 1 step at the time with screenshots and command line commands you can easily copy paste.
 ### Step 1, Cloning the repository
@@ -102,6 +103,61 @@ If everything was succesful the carla.egg file should be in __..\carla\PythonAPI
 
 ![alt text](Images/eggfile.png "eggfile")
 
-## Setting up JOAN
-To get JOAN to work you will need several python packages (and if you want to use a sensodrive wheel with CAN interface also a specific DLL). The list of required pip installs will be shown here. For your convenience we also compiled a setup.py file which should install all the necessary python libraries automatically.
+### Step 5, building and launching CARLA
+Essentially the steps here are exactly the same as the PythonAPI build, however as a precaution it is a good idea to do the following:
 
+![alt text](Images/genVis.png "genVisfiles")
+
+Now open a Terminal the same way as in step 4, go to the carla folder and run the following command:
+
+    make launch
+
+This will try and build carla, and eventually will launch the unreal editor. 
+
+### Step 6, Unreal compiling
+
+!!! Note
+    The only important step here (if everything went well) is to remain patient, Unreal will have to compile all shaders which is CPU heavy and can take up to 2 hours.
+
+### Step 7, adding vehicle assets to CARLA in Unreal
+After the unreal editor has been launched and compiled the shaders from step 6 go to the content browser and search for __'vehicle factory'__:
+
+![alt text](Images/vehfac.png "Vehicle Factory")
+
+Open up this 'Blueprint' and then click on the array variable 'vehicles'. Now add to the array and select the vehicle blueprints you have selected. Give it a name you want to call it as from the pythonAPI, as a default use the ones shown here:
+
+![alt text](Images/addvehicles.png "Adding Audi")
+
+If all of the steps succeeded than congrats! You have succesfully built CARLA, the basis of the JOAN simulator! Please proceed to the setting up of JOAN.
+
+## Setting up JOAN
+Please follow the following steps:
+
+1. __Cloning JOAN__
+2. __Getting the python libraries__
+3. __Run main.py__
+
+# Cloning JOAN
+Clone the repository with the following code:
+
+    ## clone repo
+    git clone https://gitlab.tudelft.nl/delft-haptics-lab/vrsim/SharedControlDrivingSim.git
+
+
+# Getting necessary python3 libraries
+To get JOAN to work together with CARLA you will need several python packages (and if you want to use a sensodrive wheel with CAN interface also a specific DLL). The list of required pip installs will be shown here. For your convenience we also compiled a setup.py file which should install all the necessary python libraries automatically.
+
+    pip3 install PyQt5
+    pip3 install hidapi
+    pip3 install numpy
+    pip3 install pandas
+    pip3 install qdarkgraystyle
+
+# Running JOAN
+Either open up the folder you cloned the repository in via visual code and run via that or type in the following in the terminal from your cloned directory:
+
+    py main.py
+
+What should be happening is the following:
+
+![alt text](gifs/JOAN.gif "Starting JOAN")
