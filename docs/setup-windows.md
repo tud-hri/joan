@@ -137,14 +137,14 @@ Please follow the following steps:
 2. __Getting the python libraries__
 3. __Run main.py__
 
-# Cloning JOAN
+### Cloning JOAN
 Clone the repository with the following code:
 
     ## clone repo
     git clone https://gitlab.tudelft.nl/delft-haptics-lab/vrsim/SharedControlDrivingSim.git
 
 
-# Getting necessary python3 libraries
+### Getting necessary python3 libraries
 To get JOAN to work together with CARLA you will need several python packages (and if you want to use a sensodrive wheel with CAN interface also a specific DLL). The list of required pip installs will be shown here. For your convenience we also compiled a setup.py file which should install all the necessary python libraries automatically.
 
     pip3 install PyQt5
@@ -153,7 +153,7 @@ To get JOAN to work together with CARLA you will need several python packages (a
     pip3 install pandas
     pip3 install qdarkgraystyle
 
-# Running JOAN
+### Running JOAN
 Either open up the folder you cloned the repository in via visual code and run via that or type in the following in the terminal from your cloned directory:
 
     py main.py
