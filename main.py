@@ -105,6 +105,7 @@ if __name__ == '__main__':
         app = QtWidgets.QApplication(sys.argv)
         app.setStyleSheet(qdarkgraystyle.load_stylesheet())
         win = QtWidgets.QWidget() #QMainWindow()
+        win.setWindowTitle('JOAN')
         win.resize(300, 200)
 
         resources = os.path.join(os.path.dirname(os.path.realpath(__file__)),'resources')
