@@ -1,0 +1,17 @@
+#use: pip3 install -r requirements.txt
+
+numpy==1.18.1
+pandas==1.0.3
+PyQt5==5.14.1
+PyQt5-sip==12.7.1
+
+# carla==0.9.5  # package gives error
+# same error with:
+# -e git://github.com/carla-simulator/carla#egg=carla-0.9.5
+# Error is:
+# FileNotFoundError: [Errno 2] No such file or directory: '/Users/aamvanderkraan/git/SharedControlDrivingSim/src/carla/setup.py'
+
+# not used:
+# srunner=0.15  # The package in order to use scenarios for CARLA 
+
+
