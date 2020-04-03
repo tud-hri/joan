@@ -10,7 +10,7 @@ from modules.datarecorder.action.datarecordersettings import DatarecorderSetting
 from PyQt5 import QtWidgets
 from functools import partial
 
-from datetime import datetime
+#from datetime import datetime
 
 class DatarecorderWidget(Control):
     """ 
@@ -23,6 +23,7 @@ class DatarecorderWidget(Control):
         kwargs['callback'] = [self.do]  # method will run each given millis
 
         Control.__init__(self, *args, **kwargs)
+
         self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)),"datarecorder.ui"))
         self.data = {}
         self.writeNews(channel=self, news=self.data)
@@ -42,23 +43,11 @@ class DatarecorderWidget(Control):
         self.settings = DatarecorderSettings()
        
     def do(self):
-        #if self.moduleStateHandler.getCurrentState() == self.moduleStates.DATARECORDER.START:
-        #print("news from steeringcommunication", self.readNews('modules.steeringcommunication.widget.steeringcommunication.SteeringcommunicationWidget'))
-        steeringcommunicationNews = self.readNews('modules.steeringcommunication.widget.steeringcommunication.SteeringcommunicationWidget')
-        if steeringcommunicationNews != {}:
-            steerincommunicationData = {}
-            steerincommunicationData['time'] = datetime.now()
-            steerincommunicationData.update(steeringcommunicationNews)
-        
-            self.action.write(steerincommunicationData)
-        else:
-            print('No news from steeringcommunication')
-        # self.readNews('modules.steeringcommunication.widget.steeringcommunication.SteeringcommunicationWidget'))
-
+        # handling is done in the action part
+        self.action.write()
 
     def editWidget(self):
         # TODO: make it compact (folding, tabs?)
-
         currentSettings = self.settings.read()
 
         try:
@@ -74,6 +63,8 @@ class DatarecorderWidget(Control):
             itemWidget = {}
             for channel in self.getAvailableNewsChannels():
                 if channel != moduleKey:
+                    if channel not in currentSettings['modules'].keys():
+                        currentSettings['modules'].update({channel: {}})
                     newsCheckbox[channel] = QtWidgets.QLabel(channel.split('.')[1])
                     layout.addWidget(newsCheckbox[channel])
                     news = self.readNews(channel)
@@ -91,8 +82,7 @@ class DatarecorderWidget(Control):
                             itemWidget[item].setChecked(currentSettings['modules'][channel][item])
                             itemWidget[item].stateChanged.emit(currentSettings['modules'][channel][item])
                         # end set checkboxes from currentSettings
-
-            self.widget.resize(800, 300) #TODO make this dynamic
+            self.widget.resize(800, 600) #TODO make this dynamic
         except Exception as inst:
             print (inst)
 
@@ -139,7 +129,12 @@ class DatarecorderWidget(Control):
         self.widget.lblStatusRecorder.setStyleSheet('color: orange')
 
         # reads settings if available and expands the datarecorder widget
-        self.editWidget()
+        try:
+            for y in self.getAvailableModuleStatePackages():
+                print(y)
+            self.editWidget()
+        except Exception as inst:
+            print(inst)
 
 
     def start(self):
@@ -158,8 +153,11 @@ class DatarecorderWidget(Control):
             self.window.close()
 
     def handlemodulesettings(self, moduleKey, item):
-        datarecorderSettings = DatarecorderSettings()
-        datarecorderSettings.write(moduleKey=moduleKey, item=item)
+        try:
+            datarecorderSettings = DatarecorderSettings()
+            datarecorderSettings.write(moduleKey=moduleKey, item=item)
+        except Exception as inst:
+            print(inst)
 
     def handlemodulestate(self, state):
         """ 
