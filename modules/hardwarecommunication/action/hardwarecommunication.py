@@ -229,9 +229,10 @@ class Joystick(BaseInput):
         self.brake = 0
 
         try:
-            # self._joystick.open(121, 6) #  Playstation controller Zierikzee
-            self._joystick.open(1133, 49760) #logitech wheel CoRlab
-            # self._joystick.open(16700, 8467) #Taranis Zierikzee
+            # self._joystick.open(121, 6) #  Playstation controller Zierikzee (vendor,product)
+            ##self._joystick.open(1133, 49760) #logitech wheel CoRlab
+            #self._joystick.open(16700, 8467) #Taranis Zierikzee
+            self._joystick.open(1118, 736)
         except:
             print('Could not open joystick. Is it plugged in? Are the IDs correct?')
 
@@ -261,17 +262,18 @@ class Joystick(BaseInput):
         joystickdata = self._joystick.read(64,64)
 
         if joystickdata != []:
-            self.throttle = round((((joystickdata[3]) + (joystickdata[4])*256)/2047)*100)
-            self.brake = round((((joystickdata[7]) + (joystickdata[8])*256)/1023)*100 - 100)
-            if self.brake < 0:
+            self.throttle = 100 - round((((joystickdata[9])/128))*100)
+            if joystickdata[10] == 2:
+                self.brake = 80
+            else:
                 self.brake = 0
 
-            self.steer = round((((joystickdata[5]) + (joystickdata[6])*256)/2047)*360 - 180)
-
+            self.steer = round((((joystickdata[0]) + (joystickdata[1])*256)/(256*256))*180 - 90)
+            print(joystickdata)
         self._data['BrakeInput']    = self.brake
         self._data['ThrottleInput'] = self.throttle
         self._data['SteeringInput'] = self.steer
 
-        # self.displayInputs()
-        print(joystickdata)
+        self.displayInputs()
+        
         return self._data
