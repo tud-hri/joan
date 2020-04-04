@@ -106,7 +106,7 @@ class HardwarecommunicationWidget(Control):
                 self._stop()
 
             # update the state label
-            self.stateWidget.lblModulestate.setText(str(stateAsState.name))
+            self.stateWidget.lblModuleState.setText(str(stateAsState.name))
             self.stateWidget.repaint()
 
             if stateAsState == self.moduleStates.HARDWARECOMMUNICATION.RUNNING:
