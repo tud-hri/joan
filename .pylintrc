@@ -1,5 +1,5 @@
 [MESSAGES CONTROL]
-max-line-length=120
+max-line-length=160
 [MASTER]
 disable=I0011,I0013,E1121,E1126
 [TYPECHECK]
@@ -19,3 +19,5 @@ method-rgx=(_{0,1})([a-z][a-zA-Z0-9]+)$
 # bad variable names:
 # FooBar, Foo, FOO, foo_bar
 variable-rgx=([a-z_][a-zA-Z0-9]*)$
+
+attr-rgx=([a-z_][a-zA-Z0-9]*)$
