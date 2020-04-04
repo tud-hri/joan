@@ -80,7 +80,7 @@ class Control(Pulsar):
 
         # load widget UI ()
         self.widget = self._getGui(ui)
-        assert self.widget != None, 'could not create a widget, is %s the correct filename?' % ui
+        assert self.widget is not None, 'could not create a widget, is %s the correct filename?' % ui
         self.window.addWidget(self.widget, name='Module widget')
         
         # connect self.window close signal to the widget's _close function (if defined): this will also call self._close in case the user closes the window
@@ -90,8 +90,8 @@ class Control(Pulsar):
             pass
 
         # connect stateWidget widgets (buttons, line edit)
-        self.stateWidget.lineTick.setPlaceholderText(str(self.millis))
-        self.stateWidget.lineTick.textChanged.connect(lambda dt=self.millis: self._setmillis(dt))
+        self.stateWidget.inputTickMillis.setPlaceholderText(str(self.millis))
+        self.stateWidget.inputTickMillis.textChanged.connect(lambda dt=self.millis: self._setmillis(dt))
         self.stateWidget.btnStart.clicked.connect(self._btnStartClicked)
         self.stateWidget.btnStop.clicked.connect(self._btnStopClicked)
 
@@ -106,17 +106,17 @@ class Control(Pulsar):
 
     def _btnStartClicked(self):
         self.start()
-        self.stateWidget.lineTick.setEnabled(False)
-        self.stateWidget.lineTick.clear()
-        self.stateWidget.lineTick.clearFocus()
-        self.stateWidget.lineTick.setPlaceholderText(str(self.millis))
+        self.stateWidget.inputTickMillis.setEnabled(False)
+        self.stateWidget.inputTickMillis.clear()
+        self.stateWidget.inputTickMillis.clearFocus()
+        self.stateWidget.inputTickMillis.setPlaceholderText(str(self.millis))
 
 
     def _btnStopClicked(self):
         self.stop()
-        self.stateWidget.lineTick.setEnabled(True)
-        self.stateWidget.lineTick.clear()
-        self.stateWidget.lineTick.setPlaceholderText(str(self.millis))
+        self.stateWidget.inputTickMillis.setEnabled(True)
+        self.stateWidget.inputTickMillis.clear()
+        self.stateWidget.inputTickMillis.setPlaceholderText(str(self.millis))
 
 
     def _getGui(self, ui=''):
@@ -176,11 +176,6 @@ class Control(Pulsar):
         except Exception as inst:
             print(inst)
 
-
-    ''' 20200316 deprecated
-    def getAllGui(self):
-        return self.singletonStatus.gui
-    '''
 
     def getAllNews(self):
         return self.singletonNews.news

@@ -38,7 +38,7 @@ class Simcommunication():
         try:
             print(' connecting')
             self.client = carla.Client(self.host,self.port) #connecting to server
-            #self._parentWidget.lblModulestate.setText('Connecting')
+            #self._parentWidget.lblModuleState.setText('Connecting')
             self.client.set_timeout(2.0)
             self.world = self.client.get_world() ## get world object (contains everything)
             ## JUST TO SHOW THAT THE CLIENT CONNECTS (weather has no other uses)
@@ -60,7 +60,7 @@ class Simcommunication():
 
             self.egoCarBP = random.choice(self.BlueprintLibrary.filter("vehicle.HapticsLab.*"))
             self.egoCar = self.world.spawn_actor(self.egoCarBP,self.spawnPoints[0])
-            #self._parentWidget.lblModulestate.setText('Car Spawned')
+            #self._parentWidget.lblModuleState.setText('Car Spawned')
 
             return True
         except Exception as inst:

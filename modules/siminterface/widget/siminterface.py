@@ -126,7 +126,7 @@ class SiminterfaceWidget(Control):
                 self._stop()
 
             # update the state label
-            self.stateWidget.lblModulestate.setText(str(stateAsState.name))
+            self.stateWidget.lblModuleState.setText(str(stateAsState.name))
 
             if stateAsState == self.moduleStates.SIMULATION.RUNNING:
                 self.stateWidget.btnStart.setStyleSheet("background-color: green")
