@@ -1,7 +1,7 @@
 from PyQt5 import QtCore, QtWidgets
 import os, sys, glob
 from process import Control
-
+import time
 
 try:
     sys.path.append(glob.glob('../../carla/PythonAPI/carla/dist/carla-*%d.%d-%s.egg' % (
@@ -35,20 +35,21 @@ class Simcommunication():
         
 
     def start(self):
-        try:
+        
             print(' connecting')
             self.client = carla.Client(self.host,self.port) #connecting to server
             #self._parentWidget.lblModulestate.setText('Connecting')
             self.client.set_timeout(2.0)
+            time.sleep(2)
             self.world = self.client.get_world() ## get world object (contains everything)
             ## JUST TO SHOW THAT THE CLIENT CONNECTS (weather has no other uses)
-            self.weather = self.world.get_weather()
-            self.weather.cloudyness = 30
-            self.weather.sun_azimuth_angle = 180
-            self.weather.sun_altitude_angle = 90
-            self.weather.precipitation = 0
-            self.weather.precipitation_deposits = 0
-            self.world.set_weather(self.weather)
+            # self.weather = self.world.get_weather()
+            # self.weather.cloudyness = 30
+            # self.weather.sun_azimuth_angle = 180
+            # self.weather.sun_altitude_angle = 90
+            # self.weather.precipitation = 0
+            # self.weather.precipitation_deposits = 0
+            # self.world.set_weather(self.weather)
 
             self.BlueprintLibrary = self.world.get_blueprint_library()
             self.vehicleBPlibrary = self.BlueprintLibrary.filter('vehicle.*')
@@ -63,10 +64,10 @@ class Simcommunication():
             #self._parentWidget.lblModulestate.setText('Car Spawned')
 
             return True
-        except Exception as inst:
-            self.egoCar = None
-            print('Could not connect error given:', inst)
-            return False
+        # except Exception as inst:
+        #     self.egoCar = None
+        #     print('Could not connect error given:', inst)
+        #     return False
 
 
     def stop(self):
