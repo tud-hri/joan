@@ -1,7 +1,7 @@
 """Base class for modules"""
 
 import os 
-from PyQt5 import uic, QtCore
+from PyQt5 import uic, QtCore, QtGui
 
 from signals import Pulsar
 from .statehandler import StateHandler, MasterStates
@@ -96,6 +96,7 @@ class Control(Pulsar):
         # connect stateWidget widgets (buttons, line edit)
         self.stateWidget.inputTickMillis.setPlaceholderText(str(self.millis))
         self.stateWidget.inputTickMillis.textChanged.connect(lambda dt=self.millis: self._setmillis(dt))
+        self.stateWidget.inputTickMillis.setValidator(QtGui.QIntValidator(0, 2000, self))  # only allow 0-2000ms and int
         self.stateWidget.btnStart.clicked.connect(self._btnStartClicked)
         self.stateWidget.btnStop.clicked.connect(self._btnStopClicked)
 
