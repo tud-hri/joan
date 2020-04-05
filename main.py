@@ -14,7 +14,7 @@ from PyQt5 import QtWidgets
 from PyQt5 import QtGui
 from PyQt5 import uic
 
-from modules import DatarecorderWidget
+from modules import DatarecorderWidget, SiminterfaceWidget
 from process import Status
 from process import MasterStates
 
@@ -87,17 +87,20 @@ class JOANWindow(QtWidgets.QMainWindow):
         widget.setLayout(layout)
 
         # label with name
-        layout.addWidget(QtWidgets.QLabel(str(module)))
+        label = QtWidgets.QLabel(str(module).replace("Widget", ""))
+        label.setMinimumWidth(100)
+        label.setFont(QtGui.QFont("Arial", 10, QtGui.QFont.Bold))
+        layout.addWidget(label)
 
         # show button
-        btnText = '%s %s' % ('Show', module)
-        btn = QtWidgets.QPushButton(btnText)
+        btn = QtWidgets.QPushButton("Show")
+        btn.setFixedSize(80, 40)
         btn.clicked.connect(instantiatedClass._show)
         layout.addWidget(btn)
 
         # close button
-        btnText = '%s %s' % ('Close', module)
-        btn = QtWidgets.QPushButton(btnText)
+        btn = QtWidgets.QPushButton("Close")
+        btn.setFixedSize(80, 40)
         btn.clicked.connect(instantiatedClass._close)
         layout.addWidget(btn)
 
@@ -106,7 +109,7 @@ class JOANWindow(QtWidgets.QMainWindow):
         edit = QtWidgets.QLineEdit()
         edit.textChanged.connect(instantiatedClass._setmillis)
         edit.setPlaceholderText(str(defaultMillis))
-        edit.setMaximumWidth(100)
+        edit.setFixedWidth(60)
         edit.setValidator(QtGui.QIntValidator(0, 2000, self))
         layout.addWidget(edit)
 
@@ -148,6 +151,7 @@ if __name__ == '__main__':
     window = JOANWindow()
     window.show()
     window.addModule('DatarecorderWidget')
+    window.addModule('SiminterfaceWidget')
 
     widgetfolders = os.listdir(os.path.join(os.path.dirname(os.path.realpath(__file__)), "modules"))
     for widgetfolder in widgetfolders:

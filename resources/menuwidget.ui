@@ -182,7 +182,7 @@
    <item>
     <widget class="QGroupBox" name="grpBoxModules">
      <property name="title">
-      <string>GroupBox</string>
+      <string>Modules</string>
      </property>
     </widget>
    </item>
