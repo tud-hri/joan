@@ -5,6 +5,7 @@
 """
 
 import sys
+import inspect
 import traceback
 import os
 # import qdarkgraystyle
@@ -14,7 +15,7 @@ from PyQt5 import QtWidgets
 from PyQt5 import QtGui
 from PyQt5 import uic
 
-from modules import DatarecorderWidget, SiminterfaceWidget
+from modules import *
 from process import Status
 from process import MasterStates
 
@@ -28,29 +29,35 @@ class Instantiate():
     """
 
     def __init__(self, className):
-        self._class = className in globals().keys() and globals()[className] or None
+        self._class = globals()[className] if className in globals().keys() else None
 
     def getInstantiatedClass(self):
+        """Return instantiated class"""
         try:
             if self._class:
                 return self._class()
             else:
-                print("Make sure that '%s' is lowercasename and that the class ends with 'Widget' (e.g. the widget directory 'menu' contains a class in 'menu.py' called 'MenuWidget'" % self._class)
-        except Exception as inst:
+                print("Make sure that '%s' is lowercasename and that the class ends with 'Widget'" % self._class)
+                return None
+        except NameError as inst:
             traceback.print_exc(file=sys.stdout)
             print(inst, self._class)
 
         return None
 
 
-class JOANWindow(QtWidgets.QMainWindow):
+class JOANAppMainWindow(QtWidgets.QMainWindow):
+    """ Creates the main JOAN window and allows adding modules
+        Contains the the masterstate handler
+    """
     appisquiting = QtCore.pyqtSignal()
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self):
         super().__init__()
 
         resources = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'resources')
 
+        # setup window
         self.setWindowTitle('JOAN')
         mainWidget = uic.loadUi(os.path.join(resources, "menuwidget.ui"))
         self.setCentralWidget(mainWidget)
@@ -62,33 +69,68 @@ class JOANWindow(QtWidgets.QMainWindow):
         mainWidget.btnQuit.setStyleSheet("background-color: darkred")
         mainWidget.btnQuit.clicked.connect(self.quit)
 
+        # layout for the module groupbox
         self._layoutModules = QtWidgets.QVBoxLayout()
         mainWidget.grpBoxModules.setLayout(self._layoutModules)
 
-        self.show()
+        # add file menu
+        self.fileMenu = self.menuBar().addMenu('File')
+        self.fileMenu.addAction('Quit', self.quit)
+        self.fileMenu.addSeparator()
+        self.fileMenu.addAction('Add module...', self.processMenuAddModule)
+        self.fileMenu.addAction('Remove module...', self.processMenuRemoveModule)
 
-    def addModule(self, module):
+        # dictionary to keep track of the instantiated modules
+        self._instantiatedModules = {}
 
-        # instantiate module
+    def addModule(self, module, name=''):
+        """Instantiate module, create a widget and add to main window"""
+
+        # if name is not given, take str(module)
+        if name == '':
+            name = str(module)
+
+        # check if this name is already taken
+        if name in self._instantiatedModules.keys():
+            # key exists, prompt user to give a new name
+
+            # first, find new name (appending counter)
+            counter = 1
+            newName = '%s-%d' % (name, counter)
+            while newName in self._instantiatedModules.keys():
+                newName = '%s-%d' % (name, counter+1)
+
+            # and create input dialog
+            name, _ = QtWidgets.QInputDialog.getText(self, "Get text", "Your name:", QtWidgets.QLineEdit.Normal, newName)
+
+        # instantiate class module
         instantiated = Instantiate(module)
         instantiatedClass = instantiated.getInstantiatedClass()
+
+        # raise typeerror if module/instantiatedClass is None
+        if instantiatedClass is None:
+            print("Cannot instantiate class ", module)
+            return
+
+        # add instantiated modules to dictionary
+        self._instantiatedModules[name] = instantiatedClass
 
         # module timer time step
         defaultMillis = 0
         try:
             defaultMillis = instantiatedClass.millis
-        except:
-            pass
+        except ValueError as e:
+            print("Timer tick step (millis) not defined: ", e)
 
         # create a module widget
         widget = QtWidgets.QWidget()
-        widget.setObjectName(str(module))
+        widget.setObjectName(name)
         layout = QtWidgets.QHBoxLayout()
         widget.setLayout(layout)
 
         # label with name
-        label = QtWidgets.QLabel(str(module).replace("Widget", ""))
-        label.setMinimumWidth(100)
+        label = QtWidgets.QLabel(name.replace("Widget", ""))
+        label.setMinimumWidth(150)
         label.setFont(QtGui.QFont("Arial", 10, QtGui.QFont.Bold))
         layout.addWidget(label)
 
@@ -117,8 +159,56 @@ class JOANWindow(QtWidgets.QMainWindow):
         self._layoutModules.addWidget(widget)
         self.adjustSize()
 
+    def removeModule(self, name):
+        """ Remove module by name"""
+
+        # remove the widget in the main menu
+        w = self.centralWidget().findChild(QtWidgets.QWidget, name)
+        if w is not None:
+            w.setParent(None)  # this seems to work to delete the widget, removeWidget doesn't
+            # self._layoutModules.removeWidget(w)  # does not work
+            self.centralWidget().adjustSize()
+            self.adjustSize()
+            del w
+
+        del self._instantiatedModules[name]
+
+    def processMenuAddModule(self):
+        """Add module in menu clicked, add user-defined module"""
+        modulePath = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'modules')
+        moduleDirPath = QtWidgets.QFileDialog.getExistingDirectory(
+            self, caption="Select module directory", directory=modulePath, options=QtWidgets.QFileDialog.ShowDirsOnly)
+
+        # extract module folder name
+        module = '%s%s' % (os.path.basename(os.path.normpath(moduleDirPath)), 'Widget')
+
+        # check if a class with the name 'module' is present in the live objects of this module.
+        # if so, make sure it matches (case etc)
+        # this assumes that the module is imported through the wildcard
+        # through: from modules import *
+        clsmembers = dict(inspect.getmembers(sys.modules[__name__], inspect.isclass))
+        foundClass = False
+        for key, _ in clsmembers.items():
+            if key.lower() == module.lower():
+                module = key
+                foundClass = True
+
+        if foundClass is False:
+            print("Module class not found. The module needs to be in its own folder in the 'modules' folder.")
+            return
+
+        # add the module
+        self.addModule(module)
+
+    def processMenuRemoveModule(self):
+        """User hit remove module, ask them which one to remove"""
+        name, _ = QtWidgets.QInputDialog.getItem(self, "Select module to remove", "Modules", list(self._instantiatedModules.keys()))
+
+        self.removeModule(name)
+
     def emergency(self):
         """Emergency button processing"""
+
         status = Status({})
         masterStateHandler = status.masterStateHandler
         masterStateHandler.requestStateChange(MasterStates.ERROR)
@@ -146,102 +236,19 @@ class JOANWindow(QtWidgets.QMainWindow):
 
 if __name__ == '__main__':
 
-    app = QtWidgets.QApplication(sys.argv)
+    APP = QtWidgets.QApplication(sys.argv)
 
-    window = JOANWindow()
-    window.show()
-    window.addModule('DatarecorderWidget')
-    window.addModule('SiminterfaceWidget')
+    WINDOW = JOANAppMainWindow()
+    WINDOW.show()
 
-    widgetfolders = os.listdir(os.path.join(os.path.dirname(os.path.realpath(__file__)), "modules"))
-    for widgetfolder in widgetfolders:
-        if widgetfolder not in ('__pycache__', 'interface', 'template', 'menu', '__init__.py'):
-            module = '%s%s' % (widgetfolder.title(), 'Widget')
-            print(module)
+    # adding modules (instantiates them too)
+    WINDOW.addModule('DatarecorderWidget')
 
-    app.exec_()
+    # # printing widget folders
+    # WIDGETFOLDERS = os.listdir(os.path.join(os.path.dirname(os.path.realpath(__file__)), "modules"))
+    # for widgetfolder in WIDGETFOLDERS:
+    #     if widgetfolder not in ('__pycache__', 'interface', 'template', 'menu', '__init__.py'):
+    #         module = '%s%s' % (widgetfolder.title(), 'Widget')
+    #         print(module)
 
-
-
-        # widgetfolders = os.listdir(path)
-        # for widgetfolder in widgetfolders:
-        #     #if widgetfolder not in ('__pycache__', 'template', '__init__.py'):
-        #     if widgetfolder not in ('__pycache__', 'interface', 'template', 'menu', '__init__.py'):
-        #         module = '%s%s' % (widgetfolder.title(), 'Widget')
-        #         if module:
-        #             instantiated = Instantiate(module)
-        #             instantiatedClass = instantiated.getInstantiatedClass()
-        #             # get default millis which should be defined in the class that is just instantiated
-        #             defaultMillis = 0
-        #             try:
-        #                 defaultMillis = instantiatedClass.millis
-        #             except:
-        #                 pass
-                    
-        #             # millis
-        #             editClass = None
-        #             editLabel = '%s %s' % ('Start', widgetfolder)
-        #             # try:
-        #             #     editClass = QtWidgets.QLineEdit()
-        #             #     editClass.textChanged.connect(instantiatedClass._setmillis)
-        #             #     #editClass.setValidator()
-        #             #     editClass.setPlaceholderText(str(defaultMillis))
-        #             #     layout.addWidget(editClass)
-        #             # except Exception as inst:
-        #             #     editLabel.__add__(' no action defined in %s' % module)
-        #             #     print(inst,"No action on button '%s', because method %s in %s does not exist" % ('editClass', '_setmillis()', module))
-
-        #             # show
-        #             buttonClass = None
-        #             buttonText = '%s %s' % ('Show', widgetfolder)
-        #             try:
-        #                 buttonClass = QtWidgets.QPushButton(buttonText)
-        #                 buttonClass.clicked.connect(instantiatedClass._show)
-        #                 layout.addWidget(buttonClass)
-        #             except Exception as inst:
-        #                 #traceback.print_exc(file=sys.stdout)
-        #                 buttonText.__add__(' no action defined in %s' % module)
-        #                 print(inst, "Warning: No action on button '%s', because method %s in %s does not exist" % (buttonText, '_show()', module))
-
-        #             # start
-        #             buttonClass = None
-        #             buttonText = '%s %s' % ('Start', widgetfolder)
-        #             try:
-        #                 buttonClass = QtWidgets.QPushButton(buttonText)
-        #                 buttonClass.clicked.connect(instantiatedClass._start)
-        #                 layout.addWidget(buttonClass)               
-        #             except Exception as inst:
-        #                 #traceback.print_exc(file=sys.stdout)
-        #                 print(inst, "Warning: No action on button '%s', because method %s in %s does not exist" % (buttonText, '_start()', module))
-        #                 #layout.removeWidget(buttonClass)
- 
-        #             # stop
-        #             buttonClass = None
-        #             buttonText = '%s %s' % ('Stop', widgetfolder)
-        #             try:
-        #                 buttonClass = QtWidgets.QPushButton(buttonText)
-        #                 buttonClass.clicked.connect(instantiatedClass._stop)
-        #                 layout.addWidget(buttonClass)
-        #             except Exception as inst:
-        #                 buttonText.__add__(' no action defined in %s' % module)
-        #                 print("Warning: No action on button '%s', because method %s in %s does not exist" % (buttonText, '_stop()', module))
-
-        #             # close widget
-        #             buttonClass = None
-        #             buttonText = '%s %s' % ('Close', widgetfolder)
-        #             try:
-        #                 buttonClass = QtWidgets.QPushButton(buttonText)
-        #                 buttonClass.clicked.connect(instantiatedClass._close)
-        #                 layout.addWidget(buttonClass)
-        #             except Exception as inst:
-        #                 buttonText.__add__(' no action defined in %s' % module)
-        #                 print("Warning: No action on button '%s', because method %s in %s does not exist" % (buttonText, '_close()', module))
-        
-        # layout.addWidget(quit_btn)
-    #     win.show()
-
-
-    #     print(sys.exit(app.exec()))
-    # except Exception as inst:
-    #     traceback.print_exc(file=sys.stdout)
-    #     print('Error:', inst) 
+    APP.exec_()
