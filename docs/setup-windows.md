@@ -108,11 +108,16 @@ Essentially the steps here are exactly the same as the PythonAPI build, however 
 
 ![alt text](Images/genVis.png "genVisfiles")
 
+!!! Note
+    If you dont see this option of 'Generate Visual Studio Project Files', you probably have not selected the right engine version. Try and run the 'UnrealSelectEngine' version in: __C:\Program Files\Epic Games\UE_4.24\Engine\Binaries\Win64__
+    If this program is not present it is possible it is located in: __C:\Program Files (x86)\Epic Games\Launcher\Engine\Binaries\Win64__. Just copy the 'UnrealSelectEngine' program to the first mentioned folder. It should now associate the engine with VS.
+
 Now open a Terminal the same way as in step 4, go to the carla folder and run the following command:
 
     make launch
 
 This will try and build carla, and eventually will launch the unreal editor. 
+
 
 ### Step 6, Unreal compiling
 
