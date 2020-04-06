@@ -1,30 +1,30 @@
 from process import Control, State, translate
 from PyQt5 import QtCore
 import os
-from modules.siminterface.action.states import SiminterfaceStates
-from modules.siminterface.action.siminterface import Simcommunication
+from modules.carlainterface.action.states import CarlainterfaceStates
+from modules.carlainterface.action.carlainterface import Carlacommunication
 
-class SiminterfaceWidget(Control):
+class CarlainterfaceWidget(Control):
     def __init__(self, *args, **kwargs):
         kwargs['millis'] = 'millis' in kwargs.keys() and kwargs['millis'] or 100
         kwargs['callback'] = [self.do]  # method will run each given millis
 
         Control.__init__(self, *args, **kwargs)
-        self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)),"siminterfaceWidget.ui"))
+        self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)),"carlainterfaceWidget.ui"))
 
         self.data = {}
         self.writeNews(channel=self, news=self.data)
         self.counter = 0
 
         # creating a self.moduleStateHandler which also has the moduleStates in self.moduleStateHandler.states
-        self.defineModuleStateHandler(module=self, moduleStates=SiminterfaceStates())
+        self.defineModuleStateHandler(module=self, moduleStates=CarlainterfaceStates())
         self.moduleStateHandler.stateChanged.connect(self.handlemodulestate)
         self.masterStateHandler.stateChanged.connect(self.handlemasterstate)
 
         try:
-            self.action = Simcommunication(self)
+            self.action = Carlacommunication(self)
         except Exception as inst:
-            print('De error bij de constructor van de siminterface widget is:    ', inst)
+            print('De error bij de constructor van de carlainterface widget is:    ', inst)
 
         self.moduleStateHandler.requestStateChange(self.moduleStates.SIMULATION)
         

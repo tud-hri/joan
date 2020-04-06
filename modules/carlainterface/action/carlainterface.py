@@ -15,17 +15,17 @@ except IndexError:
 
 
 import random
-class SiminterfaceAction(Control):
+class CarlainterfaceAction(Control):
     def __init__(self, *args, **kwargs):
         Control.__init__(self, *args, **kwargs)
         # get state information from module Widget
         self.moduleStates = 'moduleStates' in kwargs.keys() and kwargs['moduleStates'] or None
         self.moduleStateHandler = 'moduleStateHandler' in kwargs.keys() and kwargs['moduleStateHandler'] or None
 
-class Simcommunication():
-    def __init__(self, SiminterfaceWidget):  # Initialize the variables needed to connect, and data structure to put collected data in
+class Carlacommunication():
+    def __init__(self, CarlainterfaceWidget):  # Initialize the variables needed to connect, and data structure to put collected data in
         print('Carla Communication constructed')
-        self._parentWidget = SiminterfaceWidget.widget
+        self._parentWidget = CarlainterfaceWidget.widget
         self.carlaData = {}
         self.carlaData['egoCar'] = None
     
