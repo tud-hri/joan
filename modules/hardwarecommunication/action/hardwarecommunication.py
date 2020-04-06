@@ -1,9 +1,7 @@
 from process import Control
 from PyQt5 import uic, QtCore, QtGui
 import os
-
-
-
+import hid
 
 
 class HardwarecommunicationAction(Control):
@@ -32,6 +30,14 @@ class BaseInput():
         self._parentWidget.widget.sliderBrake.setEnabled(False)
         self.steerRange = 180 #range until
 
+        #already list the input devices here:
+        for self._devices in hid.enumerate():
+            keys = list(self._devices.keys())
+            keys.sort()
+            for key in keys:
+                print("%s : %s" % (key, self._devices[key]))
+            print()
+
 
     def process(self):
         return self._data
@@ -54,7 +60,7 @@ class Keyboard(BaseInput):
         BaseInput.__init__(self, HardwarecommunicationWidget)
         self.currentInput = 'Keyboard'
         #Load the appropriate UI file
-        self._keyboardTab = uic.loadUi(uifile = os.path.join(os.path.dirname(os.path.realpath(__file__)),"keyboard.ui"))
+        self._keyboardTab = uic.loadUi(uifile = os.path.join(os.path.dirname(os.path.realpath(__file__)),"UIs/keyboard.ui"))
         #Add ui file to a new tab
         self._parentWidget.widget.tabInputs.addTab(self._keyboardTab,'Keyboard')
 
@@ -70,31 +76,32 @@ class Keyboard(BaseInput):
         
 
 
+
     def keyPressEvent(self,event):
         if(self._parentWidget.widget.lblSource.text() == 'Keyboard'):
             key = event.key()
-            if key == QtCore.Qt.Key_Up: 
+            if key == QtCore.Qt.Key_Up or key == QtCore.Qt.Key_W: 
                 self.throttle = True
-            elif key == QtCore.Qt.Key_Space:
+            elif key == QtCore.Qt.Key_Space or key == QtCore.Qt.Key_S:
                 self.brake = True
-            elif key == QtCore.Qt.Key_A:
+            elif key == QtCore.Qt.Key_A or key == QtCore.Qt.Key_Left:
                 self.steerLeft = True
                 self.steerRight = False
-            elif key == QtCore.Qt.Key_D:
+            elif key == QtCore.Qt.Key_D or key == QtCore.Qt.Key_Right:
                 self.steerRight = True
                 self.steerLeft = False
 
     def keyReleaseEvent(self,event):
         if(self._parentWidget.widget.lblSource.text() == 'Keyboard'):
             key = event.key()
-            if key == QtCore.Qt.Key_Up: 
+            if key == QtCore.Qt.Key_Up or key == QtCore.Qt.Key_W:
                 self.throttle = False
-            elif key == QtCore.Qt.Key_Space:
+            elif key == QtCore.Qt.Key_Space or key == QtCore.Qt.Key_S:
                 self.brake = False
-            elif key == QtCore.Qt.Key_A:
+            elif key == QtCore.Qt.Key_A or key == QtCore.Qt.Key_Left:
                 self.steerLeft = False
                 self.steerRight = False
-            elif key == QtCore.Qt.Key_D:
+            elif key == QtCore.Qt.Key_D or key == QtCore.Qt.Key_Right:
                 self.steerRight = False
                 self.steerLeft = False
             elif key == QtCore.Qt.Key_R:
@@ -166,7 +173,7 @@ class Mouse(BaseInput):
         BaseInput.__init__(self, HardwarecommunicationWidget)
         self.currentInput = 'Mouse'
         #Load the appropriate UI file
-        self._mouseTab = uic.loadUi(uifile = os.path.join(os.path.dirname(os.path.realpath(__file__)),"mouse.ui"))
+        self._mouseTab = uic.loadUi(uifile = os.path.join(os.path.dirname(os.path.realpath(__file__)),"UIs/mouse.ui"))
         #Add ui file to a new tab
         self._parentWidget.widget.tabInputs.addTab(self._mouseTab,'Mouse')
 
@@ -198,4 +205,75 @@ class Mouse(BaseInput):
         self.displayInputs()
         
 
+        return self._data
+
+
+
+#Arbitratry Joystick
+class Joystick(BaseInput):
+    def __init__(self,HardwarecommunicationWidget):
+        BaseInput.__init__(self, HardwarecommunicationWidget)
+        self.currentInput = 'Joystick'
+        self._joystickTab = uic.loadUi(uifile = os.path.join(os.path.dirname(os.path.realpath(__file__)),"UIs/joystick.ui"))
+
+        self._parentWidget.widget.tabInputs.addTab(self._joystickTab,'Joystick')
+
+        self._joystickTab.btnUse.clicked.connect(self.setCurrentInput)
+
+        # Open the desired device to read (find the device and vendor ID from printed list!!)
+        self._joystick = hid.device()
+
+        #Initialize Variables
+        self.steer = 0
+        self.throttle = 0
+        self.brake = 0
+
+        try:
+            # self._joystick.open(121, 6) #  Playstation controller Zierikzee (vendor,product)
+            ##self._joystick.open(1133, 49760) #logitech wheel CoRlab
+            #self._joystick.open(16700, 8467) #Taranis Zierikzee
+            self._joystick.open(1118, 736)
+        except:
+            print('Could not open joystick. Is it plugged in? Are the IDs correct?')
+
+    def displayInputs(self):
+        #update sliders
+        self._parentWidget.widget.sliderThrottle.setValue(self._data['ThrottleInput'])
+        self._parentWidget.widget.sliderSteering.setValue(self._data['SteeringInput'])
+        self._parentWidget.widget.sliderBrake.setValue(self._data['BrakeInput'])
+
+        #set values next to sliders:
+        self._parentWidget.widget.lblThrottle.setText(str(self._data['ThrottleInput']))
+        self._parentWidget.widget.lblSteering.setText(str(self._data['SteeringInput']))
+        self._parentWidget.widget.lblBrake.setText(str(self._data['BrakeInput']))
+        
+
+    def setCurrentInput(self):
+        self._parentWidget.widget.sliderThrottle.setEnabled(False)
+        self._parentWidget.widget.sliderSteering.setEnabled(False)
+        self._parentWidget.widget.sliderBrake.setEnabled(False)
+        self.currentInput = 'Joystick'
+        self.changeInputSource()
+
+        print('CLICK')
+
+    def process(self):
+        joystickdata = []
+        joystickdata = self._joystick.read(64,64)
+
+        if joystickdata != []:
+            self.throttle = 100 - round((((joystickdata[9])/128))*100)
+            if joystickdata[10] == 2:
+                self.brake = 80
+            else:
+                self.brake = 0
+
+            self.steer = round((((joystickdata[0]) + (joystickdata[1])*256)/(256*256))*180 - 90)
+            print(joystickdata)
+        self._data['BrakeInput']    = self.brake
+        self._data['ThrottleInput'] = self.throttle
+        self._data['SteeringInput'] = self.steer
+
+        self.displayInputs()
+        
         return self._data

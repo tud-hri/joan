@@ -21,8 +21,6 @@ class SiminterfaceWidget(Control):
         self.moduleStateHandler.stateChanged.connect(self.handlemodulestate)
         self.masterStateHandler.stateChanged.connect(self.handlemasterstate)
 
-        self.widget.comboScenario.currentIndexChanged.connect(self.printshit)
-
         try:
             self.action = Simcommunication(self)
         except Exception as inst:
@@ -47,10 +45,6 @@ class SiminterfaceWidget(Control):
             pass
         #print(InputData)
         #self.action.handleFeedbackcontrollerdata(FeedbackControllerData)
-        
-
-    def printshit(self):
-        print('shit')
 
 
     @QtCore.pyqtSlot(str)
@@ -132,7 +126,7 @@ class SiminterfaceWidget(Control):
                 self._stop()
 
             # update the state label
-            self.stateWidget.lblModulestate.setText(str(stateAsState.name))
+            self.stateWidget.lblModuleState.setText(str(stateAsState.name))
 
             if stateAsState == self.moduleStates.SIMULATION.RUNNING:
                 self.stateWidget.btnStart.setStyleSheet("background-color: green")

@@ -6,3 +6,5 @@ Welcome to the JOAN Simulator documentation. In this 'readthedocs' the ins and o
 ## Structure
 On the left you see the overall layout of the documentation. Starting with setting up but also including thorough documentation on the different modules and if you wish to add modules how to do so.
 
+!!! Note
+    If you cannot read the text in the GIFS or images please zoom in in your webbrowser, the resolution should then be high enough to distinguish the text.

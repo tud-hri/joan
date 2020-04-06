@@ -76,7 +76,7 @@ class TrajectoryrecorderWidget(Control):
             self.widget.btnStoprecord.setEnabled(False)
             self.Trajectory = self.action.generate()
             self.widget.lineTrajectoryname.setEnabled(True)
-            self.widget.lblModulestate.setText('Please enter a valid Filename for Trajectory')
+            self.widget.lblModuleState.setText('Please enter a valid Filename for Trajectory')
 
     def checkfilename(self):
         curpath = os.path.dirname(os.path.realpath(__file__))
@@ -88,12 +88,12 @@ class TrajectoryrecorderWidget(Control):
 
         for fname in glob.glob(HCRPath):
             if (self.TrajectoryName == (os.path.basename(fname)[:-4]) or self.TrajectoryName == ''):
-                self.widget.lblModulestate.setText('Filename Invalid! (empty or already exists)')
+                self.widget.lblModuleState.setText('Filename Invalid! (empty or already exists)')
                 self.widget.btnSavetrajectory.setEnabled(False)
                 break
             else:
                 self.widget.btnSavetrajectory.setEnabled(True)
-                self.widget.lblModulestate.setText('Will save file as: '+ self.TrajectoryName + '.csv')
+                self.widget.lblModuleState.setText('Will save file as: '+ self.TrajectoryName + '.csv')
 
 
 
@@ -107,13 +107,13 @@ class TrajectoryrecorderWidget(Control):
         # Save 2D numpy array to csv file
         try:
             np.savetxt(HCRPath + self.TrajectoryName + '.csv', self.Trajectory, delimiter=',', fmt='%d')
-            self.widget.lblModulestate.setText('Saved trajectory as: '+ self.TrajectoryName + '.csv')
+            self.widget.lblModuleState.setText('Saved trajectory as: '+ self.TrajectoryName + '.csv')
             self.widget.lineTrajectoryname.clear()
             self.widget.lineTrajectoryname.setEnabled(False)
             self.widget.btnSavetrajectory.setEnabled(False)
             self.widget.btnStartrecord.setEnabled(True)
         except:
-            self.widget.lblModulestate.setText('Could not save File please try again')
+            self.widget.lblModuleState.setText('Could not save File please try again')
             self.widget.btnSavetrajectory.setEnabled(True)
             self.widget.btnStartrecord.setEnabled(False)
 
@@ -163,7 +163,7 @@ class TrajectoryrecorderWidget(Control):
                 self._stop()
 
             # update the state label
-            self.widget.lblModulestate.setText(str(stateAsState.name))
+            self.widget.lblModuleState.setText(str(stateAsState.name))
 
         except Exception as inst:
             print (inst)

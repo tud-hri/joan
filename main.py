@@ -96,7 +96,8 @@ if __name__ == '__main__':
     try:
         app = QtWidgets.QApplication(sys.argv)
         app.setStyleSheet(qdarkgraystyle.load_stylesheet())
-        win = QtWidgets.QWidget()  # QMainWindow()
+        win = QtWidgets.QWidget() #QMainWindow()
+        win.setWindowTitle('JOAN')
         win.resize(300, 200)
 
         resources = os.path.join(os.path.dirname(
@@ -201,4 +202,4 @@ if __name__ == '__main__':
         print(sys.exit(app.exec()))
     except Exception as inst:
         traceback.print_exc(file=sys.stdout)
-        print('Error:', inst)
+        print('Error:', inst) 

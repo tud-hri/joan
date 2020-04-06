@@ -1,9 +1,11 @@
+"""Base class for modules"""
+
+import os 
+from PyQt5 import uic, QtCore
+
 from signals import Pulsar
 from .statehandler import StateHandler, MasterStates
-from PyQt5 import uic, QtCore
 from .mainmodulewidget import MainModuleWidget
-
-import os
 
 
 class News:
@@ -18,6 +20,8 @@ class News:
         if not klass.instance:
             klass.instance = object.__new__(News)
             klass.news = {}
+            # klass.availableKeys = klass.news.keys()
+
         return klass.instance
 
     def __init__(self, recentNewsDict, *args, **kwargs):
@@ -35,18 +39,18 @@ class Status:
         if not klass.instance:
             klass.instance = object.__new__(Status)
             klass.masterStates = MasterStates()
-            klass.masterStateHandler = StateHandler(
-                firstState=MasterStates.VOID, statesDict=klass.masterStates.getStates())
+            klass.masterStateHandler = StateHandler(firstState=MasterStates.VOID, statesDict=klass.masterStates.getStates())
             klass.moduleStatePackages = {}
         return klass.instance
 
-    def __init__(self, moduleStatePackage, *args, **kwargs):
+    def __init__(self, moduleStatePackage):
         # TODO find out if self.gui is necessary, also see klass.gui
         # self.gui.update(guiDict)
         self.moduleStatePackages.update(moduleStatePackage)
 
 
 class Control(Pulsar):
+    """Base class for JOAN modules"""
 
     def __init__(self, *args, **kwargs):
         kwargs['millis'] = 'millis' in kwargs.keys() and kwargs['millis'] or 1
@@ -61,8 +65,14 @@ class Control(Pulsar):
 
         self.window = None  # main widget (container for widget and controlWidget)
         self.widget = None  # will contain a value after calling createWidget
+        self.stateWidget = None
         self.moduleStateHandler = None  # will contain  a value after calling defineModuleStateHandler
         self.moduleStates = None  # will contain  a value after calling defineModuleStateHandler
+        self.initialized = False
+
+    def initialize(self):
+        """Method to initialize the module before start"""
+        # self.initialized = True
 
     def createWidget(self, ui=''):
         assert ui != '', 'argument "ui" should point to a PyQt ui file (e.g. ui=<absolute path>menu.ui)'
@@ -79,33 +89,35 @@ class Control(Pulsar):
         assert self.widget is not None, 'could not create a widget, is %s the correct filename?' % ui
         self.window.addWidget(self.widget, name='Module widget')
 
-        # connect self.window close signal to the widget's _close function (if defined):
-        # this will also call self._close in case the user closes the window
+        # connect self.window close signal to the widget's _close function (if defined): this will also call self._close in case the user closes the window
         try:
             self.window.closed.connect(self._close)
-        except Exception:
+        except NotImplementedError:
             pass
 
         # connect stateWidget widgets (buttons, line edit)
-        self.stateWidget.lineTick.setPlaceholderText(str(self.millis))
-        self.stateWidget.lineTick.textChanged.connect(lambda x=self.millis: self._setmillis(x))
-        self.stateWidget.btnStart.clicked.connect(self.start)
-        self.stateWidget.btnStop.clicked.connect(self.stop)
-        # self.stateWidget.btnStart.clicked.connect(self.stateWidget.lineTick.setEnabled(False))
-        # self.stateWidget.btnStop.clicked.connect(self.stateWidget.lineTick.setEnabled(True))
-        # self.stateWidget.btnStop.clicked.connect(self.stateWidget.lineTick.clear)
-        # self.stateWidget.btnStart.clicked.connect(self.stateWidget.lineTick.clear)
-        # self.stateWidget.btnStart.clicked.connect(self.stateWidget.lineTick.clearFocus)
-        # self.stateWidget.btnStart.clicked.connect(self.setTicktext)
-        # self.stateWidget.btnStop.clicked.connect(self.setTicktext)
+        self.stateWidget.inputTickMillis.setPlaceholderText(str(self.millis))
+        self.stateWidget.inputTickMillis.textChanged.connect(lambda dt=self.millis: self._setmillis(dt))
+        self.stateWidget.btnStart.clicked.connect(self._btnStartClicked)
+        self.stateWidget.btnStop.clicked.connect(self._btnStopClicked)
+
+    def _btnStartClicked(self):
+        self.start()
+        self.stateWidget.inputTickMillis.setEnabled(False)
+        self.stateWidget.inputTickMillis.clear()
+        self.stateWidget.inputTickMillis.clearFocus()
+        self.stateWidget.inputTickMillis.setPlaceholderText(str(self.millis))
+
+    def _btnStopClicked(self):
+        self.stop()
+        self.stateWidget.inputTickMillis.setEnabled(True)
+        self.stateWidget.inputTickMillis.clear()
+        self.stateWidget.inputTickMillis.setPlaceholderText(str(self.millis))
 
     def _getGui(self, ui=''):
-        '''
-        return a Qwidget which can be shown
-        '''
         try:
             return uic.loadUi(ui)
-        except Exception as inst:
+        except OSError as inst:
             print(inst)
             return None
 
@@ -115,8 +127,8 @@ class Control(Pulsar):
             millis = int(millis)
             assert millis > 0, 'QTimer tick interval needs to be larger than 0'
             self.setInterval(millis)
-        except Exception:
-            pass
+        except ValueError as e:
+            print(e)
 
     def _show(self):
         self.window.show()
@@ -130,24 +142,27 @@ class Control(Pulsar):
         moduleStatesDict = moduleStates.getStates()
         self.moduleStateHandler = StateHandler(firstState=MasterStates.VOID, statesDict=moduleStatesDict)
         self.moduleStates = moduleStates
+    
         try:
             moduleKey = '%s.%s' % (module.__class__.__module__, module.__class__.__name__)
             moduleStatePackage = {}
             moduleStatePackage['moduleStates'] = moduleStates
             moduleStatePackage['moduleStateHandler'] = self.moduleStateHandler
             self.singletonStatus = Status({moduleKey: moduleStatePackage})
-        except Exception as inst:
-            print('Exception in Control', inst)
+        except Exception as e:
+            print('Exception in Control', e)
 
     def writeNews(self, channel='', news={}):
+        """write new data to channel"""
+
         assert channel != '', 'argument "channel" should be the writer class'
         assert type(news) == dict, 'argument "news" should be of type dict and will contain news(=data) of this channel'
         try:
             channelKey = '%s.%s' % (channel.__class__.__module__, channel.__class__.__name__)
             # if channelKey not in self.getAvailableNewsChannels():
             self.singletonNews = News({channelKey: news})
-        except Exception as inst:
-            print(inst)
+        except Exception as e:
+            print(e)
 
     def getAllNews(self):
         return self.singletonNews.news
@@ -165,5 +180,4 @@ class Control(Pulsar):
         return self.singletonStatus.moduleStatePackages.keys()
 
     def getModuleStatePackage(self, module=''):
-        return module in self.getAvailableModuleStatePackages() and \
-            self.singletonStatus.moduleStatePackages[module] or {}
+        return module in self.getAvailableModuleStatePackages() and self.singletonStatus.moduleStatePackages[module] or {}
