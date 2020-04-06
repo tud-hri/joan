@@ -30,6 +30,10 @@ class BaseInput():
         self._parentWidget.widget.sliderBrake.setEnabled(False)
         self.steerRange = 180 #range until
 
+        self.brake = 0
+        self.throttle = 0
+        self.steer = 0
+
         #already list the input devices here:
         for self._devices in hid.enumerate():
             keys = list(self._devices.keys())
@@ -249,18 +253,17 @@ class Joystick(BaseInput):
 
     def process(self):
         joystickdata = []
-        joystickdata = self._joystick.read(64,64)
-        # throttle = round((((joystickdata[3]) + (joystickdata[4])*256)/2047)*100)
-        # brake = round((((joystickdata[7]) + (joystickdata[8])*256)/1023)*100 - 100)
-        # if brake < 0:
-        #     brake = 0
+        joystickdata = self._joystick.read(64,20)
+        if joystickdata != []:
+            self.steer = ((((joystickdata[44])*256) + ((joystickdata[43]+1)))/(256*256)*900 - 450)
+            self.throttle = ((((joystickdata[46])*256) + ((joystickdata[45]+1)))/(256*256) * -100 +100)
+            self.brake = ((((joystickdata[48])*256) + ((joystickdata[47]+1)))/(256*256) * -100 +100)
 
-        # steer = round((((joystickdata[5]) + (joystickdata[6])*256)/2047)*360 - 180)
+        self._data['BrakeInput']    = self.brake
+        self._data['ThrottleInput'] = self.throttle
+        self._data['SteeringInput'] = self.steer
 
-        # self._data['BrakeInput']    = brake
-        # self._data['ThrottleInput'] = throttle
-        # self._data['SteeringInput'] = steer
+        self.displayInputs()
+            
 
-        # self.displayInputs()
-        print(joystickdata)
         return self._data
