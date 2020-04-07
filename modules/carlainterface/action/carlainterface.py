@@ -95,7 +95,7 @@ class Carlavehicle(Carlacommunication):
 
     def spawnCar(self):
         _BP = random.choice(Carlacommunication.BlueprintLibrary.filter("vehicle." + str(self._vehicleTab.comboCartype.currentText())))
-        #_control = 
+        self._control = carla.VehicleControl()
         try:
             spawnpointnr = self._vehicleTab.spinSpawnpoints.value()-1
             self.spawnedVehicle = Carlacommunication.world.spawn_actor(_BP, Carlacommunication.spawnPoints[spawnpointnr])
@@ -119,3 +119,9 @@ class Carlavehicle(Carlacommunication):
             self._vehicleTab.btnSpawn.setEnabled(False)
             self._vehicleTab.btnDestroy.setEnabled(True)
             self._vehicleTab.spinSpawnpoints.setEnabled(False)
+
+    def getControldata(self):
+        pass
+
+    def applycontrol(self):
+        self.spawnedVehicle.apply_control(self._control)
