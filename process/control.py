@@ -83,7 +83,7 @@ class Control(Pulsar):
         self.window.addWidget(self.stateWidget, name='State widget')
 
         # load widget UI ()
-        self.widget = self._getGui(ui)
+        self.widget = uic.loadUi(ui)
         assert self.widget is not None, 'could not create a widget, is %s the correct filename?' % ui
         self.window.addWidget(self.widget, name='Module widget')
 
