@@ -1,4 +1,5 @@
 """Action class for JOAN menu"""
+# TODO Setting store for modules (which to load, etc, etc): https://doc.qt.io/qt-5/qtcore-serialization-savegame-example.html
 import inspect
 import sys
 import traceback
@@ -50,10 +51,28 @@ class JOANMenuAction(Control):
 
         self._widget = widget
 
+        self._data = {}
+        self.writeNews(channel=self, news=self._data)
+
         self.pathModules = ''
 
         # dictionary to keep track of the instantiated modules
         self._instantiatedModules = {}
+
+    def initialize(self):
+        """Initialize modules"""
+        for _, value in self._instantiatedModules.items():
+            value.initialize()
+
+    def start(self):
+        """Initialize modules"""
+        for _, value in self._instantiatedModules.items():
+            value.start()
+
+    def stop(self):
+        """Initialize modules"""
+        for _, value in self._instantiatedModules.items():
+            value.stop()
 
     def addModule(self, module, name=''):
         """Add module, instantiated module, find unique name"""
@@ -66,8 +85,6 @@ class JOANMenuAction(Control):
             if key.lower() == module.lower():
                 module = key
                 foundClass = True
-
-        print(clsmembers)
 
         if foundClass is False:
             print("Module class not found. The module needs to be in its own folder in the 'modules' folder.")
@@ -114,12 +131,22 @@ class JOANMenuAction(Control):
 
         # add instantiated modules to dictionary
         self._instantiatedModules[name] = instantiatedClass
+
+        # update news
+        self._data['instantiatedModules'] = self._instantiatedModules
+        self.writeNews(channel=self, news=self._data)
+
         return self._instantiatedModules[name]
 
     def removeModule(self, name):
         """ Remove module by name"""
 
         del self._instantiatedModules[name]
+
+    def renameModule(self, oldName, newName):
+        """Rename the module's object name and key in _instantiatedModules dict"""
+        self._instantiatedModules[oldName].setObjectName(newName)
+        self._instantiatedModules[newName] = self._instantiatedModules.pop(oldName)
 
     @property
     def instantiatedModules(self):

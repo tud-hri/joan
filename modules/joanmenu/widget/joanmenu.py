@@ -49,6 +49,10 @@ class JOANMenuWidget(Control):
         self._mainWidget.btnQuit.setStyleSheet("background-color: darkred")
         self._mainWidget.btnQuit.clicked.connect(self.quit)
 
+        self._mainWidget.btnInitializeAll.clicked.connect(self.action.initialize)
+        self._mainWidget.btnStartAll.clicked.connect(self.action.start)
+        self._mainWidget.btnStopAll.clicked.connect(self.action.stop)
+
         # layout for the module groupbox
         self._layoutModules = QtWidgets.QVBoxLayout()
         self._mainWidget.grpBoxModules.setLayout(self._layoutModules)
@@ -58,18 +62,8 @@ class JOANMenuWidget(Control):
         self.fileMenu.addAction('Quit', self.quit)
         self.fileMenu.addSeparator()
         self.fileMenu.addAction('Add module...', self.processMenuAddModule)
+        self.fileMenu.addAction('Rename module...', self.processMenuRenameModule)
         self.fileMenu.addAction('Remove module...', self.processMenuRemoveModule)
-
-    def processMenuAddModule(self):
-        """Add module in menu clicked, add user-defined module"""
-        moduleDirPath = QtWidgets.QFileDialog.getExistingDirectory(
-            self.window, caption="Select module directory", directory=self._pathModules, options=QtWidgets.QFileDialog.ShowDirsOnly)
-
-        # extract module folder name
-        module = '%s%s' % (os.path.basename(os.path.normpath(moduleDirPath)), 'Widget')
-
-        # add the module
-        self.addModule(module)
 
     def addModule(self, module, name=''):
         """Instantiate module, create a widget and add to main window"""
@@ -125,6 +119,17 @@ class JOANMenuWidget(Control):
         self._layoutModules.addWidget(widget)
         self.window.adjustSize()
 
+    def processMenuAddModule(self):
+        """Add module in menu clicked, add user-defined module"""
+        moduleDirPath = QtWidgets.QFileDialog.getExistingDirectory(
+            self.window, caption="Select module directory", directory=self._pathModules, options=QtWidgets.QFileDialog.ShowDirsOnly)
+
+        # extract module folder name
+        module = '%s%s' % (os.path.basename(os.path.normpath(moduleDirPath)), 'Widget')
+
+        # add the module
+        self.addModule(module)
+
     def processMenuRemoveModule(self):
         """User hit remove module, ask them which one to remove"""
         name, _ = QtWidgets.QInputDialog.getItem(self.window, "Select module to remove", "Modules", list(self.action.instantiatedModules.keys()))
@@ -140,6 +145,44 @@ class JOANMenuWidget(Control):
             self.window.centralWidget().adjustSize()
             self.window.adjustSize()
             del w
+
+    def processMenuRenameModule(self):
+        """Allow user to rename a widget"""
+
+        # and create input dialog
+        dlg = QtWidgets.QDialog(self.window)
+        dlg.resize(QtCore.QSize(400, 100))
+        dlg.setWindowTitle("Rename module")
+        vbox = QtWidgets.QVBoxLayout()
+        vbox.addWidget(QtWidgets.QLabel("Select module you want to rename"))
+        cmbbox = QtWidgets.QComboBox()
+        cmbbox.addItems(list(self.action.instantiatedModules.keys()))
+        vbox.addWidget(cmbbox)
+        vbox.addWidget(QtWidgets.QLabel("Rename to:"))
+        edit = QtWidgets.QLineEdit()
+        vbox.addWidget(edit)
+        dlg.setLayout(vbox)
+        btnbox = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel
+        )
+        btnbox.accepted.connect(dlg.accept)
+        btnbox.rejected.connect(dlg.reject)
+        vbox.addWidget(btnbox)
+
+        if dlg.exec_() == QtWidgets.QDialog.Accepted:
+            oldName = cmbbox.currentText()
+            newName = edit.text()
+
+            # rename in instantiatedModule list
+            self.action.renameModule(oldName, newName)
+
+            # rename widget
+            # this needs to get done better - perhaps keep a dict of the added widgets
+            w = self.window.centralWidget().findChild(QtWidgets.QWidget, oldName)
+            if w is not None:
+                # assumption: only one label in the widget
+                w.findChild(QtWidgets.QLabel).setText(newName)
+                w.setObjectName(newName)
 
     def emergency(self):
         """Emergency button processing"""
