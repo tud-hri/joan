@@ -3,6 +3,9 @@
         "modules.feedbackcontroller.widget.feedbackcontroller.FeedbackcontrollerWidget": {
             "SteeringWheelAngle": false,
             "Throttle": true
+        },
+        "modules.joanmenu.action.joanmenu.JOANMenuAction": {
+            "instantiatedModules": true
         }
     }
 }

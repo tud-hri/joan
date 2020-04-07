@@ -26,7 +26,6 @@ if __name__ == '__main__':
     JOANMENU.addModule('DatarecorderWidget')
     JOANMENU.addModule('DatarecorderWidget')
     JOANMENU.addModule('FeedbackcontrollerWidget')
-    
 
     # # printing widget folders
     # WIDGETFOLDERS = os.listdir(os.path.join(os.path.dirname(os.path.realpath(__file__)), "modules"))

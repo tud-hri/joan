@@ -57,6 +57,9 @@ class JOANMenuWidget(Control):
         self._layoutModules = QtWidgets.QVBoxLayout()
         self._mainWidget.grpBoxModules.setLayout(self._layoutModules)
 
+        # dictionary to store all the module widgets
+        self._moduleWidgets = {}
+
         # add file menu
         self.fileMenu = self.window.menuBar().addMenu('File')
         self.fileMenu.addAction('Quit', self.quit)
@@ -82,42 +85,27 @@ class JOANMenuWidget(Control):
         except ValueError as e:
             print("Timer tick step (millis) not defined: ", e)
 
-        # create a module widget
-        widget = QtWidgets.QWidget()
+        widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "modulewidget.ui"))
         widget.setObjectName(name)
-        layout = QtWidgets.QHBoxLayout()
-        widget.setLayout(layout)
+        widget.grpBox.setTitle(name)
 
-        # label with name
-        label = QtWidgets.QLabel(name.replace("Widget", ""))
-        label.setMinimumWidth(150)
-        label.setFont(QtGui.QFont("Arial", 10, QtGui.QFont.Bold))
-        layout.addWidget(label)
+        widget.btnShow.clicked.connect(instantiatedModule._show)
+        widget.btnClose.clicked.connect(instantiatedModule._close)
 
-        # show button
-        btn = QtWidgets.QPushButton("Show")
-        btn.setFixedSize(80, 40)
-        btn.clicked.connect(instantiatedModule._show)
-        layout.addWidget(btn)
-
-        # close button
-        btn = QtWidgets.QPushButton("Close")
-        btn.setFixedSize(80, 40)
-        btn.clicked.connect(instantiatedModule._close)
-        layout.addWidget(btn)
-
-        # time step
-        layout.addWidget(QtWidgets.QLabel("Time step (ms)"))
-        edit = QtWidgets.QLineEdit()
-        edit.textChanged.connect(instantiatedModule._setmillis)
-        edit.setPlaceholderText(str(defaultMillis))
-        edit.setFixedWidth(60)
-        edit.setValidator(QtGui.QIntValidator(0, 2000, self))
-        layout.addWidget(edit)
+        widget.editTimeStepMillis.textChanged.connect(instantiatedModule._setmillis)
+        widget.editTimeStepMillis.setPlaceholderText(str(defaultMillis))
+        widget.editTimeStepMillis.setFixedWidth(60)
+        widget.editTimeStepMillis.setValidator(QtGui.QIntValidator(0, 2000, self))
+        widget.lblState.setText(instantiatedModule.moduleStateHandler.getCurrentState().name)
+        instantiatedModule.moduleStateHandler.stateChanged.connect(
+            lambda state: widget.lblState.setText(instantiatedModule.moduleStateHandler.getState(state).name)
+        )
 
         # add it to the layout
         self._layoutModules.addWidget(widget)
         self.window.adjustSize()
+
+        self._moduleWidgets[name] = widget
 
     def processMenuAddModule(self):
         """Add module in menu clicked, add user-defined module"""
@@ -138,13 +126,11 @@ class JOANMenuWidget(Control):
         self.action.removeModule(name)
 
         # remove the widget in the main menu
-        w = self.window.centralWidget().findChild(QtWidgets.QWidget, name)
-        if w is not None:
-            w.setParent(None)  # this seems to work to delete the widget, removeWidget doesn't
-            # self._layoutModules.removeWidget(w)  # does not work
-            self.window.centralWidget().adjustSize()
+        if name in self._moduleWidgets.keys():
+            self._moduleWidgets[name].setParent(None)
+            del self._moduleWidgets[name]
             self.window.adjustSize()
-            del w
+            self.window.centralWidget().adjustSize()
 
     def processMenuRenameModule(self):
         """Allow user to rename a widget"""
@@ -177,12 +163,10 @@ class JOANMenuWidget(Control):
             self.action.renameModule(oldName, newName)
 
             # rename widget
-            # this needs to get done better - perhaps keep a dict of the added widgets
-            w = self.window.centralWidget().findChild(QtWidgets.QWidget, oldName)
-            if w is not None:
-                # assumption: only one label in the widget
-                w.findChild(QtWidgets.QLabel).setText(newName)
-                w.setObjectName(newName)
+            if oldName in self._moduleWidgets.keys():
+                self._moduleWidgets[oldName].grpBox.setTitle(newName)
+                self._moduleWidgets[oldName].setObjectName(newName)
+                self._moduleWidgets[newName] = self._moduleWidgets.pop(oldName)
 
     def emergency(self):
         """Emergency button processing"""
