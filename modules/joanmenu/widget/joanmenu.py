@@ -10,18 +10,21 @@ from process import Status, StateHandler, MasterStates
 from modules.joanmenu.action.joanmenu import JOANMenuAction
 
 
-class JOANMenuWidget(QtWidgets.QMainWindow):
+class JOANMenuWidget(Control):
     """JOAN Menu widget"""
 
     appisquiting = QtCore.pyqtSignal()
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        kwargs['millis'] = 'millis' in kwargs.keys() and kwargs['millis'] or 200
+        kwargs['callback'] = []  # method will run each given millis
 
-        # singleton MasterState
-        self.status = Status({})
-        self.masterStates = self.status.masterStates
-        self.masterStateHandler = self.status.masterStateHandler
+        Control.__init__(self, *args, **kwargs)
+
+        # self.status = Status({})
+        # self.masterStates = self.status.masterStates
+        # self.masterStateHandler = self.status.masterStateHandler
+        # self.masterStateHandler.stateChanged.connect(self.handleMasterState)
         self.masterStateHandler.stateChanged.connect(self.handleMasterState)
 
         # create action class
@@ -33,11 +36,12 @@ class JOANMenuWidget(QtWidgets.QMainWindow):
         self.action.pathModules = self._pathModules
 
         # setup window
-        self.setWindowTitle('JOAN')
+        self.window = QtWidgets.QMainWindow()
+        self.window.setWindowTitle('JOAN')
         self._mainWidget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "joanmenu.ui"))
         self._mainWidget.lblMasterState.setText(self.masterStateHandler.getCurrentState().name)
-        self.setCentralWidget(self._mainWidget)
-        self.resize(400, 400)
+        self.window.setCentralWidget(self._mainWidget)
+        self.window.resize(400, 400)
 
         self._mainWidget.btnEmergency.setIcon(QtGui.QIcon(QtGui.QPixmap(os.path.join(self._pathResources, "stop.png"))))
         self._mainWidget.btnEmergency.clicked.connect(self.emergency)
@@ -50,7 +54,7 @@ class JOANMenuWidget(QtWidgets.QMainWindow):
         self._mainWidget.grpBoxModules.setLayout(self._layoutModules)
 
         # add file menu
-        self.fileMenu = self.menuBar().addMenu('File')
+        self.fileMenu = self.window.menuBar().addMenu('File')
         self.fileMenu.addAction('Quit', self.quit)
         self.fileMenu.addSeparator()
         self.fileMenu.addAction('Add module...', self.processMenuAddModule)
@@ -59,7 +63,7 @@ class JOANMenuWidget(QtWidgets.QMainWindow):
     def processMenuAddModule(self):
         """Add module in menu clicked, add user-defined module"""
         moduleDirPath = QtWidgets.QFileDialog.getExistingDirectory(
-            self, caption="Select module directory", directory=self._pathModules, options=QtWidgets.QFileDialog.ShowDirsOnly)
+            self.window, caption="Select module directory", directory=self._pathModules, options=QtWidgets.QFileDialog.ShowDirsOnly)
 
         # extract module folder name
         module = '%s%s' % (os.path.basename(os.path.normpath(moduleDirPath)), 'Widget')
@@ -72,6 +76,9 @@ class JOANMenuWidget(QtWidgets.QMainWindow):
 
         # instantiate module (in Action)
         instantiatedModule = self.action.addModule(module, name)
+        if not instantiatedModule:
+            return
+
         name = instantiatedModule.objectName()
 
         # module timer time step
@@ -116,22 +123,22 @@ class JOANMenuWidget(QtWidgets.QMainWindow):
 
         # add it to the layout
         self._layoutModules.addWidget(widget)
-        self.adjustSize()
+        self.window.adjustSize()
 
     def processMenuRemoveModule(self):
         """User hit remove module, ask them which one to remove"""
-        name, _ = QtWidgets.QInputDialog.getItem(self, "Select module to remove", "Modules", list(self._instantiatedModules.keys()))
+        name, _ = QtWidgets.QInputDialog.getItem(self.window, "Select module to remove", "Modules", list(self.action.instantiatedModules.keys()))
 
         # remove the module in action
         self.action.removeModule(name)
 
         # remove the widget in the main menu
-        w = self.centralWidget().findChild(QtWidgets.QWidget, name)
+        w = self.window.centralWidget().findChild(QtWidgets.QWidget, name)
         if w is not None:
             w.setParent(None)  # this seems to work to delete the widget, removeWidget doesn't
             # self._layoutModules.removeWidget(w)  # does not work
-            self.centralWidget().adjustSize()
-            self.adjustSize()
+            self.window.centralWidget().adjustSize()
+            self.window.adjustSize()
             del w
 
     def emergency(self):
@@ -141,7 +148,7 @@ class JOANMenuWidget(QtWidgets.QMainWindow):
     def quit(self):
         """Quit button processing"""
         reply = QtWidgets.QMessageBox.question(
-            self, 'Quit JOAN', 'Are you sure?',
+            self.window, 'Quit JOAN', 'Are you sure?',
             QtWidgets.QMessageBox.Yes, QtWidgets.QMessageBox.No
         )
 

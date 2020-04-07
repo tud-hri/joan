@@ -20,7 +20,7 @@ if __name__ == '__main__':
     APP = QtWidgets.QApplication(sys.argv)
 
     JOANMENU = JOANMenuWidget()
-    JOANMENU.show()
+    JOANMENU._show()
 
     # adding modules (instantiates them too)
     JOANMENU.addModule('DatarecorderWidget')

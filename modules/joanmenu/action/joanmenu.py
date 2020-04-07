@@ -5,6 +5,7 @@ import traceback
 
 from PyQt5 import QtCore, QtWidgets
 
+from process import Control
 from modules import *
 
 class Instantiate():
@@ -32,7 +33,7 @@ class Instantiate():
 
         return None
 
-class JOANMenuAction(QtCore.QObject):
+class JOANMenuAction(Control):
     """Action class for JOANMenuWidget"""
 
     def __init__(self, widget, *args, **kwargs):
@@ -66,6 +67,8 @@ class JOANMenuAction(QtCore.QObject):
                 module = key
                 foundClass = True
 
+        print(clsmembers)
+
         if foundClass is False:
             print("Module class not found. The module needs to be in its own folder in the 'modules' folder.")
             return None
@@ -85,7 +88,7 @@ class JOANMenuAction(QtCore.QObject):
                 newName = '%s-%d' % (name, counter+1)
 
             # and create input dialog
-            dlg = QtWidgets.QInputDialog(self._widget)
+            dlg = QtWidgets.QInputDialog(self._widget.window)
             dlg.resize(QtCore.QSize(400, 100))
             dlg.setWindowTitle("Module name already taken, provide new name")
             dlg.setLabelText("New name:")
@@ -94,6 +97,10 @@ class JOANMenuAction(QtCore.QObject):
             if dlg.exec_() == QtWidgets.QDialog.Accepted:
                 name = dlg.textValue()
             # name, _ = QtWidgets.QInputDialog.getText(self._widget, , "New name:", QtWidgets.QLineEdit.Normal, newName)
+
+        if module in ('JOANMenuWidget'):
+            print('You cannot add another JOAN menu')
+            return None
 
         # instantiate class module
         instantiated = Instantiate(module)
