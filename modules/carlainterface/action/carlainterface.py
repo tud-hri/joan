@@ -44,9 +44,9 @@ class Carlacommunication():
             # self._parentWidget.lblModuleState.setText('Connecting')
             client.set_timeout(2.0)
             time.sleep(2)
-            world = client.get_world()  # get world object (contains everything)
-            Carlacommunication.BlueprintLibrary = world.get_blueprint_library()
-            worldMap = world.get_map()
+            Carlacommunication.world = client.get_world()  # get world object (contains everything)
+            Carlacommunication.BlueprintLibrary = Carlacommunication.world.get_blueprint_library()
+            worldMap = Carlacommunication.world.get_map()
             Carlacommunication.spawnPoints = worldMap.get_spawn_points()
             Carlacommunication.nrSpawnPoints = len(self.spawnPoints)
             print('JOAN connected to CARLA Server!')
@@ -82,14 +82,37 @@ class Carlavehicle(Carlacommunication):
         self._vehicleTab.spinSpawnpoints.setRange(0, Carlacommunication.nrSpawnPoints)
         self._vehicleTab.spinSpawnpoints.lineEdit().setReadOnly(True)
 
-        # Initialize Vehicle
-        self._BP = random.choice(Carlacommunication.BlueprintLibrary.filter("vehicle.HapticsLab.*"))
+        self._vehicleTab.btnSpawn.clicked.connect(self.spawnCar)
+        self._vehicleTab.btnDestroy.clicked.connect(self.destroyCar)
+
         
     def destroyTab(self):
         self._parentWidget.layOut.removeWidget(self._vehicleTab)
         self._vehicleTab.setParent(None)
 
-    def spawn(self):
-        spawnpointnr = self._vehicleTab.spinSpawnpoints.value()
-        self.spawnedVehicle = 
-        pass
+    def spawnCar(self):
+        _BP = random.choice(Carlacommunication.BlueprintLibrary.filter("vehicle." + str(self._vehicleTab.comboCartype.currentText()) + ".*"))
+        try:
+            spawnpointnr = self._vehicleTab.spinSpawnpoints.value()-1
+            self.spawnedVehicle = Carlacommunication.world.spawn_actor(_BP, Carlacommunication.spawnPoints[spawnpointnr])
+            self._vehicleTab.btnSpawn.setEnabled(False)
+            self._vehicleTab.btnDestroy.setEnabled(True)
+            self._vehicleTab.spinSpawnpoints.setEnabled(False)
+        except Exception as inst:
+            print('Could not spawn car:', inst)
+            self._vehicleTab.btnSpawn.setEnabled(True)
+            self._vehicleTab.btnDestroy.setEnabled(False)
+            self._vehicleTab.spinSpawnpoints.setEnabled(True)
+
+
+    def destroyCar(self):
+        try:
+            self.spawnedVehicle.destroy()
+            self._vehicleTab.btnSpawn.setEnabled(True)
+            self._vehicleTab.btnDestroy.setEnabled(False)
+            self._vehicleTab.spinSpawnpoints.setEnabled(True)
+        except Exception as inst:
+            print('Could not destroy spawn car:', inst)
+            self._vehicleTab.btnSpawn.setEnabled(False)
+            self._vehicleTab.btnDestroy.setEnabled(True)
+            self._vehicleTab.spinSpawnpoints.setEnabled(False)
