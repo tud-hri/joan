@@ -59,8 +59,8 @@ class CarlainterfaceWidget(Control):
 
     # callback class is called each time a pulse has come from the Pulsar class instance
     def do(self):
-        self.carlaCommunication.process()
-        pass
+        self.data['vehicles'] = self.vehicles
+        self.writeNews(channel=self, news=self.data)
 
     @QtCore.pyqtSlot(str)
     def _setmillis(self, millis):

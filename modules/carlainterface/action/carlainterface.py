@@ -32,8 +32,7 @@ class Carlacommunication():
     def __init__(self, CarlainterfaceWidget):  # Initialize the variables needed to connect, and data structure to put collected data in
         print('Carla Communication constructed')
         self._parentWidget = CarlainterfaceWidget.widget
-        self.carlaData = {}
-        self.carlaData['egoCar'] = None
+        Carlacommunication.carlaData = {}
         self.host = 'localhost'
         self.port = 2000
         Carlacommunication.tags = []
@@ -57,24 +56,21 @@ class Carlacommunication():
 
             return True
         except Exception as inst:
-            self.egoCar = None
             print('Could not connect error given:', inst)
             return False
 
-    def getData(self):
-        self.carlaData['egoCar'] = self.egoCar
-        return self.carlaData
 
     def setInputs(self, inputs):
-        steering = inputs['SteeringInput'] / 450
-        throttle = inputs['ThrottleInput'] / 100
-        brake = inputs['BrakeInput'] / 100
+        pass
+        # steering = inputs['SteeringInput'] / 450
+        # throttle = inputs['ThrottleInput'] / 100
+        # brake = inputs['BrakeInput'] / 100
 
-        self.control.steer = steering
-        self.control.throttle = throttle
-        self.control.brake = brake
+        # self.control.steer = steering
+        # self.control.throttle = throttle
+        # self.control.brake = brake
 
-        self.egoCar.apply_control(self.control)
+        # self.egoCar.apply_control(self.control)
 
 class Carlavehicle(Carlacommunication):
     def __init__(self, CarlainterfaceWidget, carnr):
@@ -91,10 +87,11 @@ class Carlavehicle(Carlacommunication):
         for item in Carlacommunication.tags:
             self._vehicleTab.comboCartype.addItem(item)
 
-        
     def destroyTab(self):
         self._parentWidget.layOut.removeWidget(self._vehicleTab)
         self._vehicleTab.setParent(None)
+
+    
 
     def spawnCar(self):
         _BP = random.choice(Carlacommunication.BlueprintLibrary.filter("vehicle." + str(self._vehicleTab.comboCartype.currentText())))
@@ -109,7 +106,6 @@ class Carlavehicle(Carlacommunication):
             self._vehicleTab.btnSpawn.setEnabled(True)
             self._vehicleTab.btnDestroy.setEnabled(False)
             self._vehicleTab.spinSpawnpoints.setEnabled(True)
-
 
     def destroyCar(self):
         try:

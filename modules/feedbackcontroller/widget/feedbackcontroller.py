@@ -50,7 +50,7 @@ class FeedbackcontrollerWidget(Control):
         self.data['SteeringWheelAngle'] = SWangle
         self.data['Throttle'] = 0.5
         self.writeNews(channel=self, news=self.data)
-        print(self.counter)
+        #print(self.counter)
 
 
 

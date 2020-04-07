@@ -276,8 +276,9 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
         
     def process(self):
         try:
-            self._data= self._parentWidget.readNews('modules.siminterface.widget.siminterface.SiminterfaceWidget')
-            egoCar = self._data['egoCar']
+            self._data = self._parentWidget.readNews('modules.carlainterface.widget.carlainterface.CarlainterfaceWidget')
+            egoCar = self._data['vehicles'][0].spawnedVehicle
+            
             self._Error = self.Error_Calc(self._t_aheadFF, self._HCR, egoCar)
             print(self._Error)
 
