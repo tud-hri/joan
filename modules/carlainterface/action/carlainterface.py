@@ -91,8 +91,6 @@ class Carlavehicle(Carlacommunication):
         self._parentWidget.layOut.removeWidget(self._vehicleTab)
         self._vehicleTab.setParent(None)
 
-    
-
     def spawnCar(self):
         _BP = random.choice(Carlacommunication.BlueprintLibrary.filter("vehicle." + str(self._vehicleTab.comboCartype.currentText())))
         self._control = carla.VehicleControl()
@@ -109,7 +107,7 @@ class Carlavehicle(Carlacommunication):
             self._vehicleTab.spinSpawnpoints.setEnabled(True)
 
     def destroyCar(self):
-        try:
+        try:  
             self.spawnedVehicle.destroy()
             self._vehicleTab.btnSpawn.setEnabled(True)
             self._vehicleTab.btnDestroy.setEnabled(False)
