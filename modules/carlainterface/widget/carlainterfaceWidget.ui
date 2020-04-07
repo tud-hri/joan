@@ -63,7 +63,7 @@
       </widget>
      </item>
      <item row="0" column="0">
-      <widget class="QPushButton" name="btnInit">
+      <widget class="QPushButton" name="btnConnect">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -76,7 +76,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Initialize</string>
+        <string>Connect</string>
        </property>
       </widget>
      </item>

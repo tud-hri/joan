@@ -7,7 +7,7 @@ from modules.carlainterface.action.carlainterface import Carlavehicle
 
 class CarlainterfaceWidget(Control):
     def __init__(self, *args, **kwargs):
-        kwargs['millis'] = 'millis' in kwargs.keys() and kwargs['millis'] or 100
+        kwargs['millis'] = 'millis' in kwargs.keys() and kwargs['millis'] or 2
         kwargs['callback'] = [self.do]  # method will run each given millis
 
         Control.__init__(self, *args, **kwargs)
@@ -15,58 +15,52 @@ class CarlainterfaceWidget(Control):
 
         self.data = {}
         self.writeNews(channel=self, news=self.data)
-        self.counter = 0
+        self.connected = False
 
         # creating a self.moduleStateHandler which also has the moduleStates in self.moduleStateHandler.states
         self.defineModuleStateHandler(module=self, moduleStates=CarlainterfaceStates())
         self.moduleStateHandler.stateChanged.connect(self.handlemodulestate)
         self.masterStateHandler.stateChanged.connect(self.handlemasterstate)
 
-        try:
-            self.action = Carlacommunication(self)
-        except Exception as inst:
-            print('De error bij de constructor van de carlainterface widget is:    ', inst)
-
         self.moduleStateHandler.requestStateChange(self.moduleStates.SIMULATION)
-        self.widget.spinVehicles.setRange(0,10)
+        self.widget.spinVehicles.setRange(0, 10)
         self.widget.spinVehicles.lineEdit().setReadOnly(True)
+
         self.widget.spinVehicles.valueChanged.connect(self.updateCars)
+        self.widget.btnConnect.clicked.connect(self.connect)
+        self.widget.groupVehicles.setEnabled(False)
+        self.widget.spinVehicles.setEnabled(False)
+
         self.vehicles = []
- 
+
+        self.carlaCommunication = Carlacommunication(self)
+
+    def connect(self):
+        self.connected = self.carlaCommunication.connect()
+        if(self.connected is True):
+            self.widget.groupVehicles.setEnabled(True)
+            self.widget.spinVehicles.setEnabled(True)
+            self.widget.btnConnect.setEnabled(False)
+        else:
+            self.widget.groupVehicles.setEnabled(False)
+            self.widget.spinVehicles.setEnabled(False)
+            self.widget.btnConnect.setEnabled(True)
 
     def updateCars(self):
         # Delete excess vehicles if any
         if(self.widget.spinVehicles.value() < len(self.vehicles)):
             for k in range(self.widget.spinVehicles.value(), len(self.vehicles)):
-                self.vehicles[-k].destroy()
+                self.vehicles[-k].destroyTab()
                 self.vehicles.pop(-k)
 
         # Create new vehicles and show them:
         for i in range(len(self.vehicles), self.widget.spinVehicles.value()):
             self.vehicles.append(Carlavehicle(self, i))
 
-        print(len(self.vehicles))
-
-        
-
-
-
     # callback class is called each time a pulse has come from the Pulsar class instance
     def do(self):
-        self.data = self.action.getData() #get data from carla
-        self.writeNews(channel=self, news=self.data)  #write away this data to news channel
-
-        FeedbackControllerData = self.readNews('modules.feedbackcontroller.widget.feedbackcontroller.FeedbackcontrollerWidget')
-        InputData = self.readNews('modules.hardwarecommunication.widget.hardwarecommunication.HardwarecommunicationWidget')
-        print(InputData)
-
-        try:
-            self.action.setInputs(InputData)
-        except:
-            pass
-        #print(InputData)
-        #self.action.handleFeedbackcontrollerdata(FeedbackControllerData)
-
+        self.carlaCommunication.process()
+        pass
 
     @QtCore.pyqtSlot(str)
     def _setmillis(self, millis):
@@ -83,32 +77,15 @@ class CarlainterfaceWidget(Control):
             print(' ############## Exception was: #########',e)
 
     def start(self):
-        if not self.window.isVisible():
-            self._show()
-
-        # Connect to the server
-        Connected = self.action.start()
-        self.data = self.action.getData()
-        self.writeNews(channel=self, news=self.data)
         self.moduleStateHandler.requestStateChange(self.moduleStates.SIMULATION.RUNNING)
         self.startPulsar()
 
-        #if Connected is True:
-        #    self.moduleStateHandler.requestStateChange(self.moduleStates.SIMULATION.RUNNING)
-        #    self.startPulsar()
-        #    print('STARTED CARLA PULSAR!!')
-
     def stop(self):
         self.moduleStateHandler.requestStateChange(self.moduleStates.SIMULATION.STOPPED)
-        self.action.stop()
-        
         self.stopPulsar()
 
     def _close(self):
         self.moduleStateHandler.requestStateChange(self.moduleStates.SIMULATION.STOPPED)
-        # self.action.stop()
-        # self.stopPulsar()
-        # del self.action
         self.window.close()
 
     def handlemasterstate(self, state):
