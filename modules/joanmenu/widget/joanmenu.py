@@ -103,6 +103,7 @@ class JOANMenuWidget(Control):
 
         # add it to the layout
         self._layoutModules.addWidget(widget)
+        # self._mainWidget.scrollArea.adjustSize()
         self.window.adjustSize()
 
         self._moduleWidgets[name] = widget
@@ -129,8 +130,9 @@ class JOANMenuWidget(Control):
         if name in self._moduleWidgets.keys():
             self._moduleWidgets[name].setParent(None)
             del self._moduleWidgets[name]
+            self._mainWidget.grpBoxModules.adjustSize()
+            self._mainWidget.adjustSize()
             self.window.adjustSize()
-            self.window.centralWidget().adjustSize()
 
     def processMenuRenameModule(self):
         """Allow user to rename a widget"""
@@ -155,6 +157,7 @@ class JOANMenuWidget(Control):
         btnbox.rejected.connect(dlg.reject)
         vbox.addWidget(btnbox)
 
+        # execute the dialog
         if dlg.exec_() == QtWidgets.QDialog.Accepted:
             oldName = cmbbox.currentText()
             newName = edit.text()
