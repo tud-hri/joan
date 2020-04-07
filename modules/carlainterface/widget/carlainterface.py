@@ -28,7 +28,8 @@ class CarlainterfaceWidget(Control):
             print('De error bij de constructor van de carlainterface widget is:    ', inst)
 
         self.moduleStateHandler.requestStateChange(self.moduleStates.SIMULATION)
-        self.widget.spinVehicles.readOnly = True
+        self.widget.spinVehicles.setRange(0,10)
+        self.widget.spinVehicles.lineEdit().setReadOnly(True)
         self.widget.spinVehicles.valueChanged.connect(self.updateCars)
         self.vehicles = []
  
