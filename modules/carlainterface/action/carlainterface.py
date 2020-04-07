@@ -36,6 +36,7 @@ class Carlacommunication():
         self.carlaData['egoCar'] = None
         self.host = 'localhost'
         self.port = 2000
+        Carlacommunication.tags = []
 
     def connect(self):
         try:
@@ -46,6 +47,9 @@ class Carlacommunication():
             time.sleep(2)
             Carlacommunication.world = client.get_world()  # get world object (contains everything)
             Carlacommunication.BlueprintLibrary = Carlacommunication.world.get_blueprint_library()
+            vehicleBPlibrary = Carlacommunication.BlueprintLibrary.filter('vehicle.*')
+            for items in vehicleBPlibrary:
+                Carlacommunication.tags.append(items.id[8:])
             worldMap = Carlacommunication.world.get_map()
             Carlacommunication.spawnPoints = worldMap.get_spawn_points()
             Carlacommunication.nrSpawnPoints = len(self.spawnPoints)
@@ -84,6 +88,8 @@ class Carlavehicle(Carlacommunication):
 
         self._vehicleTab.btnSpawn.clicked.connect(self.spawnCar)
         self._vehicleTab.btnDestroy.clicked.connect(self.destroyCar)
+        for item in Carlacommunication.tags:
+            self._vehicleTab.comboCartype.addItem(item)
 
         
     def destroyTab(self):
@@ -91,7 +97,7 @@ class Carlavehicle(Carlacommunication):
         self._vehicleTab.setParent(None)
 
     def spawnCar(self):
-        _BP = random.choice(Carlacommunication.BlueprintLibrary.filter("vehicle." + str(self._vehicleTab.comboCartype.currentText()) + ".*"))
+        _BP = random.choice(Carlacommunication.BlueprintLibrary.filter("vehicle." + str(self._vehicleTab.comboCartype.currentText())))
         try:
             spawnpointnr = self._vehicleTab.spinSpawnpoints.value()-1
             self.spawnedVehicle = Carlacommunication.world.spawn_actor(_BP, Carlacommunication.spawnPoints[spawnpointnr])

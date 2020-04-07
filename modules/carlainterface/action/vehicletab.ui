@@ -82,18 +82,7 @@
        <widget class="QSpinBox" name="spinSpawnpoints"/>
       </item>
       <item row="1" column="4">
-       <widget class="QComboBox" name="comboCartype">
-        <item>
-         <property name="text">
-          <string>Nissan</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Audi</string>
-         </property>
-        </item>
-       </widget>
+       <widget class="QComboBox" name="comboCartype"/>
       </item>
       <item row="1" column="7">
        <widget class="QPushButton" name="btnDestroy">
