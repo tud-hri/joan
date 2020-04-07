@@ -10,26 +10,26 @@ class MenuWidget(Control):
         kwargs['callback'] = [self.do]  # method will run each given millis
 
         Control.__init__(self, *args, **kwargs)
-        self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)),"menu.ui"))
+        self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)), "menu.ui"))
         self.data = {}
         self.writeNews(channel=self, news=self.data)
 
-        #self.widget = self.getGui()
+        # self.widget = self.getGui()
         self.counter = 0
 
-        #self.masterStateHandler.stateChanged.connect(self.finish)
+        # self.masterStateHandler.stateChanged.connect(self.finish)
         self.masterStateHandler.stateChanged.connect(self.handlemasterstate)
-        #self.moduleStateHandler.stateChanged.connect(self.handlemodulestate)
-        #self.ts = None
-        #self.te = None
+        # self.moduleStateHandler.stateChanged.connect(self.handlemodulestate)
+        # self.ts = None
+        # self.te = None
         self.millis = kwargs['millis']
 
         self.widget.btnQuit.clicked.connect(self._close)
 
     def do(self):
         self.counter += 1
-        #print(" counter %d" % self.counter)
-        #if (self.counter == 40):
+        # print(" counter %d" % self.counter)
+        # if (self.counter == 40):
         #    self.setInterval(1000)
         if (self.counter == 500):
             self.masterStateHandler.stateChanged.emit(self.masterStateHandler.state)
@@ -54,17 +54,16 @@ class MenuWidget(Control):
         self.startPulsar()
         #self.ts = time.time()
 
-
     def _stop(self):
         self.stopPulsar()
-        #if not self.ts:
+        # if not self.ts:
         #    self.ts = time.time()
         #self.te = time.time()
-        #try:
+        # try:
         #    print('millis %d, counter %d,  time: %f ms, verhouding: %f ' % (self.millis, self.counter * self.millis, (self.te - self.ts) * 1000, (self.counter * self.millis) / ((self.te - self.ts) * 1000)))
-        #except Exception as inst:
+        # except Exception as inst:
         #    print(inst)
-    
+
     def _close(self):
         self.widget.close()
 
@@ -74,11 +73,11 @@ class MenuWidget(Control):
         GUI reflect the possibilities of the current state.
         """
 
-        #self.masterStateHandler.stateChanged
+        # self.masterStateHandler.stateChanged
         try:
-            #stateAsState = self.states.getState(state) # ensure we have the State object (not the int)
-            stateAsState = self.masterStateHandler.getState(state) # ensure we have the State object (not the int)
-            
+            # stateAsState = self.states.getState(state) # ensure we have the State object (not the int)
+            stateAsState = self.masterStateHandler.getState(state)  # ensure we have the State object (not the int)
+
             # emergency stop
             if stateAsState == self.masterStates.ERROR:
                 self._stop()
@@ -88,7 +87,7 @@ class MenuWidget(Control):
             self.widget.repaint()
 
         except Exception as inst:
-            print (' in menu.py' ,inst)
+            print(' in menu.py', inst)
     '''
     def handlemodulestate(self, state):
         """ 
