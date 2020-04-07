@@ -4,6 +4,7 @@ import os
 import sys
 import glob
 
+from PyQt5 import QtCore, QtWidgets, uic
 from process import Control
 
 try:
@@ -22,6 +23,18 @@ class CarlainterfaceAction(Control):
         # get state information from module Widget
         self.moduleStates = 'moduleStates' in kwargs.keys() and kwargs['moduleStates'] or None
         self.moduleStateHandler = 'moduleStateHandler' in kwargs.keys() and kwargs['moduleStateHandler'] or None
+
+
+class Carlavehicle():
+    def __init__(self, CarlainterfaceWidget, carnr):
+        self._parentWidget = CarlainterfaceWidget.widget
+        self._vehicleTab = uic.loadUi(uifile = os.path.join(os.path.dirname(os.path.realpath(__file__)),"vehicletab.ui"))
+        self._parentWidget.layOut.addWidget(self._vehicleTab)
+        self._vehicleTab.groupCar.setTitle('Car ' + str(carnr+1))
+
+    def destroy(self):
+        self._parentWidget.layOut.removeWidget(self._vehicleTab)
+        self._vehicleTab.setParent(None)
 
 class Carlacommunication():
     def __init__(self, CarlainterfaceWidget):  # Initialize the variables needed to connect, and data structure to put collected data in

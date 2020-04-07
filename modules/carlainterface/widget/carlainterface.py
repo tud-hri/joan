@@ -3,6 +3,7 @@ from PyQt5 import QtCore
 import os
 from modules.carlainterface.action.states import CarlainterfaceStates
 from modules.carlainterface.action.carlainterface import Carlacommunication
+from modules.carlainterface.action.carlainterface import Carlavehicle
 
 class CarlainterfaceWidget(Control):
     def __init__(self, *args, **kwargs):
@@ -27,9 +28,28 @@ class CarlainterfaceWidget(Control):
             print('De error bij de constructor van de carlainterface widget is:    ', inst)
 
         self.moduleStateHandler.requestStateChange(self.moduleStates.SIMULATION)
+        self.widget.spinVehicles.readOnly = True
+        self.widget.spinVehicles.valueChanged.connect(self.updateCars)
+        self.vehicles = []
+ 
+
+    def updateCars(self):
+        # Delete excess vehicles if any
+        if(self.widget.spinVehicles.value() < len(self.vehicles)):
+            for k in range(self.widget.spinVehicles.value(), len(self.vehicles)):
+                self.vehicles[-k].destroy()
+                self.vehicles.pop(-k)
+
+        # Create new vehicles and show them:
+        for i in range(len(self.vehicles), self.widget.spinVehicles.value()):
+            self.vehicles.append(Carlavehicle(self, i))
+
+        print(len(self.vehicles))
+
         
 
-    
+
+
     # callback class is called each time a pulse has come from the Pulsar class instance
     def do(self):
         self.data = self.action.getData() #get data from carla
