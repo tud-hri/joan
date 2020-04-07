@@ -2,6 +2,7 @@ from PyQt5 import QtCore, QtWidgets
 import os, sys, glob
 from process import Control
 import time
+import random
 
 try:
     sys.path.append(glob.glob('../../carla/PythonAPI/carla/dist/carla-*%d.%d-%s.egg' % (
@@ -13,8 +14,6 @@ try:
 except IndexError:
      pass
 
-
-import random
 class CarlainterfaceAction(Control):
     def __init__(self, *args, **kwargs):
         Control.__init__(self, *args, **kwargs)
@@ -28,14 +27,10 @@ class Carlacommunication():
         self._parentWidget = CarlainterfaceWidget.widget
         self.carlaData = {}
         self.carlaData['egoCar'] = None
-    
-
         self.host = 'localhost'
         self.port = 2000
         
-
     def start(self):
-        
             print(' connecting')
             self.client = carla.Client(self.host,self.port) #connecting to server
             #self._parentWidget.lblModuleState.setText('Connecting')
