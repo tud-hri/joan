@@ -1,9 +1,10 @@
-from process import Control, State, translate
-from PyQt5 import QtCore
 import os
 from modules.carlainterface.action.states import CarlainterfaceStates
 from modules.carlainterface.action.carlainterface import Carlacommunication
 from modules.carlainterface.action.carlainterface import Carlavehicle
+
+from process import Control, State, translate
+from PyQt5 import QtCore
 
 class CarlainterfaceWidget(Control):
     def __init__(self, *args, **kwargs):
@@ -11,7 +12,7 @@ class CarlainterfaceWidget(Control):
         kwargs['callback'] = [self.do]  # method will run each given millis
 
         Control.__init__(self, *args, **kwargs)
-        self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)),"carlainterfaceWidget.ui"))
+        self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)), "carlainterfaceWidget.ui"))
 
         self.data = {}
         self.writeNews(channel=self, news=self.data)
@@ -74,17 +75,26 @@ class CarlainterfaceWidget(Control):
         try:
             self.window.show()
         except Exception as e:
-            print(' ############## Exception was: #########',e)
+            print(' ############## Exception was: #########', e)
 
     def start(self):
+        """
+        Starts the pulsar and requests appropriate module state change
+        """
         self.moduleStateHandler.requestStateChange(self.moduleStates.SIMULATION.RUNNING)
         self.startPulsar()
 
     def stop(self):
+        """
+        Stops the pulsar and requests appropriate module state change
+        """
         self.moduleStateHandler.requestStateChange(self.moduleStates.SIMULATION.STOPPED)
         self.stopPulsar()
 
     def _close(self):
+        """
+        Closes the window and requests appropriate module state change
+        """
         self.moduleStateHandler.requestStateChange(self.moduleStates.SIMULATION.STOPPED)
         self.window.close()
 
@@ -95,9 +105,9 @@ class CarlainterfaceWidget(Control):
         """
 
         try:
-            #stateAsState = self.states.getState(state) # ensure we have the State object (not the int)
-            stateAsState = self.masterStateHandler.getState(state) # ensure we have the State object (not the int)
-            
+            # stateAsState = self.states.getState(state) # ensure we have the State object (not the int)
+            stateAsState = self.masterStateHandler.getState(state)  # ensure we have the State object (not the int)
+
             # emergency stop
             if stateAsState == self.moduleStates.ERROR:
                 self._stop()
@@ -106,7 +116,7 @@ class CarlainterfaceWidget(Control):
             self.stateWidget.lblState.setText(str(stateAsState))
 
         except Exception as inst:
-            print (inst)
+            print(inst)
 
     def handlemodulestate(self, state):
         """ 
@@ -115,10 +125,10 @@ class CarlainterfaceWidget(Control):
         """
 
         try:
-            #stateAsState = self.states.getState(state) # ensure we have the State object (not the int)
-            stateAsState = self.moduleStateHandler.getState(state) # ensure we have the State object (not the int)]
+            # stateAsState = self.states.getState(state) # ensure we have the State object (not the int)
+            stateAsState = self.moduleStateHandler.getState(state)  # ensure we have the State object (not the int)]
             self.writeNews(channel=self, news=self.data)
-            
+
             # emergency stop
             if stateAsState == self.moduleStates.ERROR:
                 self._stop()
@@ -130,7 +140,6 @@ class CarlainterfaceWidget(Control):
                 self.stateWidget.btnStart.setStyleSheet("background-color: green")
             else:
                 self.stateWidget.btnStart.setStyleSheet("background-color: none")
-            
 
         except Exception as inst:
-            print (inst)
+            print(inst)
