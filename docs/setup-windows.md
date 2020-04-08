@@ -1,17 +1,19 @@
 # Setting up the simulator for Windows Documentation
 
+---
 ## Introduction
 In order to properly setup the simulation software on Windows several packages and steps are required, which will be elaborated upon in this section.
 !!! Note
-    This setup guide is extensive, if you are familiar with building software and installing new libraries etc it might be easier to just scan through this guide instead of going through it thoroughly. However, if you don't, please follow the guide step by step.
+    This setup guide is extensive, if you are familiar with building software and installing new libraries etcetera, it might be easier to just scan through this guide instead of going through it thoroughly. However, if you don't, please follow the guide step by step.
 ## Hardware Requirements
 * __x64 system.__ The simulator should run in any 64 bits Windows system.  
-* __50GB disk space.__ Installing all the software needed and CARLA will require quite a lot of space. Make sure to have about 50gb of space (especially since you will also need a visual studio 2017 install)
-* __An adequate GPU.__ CARLA aims for realistic simulations, so the server needs at least a 4GB GPU. If VR is required a turing based GPU (for example the RTX branch of NVIDIA is highly recommended!)
+* __50GB disk space.__ Installing all the software needed and CARLA will require quite a lot of space. Make sure to have about 50GB of space (especially since you will also need a visual studio 2017 install)
+* __An adequate GPU.__ CARLA aims for realistic simulations, so the server needs at least a 4GB GPU. If VR is required a Turing based GPU (for example the RTX branch of NVIDIA is highly recommended!)
 * __Two TCP ports and good internet connection.__ 2000 and 2001 by default. Be sure neither the firewall nor any other application are blocking these. 
 
-
+---
 ## Required Software 
+
 ### Minor Building Dependencies
 Please make sure you have the following programs installed before continuing. If you will be installing them now, please read the instructions below carefully to prevent problems later on in the installation process.
 
@@ -67,6 +69,7 @@ Please not the >>> symbols indicating that you are now within a python environme
 ### Visual Code (Optional)
 Of course you are free to use any IDE you are comfortable with (pycharm, spyder, anaconda), however the authors and creators of the JOAN simulator have consistently used __[Visual Studio Code](https://code.visualstudio.com/)__ due to easy source control functionality.
 
+---
 ## Building and installing CARLA & the CARLA PythonAPI
 Before we start putting in commands in the recently setup x64 VS command prompt it is important to double check if you have all necessary software, and have it installed properly before you read on.
 The build and install of the bare bones CARLA simulator can be divided in the following steps:
@@ -166,6 +169,7 @@ Open up this 'Blueprint' and then click on the array variable 'vehicles'. Now ad
 
 If all of the steps succeeded than congrats! You have successfully built CARLA, the basis of the JOAN simulator! Please proceed to the setting up of JOAN.
 
+---
 ## Setting up JOAN
 Please follow the following steps:
 
@@ -208,6 +212,7 @@ The only dependency not in the requirements.txt is the CARLA PythonAPI which we 
 !!! Note
     Please note that the file name of the *.egg file might be slightly different in your case, it depends on the Python version.
 
+---
 ## Running JOAN
 Either open up the folder you cloned the repository in your preferred IDE and run via that or type in the following in the terminal from your cloned directory.
 In both cases make sure you use the virtual environment as the python interpreter.

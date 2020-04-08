@@ -12,27 +12,25 @@ How can I contribute?
 ---
 ## Reporting bugs and issues
 
-<!-- Use our [issue section][issueslink] on GitHub. Please check before that the
-issue is not already reported, and make sure you have read our
-[Documentation][docslink] and [FAQ][faqlink].
+If you find bugs or have other issues, use our [Issue tracker][issueslink]. Before creating a new issue, please check if a similar issue has already been reported. 
+Also check the [documentation][docslink]. <!--and FAQ-->
 
 [issueslink]: https://github.com/carla-simulator/carla/issues
-[docslink]: http://carla.readthedocs.io
-[faqlink]: build_faq.md -->
+[docslink]: http://joan.readthedocs.io
+<!-- [faqlink]: build_faq.md -->
 
 ---
 ## Feature requests
 
-<!-- Please check first the list of [feature requests][frlink]. If it is not there
-and you think is a feature that might be interesting for users, please submit
-your request as a new issue.
+Check the [feature request list][frlink] before requesting a new feature. Please submit your request as a new issue and select the 'feature request' template in the issue tracker.
+
 
 [frlink]: https://github.com/carla-simulator/carla/issues?q=is%3Aissue+is%3Aopen+label%3A%22feature+request%22+sort%3Acomments-desc -->
 
 ---
 ## Improving documentation
 
-If you feel something is missing in the documentation, please don't hesitate to open an issue to let us know. Even better, if you think you can improve it yourself, it would be a great contribution to the community!
+Everyone can agree that good documentation is awesome to have. If you feel something is missing in the documentation, please don't hesitate to open an issue to let us know. Even better, if you think you can improve it yourself, it would be a great contribution!
 
 We build our documentation with [MkDocs](http://www.mkdocs.org/) based on the Markdown files inside the `docs` folder. You can either directly modify them on the GitLab repository or locally on your machine.
 
@@ -51,10 +49,10 @@ Once you are done with your changes, please submit a pull-request.
 ## Code contributions
 
 The code is never done, so if you want to help out, awesome!
-<!-- 
-Before starting hands-on on coding, please check out our [issue board][issueboard] to see if we are already working on that, it would be a pity putting an effort into something just to discover that someone else was already working on that. In case of doubt or to discuss how to proceed, please contact one of us.
 
-[issueboard]: https://github.com/carla-simulator/carla/issues -->
+Before starting hands-on on coding, please check out our [issue board][issueboard] to see if we are already working on that particular issue. In case of doubt or to discuss how to proceed, please contact one of us.
+
+[issueboard]: https://github.com/carla-simulator/carla/issues 
 
 #### Coding standard
 
@@ -80,5 +78,5 @@ If you see a red mark, please correct your code accordingly. -->
 
   - [ ] Your branch is up-to-date with the `master` branch and tested with latest changes
   - [ ] Extended the README / documentation, if necessary
+  - [ ] The code adheres to PEP8, please use `flake8` or `pylint` to check the code for consistency (see [coding standard](contributing-coding-standard.md))
   - [ ] Code compiles correctly
-  <!-- - [ ] All tests passing with `make check` -->
