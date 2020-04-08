@@ -31,57 +31,57 @@ class JOANMenuWidget(Control):
         self.action = JOANMenuAction(self)
 
         # path to resources folder
-        self._pathResources = os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../", "resources"))
-        self._pathModules = os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../", "modules"))
-        self.action.pathModules = self._pathModules
+        self._path_resources = os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../", "resources"))
+        self._path_modules = os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../", "modules"))
+        self.action.pathModules = self._path_modules
 
         # setup window
         self.window = QtWidgets.QMainWindow()
         self.window.setWindowTitle('JOAN')
-        self._mainWidget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "joanmenu.ui"))
-        self._mainWidget.lblMasterState.setText(self.masterStateHandler.getCurrentState().name)
-        self.window.setCentralWidget(self._mainWidget)
+        self._main_widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "joanmenu.ui"))
+        self._main_widget.lblMasterState.setText(self.masterStateHandler.getCurrentState().name)
+        self.window.setCentralWidget(self._main_widget)
         self.window.resize(400, 400)
 
-        self._mainWidget.btnEmergency.setIcon(QtGui.QIcon(QtGui.QPixmap(os.path.join(self._pathResources, "stop.png"))))
-        self._mainWidget.btnEmergency.clicked.connect(self.emergency)
+        self._main_widget.btnEmergency.setIcon(QtGui.QIcon(QtGui.QPixmap(os.path.join(self._path_resources, "stop.png"))))
+        self._main_widget.btnEmergency.clicked.connect(self.emergency)
 
-        self._mainWidget.btnQuit.setStyleSheet("background-color: darkred")
-        self._mainWidget.btnQuit.clicked.connect(self.quit)
+        self._main_widget.btnQuit.setStyleSheet("background-color: darkred")
+        self._main_widget.btnQuit.clicked.connect(self.quit)
 
-        self._mainWidget.btnInitializeAll.clicked.connect(self.action.initialize)
-        self._mainWidget.btnStartAll.clicked.connect(self.action.start)
-        self._mainWidget.btnStopAll.clicked.connect(self.action.stop)
+        self._main_widget.btnInitializeAll.clicked.connect(self.action.initialize)
+        self._main_widget.btnStartAll.clicked.connect(self.action.start)
+        self._main_widget.btnStopAll.clicked.connect(self.action.stop)
 
         # layout for the module groupbox
-        self._layoutModules = QtWidgets.QVBoxLayout()
-        self._mainWidget.grpBoxModules.setLayout(self._layoutModules)
+        self._layout_modules = QtWidgets.QVBoxLayout()
+        self._main_widget.grpBoxModules.setLayout(self._layout_modules)
 
         # dictionary to store all the module widgets
-        self._moduleWidgets = {}
+        self._module_widgets = {}
 
         # add file menu
-        self.fileMenu = self.window.menuBar().addMenu('File')
-        self.fileMenu.addAction('Quit', self.quit)
-        self.fileMenu.addSeparator()
-        self.fileMenu.addAction('Add module...', self.processMenuAddModule)
-        self.fileMenu.addAction('Rename module...', self.processMenuRenameModule)
-        self.fileMenu.addAction('Remove module...', self.processMenuRemoveModule)
+        self.file_menu = self.window.menuBar().addMenu('File')
+        self.file_menu.addAction('Quit', self.quit)
+        self.file_menu.addSeparator()
+        self.file_menu.addAction('Add module...', self.process_menu_add_module)
+        self.file_menu.addAction('Rename module...', self.process_menu_rename_module)
+        self.file_menu.addAction('Remove module...', self.process_menu_remove_module)
 
-    def addModule(self, module, name=''):
+    def add_module(self, module, name=''):
         """Instantiate module, create a widget and add to main window"""
 
         # instantiate module (in Action)
-        instantiatedModule = self.action.addModule(module, name)
-        if not instantiatedModule:
+        instantiated_module = self.action.add_module(module, name)
+        if not instantiated_module:
             return
 
-        name = instantiatedModule.objectName()
+        name = instantiated_module.objectName()
 
         # module timer time step
-        defaultMillis = 0
+        default_millis = 0
         try:
-            defaultMillis = instantiatedModule.millis
+            default_millis = instantiated_module.millis
         except ValueError as e:
             print("Timer tick step (millis) not defined: ", e)
 
@@ -89,52 +89,52 @@ class JOANMenuWidget(Control):
         widget.setObjectName(name)
         widget.grpBox.setTitle(name)
 
-        widget.btnShow.clicked.connect(instantiatedModule._show)
-        widget.btnClose.clicked.connect(instantiatedModule._close)
+        widget.btnShow.clicked.connect(instantiated_module._show)
+        widget.btnClose.clicked.connect(instantiated_module._close)
 
-        widget.editTimeStepMillis.textChanged.connect(instantiatedModule._setmillis)
-        widget.editTimeStepMillis.setPlaceholderText(str(defaultMillis))
+        widget.editTimeStepMillis.textChanged.connect(instantiated_module._setmillis)
+        widget.editTimeStepMillis.setPlaceholderText(str(default_millis))
         widget.editTimeStepMillis.setFixedWidth(60)
         widget.editTimeStepMillis.setValidator(QtGui.QIntValidator(0, 2000, self))
-        widget.lblState.setText(instantiatedModule.moduleStateHandler.getCurrentState().name)
-        instantiatedModule.moduleStateHandler.stateChanged.connect(
-            lambda state: widget.lblState.setText(instantiatedModule.moduleStateHandler.getState(state).name)
+        widget.lblState.setText(instantiated_module.moduleStateHandler.getCurrentState().name)
+        instantiated_module.moduleStateHandler.stateChanged.connect(
+            lambda state: widget.lblState.setText(instantiated_module.moduleStateHandler.getState(state).name)
         )
 
         # add it to the layout
-        self._layoutModules.addWidget(widget)
-        # self._mainWidget.scrollArea.adjustSize()
+        self._layout_modules.addWidget(widget)
+        # self._main_widget.scrollArea.adjustSize()
         self.window.adjustSize()
 
-        self._moduleWidgets[name] = widget
+        self._module_widgets[name] = widget
 
-    def processMenuAddModule(self):
+    def process_menu_add_module(self):
         """Add module in menu clicked, add user-defined module"""
-        moduleDirPath = QtWidgets.QFileDialog.getExistingDirectory(
-            self.window, caption="Select module directory", directory=self._pathModules, options=QtWidgets.QFileDialog.ShowDirsOnly)
+        path_module_dir = QtWidgets.QFileDialog.getExistingDirectory(
+            self.window, caption="Select module directory", directory=self._path_modules, options=QtWidgets.QFileDialog.ShowDirsOnly)
 
         # extract module folder name
-        module = '%s%s' % (os.path.basename(os.path.normpath(moduleDirPath)), 'Widget')
+        module = '%s%s' % (os.path.basename(os.path.normpath(path_module_dir)), 'Widget')
 
         # add the module
-        self.addModule(module)
+        self.add_module(module)
 
-    def processMenuRemoveModule(self):
+    def process_menu_remove_module(self):
         """User hit remove module, ask them which one to remove"""
-        name, _ = QtWidgets.QInputDialog.getItem(self.window, "Select module to remove", "Modules", list(self.action.instantiatedModules.keys()))
+        name, _ = QtWidgets.QInputDialog.getItem(self.window, "Select module to remove", "Modules", list(self.action.instantiated_modules.keys()))
 
         # remove the module in action
         self.action.removeModule(name)
 
         # remove the widget in the main menu
-        if name in self._moduleWidgets.keys():
-            self._moduleWidgets[name].setParent(None)
-            del self._moduleWidgets[name]
-            self._mainWidget.grpBoxModules.adjustSize()
-            self._mainWidget.adjustSize()
+        if name in self._module_widgets.keys():
+            self._module_widgets[name].setParent(None)
+            del self._module_widgets[name]
+            self._main_widget.grpBoxModules.adjustSize()
+            self._main_widget.adjustSize()
             self.window.adjustSize()
 
-    def processMenuRenameModule(self):
+    def process_menu_rename_module(self):
         """Allow user to rename a widget"""
 
         # and create input dialog
@@ -144,7 +144,7 @@ class JOANMenuWidget(Control):
         vbox = QtWidgets.QVBoxLayout()
         vbox.addWidget(QtWidgets.QLabel("Select module you want to rename"))
         cmbbox = QtWidgets.QComboBox()
-        cmbbox.addItems(list(self.action.instantiatedModules.keys()))
+        cmbbox.addItems(list(self.action.instantiated_modules.keys()))
         vbox.addWidget(cmbbox)
         vbox.addWidget(QtWidgets.QLabel("Rename to:"))
         edit = QtWidgets.QLineEdit()
@@ -159,17 +159,17 @@ class JOANMenuWidget(Control):
 
         # execute the dialog
         if dlg.exec_() == QtWidgets.QDialog.Accepted:
-            oldName = cmbbox.currentText()
-            newName = edit.text()
+            old_name = cmbbox.currentText()
+            new_name = edit.text()
 
-            # rename in instantiatedModule list
-            self.action.renameModule(oldName, newName)
+            # rename in instantiated_module list
+            self.action.renameModule(old_name, new_name)
 
             # rename widget
-            if oldName in self._moduleWidgets.keys():
-                self._moduleWidgets[oldName].grpBox.setTitle(newName)
-                self._moduleWidgets[oldName].setObjectName(newName)
-                self._moduleWidgets[newName] = self._moduleWidgets.pop(oldName)
+            if old_name in self._module_widgets.keys():
+                self._module_widgets[old_name].grpBox.setTitle(new_name)
+                self._module_widgets[old_name].setObjectName(new_name)
+                self._module_widgets[new_name] = self._module_widgets.pop(old_name)
 
     def emergency(self):
         """Emergency button processing"""
@@ -201,12 +201,12 @@ class JOANMenuWidget(Control):
         GUI reflect the possibilities of the current state.
         """
         try:
-            stateAsState = self.masterStateHandler.getState(state)  # ensure we have the State object (not the int)
+            state_as_state = self.masterStateHandler.getState(state)  # ensure we have the State object (not the int)
 
-            self._mainWidget.lblMasterState.setText(stateAsState.name)
+            self._main_widget.lblMasterState.setText(state_as_state.name)
 
             # emergency stop
-            if stateAsState == self.masterStates.ERROR:
+            if state_as_state == self.masterStates.ERROR:
                 self._stop()
 
         except Exception as inst:

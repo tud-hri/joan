@@ -74,7 +74,7 @@ class JOANMenuAction(Control):
         for _, value in self._instantiatedModules.items():
             value.stop()
 
-    def addModule(self, module, name=''):
+    def add_module(self, module, name=''):
         """Add module, instantiated module, find unique name"""
 
         # first, check if a class with the name 'module' is present in the live objects of this module (e.g. whether it is imported).
