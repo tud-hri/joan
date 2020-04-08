@@ -13,7 +13,7 @@ from modules.joanmenu.action.joanmenu import JOANMenuAction
 class JOANMenuWidget(Control):
     """JOAN Menu widget"""
 
-    appisquiting = QtCore.pyqtSignal()
+    app_is_quiting = QtCore.pyqtSignal()
 
     def __init__(self, *args, **kwargs):
         kwargs['millis'] = 'millis' in kwargs.keys() and kwargs['millis'] or 200
@@ -82,8 +82,8 @@ class JOANMenuWidget(Control):
         default_millis = 0
         try:
             default_millis = instantiated_module.millis
-        except ValueError as e:
-            print("Timer tick step (millis) not defined: ", e)
+        except ValueError as err:
+            print("Timer tick step (millis) not defined: ", err)
 
         widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "modulewidget.ui"))
         widget.setObjectName(name)
@@ -121,10 +121,12 @@ class JOANMenuWidget(Control):
 
     def process_menu_remove_module(self):
         """User hit remove module, ask them which one to remove"""
-        name, _ = QtWidgets.QInputDialog.getItem(self.window, "Select module to remove", "Modules", list(self.action.instantiated_modules.keys()))
+        name, _ = QtWidgets.QInputDialog.getItem(
+            self.window, "Select module to remove", "Modules", list(self.action.instantiated_modules.keys())
+        )
 
         # remove the module in action
-        self.action.removeModule(name)
+        self.action.remove_module(name)
 
         # remove the widget in the main menu
         if name in self._module_widgets.keys():
@@ -163,7 +165,7 @@ class JOANMenuWidget(Control):
             new_name = edit.text()
 
             # rename in instantiated_module list
-            self.action.renameModule(old_name, new_name)
+            self.action.rename_module(old_name, new_name)
 
             # rename widget
             if old_name in self._module_widgets.keys():
@@ -183,7 +185,7 @@ class JOANMenuWidget(Control):
         )
 
         if reply == QtWidgets.QMessageBox.Yes:
-            self.appisquiting.emit()
+            self.app_is_quiting.emit()
             sys.exit()
 
     def closeEvent(self, event):

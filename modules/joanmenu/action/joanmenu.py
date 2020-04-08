@@ -54,24 +54,24 @@ class JOANMenuAction(Control):
         self._data = {}
         self.writeNews(channel=self, news=self._data)
 
-        self.pathModules = ''
+        self.path_modules = ''
 
         # dictionary to keep track of the instantiated modules
-        self._instantiatedModules = {}
+        self._instantiated_modules = {}
 
     def initialize(self):
         """Initialize modules"""
-        for _, value in self._instantiatedModules.items():
+        for _, value in self._instantiated_modules.items():
             value.initialize()
 
     def start(self):
         """Initialize modules"""
-        for _, value in self._instantiatedModules.items():
+        for _, value in self._instantiated_modules.items():
             value.start()
 
     def stop(self):
         """Initialize modules"""
-        for _, value in self._instantiatedModules.items():
+        for _, value in self._instantiated_modules.items():
             value.stop()
 
     def add_module(self, module, name=''):
@@ -80,13 +80,13 @@ class JOANMenuAction(Control):
         # first, check if a class with the name 'module' is present in the live objects of this module (e.g. whether it is imported).
         # this assumes that the module is imported through the wildcard through: 'from modules import *'
         clsmembers = dict(inspect.getmembers(sys.modules[__name__], inspect.isclass))
-        foundClass = False
+        found_class = False
         for key, _ in clsmembers.items():
             if key.lower() == module.lower():
                 module = key
-                foundClass = True
+                found_class = True
 
-        if foundClass is False:
+        if not found_class:
             print("Module class not found. The module needs to be in its own folder in the 'modules' folder.")
             return None
 
@@ -95,25 +95,25 @@ class JOANMenuAction(Control):
             name = str(module)
 
         # check if this name is already taken
-        if name in self._instantiatedModules.keys():
+        if name in self._instantiated_modules.keys():
             # key exists, prompt user to give a new name
 
             # first, find new name (appending counter)
             counter = 1
-            newName = '%s-%d' % (name, counter)
-            while newName in self._instantiatedModules.keys():
-                newName = '%s-%d' % (name, counter+1)
+            new_name = '%s-%d' % (name, counter)
+            while new_name in self._instantiated_modules.keys():
+                new_name = '%s-%d' % (name, counter+1)
 
             # and create input dialog
             dlg = QtWidgets.QInputDialog(self._widget.window)
             dlg.resize(QtCore.QSize(400, 100))
             dlg.setWindowTitle("Module name already taken, provide new name")
             dlg.setLabelText("New name:")
-            dlg.setTextValue(newName)
+            dlg.setTextValue(new_name)
             dlg.setTextEchoMode(QtWidgets.QLineEdit.Normal)
             if dlg.exec_() == QtWidgets.QDialog.Accepted:
                 name = dlg.textValue()
-            # name, _ = QtWidgets.QInputDialog.getText(self._widget, , "New name:", QtWidgets.QLineEdit.Normal, newName)
+            # name, _ = QtWidgets.QInputDialog.getText(self._widget, , "New name:", QtWidgets.QLineEdit.Normal, new_name)
 
         if module in ('JOANMenuWidget'):
             print('You cannot add another JOAN menu')
@@ -121,34 +121,34 @@ class JOANMenuAction(Control):
 
         # instantiate class module
         instantiated = Instantiate(module)
-        instantiatedClass = instantiated.getInstantiatedClass()
-        instantiatedClass.setObjectName(name)
+        instantiated_class = instantiated.getInstantiatedClass()
+        instantiated_class.setObjectName(name)
 
-        # raise typeerror if module/instantiatedClass is None
-        if instantiatedClass is None:
+        # raise typeerror if module/instantiated_class is None
+        if instantiated_class is None:
             print("Cannot instantiate class ", module)
             return None
 
         # add instantiated modules to dictionary
-        self._instantiatedModules[name] = instantiatedClass
+        self._instantiated_modules[name] = instantiated_class
 
         # update news
-        self._data['instantiatedModules'] = self._instantiatedModules
+        self._data['instantiated_modules'] = self._instantiated_modules
         self.writeNews(channel=self, news=self._data)
 
-        return self._instantiatedModules[name]
+        return self._instantiated_modules[name]
 
-    def removeModule(self, name):
+    def remove_module(self, name):
         """ Remove module by name"""
 
-        del self._instantiatedModules[name]
+        del self._instantiated_modules[name]
 
-    def renameModule(self, oldName, newName):
-        """Rename the module's object name and key in _instantiatedModules dict"""
-        self._instantiatedModules[oldName].setObjectName(newName)
-        self._instantiatedModules[newName] = self._instantiatedModules.pop(oldName)
+    def rename_module(self, old_name, new_name):
+        """Rename the module's object name and key in _instantiated_modules dict"""
+        self._instantiated_modules[old_name].setObjectName(new_name)
+        self._instantiated_modules[new_name] = self._instantiated_modules.pop(old_name)
 
     @property
-    def instantiatedModules(self):
-        """getter for self._instantiatedModules, only allow get, not set"""
-        return self._instantiatedModules
+    def instantiated_modules(self):
+        """getter for self._instantiated_modules, only allow get, not set"""
+        return self._instantiated_modules
