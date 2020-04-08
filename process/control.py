@@ -99,6 +99,14 @@ class Control(Pulsar):
         self.stateWidget.btnStart.clicked.connect(self._btnStartClicked)
         self.stateWidget.btnStop.clicked.connect(self._btnStopClicked)
 
+        try:
+            self.stateWidget.lbModuleState.setText(self.moduleStateHandler.getCurrentState().name)
+            self.moduleStateHandler.stateChanged.connect(
+                lambda state: self.stateWidget.lbModuleState.setText(self.moduleStateHandler.getState(state).name)
+            )
+        except Exception as e:
+            print("TODO: we should create the moduleStateHandler first thing per module in __init__ before calling createWidget")
+
     def _btnStartClicked(self):
         self.start()
         self.stateWidget.inputTickMillis.setEnabled(False)
