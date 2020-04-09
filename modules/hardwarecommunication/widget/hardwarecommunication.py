@@ -9,6 +9,7 @@ class HardwarecommunicationWidget(Control):
         kwargs['millis'] = 'millis' in kwargs.keys() and kwargs['millis'] or 5
         kwargs['callback'] = [self.do]  # method will run each given millis
         Control.__init__(self, *args, **kwargs)
+        
         self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)),"hardwarecommunication.ui"))
         self.Inputdata = {}
 
@@ -51,8 +52,6 @@ class HardwarecommunicationWidget(Control):
 
     def _show(self):
         self.window.show()
-        print('in widget/hardwarecommunication.py', self.moduleStateHandler)
-        print('in widget/hardwarecommunication.py', self.moduleStates)
         moduleStatesDict = self.moduleStates.getStates()
         for state in moduleStatesDict:
             print('in HardwarecommunicationStates bij show', state, moduleStatesDict[state])
@@ -61,8 +60,6 @@ class HardwarecommunicationWidget(Control):
     def start(self):
         if not self.window.isVisible():
             self._show()
-        print(self.widget.windowTitle())
-        self.widget.setWindowTitle("Hardwarecommunication title")
         self.moduleStateHandler.requestStateChange(self.moduleStates.HARDWARECOMMUNICATION.RUNNING)
         self.startPulsar()
 
@@ -109,7 +106,7 @@ class HardwarecommunicationWidget(Control):
                 self._stop()
 
             # update the state label
-            self.stateWidget.lblModulestate.setText(str(stateAsState.name))
+            self.stateWidget.lblModuleState.setText(str(stateAsState.name))
             self.stateWidget.repaint()
 
             if stateAsState == self.moduleStates.HARDWARECOMMUNICATION.RUNNING:

@@ -1,7 +1,23 @@
 site_name: JOAN Simulator Documentation
 theme: readthedocs
 
+
 nav:
-    - Home: home.md
-    - Setup on Windows: winsetup.md
-    - Setup on Linux: linsetup.md
+    - Home: 'index.md'
+    - Setup:
+      - Setup on Windows: setup-windows.md
+      - Setup on Linux: setup-linux.md
+
+    - JOAN:
+      - Workflow: joan-workflow.md
+      - Adding modules: joan-adding-modules.md
+
+    - Extra Instructions:
+      - Adding to system variables: sys-path.md
+
+    - Contributing:
+      - Guidelines: contributing-guidelines.md
+      - Coding Standard: contributing-coding-standard.md
+
+markdown_extensions:
+  - admonition
