@@ -5,9 +5,9 @@ import sys
 
 from PyQt5 import QtCore, QtWidgets, QtGui, uic
 
-from process import Control
-from process import Status, StateHandler, MasterStates
 from modules.joanmenu.action.joanmenu import JOANMenuAction
+from modules.joanmodules import JOANModules
+from process import Control
 
 
 class JOANMenuWidget(Control):
@@ -65,23 +65,22 @@ class JOANMenuWidget(Control):
         self.file_menu.addAction('Quit', self.quit)
         self.file_menu.addSeparator()
         self.file_menu.addAction('Add module...', self.process_menu_add_module)
-        self.file_menu.addAction('Rename module...', self.process_menu_rename_module)
         self.file_menu.addAction('Remove module...', self.process_menu_remove_module)
 
-    def add_module(self, module, name=''):
+    def add_module(self, module: JOANModules, name=''):
         """Instantiate module, create a widget and add to main window"""
 
         # instantiate module (in Action)
-        instantiated_module = self.action.add_module(module, name)
-        if not instantiated_module:
+        module_widget = self.action.add_module(module, name)
+        if not module_widget:
             return
 
-        name = instantiated_module.objectName()
+        name = str(module)
 
         # module timer time step
         default_millis = 0
         try:
-            default_millis = instantiated_module.millis
+            default_millis = module_widget.millis
         except ValueError as err:
             print("Timer tick step (millis) not defined: ", err)
 
@@ -89,16 +88,16 @@ class JOANMenuWidget(Control):
         widget.setObjectName(name)
         widget.grpBox.setTitle(name)
 
-        widget.btnShow.clicked.connect(instantiated_module._show)
-        widget.btnClose.clicked.connect(instantiated_module._close)
+        widget.btnShow.clicked.connect(module_widget._show)
+        widget.btnClose.clicked.connect(module_widget._close)
 
-        widget.editTimeStepMillis.textChanged.connect(instantiated_module._setmillis)
+        widget.editTimeStepMillis.textChanged.connect(module_widget._setmillis)
         widget.editTimeStepMillis.setPlaceholderText(str(default_millis))
         widget.editTimeStepMillis.setFixedWidth(60)
         widget.editTimeStepMillis.setValidator(QtGui.QIntValidator(1, 2000, self))
-        widget.lblState.setText(instantiated_module.moduleStateHandler.getCurrentState().name)
-        instantiated_module.moduleStateHandler.stateChanged.connect(
-            lambda state: widget.lblState.setText(instantiated_module.moduleStateHandler.getState(state).name)
+        widget.lblState.setText(module_widget.moduleStateHandler.getCurrentState().name)
+        module_widget.moduleStateHandler.stateChanged.connect(
+            lambda state: widget.lblState.setText(module_widget.moduleStateHandler.getState(state).name)
         )
 
         # add it to the layout
@@ -135,43 +134,6 @@ class JOANMenuWidget(Control):
             self._main_widget.grpBoxModules.adjustSize()
             self._main_widget.adjustSize()
             self.window.adjustSize()
-
-    def process_menu_rename_module(self):
-        """Allow user to rename a widget"""
-
-        # and create input dialog
-        dlg = QtWidgets.QDialog(self.window)
-        dlg.resize(QtCore.QSize(400, 100))
-        dlg.setWindowTitle("Rename module")
-        vbox = QtWidgets.QVBoxLayout()
-        vbox.addWidget(QtWidgets.QLabel("Select module you want to rename"))
-        cmbbox = QtWidgets.QComboBox()
-        cmbbox.addItems(list(self.action.instantiated_modules.keys()))
-        vbox.addWidget(cmbbox)
-        vbox.addWidget(QtWidgets.QLabel("Rename to:"))
-        edit = QtWidgets.QLineEdit()
-        vbox.addWidget(edit)
-        dlg.setLayout(vbox)
-        btnbox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel
-        )
-        btnbox.accepted.connect(dlg.accept)
-        btnbox.rejected.connect(dlg.reject)
-        vbox.addWidget(btnbox)
-
-        # execute the dialog
-        if dlg.exec_() == QtWidgets.QDialog.Accepted:
-            old_name = cmbbox.currentText()
-            new_name = edit.text()
-
-            # rename in instantiated_module list
-            self.action.rename_module(old_name, new_name)
-
-            # rename widget
-            if old_name in self._module_widgets.keys():
-                self._module_widgets[old_name].grpBox.setTitle(new_name)
-                self._module_widgets[old_name].setObjectName(new_name)
-                self._module_widgets[new_name] = self._module_widgets.pop(old_name)
 
     def emergency(self):
         """Emergency button processing"""

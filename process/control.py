@@ -1,6 +1,6 @@
 """Base class for modules"""
 
-import os 
+import os
 from PyQt5 import uic, QtCore, QtGui
 
 from signals import Pulsar
@@ -48,6 +48,7 @@ class Status:
         # self.gui.update(guiDict)
         self.moduleStatePackages.update(moduleStatePackage)
 
+
 class Control(Pulsar):
     """Base class for JOAN modules"""
 
@@ -79,7 +80,7 @@ class Control(Pulsar):
         # window is a QMainWindow, and the container for all widgets
         self.window = MainModuleWidget()
 
-        self.stateWidget = self._getGui(os.path.join(os.path.dirname(os.path.realpath(__file__)),"../resources/statewidget.ui"))
+        self.stateWidget = self._getGui(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../resources/statewidget.ui"))
         self.window.addWidget(self.stateWidget, name='State widget')
 
         # load widget UI ()
@@ -142,7 +143,7 @@ class Control(Pulsar):
         moduleStatesDict = moduleStates.getStates()
         self.moduleStateHandler = StateHandler(firstState=MasterStates.VOID, statesDict=moduleStatesDict)
         self.moduleStates = moduleStates
-    
+
         try:
             moduleKey = '%s.%s' % (module.__class__.__module__, module.__class__.__name__)
             moduleStatePackage = {}

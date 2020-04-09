@@ -84,4 +84,3 @@ class MainModuleWidget(QMainWindow):
             # window is closed, emit closed signal and accept the event
             self.closed.emit()
             event.accept()
-             
