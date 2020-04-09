@@ -67,6 +67,7 @@ class FeedbackcontrollerWidget(Control):
         
     @QtCore.pyqtSlot(str)
     def _setmillis(self, millis):
+        print(millis)
         try:
             millis = int(millis)
             assert millis > 0, 'QTimer tick interval needs to be larger than 0'

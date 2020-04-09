@@ -33,7 +33,7 @@ class JOANMenuWidget(Control):
         # path to resources folder
         self._path_resources = os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../", "resources"))
         self._path_modules = os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../", "modules"))
-        self.action.pathModules = self._path_modules
+        self.action.path_modules = self._path_modules
 
         # setup window
         self.window = QtWidgets.QMainWindow()
@@ -95,7 +95,7 @@ class JOANMenuWidget(Control):
         widget.editTimeStepMillis.textChanged.connect(instantiated_module._setmillis)
         widget.editTimeStepMillis.setPlaceholderText(str(default_millis))
         widget.editTimeStepMillis.setFixedWidth(60)
-        widget.editTimeStepMillis.setValidator(QtGui.QIntValidator(0, 2000, self))
+        widget.editTimeStepMillis.setValidator(QtGui.QIntValidator(1, 2000, self))
         widget.lblState.setText(instantiated_module.moduleStateHandler.getCurrentState().name)
         instantiated_module.moduleStateHandler.stateChanged.connect(
             lambda state: widget.lblState.setText(instantiated_module.moduleStateHandler.getState(state).name)
