@@ -105,7 +105,7 @@ __[Carla Assets Link](http://carla-assets.s3.amazonaws.com/20200306_06b6cb1.tar.
 Unpack these assets in \carla\Unreal\CarlaUE4\Content\Carla
 
 ### Step 3, get speficic JOAN Assets
-To have a nice car interior which also turns the wheel if you turn it some extra assets are required. You can download them from this link: __[Dropboxlink](https://www.dropbox.com/s/7cboucrb81sdlxq/JOAN_Assets.zip?dl=0)__ It contains:
+To have a nice car interior which also turns the wheel if you turn it some extra assets are required. You can download them from this link: __[Dropbox link](https://www.dropbox.com/s/7cboucrb81sdlxq/JOAN_Assets.zip?dl=0)__ It contains:
 
 * JOAN_Blueprints 
 * JOAN_Static
@@ -133,7 +133,7 @@ Navigate to the directory where you cloned carla and run the following (if you d
 You can see what should happen below:
 ![alt text](gifs/makePythonAPI.gif "Making PythonAPI")
 
-If everything was succesful the carla.egg file should be in __..\carla\PythonAPI\carla\dist__ :
+If everything was successful the carla.egg file should be in __..\carla\PythonAPI\carla\dist__ :
 
 ![alt text](Images/eggfile.png "eggfile")
 
@@ -143,7 +143,7 @@ Essentially the steps here are exactly the same as the PythonAPI build, however 
 ![alt text](Images/genVis.png "genVisfiles")
 
 !!! Note
-    If you dont see this option of 'Generate Visual Studio Project Files', you probably have not selected the right engine version. Try and run the 'UnrealSelectEngine' version in: __C:\Program Files\Epic Games\UE_4.24\Engine\Binaries\Win64__
+    If you don't see this option of 'Generate Visual Studio Project Files', you probably have not selected the right engine version. Try and run the 'UnrealSelectEngine' version in: __C:\Program Files\Epic Games\UE_4.24\Engine\Binaries\Win64__
     If this program is not present it is possible it is located in: __C:\Program Files (x86)\Epic Games\Launcher\Engine\Binaries\Win64__. Just copy the 'UnrealSelectEngine' program to the first mentioned folder. It should now associate the engine with VS.
 
 Now open a Terminal the same way as in step 4, go to the carla folder and run the following command:
@@ -183,7 +183,7 @@ Open a command window and navigate to the folder where you would like to clone t
 Clone the repository with the following code:
 
     ## clone repo
-    git clone https://gitlab.tudelft.nl/delft-haptics-lab/vrsim/SharedControlDrivingSim.git
+    git clone https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan.git
 
 ### Setting up a Python Virtual Environment
 We will now create a Python virtual environment, this will help keeping your JOAN project separated from your other projects. If you are interested and would like more information on virtual environments, please read [this](https://docs.python.org/3/tutorial/venv.html). But for now you can also just follow these steps.
@@ -192,16 +192,16 @@ To create the virtual environment, navigate to the JOAN project folder you've ju
 
     python -m venv venv
 
-This will create a folder called venv containing a new and clean virtual environment. To start working in this environment, we have to activate it first. To do this type:
+This will create a folder called `venv` containing a new and clean virtual environment. To start working in this environment, we have to activate it first. To do this type:
 
     venv\Scripts\activate.bat 
 
 If this succeeded, (venv) should have appeared in your command line trailing your current location. This indicates that the python command points to the virtual environment.
-How to select this newly created virtual environment as the project interpreter in your IDE, depend on which IDE you are using. Pycharm should automatically detect the virtual environment and use it, for VS code please check [this link](https://stackoverflow.com/questions/54106071/how-to-setup-virtual-environment-for-python-in-vs-code). For other IDE's please use google.  
+How to select this newly created virtual environment as the project interpreter in your IDE, depend on which IDE you are using. PyCharm should automatically detect the virtual environment and use it, for VS code please check [this link](https://stackoverflow.com/questions/54106071/how-to-setup-virtual-environment-for-python-in-vs-code). For other IDE's please use google.  
 
 ### Getting necessary python3 libraries
-To get JOAN to work together with CARLA you will need several python packages (and if you want to use a sensodrive wheel with CAN interface also a specific DLL). The list of required pip installs is saved in the requirements.txt file.
-To install all requirements from the command prompt, mak sure you are in the project folder and have the virtual environment activated. Now type: 
+To get JOAN to work together with CARLA you will need several python packages (and if you want to use a SensoDrive wheel with CAN interface also a specific DLL). The list of required pip installs is saved in the requirements.txt file.
+To install all requirements from the command prompt, make sure you are in the project folder and have the virtual environment activated. Now type: 
 
     pip install -r requirements.txt 
 
