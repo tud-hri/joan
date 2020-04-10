@@ -9,3 +9,7 @@ On the left you see the overall layout of the documentation. Starting with setti
 
 !!! Note
     If you cannot read the text in the GIFS or images please zoom in in your webbrowser, the resolution should then be high enough to distinguish the text.
+
+## Team
+
+JOAN is developed by members of the Human-Robot Interaction group at Cognitive Robotics of Delft University of Technology.
