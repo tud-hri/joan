@@ -1,5 +1,5 @@
 from process import Control, State, translate
-from PyQt5 import QtCore
+from PyQt5 import QtCore, uic
 from modules.hardwarecommunication.action.states import HardwarecommunicationStates
 from modules.hardwarecommunication.action.hardwarecommunication import *
 import os
@@ -10,7 +10,7 @@ class HardwarecommunicationWidget(Control):
         kwargs['callback'] = [self.do]  # method will run each given millis
         Control.__init__(self, *args, **kwargs)
         
-        self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)),"hardwaremanager_ui.ui"))
+        self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)), "hardwaremanager_ui.ui"))
         self.Inputdata = {}
 
         # creating a self.moduleStateHandler which also has the moduleStates in self.moduleStateHandler.states
@@ -21,9 +21,14 @@ class HardwarecommunicationWidget(Control):
         # use Action with state handling, using only this widgets state changes
         try:
             self.action = HardwarecommunicationAction()
+            self.action.widget = self
         except Exception as inst:
             print(inst)
-
+        
+        self._input_type_dialog = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../action/UIs/inputtype_ui.ui"))
+        self._input_type_dialog.btns_hardware_inputtype.accepted.connect(self.action.selected_input)
+        self.widget.btn_add_hardware.clicked.connect(self._input_type_dialog.show)
+        
 
         self._input = BaseInput(self)
  
