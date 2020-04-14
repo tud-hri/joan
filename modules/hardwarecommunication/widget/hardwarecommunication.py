@@ -6,7 +6,7 @@ import os
 
 class HardwarecommunicationWidget(Control):
     def __init__(self, *args, **kwargs):
-        kwargs['millis'] = 'millis' in kwargs.keys() and kwargs['millis'] or 5
+        kwargs['millis'] = 'millis' in kwargs.keys() and kwargs['millis'] or 2
         kwargs['callback'] = [self.do]  # method will run each given millis
         Control.__init__(self, *args, **kwargs)
         
@@ -30,9 +30,9 @@ class HardwarecommunicationWidget(Control):
         self.widget.btn_add_hardware.clicked.connect(self._input_type_dialog.show)
         
 
-        self._input = BaseInput(self)
- 
-        #self.Inputs = dict([("Keyboard",Keyboard(self)),("Mouse",Mouse(self)),("Joystick",Joystick(self))])
+        self._input = BaseInput(self, self.action)
+        
+        #self._input_devices = dict([("Keyboard",Keyboard(self)),("Mouse",Mouse(self)),("Joystick",Joystick(self))])
         self.Inputs = {}
         #initialize input with none (not catching any inputs)
         #self.Inputdata = self._input.process
