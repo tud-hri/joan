@@ -10,7 +10,7 @@ class HardwarecommunicationWidget(Control):
         kwargs['callback'] = [self.do]  # method will run each given millis
         Control.__init__(self, *args, **kwargs)
         
-        self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)),"hardwarecommunication.ui"))
+        self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)),"hardwaremanager_ui.ui"))
         self.Inputdata = {}
 
         # creating a self.moduleStateHandler which also has the moduleStates in self.moduleStateHandler.states
@@ -27,8 +27,8 @@ class HardwarecommunicationWidget(Control):
 
         self._input = BaseInput(self)
  
-        self.Inputs = dict([("Keyboard",Keyboard(self)),("Mouse",Mouse(self)),("Joystick",Joystick(self))])
-
+        #self.Inputs = dict([("Keyboard",Keyboard(self)),("Mouse",Mouse(self)),("Joystick",Joystick(self))])
+        self.Inputs = {}
         #initialize input with none (not catching any inputs)
         #self.Inputdata = self._input.process
         self.writeNews(channel=self, news=self.Inputdata)

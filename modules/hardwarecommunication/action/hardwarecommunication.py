@@ -23,25 +23,40 @@ class BaseInput():
         self._data['Reverse']            = False
 
         self.currentInput = 'None'
+        self._input_devices = []
         self.setUsingtext()
 
-        self._parentWidget.widget.sliderThrottle.setEnabled(False)
-        self._parentWidget.widget.sliderSteering.setEnabled(False)
-        self._parentWidget.widget.sliderBrake.setEnabled(False)
+        self._input_type_dialog = uic.loadUi(uifile = os.path.join(os.path.dirname(os.path.realpath(__file__)),"UIs/inputtype_ui.ui"))
+        self._hardware_tab = uic.loadUi(uifile = os.path.join(os.path.dirname(os.path.realpath(__file__)),"UIs/hardware_tab.ui"))
+        self._parentWidget.widget.btn_add_hardware.clicked.connect(self._input_type_dialog.show)
+        self._input_type_dialog.btns_hardware_inputtype.accepted.connect(self.selected_input)
+
+        # self._parentWidget.widget.sliderThrottle.setEnabled(False)
+        # self._parentWidget.widget.sliderSteering.setEnabled(False)
+        # self._parentWidget.widget.sliderBrake.setEnabled(False)
         self.steerRange = 180 #range until
 
         self.brake = 0
         self.throttle = 0
         self.steer = 0
 
-        #already list the input devices here:
-        for self._devices in hid.enumerate():
-            keys = list(self._devices.keys())
-            keys.sort()
-            for key in keys:
-                print("%s : %s" % (key, self._devices[key]))
-            print()
+        # #already list the input devices here:
+        # for self._devices in hid.enumerate():
+        #     keys = list(self._devices.keys())
+        #     keys.sort()
+        #     for key in keys:
+        #         print("%s : %s" % (key, self._devices[key]))
+        #     print()
 
+    def selected_input(self):
+        self._selected_input_device = self._input_type_dialog.combo_hardware_inputtype.currentText()
+        self._input_devices.append(1)
+        print('selected ' + self._selected_input_device)
+        if self._selected_input_device == 'Mouse':
+        #Add ui file to a new tab
+            self._parentWidget.Inputs.update([("Mouse" + str(len(self._input_devices)), Mouse(self._parentWidget))])
+
+        print(self._input_devices)
 
     def process(self):
         return self._data
@@ -52,7 +67,8 @@ class BaseInput():
         self.setUsingtext()
 
     def setUsingtext(self):
-        self._parentWidget.widget.lblSource.setText(self.currentInput)
+        #self._parentWidget.widget.lblSource.setText(self.currentInput)
+        pass
 
     def displayInputs(self):
         pass
@@ -176,37 +192,35 @@ class Mouse(BaseInput):
     def __init__(self,HardwarecommunicationWidget):
         BaseInput.__init__(self, HardwarecommunicationWidget)
         self.currentInput = 'Mouse'
+        self._parentWidget.widget.hardware_list_layout.addWidget(self._hardware_tab)
         #Load the appropriate UI file
-        self._mouseTab = uic.loadUi(uifile = os.path.join(os.path.dirname(os.path.realpath(__file__)),"UIs/mouse.ui"))
-        #Add ui file to a new tab
-        self._parentWidget.widget.tabInputs.addTab(self._mouseTab,'Mouse')
-
-        self._mouseTab.btnUse.clicked.connect(self.setCurrentInput)
+        
 
     def displayInputs(self):
         #update sliders
-        self._parentWidget.widget.sliderThrottle.setValue(self._data['ThrottleInput'])
-        self._parentWidget.widget.sliderSteering.setValue(self._data['SteeringInput'])
-        self._parentWidget.widget.sliderBrake.setValue(self._data['BrakeInput'])
+        # self._parentWidget.widget.sliderThrottle.setValue(self._data['ThrottleInput'])
+        # self._parentWidget.widget.sliderSteering.setValue(self._data['SteeringInput'])
+        # self._parentWidget.widget.sliderBrake.setValue(self._data['BrakeInput'])
 
         #set values next to sliders:
-        self._parentWidget.widget.lblThrottle.setText(str(self._data['ThrottleInput']))
-        self._parentWidget.widget.lblSteering.setText(str(self._data['SteeringInput']))
-        self._parentWidget.widget.lblBrake.setText(str(self._data['BrakeInput']))
-        
+        # self._parentWidget.widget.lblThrottle.setText(str(self._data['ThrottleInput']))
+        # self._parentWidget.widget.lblSteering.setText(str(self._data['SteeringInput']))
+        # self._parentWidget.widget.lblBrake.setText(str(self._data['BrakeInput']))
+        pass
 
     def setCurrentInput(self):
-        self._parentWidget.widget.sliderThrottle.setEnabled(True)
-        self._parentWidget.widget.sliderSteering.setEnabled(True)
-        self._parentWidget.widget.sliderBrake.setEnabled(True)
-        self.currentInput = 'Mouse'
-        self.changeInputSource()
-        
+        # self._parentWidget.widget.sliderThrottle.setEnabled(True)
+        # self._parentWidget.widget.sliderSteering.setEnabled(True)
+        # self._parentWidget.widget.sliderBrake.setEnabled(True)
+        # self.currentInput = 'Mouse'
+        # self.changeInputSource()
+        pass
+
     def process(self):
-        self._data['BrakeInput']    = self._parentWidget.widget.sliderBrake.value()
-        self._data['ThrottleInput'] = self._parentWidget.widget.sliderThrottle.value()
-        self._data['SteeringInput'] = self._parentWidget.widget.sliderSteering.value()
-        self.displayInputs()
+        # self._data['BrakeInput']    = self._parentWidget.widget.sliderBrake.value()
+        # self._data['ThrottleInput'] = self._parentWidget.widget.sliderThrottle.value()
+        # self._data['SteeringInput'] = self._parentWidget.widget.sliderSteering.value()
+        #self.displayInputs()
         
 
         return self._data
