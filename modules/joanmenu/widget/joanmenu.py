@@ -91,10 +91,6 @@ class JOANMenuWidget(Control):
         widget.btnShow.clicked.connect(module_widget._show)
         widget.btnClose.clicked.connect(module_widget._close)
 
-        widget.editTimeStepMillis.textChanged.connect(module_widget._setmillis)
-        widget.editTimeStepMillis.setPlaceholderText(str(default_millis))
-        widget.editTimeStepMillis.setFixedWidth(60)
-        widget.editTimeStepMillis.setValidator(QtGui.QIntValidator(1, 2000, self))
         widget.lblState.setText(module_widget.moduleStateHandler.getCurrentState().name)
         module_widget.moduleStateHandler.stateChanged.connect(
             lambda state: widget.lblState.setText(module_widget.moduleStateHandler.getState(state).name)

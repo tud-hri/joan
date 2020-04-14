@@ -1,11 +1,8 @@
 {
     "modules": {
-        "modules.feedbackcontroller.widget.feedbackcontroller.FeedbackcontrollerWidget": {
-            "SteeringWheelAngle": false,
-            "Throttle": true
-        },
         "modules.joanmenu.action.joanmenu.JOANMenuAction": {
-            "instantiatedModules": true
+            "instantiatedModules": true,
+            "instantiated_modules": true
         }
     }
 }
