@@ -48,6 +48,7 @@ class Status:
         # self.gui.update(guiDict)
         self.moduleStatePackages.update(moduleStatePackage)
 
+
 class Control(Pulsar):
     """Base class for JOAN modules"""
 
@@ -79,7 +80,8 @@ class Control(Pulsar):
         # window is a QMainWindow, and the container for all widgets
         self.window = MainModuleWidget()
 
-        self.stateWidget = self._getGui(os.path.join(os.path.dirname(os.path.realpath(__file__)),"../resources/statewidget.ui"))
+        self.stateWidget = self._getGui(os.path.join(os.path.dirname(
+            os.path.realpath(__file__)), "../resources/statewidget.ui"))
         self.window.addWidget(self.stateWidget, name='State widget')
 
         # load widget UI ()

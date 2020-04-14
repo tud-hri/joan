@@ -13,7 +13,7 @@ nav:
       - Adding modules: joan-adding-modules.md
 
     - Extra Instructions:
-      - Adding to system variables: sysPath.md
+      - Adding to system variables: sys-path.md
 
     - Contributing:
       - Guidelines: contributing-guidelines.md
