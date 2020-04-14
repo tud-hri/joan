@@ -55,7 +55,7 @@ class Carlacommunication():
             print('JOAN connected to CARLA Server!')
 
             return True
-        except Exception as inst:
+        except RuntimeError as inst:
             print('Could not connect error given:', inst)
             return False
 

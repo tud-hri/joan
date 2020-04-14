@@ -16,7 +16,7 @@ class CarlainterfaceWidget(Control):
 
         self.data = {}
         self.writeNews(channel=self, news=self.data)
-        self.connected = False
+        self.is_connected = False
 
         # creating a self.moduleStateHandler which also has the moduleStates in self.moduleStateHandler.states
         self.defineModuleStateHandler(module=self, moduleStates=CarlainterfaceStates())
@@ -27,7 +27,7 @@ class CarlainterfaceWidget(Control):
         self.widget.spinVehicles.setRange(0, 10)
         self.widget.spinVehicles.lineEdit().setReadOnly(True)
 
-        self.widget.spinVehicles.valueChanged.connect(self.updateCars)
+        self.widget.spinVehicles.valueChanged.connect(self.update_cars)
         self.widget.btnConnect.clicked.connect(self.connect)
         self.widget.groupVehicles.setEnabled(False)
         self.widget.spinVehicles.setEnabled(False)
@@ -37,22 +37,16 @@ class CarlainterfaceWidget(Control):
         self.carlaCommunication = Carlacommunication(self)
 
     def connect(self):
-        self.connected = self.carlaCommunication.connect()
-        if(self.connected is True):
-            self.widget.groupVehicles.setEnabled(True)
-            self.widget.spinVehicles.setEnabled(True)
-            self.widget.btnConnect.setEnabled(False)
-        else:
-            self.widget.groupVehicles.setEnabled(False)
-            self.widget.spinVehicles.setEnabled(False)
-            self.widget.btnConnect.setEnabled(True)
+        self.is_connected = self.carlaCommunication.connect()
+        self.widget.groupVehicles.setEnabled(self.is_connected)
+        self.widget.spinVehicles.setEnabled(self.is_connected)
+        self.widget.btnConnect.setEnabled(not self.is_connected)
 
-    def updateCars(self):
+    def update_cars(self):
         # Delete excess vehicles if any
-        if(self.widget.spinVehicles.value() < len(self.vehicles)):
-            for k in range(self.widget.spinVehicles.value(), len(self.vehicles)):
-                self.vehicles[-k].destroyTab()
-                self.vehicles.pop(-k)
+        while self.widget.spinVehicles.value() < len(self.vehicles):
+            self.vehicles[-1].destroyTab()
+            self.vehicles.pop(-1)
 
         # Create new vehicles and show them:
         for i in range(len(self.vehicles), self.widget.spinVehicles.value()):
