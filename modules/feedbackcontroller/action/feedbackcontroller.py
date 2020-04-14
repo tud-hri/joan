@@ -17,9 +17,18 @@ import time
 class FeedbackcontrollerAction(Control):
     def __init__(self, *args, **kwargs):
         Control.__init__(self, *args, **kwargs)
+        self.moduleStates = None
+        self.moduleStateHandler = None
+        try:
+            statePackage = self.getModuleStatePackage(module='modules.feedbackcontroller.widget.feedbackcontroller.FeedbackcontrollerWidget')
+            self.moduleStates = statePackage['moduleStates']
+            self.moduleStateHandler = statePackage['moduleStateHandler']
+        except:
+            pass
+
         # get state information from module Widget
-        self.moduleStates = 'moduleStates' in kwargs.keys() and kwargs['moduleStates'] or None
-        self.moduleStateHandler = 'moduleStateHandler' in kwargs.keys() and kwargs['moduleStateHandler'] or None
+        #self.moduleStates = 'moduleStates' in kwargs.keys() and kwargs['moduleStates'] or None
+        #self.moduleStateHandler = 'moduleStateHandler' in kwargs.keys() and kwargs['moduleStateHandler'] or None
 
 
 class Basecontroller():
@@ -221,8 +230,11 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
 
     def updateAvailableTrajectoryList(self):
         # get list of csv files in directory
-        os.chdir(self._pathHCRDirectory)
-        files = glob.glob('*.{}'.format('csv'))
+        filenames = os.listdir(self._pathHCRDirectory)
+        files = [ filename for filename in filenames if filename.endswith('csv') ]
+
+        # os.chdir() # undesired change dir. 
+        # files = glob.glob('*.{}'.format('csv'))
 
 
         # run through the combobox to check for files that are in the list, but not in the directory anymore
@@ -264,8 +276,9 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
         
     def process(self):
         try:
-            self._data= self._parentWidget.readNews('modules.siminterface.widget.siminterface.SiminterfaceWidget')
-            egoCar = self._data['egoCar']
+            self._data = self._parentWidget.readNews('modules.carlainterface.widget.carlainterface.CarlainterfaceWidget')
+            egoCar = self._data['vehicles'][0].spawnedVehicle
+            
             self._Error = self.Error_Calc(self._t_aheadFF, self._HCR, egoCar)
             print(self._Error)
 

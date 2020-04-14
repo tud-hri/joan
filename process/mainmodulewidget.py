@@ -1,9 +1,15 @@
-from PyQt5 import uic, QtCore
-from PyQt5 import QtWidgets
-from PyQt5 import QtGui
+"""Module widget class"""
+
+from PyQt5 import QtCore
+from PyQt5.QtWidgets import QMainWindow, QWidget, QMessageBox, QVBoxLayout, QAction
 
 
-class MainModuleWidget(QtWidgets.QMainWindow):
+class MainModuleWidget(QMainWindow):
+    """ QWidget for module widgets
+
+        Implements a QMainWindow in which all widgets for a menu can be loaded.
+        We include a general state widget and allow for a module-specific widget
+    """
 
     # closed signal (when mainwindow is closed)
     closed = QtCore.pyqtSignal()
@@ -11,61 +17,68 @@ class MainModuleWidget(QtWidgets.QMainWindow):
     def __init__(self, *args, **kwargs):
         super().__init__()
 
+        self._showClosePrompt = kwargs['showcloseprompt'] if 'showcloseprompt' in kwargs.keys() else False
         # main widget
-        self.mainWidget = QtWidgets.QWidget()
+        self.mainWidget = QWidget()
 
         # default layout
-        self.layout = QtWidgets.QVBoxLayout()
+        self.layout = QVBoxLayout()
         self.mainWidget.setLayout(self.layout)
         self.setCentralWidget(self.mainWidget)
-        
 
+        # file menu
+        # this menu always has a close action, and allows for customized actions per module (after the close action).
         self.fileMenu = self.menuBar().addMenu('File')
-        self.fileMenu.addAction('Store settings')
+        self.fileMenu.addAction('Close', self.close)
         self.fileMenu.addSeparator()
-        self.fileMenu.addAction('Close')
-        self.fileMenu.triggered.connect(self.processFileTrigger)
 
-        self.viewMenu = self.menuBar().addMenu('Show')
-        self.viewMenu.triggered.connect(self.processViewTrigger)
-        
-        # self.askConfirmClose = 'askCloseConfirm' in kwargs.keys() and kwargs['askCloseConfirm'] or False
-        # self.showStateWidget = 'showStateWidget' in kwargs.keys() and kwargs['showStateWidget'] or False
+        # show menu
+        # enables the user to set the visibility of all widgets loaded in the window.
+        self.showMenu = self.menuBar().addMenu('Show')
+        self.showMenu.triggered.connect(self.processTriggerShowMenu)
 
-    def addWidget(self, widget, name='widget'):
-        
-        
-        # if the default name is given, check if it already exists in the central Widget, and add counter
-        if self.mainWidget.findChild(QtWidgets.QWidget, name) is not None:
-            for i in range(len(self.mainWidget.findChildren(QtWidgets.QWidget))):
-                tmpname = name + '-' + str(i)
-                if self.mainWidget.findChild(QtWidgets.QWidget, tmpname) is None:
-                    name = tmpname
-                    break
+    def addWidget(self, widget, name):
+        """Add widgets to the window and to the 'view' menu."""
 
-        # set widget name
         widget.setObjectName(name)
 
-        # add action for each widget in the view menu: this is used to show the widget
-        self.viewMenu.addAction(QtWidgets.QAction(name, self.viewMenu, checkable=True, checked=True))
+        # add action for each  in the view menu: this is used to show the widget
+        self.showMenu.addAction(QAction(name, self.showMenu,
+                                        checkable=True, checked=True))
 
         # and finally add the widget to the layout of the mainWidget
         self.layout.addWidget(widget)
 
+        # adjust the size of the mainWidget and the window
+        self.mainWidget.adjustSize()
+        self.adjustSize()
 
-    def processFileTrigger(self, action):
-        '''Using action.text(), you can process the action that is triggered in the file menu, like Save settings or close'''
+    def processTriggerShowMenu(self, action):
+        """Set visibility of the clicked widget in the view menu"""
 
-        if action.text() == 'Close':
-            self.close()
-
-    def processViewTrigger(self, action):
-        '''Using action.text(), you can process the action that is triggered in the file menu, like Save settings or close'''
-        widget = self.mainWidget.findChild(QtWidgets.QWidget, action.text())
+        widget = self.mainWidget.findChild(QWidget, action.text())
         if widget is not None:
             widget.setVisible(action.isChecked())
-            self.centralWidget().adjustSize()
+            # adjust the size of the window
+            self.mainWidget.adjustSize()
+            self.adjustSize()
 
     def closeEvent(self, event):
-        self.closed.emit()
-        event.accept()
+        """redefined closeEvent, emits closed signal"""
+
+        if self.isVisible():
+
+            if self._showClosePrompt:
+                reply = QMessageBox.question(
+                    self, 'Close window', 'Are you sure?',
+                    QMessageBox.Yes, QMessageBox.No
+                )
+
+                if reply == QMessageBox.No:
+                    event.ignore()
+                    return
+
+            # window is closed, emit closed signal and accept the event
+            self.closed.emit()
+            event.accept()
+             

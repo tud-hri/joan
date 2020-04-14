@@ -1,7 +1,7 @@
 from process import Control
 import os
 import json
-from json import JSONDecoder, JSONDecodeError, JSONEncoder
+import copy
 
 '''
 { "modules": {
@@ -16,17 +16,29 @@ from json import JSONDecoder, JSONDecodeError, JSONEncoder
         }
     }
 }
-
 '''
+
+
 class DatarecorderSettings(Control):
     def __init__(self, *args, **kwargs):
         Control.__init__(self, *args, **kwargs)
         self.file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'modulesettings.json')
         self.settings = None
 
+    def _cleanup(self):
+        copySettings = copy.deepcopy(self.settings)
+        for channel in self.settings['modules'].keys():
+            if channel not in self.getAvailableNewsChannels():
+                del copySettings['modules'][channel]
+        self.settings = copy.deepcopy(copySettings)
+
     def write(self, moduleKey=None, item=None):
+        print('settings write')
         self.read()
         # add/remove/change content to self.settings
+        # remove settings from removed modules
+        self._cleanup()
+        # add/change content of self.settings
         if moduleKey:
             try:
                 moduleData = {}
@@ -51,7 +63,7 @@ class DatarecorderSettings(Control):
             with open(self.file, 'r') as settingsFile:
                 self.settings = json.load(settingsFile)
         except Exception as inst:
-            if self.settings == None:
+            if self.settings is None:
                 self.settings = {}
                 self.settings['modules'] = {}
             print('reading', inst)

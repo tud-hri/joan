@@ -14,6 +14,9 @@ class FeedbackcontrollerWidget(Control):
         self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)),"feedbackcontroller.ui"))
         
         self.data = {}
+        self.data['SteeringWheelAngle'] = 0
+        self.data['Throttle'] = 0
+
         self.writeNews(channel=self, news=self.data)
         self.counter = 0
 
@@ -22,8 +25,7 @@ class FeedbackcontrollerWidget(Control):
         self.masterStateHandler.stateChanged.connect(self.handlemasterstate)
 
         try:
-            self.action = FeedbackcontrollerAction(moduleStates = self.moduleStates,
-                                          moduleStateHandler = self.moduleStateHandler)
+            self.action = FeedbackcontrollerAction()
         except Exception as e:
             print('De error bij de constructor van de widget is: ', e)
         
@@ -48,7 +50,7 @@ class FeedbackcontrollerWidget(Control):
         self.data['SteeringWheelAngle'] = SWangle
         self.data['Throttle'] = 0.5
         self.writeNews(channel=self, news=self.data)
-        print(self.counter)
+        #print(self.counter)
 
 
 
@@ -67,6 +69,7 @@ class FeedbackcontrollerWidget(Control):
     def _setmillis(self, millis):
         try:
             millis = int(millis)
+            assert millis > 0, 'QTimer tick interval needs to be larger than 0'
             self.setInterval(millis)
         except:
             pass
@@ -125,7 +128,7 @@ class FeedbackcontrollerWidget(Control):
                 self._stop()
 
             # update the state label
-            self.stateWidget.lblModulestate.setText(str(stateAsState.name))
+            self.stateWidget.lblModuleState.setText(str(stateAsState.name))
 
             if stateAsState == self.moduleStates.FEEDBACKCONTROLLER.RUNNING:
                 self.stateWidget.btnStart.setStyleSheet("background-color: green")

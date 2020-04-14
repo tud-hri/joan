@@ -84,9 +84,9 @@ class Keyboard(BaseInput):
     def keyPressEvent(self,event):
         if(self._parentWidget.widget.lblSource.text() == 'Keyboard'):
             key = event.key()
-            if key == QtCore.Qt.Key_Up: 
+            if key == QtCore.Qt.Key_Up or key == QtCore.Qt.Key_W: 
                 self.throttle = True
-            elif key == QtCore.Qt.Key_Space:
+            elif key == QtCore.Qt.Key_Space or key == QtCore.Qt.Key_S:
                 self.brake = True
             elif key == QtCore.Qt.Key_A or key == QtCore.Qt.Key_Left:
                 self.steerLeft = True
@@ -98,9 +98,9 @@ class Keyboard(BaseInput):
     def keyReleaseEvent(self,event):
         if(self._parentWidget.widget.lblSource.text() == 'Keyboard'):
             key = event.key()
-            if key == QtCore.Qt.Key_Up: 
+            if key == QtCore.Qt.Key_Up or key == QtCore.Qt.Key_W:
                 self.throttle = False
-            elif key == QtCore.Qt.Key_Space:
+            elif key == QtCore.Qt.Key_Space or key == QtCore.Qt.Key_S:
                 self.brake = False
             elif key == QtCore.Qt.Key_A or key == QtCore.Qt.Key_Left:
                 self.steerLeft = False
@@ -226,9 +226,19 @@ class Joystick(BaseInput):
 
         # Open the desired device to read (find the device and vendor ID from printed list!!)
         self._joystick = hid.device()
-        #self._joystick.open(121, 6) #  Playstation controller Zierikzee
-        self._joystick.open(1133, 49760) #logitech wheel CoRlab
-        #self._joystick.open(16700, 8467) #Taranis Zierikzee
+
+        #Initialize Variables
+        self.steer = 0
+        self.throttle = 0
+        self.brake = 0
+
+        try:
+            # self._joystick.open(121, 6) #  Playstation controller Zierikzee (vendor,product)
+            ##self._joystick.open(1133, 49760) #logitech wheel CoRlab
+            #self._joystick.open(16700, 8467) #Taranis Zierikzee
+            self._joystick.open(1118, 736)
+        except:
+            print('Could not open joystick. Is it plugged in? Are the IDs correct?')
 
     def displayInputs(self):
         #update sliders
@@ -253,17 +263,21 @@ class Joystick(BaseInput):
 
     def process(self):
         joystickdata = []
-        joystickdata = self._joystick.read(64,20)
-        if joystickdata != []:
-            self.steer = ((((joystickdata[44])*256) + ((joystickdata[43]+1)))/(256*256)*900 - 450)
-            self.throttle = ((((joystickdata[46])*256) + ((joystickdata[45]+1)))/(256*256) * -100 +100)
-            self.brake = ((((joystickdata[48])*256) + ((joystickdata[47]+1)))/(256*256) * -100 +100)
+        joystickdata = self._joystick.read(64,64)
 
+        if joystickdata != []:
+            self.throttle = 100 - round((((joystickdata[9])/128))*100)
+            if joystickdata[10] == 2:
+                self.brake = 80
+            else:
+                self.brake = 0
+
+            self.steer = round((((joystickdata[0]) + (joystickdata[1])*256)/(256*256))*180 - 90)
+            print(joystickdata)
         self._data['BrakeInput']    = self.brake
         self._data['ThrottleInput'] = self.throttle
         self._data['SteeringInput'] = self.steer
 
         self.displayInputs()
-            
-
+        
         return self._data

@@ -12,7 +12,7 @@ class SteeringcommunicationAction(Control):
         self.moduleStates = None
         self.moduleStateHandler = None
         try:
-            statePackage = self.getModuleStatePackage(module='module.steeringcommunication.widget.steeringcommunication.SteeringcommunicationWidget')
+            statePackage = self.getModuleStatePackage(module='modules.steeringcommunication.widget.steeringcommunication.SteeringcommunicationWidget')
             self.moduleStates = statePackage['moduleStates']
             self.moduleStateHandler = statePackage['moduleStateHandler']
         except:
