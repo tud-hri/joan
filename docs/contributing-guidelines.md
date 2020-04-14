@@ -12,20 +12,18 @@ How can I contribute?
 ---
 ## Reporting bugs and issues
 
-If you find bugs or have other issues, use our [Issue tracker][issueslink]. Before creating a new issue, please check if a similar issue has already been reported. 
+If you find bugs or have other issues, use our [Issue tracker][issueslink]. Before creating a new issue, please check if a similar issue has already been reported. Select the 'bug' template in the issue tracker and fill out as much as you can. Only then we can properly address the bug!
 Also check the [documentation][docslink]. <!--and FAQ-->
 
-[issueslink]: https://github.com/carla-simulator/carla/issues
+[issueslink]: https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan/issues
 [docslink]: http://joan.readthedocs.io
-<!-- [faqlink]: build_faq.md -->
 
 ---
 ## Feature requests
 
-Check the [feature request list][frlink] before requesting a new feature. Please submit your request as a new issue and select the 'feature request' template in the issue tracker.
+Check the [issue tracker list][issueslink] and filter on the label `feature` to check if a similar feature has been already requested. If so, please add information in the already existing feature if something is missing. Please submit your request as a new issue and select the 'feature request' template in the issue tracker.
 
-
-[frlink]: https://github.com/carla-simulator/carla/issues?q=is%3Aissue+is%3Aopen+label%3A%22feature+request%22+sort%3Acomments-desc -->
+[issueslink]: https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan/issues
 
 ---
 ## Improving documentation
@@ -52,7 +50,7 @@ The code is never done, so if you want to help out, awesome!
 
 Before starting hands-on on coding, please check out our [issue board][issueboard] to see if we are already working on that particular issue. In case of doubt or to discuss how to proceed, please contact one of us.
 
-[issueboard]: https://github.com/carla-simulator/carla/issues 
+[issueboard]: https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan/issues
 
 #### Coding standard
 
