@@ -5,7 +5,7 @@ Welcome to the JOAN Simulator documentation. In this 'readthedocs' the ins and o
 
 You can find the public repository [here][repolink]. Note that JOAN is still under development, so core functionality may change over time. We'll post releases as soon as we think we are ready :-)
 
-[repolink][https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan]
+[repolink]: https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan
 
 ---
 ## Structure
