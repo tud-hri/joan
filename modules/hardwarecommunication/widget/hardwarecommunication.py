@@ -1,7 +1,7 @@
 from process import Control, State, translate
 from PyQt5 import QtCore, uic
 from modules.hardwarecommunication.action.states import HardwarecommunicationStates
-from modules.hardwarecommunication.action.hardwarecommunication import *
+from modules.hardwarecommunication.action.hardwarecommunication import HardwarecommunicationAction, BaseInput
 import os
 
 class HardwarecommunicationWidget(Control):
@@ -28,14 +28,9 @@ class HardwarecommunicationWidget(Control):
         self._input_type_dialog = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../action/UIs/inputtype_ui.ui"))
         self._input_type_dialog.btns_hardware_inputtype.accepted.connect(self.action.selected_input)
         self.widget.btn_add_hardware.clicked.connect(self._input_type_dialog.show)
-        
 
         self._input = BaseInput(self, self.action)
         
-        #self._input_devices = dict([("Keyboard",Keyboard(self)),("Mouse",Mouse(self)),("Joystick",Joystick(self))])
-        self.Inputs = {}
-        #initialize input with none (not catching any inputs)
-        #self.Inputdata = self._input.process
         self.writeNews(channel=self, news=self.Inputdata)
 
 
