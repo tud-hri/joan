@@ -1,4 +1,5 @@
 import enum
+import os
 
 from modules.datarecorder.action.datarecorder import DatarecorderAction
 from modules.datarecorder.widget.datarecorder import DatarecorderWidget
@@ -39,6 +40,15 @@ class JOANModules(enum.Enum):
                 JOANModules.HARDWARE_COMMUNICATION: HardwarecommunicationWidget,
                 JOANModules.CARLA_INTERFACE: SiminterfaceWidget,
                 JOANModules.TRAJECTORY_RECORDER: TrajectoryrecorderWidget}[self]
+
+    @property
+    def ui_file(self):
+        path_to_modules = os.path.dirname(os.path.realpath(__file__))
+        return {JOANModules.DATA_RECORDER: os.path.join(path_to_modules, "datarecorder/widget/datarecorder.ui"),
+                JOANModules.FEED_BACK_CONTROLLER: os.path.join(path_to_modules, "feedbackcontroller/widget/feedbackcontroller.ui"),
+                JOANModules.HARDWARE_COMMUNICATION: os.path.join(path_to_modules, "hardwarecommunication/widget/hardwarecommunication.ui"),
+                JOANModules.CARLA_INTERFACE: os.path.join(path_to_modules, "siminterface/widget/siminterface.ui"),
+                JOANModules.TRAJECTORY_RECORDER: os.path.join(path_to_modules, "trajectoryrecorder/widget/trajectoryrecorder.ui")}[self]
 
     def __str__(self):
         return {JOANModules.DATA_RECORDER: 'Data Recorder',
