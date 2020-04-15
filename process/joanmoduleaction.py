@@ -37,6 +37,9 @@ class JoanModuleAction(QtCore.QObject):
         self.moduleStateHandler.stateChanged.connect(self.handle_module_state)
         master_state_handler.stateChanged.connect(self.handle_master_state)
 
+    def do(self):
+        pass
+
     def initialize(self):
         pass
 

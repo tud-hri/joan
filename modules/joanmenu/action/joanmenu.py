@@ -38,23 +38,32 @@ class JOANMenuAction(Control):
     def initialize(self):
         """Initialize modules"""
         for _, module in self._instantiated_modules.items():
-            module.action().initialize()
+            try:
+                module.action.initialize()
+            except AttributeError:  # module has new style TODO: remove statement above when moving to new style
+                module.initialize()
 
     def start(self):
         """Initialize modules"""
         for _, module in self._instantiated_modules.items():
-            module.action.start()
+            try:
+                module.action.start()
+            except AttributeError:  # module has new style TODO: remove statement above when moving to new style
+                module.start()
 
     def stop(self):
         """Initialize modules"""
         for _, module in self._instantiated_modules.items():
-            module.action.stop()
+            try:
+                module.action.stop()
+            except AttributeError:  # module has new style TODO: remove statement above when moving to new style
+                module.stop()
 
     def add_module(self, module: JOANModules, name='', parent=None):
         """Add module, instantiated module, find unique name"""
 
         if module is JOANModules.TEMPLATE:  # Example of how the new style could be
-            # Load the default settings for this module here, this can be from a saved settings file or from another source
+            # TODO Load the default settings for this module here, this can be from a saved settings file or from another source
             # millis = default_millis_for_this_module
             # callbacks = default_callbacks_for_this_module
 
@@ -62,7 +71,7 @@ class JOANMenuAction(Control):
             module_dialog = module.dialog(module_action, self.masterStateHandler, parent=parent)
 
             module_widget = module_dialog  # to keep the names equal, should be removed when the if template statement is removed
-        else:
+        else: # module has old style TODO: remove statements below when moving to new style
             module_action = None
 
             module_widget = module.dialog()
@@ -70,7 +79,7 @@ class JOANMenuAction(Control):
 
         # add instantiated module to dictionary
         # note: here, we are storing the enums for easy access to both action and widget classes
-        self._instantiated_modules[module] = module
+        self._instantiated_modules[module] = module_action if module_action else module_widget  # TODO remove if else statement when moving to new style
 
         # update news
         self._data['instantiated_modules'] = self._instantiated_modules
