@@ -52,7 +52,10 @@
       <property name="verticalSpacing">
        <number>3</number>
       </property>
-      <item row="0" column="2">
+      <item row="1" column="0">
+       <widget class="QSpinBox" name="spinSpawnpoints"/>
+      </item>
+      <item row="0" column="0">
        <widget class="QLabel" name="lblSpawnpoints">
         <property name="font">
          <font>
@@ -65,78 +68,41 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="lblInput">
-        <property name="font">
-         <font>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>Select input:</string>
-        </property>
-       </widget>
-      </item>
       <item row="1" column="2">
-       <widget class="QSpinBox" name="spinSpawnpoints"/>
-      </item>
-      <item row="1" column="4">
        <widget class="QComboBox" name="comboCartype"/>
       </item>
-      <item row="1" column="7">
+      <item row="1" column="5">
        <widget class="QPushButton" name="btnDestroy">
         <property name="text">
          <string>Destroy</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="7">
+      <item row="0" column="5">
        <widget class="QPushButton" name="btnSpawn">
         <property name="text">
          <string>Spawn</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="5" rowspan="2">
+      <item row="0" column="3" rowspan="2">
        <widget class="Line" name="line_3">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
         </property>
        </widget>
       </item>
-      <item row="0" column="1" rowspan="2">
-       <widget class="Line" name="line">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QComboBox" name="comboInputtype">
-        <property name="font">
-         <font>
-          <pointsize>11</pointsize>
-         </font>
-        </property>
-        <item>
-         <property name="text">
-          <string>None</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="0" column="3" rowspan="2">
-       <widget class="Line" name="line_2">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="4">
+      <item row="0" column="2">
        <widget class="QLabel" name="label">
         <property name="text">
          <string>CarType:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1" rowspan="2">
+       <widget class="Line" name="line_2">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
         </property>
        </widget>
       </item>

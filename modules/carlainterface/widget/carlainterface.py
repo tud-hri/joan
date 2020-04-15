@@ -99,7 +99,6 @@ class CarlainterfaceWidget(Control):
         """
 
         try:
-            # stateAsState = self.states.getState(state) # ensure we have the State object (not the int)
             stateAsState = self.masterStateHandler.getState(state)  # ensure we have the State object (not the int)
 
             # emergency stop

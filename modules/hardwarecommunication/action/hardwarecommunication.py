@@ -113,7 +113,6 @@ class BaseInput():
 class Keyboard(BaseInput):
     def __init__(self, HardwarecommunicationWidget, keyboard_tab):
         BaseInput.__init__(self, HardwarecommunicationWidget, HardwarecommunicationAction)
-        self.currentInput = 'Keyboard'
         self._keyboard_tab = keyboard_tab
         self._parentWidget.widget.hardware_list_layout.addWidget(self._keyboard_tab)
 
@@ -121,13 +120,15 @@ class Keyboard(BaseInput):
 
         self._parentWidget.window.keyPressEvent = self.keyPressEvent
         self._parentWidget.window.keyReleaseEvent = self.keyReleaseEvent
-        self.steerLeft = False
-        self.steerRight = False
+        
+        self.steer_left = False
+        self.steer_right = False
         self.throttle = False
         self.brake = False
         self.reverse = False
 
         # Open the settings window:
+
 
     def remove_tab(self):
         self._action.remove(self._keyboard_tab.groupBox.title())
@@ -142,11 +143,11 @@ class Keyboard(BaseInput):
             elif key == QtCore.Qt.Key_Space or key == QtCore.Qt.Key_S:
                 self.brake = True
             elif key == QtCore.Qt.Key_A or key == QtCore.Qt.Key_Left:
-                self.steerLeft = True
-                self.steerRight = False
+                self.steer_left = True
+                self.steer_right = False
             elif key == QtCore.Qt.Key_D or key == QtCore.Qt.Key_Right:
-                self.steerRight = True
-                self.steerLeft = False
+                self.steer_right = True
+                self.steer_left = False
 
     def keyReleaseEvent(self, event):
         if(self.currentInput == 'Keyboard'):
@@ -156,11 +157,11 @@ class Keyboard(BaseInput):
             elif key == QtCore.Qt.Key_Space or key == QtCore.Qt.Key_S:
                 self.brake = False
             elif key == QtCore.Qt.Key_A or key == QtCore.Qt.Key_Left:
-                self.steerLeft = False
-                self.steerRight = False
+                self.steer_left = False
+                self.steer_right = False
             elif key == QtCore.Qt.Key_D or key == QtCore.Qt.Key_Right:
-                self.steerRight = False
-                self.steerLeft = False
+                self.steer_right = False
+                self.steer_left = False
             elif key == QtCore.Qt.Key_R:
                 if not self.reverse:
                     self.reverse = True
@@ -201,9 +202,9 @@ class Keyboard(BaseInput):
             self._data['BrakeInput'] = self._data['BrakeInput'] - 5
 
         # Steering:
-        if(self.steerLeft and self._data['SteeringInput'] < self.steerRange and self._data['SteeringInput'] > -self.steerRange):
+        if(self.steer_left and self._data['SteeringInput'] < self.steerRange and self._data['SteeringInput'] > -self.steerRange):
             self._data['SteeringInput'] = self._data['SteeringInput'] - 2
-        elif(self.steerRight and self._data['SteeringInput'] > -self.steerRange and self._data['SteeringInput'] < self.steerRange):
+        elif(self.steer_right and self._data['SteeringInput'] > -self.steerRange and self._data['SteeringInput'] < self.steerRange):
             self._data['SteeringInput'] = self._data['SteeringInput'] + 2
         elif(self._data['SteeringInput'] > 0):
             self._data['SteeringInput'] = self._data['SteeringInput'] - 1
