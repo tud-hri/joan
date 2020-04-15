@@ -43,18 +43,30 @@ class JOANMenuAction(Control):
     def start(self):
         """Initialize modules"""
         for _, module in self._instantiated_modules.items():
-            module.action().start()
+            module.action.start()
 
     def stop(self):
         """Initialize modules"""
         for _, module in self._instantiated_modules.items():
-            module.action().stop()
+            module.action.stop()
 
-    def add_module(self, module: JOANModules, name=''):
+    def add_module(self, module: JOANModules, name='', parent=None):
         """Add module, instantiated module, find unique name"""
 
-        module_widget = module.widget()
-        module_widget.setObjectName(name)
+        if module is JOANModules.TEMPLATE:  # Example of how the new style could be
+            # Load the default settings for this module here, this can be from a saved settings file or from another source
+            # millis = default_millis_for_this_module
+            # callbacks = default_callbacks_for_this_module
+
+            module_action = module.action(self.masterStateHandler, millis=100, callbacks=[])
+            module_dialog = module.dialog(module_action, self.masterStateHandler, parent=parent)
+
+            module_widget = module_dialog  # to keep the names equal, should be removed when the if template statement is removed
+        else:
+            module_action = None
+
+            module_widget = module.dialog()
+            module_widget.setObjectName(name)
 
         # add instantiated module to dictionary
         # note: here, we are storing the enums for easy access to both action and widget classes
@@ -64,7 +76,7 @@ class JOANMenuAction(Control):
         self._data['instantiated_modules'] = self._instantiated_modules
         self.writeNews(channel=self, news=self._data)
         
-        return module_widget
+        return module_widget, module_action
 
     def remove_module(self, module: JOANModules):
         """ Remove module by name"""

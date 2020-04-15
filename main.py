@@ -23,6 +23,7 @@ if __name__ == '__main__':
     JOANMENU._show()
 
     # adding modules (instantiates them too)
+    JOANMENU.add_module(JOANModules.TEMPLATE)
     JOANMENU.add_module(JOANModules.DATA_RECORDER)
     # JOANMENU.add_module(JOANModules.FEED_BACK_CONTROLLER)
     JOANMENU.add_module(JOANModules.CARLA_INTERFACE)

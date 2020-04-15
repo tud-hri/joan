@@ -1,15 +1,22 @@
-from process import Control
+from modules.joanmodules import JOANModules
+from process.joanmoduleaction import JoanModuleAction
+from .states import TemplateStates
 
 
-class TemplateAction(Control):
-    def __init__(self, *args, **kwargs):
-        Control.__init__(self, *args, **kwargs)
-        self.moduleStates = None
-        self.moduleStateHandler = None
+class TemplateAction(JoanModuleAction):
+    def __init__(self, master_state_handler, millis=100, callbacks=None):
+        super().__init__(module=JOANModules.TEMPLATE, master_state_handler=master_state_handler, millis=millis, callbacks=callbacks)
 
-        try:
-            statePackage = self.getModuleStatePackage(module='modules.template.widget.template.TemplateWidget')
-            self.moduleStates = statePackage['moduleStates']
-            self.moduleStateHandler = statePackage['moduleStateHandler']
-        except Exception as inst:
-            print('Exception in TemplateAction', inst)
+        self.moduleStateHandler.requestStateChange(TemplateStates.TEMPLATE.READY)
+
+    def start(self):
+        if super().start():
+            self.moduleStateHandler.requestStateChange(TemplateStates.TEMPLATE.RUNNING)
+            return True
+        return False
+
+    def stop(self):
+        if super().stop():
+            self.moduleStateHandler.requestStateChange(TemplateStates.TEMPLATE.STOPPED)
+            return True
+        return False

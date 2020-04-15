@@ -64,9 +64,8 @@ class JOANMenuWidget(Control):
 
     def add_module(self, module: JOANModules, name=''):
         """Instantiate module, create a widget and add to main window"""
-
         # instantiate module (in Action)
-        module_widget = self.action.add_module(module, name)
+        module_widget, module_action = self.action.add_module(module, name, parent=self.window)
         if not module_widget:
             return
 
@@ -78,13 +77,19 @@ class JOANMenuWidget(Control):
         widget.setObjectName(name)
         widget.grpbox.setTitle(name)
 
-        widget.btn_show.clicked.connect(module_widget._show)
-        widget.btn_close.clicked.connect(module_widget._close)
+        if module is JOANModules.TEMPLATE:  # syntax is changed slightly in new example: wrapping show() in _show() is unnecessary
+            widget.btn_show.clicked.connect(module_widget.show)
+            widget.btn_close.clicked.connect(module_widget.close)
 
-        widget.lbl_state.setText(module_widget.moduleStateHandler.getCurrentState().name)
-        module_widget.moduleStateHandler.stateChanged.connect(
-            lambda state: widget.lbl_state.setText(module_widget.moduleStateHandler.getState(state).name)
-        )
+            module_action.moduleStateHandler.stateChanged.connect(lambda state: widget.lbl_state.setText(module_action.moduleStateHandler.getState(state).name))
+        else:
+            widget.btn_show.clicked.connect(module_widget._show)
+            widget.btn_close.clicked.connect(module_widget._close)
+
+            widget.lbl_state.setText(module_widget.moduleStateHandler.getCurrentState().name)
+            module_widget.moduleStateHandler.stateChanged.connect(
+                lambda state: widget.lbl_state.setText(module_widget.moduleStateHandler.getState(state).name)
+            )
 
         # add it to the layout
         self._layout_modules.addWidget(widget)
