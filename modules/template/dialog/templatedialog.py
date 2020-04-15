@@ -1,16 +1,17 @@
 from process import Control, State, translate
 from PyQt5 import QtCore
 from modules.template.action.states import TemplateStates
-from modules.template.action.template import TemplateAction
+from modules.template.action.templateaction import TemplateAction
 import os
+
 
 class TemplateWidget(Control):
     def __init__(self, *args, **kwargs):
         kwargs['millis'] = 'millis' in kwargs.keys() and kwargs['millis'] or 500
         kwargs['callback'] = [self.do]  # method will run each given millis
         Control.__init__(self, *args, **kwargs)
-        self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)),"template.ui"))
-        
+        self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)), "template.ui"))
+
         self.data = {}
         self.writeNews(channel=self, news=self.data)
 
@@ -18,7 +19,7 @@ class TemplateWidget(Control):
         self.defineModuleStateHandler(module=self, moduleStates=TemplateStates())
         self.moduleStateHandler.stateChanged.connect(self.handlemodulestate)
         self.masterStateHandler.stateChanged.connect(self.handlemasterstate)
-        
+
         # use Action with state handling, using only this widgets state changes
         try:
             self.action = TemplateAction()
@@ -45,7 +46,6 @@ class TemplateWidget(Control):
         for state in moduleStatesDict:
             print('in TemplateStates bij show', state, moduleStatesDict[state])
 
-
     def start(self):
         if not self.window.isVisible():
             self._show()
@@ -68,9 +68,9 @@ class TemplateWidget(Control):
         """
 
         try:
-            #stateAsState = self.states.getState(state) # ensure we have the State object (not the int)
-            stateAsState = self.masterStateHandler.getState(state) # ensure we have the State object (not the int)
-            
+            # stateAsState = self.states.getState(state) # ensure we have the State object (not the int)
+            stateAsState = self.masterStateHandler.getState(state)  # ensure we have the State object (not the int)
+
             # emergency stop
             if stateAsState == self.moduleStates.ERROR:
                 self._stop()
@@ -80,7 +80,7 @@ class TemplateWidget(Control):
             self.widget.repaint()
 
         except Exception as inst:
-            print ('Exception in TemplateWidget', inst)
+            print('Exception in TemplateWidget', inst)
 
     def handlemodulestate(self, state):
         """ 
@@ -89,9 +89,9 @@ class TemplateWidget(Control):
         """
 
         try:
-            #stateAsState = self.states.getState(state) # ensure we have the State object (not the int)
-            stateAsState = self.moduleStateHandler.getState(state) # ensure we have the State object (not the int)
-            
+            # stateAsState = self.states.getState(state) # ensure we have the State object (not the int)
+            stateAsState = self.moduleStateHandler.getState(state)  # ensure we have the State object (not the int)
+
             # emergency stop
             if stateAsState == self.moduleStates.ERROR:
                 self._stop()
@@ -106,4 +106,4 @@ class TemplateWidget(Control):
                 self.stateWidget.btnStart.setStyleSheet("background-color: none")
 
         except Exception as inst:
-            print (inst)
+            print(inst)
