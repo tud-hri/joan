@@ -11,7 +11,8 @@ class HardwarecommunicationWidget(Control):
         Control.__init__(self, *args, **kwargs)
         
         self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)), "hardwaremanager_ui.ui"))
-        self.Inputdata = {}
+        self._input_data = {}
+        self._inputlist = {}
         self.counter = 0
         # creating a self.moduleStateHandler which also has the moduleStates in self.moduleStateHandler.states
         self.defineModuleStateHandler(module=self, moduleStates=HardwarecommunicationStates())
@@ -29,20 +30,24 @@ class HardwarecommunicationWidget(Control):
         self._input_type_dialog.btns_hardware_inputtype.accepted.connect(self.action.selected_input)
         self.widget.btn_add_hardware.clicked.connect(self._input_type_dialog.show)
 
+        self._inputlist = self.action.input_devices_classes
+
         self._input = BaseInput(self, self.action)
         
-        self.writeNews(channel=self, news=self.Inputdata)
 
+        self.writeNews(channel=self, news=self._input_data)
 
+        self.installEventFilter(self)
+   
+    def eventFilter(self,event):
+        print(event)
     # callback class is called each time a pulse has come from the Pulsar class instance
     def do(self):
-        self.counter = self.counter + 1
-        print(self.counter)
-        try:
-            self.Inputdata = self._input.process()
-            self.writeNews(channel=self, news=self.Inputdata)
-        except Exception as e:
-            print(e)
+        for key in self._inputlist:
+            try:
+                self._input_data[key] = self._inputlist[key].process()
+            except Exception as e:
+                print(e)
 
     @QtCore.pyqtSlot(str)
     def _setmillis(self, millis):

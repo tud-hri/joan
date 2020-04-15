@@ -125,6 +125,7 @@ class Manualcontrol(Basecontroller):
         self._parentWidget.widget.tabWidget.addTab(self.manualTab,'Manual')
     
     def process(self):
+        self._data = self._parentWidget.readNews('modules.carlainterface.widget.carlainterface.CarlainterfaceWidget')
         "Processes all information and returns parameters needed for steeringcommunication"
         return self._data
 
@@ -277,6 +278,7 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
     def process(self):
         try:
             self._data = self._parentWidget.readNews('modules.carlainterface.widget.carlainterface.CarlainterfaceWidget')
+            print(self._data)
             egoCar = self._data['vehicles'][0].spawnedVehicle
             
             self._Error = self.Error_Calc(self._t_aheadFF, self._HCR, egoCar)

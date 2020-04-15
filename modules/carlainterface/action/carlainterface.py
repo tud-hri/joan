@@ -92,11 +92,11 @@ class Carlavehicle(Carlacommunication):
         self._vehicleTab.setParent(None)
 
     def spawnCar(self):
-        _BP = random.choice(Carlacommunication.BlueprintLibrary.filter("vehicle." + str(self._vehicleTab.comboCartype.currentText())))
+        self._BP = random.choice(Carlacommunication.BlueprintLibrary.filter("vehicle." + str(self._vehicleTab.comboCartype.currentText())))
         self._control = carla.VehicleControl()
         try:
             spawnpointnr = self._vehicleTab.spinSpawnpoints.value()-1
-            self.spawnedVehicle = Carlacommunication.world.spawn_actor(_BP, Carlacommunication.spawnPoints[spawnpointnr])
+            self.spawnedVehicle = Carlacommunication.world.spawn_actor(self._BP, Carlacommunication.spawnPoints[spawnpointnr])
             self._vehicleTab.btnSpawn.setEnabled(False)
             self._vehicleTab.btnDestroy.setEnabled(True)
             self._vehicleTab.spinSpawnpoints.setEnabled(False)
@@ -121,5 +121,10 @@ class Carlavehicle(Carlacommunication):
     def getControldata(self):
         pass
 
+    def get_vehicle_id(self):
+        return self._BP.id
+
+
     def applycontrol(self):
-        self.spawnedVehicle.apply_control(self._control)
+        print('hai')
+        #self.spawnedVehicle.apply_control(self._control)

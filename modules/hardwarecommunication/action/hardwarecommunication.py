@@ -16,6 +16,7 @@ class HardwarecommunicationAction(Control):
         HardwarecommunicationAction._nr_of_keyboards = 0
         HardwarecommunicationAction._nr_of_joysticks = 0
         HardwarecommunicationAction._nr_of_sensodrives = 0
+        
 
     def selected_input(self):
         self._selected_input_device = self.widget._input_type_dialog.combo_hardware_inputtype.currentText()
@@ -78,16 +79,13 @@ class BaseInput():
         self._data = {}
         self._data['SteeringInput'] = 0
         self._data['ThrottleInput'] = 0
-        self._data['GearShiftInput'] = 0
         self._data['BrakeInput'] = 0
         self._data['Reverse'] = False
+        self._data['Handbrake'] = False
 
         self.currentInput = 'None'
 
-        self.steerRange = 180  # range until
-        self.brake = 0
-        self.throttle = 0
-        self.steer = 0
+        #self._available_vehicles = {}
 
         # #already list the input devices here:
         # for self._devices in hid.enumerate():
@@ -116,103 +114,232 @@ class Keyboard(BaseInput):
         self._keyboard_tab = keyboard_tab
         self._parentWidget.widget.hardware_list_layout.addWidget(self._keyboard_tab)
 
+        self._available_vehicles = {}
+
+        # Initialize needed variables:
+        self._throttle = False
+        self._brake = False
+        self._steer_left = False
+        self._steer_right = False
+        self._handbrake = False
+        self._reverse = False
+
+        # Load the appropriate settings window and show it:
+        self._settings_tab = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "UIs/keyboard_settings_ui.ui"))
+        self._settings_tab.show()
+        
+        # Connect the settings button to the settings window
+        self._keyboard_tab.btn_settings.clicked.connect(self._settings_tab.show)
+
+        # Connect the hardware remove button to removing routine
         self._keyboard_tab.btn_remove_hardware.clicked.connect(self.remove_tab)
 
-        self._parentWidget.window.keyPressEvent = self.keyPressEvent
-        self._parentWidget.window.keyReleaseEvent = self.keyReleaseEvent
+        # Connect buttons of settings menu to methods:
+        self._settings_tab.btn_set_keys.clicked.connect(self.settings_set_keys)
+        self._settings_tab.button_box_settings.button(self._settings_tab.button_box_settings.RestoreDefaults).clicked.connect(self.settings_set_default_values)
+        self._settings_tab.keyPressEvent = self.settings_key_press_event
+        self._settings_tab.slider_steer_sensitivity.valueChanged.connect(self.settings_update_sliders)
+        self._settings_tab.slider_throttle_sensitivity.valueChanged.connect(self.settings_update_sliders)
+        self._settings_tab.slider_brake_sensitivity.valueChanged.connect(self.settings_update_sliders)
+        self._set_key_counter = 0
+
+        # set the default settings when constructing:
+        self.settings_set_default_values()
+
+        # Overwriting keypress events to handle keypresses for controlling
+        self._parentWidget.window.keyPressEvent = self.key_press_event
+        self._parentWidget.window.keyReleaseEvent = self.key_release_event
+
+    def settings_update_sliders(self):
+        self._settings_tab.label_steer_sensitivity.setText(str(self._settings_tab.slider_steer_sensitivity.value()))
+        self._settings_tab.label_throttle_sensitivity.setText(str(self._settings_tab.slider_throttle_sensitivity.value()))
+        self._settings_tab.label_brake_sensitivity.setText(str(self._settings_tab.slider_brake_sensitivity.value()))
+
+    def settings_set_default_values(self):
+        # Keys
+        self._steer_left_key = QtCore.Qt.Key_A
+        self._steer_right_key = QtCore.Qt.Key_D
+        self._throttle_key = QtCore.Qt.Key_W
+        self._brake_key = QtCore.Qt.Key_S
+        self._reverse_key = QtCore.Qt.Key_R
+        self._handbrake_key = QtCore.Qt.Key_K
+
+        #Key Names
+        self._settings_tab.label_steer_left.setText("A")
+        self._settings_tab.label_steer_right.setText("D")
+        self._settings_tab.label_throttle.setText("W")
+        self._settings_tab.label_brake.setText("S")
+        self._settings_tab.label_reverse.setText("R")
+        self._settings_tab.label_handbrake.setText("K")
+
+        # Steering Range
+        self._min_steer = -90
+        self._max_steer = 90
+
+        self._settings_tab.line_edit_min_steer.setText(str(self._min_steer))
+        self._settings_tab.line_edit_max_steer.setText(str(self._max_steer))
+
+        # Check autocenter
+        self._autocenter = True
+        self._settings_tab.checkbox_autocenter.setChecked(self._autocenter)
+
+        # Sensitivities
+        self._steer_sensitivity = 50
+        self._throttle_sensitivity = 50
+        self._brake_sensitivity = 50
+
+        self._settings_tab.slider_steer_sensitivity.setValue(self._steer_sensitivity)
+        self._settings_tab.slider_throttle_sensitivity.setValue(self._throttle_sensitivity)
+        self._settings_tab.slider_brake_sensitivity.setValue(self._brake_sensitivity)
+
+        # Nr vehicles
+        self.old_nr_vehicles = 0
+
+    def settings_set_keys(self):
+        self._settings_tab.btn_set_keys.setStyleSheet("background-color: lightgreen")
+        self._settings_tab.btn_set_keys.clearFocus()
+        self._settings_tab.button_box_settings.setEnabled(False)
+        self._settings_tab.btn_set_keys.setEnabled(False)
+        self._set_key_counter = 0
+        self._settings_tab.label_steer_left.setStyleSheet("background-color: lightgreen")
+
+    def settings_key_press_event(self,event):
+        text = ""
+        if self._settings_tab.btn_set_keys.isChecked():
+            self._set_key_counter += 1
+
+            if event.key() == QtCore.Qt.Key_Space:
+                text = 'Spacebar'
+            elif event.key() == QtCore.Qt.Key_Left:
+                text = u"\u2190"
+            elif event.key() == QtCore.Qt.Key_Right:
+                text = u"\u2192"
+            elif event.key() == QtCore.Qt.Key_Up:
+                text = u"\u2191"
+            elif event.key() == QtCore.Qt.Key_Down:
+                text = u"\u2193"
+            else:
+                text = event.text().capitalize()
         
-        self.steer_left = False
-        self.steer_right = False
-        self.throttle = False
-        self.brake = False
-        self.reverse = False
-
-        # Open the settings window:
-
+            
+            if self._set_key_counter == 1:
+                self._settings_tab.label_steer_left.setText(text)
+                self._settings_tab.label_steer_left.setStyleSheet("background-color: none")
+                self._settings_tab.label_steer_right.setStyleSheet("background-color: lightgreen")
+                self._steer_left_key = event.key()
+            elif self._set_key_counter == 2:
+                self._settings_tab.label_steer_right.setText(text)
+                self._settings_tab.label_steer_right.setStyleSheet("background-color: none")
+                self._settings_tab.label_throttle.setStyleSheet("background-color: lightgreen")
+                self._steer_right_key = event.key()
+            elif self._set_key_counter == 3:
+                self._settings_tab.label_throttle.setText(text)
+                self._settings_tab.label_throttle.setStyleSheet("background-color: none")
+                self._settings_tab.label_brake.setStyleSheet("background-color: lightgreen")
+                self._throttle_key = event.key()
+            elif self._set_key_counter == 4:
+                self._settings_tab.label_brake.setText(text)
+                self._settings_tab.label_brake.setStyleSheet("background-color: none")
+                self._settings_tab.label_reverse.setStyleSheet("background-color: lightgreen")
+                self.brake_key = event.key()
+            elif self._set_key_counter == 5:
+                self._settings_tab.label_reverse.setText(text)
+                self._settings_tab.label_reverse.setStyleSheet("background-color: none")
+                self._settings_tab.label_handbrake.setStyleSheet("background-color: lightgreen")
+                self._reverse_key = event.key()
+            elif self._set_key_counter == 6:
+                self._settings_tab.label_handbrake.setText(text)
+                self._settings_tab.label_handbrake.setStyleSheet("background-color: none")
+                self._handbrake_key = event.key()
+                self._settings_tab.btn_set_keys.setChecked(False)
+                self._settings_tab.btn_set_keys.setStyleSheet("background-color: none")
+                self._set_key_counter = 0
+                self._settings_tab.button_box_settings.setEnabled(True)
+                self._settings_tab.btn_set_keys.setEnabled(True)
 
     def remove_tab(self):
         self._action.remove(self._keyboard_tab.groupBox.title())
         self._parentWidget.widget.hardware_list_layout.removeWidget(self._keyboard_tab)
         self._keyboard_tab.setParent(None)
 
-    def keyPressEvent(self, event):
-        if(self.currentInput == 'Keyboard'):
-            key = event.key()
-            if key == QtCore.Qt.Key_Up or key == QtCore.Qt.Key_W:
-                self.throttle = True
-            elif key == QtCore.Qt.Key_Space or key == QtCore.Qt.Key_S:
-                self.brake = True
-            elif key == QtCore.Qt.Key_A or key == QtCore.Qt.Key_Left:
-                self.steer_left = True
-                self.steer_right = False
-            elif key == QtCore.Qt.Key_D or key == QtCore.Qt.Key_Right:
-                self.steer_right = True
-                self.steer_left = False
+    def key_press_event(self, event):
+        key = event.key()
+        if key == self._throttle_key:
+            self._throttle = True
+        elif key == self._brake_key:
+            self._brake = True
+        elif key == self._steer_left_key:
+            self._steer_left = True
+            self._steer_right = False
+        elif key == self._steer_right_key:
+            self._steer_right = True
+            self._steer_left = False
+        elif key == self._handbrake_key:
+            self._handbrake = True
 
-    def keyReleaseEvent(self, event):
-        if(self.currentInput == 'Keyboard'):
-            key = event.key()
-            if key == QtCore.Qt.Key_Up or key == QtCore.Qt.Key_W:
-                self.throttle = False
-            elif key == QtCore.Qt.Key_Space or key == QtCore.Qt.Key_S:
-                self.brake = False
-            elif key == QtCore.Qt.Key_A or key == QtCore.Qt.Key_Left:
-                self.steer_left = False
-                self.steer_right = False
-            elif key == QtCore.Qt.Key_D or key == QtCore.Qt.Key_Right:
-                self.steer_right = False
-                self.steer_left = False
-            elif key == QtCore.Qt.Key_R:
-                if not self.reverse:
-                    self.reverse = True
-                elif self.reverse:
-                    self.reverse = False
-
-    def setCurrentInput(self):
-        self.currentInput = 'Keyboard'
-        # self._parentWidget.widget.sliderThrottle.setEnabled(False)
-        # self._parentWidget.widget.sliderSteering.setEnabled(False)
-        # self._parentWidget.widget.sliderBrake.setEnabled(False)
-        self.changeInputSource()
-
-    def displayInputs(self):
-        # update sliders and reverse label
-        # self._parentWidget.widget.sliderThrottle.setValue(self._data['ThrottleInput'])
-        # self._parentWidget.widget.sliderSteering.setValue(self._data['SteeringInput'])
-        # self._parentWidget.widget.sliderBrake.setValue(self._data['BrakeInput'])
-        # self._parentWidget.widget.lblReverse.setText(str(self.reverse))
-
-        # #set values next to sliders:
-        # self._parentWidget.widget.lblThrottle.setText(str(self._data['ThrottleInput']))
-        # self._parentWidget.widget.lblSteering.setText(str(self._data['SteeringInput']))
-        # self._parentWidget.widget.lblBrake.setText(str(self._data['BrakeInput']))
-        pass
+    def key_release_event(self, event):
+        key = event.key()
+        if key == self._throttle_key:
+            self._throttle = False
+        elif key == self._brake_key:
+            self._brake = False
+        elif key == self._steer_left_key:
+            self._steer_left = False
+            self._steer_right = False
+        elif key == self._steer_right_key:
+            self._steer_right = False
+            self._steer_left = False
+        elif key == self._handbrake_key:
+            self._handbrake = False
+        elif key == self._reverse_key:
+            if not self._reverse:
+                self._reverse = True
+            elif self._reverse:
+                self._reverse = False
 
     def process(self):
+        # If there are cars in the simulation add them to the controllable car combobox
+        self._available_vehicles = (self._parentWidget.readNews('modules.carlainterface.widget.carlainterface.CarlainterfaceWidget'))
+        new_nr_vehicles = len(self._available_vehicles['vehicles'])
+        if (new_nr_vehicles - self.old_nr_vehicles > 0):
+            latest_id = self._available_vehicles['vehicles'][-1].get_vehicle_id()
+            self._keyboard_tab.combo_target_vehicle.addItem(latest_id)
+
+        if (new_nr_vehicles - self.old_nr_vehicles < 0):
+            self._keyboard_tab.combo_target_vehicle.removeItem(new_nr_vehicles-1)
+
+        
+        
+
         # Throttle:
-        if(self.throttle and self._data['ThrottleInput'] < 100):
-            self._data['ThrottleInput'] = self._data['ThrottleInput'] + 2.5
-        elif(self._data['ThrottleInput'] > 0 and not self.throttle):
-            self._data['ThrottleInput'] = self._data['ThrottleInput'] - 2.5
+        if(self._throttle and self._data['ThrottleInput'] < 100):
+            self._data['ThrottleInput'] = self._data['ThrottleInput'] + (5 * self._throttle_sensitivity/100)
+        elif(self._data['ThrottleInput'] > 0 and not self._throttle):
+            self._data['ThrottleInput'] = self._data['ThrottleInput'] - (5 * self._throttle_sensitivity/100)
 
         # Brake:
-        if(self.brake and self._data['BrakeInput'] < 100):
-            self._data['BrakeInput'] = self._data['BrakeInput'] + 5
-        elif(self._data['BrakeInput'] > 0 and not self.brake):
-            self._data['BrakeInput'] = self._data['BrakeInput'] - 5
+        if(self._brake and self._data['BrakeInput'] < 100):
+            self._data['BrakeInput'] = self._data['BrakeInput'] + (5 * self._brake_sensitivity/100)
+        elif(self._data['BrakeInput'] > 0 and not self._brake):
+            self._data['BrakeInput'] = self._data['BrakeInput'] - (5 * self._brake_sensitivity/100)
 
         # Steering:
-        if(self.steer_left and self._data['SteeringInput'] < self.steerRange and self._data['SteeringInput'] > -self.steerRange):
-            self._data['SteeringInput'] = self._data['SteeringInput'] - 2
-        elif(self.steer_right and self._data['SteeringInput'] > -self.steerRange and self._data['SteeringInput'] < self.steerRange):
-            self._data['SteeringInput'] = self._data['SteeringInput'] + 2
-        elif(self._data['SteeringInput'] > 0):
-            self._data['SteeringInput'] = self._data['SteeringInput'] - 1
-        elif(self._data['SteeringInput'] < 0):
-            self._data['SteeringInput'] = self._data['SteeringInput'] + 1
+        if(self._steer_left and self._data['SteeringInput'] < self._max_steer and self._data['SteeringInput'] > self._min_steer):
+            self._data['SteeringInput'] = self._data['SteeringInput'] - (4 * self._steer_sensitivity/100)
+        elif(self._steer_right and self._data['SteeringInput'] > self._min_steer and self._data['SteeringInput'] < self._max_steer):
+            self._data['SteeringInput'] = self._data['SteeringInput'] + (4 * self._steer_sensitivity/100)
+        elif(self._data['SteeringInput'] > 0 and self._autocenter):
+            self._data['SteeringInput'] = self._data['SteeringInput'] - (2 * self._steer_sensitivity/100)
+        elif(self._data['SteeringInput'] < 0 and self._autocenter):
+            self._data['SteeringInput'] = self._data['SteeringInput'] + (2 * self._steer_sensitivity/100)
 
-        self.displayInputs()
+        # Reverse
+        self._data['Reverse'] = self._reverse
 
+        # Handbrake
+        self._data['Handbrake'] = self._handbrake
+
+        self.old_nr_vehicles = new_nr_vehicles
         return self._data
 
 
@@ -232,31 +359,13 @@ class Mouse(BaseInput):
         self._mouse_tab.setParent(None)
 
     def displayInputs(self):
-        # update sliders
-        # self._parentWidget.widget.sliderThrottle.setValue(self._data['ThrottleInput'])
-        # self._parentWidget.widget.sliderSteering.setValue(self._data['SteeringInput'])
-        # self._parentWidget.widget.sliderBrake.setValue(self._data['BrakeInput'])
-
-        # set values next to sliders:
-        # self._parentWidget.widget.lblThrottle.setText(str(self._data['ThrottleInput']))
-        # self._parentWidget.widget.lblSteering.setText(str(self._data['SteeringInput']))
-        # self._parentWidget.widget.lblBrake.setText(str(self._data['BrakeInput']))
         pass
 
     def setCurrentInput(self):
-        # self._parentWidget.widget.sliderThrottle.setEnabled(True)
-        # self._parentWidget.widget.sliderSteering.setEnabled(True)
-        # self._parentWidget.widget.sliderBrake.setEnabled(True)
-        # self.currentInput = 'Mouse'
-        # self.changeInputSource()
+
         pass
 
     def process(self):
-        # self._data['BrakeInput']    = self._parentWidget.widget.sliderBrake.value()
-        # self._data['ThrottleInput'] = self._parentWidget.widget.sliderThrottle.value()
-        # self._data['SteeringInput'] = self._parentWidget.widget.sliderSteering.value()
-        # self.displayInputs()
-
         return self._data
 
 # Arbitratry Joystick
