@@ -20,25 +20,32 @@ class HardwarecommunicationAction(Control):
     def selected_input(self):
         self._selected_input_device = self.widget._input_type_dialog.combo_hardware_inputtype.currentText()
 
-        if self._selected_input_device == 'Mouse':
+        if "Mouse" in self._selected_input_device:
             HardwarecommunicationAction._nr_of_mouses = HardwarecommunicationAction._nr_of_mouses + 1
             device_title = "Mouse " + str(self._nr_of_mouses)
+            HardwarecommunicationAction.input_devices_widgets.update([(device_title, uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "UIs/hardware_tab.ui")))])
+            HardwarecommunicationAction.input_devices_classes.update([(device_title, Mouse(self, self.input_devices_widgets[device_title]))])
 
-        if self._selected_input_device == 'Keyboard':
+        if "Keyboard" in self._selected_input_device:
             HardwarecommunicationAction._nr_of_keyboards = HardwarecommunicationAction._nr_of_keyboards + 1
             device_title = "Keyboard " + str(self._nr_of_keyboards)
+            HardwarecommunicationAction.input_devices_widgets.update([(device_title, uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "UIs/hardware_tab.ui")))])
+            HardwarecommunicationAction.input_devices_classes.update([(device_title, Keyboard(self, self.input_devices_widgets[device_title]))])
 
-        if self._selected_input_device == 'Joystick':
+        if "Joystick" in self._selected_input_device:
             HardwarecommunicationAction._nr_of_joysticks = HardwarecommunicationAction._nr_of_joysticks + 1
-            device_title = "Keyboard " + str(self._nr_of_joysticks)
+            device_title = "Joystick " + str(self._nr_of_joysticks)
+            HardwarecommunicationAction.input_devices_widgets.update([(device_title, uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "UIs/hardware_tab.ui")))])
+            HardwarecommunicationAction.input_devices_classes.update([(device_title, Joystick(self, self.input_devices_widgets[device_title]))])
         
-        if self._selected_input_device == 'Sensodrive':
+        if "SensoDrive" in self._selected_input_device:
             HardwarecommunicationAction._nr_of_sensodrives = HardwarecommunicationAction._nr_of_sensodrives + 1
-            device_title = "Keyboard " + str(self._nr_of_sensodrives)
+            device_title = "SensoDrive " + str(self._nr_of_sensodrives)
+            HardwarecommunicationAction.input_devices_widgets.update([(device_title, uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "UIs/hardware_tab.ui")))])
+            HardwarecommunicationAction.input_devices_classes.update([(device_title, SensoDrive(self, self.input_devices_widgets[device_title]))])
             
-        HardwarecommunicationAction.input_devices_widgets.update([(device_title, uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "UIs/hardware_tab.ui")))])
         HardwarecommunicationAction.input_devices_widgets[device_title].groupBox.setTitle(device_title)
-        HardwarecommunicationAction.input_devices_classes.update([(device_title, Keyboard(self, self.input_devices_widgets[device_title]))])
+    
         print(HardwarecommunicationAction.input_devices_classes)
         
     def remove(tabtitle):
@@ -76,16 +83,8 @@ class BaseInput():
         self._data['Reverse']            = False
 
         self.currentInput = 'None'
-        
-        self.setUsingtext()
 
-        self._hardware_tab = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "UIs/hardware_tab.ui"))
-        
-        # self._parentWidget.widget.sliderThrottle.setEnabled(False)
-        # self._parentWidget.widget.sliderSteering.setEnabled(False)
-        # self._parentWidget.widget.sliderBrake.setEnabled(False)
         self.steerRange = 180 #range until
-
         self.brake = 0
         self.throttle = 0
         self.steer = 0
@@ -98,20 +97,14 @@ class BaseInput():
         #         print("%s : %s" % (key, self._devices[key]))
         #     print()
 
-    
-
 
     def process(self):
         return self._data
-        
 
     def changeInputSource(self):
-        # self._parentWidget._input = self._parentWidget.Inputs[self.currentInput]
-        # self.setUsingtext()
         pass
 
     def setUsingtext(self):
-        #self._parentWidget.widget.lblSource.setText(self.currentInput)
         pass
 
     def displayInputs(self):
@@ -127,9 +120,6 @@ class Keyboard(BaseInput):
         self._parentWidget.widget.hardware_list_layout.addWidget(self._keyboard_tab)
         
         self._keyboard_tab.btn_remove_hardware.clicked.connect(self.remove_tab)
-
-    
-        # self._keyboardTab.btnUse.clicked.connect(self.setCurrentInput)
 
         self._parentWidget.window.keyPressEvent = self.keyPressEvent
         self._parentWidget.window.keyReleaseEvent = self.keyReleaseEvent
@@ -245,10 +235,14 @@ class Mouse(BaseInput):
         self.currentInput = 'Mouse'
         #Add the tab to the widget
         self._mouse_tab = mouse_tab
-        self._parentWidget.widget.hardware_list_layout.addWidget(self._mousetab_tab)
+        self._parentWidget.widget.hardware_list_layout.addWidget(self._mouse_tab)
         
         self._mouse_tab.btn_remove_hardware.clicked.connect(self.remove_tab)
         
+    def remove_tab(self):
+        self._action.remove(self._mouse_tab.groupBox.title())
+        self._parentWidget.widget.hardware_list_layout.removeWidget(self._mouse_tab)
+        self._mouse_tab.setParent(None)
 
     def displayInputs(self):
         #update sliders
@@ -283,11 +277,11 @@ class Mouse(BaseInput):
 
 #Arbitratry Joystick
 class Joystick(BaseInput):
-    def __init__(self,HardwarecommunicationWidget):
+    def __init__(self,HardwarecommunicationWidget, joystick_tab):
         BaseInput.__init__(self, HardwarecommunicationWidget, HardwarecommunicationAction)
         self.currentInput = 'Joystick'
         self._joystick_tab = joystick_tab
-        self._parentWidget.widget.hardware_list_layout.addWidget(self._joysticktab_tab)
+        self._parentWidget.widget.hardware_list_layout.addWidget(self._joystick_tab)
         
         self._joystick_tab.btn_remove_hardware.clicked.connect(self.remove_tab)
 
@@ -309,26 +303,29 @@ class Joystick(BaseInput):
         except:
             print('Could not open joystick. Is it plugged in? Are the IDs correct?')
 
+    def remove_tab(self):
+        self._action.remove(self._joystick_tab.groupBox.title())
+        self._parentWidget.widget.hardware_list_layout.removeWidget(self._joystick_tab)
+        self._joystick_tab.setParent(None)
+
     def displayInputs(self):
         #update sliders
-        self._parentWidget.widget.sliderThrottle.setValue(self._data['ThrottleInput'])
-        self._parentWidget.widget.sliderSteering.setValue(self._data['SteeringInput'])
-        self._parentWidget.widget.sliderBrake.setValue(self._data['BrakeInput'])
+        # self._parentWidget.widget.sliderThrottle.setValue(self._data['ThrottleInput'])
+        # self._parentWidget.widget.sliderSteering.setValue(self._data['SteeringInput'])
+        # self._parentWidget.widget.sliderBrake.setValue(self._data['BrakeInput'])
 
         #set values next to sliders:
-        self._parentWidget.widget.lblThrottle.setText(str(self._data['ThrottleInput']))
-        self._parentWidget.widget.lblSteering.setText(str(self._data['SteeringInput']))
-        self._parentWidget.widget.lblBrake.setText(str(self._data['BrakeInput']))
-        
+        # self._parentWidget.widget.lblThrottle.setText(str(self._data['ThrottleInput']))
+        # self._parentWidget.widget.lblSteering.setText(str(self._data['SteeringInput']))
+        # self._parentWidget.widget.lblBrake.setText(str(self._data['BrakeInput']))
+        pass
 
     def setCurrentInput(self):
-        self._parentWidget.widget.sliderThrottle.setEnabled(False)
-        self._parentWidget.widget.sliderSteering.setEnabled(False)
-        self._parentWidget.widget.sliderBrake.setEnabled(False)
+        # self._parentWidget.widget.sliderThrottle.setEnabled(False)
+        # self._parentWidget.widget.sliderSteering.setEnabled(False)
+        # self._parentWidget.widget.sliderBrake.setEnabled(False)
         self.currentInput = 'Joystick'
         self.changeInputSource()
-
-        print('CLICK')
 
     def process(self):
         joystickdata = []
@@ -350,3 +347,18 @@ class Joystick(BaseInput):
         self.displayInputs()
         
         return self._data
+
+
+class SensoDrive(BaseInput):
+    def __init__(self,HardwarecommunicationWidget, sensodrive_tab):
+        BaseInput.__init__(self, HardwarecommunicationWidget, HardwarecommunicationAction)
+        self.currentInput = 'SensoDrive'
+        self._sensodrive_tab = sensodrive_tab
+        self._parentWidget.widget.hardware_list_layout.addWidget(self._sensodrive_tab)
+        
+        self._sensodrive_tab.btn_remove_hardware.clicked.connect(self.remove_tab)
+
+    def remove_tab(self):
+        self._action.remove(self._sensodrive_tab.groupBox.title())
+        self._parentWidget.widget.hardware_list_layout.removeWidget(self._sensodrive_tab)
+        self._sensodrive_tab.setParent(None)

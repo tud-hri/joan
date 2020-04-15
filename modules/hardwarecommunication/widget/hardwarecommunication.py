@@ -12,7 +12,7 @@ class HardwarecommunicationWidget(Control):
         
         self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)), "hardwaremanager_ui.ui"))
         self.Inputdata = {}
-
+        self.counter = 0
         # creating a self.moduleStateHandler which also has the moduleStates in self.moduleStateHandler.states
         self.defineModuleStateHandler(module=self, moduleStates=HardwarecommunicationStates())
         self.moduleStateHandler.stateChanged.connect(self.handlemodulestate)
@@ -41,6 +41,8 @@ class HardwarecommunicationWidget(Control):
 
     # callback class is called each time a pulse has come from the Pulsar class instance
     def do(self):
+        self.counter = self.counter + 1
+        print(self.counter)
         try:
             self.Inputdata = self._input.process()
             self.writeNews(channel=self, news=self.Inputdata)
