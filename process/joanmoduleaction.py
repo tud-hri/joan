@@ -14,6 +14,7 @@ class JoanModuleAction(QtCore.QObject):
         self.module = module
 
         self.timer = QtCore.QTimer()
+        self.timer.setTimerType(QtCore.Qt.PreciseTimer)
         self.timer.setInterval(millis)
         self.timer.timeout.connect(self.do)
 
