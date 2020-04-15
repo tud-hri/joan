@@ -65,9 +65,8 @@ class JOANMenuAction(Control):
         if module is JOANModules.TEMPLATE:  # Example of how the new style could be
             # TODO Load the default settings for this module here, this can be from a saved settings file or from another source
             # millis = default_millis_for_this_module
-            # callbacks = default_callbacks_for_this_module
 
-            module_action = module.action(self.masterStateHandler, millis=100, callbacks=[])
+            module_action = module.action(self.masterStateHandler, millis=100)
             module_dialog = module.dialog(module_action, self.masterStateHandler, parent=parent)
 
             module_widget = module_dialog  # to keep the names equal, should be removed when the if template statement is removed

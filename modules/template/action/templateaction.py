@@ -4,19 +4,33 @@ from .states import TemplateStates
 
 
 class TemplateAction(JoanModuleAction):
-    def __init__(self, master_state_handler, millis=100, callbacks=None):
-        super().__init__(module=JOANModules.TEMPLATE, master_state_handler=master_state_handler, millis=millis, callbacks=callbacks)
+    def __init__(self, master_state_handler, millis=100):
+        super().__init__(module=JOANModules.TEMPLATE, master_state_handler=master_state_handler, millis=millis)
 
         self.moduleStateHandler.requestStateChange(TemplateStates.TEMPLATE.READY)
 
+    def do(self):
+        """
+        This function is called every controller tick of this module implement your main calculations here
+        """
+        pass
+
+    def initialize(self):
+        """
+        This function is called before the module is started
+        """
+        pass
+
     def start(self):
-        if super().start():
+        try:
             self.moduleStateHandler.requestStateChange(TemplateStates.TEMPLATE.RUNNING)
-            return True
-        return False
+        except RuntimeError:
+            return False
+        return super().start()
 
     def stop(self):
-        if super().stop():
+        try:
             self.moduleStateHandler.requestStateChange(TemplateStates.TEMPLATE.STOPPED)
-            return True
-        return False
+        except RuntimeError:
+            return False
+        return super().start()

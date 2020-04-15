@@ -11,7 +11,3 @@ import os
 class TemplateDialog(JoanModuleDialog):
     def __init__(self, module_action: JoanModuleAction, master_state_handler, parent=None):
         super().__init__(module=JOANModules.TEMPLATE, module_action=module_action, master_state_handler=master_state_handler, parent=parent)
-
-    # callback class is called each time a pulse has come from the Pulsar class instance
-    def do(self):
-        pass

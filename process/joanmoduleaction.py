@@ -7,15 +7,15 @@ import abc
 
 
 class JoanModuleAction(QtCore.QObject):
-    def __init__(self, module: JOANModules, master_state_handler, millis=100, callbacks=None):
-        super().__init__()
+    def __init__(self, module: JOANModules, master_state_handler, millis=100):
+        super(QtCore.QObject, self).__init__()
 
         self._millis = millis
-        self._callbacks = callbacks if callbacks is not None else []
         self.module = module
 
         self.timer = QtCore.QTimer()
         self.timer.setInterval(millis)
+        self.timer.timeout.connect(self.do)
 
         self.singleton_status = Status({})
         self.singleton_news = News({})
@@ -25,14 +25,11 @@ class JoanModuleAction(QtCore.QObject):
         self.moduleStateHandler = StateHandler(firstState=MasterStates.VOID, statesDict=self.moduleStates.getStates())
         module_state_package = {'moduleStates': self.moduleStates, 'moduleStateHandler': self.moduleStateHandler}
         self.singleton_status = Status({module: module_state_package})
+        self.handle_module_state(self.moduleStateHandler.state)
 
         # initialize own data and create channel in news
         self.data = {}
         self.write_news(news=self.data)
-
-        if callbacks is not None:
-            for callback in callbacks:
-                self.timer.timeout.connect(callback)
 
         self.moduleStateHandler.stateChanged.connect(self.handle_module_state)
         master_state_handler.stateChanged.connect(self.handle_master_state)
@@ -44,37 +41,12 @@ class JoanModuleAction(QtCore.QObject):
         pass
 
     def start(self):
-        self._start_pulsar()
+        self.timer.start()
         return True
 
     def stop(self):
-        self._stop_pulsar()
-        return True
-
-    def _start_pulsar(self):
-        self.timer.start()
-
-    def _stop_pulsar(self):
         self.timer.stop()
-
-    def add_callback(self, callback):
-        if callback not in self._callbacks:
-            self._callbacks.append(callback)
-            self.timer.timeout.connect(callback)
-        else:
-            print("Warning in " + str(self.module) + ", attempted to add callback that was already registered. Request was ignored.")
-
-    def remove_callback(self, callback):
-        if callback in self._callbacks:
-            self._callbacks.remove(callback)
-
-            # TODO: keep track of connections and only disconnect the specific callback
-            self.timer.disconnect()
-            for callback in self._callbacks:
-                self.timer.timeout.connect(callback)
-
-        else:
-            print("Warning in " + str(self.module) + ", attempted to remove unknown callback. Request was ignored.")
+        return True
 
     def handle_master_state(self, state):
         """
