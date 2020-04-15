@@ -23,22 +23,25 @@ class HardwarecommunicationAction(Control):
         if self._selected_input_device == 'Mouse':
             HardwarecommunicationAction._nr_of_mouses = HardwarecommunicationAction._nr_of_mouses + 1
             device_title = "Mouse " + str(self._nr_of_mouses)
-            HardwarecommunicationAction.input_devices_widgets.update([(device_title, uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "UIs/hardware_tab.ui")))])
-            HardwarecommunicationAction.input_devices_widgets[device_title].groupBox.setTitle(device_title)
-            HardwarecommunicationAction.input_devices_classes.update([(device_title, Mouse(self, self.input_devices_widgets[device_title]))])
 
         if self._selected_input_device == 'Keyboard':
             HardwarecommunicationAction._nr_of_keyboards = HardwarecommunicationAction._nr_of_keyboards + 1
             device_title = "Keyboard " + str(self._nr_of_keyboards)
-            HardwarecommunicationAction.input_devices_widgets.update([(device_title, uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "UIs/hardware_tab.ui")))])
-            HardwarecommunicationAction.input_devices_widgets[device_title].groupBox.setTitle(device_title)
-            HardwarecommunicationAction.input_devices_classes.update([(device_title, Keyboard(self, self.input_devices_widgets[device_title]))])
 
+        if self._selected_input_device == 'Joystick':
+            HardwarecommunicationAction._nr_of_joysticks = HardwarecommunicationAction._nr_of_joysticks + 1
+            device_title = "Keyboard " + str(self._nr_of_joysticks)
+        
+        if self._selected_input_device == 'Sensodrive':
+            HardwarecommunicationAction._nr_of_sensodrives = HardwarecommunicationAction._nr_of_sensodrives + 1
+            device_title = "Keyboard " + str(self._nr_of_sensodrives)
+            
+        HardwarecommunicationAction.input_devices_widgets.update([(device_title, uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "UIs/hardware_tab.ui")))])
+        HardwarecommunicationAction.input_devices_widgets[device_title].groupBox.setTitle(device_title)
+        HardwarecommunicationAction.input_devices_classes.update([(device_title, Keyboard(self, self.input_devices_widgets[device_title]))])
         print(HardwarecommunicationAction.input_devices_classes)
         
     def remove(tabtitle):
-        print(tabtitle)
-   
         del HardwarecommunicationAction.input_devices_widgets[tabtitle]
         del HardwarecommunicationAction.input_devices_classes[tabtitle]
 
@@ -241,7 +244,10 @@ class Mouse(BaseInput):
         BaseInput.__init__(self, HardwarecommunicationWidget, HardwarecommunicationAction)
         self.currentInput = 'Mouse'
         #Add the tab to the widget
-        self._parentWidget.widget.hardware_list_layout.addWidget(mouse_tab)
+        self._mouse_tab = mouse_tab
+        self._parentWidget.widget.hardware_list_layout.addWidget(self._mousetab_tab)
+        
+        self._mouse_tab.btn_remove_hardware.clicked.connect(self.remove_tab)
         
 
     def displayInputs(self):
@@ -280,11 +286,12 @@ class Joystick(BaseInput):
     def __init__(self,HardwarecommunicationWidget):
         BaseInput.__init__(self, HardwarecommunicationWidget, HardwarecommunicationAction)
         self.currentInput = 'Joystick'
-        self._joystickTab = uic.loadUi(uifile = os.path.join(os.path.dirname(os.path.realpath(__file__)),"UIs/joystick.ui"))
+        self._joystick_tab = joystick_tab
+        self._parentWidget.widget.hardware_list_layout.addWidget(self._joysticktab_tab)
+        
+        self._joystick_tab.btn_remove_hardware.clicked.connect(self.remove_tab)
 
-        self._parentWidget.widget.tabInputs.addTab(self._joystickTab,'Joystick')
-
-        self._joystickTab.btnUse.clicked.connect(self.setCurrentInput)
+        # self._joystickTab.btnUse.clicked.connect(self.setCurrentInput)
 
         # Open the desired device to read (find the device and vendor ID from printed list!!)
         self._joystick = hid.device()
