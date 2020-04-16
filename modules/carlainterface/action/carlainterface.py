@@ -8,7 +8,7 @@ from PyQt5 import QtCore, QtWidgets, uic
 from process import Control
 
 try:
-    sys.path.append(glob.glob('../../carla/PythonAPI/carla/dist/carla-*%d.%d-%s.egg' % (
+    sys.path.append(glob.glob('../../carla2/carla/PythonAPI/carla/dist/carla-*%d.%d-%s.egg' % (
         sys.version_info.major,
         sys.version_info.minor,
         'win-amd64' if os.name == 'nt' else 'linux-x86_64'))[0])
@@ -81,6 +81,7 @@ class Carlavehicle(Carlacommunication):
 
         self._vehicleTab.spinSpawnpoints.setRange(0, Carlacommunication.nrSpawnPoints)
         self._vehicleTab.spinSpawnpoints.lineEdit().setReadOnly(True)
+        self._vehicleTab.btnDestroy.setEnabled(False)
 
         self._vehicleTab.btnSpawn.clicked.connect(self.spawnCar)
         self._vehicleTab.btnDestroy.clicked.connect(self.destroyCar)
@@ -90,6 +91,7 @@ class Carlavehicle(Carlacommunication):
     def destroyTab(self):
         self._parentWidget.layOut.removeWidget(self._vehicleTab)
         self._vehicleTab.setParent(None)
+        self.destroyCar()
 
     def spawnCar(self):
         self._BP = random.choice(Carlacommunication.BlueprintLibrary.filter("vehicle." + str(self._vehicleTab.comboCartype.currentText())))
