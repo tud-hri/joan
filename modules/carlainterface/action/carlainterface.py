@@ -62,10 +62,7 @@ class Carlacommunication():
 
     def setInputs(self, inputs):
         pass
-        # steering = inputs['SteeringInput'] / 450
-        # throttle = inputs['ThrottleInput'] / 100
-        # brake = inputs['BrakeInput'] / 100
-
+        
         # self.control.steer = steering
         # self.control.throttle = throttle
         # self.control.brake = brake
@@ -134,12 +131,18 @@ class Carlavehicle(Carlacommunication):
             
 
     def getControldata(self):
+
         pass
 
     def get_vehicle_id(self):
         return self._BP.id
 
 
-    def applycontrol(self):
-        print('hai')
-        #self.spawnedVehicle.apply_control(self._control)
+    def applycontrol(self, data):
+        self._control.steer = data['Keyboard 1']['SteeringInput'] / 90
+        self._control.throttle = data['Keyboard 1']['ThrottleInput'] / 100
+        self._control.brake = data['Keyboard 1']['BrakeInput'] / 100
+        self._control.reverse = data['Keyboard 1']['Reverse']
+        self._control.hand_brake = data['Keyboard 1']['Handbrake']
+
+        self.spawnedVehicle.apply_control(self._control)

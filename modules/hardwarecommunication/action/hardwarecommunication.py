@@ -362,6 +362,9 @@ class Keyboard(BaseInput):
         # Handbrake
         self._data['Handbrake'] = self._handbrake
 
+        # Target Vehicle:
+        if self._carla_interface_data['vehicles']:
+            self._data['TargetVehicle'] = self._keyboard_tab.combo_target_vehicle.currentIndex()
         # self.old_nr_vehicles = new_nr_vehicles
         return self._data
 

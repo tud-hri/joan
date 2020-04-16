@@ -15,6 +15,7 @@ class CarlainterfaceWidget(Control):
         self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)), "carlainterfaceWidget.ui"))
 
         self.data = {}
+        self._data_from_hardware = {}
         self.writeNews(channel=self, news=self.data)
         self.is_connected = False
 
@@ -56,6 +57,14 @@ class CarlainterfaceWidget(Control):
     def do(self):
         self.data['vehicles'] = self.vehicles
         self.writeNews(channel=self, news=self.data)
+
+        self._data_from_hardware = self.readNews('modules.hardwarecommunication.widget.hardwarecommunication.HardwarecommunicationWidget')
+        for items in self.vehicles:
+            if items.spawned:
+                items.applycontrol(self._data_from_hardware)
+
+   
+        
 
     @QtCore.pyqtSlot(str)
     def _setmillis(self, millis):
