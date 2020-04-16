@@ -42,10 +42,8 @@ class HardwarecommunicationWidget(Control):
     # callback class is called each time a pulse has come from the Pulsar class instance
     def do(self):
         for key in self._inputlist:
-            try:
-                self._input_data[key] = self._inputlist[key].process()
-            except Exception as e:
-                pass
+            self._input_data[key] = self._inputlist[key].process()
+
 
     @QtCore.pyqtSlot(str)
     def _setmillis(self, millis):

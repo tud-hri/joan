@@ -95,7 +95,7 @@ if __name__ == '__main__':
 
     try:
         app = QtWidgets.QApplication(sys.argv)
-        #app.setStyleSheet(qdarkgraystyle.load_stylesheet())
+        # app.setStyleSheet(qdarkgraystyle.load_stylesheet())
         win = QtWidgets.QWidget()  # QMainWindow()
         win.setWindowTitle('JOAN')
         win.resize(300, 200)

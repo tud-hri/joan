@@ -124,7 +124,12 @@ class Keyboard(BaseInput):
         self._handbrake = False
         self._reverse = False
 
+        # nr vehicles
+        self._spawned_list = [None] * 10
+        self._already_added = [None] * 10
+        self.k = 0
         self.i = 0
+
 
         # Load the appropriate settings window and show it:
         self._settings_tab = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "UIs/keyboard_settings_ui.ui"))
@@ -151,6 +156,8 @@ class Keyboard(BaseInput):
         # Overwriting keypress events to handle keypresses for controlling
         self._parentWidget.window.keyPressEvent = self.key_press_event
         self._parentWidget.window.keyReleaseEvent = self.key_release_event
+
+        
 
     def settings_update_sliders(self):
         self._settings_tab.label_steer_sensitivity.setText(str(self._settings_tab.slider_steer_sensitivity.value()))
@@ -193,10 +200,6 @@ class Keyboard(BaseInput):
         self._settings_tab.slider_steer_sensitivity.setValue(self._steer_sensitivity)
         self._settings_tab.slider_throttle_sensitivity.setValue(self._throttle_sensitivity)
         self._settings_tab.slider_brake_sensitivity.setValue(self._brake_sensitivity)
-
-        # Nr vehicles
-        self._spawned_list = [None]
-        self._previous = [None]
 
     def settings_set_keys(self):
         self._settings_tab.btn_set_keys.setStyleSheet("background-color: lightgreen")
@@ -301,48 +304,35 @@ class Keyboard(BaseInput):
                 self._reverse = False
 
     def process(self):
-        
         # If there are cars in the simulation add them to the controllable car combobox
         self._carla_interface_data = (self._parentWidget.readNews('modules.carlainterface.widget.carlainterface.CarlainterfaceWidget'))
-        # Save old list values
-        if len(self._carla_interface_data['vehicles']) == 0:
-            self._spawned_list[0] = None
-
         for items in self._carla_interface_data['vehicles']:
-            if len(self._carla_interface_data['vehicles']) == 1:
-                self._spawned_list[0] = items.spawned
-            if len(self._carla_interface_data['vehicles']) < len(self._spawned_list):
-                self._spawned_list.pop(-1)
-                print('popped')
+            # if len(self._carla_interface_data['vehicles']) < len(self._spawned_list):
+            #     self._spawned_list.pop(-1)
+            #     print('popped')
             
-            if len(self._carla_interface_data['vehicles']) > len(self._spawned_list):
-                self._spawned_list.append(items.spawned)
-                print('appended')
-            
-            self._spawned_list[self.i] = items.spawned
-            self.i = self.i + 1
+            # if len(self._carla_interface_data['vehicles']) > len(self._spawned_list):
+            #     self._spawned_list.append(items.spawned)
+            #     print('appended')
+            if len(self._carla_interface_data['vehicles']) != 0:
+                self._spawned_list[self.i] = items.spawned
+                self.i = self.i + 1
 
-        self.i = 0
-        
-        print(self._previous, self._spawned_list)
-        self._previous = self._spawned_list
-        
-        
+        self. i = 0
 
-        
-    
-  
-        
-        # new_nr_vehicles = len(self._carla_interface_data['vehicles'])
-        # if (new_nr_vehicles - self.old_nr_vehicles > 0):
-        #     latest_id = self._carla_interface_data['vehicles'][-1].get_vehicle_id()
-        #     self._keyboard_tab.combo_target_vehicle.addItem(latest_id)
+        for spawns in self._spawned_list:
+            if not spawns and self._already_added[self.k]:
+                self._already_added[self.k] = None
+                self._keyboard_tab.combo_target_vehicle.removeItem(self.k)
 
-        # if (new_nr_vehicles - self.old_nr_vehicles < 0):
-        #     self._keyboard_tab.combo_target_vehicle.removeItem(new_nr_vehicles-1)
+            if spawns and not self._already_added[self.k]:
+                self._already_added[self.k] = True
+                self._keyboard_tab.combo_target_vehicle.addItem('Car ' + str(self.k +1))
 
-        
-        
+            self.k = self.k + 1
+
+        self.k = 0
+        #print(self._spawned_list, self._already_added)
 
         # Throttle:
         if(self._throttle and self._data['ThrottleInput'] < 100):
