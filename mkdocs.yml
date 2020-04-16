@@ -5,15 +5,13 @@ theme: readthedocs
 nav:
     - Home: 'index.md'
     - Setup:
-      - Setup on Windows: setup-windows.md
-      - Setup on Linux: setup-linux.md
+      - Setup on Windows: setup-carla-windows.md
+      - Setup on Linux: setup-carla-linux.md
+      - Setup JOAN: setup-joan.md
 
-    - JOAN:
+    - How to use JOAN:
       - Workflow: joan-workflow.md
       - Adding modules: joan-adding-modules.md
-
-    - Extra Instructions:
-      - Adding to system variables: sys-path.md
 
     - Contributing:
       - Guidelines: contributing-guidelines.md
