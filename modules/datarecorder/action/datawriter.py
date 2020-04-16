@@ -3,7 +3,7 @@ import io
 import csv
 
 class DataWriter(threading.Thread):
-    def __init__(self, news=None, channels=[], settings=None):
+    def __init__(self, news=None, channels=[], settingsObject=None):
         threading.Thread.__init__(self)
         self.filehandle = None
         self.dictWriter = None
@@ -11,8 +11,8 @@ class DataWriter(threading.Thread):
         self.channels = channels
 
         self.fieldnames = []
-        self.settingsObject = settings
-        self.settingsDict = None
+        self.settingsObject = settingsObject
+        self.settingsDict = {}
 
     def run(self):
         print(self.is_alive())

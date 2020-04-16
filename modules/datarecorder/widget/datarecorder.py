@@ -22,9 +22,12 @@ class DatarecorderWidget(Control):
         Control.__init__(self, *args, **kwargs)
 
         self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)), "datarecorder.ui"))
+        self.createSettings(module=self, file=os.path.join(os.path.dirname(os.path.realpath(__file__)), "datarecordersettings.json"))
+        self.settings = self.getModuleSettings(module='modules.datarecorder.widget.datarecorder.DatarecorderWidget')
+
         self.data = {}
         self.writeNews(channel=self, news=self.data)
-
+        
         self.millis = kwargs['millis']
 
         # creating a self.moduleStateHandler which also has the moduleStates in self.moduleStateHandler.states
@@ -33,7 +36,8 @@ class DatarecorderWidget(Control):
         self.masterStateHandler.stateChanged.connect(self.handlemasterstate)
 
         try:
-            self.action = DatarecorderAction(self.settings)
+            self.action = DatarecorderAction()
+            #self.action = DatarecorderAction(self.settings)
         except Exception as inst:
             print('De error bij de constructor van de widget is:    ', inst)
 
@@ -44,7 +48,6 @@ class DatarecorderWidget(Control):
         self.action.write()
 
     def editWidget(self):
-        currentSettings = self.settings.read()
         try:
             layout = self.widget.verticalLayout_items
 
@@ -74,6 +77,8 @@ class DatarecorderWidget(Control):
             newsCheckbox = {}
             moduleKey = '%s.%s' % (self.__class__.__module__, self.__class__.__name__)
             itemWidget = {}
+
+            currentSettings = self.settings and self.settings.read() or {'data': {}}
             for channel in self.getAvailableNewsChannels():
                 if channel != moduleKey:
                     if channel not in currentSettings['data'].keys():
@@ -136,8 +141,6 @@ class DatarecorderWidget(Control):
 
         # reads settings if available and expands the datarecorder widget
         try:
-            for y in self.getAvailableModuleStatePackages():
-                print(y)
             self.editWidget()
         except Exception as inst:
             print(inst)
@@ -166,6 +169,7 @@ class DatarecorderWidget(Control):
             print('handlemodulesettings', item.text())
             itemDict = {}
             itemDict[item.text()] = item.isChecked()
+            # self.getAvailableNewsChannels() means only modules with news will be there in the datarecorderSettings file
             self.settings.write(groupKey=moduleKey, item=itemDict, filter=self.getAvailableNewsChannels())
         except Exception as inst:
             print(inst)

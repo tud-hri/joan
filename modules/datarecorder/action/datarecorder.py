@@ -5,18 +5,20 @@ from datetime import datetime
 
 class DatarecorderAction(Control):
     def __init__(self, *args, **kwargs):
-        Control.__init__(self, settings=None, *args, **kwargs)
+        Control.__init__(self, *args, **kwargs)
         self.moduleStates = None
         self.moduleStateHandler = None
+        self.datarecorderSettings = None
         try:
             statePackage = self.getModuleStatePackage(
-                module='modules.datarecorder.widget.daterecorder.DatarecorderWidget')
+                module='modules.datarecorder.widget.datarecorder.DatarecorderWidget')
             self.moduleStates = statePackage['moduleStates']
             self.moduleStateHandler = statePackage['moduleStateHandler']
+            self.datarecorderSettings = self.getModuleSettings(module='modules.datarecorder.widget.datarecorder.DatarecorderWidget')
         except Exception:
             pass
         self.filename = ''
-        self.dataWriter = DataWriter(news=self.getAllNews(), channels=self.getAvailableNewsChannels(), settings=settings)
+        self.dataWriter = DataWriter(news=self.getAllNews(), channels=self.getAvailableNewsChannels(), settingsObject=self.datarecorderSettings)
 
     def initialize(self):
         self.filename = self._createFilename(extension='csv')

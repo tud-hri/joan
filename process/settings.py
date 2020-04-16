@@ -18,7 +18,7 @@ import json
 import copy
 
 
-class Settings:
+class ModuleSettings:
     '''
     writes and reads settings in JSON format
     '''
@@ -60,7 +60,7 @@ class Settings:
                 with open(self._file, 'w') as settingsFile:
                     json.dump(self._settings, settingsFile, sort_keys=True, indent=4)
             except Exception as inst:
-                print(inst)
+                print('in write of moduleSettings', inst)
                 return False
             return True
         else:
