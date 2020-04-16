@@ -8,7 +8,7 @@ from PyQt5 import QtCore, QtWidgets, uic
 from process import Control
 
 try:
-    sys.path.append(glob.glob('../../carla2/carla/PythonAPI/carla/dist/carla-*%d.%d-%s.egg' % (
+    sys.path.append(glob.glob('../../carla/PythonAPI/carla/dist/carla-*%d.%d-%s.egg' % (
         sys.version_info.major,
         sys.version_info.minor,
         'win-amd64' if os.name == 'nt' else 'linux-x86_64'))[0])
@@ -95,9 +95,11 @@ class Carlavehicle(Carlacommunication):
 
 
     def destroyTab(self):
+        self.destroyCar()
+        self._spawned = False
         self._parentWidget.layOut.removeWidget(self._vehicleTab)
         self._vehicleTab.setParent(None)
-        self.destroyCar()
+
 
     def spawnCar(self):
         self._BP = random.choice(Carlacommunication.BlueprintLibrary.filter("vehicle." + str(self._vehicleTab.comboCartype.currentText())))
@@ -118,17 +120,18 @@ class Carlavehicle(Carlacommunication):
 
     def destroyCar(self):
         try:  
+            self._spawned = False
             self.spawnedVehicle.destroy()
             self._vehicleTab.btnSpawn.setEnabled(True)
             self._vehicleTab.btnDestroy.setEnabled(False)
             self._vehicleTab.spinSpawnpoints.setEnabled(True)
-            self._spawned = False
         except Exception as inst:
+            self._spawned = True
             print('Could not destroy spawn car:', inst)
             self._vehicleTab.btnSpawn.setEnabled(False)
             self._vehicleTab.btnDestroy.setEnabled(True)
             self._vehicleTab.spinSpawnpoints.setEnabled(False)
-            self._spawned = True
+            
 
     def getControldata(self):
         pass

@@ -38,16 +38,14 @@ class HardwarecommunicationWidget(Control):
         self.writeNews(channel=self, news=self._input_data)
 
         self.installEventFilter(self)
-   
-    def eventFilter(self,event):
-        print(event)
+
     # callback class is called each time a pulse has come from the Pulsar class instance
     def do(self):
         for key in self._inputlist:
             try:
                 self._input_data[key] = self._inputlist[key].process()
             except Exception as e:
-                print(e)
+                pass
 
     @QtCore.pyqtSlot(str)
     def _setmillis(self, millis):

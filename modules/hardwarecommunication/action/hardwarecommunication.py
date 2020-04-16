@@ -124,6 +124,8 @@ class Keyboard(BaseInput):
         self._handbrake = False
         self._reverse = False
 
+        self.i = 0
+
         # Load the appropriate settings window and show it:
         self._settings_tab = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "UIs/keyboard_settings_ui.ui"))
         self._settings_tab.show()
@@ -193,7 +195,8 @@ class Keyboard(BaseInput):
         self._settings_tab.slider_brake_sensitivity.setValue(self._brake_sensitivity)
 
         # Nr vehicles
-        self.old_nr_vehicles = 0
+        self._spawned_list = [None]
+        self._previous = [None]
 
     def settings_set_keys(self):
         self._settings_tab.btn_set_keys.setStyleSheet("background-color: lightgreen")
@@ -298,10 +301,35 @@ class Keyboard(BaseInput):
                 self._reverse = False
 
     def process(self):
+        
         # If there are cars in the simulation add them to the controllable car combobox
         self._carla_interface_data = (self._parentWidget.readNews('modules.carlainterface.widget.carlainterface.CarlainterfaceWidget'))
+        # Save old list values
+        if len(self._carla_interface_data['vehicles']) == 0:
+            self._spawned_list[0] = None
+
         for items in self._carla_interface_data['vehicles']:
-            print(items.spawned)
+            if len(self._carla_interface_data['vehicles']) == 1:
+                self._spawned_list[0] = items.spawned
+            if len(self._carla_interface_data['vehicles']) < len(self._spawned_list):
+                self._spawned_list.pop(-1)
+                print('popped')
+            
+            if len(self._carla_interface_data['vehicles']) > len(self._spawned_list):
+                self._spawned_list.append(items.spawned)
+                print('appended')
+            
+            self._spawned_list[self.i] = items.spawned
+            self.i = self.i + 1
+
+        self.i = 0
+        
+        print(self._previous, self._spawned_list)
+        self._previous = self._spawned_list
+        
+        
+
+        
     
   
         
