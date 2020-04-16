@@ -22,18 +22,19 @@ class JoanModuleAction(QtCore.QObject):
         self.singleton_news = News({})
 
         # initialize states and state handler
-        self.moduleStates = module.states()
-        self.moduleStateHandler = StateHandler(firstState=MasterStates.VOID, statesDict=self.moduleStates.getStates())
-        module_state_package = {'moduleStates': self.moduleStates, 'moduleStateHandler': self.moduleStateHandler}
+        self.master_state_handler = master_state_handler
+        self.module_states = module.states()
+        self.module_state_handler = StateHandler(firstState=MasterStates.VOID, statesDict=self.module_states.getStates())
+        module_state_package = {'module_states': self.module_states, 'module_state_handler': self.module_state_handler}
         self.singleton_status = Status({module: module_state_package})
-        self.handle_module_state(self.moduleStateHandler.state)
+        self.handle_module_state(self.module_state_handler.state)
 
         # initialize own data and create channel in news
         self.data = {}
         self.write_news(news=self.data)
 
-        self.moduleStateHandler.stateChanged.connect(self.handle_module_state)
-        master_state_handler.stateChanged.connect(self.handle_master_state)
+        self.module_state_handler.stateChanged.connect(self.handle_module_state)
+        self.master_state_handler.stateChanged.connect(self.handle_master_state)
 
     def do(self):
         pass
@@ -54,9 +55,9 @@ class JoanModuleAction(QtCore.QObject):
         Handle the state transition by updating the status label and have the
         GUI reflect the possibilities of the current state.
         """
-        state_as_state = self.masterStateHandler.getState(state)  # ensure we have the State object (not the int)
+        state_as_state = self.master_state_handler.getState(state)  # ensure we have the State object (not the int)
         # emergency stop
-        if state_as_state == self.moduleStates.ERROR:
+        if state_as_state == self.module_states.ERROR:
             self.module_action.stop_pulsar()
 
     def handle_module_state(self, state):
@@ -64,14 +65,15 @@ class JoanModuleAction(QtCore.QObject):
         Handle the state transition by updating the status label and have the
         GUI reflect the possibilities of the current state.
         """
-        state_as_state = self.moduleStateHandler.getState(state)  # ensure we have the State object (not the int)
+        state_as_state = self.module_state_handler.getState(state)  # ensure we have the State object (not the int)
+        
         # emergency stop
-        if state_as_state == self.moduleStates.ERROR:
+        if state_as_state == self.module_states.ERROR:
             self.stop_pulsar()
 
     def write_news(self, news: dict):
         """write new data to channel"""
-        assert type(news) == dict, 'argument "news" should be of type dict and will contain news(=data) of this channel'
+        assert isinstance(news, dict), 'argument "news" should be of type dict and will contain news(=data) of this channel'
 
         self.singleton_news = News({self.module: news})
 

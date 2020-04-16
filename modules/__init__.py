@@ -10,4 +10,5 @@ from .trajectoryrecorder.widget.trajectoryrecorder import TrajectoryrecorderWidg
 #from .steeringcommunication.widget.steeringcommunication import SteeringcommunicationWidget
 #from .template.widget.template import TemplateWidget
 #from .interface.widget.interface import InterfaceWidget
-from .joanmenu.widget.joanmenu import JOANMenuWidget
+from .joanmenu.widget.joanmenu import JOANMenuWindow
+from .joanmenu.action.joanmenu import JOANMenuAction

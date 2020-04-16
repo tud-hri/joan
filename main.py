@@ -10,8 +10,8 @@ import traceback
 
 from PyQt5 import QtWidgets
 
-# from modules.joanmenu import JOANMenuWidget
 from modules import *
+from modules import JOANMenuAction, JOANMenuWindow
 from modules.joanmodules import JOANModules
 from process import Status
 from process import MasterStates
@@ -19,14 +19,15 @@ from process import MasterStates
 if __name__ == '__main__':
     APP = QtWidgets.QApplication(sys.argv)
 
-    JOANMENU = JOANMenuWidget()
-    JOANMENU._show()
+    JOANMENUACTION = JOANMenuAction()
+    JOANMENUWINDOW = JOANMenuWindow(JOANMENUACTION)
+    JOANMENUWINDOW.show()
 
     # adding modules (instantiates them too)
-    JOANMENU.add_module(JOANModules.TEMPLATE)
-    JOANMENU.add_module(JOANModules.DATA_RECORDER)
+    JOANMENUWINDOW.add_module(JOANModules.TEMPLATE)
+    JOANMENUWINDOW.add_module(JOANModules.DATA_RECORDER)
     # JOANMENU.add_module(JOANModules.FEED_BACK_CONTROLLER)
-    JOANMENU.add_module(JOANModules.CARLA_INTERFACE)
+    JOANMENUWINDOW.add_module(JOANModules.CARLA_INTERFACE)
 
     # # printing widget folders
     # WIDGETFOLDERS = os.listdir(os.path.join(os.path.dirname(os.path.realpath(__file__)), "modules"))

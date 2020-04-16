@@ -1,33 +1,27 @@
 """Action class for JOAN menu"""
 import os
 import sys
-from PyQt5 import QtWidgets
+from PyQt5 import QtCore, QtWidgets
 
 from modules.joanmodules import JOANModules
-from process import Control
+from process import Status, News
 
 
-class JOANMenuAction(Control):
+class JOANMenuAction(QtCore.QObject):
     """Action class for JOANMenuWidget"""
 
-    def __init__(self, widget, *args, **kwargs):
-        super().__init__()
+    def __init__(self):
+        super(QtCore.QObject, self).__init__()
 
-        # self.moduleStates = None
-        # self.moduleStateHandler = None
-        # try:
-        #     statePackage = self.getModuleStatePackage(module='modules.joanmenu.widget.joanmenu.JOANMenuWidget')
-        #     self.moduleStates = statePackage['moduleStates']
-        #     self.moduleStateHandler = statePackage['moduleStateHandler']
-        # except Exception as e:
-        #     print(e)
+        # status, statehandlers and news
+        self.singleton_status = Status({})
+        self.master_state_handler = self.singleton_status.masterStateHandler
+        self.master_states = self.singleton_status.masterStates
+        self.master_state_handler.stateChanged.connect(self.handle_master_state)
 
-        self.masterStateHandler.stateChanged.connect(self.handle_master_state)
-
-        self._widget = widget
-
-        self._data = {}
-        self.writeNews(channel=self, news=self._data)
+        self.singleton_news = News({})
+        # self._data = {}
+        # self.write_news(news=self._data)
 
         # path to modules directory
         self.path_modules = os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../", "modules"))
@@ -66,11 +60,11 @@ class JOANMenuAction(Control):
             # TODO Load the default settings for this module here, this can be from a saved settings file or from another source
             # millis = default_millis_for_this_module
 
-            module_action = module.action(self.masterStateHandler, millis=100)
-            module_dialog = module.dialog(module_action, self.masterStateHandler, parent=parent)
+            module_action = module.action(self.master_state_handler, millis=100)
+            module_dialog = module.dialog(module_action, self.master_state_handler, parent=parent)
 
             module_widget = module_dialog  # to keep the names equal, should be removed when the if template statement is removed
-        else: # module has old style TODO: remove statements below when moving to new style
+        else:  # module has old style TODO: remove statements below when moving to new style
             module_action = None
 
             module_widget = module.dialog()
@@ -81,8 +75,8 @@ class JOANMenuAction(Control):
         self._instantiated_modules[module] = module_action if module_action else module_widget  # TODO remove if else statement when moving to new style
 
         # update news
-        self._data['instantiated_modules'] = self._instantiated_modules
-        self.writeNews(channel=self, news=self._data)
+        # self._data['instantiated_modules'] = self._instantiated_modules
+        # self.write_news(news=self._data)
         
         return module_widget, module_action
 
@@ -91,18 +85,22 @@ class JOANMenuAction(Control):
 
         del self._instantiated_modules[module]
 
+    # def write_news(self, news: dict):
+    #     """write new data to channel"""
+    #     assert type(news) == dict, 'argument "news" should be of type dict and will contain news(=data) of this channel'
+
+    #     self.singleton_news = News({self.module: news})
+
     def handle_master_state(self, state):
         """
         Handle the state transition by updating the status label and have the
         GUI reflect the possibilities of the current state.
         """
         try:
-            state_as_state = self.masterStateHandler.getState(state)  # ensure we have the State object (not the int)
-
-            # self._main_widget.lblMasterState.setText(state_as_state.name)
+            state_as_state = self.master_state_handler.getState(state)  # ensure we have the State object (not the int)
 
             # emergency stop
-            if state_as_state == self.masterStates.ERROR:
+            if state_as_state == self.master_states.ERROR:
                 self.stop()
 
         except Exception as inst:
@@ -110,20 +108,13 @@ class JOANMenuAction(Control):
 
     def emergency(self):
         """Emergency button processing"""
-        self.masterStateHandler.requestStateChange(self.masterStates.ERROR)
+        self.master_state_handler.requestStateChange(self.master_states.ERROR)
 
     def quit(self):
-        """Quit button processing"""
-        reply = QtWidgets.QMessageBox.question(
-            self.window, 'Quit JOAN', 'Are you sure?',
-            QtWidgets.QMessageBox.Yes, QtWidgets.QMessageBox.No
-        )
-
-        if reply == QtWidgets.QMessageBox.Yes:
-            self.app_is_quiting.emit()
-            sys.exit()
+        self.master_state_handler.requestStateChange(self.master_states.QUIT)
 
     @property
     def instantiated_modules(self):
         """getter for self._instantiated_modules, only allow get, not set"""
         return self._instantiated_modules
+

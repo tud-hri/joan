@@ -27,7 +27,7 @@ class JoanModuleDialog(QtWidgets.QDialog):
         self.setWindowTitle(str(module))
         self.state_widget.inputTickMillis.setPlaceholderText(str(self.module_action.millis))
 
-        self.module_action.moduleStateHandler.stateChanged.connect(self.handle_module_state)
+        self.module_action.module_state_handler.stateChanged.connect(self.handle_module_state)
         master_state_handler.stateChanged.connect(self.handle_master_state)
         self.master_state_handler = master_state_handler
 
@@ -60,12 +60,12 @@ class JoanModuleDialog(QtWidgets.QDialog):
         Handle the state transition by updating the status label and have the
         GUI reflect the possibilities of the current state.
         """
-        state_as_state = self.module_action.moduleStateHandler.getState(state)  # ensure we have the State object (not the int)
+        state_as_state = self.module_action.module_state_handler.getState(state)  # ensure we have the State object (not the int)
 
         # update the state label
         self.state_widget.lbModuleState.setText(str(state_as_state.name))
 
-        if state_as_state == self.module_action.moduleStates.TEMPLATE.RUNNING:
+        if state_as_state == self.module_action.module_states.TEMPLATE.RUNNING:
             self.state_widget.btnStart.setStyleSheet("background-color: green")
         else:
             self.state_widget.btnStart.setStyleSheet("background-color: none")
