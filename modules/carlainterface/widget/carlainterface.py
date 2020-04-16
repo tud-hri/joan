@@ -24,7 +24,7 @@ class CarlainterfaceWidget(Control):
         self.masterStateHandler.stateChanged.connect(self.handlemasterstate)
 
         self.moduleStateHandler.requestStateChange(self.moduleStates.SIMULATION)
-        self.widget.spinVehicles.setRange(0, 10)
+        self.widget.spinVehicles.setRange(0, 1)
         self.widget.spinVehicles.lineEdit().setReadOnly(True)
 
         self.widget.spinVehicles.valueChanged.connect(self.update_cars)
