@@ -5,7 +5,7 @@ from datetime import datetime
 
 class DatarecorderAction(Control):
     def __init__(self, *args, **kwargs):
-        Control.__init__(self, *args, **kwargs)
+        Control.__init__(self, settings=None, *args, **kwargs)
         self.moduleStates = None
         self.moduleStateHandler = None
         try:
@@ -16,7 +16,7 @@ class DatarecorderAction(Control):
         except Exception:
             pass
         self.filename = ''
-        self.dataWriter = DataWriter(news=self.getAllNews(), channels=self.getAvailableNewsChannels())
+        self.dataWriter = DataWriter(news=self.getAllNews(), channels=self.getAvailableNewsChannels(), settings=settings)
 
     def initialize(self):
         self.filename = self._createFilename(extension='csv')

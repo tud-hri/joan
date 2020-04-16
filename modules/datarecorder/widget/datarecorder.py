@@ -3,7 +3,7 @@ import os
 from PyQt5 import QtCore
 from modules.datarecorder.action.states import DatarecorderStates
 from modules.datarecorder.action.datarecorder import DatarecorderAction
-from modules.datarecorder.action.datarecordersettings import DatarecorderSettings
+#from modules.datarecorder.action.datarecordersettings import DatarecorderSettings
 
 # for editWidgets
 from PyQt5 import QtWidgets, QtGui
@@ -33,11 +33,11 @@ class DatarecorderWidget(Control):
         self.masterStateHandler.stateChanged.connect(self.handlemasterstate)
 
         try:
-            self.action = DatarecorderAction()
+            self.action = DatarecorderAction(self.settings)
         except Exception as inst:
             print('De error bij de constructor van de widget is:    ', inst)
 
-        self.settings = DatarecorderSettings()
+        #self.settings = DatarecorderSettings()
 
     def do(self):
         # handling is done in the action part
@@ -76,8 +76,8 @@ class DatarecorderWidget(Control):
             itemWidget = {}
             for channel in self.getAvailableNewsChannels():
                 if channel != moduleKey:
-                    if channel not in currentSettings['modules'].keys():
-                        currentSettings['modules'].update({channel: {}})
+                    if channel not in currentSettings['data'].keys():
+                        currentSettings['data'].update({channel: {}})
                     newsCheckbox[channel] = QtWidgets.QLabel(channel.split('.')[1])
                     newsCheckbox[channel].setFont(labelFont)
                     news = self.readNews(channel)
@@ -97,12 +97,12 @@ class DatarecorderWidget(Control):
                             vlay.addWidget(itemWidget[item])
 
                             # start set checkboxes from currentSettings
-                            if item not in currentSettings['modules'][channel].keys():
+                            if item not in currentSettings['data'][channel].keys():
                                 itemWidget[item].setChecked(True)
                                 itemWidget[item].stateChanged.emit(True)
                             else:
-                                itemWidget[item].setChecked(currentSettings['modules'][channel][item])
-                                itemWidget[item].stateChanged.emit(currentSettings['modules'][channel][item])
+                                itemWidget[item].setChecked(currentSettings['data'][channel][item])
+                                itemWidget[item].stateChanged.emit(currentSettings['data'][channel][item])
                             # end set checkboxes from currentSettings
 
             vlay.addStretch()
@@ -163,10 +163,13 @@ class DatarecorderWidget(Control):
 
     def handlemodulesettings(self, moduleKey, item):
         try:
-            datarecorderSettings = DatarecorderSettings()
-            datarecorderSettings.write(moduleKey=moduleKey, item=item)
+            print('handlemodulesettings', item.text())
+            itemDict = {}
+            itemDict[item.text()] = item.isChecked()
+            self.settings.write(groupKey=moduleKey, item=itemDict, filter=self.getAvailableNewsChannels())
         except Exception as inst:
             print(inst)
+
 
     def handlemodulestate(self, state):
         """

@@ -130,7 +130,8 @@ if __name__ == '__main__':
         widgetfolders = os.listdir(path)
         for widgetfolder in widgetfolders:
             # if widgetfolder not in ('__pycache__', 'template', '__init__.py'):
-            if widgetfolder not in ('__pycache__', 'interface', 'template', 'menu', '__init__.py'):
+            if widgetfolder not in ('__pycache__', 'interface', 'hardwarecommunication', 'template', 'menu', '__init__.py'):
+            #if widgetfolder not in ('__pycache__', 'interface', 'template', 'menu', '__init__.py'):
                 module = '%s%s' % (widgetfolder.title(), 'Widget')
                 if module:
                     instantiated = Instantiate(module)

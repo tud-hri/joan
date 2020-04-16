@@ -6,6 +6,7 @@ from PyQt5 import uic, QtCore
 from signals import Pulsar
 from .statehandler import StateHandler, MasterStates
 from .mainmodulewidget import MainModuleWidget
+from .settings import Settings
 
 
 class News:
@@ -79,6 +80,8 @@ class Control(Pulsar):
 
         # window is a QMainWindow, and the container for all widgets
         self.window = MainModuleWidget()
+
+        self.settings = Settings(file=os.path.join(os.path.dirname(ui), 'modulesettings.json'))
 
         self.stateWidget = self._getGui(os.path.join(os.path.dirname(
             os.path.realpath(__file__)), "../resources/statewidget.ui"))
