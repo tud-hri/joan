@@ -16,6 +16,7 @@ class HardwarecommunicationAction(Control):
         HardwarecommunicationAction._nr_of_keyboards = 0
         HardwarecommunicationAction._nr_of_joysticks = 0
         HardwarecommunicationAction._nr_of_sensodrives = 0
+
         
 
     def selected_input(self):
@@ -144,6 +145,7 @@ class Keyboard(BaseInput):
         # Connect buttons of settings menu to methods:
         self._settings_tab.btn_set_keys.clicked.connect(self.settings_set_keys)
         self._settings_tab.button_box_settings.button(self._settings_tab.button_box_settings.RestoreDefaults).clicked.connect(self.settings_set_default_values)
+        self._settings_tab.button_box_settings.button(self._settings_tab.button_box_settings.Save).clicked.connect(self.settings_set_newvalues)
         self._settings_tab.keyPressEvent = self.settings_key_press_event
         self._settings_tab.slider_steer_sensitivity.valueChanged.connect(self.settings_update_sliders)
         self._settings_tab.slider_throttle_sensitivity.valueChanged.connect(self.settings_update_sliders)
@@ -163,6 +165,25 @@ class Keyboard(BaseInput):
         self._settings_tab.label_steer_sensitivity.setText(str(self._settings_tab.slider_steer_sensitivity.value()))
         self._settings_tab.label_throttle_sensitivity.setText(str(self._settings_tab.slider_throttle_sensitivity.value()))
         self._settings_tab.label_brake_sensitivity.setText(str(self._settings_tab.slider_brake_sensitivity.value()))
+
+
+    def settings_set_newvalues(self):
+        self._min_steer = int(self._settings_tab.line_edit_min_steer.text())
+        self._max_steer = int(self._settings_tab.line_edit_max_steer.text())
+        self._autocenter = self._settings_tab.checkbox_autocenter.isChecked()
+        self._steer_sensitivity = self._settings_tab.slider_steer_sensitivity.value()
+        self._brake_sensitivity = self._settings_tab.slider_brake_sensitivity.value()
+        self._throttle_sensitivity = self._settings_tab.slider_throttle_sensitivity.value()
+    
+
+
+ 
+
+
+
+
+
+
 
     def settings_set_default_values(self):
         # Keys
@@ -332,7 +353,7 @@ class Keyboard(BaseInput):
             self.k = self.k + 1
 
         self.k = 0
-        #print(self._spawned_list, self._already_added)
+
 
         # Throttle:
         if(self._throttle and self._data['ThrottleInput'] < 100):

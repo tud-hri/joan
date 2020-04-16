@@ -42,7 +42,10 @@ class HardwarecommunicationWidget(Control):
     # callback class is called each time a pulse has come from the Pulsar class instance
     def do(self):
         for key in self._inputlist:
-            self._input_data[key] = self._inputlist[key].process()
+            try:
+                self._input_data[key] = self._inputlist[key].process()
+            except Exception as inst:
+                print("Error in Do of hardware comm is:", inst)
 
 
     @QtCore.pyqtSlot(str)

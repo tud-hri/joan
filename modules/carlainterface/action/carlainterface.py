@@ -139,7 +139,7 @@ class Carlavehicle(Carlacommunication):
 
 
     def applycontrol(self, data):
-        self._control.steer = data['Keyboard 1']['SteeringInput'] / 90
+        self._control.steer = data['Keyboard 1']['SteeringInput'] / 450
         self._control.throttle = data['Keyboard 1']['ThrottleInput'] / 100
         self._control.brake = data['Keyboard 1']['BrakeInput'] / 100
         self._control.reverse = data['Keyboard 1']['Reverse']
