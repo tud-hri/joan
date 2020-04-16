@@ -85,7 +85,7 @@ class BaseInput():
 
         self.currentInput = 'None'
 
-        #self._available_vehicles = {}
+        #self._carla_interface_data = {}
 
         # #already list the input devices here:
         # for self._devices in hid.enumerate():
@@ -114,7 +114,7 @@ class Keyboard(BaseInput):
         self._keyboard_tab = keyboard_tab
         self._parentWidget.widget.hardware_list_layout.addWidget(self._keyboard_tab)
 
-        self._available_vehicles = {}
+        self._carla_interface_data = {}
 
         # Initialize needed variables:
         self._throttle = False
@@ -299,14 +299,19 @@ class Keyboard(BaseInput):
 
     def process(self):
         # If there are cars in the simulation add them to the controllable car combobox
-        self._available_vehicles = (self._parentWidget.readNews('modules.carlainterface.widget.carlainterface.CarlainterfaceWidget'))
-        new_nr_vehicles = len(self._available_vehicles['vehicles'])
-        if (new_nr_vehicles - self.old_nr_vehicles > 0):
-            latest_id = self._available_vehicles['vehicles'][-1].get_vehicle_id()
-            self._keyboard_tab.combo_target_vehicle.addItem(latest_id)
+        self._carla_interface_data = (self._parentWidget.readNews('modules.carlainterface.widget.carlainterface.CarlainterfaceWidget'))
+        for items in self._carla_interface_data['vehicles']:
+            print(items.spawned)
+    
+  
+        
+        # new_nr_vehicles = len(self._carla_interface_data['vehicles'])
+        # if (new_nr_vehicles - self.old_nr_vehicles > 0):
+        #     latest_id = self._carla_interface_data['vehicles'][-1].get_vehicle_id()
+        #     self._keyboard_tab.combo_target_vehicle.addItem(latest_id)
 
-        if (new_nr_vehicles - self.old_nr_vehicles < 0):
-            self._keyboard_tab.combo_target_vehicle.removeItem(new_nr_vehicles-1)
+        # if (new_nr_vehicles - self.old_nr_vehicles < 0):
+        #     self._keyboard_tab.combo_target_vehicle.removeItem(new_nr_vehicles-1)
 
         
         
@@ -339,7 +344,7 @@ class Keyboard(BaseInput):
         # Handbrake
         self._data['Handbrake'] = self._handbrake
 
-        self.old_nr_vehicles = new_nr_vehicles
+        # self.old_nr_vehicles = new_nr_vehicles
         return self._data
 
 

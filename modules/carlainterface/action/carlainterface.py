@@ -78,6 +78,7 @@ class Carlavehicle(Carlacommunication):
         self._vehicleTab = uic.loadUi(uifile = os.path.join(os.path.dirname(os.path.realpath(__file__)),"vehicletab.ui"))
         self._parentWidget.layOut.addWidget(self._vehicleTab)
         self._vehicleTab.groupCar.setTitle('Car ' + str(carnr+1))
+        self._spawned = False
 
         self._vehicleTab.spinSpawnpoints.setRange(0, Carlacommunication.nrSpawnPoints)
         self._vehicleTab.spinSpawnpoints.lineEdit().setReadOnly(True)
@@ -87,6 +88,11 @@ class Carlavehicle(Carlacommunication):
         self._vehicleTab.btnDestroy.clicked.connect(self.destroyCar)
         for item in Carlacommunication.tags:
             self._vehicleTab.comboCartype.addItem(item)
+
+    @property
+    def spawned(self):
+        return self._spawned
+
 
     def destroyTab(self):
         self._parentWidget.layOut.removeWidget(self._vehicleTab)
@@ -102,11 +108,13 @@ class Carlavehicle(Carlacommunication):
             self._vehicleTab.btnSpawn.setEnabled(False)
             self._vehicleTab.btnDestroy.setEnabled(True)
             self._vehicleTab.spinSpawnpoints.setEnabled(False)
+            self._spawned = True
         except Exception as inst:
             print('Could not spawn car:', inst)
             self._vehicleTab.btnSpawn.setEnabled(True)
             self._vehicleTab.btnDestroy.setEnabled(False)
             self._vehicleTab.spinSpawnpoints.setEnabled(True)
+            self._spawned = False
 
     def destroyCar(self):
         try:  
@@ -114,11 +122,13 @@ class Carlavehicle(Carlacommunication):
             self._vehicleTab.btnSpawn.setEnabled(True)
             self._vehicleTab.btnDestroy.setEnabled(False)
             self._vehicleTab.spinSpawnpoints.setEnabled(True)
+            self._spawned = False
         except Exception as inst:
             print('Could not destroy spawn car:', inst)
             self._vehicleTab.btnSpawn.setEnabled(False)
             self._vehicleTab.btnDestroy.setEnabled(True)
             self._vehicleTab.spinSpawnpoints.setEnabled(False)
+            self._spawned = True
 
     def getControldata(self):
         pass
