@@ -4,6 +4,7 @@ These instructions are complete and are heavily based on the awesome documentati
 
 ---
 ## Introduction
+
 In order to properly setup the simulation software on Windows several packages and steps are required, which will be elaborated upon in this section.
 
 !!! Note
@@ -11,6 +12,7 @@ In order to properly setup the simulation software on Windows several packages a
 
 ---    
 ## Hardware Requirements
+
 * __x64 system.__ The simulator should run in any 64 bits Windows system.  
 * __50GB disk space.__ Installing all the software needed and CARLA will require quite a lot of space. Make sure to have about 50GB of space (especially since you will also need a visual studio 2017 install)
 * __An adequate GPU.__ CARLA aims for realistic simulations, so the server needs at least a 4GB GPU. If VR is required a Turing based GPU (for example the RTX branch of NVIDIA is highly recommended!)
@@ -20,6 +22,7 @@ In order to properly setup the simulation software on Windows several packages a
 ## Required Software 
 
 ### Before you continue
+
 Please make sure you have the following programs installed before continuing. If you will be installing them now, please read the instructions below carefully to prevent problems later on in the installation process.
 
 * __[CMake](https://cmake.org/download/)__ *A small software package to make the CARLA build can compile C-code.* Please follow the link, scroll down and download the "Windows win64-x64 Installer" (there is no need to download the source). When installing select the option "Add CMake to the system `PATH` for all users"
@@ -30,18 +33,23 @@ Please make sure you have the following programs installed before continuing. If
     When you already have installed versions of the above mentioned software please make sure that the binary folders are added to the system's `PATH` variable! If you don't know how to do so, check 'Adding to System Variables'. If you have followed the instructions above, only make has to be added to the `PATH` manually.
 
 ### Visual Studio 2017
+
 [Visual studio 2017](https://visualstudio.microsoft.com/vs/older-downloads/) is used as main building tool for the CARLA simulator. Make sure to use the 2017 version, newer or older version will not work. There two approaches you can follow: (1) install the build tools (requires less disk space) or (2) install VS2017 community edition.
 
 !!! Important
     Other Visual Studio versions may conflicts later down the line. Even if these have been uninstalled, some registers may persist. To completely clean Visual Studio from the computer, go to `Program Files (x86)\Microsoft Visual Studio\Installer\resources\app\layout` and run `.\InstallCleanup.exe -full`
 
 #### Approach 1: Build tools
+
 For building CARLA, only the VS 2017 and .NET build tools are required, which requires significantly less disk space then a full version of Visual Studio. The build tools can be downloaded and installed by following the [link](https://visualstudio.microsoft.com/vs/older-downloads/) above. You need to log in with your Microsoft account (Hotmail, Live, etc). Please make sure to download the "Build Tools for Visual Studio 2017 (version 15.9)" executable (Check Visual Studio 2017 (version 15.9) under "Filter by product family"). Download and run the installer. 
 
 In the installer, select the "VS 2017 build tools" and ".NET build tools" checkboxes in the left pane of the visual studio installer and select all the default options plus "Windows 8.1 SDK" in the column on the right. See the GIF below"
 ![install options](gifs/MSVC-installer-selectpackages.gif)
 
 #### Approach 2: Visual Studio 2017 community edition
+
+Alternatively, you can install the full Visual Studio community edition, this is a complete code editor but it will require some disk space. Download the Visual 2017 Studio Community edition installer by following the link above, again this will require creating an account and navigation the extensive downloads list. 
+When installing please make sure you install it with the following properties:
 
 Alternatively, you can install the full Visual Studio community edition, this is a complete code editor but it will require some disk space. Download the Visual 2017 Studio Community edition installer [here](https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=Community&rel=15). 
 When installing please make sure you install it with the following properties in Visual Studio Installer:
@@ -51,6 +59,7 @@ When installing please make sure you install it with the following properties in
 ![alt text](imgs/commandPrompt.png "x64 Command prompt")
 
 ### Unreal Engine 4.24
+
 Go to __[Unreal Engine](https://www.unrealengine.com/download)__ and download the Epic Games Launcher. You will have to create an Epic Games account. In the Epic Games launcher go to 'unreal engine' in the left menu bar and then to 'library' and you should see something like this:
 ![alt text](imgs/epicGamesMenu.png "Epic Games Menu")
 Download Unreal Engine 4.24.x and use the default install settings. Make sure to run it in order to check that everything was properly installed. Also, when right-clicking on `CarlaUE3.uproject` in `carla\Unreal\CarlaUE4`, you should see an option to Generate Visual Studio project files (but don't click it).
@@ -58,8 +67,9 @@ Download Unreal Engine 4.24.x and use the default install settings. Make sure to
 !!! Note
     If you get an error while installing the Unreal engine stating you do not have permission to install to ... (error code like DP-06), exit the Epic Games installer. Also make sure to complete quit the program (check in the system tray; is the Epic Game icon still there? Right-click &rarr; Exit). Then, run the Epic Game installer as administrator (right-click on Epic Game installer &rarr; Run as administrator). This should enable you to start the install.
 
-
+    
 ### Python3 x64
+
  Install python 3 and __make sure you get the x64 version__ else it will not work, there is even some speculation that if you have a x32 version installed it can cause conflicts so its best to only have x64. At the time of writing this guide the working version of python is __[Python 3.8.2](https://www.python.org/downloads/release/python-382/)__
 
 To check if we can run Python from the command line. And if the python command links to the correct version of Python, it might not if you have multiple versions of Python installed. Open a command line window and type:
@@ -82,11 +92,12 @@ Please not the >>> symbols indicating that you are now within a python environme
     Only use python 3, preferably python 3.8. Installing python 2.7 will be a waste of your time ;-)
 
 ### Python editors
+
 We recommend installing __[Visual Studio Code](https://code.visualstudio.com/)__ as your python editor. __[PyCharm](https://www.jetbrains.com/pycharm/)__ is a good alternative.
 
 
 ---
-## Building and installing CARLA and the CARLA PythonAPI
+## Building and installing CARLA & the CARLA PythonAPI
 
 Before we start putting in commands in the recently setup x64 VS command prompt it is important to double check if you have all necessary software, and have it installed properly before you read on.
 The build and install of the bare bones CARLA simulator can be divided in the following steps:
@@ -102,6 +113,7 @@ The build and install of the bare bones CARLA simulator can be divided in the fo
 The steps will be explained 1 step at the time with screenshots and command line commands you can easily copy paste.
 
 ### Step 1: Cloning the CARLA repository
+
 To clone the repository either go to this [link](https://github.com/carla-simulator/carla) and download the zip file (click on 'Clone or download'), use a git client (SourceTree, GitHub desktop), or type in the following command in the command line of a Windows command prompt (make sure you are in the right directory!):
 
     # Clone the CARLA repository (will clone in the folder you are currently in in your terminal)
@@ -115,7 +127,7 @@ After cloning, verify that you have actually cloned the repository, it should lo
 
 ### Step 2: Getting latest CARLA assets
 
-To get the latest CARLA assets, open the folder `Utils` in the `carla` folder that you have just created in step 1 and open the file `contentversions.txt`, see below:
+To get the latest CARLA assets open up the folder `Utils` in the `carla` folder that you have just created in step 1, and open the file `contentversions.txt`, see below:
 ![alt text](imgs/utilScreenshot.png "cloned repository")
 
 This text file contains the instructions of what to do to download the latest assets, for now get the 0.9.8 version. You can also click this [link](http://carla-assets.s3.amazonaws.com/20200306_06b6cb1.tar.gz). Note: this file is almost 10GB. To extract the compressed file, you can use [7-zip](https://www.7-zip.org/), for example.
@@ -123,6 +135,8 @@ This text file contains the instructions of what to do to download the latest as
 Unpack these assets in `\carla\Unreal\CarlaUE4\Content\Carla`. If the directory does not exist, create it.
 
 ### Step 3: Get specific JOAN Assets
+
+To have a nice car interior which also turns the steering wheel, some extra assets are required. You can download them __[here](https://www.dropbox.com/s/7cboucrb81sdlxq/JOAN_Assets.zip?dl=0)__ The file contains:
 
 To have a nice car interior which also turns the steering wheel when you turn your physical steering wheel, some extra assets are required. You can download them [here](https://www.dropbox.com/s/7cboucrb81sdlxq/JOAN_Assets.zip?dl=0). The file contains:
 
@@ -137,6 +151,8 @@ Copy the contents of `JOAN_Static` (only cars) to `\carla\Unreal\CarlaUE4\Conten
 Then, copy all `.xodr` files in `JOAN_Map` to `\carla\Unreal\CarlaUE4\Content\Carla\Maps\OpenDrive`. Copy the remaining files in `JOAN_Map` to `\carla\Unreal\CarlaUE4\Content\Carla\Maps`. 
 
 ### Step 4: Build the PythonAPI
+
+In order to build the python API open the "x64 Native Tools Command Prompt for VS 2017" terminal. 
 
 In order to build the python API open the 'x64 Native Tools Command Prompt for VS 2017' terminal. 
 
@@ -161,6 +177,7 @@ Furthermore, a `carla.egg` file should be in `..\carla\PythonAPI\carla\dist`:
 The exact filename depends on the CARLA version and python version (in our case python 3.8).
 
 ### Step 5: Building and launching CARLA
+
 Essentially the steps here are exactly the same as the PythonAPI build, however as a precaution it is a good idea to do the following:
 
 ![alt text](imgs/genVis.png "genVisfiles")
@@ -189,6 +206,8 @@ The editor will be initializing for a while - no worries! It is compiling all th
     The only important step here (if everything went well) is to remain patient, Unreal will have to compile _all_ shaders which is CPU heavy and can take up to 2 hours.
 
 ### Step 7: Adding vehicle assets to CARLA in Unreal
+
+After the Unreal editor has been launched and compiled the shaders from step 6 go to the content browser and search for __'vehicle factory'__:
 
 After the Unreal editor has been launched and compiled the shaders from step 6 go to the content browser and search for 'vehicle factory':
 
