@@ -222,17 +222,7 @@ class Joystick(BaseInput):
         self._joystickTab.btnUse.clicked.connect(self.setCurrentInput)
 
         # Open the desired device to read (find the device and vendor ID from printed list!!)
-        self._joystick = None
-        if platform.system() == 'Darwin':
-            vendor_id = 0  # comes from the list
-            product_id = 0  # comes from the list
-            # this also opens the device
-            self._joystick = hid.Device(vid=vendor_id, pid=product_id)
-        else:
-            self._joystick = hid.device()
-
-
-        #self._joystick = hid.device()
+        self._joystick = hid.device()
 
 
         #Initialize Variables
@@ -241,12 +231,11 @@ class Joystick(BaseInput):
         self.brake = 0
 
         try:
-            if platform.system() != 'Darwin':
-                # self._joystick.open(121, 6) #  Playstation controller Zierikzee (vendor,product)
-                ##self._joystick.open(1133, 49760) #logitech wheel CoRlab
-                #self._joystick.open(16700, 8467) #Taranis Zierikzee
-                #self._joystick.open(vendor_id, product_id)
-                self._joystick.open(1118, 736)
+            # self._joystick.open(121, 6) #  Playstation controller Zierikzee (vendor,product)
+            ##self._joystick.open(1133, 49760) #logitech wheel CoRlab
+            #self._joystick.open(16700, 8467) #Taranis Zierikzee
+            #self._joystick.open(vendor_id, product_id)
+            self._joystick.open(1118, 736)
         except:
             print('Could not open joystick. Is it plugged in? Are the IDs correct?')
 
