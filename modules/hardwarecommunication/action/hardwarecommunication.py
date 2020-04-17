@@ -454,9 +454,12 @@ class Joystick(BaseInput):
                     self._joystick_tab.btn_remove_hardware.setEnabled(True)
 
         joystickdata = []
-        joystickdata = self._joystick.read(64, 64)
+        joystickdata = self._joystick.read(12, 1)
+
+        
 
         if joystickdata != []:
+            print(joystickdata)
             self.throttle = 100 - round((((joystickdata[9])/128))*100)
             if(self.throttle > 0):
                 self.throttle = self.throttle
