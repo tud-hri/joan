@@ -1,13 +1,24 @@
 # Editors
 .vscode/
 
+# OS-specific files to ignore
 # Mac/OSX
 .DS_Store
 
-venv
-
 # Windows
 Thumbs.db
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Cython debug symbols
+cython_debug/
 
 # ignore files ending with ~
 *~
@@ -19,10 +30,14 @@ Thumbs.db
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
-*$py.class
 
-out.txt
-previous_*
+# Distribution / packaging
+.Python
+*.egg
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# ignore data files
 *.csv
-collapse.py
-src
