@@ -5,14 +5,14 @@ Datarecorder consist of a moduleWidget called DatarecorderWidget and a moduleAct
 DataRecorderWidget(Control) <br>
 moduleWidget(Control) <br>
 moduleAction(Control) <br>
-moduleStates(MasterStates)<br><br>
+module_states(MasterStates)<br><br>
 
 ```mermaid
     classDiagram
         class QThread
         class moduleWidget
         class moduleAction
-        class modulestates
+        class module_states
         class DatarecorderStates
         class DatarecorderWidget
         class DatarecorderAction
@@ -23,7 +23,7 @@ moduleStates(MasterStates)<br><br>
         QThread --|> DataWriter : Inheritance
         moduleWidget --> DatarecorderWidget
         moduleAction --> DatarecorderAction
-        modulestates --> State : Realization
+        module_states --> State : Realization
         DatarecorderWidget ..|> DatarecorderStates : Realization
         DatarecorderWidget ..|> DatarecorderAction : Realization
         DatarecorderAction ..|> DataWriter : Realization

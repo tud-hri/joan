@@ -39,7 +39,7 @@ class ModuleSettings:
 
         item: a dictionary with {key: value}
 
-        filter: if empty, no filtering takes place, if not empty settings are filtered and will only contain moduleKeys, given in the filterList
+        filter: if empty, no filtering takes place, if not empty settings are filtered and will only contain module_keys, given in the filterList
         """
         self.read()
         # add/remove/change content to self._settings

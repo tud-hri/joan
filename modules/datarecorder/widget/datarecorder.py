@@ -21,19 +21,19 @@ class DatarecorderWidget(Control):
 
         Control.__init__(self, *args, **kwargs)
 
-        self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)), "datarecorder.ui"))
-        self.createSettings(module=self, file=os.path.join(os.path.dirname(os.path.realpath(__file__)), "datarecordersettings.json"))
-        self.settings = self.getModuleSettings(module='modules.datarecorder.widget.datarecorder.DatarecorderWidget')
+        self.create_widget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)), "datarecorder.ui"))
+        self.create_settings(module=self, file=os.path.join(os.path.dirname(os.path.realpath(__file__)), "datarecordersettings.json"))
+        self.settings = self.get_module_settings(module='modules.datarecorder.widget.datarecorder.DatarecorderWidget')
 
         self.data = {}
-        self.writeNews(channel=self, news=self.data)
+        self.write_news(channel=self, news=self.data)
         
         self.millis = kwargs['millis']
 
-        # creating a self.moduleStateHandler which also has the moduleStates in self.moduleStateHandler.states
-        self.defineModuleStateHandler(module=self, moduleStates=DatarecorderStates())
-        self.moduleStateHandler.stateChanged.connect(self.handlemodulestate)
-        self.masterStateHandler.stateChanged.connect(self.handlemasterstate)
+        # creating a self.module_state_handler which also has the module_states in self.module_state_handler.states
+        self.define_module_state_handler(module=self, module_states=DatarecorderStates())
+        self.module_state_handler.state_changed.connect(self.handle_module_state)
+        self.master_state_handler.state_changed.connect(self.handle_master_state)
 
         try:
             self.action = DatarecorderAction()
@@ -56,64 +56,64 @@ class DatarecorderWidget(Control):
 
             # cleanup previous widgets from scroll area
             for i in reversed(range(vlay.count())):
-                markedWidget = vlay.takeAt(i).widget()
-                vlay.removeWidget(markedWidget)
-                markedWidget.setParent(None)
+                marked_widget = vlay.takeAt(i).widget()
+                vlay.removeWidget(marked_widget)
+                marked_widget.setParent(None)
             # cleanup previous widgets from verticalLayout_items
             for i in reversed(range(layout.count())):
-                markedWidget = layout.takeAt(i).widget()
-                layout.removeWidget(markedWidget)
-                markedWidget.setParent(None)
+                marked_widget = layout.takeAt(i).widget()
+                layout.removeWidget(marked_widget)
+                marked_widget.setParent(None)
 
             scroll = QtWidgets.QScrollArea()
             layout.addWidget(scroll)
             scroll.setWidget(content)
             scroll.setWidgetResizable(True)
 
-            labelFont = QtGui.QFont()
-            labelFont.setPointSize(12)
-            itemFont = QtGui.QFont()
-            itemFont.setPointSize(10)
-            newsCheckbox = {}
-            moduleKey = '%s.%s' % (self.__class__.__module__, self.__class__.__name__)
-            itemWidget = {}
+            label_font = QtGui.QFont()
+            label_font.setPointSize(12)
+            item_font = QtGui.QFont()
+            item_font.setPointSize(10)
+            news_checkbox = {}
+            module_key = '%s.%s' % (self.__class__.__module__, self.__class__.__name__)
+            item_widget = {}
 
-            currentSettings = self.settings and self.settings.read() or {'data': {}}
-            for channel in self.getAvailableNewsChannels():
-                if channel != moduleKey:
-                    if channel not in currentSettings['data'].keys():
-                        currentSettings['data'].update({channel: {}})
-                    newsCheckbox[channel] = QtWidgets.QLabel(channel.split('.')[1])
-                    newsCheckbox[channel].setFont(labelFont)
-                    news = self.readNews(channel)
+            current_settings = self.settings and self.settings.read() or {'data': {}}
+            for channel in self.get_available_news_channels():
+                if channel != module_key:
+                    if channel not in current_settings['data'].keys():
+                        current_settings['data'].update({channel: {}})
+                    news_checkbox[channel] = QtWidgets.QLabel(channel.split('.')[1])
+                    news_checkbox[channel].setFont(label_font)
+                    news = self.read_news(channel)
                     if news:
-                        vlay.addWidget(newsCheckbox[channel])
+                        vlay.addWidget(news_checkbox[channel])
 
                         for item in news:
-                            itemWidget[item] = QtWidgets.QCheckBox(item)
-                            itemWidget[item].setFont(itemFont)
+                            item_widget[item] = QtWidgets.QCheckBox(item)
+                            item_widget[item].setFont(item_font)
                             # lambda will not deliver what you expect:
-                            # itemWidget[item].clicked.connect(lambda:
-                            #                                  self.handlemodulesettings(itemWidget[item].text(),
-                            #                                  itemWidget[item].isChecked()))
-                            itemWidget[item].stateChanged.connect(partial(self.handlemodulesettings,
-                                                                          channel,
-                                                                          itemWidget[item]))
-                            vlay.addWidget(itemWidget[item])
+                            # item_widget[item].clicked.connect(lambda:
+                            #                                  self.handlemodulesettings(item_widget[item].text(),
+                            #                                  item_widget[item].isChecked()))
+                            item_widget[item].stateChanged.connect(
+                                partial(self.handlemodulesettings, channel, item_widget[item])
+                            )
+                            vlay.addWidget(item_widget[item])
 
-                            # start set checkboxes from currentSettings
-                            if item not in currentSettings['data'][channel].keys():
-                                itemWidget[item].setChecked(True)
-                                itemWidget[item].stateChanged.emit(True)
+                            # start set checkboxes from current_settings
+                            if item not in current_settings['data'][channel].keys():
+                                item_widget[item].setChecked(True)
+                                item_widget[item].stateChanged.emit(True)
                             else:
-                                itemWidget[item].setChecked(currentSettings['data'][channel][item])
-                                itemWidget[item].stateChanged.emit(currentSettings['data'][channel][item])
-                            # end set checkboxes from currentSettings
+                                item_widget[item].setChecked(current_settings['data'][channel][item])
+                                item_widget[item].stateChanged.emit(current_settings['data'][channel][item])
+                            # end set checkboxes from current_settings
 
             vlay.addStretch()
 
             content.adjustSize()
-            self.window.mainWidget.adjustSize()
+            self.window.main_widget.adjustSize()
         except Exception as inst:
             print(inst)
 
@@ -127,17 +127,17 @@ class DatarecorderWidget(Control):
 
     def _show(self):
         self.window.show()
-        self.moduleStateHandler.requestStateChange(self.moduleStates.DATARECORDER.NOTINITIALIZED)
+        self.module_state_handler.request_state_change(self.module_states.DATARECORDER.NOTINITIALIZED)
 
         # connect buttons
-        self.widget.btnInitialize.clicked.connect(self._clickedBtnInitialize)
+        self.widget.btn_initialize.clicked.connect(self._clicked_btn_initialize)
 
         # set current data file name
-        self.widget.lblDataFilename.setText("< none >")
+        self.widget.lbl_data_filename.setText("< none >")
 
         # set message text
-        self.widget.lblMessageRecorder.setText("not recording")
-        self.widget.lblMessageRecorder.setStyleSheet('color: orange')
+        self.widget.lbl_message_recorder.setText("not recording")
+        self.widget.lbl_message_recorder.setStyleSheet('color: orange')
 
         # reads settings if available and expands the datarecorder widget
         try:
@@ -149,100 +149,99 @@ class DatarecorderWidget(Control):
         print('start in datarecorder')
         if not self.window.isVisible():
             self._show()
-        self.moduleStateHandler.requestStateChange(self.moduleStates.DATARECORDER.START)
+        self.module_state_handler.request_state_change(self.module_states.DATARECORDER.START)
         self.action.start()
         self.startPulsar()
 
     def stop(self):
-        self.moduleStateHandler.requestStateChange(self.moduleStates.DATARECORDER.STOP)
+        self.module_state_handler.request_state_change(self.module_states.DATARECORDER.STOP)
         print('stop in datarecorder')
         self.stopPulsar()
         self.action.stop()
 
     def _close(self):
-        self.moduleStateHandler.requestStateChange(self.moduleStates.DATARECORDER.STOP)
+        self.module_state_handler.request_state_change(self.module_states.DATARECORDER.STOP)
         if self.window.isVisible():
             self.window.close()
 
-    def handlemodulesettings(self, moduleKey, item):
+    def handlemodulesettings(self, module_key, item):
         try:
             print('handlemodulesettings', item.text())
-            itemDict = {}
-            itemDict[item.text()] = item.isChecked()
-            # self.getAvailableNewsChannels() means only modules with news will be there in the datarecorderSettings file
-            self.settings.write(groupKey=moduleKey, item=itemDict, filter=self.getAvailableNewsChannels())
+            item_dict = {}
+            item_dict[item.text()] = item.isChecked()
+            # self.get_available_news_channels() means only modules with news will be there in the datarecorder_settings file
+            self.settings.write(groupKey=module_key, item=item_dict, filter=self.get_available_news_channels())
         except Exception as inst:
             print(inst)
 
-
-    def handlemodulestate(self, state):
+    def handle_module_state(self, state):
         """
         Handle the state transition by updating the status label and have the
         GUI reflect the possibilities of the current state.
         """
         try:
-            stateAsState = self.moduleStateHandler.getState(state)  # ensure we have the State object (not the int)
+            state_as_state = self.module_state_handler.get_state(state)  # ensure we have the State object (not the int)
 
-            if stateAsState == self.moduleStates.DATARECORDER.INITIALIZED:
-                self.stateWidget.btnStart.setEnabled(True)
-                self.widget.lblDataFilename.setText(self.action.getFilename())
+            if state_as_state == self.module_states.DATARECORDER.INITIALIZED:
+                self.state_widget.btn_start.setEnabled(True)
+                self.widget.lbl_data_filename.setText(self.action.get_filename())
 
-            if stateAsState == self.moduleStates.DATARECORDER.NOTINITIALIZED:
-                self.stateWidget.btnStart.setEnabled(False)
-                self.stateWidget.btnStop.setEnabled(False)
+            if state_as_state == self.module_states.DATARECORDER.NOTINITIALIZED:
+                self.state_widget.btn_start.setEnabled(False)
+                self.state_widget.btn_stop.setEnabled(False)
 
-            if stateAsState == self.moduleStates.DATARECORDER.START:
-                self.stateWidget.btnStart.setEnabled(False)
-                self.stateWidget.btnStop.setEnabled(True)
-                self.widget.btnInitialize.setEnabled(False)
-
-                # set message text
-                self.widget.lblMessageRecorder.setText("Busy Recording ...")
-                self.widget.lblMessageRecorder.setStyleSheet('color: red')
-
-            if stateAsState == self.moduleStates.DATARECORDER.STOP:
-                self.stateWidget.btnStart.setEnabled(False)
-                self.stateWidget.btnStop.setEnabled(False)
-                self.widget.btnInitialize.setEnabled(True)
+            if state_as_state == self.module_states.DATARECORDER.START:
+                self.state_widget.btn_start.setEnabled(False)
+                self.state_widget.btn_stop.setEnabled(True)
+                self.widget.btn_initialize.setEnabled(False)
 
                 # set message text
-                self.widget.lblMessageRecorder.setText("not recording")
-                self.widget.lblMessageRecorder.setStyleSheet('color: orange')
+                self.widget.lbl_message_recorder.setText("Busy Recording ...")
+                self.widget.lbl_message_recorder.setStyleSheet('color: red')
+
+            if state_as_state == self.module_states.DATARECORDER.STOP:
+                self.state_widget.btn_start.setEnabled(False)
+                self.state_widget.btn_stop.setEnabled(False)
+                self.widget.btn_initialize.setEnabled(True)
+
+                # set message text
+                self.widget.lbl_message_recorder.setText("not recording")
+                self.widget.lbl_message_recorder.setStyleSheet('color: orange')
 
             # update the state label
-            self.stateWidget.lblModulestate.setText(stateAsState.name)
+            self.state_widget.lbl_module_state.setText(state_as_state.name)
             self.widget.repaint()
 
-            if stateAsState == self.moduleStates.DATARECORDER.START:
-                self.stateWidget.btnStart.setStyleSheet("background-color: green")
+            if state_as_state == self.module_states.DATARECORDER.START:
+                self.state_widget.btn_start.setStyleSheet("background-color: green")
             else:
-                self.stateWidget.btnStart.setStyleSheet("background-color: none")
+                self.state_widget.btn_start.setStyleSheet("background-color: none")
 
         except Exception as inst:
             print(inst)
 
-    def handlemasterstate(self, state):
+    def handle_master_state(self, state):
         """
         Handle the state transition by updating the status label and have the
         GUI reflect the possibilities of the current state.
         """
         try:
-            stateAsState = self.masterStateHandler.getState(state)  # ensure we have the State object (not the int)
+            state_as_state = self.master_state_handler.get_state(state)  # ensure we have the State object (not the int)
 
             # emergency stop
-            if stateAsState == self.masterStates.ERROR:
+            if state_as_state == self.master_states.ERROR:
                 self.stop()
-                self.widget.btnInitialize.setEnabled(True)
+                self.widget.btn_initialize.setEnabled(True)
 
             # update the state label
-            self.stateWidget.lblModulestate.setText(stateAsState.name)
+            self.state_widget.lbl_module_state.setText(state_as_state.name)
             self.widget.repaint()
 
         except Exception as inst:
             print(inst)
 
-    def _clickedBtnInitialize(self):
+    def _clicked_btn_initialize(self):
         """initialize the data recorder (mainly setting the data directory and data file prefix"""
-        self.moduleStateHandler.requestStateChange(self.moduleStates.DATARECORDER.INITIALIZING)
+        self.module_state_handler.request_state_change(self.module_states.DATARECORDER.INITIALIZING)
         if self.action.initialize():
-            self.moduleStateHandler.requestStateChange(self.moduleStates.DATARECORDER.INITIALIZED)
+            self.module_state_handler.request_state_change(self.module_states.DATARECORDER.INITIALIZED)

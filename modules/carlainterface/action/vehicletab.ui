@@ -27,7 +27,7 @@
     <number>0</number>
    </property>
    <item row="0" column="0">
-    <widget class="QGroupBox" name="groupCar">
+    <widget class="QGroupBox" name="group_car">
      <property name="minimumSize">
       <size>
        <width>600</width>
@@ -66,7 +66,7 @@
        </widget>
       </item>
       <item row="1" column="2">
-       <widget class="QSpinBox" name="spinSpawnpoints"/>
+       <widget class="QSpinBox" name="spin_spawn_points"/>
       </item>
       <item row="0" column="2">
        <widget class="QLabel" name="lblSpawnpoints">
@@ -99,7 +99,7 @@
        </widget>
       </item>
       <item row="0" column="7">
-       <widget class="QPushButton" name="btnSpawn">
+       <widget class="QPushButton" name="btn_spawn">
         <property name="text">
          <string>Spawn</string>
         </property>
@@ -113,7 +113,7 @@
        </widget>
       </item>
       <item row="1" column="7">
-       <widget class="QPushButton" name="btnDestroy">
+       <widget class="QPushButton" name="btn_destroy">
         <property name="text">
          <string>Destroy</string>
         </property>
@@ -127,7 +127,7 @@
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QComboBox" name="comboInput">
+       <widget class="QComboBox" name="combo_input">
         <item>
          <property name="text">
           <string>None</string>

@@ -9,8 +9,8 @@ class HardwarecommunicationAction(Control):
     def __init__(self, *args, **kwargs):
         Control.__init__(self, *args, **kwargs)
         # get state information from module Widget
-        self.moduleStates = 'moduleStates' in kwargs.keys() and kwargs['moduleStates'] or None
-        self.moduleStateHandler = 'moduleStateHandler' in kwargs.keys() and kwargs['moduleStateHandler'] or None
+        self.module_states = 'module_states' in kwargs.keys() and kwargs['module_states'] or None
+        self.module_state_handler = 'module_state_handler' in kwargs.keys() and kwargs['module_state_handler'] or None
         HardwarecommunicationAction.input_devices_classes = {}
         HardwarecommunicationAction.input_devices_widgets = {}
         HardwarecommunicationAction._nr_of_mouses = 0
@@ -77,7 +77,7 @@ class HardwarecommunicationAction(Control):
 class BaseInput():
     def __init__(self, HardwarecommunicationWidget, HardwarecommunicationAction):
         self._parentWidget = HardwarecommunicationWidget.widget
-        self._carla_interface_data = HardwarecommunicationWidget.readNews('modules.carlainterface.widget.carlainterface.CarlainterfaceWidget')
+        self._carla_interface_data = HardwarecommunicationWidget.read_news('modules.carlainterface.widget.carlainterface.CarlainterfaceWidget')
         self._action = HardwarecommunicationAction
         self._data = {}
         self._data['SteeringInput'] = 0
@@ -304,7 +304,7 @@ class Keyboard(BaseInput):
     def process(self):
         # # If there are cars in the simulation add them to the controllable car combobox
         if(self._carla_interface_data['vehicles'] is not None):
-            self._carla_interface_data = (self._parentWidget.readNews('modules.carlainterface.widget.carlainterface.CarlainterfaceWidget'))
+            self._carla_interface_data = (self._parentWidget.read_news('modules.carlainterface.widget.carlainterface.CarlainterfaceWidget'))
 
             for vehicles in self._carla_interface_data['vehicles']:
                 if vehicles.selected_input == self._keyboard_tab.groupBox.title():
@@ -369,7 +369,7 @@ class Mouse(BaseInput):
 
     def process(self):
         if(self._carla_interface_data['vehicles'] is not None):
-            self._carla_interface_data = (self._parentWidget.readNews('modules.carlainterface.widget.carlainterface.CarlainterfaceWidget'))
+            self._carla_interface_data = (self._parentWidget.read_news('modules.carlainterface.widget.carlainterface.CarlainterfaceWidget'))
 
             for vehicles in self._carla_interface_data['vehicles']:
                 if vehicles.selected_input == self._mouse_tab.groupBox.title():
@@ -445,7 +445,7 @@ class Joystick(BaseInput):
 
     def process(self):
         if(self._carla_interface_data['vehicles'] is not None):
-            self._carla_interface_data = (self._parentWidget.readNews('modules.carlainterface.widget.carlainterface.CarlainterfaceWidget'))
+            self._carla_interface_data = (self._parentWidget.read_news('modules.carlainterface.widget.carlainterface.CarlainterfaceWidget'))
 
             for vehicles in self._carla_interface_data['vehicles']:
                 if vehicles.selected_input == self._joystick_tab.groupBox.title():

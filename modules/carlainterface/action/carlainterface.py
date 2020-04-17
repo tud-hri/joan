@@ -21,8 +21,8 @@ class CarlainterfaceAction(Control):
     def __init__(self, *args, **kwargs):
         Control.__init__(self, *args, **kwargs)
         # get state information from module Widget
-        self.moduleStates = 'moduleStates' in kwargs.keys() and kwargs['moduleStates'] or None
-        self.moduleStateHandler = 'moduleStateHandler' in kwargs.keys() and kwargs['moduleStateHandler'] or None
+        self.module_states = 'module_states' in kwargs.keys() and kwargs['module_states'] or None
+        self.module_state_handler = 'module_state_handler' in kwargs.keys() and kwargs['module_state_handler'] or None
 
 
 class Carlacommunication():
@@ -46,12 +46,12 @@ class Carlacommunication():
             time.sleep(2)
             Carlacommunication.world = client.get_world()  # get world object (contains everything)
             Carlacommunication.BlueprintLibrary = Carlacommunication.world.get_blueprint_library()
-            vehicleBPlibrary = Carlacommunication.BlueprintLibrary.filter('vehicle.*')
-            for items in vehicleBPlibrary:
+            vehicle_bp_library = Carlacommunication.BlueprintLibrary.filter('vehicle.*')
+            for items in vehicle_bp_library:
                 Carlacommunication.tags.append(items.id[8:])
-            worldMap = Carlacommunication.world.get_map()
-            Carlacommunication.spawnPoints = worldMap.get_spawn_points()
-            Carlacommunication.nrSpawnPoints = len(self.spawnPoints)
+            world_map = Carlacommunication.world.get_map()
+            Carlacommunication.spawn_points = world_map.get_spawn_points()
+            Carlacommunication.nr_spawn_points = len(self.spawn_points)
             print('JOAN connected to CARLA Server!')
 
             return True
@@ -63,21 +63,21 @@ class Carlacommunication():
 class Carlavehicle(Carlacommunication):
     def __init__(self, CarlainterfaceWidget, carnr):
         self._parentWidget = CarlainterfaceWidget
-        self._vehicleTab = uic.loadUi(uifile=os.path.join(os.path.dirname(os.path.realpath(__file__)), "vehicletab.ui"))
-        self._parentWidget.widget.layOut.addWidget(self._vehicleTab)
-        self._vehicleTab.groupCar.setTitle('Car ' + str(carnr+1))
+        self._vehicle_tab = uic.loadUi(uifile=os.path.join(os.path.dirname(os.path.realpath(__file__)), "vehicletab.ui"))
+        self._parentWidget.widget.layOut.addWidget(self._vehicle_tab)
+        self._vehicle_tab.group_car.setTitle('Car ' + str(carnr+1))
         self._spawned = False
         self._hardware_data = {}
 
-        self._vehicleTab.spinSpawnpoints.setRange(0, Carlacommunication.nrSpawnPoints)
-        self._vehicleTab.spinSpawnpoints.lineEdit().setReadOnly(True)
-        self._vehicleTab.btnDestroy.setEnabled(False)
-        self._vehicleTab.comboInput.currentTextChanged.connect(self.updateInput)
+        self._vehicle_tab.spin_spawn_points.setRange(0, Carlacommunication.nr_spawn_points)
+        self._vehicle_tab.spin_spawn_points.lineEdit().setReadOnly(True)
+        self._vehicle_tab.btn_destroy.setEnabled(False)
+        self._vehicle_tab.combo_input.currentTextChanged.connect(self.update_input)
 
-        self._vehicleTab.btnSpawn.clicked.connect(self.spawnCar)
-        self._vehicleTab.btnDestroy.clicked.connect(self.destroyCar)
+        self._vehicle_tab.btn_spawn.clicked.connect(self.spawn_car)
+        self._vehicle_tab.btn_destroy.clicked.connect(self.destroy_car)
         for item in Carlacommunication.tags:
-            self._vehicleTab.comboCartype.addItem(item)
+            self._vehicle_tab.comboCartype.addItem(item)
 
         self._selected_input = str('None')
 
@@ -89,67 +89,66 @@ class Carlavehicle(Carlacommunication):
     def selected_input(self):
         return self._selected_input
 
-    def updateInput(self):
-        self._selected_input = self._vehicleTab.comboInput.currentText()
+    def update_input(self):
+        self._selected_input = self._vehicle_tab.combo_input.currentText()
         print(self._selected_input)
 
-    def getAvailableInputs(self):
-        self._hardware_data = self._parentWidget.readNews('modules.hardwarecommunication.widget.hardwarecommunication.HardwarecommunicationWidget')
+    def get_available_inputs(self):
+        self._hardware_data = self._parentWidget.read_news('modules.hardwarecommunication.widget.hardwarecommunication.HardwarecommunicationWidget')
         for keys in self._hardware_data:
-            self._vehicleTab.comboInput.addItem(str(keys))
+            self._vehicle_tab.combo_input.addItem(str(keys))
 
-    def destroyInputs(self):
-        self._vehicleTab.comboInput.clear()
-        self._vehicleTab.comboInput.addItem('None')
+    def destroy_inputs(self):
+        self._vehicle_tab.combo_input.clear()
+        self._vehicle_tab.combo_input.addItem('None')
 
-
-    def destroyTab(self):
-        self.destroyCar()
+    def destroy_tab(self):
+        self.destroy_car()
         self._spawned = False
-        self._parentWidget.widget.layOut.removeWidget(self._vehicleTab)
-        self._vehicleTab.setParent(None)
+        self._parentWidget.widget.layOut.removeWidget(self._vehicle_tab)
+        self._vehicle_tab.setParent(None)
 
-    def spawnCar(self):
-        self._BP = random.choice(Carlacommunication.BlueprintLibrary.filter("vehicle." + str(self._vehicleTab.comboCartype.currentText())))
+    def spawn_car(self):
+        self._BP = random.choice(Carlacommunication.BlueprintLibrary.filter("vehicle." + str(self._vehicle_tab.comboCartype.currentText())))
         self._control = carla.VehicleControl()
         try:
-            spawnpointnr = self._vehicleTab.spinSpawnpoints.value()-1
-            self.spawnedVehicle = Carlacommunication.world.spawn_actor(self._BP, Carlacommunication.spawnPoints[spawnpointnr])
-            self._vehicleTab.btnSpawn.setEnabled(False)
-            self._vehicleTab.btnDestroy.setEnabled(True)
-            self._vehicleTab.spinSpawnpoints.setEnabled(False)
-            self.getAvailableInputs()
+            spawnpointnr = self._vehicle_tab.spin_spawn_points.value()-1
+            self.spawned_vehicle = Carlacommunication.world.spawn_actor(self._BP, Carlacommunication.spawn_points[spawnpointnr])
+            self._vehicle_tab.btn_spawn.setEnabled(False)
+            self._vehicle_tab.btn_destroy.setEnabled(True)
+            self._vehicle_tab.spin_spawn_points.setEnabled(False)
+            self.get_available_inputs()
             self._spawned = True
         except Exception as inst:
             print('Could not spawn car:', inst)
-            self._vehicleTab.btnSpawn.setEnabled(True)
-            self._vehicleTab.btnDestroy.setEnabled(False)
-            self._vehicleTab.spinSpawnpoints.setEnabled(True)
+            self._vehicle_tab.btn_spawn.setEnabled(True)
+            self._vehicle_tab.btn_destroy.setEnabled(False)
+            self._vehicle_tab.spin_spawn_points.setEnabled(True)
             self._spawned = False
 
-    def destroyCar(self):
+    def destroy_car(self):
         try:
             self._spawned = False
-            self.spawnedVehicle.destroy()
-            self._vehicleTab.btnSpawn.setEnabled(True)
-            self._vehicleTab.btnDestroy.setEnabled(False)
-            self._vehicleTab.spinSpawnpoints.setEnabled(True)
-            self.destroyInputs()
+            self.spawned_vehicle.destroy()
+            self._vehicle_tab.btn_spawn.setEnabled(True)
+            self._vehicle_tab.btn_destroy.setEnabled(False)
+            self._vehicle_tab.spin_spawn_points.setEnabled(True)
+            self.destroy_inputs()
         except Exception as inst:
             self._spawned = True
             print('Could not destroy spawn car:', inst)
-            self._vehicleTab.btnSpawn.setEnabled(False)
-            self._vehicleTab.btnDestroy.setEnabled(True)
-            self._vehicleTab.spinSpawnpoints.setEnabled(False)
+            self._vehicle_tab.btn_spawn.setEnabled(False)
+            self._vehicle_tab.btn_destroy.setEnabled(True)
+            self._vehicle_tab.spin_spawn_points.setEnabled(False)
 
     def get_vehicle_id(self):
         return self._BP.id
 
-    def applycontrol(self, data):
+    def apply_control(self, data):
         if self._selected_input != 'None':
             self._control.steer = data[self._selected_input]['SteeringInput'] / 450
             self._control.throttle = data[self._selected_input]['ThrottleInput'] / 100
             self._control.brake = data[self._selected_input]['BrakeInput'] / 100
             self._control.reverse = data[self._selected_input]['Reverse']
             self._control.hand_brake = data[self._selected_input]['Handbrake']
-            self.spawnedVehicle.apply_control(self._control)
+            self.spawned_vehicle.apply_control(self._control)

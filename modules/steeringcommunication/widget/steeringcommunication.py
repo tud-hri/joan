@@ -10,16 +10,16 @@ class SteeringcommunicationWidget(Control):
         kwargs['callback'] = [self.do]  # method will run each given millis
 
         Control.__init__(self, *args, **kwargs)
-        self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)),"steeringcommunication.ui"))
+        self.create_widget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)),"steeringcommunication.ui"))
         self.data = {}
         self.data['throttle'] = 0
         self.data['damping'] = 0
-        self.writeNews(channel=self, news=self.data)
+        self.write_news(channel=self, news=self.data)
 
-        # creating a self.moduleStateHandler which also has the moduleStates in self.moduleStateHandler.states
-        self.defineModuleStateHandler(module=self, moduleStates=SteeringcommunicationStates())
-        self.moduleStateHandler.stateChanged.connect(self.handlemodulestate)
-        self.masterStateHandler.stateChanged.connect(self.handlemasterstate)
+        # creating a self.module_state_handler which also has the module_states in self.module_state_handler.states
+        self.define_module_state_handler(module=self, module_states=SteeringcommunicationStates())
+        self.module_state_handler.state_changed.connect(self.handle_module_state)
+        self.master_state_handler.state_changed.connect(self.handle_master_state)
 
         try:
             self.action = SteeringcommunicationAction()
@@ -33,10 +33,10 @@ class SteeringcommunicationWidget(Control):
 
         self.data['throttle'] = self.i
         self.data['damping'] = 0
-        self.writeNews(channel=self, news=self.data)
+        self.write_news(channel=self, news=self.data)
 
-        if(self.moduleStateHandler._state is self.moduleStates.STEERINGWHEEL.ON):
-            print(self.masterStateHandler._state)
+        if(self.module_state_handler._state is self.module_states.STEERINGWHEEL.ON):
+            print(self.master_state_handler._state)
             print(self.i)
         pass
 
@@ -50,9 +50,9 @@ class SteeringcommunicationWidget(Control):
 
     def _show(self):
         self.widget.show()
-        self.widget.btnInitialize.clicked.connect(self.action.initialize)
-        self.widget.btnStart.clicked.connect(self.action.start)
-        self.widget.btnStop.clicked.connect(self.action.stop)
+        self.widget.btn_initialize.clicked.connect(self.action.initialize)
+        self.widget.btn_start.clicked.connect(self.action.start)
+        self.widget.btn_stop.clicked.connect(self.action.stop)
         #self.action.initialize()
         
 
@@ -67,54 +67,54 @@ class SteeringcommunicationWidget(Control):
     def _close(self):
         self.widget.close()
 
-    def handlemodulestate(self, state):
+    def handle_module_state(self, state):
         """ 
         Handle the state transition by updating the status label and have the
         GUI reflect the possibilities of the current state.
         """
 
         try:
-            #stateAsState = self.states.getState(state) # ensure we have the State object (not the int)
-            stateAsState = self.moduleStateHandler.getState(state) # ensure we have the State object (not the int)
+            #state_as_state = self.states.get_state(state) # ensure we have the State object (not the int)
+            state_as_state = self.module_state_handler.get_state(state) # ensure we have the State object (not the int)
             
             # Start if the system is initialized
-            if stateAsState == self.moduleStates.STEERINGWHEEL.INITIALIZED:
+            if state_as_state == self.module_states.STEERINGWHEEL.INITIALIZED:
                 self.start()
 
             # Reinitialize available if exception
-            if stateAsState == self.moduleStates.STEERINGWHEEL.ERROR.INIT:
-                self.widget.btnInitialize.setEnabled(True)
+            if state_as_state == self.module_states.STEERINGWHEEL.ERROR.INIT:
+                self.widget.btn_initialize.setEnabled(True)
             else:
-                self.widget.btnInitialize.setEnabled(False)
+                self.widget.btn_initialize.setEnabled(False)
 
 
             # emergency stop
-            if stateAsState == self.moduleStates.ERROR:
+            if state_as_state == self.module_states.ERROR:
                 self.stop()
 
             # update the state label
-            self.widget.lblState.setText(stateAsState.name)
+            self.widget.lblState.setText(state_as_state.name)
             self.widget.repaint()
 
         except Exception as inst:
             print (inst)
 
-    def handlemasterstate(self, state):
+    def handle_master_state(self, state):
         """ 
         Handle the state transition by updating the status label and have the
         GUI reflect the possibilities of the current state.
         """
 
         try:
-            #stateAsState = self.states.getState(state) # ensure we have the State object (not the int)
-            stateAsState = self.masterStateHandler.getState(state) # ensure we have the State object (not the int)
+            #state_as_state = self.states.get_state(state) # ensure we have the State object (not the int)
+            state_as_state = self.master_state_handler.get_state(state) # ensure we have the State object (not the int)
             
            # emergency stop
-            if stateAsState == self.moduleStates.ERROR:
+            if state_as_state == self.module_states.ERROR:
                 self.stop()
 
             # update the state label
-            self.widget.lblState.setText(stateAsState.name)
+            self.widget.lblState.setText(state_as_state.name)
             self.widget.repaint()
 
 

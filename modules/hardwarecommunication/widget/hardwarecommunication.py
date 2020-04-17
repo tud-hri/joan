@@ -10,14 +10,14 @@ class HardwarecommunicationWidget(Control):
         kwargs['callback'] = [self.do]  # method will run each given millis
         Control.__init__(self, *args, **kwargs)
         
-        self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)), "hardwaremanager_ui.ui"))
+        self.create_widget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)), "hardwaremanager_ui.ui"))
         self._input_data = {}
         self._inputlist = {}
         self.counter = 0
-        # creating a self.moduleStateHandler which also has the moduleStates in self.moduleStateHandler.states
-        self.defineModuleStateHandler(module=self, moduleStates=HardwarecommunicationStates())
-        self.moduleStateHandler.stateChanged.connect(self.handlemodulestate)
-        self.masterStateHandler.stateChanged.connect(self.handlemasterstate)
+        # creating a self.module_state_handler which also has the module_states in self.module_state_handler.states
+        self.define_module_state_handler(module=self, module_states=HardwarecommunicationStates())
+        self.module_state_handler.state_changed.connect(self.handle_module_state)
+        self.master_state_handler.state_changed.connect(self.handle_master_state)
         
         # use Action with state handling, using only this widgets state changes
         try:
@@ -36,7 +36,7 @@ class HardwarecommunicationWidget(Control):
 
         self._input = BaseInput(self, self.action)
         
-        self.writeNews(channel=self, news=self._input_data)
+        self.write_news(channel=self, news=self._input_data)
 
         self.installEventFilter(self)
 
@@ -48,7 +48,7 @@ class HardwarecommunicationWidget(Control):
         for key in self._inputlist:
             try:
                 self._input_data[key] = self._inputlist[key].process()
-                self.writeNews(channel=self, news=self._input_data)
+                self.write_news(channel=self, news=self._input_data)
             except Exception as inst:
                     print("Error in Do of hardware comm is:", inst)
                     pass
@@ -65,69 +65,69 @@ class HardwarecommunicationWidget(Control):
 
     def _show(self):
         self.window.show()
-        moduleStatesDict = self.moduleStates.getStates()
-        for state in moduleStatesDict:
-            print('in HardwarecommunicationStates bij show', state, moduleStatesDict[state])
+        module_states_dict = self.module_states.get_states()
+        for state in module_states_dict:
+            print('in HardwarecommunicationStates bij show', state, module_states_dict[state])
 
 
     def start(self):
         self.widget.btn_add_hardware.setEnabled(True)
         if not self.window.isVisible():
             self._show()
-        self.moduleStateHandler.requestStateChange(self.moduleStates.HARDWARECOMMUNICATION.RUNNING)
+        self.module_state_handler.request_state_change(self.module_states.HARDWARECOMMUNICATION.RUNNING)
         self.startPulsar()
 
     def stop(self):
         self.widget.btn_add_hardware.setEnabled(False)
-        self.moduleStateHandler.requestStateChange(self.moduleStates.HARDWARECOMMUNICATION.STOPPED)
+        self.module_state_handler.request_state_change(self.module_states.HARDWARECOMMUNICATION.STOPPED)
         self.stopPulsar()
 
     def _close(self):
         self.window.close()
 
-    def handlemasterstate(self, state):
+    def handle_master_state(self, state):
         """ 
         Handle the state transition by updating the status label and have the
         GUI reflect the possibilities of the current state.
         """
 
         try:
-            #stateAsState = self.states.getState(state) # ensure we have the State object (not the int)
-            stateAsState = self.masterStateHandler.getState(state) # ensure we have the State object (not the int)
+            #state_as_state = self.states.get_state(state) # ensure we have the State object (not the int)
+            state_as_state = self.master_state_handler.get_state(state) # ensure we have the State object (not the int)
             
             # emergency stop
-            if stateAsState == self.moduleStates.ERROR:
+            if state_as_state == self.module_states.ERROR:
                 self._stop()
 
             # update the state label
-            self.widget.lblState.setText(str(stateAsState))
+            self.widget.lblState.setText(str(state_as_state))
             self.widget.repaint()
 
         except Exception as inst:
             print (inst)
 
-    def handlemodulestate(self, state):
+    def handle_module_state(self, state):
         """ 
         Handle the state transition by updating the status label and have the
         GUI reflect the possibilities of the current state.
         """
 
         try:
-            #stateAsState = self.states.getState(state) # ensure we have the State object (not the int)
-            stateAsState = self.moduleStateHandler.getState(state) # ensure we have the State object (not the int)
+            #state_as_state = self.states.get_state(state) # ensure we have the State object (not the int)
+            state_as_state = self.module_state_handler.get_state(state) # ensure we have the State object (not the int)
             
             # emergency stop
-            if stateAsState == self.moduleStates.ERROR:
+            if state_as_state == self.module_states.ERROR:
                 self._stop()
 
             # update the state label
-            self.stateWidget.lblModuleState.setText(str(stateAsState.name))
-            self.stateWidget.repaint()
+            self.state_widget.lblModuleState.setText(str(state_as_state.name))
+            self.state_widget.repaint()
 
-            if stateAsState == self.moduleStates.HARDWARECOMMUNICATION.RUNNING:
-                self.stateWidget.btnStart.setStyleSheet("background-color: green")
+            if state_as_state == self.module_states.HARDWARECOMMUNICATION.RUNNING:
+                self.state_widget.btn_start.setStyleSheet("background-color: green")
             else:
-                self.stateWidget.btnStart.setStyleSheet("background-color: none")
+                self.state_widget.btn_start.setStyleSheet("background-color: none")
 
         except Exception as inst:
             print (inst)

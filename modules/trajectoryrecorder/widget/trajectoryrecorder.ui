@@ -30,7 +30,7 @@
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QPushButton" name="btnStoprecord">
+       <widget class="QPushButton" name="btn_stoprecord">
         <property name="font">
          <font>
           <pointsize>15</pointsize>
@@ -63,7 +63,7 @@
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="QPushButton" name="btnStartrecord">
+       <widget class="QPushButton" name="btn_startrecord">
         <property name="font">
          <font>
           <pointsize>15</pointsize>

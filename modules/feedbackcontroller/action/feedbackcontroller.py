@@ -17,18 +17,18 @@ import time
 class FeedbackcontrollerAction(Control):
     def __init__(self, *args, **kwargs):
         Control.__init__(self, *args, **kwargs)
-        self.moduleStates = None
-        self.moduleStateHandler = None
+        self.module_states = None
+        self.module_state_handler = None
         try:
-            statePackage = self.getModuleStatePackage(module='modules.feedbackcontroller.widget.feedbackcontroller.FeedbackcontrollerWidget')
-            self.moduleStates = statePackage['moduleStates']
-            self.moduleStateHandler = statePackage['moduleStateHandler']
+            state_package = self.get_module_state_package(module='modules.feedbackcontroller.widget.feedbackcontroller.FeedbackcontrollerWidget')
+            self.module_states = state_package['module_states']
+            self.module_state_handler = state_package['module_state_handler']
         except:
             pass
 
         # get state information from module Widget
-        #self.moduleStates = 'moduleStates' in kwargs.keys() and kwargs['moduleStates'] or None
-        #self.moduleStateHandler = 'moduleStateHandler' in kwargs.keys() and kwargs['moduleStateHandler'] or None
+        #self.module_states = 'module_states' in kwargs.keys() and kwargs['module_states'] or None
+        #self.module_state_handler = 'module_state_handler' in kwargs.keys() and kwargs['module_state_handler'] or None
 
 
 class Basecontroller():
@@ -125,7 +125,7 @@ class Manualcontrol(Basecontroller):
         self._parentWidget.widget.tabWidget.addTab(self.manualTab,'Manual')
     
     def process(self):
-        self._data = self._parentWidget.readNews('modules.carlainterface.widget.carlainterface.CarlainterfaceWidget')
+        self._data = self._parentWidget.read_news('modules.carlainterface.widget.carlainterface.CarlainterfaceWidget')
         "Processes all information and returns parameters needed for steeringcommunication"
         return self._data
 
@@ -277,9 +277,9 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
         
     def process(self):
         try:
-            self._data = self._parentWidget.readNews('modules.carlainterface.widget.carlainterface.CarlainterfaceWidget')
+            self._data = self._parentWidget.read_news('modules.carlainterface.widget.carlainterface.CarlainterfaceWidget')
             print(self._data)
-            egoCar = self._data['vehicles'][0].spawnedVehicle
+            egoCar = self._data['vehicles'][0].spawned_vehicle
             
             self._Error = self.Error_Calc(self._t_aheadFF, self._HCR, egoCar)
             print(self._Error)
@@ -420,7 +420,7 @@ class PDcontrol(Basecontroller):
 
     def process(self):
         try:
-            self._data= self._parentWidget.readNews('modules.siminterface.widget.siminterface.SiminterfaceWidget')
+            self._data= self._parentWidget.read_news('modules.siminterface.widget.siminterface.SiminterfaceWidget')
             egoCar = self._data['egoCar']
             self._T1 = time.time()
             self._Error = self.Error_Calc(self._t_ahead, self._HCR, egoCar)

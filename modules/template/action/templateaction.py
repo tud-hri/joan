@@ -7,7 +7,7 @@ class TemplateAction(JoanModuleAction):
     def __init__(self, master_state_handler, millis=100):
         super().__init__(module=JOANModules.TEMPLATE, master_state_handler=master_state_handler, millis=millis)
 
-        self.module_state_handler.requestStateChange(TemplateStates.TEMPLATE.READY)
+        self.module_state_handler.request_state_change(TemplateStates.TEMPLATE.READY)
 
     def do(self):
         """
@@ -23,14 +23,14 @@ class TemplateAction(JoanModuleAction):
 
     def start(self):
         try:
-            self.module_state_handler.requestStateChange(TemplateStates.TEMPLATE.RUNNING)
+            self.module_state_handler.request_state_change(TemplateStates.TEMPLATE.RUNNING)
         except RuntimeError:
             return False
         return super().start()
 
     def stop(self):
         try:
-            self.module_state_handler.requestStateChange(TemplateStates.TEMPLATE.STOPPED)
+            self.module_state_handler.request_state_change(TemplateStates.TEMPLATE.STOPPED)
         except RuntimeError:
             return False
         return super().start()

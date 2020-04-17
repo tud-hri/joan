@@ -11,39 +11,39 @@ class TrajectoryrecorderWidget(Control):
         kwargs['callback'] = [self.do]  # method will run each given millis
 
         Control.__init__(self, *args, **kwargs)
-        self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)),"trajectoryrecorder.ui"))
+        self.create_widget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)),"trajectoryrecorder.ui"))
         
         self.data = {}
-        self.writeNews(channel=self, news=self.data)
+        self.write_news(channel=self, news=self.data)
         self.counter = 0
 
 
-        self.defineModuleStateHandler(module=self, moduleStates=TrajectoryrecorderStates())
-        self.moduleStateHandler.stateChanged.connect(self.handlemodulestate)
-        self.masterStateHandler.stateChanged.connect(self.handlemasterstate)
+        self.define_module_state_handler(module=self, module_states=TrajectoryrecorderStates())
+        self.module_state_handler.state_changed.connect(self.handle_module_state)
+        self.master_state_handler.state_changed.connect(self.handle_master_state)
 
         try:
-            self.action = TrajectoryrecorderAction(moduleStates = self.moduleStates,
-                                          moduleStateHandler = self.moduleStateHandler)
+            self.action = TrajectoryrecorderAction(module_states = self.module_states,
+                                          module_state_handler = self.module_state_handler)
         except Exception as inst:
             print('De error bij de constructor van de widget is:    ', inst)
 
-        self.Siminterface = self.getModuleStatePackage('modules.siminterface.widget.siminterface.SiminterfaceWidget')
+        self.Siminterface = self.get_module_state_package('modules.siminterface.widget.siminterface.SiminterfaceWidget')
         
-        self.widget.btnStartrecord.setEnabled(True)
-        self.widget.btnStoprecord.setEnabled(False)
+        self.widget.btn_startrecord.setEnabled(True)
+        self.widget.btn_stoprecord.setEnabled(False)
         self.widget.btnSavetrajectory.setEnabled(False)
         self.widget.lineTrajectoryname.setEnabled(False)
 
-        self.widget.btnStartrecord.clicked.connect(self.start)
-        self.widget.btnStoprecord.clicked.connect(self.stop)
+        self.widget.btn_startrecord.clicked.connect(self.start)
+        self.widget.btn_stoprecord.clicked.connect(self.stop)
         self.widget.btnSavetrajectory.clicked.connect(self.savefiles)
         self.widget.lineTrajectoryname.textEdited.connect(self.checkfilename)
         
 
     # callback class is called each time a pulse has come from the Pulsar class instance
     def do(self):
-        self.data = self.readNews('modules.siminterface.widget.siminterface.SiminterfaceWidget')
+        self.data = self.read_news('modules.siminterface.widget.siminterface.SiminterfaceWidget')
         #self.action.process(self.data)
         pass
 
@@ -56,24 +56,24 @@ class TrajectoryrecorderWidget(Control):
             pass
 
     def _show(self):
-        if(self.Siminterface['moduleStateHandler'].state == self.Siminterface['moduleStates'].SIMULATION.RUNNING): 
+        if(self.Siminterface['module_state_handler'].state == self.Siminterface['module_states'].SIMULATION.RUNNING): 
             self.window.show()
         
 
 
 
     def start(self):
-        if(self.Siminterface['moduleStateHandler'].state == self.Siminterface['moduleStates'].SIMULATION.RUNNING): 
+        if(self.Siminterface['module_state_handler'].state == self.Siminterface['module_states'].SIMULATION.RUNNING): 
             self.startPulsar()
-            self.widget.btnStartrecord.setEnabled(False)
+            self.widget.btn_startrecord.setEnabled(False)
             self.widget.btnSavetrajectory.setEnabled(False)
             self.widget.lineTrajectoryname.setEnabled(False)
-            self.widget.btnStoprecord.setEnabled(True)
+            self.widget.btn_stoprecord.setEnabled(True)
 
 
     def stop(self):
             self.stopPulsar()
-            self.widget.btnStoprecord.setEnabled(False)
+            self.widget.btn_stoprecord.setEnabled(False)
             self.Trajectory = self.action.generate()
             self.widget.lineTrajectoryname.setEnabled(True)
             self.widget.lblModuleState.setText('Please enter a valid Filename for Trajectory')
@@ -111,11 +111,11 @@ class TrajectoryrecorderWidget(Control):
             self.widget.lineTrajectoryname.clear()
             self.widget.lineTrajectoryname.setEnabled(False)
             self.widget.btnSavetrajectory.setEnabled(False)
-            self.widget.btnStartrecord.setEnabled(True)
+            self.widget.btn_startrecord.setEnabled(True)
         except:
             self.widget.lblModuleState.setText('Could not save File please try again')
             self.widget.btnSavetrajectory.setEnabled(True)
-            self.widget.btnStartrecord.setEnabled(False)
+            self.widget.btn_startrecord.setEnabled(False)
 
 
 
@@ -125,45 +125,45 @@ class TrajectoryrecorderWidget(Control):
 
 
     def _close(self):
-        if(self.Siminterface['moduleStateHandler'].state != self.Siminterface['moduleStates'].SIMULATION.RUNNING): 
+        if(self.Siminterface['module_state_handler'].state != self.Siminterface['module_states'].SIMULATION.RUNNING): 
             self.window.close()
 
-    def handlemasterstate(self, state):
+    def handle_master_state(self, state):
         """ 
         Handle the state transition by updating the status label and have the
         GUI reflect the possibilities of the current state.
         """
 
         try:
-            #stateAsState = self.states.getState(state) # ensure we have the State object (not the int)
-            stateAsState = self.masterStateHandler.getState(state) # ensure we have the State object (not the int)
+            #state_as_state = self.states.get_state(state) # ensure we have the State object (not the int)
+            state_as_state = self.master_state_handler.get_state(state) # ensure we have the State object (not the int)
             
             # emergency stop
-            if stateAsState == self.moduleStates.ERROR:
+            if state_as_state == self.module_states.ERROR:
                 self._stop()
 
             # update the state label
-            self.widget.lblState.setText(str(stateAsState))
+            self.widget.lblState.setText(str(state_as_state))
 
         except Exception as inst:
             print (inst)
 
-    def handlemodulestate(self, state):
+    def handle_module_state(self, state):
         """ 
         Handle the state transition by updating the status label and have the
         GUI reflect the possibilities of the current state.
         """
 
         try:
-            #stateAsState = self.states.getState(state) # ensure we have the State object (not the int)
-            stateAsState = self.moduleStateHandler.getState(state) # ensure we have the State object (not the int)
+            #state_as_state = self.states.get_state(state) # ensure we have the State object (not the int)
+            state_as_state = self.module_state_handler.get_state(state) # ensure we have the State object (not the int)
             
             # emergency stop
-            if stateAsState == self.moduleStates.ERROR:
+            if state_as_state == self.module_states.ERROR:
                 self._stop()
 
             # update the state label
-            self.widget.lblModuleState.setText(str(stateAsState.name))
+            self.widget.lblModuleState.setText(str(state_as_state.name))
 
         except Exception as inst:
             print (inst)

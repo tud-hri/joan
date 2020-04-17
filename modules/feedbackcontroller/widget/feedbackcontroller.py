@@ -12,18 +12,18 @@ class FeedbackcontrollerWidget(Control):
         kwargs['callback'] = [self.do]  # method will run each given millis
 
         Control.__init__(self, *args, **kwargs)
-        self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)), "feedbackcontroller.ui"))
+        self.create_widget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)), "feedbackcontroller.ui"))
 
         self.data = {}
         self.data['SteeringWheelAngle'] = 0
         self.data['Throttle'] = 0
 
-        self.writeNews(channel=self, news=self.data)
+        self.write_news(channel=self, news=self.data)
         self.counter = 0
 
-        self.defineModuleStateHandler(module=self, moduleStates=FeedbackcontrollerStates())
-        self.moduleStateHandler.stateChanged.connect(self.handlemodulestate)
-        self.masterStateHandler.stateChanged.connect(self.handlemasterstate)
+        self.define_module_state_handler(module=self, module_states=FeedbackcontrollerStates())
+        self.module_state_handler.state_changed.connect(self.handle_module_state)
+        self.master_state_handler.state_changed.connect(self.handle_master_state)
 
         try:
             self.action = FeedbackcontrollerAction()
@@ -47,7 +47,7 @@ class FeedbackcontrollerWidget(Control):
         # self.counter = self.counter + 1
         # self.data['SteeringWheelAngle'] = SWangle
         # self.data['Throttle'] = 0.5
-        # self.writeNews(channel=self, news=self.data)
+        # self.write_news(channel=self, news=self.data)
         #print(self.counter)
         joe = self._controller.process()
         print(joe)
@@ -74,56 +74,56 @@ class FeedbackcontrollerWidget(Control):
         if not self.window.isVisible():
             self._show()
         self.startPulsar()
-        self.moduleStateHandler.requestStateChange(self.moduleStates.FEEDBACKCONTROLLER.RUNNING)
+        self.module_state_handler.request_state_change(self.module_states.FEEDBACKCONTROLLER.RUNNING)
 
     def stop(self):
-        self.moduleStateHandler.requestStateChange(self.moduleStates.FEEDBACKCONTROLLER.STOPPED)
+        self.module_state_handler.request_state_change(self.module_states.FEEDBACKCONTROLLER.STOPPED)
         self.stopPulsar()
 
     def _close(self):
         self.window.close()
 
-    def handlemasterstate(self, state):
+    def handle_master_state(self, state):
         """ 
         Handle the state transition by updating the status label and have the
         GUI reflect the possibilities of the current state.
         """
 
         try:
-            # stateAsState = self.states.getState(state) # ensure we have the State object (not the int)
-            stateAsState = self.masterStateHandler.getState(state)  # ensure we have the State object (not the int)
+            # state_as_state = self.states.get_state(state) # ensure we have the State object (not the int)
+            state_as_state = self.master_state_handler.get_state(state)  # ensure we have the State object (not the int)
 
             # emergency stop
-            if stateAsState == self.moduleStates.ERROR:
+            if state_as_state == self.module_states.ERROR:
                 self._stop()
 
             # update the state label
-            self.widget.lblState.setText(str(stateAsState))
+            self.widget.lblState.setText(str(state_as_state))
 
         except Exception as e:
             print(e)
 
-    def handlemodulestate(self, state):
+    def handle_module_state(self, state):
         """ 
         Handle the state transition by updating the status label and have the
         GUI reflect the possibilities of the current state.
         """
 
         try:
-            # stateAsState = self.states.getState(state) # ensure we have the State object (not the int)
-            stateAsState = self.moduleStateHandler.getState(state)  # ensure we have the State object (not the int)
+            # state_as_state = self.states.get_state(state) # ensure we have the State object (not the int)
+            state_as_state = self.module_state_handler.get_state(state)  # ensure we have the State object (not the int)
 
             # emergency stop
-            if stateAsState == self.moduleStates.ERROR:
+            if state_as_state == self.module_states.ERROR:
                 self._stop()
 
             # update the state label
-            self.stateWidget.lblModuleState.setText(str(stateAsState.name))
+            self.state_widget.lblModuleState.setText(str(state_as_state.name))
 
-            if stateAsState == self.moduleStates.FEEDBACKCONTROLLER.RUNNING:
-                self.stateWidget.btnStart.setStyleSheet("background-color: green")
+            if state_as_state == self.module_states.FEEDBACKCONTROLLER.RUNNING:
+                self.state_widget.btn_start.setStyleSheet("background-color: green")
             else:
-                self.stateWidget.btnStart.setStyleSheet("background-color: none")
+                self.state_widget.btn_start.setStyleSheet("background-color: none")
 
         except Exception as e:
             print(e)

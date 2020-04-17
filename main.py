@@ -3,18 +3,13 @@
     That is why classes have already been imported using a wildcard (*)
     Make sure that the requested class are also in widgets/__init__.py 
 """
-
 import sys
-import traceback
-# import qdarkgraystyle
 
 from PyQt5 import QtWidgets
 
 from modules import *
 from modules import JOANMenuAction, JOANMenuWindow
 from modules.joanmodules import JOANModules
-from process import Status
-from process import MasterStates
 
 if __name__ == '__main__':
     APP = QtWidgets.QApplication(sys.argv)

@@ -15,9 +15,9 @@ class JOANMenuAction(QtCore.QObject):
 
         # status, statehandlers and news
         self.singleton_status = Status({})
-        self.master_state_handler = self.singleton_status.masterStateHandler
-        self.master_states = self.singleton_status.masterStates
-        self.master_state_handler.stateChanged.connect(self.handle_master_state)
+        self.master_state_handler = self.singleton_status.master_state_handler
+        self.master_states = self.singleton_status.master_states
+        self.master_state_handler.state_changed.connect(self.handle_master_state)
 
         self.singleton_news = News({})
         # self._data = {}
@@ -97,7 +97,7 @@ class JOANMenuAction(QtCore.QObject):
         GUI reflect the possibilities of the current state.
         """
         try:
-            state_as_state = self.master_state_handler.getState(state)  # ensure we have the State object (not the int)
+            state_as_state = self.master_state_handler.get_state(state)  # ensure we have the State object (not the int)
 
             # emergency stop
             if state_as_state == self.master_states.ERROR:
@@ -108,10 +108,10 @@ class JOANMenuAction(QtCore.QObject):
 
     def emergency(self):
         """Emergency button processing"""
-        self.master_state_handler.requestStateChange(self.master_states.ERROR)
+        self.master_state_handler.request_state_change(self.master_states.ERROR)
 
     def quit(self):
-        self.master_state_handler.requestStateChange(self.master_states.QUIT)
+        self.master_state_handler.request_state_change(self.master_states.QUIT)
 
     @property
     def instantiated_modules(self):

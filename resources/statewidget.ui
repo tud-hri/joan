@@ -37,7 +37,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="lbModuleState">
+        <widget class="QLabel" name="lb_module_state">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
            <horstretch>0</horstretch>
@@ -82,7 +82,7 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <widget class="QPushButton" name="btnStart">
+        <widget class="QPushButton" name="btn_start">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -106,7 +106,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="btnStop">
+        <widget class="QPushButton" name="btn_stop">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -157,7 +157,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="inputTickMillis">
+        <widget class="QLineEdit" name="input_tick_millis">
          <property name="maximumSize">
           <size>
            <width>100</width>

@@ -15,45 +15,25 @@ from .states import State, MasterStates
 class StateHandler(QtCore.QObject):
     """
     """
-    
-    ## signals
-    #stateChanged = QtCore.Signal(int) #: Signal(int), emitted when the Lopes state has changed
-    stateChanged = QtCore.pyqtSignal(int)
-    
-    ## properties
+
+    # signals  
+    state_changed = QtCore.pyqtSignal(int)
+
+    # properties
     @property
     def state(self):
         """Property: get the current state"""
         return self._state
 
-
-    '''
-    @property   
-    def state_c_int(self):
-        return self._state_c_int
-
-    @property
-    def state_pointer(self):
-        return self._state_pointer
-    '''
-
-    ## Methods
+    # Methods
     def __init__(self, *args, **kwargs):
-    #def __init__(self, haptictrainer, *args, **kwargs):
         """ Initialize StateHandler. """
         QtCore.QObject.__init__(self)
-        #self._haptictrainer = haptictrainer # keep a reference to haptic trainer (our umbrella)
-        
-        # MasterStates (there is a MasterStates class and each module has its own ModuleStates)
-        #self._state = MasterStates.VOID
-        #self.states = MasterStates.states   # TODO voor moduleStates via arguments
-        self._state = 'firstState' in kwargs.keys() and kwargs['firstState'] or MasterStates.VOID
-        self.states = 'statesDict' in kwargs.keys() and kwargs['statesDict'] or {}
 
-        #self._state_c_int = ctypes.c_int(int(self._state))
-        #self._state_pointer = ctypes.addressof(self._state_c_int)
+        self._state = 'first_state' in kwargs.keys() and kwargs['first_state'] or MasterStates.VOID
+        self.states = 'states_dict' in kwargs.keys() and kwargs['states_dict'] or {}
 
-    def getState(self,no):
+    def get_state(self, no):
         """Given a state number (as an int), it returns the state object.
         Raises a KeyError if no state with the given number exists.
         If a state itself is given (i.e., an object of type State, it is
@@ -65,54 +45,45 @@ class StateHandler(QtCore.QObject):
                 return self.states[no]
             except KeyError:
                 # Raise a key error with better description
-                raise KeyError("No state with number %d"%no)
+                raise KeyError("No state with number %d" % no)
         else:
             raise TypeError("variable 'no' should be an int (or State).")
 
-    def requestStateChange(self, requestedstate):
+    def request_state_change(self, requested_state):
         """ Process requests for state change from outside """
-        # check if the change of state is allowed 
-        # (check for the allowed transitions)
-        
-        if self.isStateTransitionAllowed(self._state, requestedstate):
-        #if self.myStates.isStateTransitionAllowed(self._state, requestedstate):
-        #if STATES.isStateTransitionAllowed(self._state, requestedstate):
-            self._setState(requestedstate)
+        # check if the state transition is allowed
+
+        if self.is_state_transition_allowed(self._state, requested_state):
+            self._set_state(requested_state)
         else:
             raise RuntimeError('State change not allowed.')
-        
-    def allowedTransitions(self, currentstate):
+
+    def allowed_transitions(self, current_state):
         """ Return allowed state transitions for current state. """
-        state = currentstate
-        
+        state = current_state
+
         allowed_transitions = state.transitions
-        
-        allowed_transitions += (int(state),) # change to the same state is also allowed
-        
+
+        allowed_transitions += (int(state),)  # change to the same state is also allowed
+
         while state.parent:
             allowed_transitions += state.parent.transitions
             state = state.parent
 
         return allowed_transitions
-        
-    def isStateTransitionAllowed(self, currentstate, requestedstate):
+
+    def is_state_transition_allowed(self, currentstate, requested_state):
         """ Return true/false if state transition is allowed """
-        
-        allowed_transitions = self.allowedTransitions(currentstate)
+        allowed_transitions = self.allowed_transitions(currentstate)
 
-        if (requestedstate in allowed_transitions) or (-1 in allowed_transitions):
-            return True
-        else:
-            return False
+        return (requested_state in allowed_transitions) or (-1 in allowed_transitions)
 
-
-    def _setState(self, s):
+    def _set_state(self, s):
         """ Set the current state. """
         self._state = s
-        #self._state_c_int.value = int(self._state)
 
         # state is changed, emit signal to other objects
-        self.stateChanged.emit(int(self._state))
+        self.state_changed.emit(int(self._state))
 
-    def getCurrentState(self):
+    def get_current_state(self):
         return self._state

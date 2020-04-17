@@ -25,7 +25,7 @@ class JOANMenuWindow(QtWidgets.QMainWindow):
         # setup
         self.setWindowTitle('JOAN HQ')
         self._main_widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "joanmenu.ui"))
-        self._main_widget.lbl_master_state.setText(self.master_state_handler.getCurrentState().name)
+        self._main_widget.lbl_master_state.setText(self.master_state_handler.get_current_state().name)
         self.setCentralWidget(self._main_widget)
         self.resize(400, 400)
 
@@ -72,14 +72,14 @@ class JOANMenuWindow(QtWidgets.QMainWindow):
             widget.btn_show.clicked.connect(module_widget.show)
             widget.btn_close.clicked.connect(module_widget.close)
 
-            action.module_state_handler.stateChanged.connect(lambda state: widget.lbl_state.setText(action.module_state_handler.getState(state).name))
+            action.module_state_handler.state_changed.connect(lambda state: widget.lbl_state.setText(action.module_state_handler.get_state(state).name))
         else:
             widget.btn_show.clicked.connect(module_widget._show)
             widget.btn_close.clicked.connect(module_widget._close)
 
-            widget.lbl_state.setText(module_widget.moduleStateHandler.getCurrentState().name)
-            module_widget.moduleStateHandler.stateChanged.connect(
-                lambda state: widget.lbl_state.setText(module_widget.moduleStateHandler.getState(state).name)
+            widget.lbl_state.setText(module_widget.module_state_handler.get_current_state().name)
+            module_widget.module_state_handler.state_changed.connect(
+                lambda state: widget.lbl_state.setText(module_widget.module_state_handler.get_state(state).name)
             )
 
         # add it to the layout

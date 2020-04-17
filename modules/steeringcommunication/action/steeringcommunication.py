@@ -9,32 +9,32 @@ import platform
 class SteeringcommunicationAction(Control):
     def __init__(self, *args, **kwargs):
         Control.__init__(self,*args, **kwargs)
-        self.moduleStates = None
-        self.moduleStateHandler = None
+        self.module_states = None
+        self.module_state_handler = None
         try:
-            statePackage = self.getModuleStatePackage(module='modules.steeringcommunication.widget.steeringcommunication.SteeringcommunicationWidget')
-            self.moduleStates = statePackage['moduleStates']
-            self.moduleStateHandler = statePackage['moduleStateHandler']
+            state_package = self.get_module_state_package(module='modules.steeringcommunication.widget.steeringcommunication.SteeringcommunicationWidget')
+            self.module_states = state_package['module_states']
+            self.module_state_handler = state_package['module_state_handler']
         except:
             pass
         # get state information from module Widget
-        #self.moduleStates = 'moduleStates' in kwargs.keys() and kwargs['moduleStates'] or None
-        #self.moduleStateHandler = 'moduleStateHandler' in kwargs.keys() and kwargs['moduleStateHandler'] or None
+        #self.module_states = 'module_states' in kwargs.keys() and kwargs['module_states'] or None
+        #self.module_state_handler = 'module_state_handler' in kwargs.keys() and kwargs['module_state_handler'] or None
 
-        #self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)),"steeringcommunication.ui"))
+        #self.create_widget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)),"steeringcommunication.ui"))
         #self.data = {}
         #self.data['throttle'] = 0
         #self.data['damping'] = 0
-        #self.writeNews(channel=self, news=self.data)
+        #self.write_news(channel=self, news=self.data)
 
-        # creating a self.moduleStateHandler which also has the moduleStates in self.moduleStateHandler.states
-        #self.defineModuleStateHandler(module=self, moduleStates=SteeringcommunicationStates())
-        #self.moduleStateHandler.stateChanged.emit(self.moduleStateHandler.state)
-        #self.moduleStateHandler.stateChanged.connect(self.handlemodulestate)
-        #self.masterStateHandler.stateChanged.connect(self.handlemasterstate)
+        # creating a self.module_state_handler which also has the module_states in self.module_state_handler.states
+        #self.define_module_state_handler(module=self, module_states=SteeringcommunicationStates())
+        #self.module_state_handler.state_changed.emit(self.module_state_handler.state)
+        #self.module_state_handler.state_changed.connect(self.handle_module_state)
+        #self.master_state_handler.state_changed.connect(self.handle_master_state)
 
 
-        #print('News in action/steeringcommunication.py', self.getAllNews())
+        #print('News in action/steeringcommunication.py', self.get_all_news())
 
         # Declare variables
         self.objPCAN = None
@@ -80,33 +80,33 @@ class SteeringcommunicationAction(Control):
                 self.initMSG.DATA[7] =  0
                 
 
-                self.moduleStateHandler.requestStateChange(self.moduleStates.STEERINGWHEEL.INITIALIZED)
+                self.module_state_handler.request_state_change(self.module_states.STEERINGWHEEL.INITIALIZED)
                 self.ready()
             else:
-                self.moduleStateHandler.requestStateChange(self.moduleStates.STEERINGWHEEL.ERROR.INIT)
+                self.module_state_handler.request_state_change(self.module_states.STEERINGWHEEL.ERROR.INIT)
                 self.stop()
 
         except Exception as inst:
             traceback.print_exc(file=sys.stdout)
 
-            print(self.moduleStates)
-            self.moduleStateHandler.requestStateChange(self.moduleStates.STEERINGWHEEL.ERROR.INIT)
+            print(self.module_states)
+            self.module_state_handler.request_state_change(self.module_states.STEERINGWHEEL.ERROR.INIT)
             
             print('In initialize of action/steeringcommunication',inst)
             self.stop()
 
 
     def ready(self):
-        if(self.moduleStateHandler._state is self.moduleStates.STEERINGWHEEL.INITIALIZED):
-            self.moduleStateHandler.requestStateChange(self.moduleStates.STEERINGWHEEL.READY)
+        if(self.module_state_handler._state is self.module_states.STEERINGWHEEL.INITIALIZED):
+            self.module_state_handler.request_state_change(self.module_states.STEERINGWHEEL.READY)
 
     def start(self):
         print('Pressed Start')
-        if(self.moduleStateHandler._state is self.moduleStates.STEERINGWHEEL.READY):
-            self.moduleStateHandler.requestStateChange(self.moduleStates.STEERINGWHEEL.ON)
+        if(self.module_state_handler._state is self.module_states.STEERINGWHEEL.READY):
+            self.module_state_handler.request_state_change(self.module_states.STEERINGWHEEL.ON)
 
     def stop(self):
         print('Pressed Stop')
-        if(self.moduleStateHandler._state is self.moduleStates.STEERINGWHEEL.ON):
-            self.moduleStateHandler.requestStateChange(self.moduleStates.STEERINGWHEEL.READY)
+        if(self.module_state_handler._state is self.module_states.STEERINGWHEEL.ON):
+            self.module_state_handler.request_state_change(self.module_states.STEERINGWHEEL.READY)
 
