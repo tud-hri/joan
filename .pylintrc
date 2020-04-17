@@ -3,7 +3,7 @@ max-line-length=160
 [MASTER]
 disable=I0011,I0013,E1121,E1126
 [TYPECHECK]
-ignored-modules=pygame,numpy,configparser,ConfigParser
+ignored-modules=pygame,numpy,configparser,ConfigParser,PyQt5
 
 # Classes are to be named in mixed case, with the first letter capitalized,
 # each word separated by having its first letter capitalized.
@@ -20,4 +20,5 @@ ignored-modules=pygame,numpy,configparser,ConfigParser
 # FooBar, Foo, FOO, foo_bar
 # variable-rgx=([a-z_][a-zA-Z0-9]*)$
 
+# Attributes also in camelCase
 # attr-rgx=([a-z_][a-zA-Z0-9]*)$

@@ -18,6 +18,9 @@ class MainModuleWidget(QMainWindow):
         super().__init__()
 
         self._showClosePrompt = kwargs['showcloseprompt'] if 'showcloseprompt' in kwargs.keys() else False
+        windowName = kwargs['name'] if 'name' in kwargs.keys() else ''
+        self.setWindowTitle(windowName)
+
         # main widget
         self.mainWidget = QWidget()
 
@@ -81,4 +84,3 @@ class MainModuleWidget(QMainWindow):
             # window is closed, emit closed signal and accept the event
             self.closed.emit()
             event.accept()
-             

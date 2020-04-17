@@ -4,7 +4,7 @@ from process import Control
 import numpy as np
 import math
 import copy
-import pandas as pd
+# import pandas as pd
 import time
 # #overriding the showpopup so that we can add new trajectories in the combobox on the go
 # class ComboBox(QtWidgets.QComboBox):

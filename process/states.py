@@ -124,6 +124,7 @@ class MasterStates:
     ERROR.INTERFACE.INIT_DEV        = State(154,  translate('ErrorStates', 'Error - Interface initialization, DEV'), 100,111,151,152,153)
     ERROR.EXPERIMENT                = State(155,  translate('ErrorStates', 'Error - Experiment'), -1, 150) 
 
+    QUIT                            = State(999, translate('Quit', 'Quit'), -1)
     '''
     States is only used by SingletonStatus
     __instance = None
