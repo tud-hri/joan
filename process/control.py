@@ -1,12 +1,30 @@
 """Base class for modules"""
 
-import os 
+import os
+import sys
 from PyQt5 import uic, QtCore
 
 from signals import Pulsar
 from .statehandler import StateHandler, MasterStates
 from .mainmodulewidget import MainModuleWidget
+from .settings import ModuleSettings
 
+
+class Settings:
+    '''
+    The Settings class is a singleton that holds settings of module, 
+    so they can be used from Experiment classes, using the module_key
+    '''
+    instance = None
+
+    def __new__(klass, *args, **kwargs):
+        if not klass.instance:
+            klass.instance = object.__new__(Settings)
+            klass.settings = {}
+        return klass.instance
+
+    def __init__(self, settingsDict):
+        self.settings.update(settingsDict)
 
 class News:
     '''
@@ -60,8 +78,11 @@ class Control(Pulsar):
         # for use in child classes
         self.singletonStatus = Status({})
         self.singletonNews = News({})
+        self.singletonSettings = Settings({})
         self.masterStateHandler = self.singletonStatus.masterStateHandler
         self.masterStates = self.singletonStatus.masterStates
+        #self.Settings(file=os.path.join(os.path.dirname(ui), 'modulesettings.json'))
+
 
         self.window = None  # main widget (container for widget and controlWidget)
         self.widget = None  # will contain a value after calling createWidget
@@ -79,6 +100,8 @@ class Control(Pulsar):
 
         # window is a QMainWindow, and the container for all widgets
         self.window = MainModuleWidget()
+
+        #self.settings = Settings(file=os.path.join(os.path.dirname(ui), 'modulesettings.json'))
 
         self.stateWidget = self._getGui(os.path.join(os.path.dirname(
             os.path.realpath(__file__)), "../resources/statewidget.ui"))
@@ -172,6 +195,22 @@ class Control(Pulsar):
         except Exception as e:
             print(e)
 
+    def createSettings(self, module='', file=''):
+        """ 
+        When called, other childs of Control can use these settings from modules
+        File should be placed within the calling module directory. 
+        When removing a module the corresponding settings are also removed, which is a good thing.
+        """
+        assert module != '', 'argument "module" should containt the name of the module, which is the calling class'
+        assert file != '', 'argument "file" should contain the full path with a filename that ends with ".json"'
+        assert file.endswith('.json'), 'argument "file" should contain the full path with a filename that ends with ".json"'
+        try:
+            moduleKey = '%s.%s' % (module.__class__.__module__, module.__class__.__name__)
+            settings = ModuleSettings(file=file)
+            self.singletonSettings = Settings({moduleKey: settings})
+        except Exception as e:
+            print('Exception in Control', e)
+
     def getAllNews(self):
         return self.singletonNews.news
 
@@ -189,3 +228,9 @@ class Control(Pulsar):
 
     def getModuleStatePackage(self, module=''):
         return module in self.getAvailableModuleStatePackages() and self.singletonStatus.moduleStatePackages[module] or {}
+
+    def getAvailableModuleSettings(self):
+        return self.singletonSettings.settings.keys()
+
+    def getModuleSettings(self, module=''):
+        return module in self.getAvailableModuleSettings() and self.singletonSettings.settings[module] or None

@@ -2,6 +2,7 @@ from process import Control
 from PyQt5 import uic, QtCore, QtGui
 import os
 import hid
+import platform 
 
 
 class HardwarecommunicationAction(Control):
@@ -223,6 +224,7 @@ class Joystick(BaseInput):
         # Open the desired device to read (find the device and vendor ID from printed list!!)
         self._joystick = hid.device()
 
+
         #Initialize Variables
         self.steer = 0
         self.throttle = 0
@@ -232,6 +234,7 @@ class Joystick(BaseInput):
             # self._joystick.open(121, 6) #  Playstation controller Zierikzee (vendor,product)
             ##self._joystick.open(1133, 49760) #logitech wheel CoRlab
             #self._joystick.open(16700, 8467) #Taranis Zierikzee
+            #self._joystick.open(vendor_id, product_id)
             self._joystick.open(1118, 736)
         except:
             print('Could not open joystick. Is it plugged in? Are the IDs correct?')

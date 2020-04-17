@@ -1,11 +1,9 @@
 import threading
 import io
 import csv
-from modules.datarecorder.action.datarecordersettings import DatarecorderSettings
-
 
 class DataWriter(threading.Thread):
-    def __init__(self, news=None, channels=[]):
+    def __init__(self, news=None, channels=[], settingsObject=None):
         threading.Thread.__init__(self)
         self.filehandle = None
         self.dictWriter = None
@@ -13,8 +11,8 @@ class DataWriter(threading.Thread):
         self.channels = channels
 
         self.fieldnames = []
-        self.datarecorderSettings = DatarecorderSettings()
-        self.settings = None
+        self.settingsObject = settingsObject
+        self.settingsDict = {}
 
     def run(self):
         print(self.is_alive())
@@ -25,17 +23,16 @@ class DataWriter(threading.Thread):
         for channel in self.channels:
             latestNews = self.news[channel]
             for key in latestNews:
-                if self.settings['modules'][channel][key] is True:
+                if self.settingsDict['data'][channel][key] is True:
                     row.append('%s.%s' % (channel.split('.')[1], key))
         self.columnnames(row)
-        print('first', row)
 
     def filterRow(self, news=None, channels=[]):
         row = {}
         for channel in channels:
             latestNews = news[channel]
             for key in latestNews:
-                if self.settings['modules'][channel][key] is True:
+                if self.settingsDict['data'][channel][key] is True:
                     row.update({'%s.%s' % (channel.split('.')[1], key): latestNews[key]})
         return row
 
@@ -48,11 +45,10 @@ class DataWriter(threading.Thread):
 
     def open(self, filename, buffersize=io.DEFAULT_BUFFER_SIZE):
         # renew settings
-        self.settings = self.datarecorderSettings.read()
+        self.settingsDict = self.settingsObject.read()
         self.filterFirstRow()
 
         # open file and write the first row
-        print('buffersize', buffersize)
         self.filehandle = open(filename, 'w', buffering=buffersize, newline='')
         self.dictWriter = csv.DictWriter(self.filehandle, fieldnames=self.getFirstRow())
         self.dictWriter.writeheader()
