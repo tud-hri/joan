@@ -1,0 +1,11 @@
+{
+    "data": {
+        "modules.carlainterface.widget.carlainterface.CarlainterfaceWidget": {
+            "vehicles": true
+        },
+        "modules.feedbackcontroller.widget.feedbackcontroller.FeedbackcontrollerWidget": {
+            "SteeringWheelAngle": true,
+            "Throttle": true
+        }
+    }
+}

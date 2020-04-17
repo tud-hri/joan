@@ -31,7 +31,7 @@ class JoanModuleAction(QtCore.QObject):
 
         # initialize own data and create channel in news
         self.data = {}
-        self.write_news(news=self.data)
+        # self.write_news(news=self.data)
 
         self.module_state_handler.stateChanged.connect(self.handle_module_state)
         self.master_state_handler.stateChanged.connect(self.handle_master_state)

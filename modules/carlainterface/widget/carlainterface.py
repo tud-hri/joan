@@ -12,7 +12,7 @@ class CarlainterfaceWidget(Control):
         kwargs['callback'] = [self.do]  # method will run each given millis
 
         Control.__init__(self, *args, **kwargs)
-        self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)), "carlainterfaceWidget.ui"))
+        self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)), "carlainterface.ui"))
 
         self.data = {}
         self.data['vehicles'] = None

@@ -26,7 +26,7 @@ if __name__ == '__main__':
     # adding modules (instantiates them too)
     JOANMENUWINDOW.add_module(JOANModules.TEMPLATE)
     JOANMENUWINDOW.add_module(JOANModules.DATA_RECORDER)
-    # JOANMENU.add_module(JOANModules.FEED_BACK_CONTROLLER)
+    JOANMENUWINDOW.add_module(JOANModules.FEED_BACK_CONTROLLER)
     JOANMENUWINDOW.add_module(JOANModules.CARLA_INTERFACE)
 
     # # printing widget folders
