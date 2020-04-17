@@ -44,13 +44,15 @@ class HardwarecommunicationWidget(Control):
     def do(self):
         self._inputlist = self.action.input_devices_classes
         self._input_data.clear()
+        
         for key in self._inputlist:
             try:
                 self._input_data[key] = self._inputlist[key].process()
                 self.writeNews(channel=self, news=self._input_data)
             except Exception as inst:
-                print("Error in Do of hardware comm is:", inst)
-        
+                    print("Error in Do of hardware comm is:", inst)
+                    pass
+            
 
 
     @QtCore.pyqtSlot(str)

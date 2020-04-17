@@ -87,16 +87,6 @@ class BaseInput():
 
         self.currentInput = 'None'
 
-        #self._carla_interface_data = {}
-
-        # #already list the input devices here:
-        # for self._devices in hid.enumerate():
-        #     keys = list(self._devices.keys())
-        #     keys.sort()
-        #     for key in keys:
-        #         print("%s : %s" % (key, self._devices[key]))
-        #     print()
-
     def process(self):
         return self._data
 
@@ -116,9 +106,6 @@ class Keyboard(BaseInput):
         self._keyboard_tab = keyboard_tab
         self._parentWidget.widget.hardware_list_layout.addWidget(self._keyboard_tab)
 
-
-
-
         # Initialize needed variables:
         self._throttle = False
         self._brake = False
@@ -132,7 +119,6 @@ class Keyboard(BaseInput):
         self._already_added = [None] * 10
         self.k = 0
         self.i = 0
-
 
         # Load the appropriate settings window and show it:
         self._settings_tab = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "UIs/keyboard_settings_ui.ui"))
@@ -161,13 +147,10 @@ class Keyboard(BaseInput):
         self._parentWidget.window.keyPressEvent = self.key_press_event
         self._parentWidget.window.keyReleaseEvent = self.key_release_event
 
-        
-
     def settings_update_sliders(self):
         self._settings_tab.label_steer_sensitivity.setText(str(self._settings_tab.slider_steer_sensitivity.value()))
         self._settings_tab.label_throttle_sensitivity.setText(str(self._settings_tab.slider_throttle_sensitivity.value()))
         self._settings_tab.label_brake_sensitivity.setText(str(self._settings_tab.slider_brake_sensitivity.value()))
-
 
     def settings_set_newvalues(self):
         self._min_steer = int(self._settings_tab.line_edit_min_steer.text())
@@ -177,16 +160,6 @@ class Keyboard(BaseInput):
         self._brake_sensitivity = self._settings_tab.slider_brake_sensitivity.value()
         self._throttle_sensitivity = self._settings_tab.slider_throttle_sensitivity.value()
     
-
-
- 
-
-
-
-
-
-
-
     def settings_set_default_values(self):
         # Keys
         self._steer_left_key = QtCore.Qt.Key_A
@@ -329,14 +302,15 @@ class Keyboard(BaseInput):
 
     def process(self):
         # # If there are cars in the simulation add them to the controllable car combobox
-        self._carla_interface_data = (self._parentWidget.readNews('modules.carlainterface.widget.carlainterface.CarlainterfaceWidget'))
+        if(self._carla_interface_data['vehicles'] is not None):
+            self._carla_interface_data = (self._parentWidget.readNews('modules.carlainterface.widget.carlainterface.CarlainterfaceWidget'))
 
-        for vehicles in self._carla_interface_data['vehicles']:
-            if vehicles.selected_input == self._keyboard_tab.groupBox.title():
-                self._keyboard_tab.btn_remove_hardware.setEnabled(False)
-                break
-            else:
-                self._keyboard_tab.btn_remove_hardware.setEnabled(True)
+            for vehicles in self._carla_interface_data['vehicles']:
+                if vehicles.selected_input == self._keyboard_tab.groupBox.title():
+                    self._keyboard_tab.btn_remove_hardware.setEnabled(False)
+                    break
+                else:
+                    self._keyboard_tab.btn_remove_hardware.setEnabled(True)
 
         # Throttle:
         if(self._throttle and self._data['ThrottleInput'] < 100):
@@ -366,10 +340,6 @@ class Keyboard(BaseInput):
         # Handbrake
         self._data['Handbrake'] = self._handbrake
 
-        # Target Vehicle:
-        # if self._carla_interface_data['vehicles']:
-        #     self._data['TargetVehicle'] = self._keyboard_tab.combo_target_vehicle.currentIndex()
-        # self.old_nr_vehicles = new_nr_vehicles
         return self._data
 
 
@@ -397,16 +367,17 @@ class Mouse(BaseInput):
         pass
 
     def process(self):
-        self._carla_interface_data = (self._parentWidget.readNews('modules.carlainterface.widget.carlainterface.CarlainterfaceWidget'))
+        if(self._carla_interface_data['vehicles'] is not None):
+            self._carla_interface_data = (self._parentWidget.readNews('modules.carlainterface.widget.carlainterface.CarlainterfaceWidget'))
 
-        for vehicles in self._carla_interface_data['vehicles']:
-            if vehicles.selected_input == self._mouse_tab.groupBox.title():
-                self._mouse_tab.btn_remove_hardware.setEnabled(False)
-                break
-            else:
-                self._mouse_tab.btn_remove_hardware.setEnabled(True)
+            for vehicles in self._carla_interface_data['vehicles']:
+                if vehicles.selected_input == self._mouse_tab.groupBox.title():
+                    self._mouse_tab.btn_remove_hardware.setEnabled(False)
+                    break
+                else:
+                    self._mouse_tab.btn_remove_hardware.setEnabled(True)
 
-        return self._data
+            return self._data
 
 # Arbitratry Joystick
 class Joystick(BaseInput):
@@ -418,23 +389,52 @@ class Joystick(BaseInput):
 
         self._joystick_tab.btn_remove_hardware.clicked.connect(self.remove_tab)
 
-        # self._joystickTab.btnUse.clicked.connect(self.setCurrentInput)
-
-        # Open the desired device to read (find the device and vendor ID from printed list!!)
         self._joystick = hid.device()
 
-        # Initialize Variables
+        # Load the appropriate settings tab and show it:
+        self._settings_tab = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "UIs/joystick_settings_ui.ui"))
+        self._settings_tab.show()
+
+        self._settings_tab.button_box_settings.button(self._settings_tab.button_box_settings.Save).clicked.connect(self.settings_set_newvalues)
+        self._settings_tab.button_box_settings.button(self._settings_tab.button_box_settings.RestoreDefaults).clicked.connect(self.settings_set_default_values)
+        self._joystick_tab.btn_settings.clicked.connect(self._settings_tab.show)
+
+        self._available_devices = []
+
+        self.settings_set_default_values()
+
+        for self._devices in hid.enumerate():
+            self._settings_tab.combo_available_devices.addItem(self._devices['product_string'])
+            self._available_devices.append(self._devices)
+
+        self._settings_tab.combo_available_devices.currentTextChanged.connect(self.selected_input)
+
+    def selected_input(self):
+        for device in self._available_devices:
+            if device['product_string'] == self._settings_tab.combo_available_devices.currentText():
+                chosen_device = device
+
+        self._joystick.open(chosen_device['vendor_id'], chosen_device['product_id'])
+  
+
+    def settings_set_newvalues(self):
+        self._min_steer = int(self._settings_tab.line_edit_min_steer.text())
+        self._max_steer = int(self._settings_tab.line_edit_max_steer.text())
+
+    def settings_set_default_values(self):
+        # Steering Range
+        self._min_steer = -90
+        self._max_steer = 90
+
+        # Input defaults:
+        self.brake = 0
         self.steer = 0
         self.throttle = 0
-        self.brake = 0
+        self.handbrake = False
+        self.reverse = False
 
-        try:
-            # self._joystick.open(121, 6) #  Playstation controller Zierikzee (vendor,product)
-            # self._joystick.open(1133, 49760) #logitech wheel CoRlab
-            # self._joystick.open(16700, 8467) #Taranis Zierikzee
-            self._joystick.open(1118, 736)
-        except:
-            print('Could not open joystick. Is it plugged in? Are the IDs correct?')
+        self._settings_tab.line_edit_min_steer.setText(str(self._min_steer))
+        self._settings_tab.line_edit_max_steer.setText(str(self._max_steer))
 
     def remove_tab(self):
         self._parentWidget.do()
@@ -442,51 +442,44 @@ class Joystick(BaseInput):
         self._parentWidget.widget.hardware_list_layout.removeWidget(self._joystick_tab)
         self._joystick_tab.setParent(None)
 
-    def displayInputs(self):
-        # update sliders
-        # self._parentWidget.widget.sliderThrottle.setValue(self._data['ThrottleInput'])
-        # self._parentWidget.widget.sliderSteering.setValue(self._data['SteeringInput'])
-        # self._parentWidget.widget.sliderBrake.setValue(self._data['BrakeInput'])
-
-        # set values next to sliders:
-        # self._parentWidget.widget.lblThrottle.setText(str(self._data['ThrottleInput']))
-        # self._parentWidget.widget.lblSteering.setText(str(self._data['SteeringInput']))
-        # self._parentWidget.widget.lblBrake.setText(str(self._data['BrakeInput']))
-        pass
-
-    def setCurrentInput(self):
-        # self._parentWidget.widget.sliderThrottle.setEnabled(False)
-        # self._parentWidget.widget.sliderSteering.setEnabled(False)
-        # self._parentWidget.widget.sliderBrake.setEnabled(False)
-        self.currentInput = 'Joystick'
-        self.changeInputSource()
-
     def process(self):
-        self._carla_interface_data = (self._parentWidget.readNews('modules.carlainterface.widget.carlainterface.CarlainterfaceWidget'))
+        if(self._carla_interface_data['vehicles'] is not None):
+            self._carla_interface_data = (self._parentWidget.readNews('modules.carlainterface.widget.carlainterface.CarlainterfaceWidget'))
 
-        for vehicles in self._carla_interface_data['vehicles']:
-            if vehicles.selected_input == self._joystick_tab.groupBox.title():
-                self._joystick_tab.btn_remove_hardware.setEnabled(False)
-                break
+            for vehicles in self._carla_interface_data['vehicles']:
+                if vehicles.selected_input == self._joystick_tab.groupBox.title():
+                    self._joystick_tab.btn_remove_hardware.setEnabled(False)
+                    break
+                else:
+                    self._joystick_tab.btn_remove_hardware.setEnabled(True)
+
+        joystickdata = []
+        joystickdata = self._joystick.read(64, 64)
+
+        if joystickdata != []:
+            self.throttle = 100 - round((((joystickdata[9])/128))*100)
+            if(self.throttle > 0):
+                self.throttle = self.throttle
+                self.brake = 0
+            elif(self.throttle < 0):
+                temp = self.throttle
+                self.throttle = 0
+                self.brake = -temp
+
+            if joystickdata[10] == 2:
+                self.handbrake = True
+            elif joystickdata[10] == 8:
+                self.reverse = True
             else:
-                self._joystick_tab.btn_remove_hardware.setEnabled(True)
-        # joystickdata = []
-        # joystickdata = self._joystick.read(64, 64)
+                self.handbrake = False
+                self.reverse = False
 
-        # if joystickdata != []:
-        #     self.throttle = 100 - round((((joystickdata[9])/128))*100)
-        #     if joystickdata[10] == 2:
-        #         self.brake = 80
-        #     else:
-        #         self.brake = 0
-
-        #     self.steer = round((((joystickdata[0]) + (joystickdata[1])*256)/(256*256))*180 - 90)
-        #     print(joystickdata)
-        # self._data['BrakeInput'] = self.brake
-        # self._data['ThrottleInput'] = self.throttle
-        # self._data['SteeringInput'] = self.steer
-
-        # self.displayInputs()
+            self.steer = round((((joystickdata[0]) + (joystickdata[1])*256)/(256*256))*(self._max_steer - self._min_steer) - self._max_steer)
+        self._data['BrakeInput'] = self.brake
+        self._data['ThrottleInput'] = self.throttle
+        self._data['SteeringInput'] = self.steer
+        self._data['Handbrake'] = self.handbrake
+        self._data['Reverse'] = self.reverse
 
         return self._data
 
@@ -507,11 +500,12 @@ class SensoDrive(BaseInput):
         self._sensodrive_tab.setParent(None)
 
     def process(self):
-        for vehicles in self._carla_interface_data['vehicles']:
-            if vehicles.selected_input == self._sensodrive_tab.groupBox.title():
-                self._sensodrive_tab.btn_remove_hardware.setEnabled(False)
-                break
-            else:
-                self._sensodrive_tab.btn_remove_hardware.setEnabled(True)
-            
+        if(self._carla_interface_data['vehicles'] is not None):
+            for vehicles in self._carla_interface_data['vehicles']:
+                if vehicles.selected_input == self._sensodrive_tab.groupBox.title():
+                    self._sensodrive_tab.btn_remove_hardware.setEnabled(False)
+                    break
+                else:
+                    self._sensodrive_tab.btn_remove_hardware.setEnabled(True)
+                
         return self._data

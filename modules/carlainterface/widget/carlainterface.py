@@ -60,8 +60,6 @@ class CarlainterfaceWidget(Control):
         self.data['vehicles'] = self.vehicles
         self.writeNews(channel=self, news=self.data)
 
-        print(self.data)
-
         self._data_from_hardware = self.readNews('modules.hardwarecommunication.widget.hardwarecommunication.HardwarecommunicationWidget')
         try:
             for items in self.vehicles:

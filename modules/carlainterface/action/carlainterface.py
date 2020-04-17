@@ -42,7 +42,6 @@ class Carlacommunication():
         try:
             print(' connecting')
             client = carla.Client(self.host, self.port)  # connecting to server
-            # self._parentWidget.lblModuleState.setText('Connecting')
             client.set_timeout(2.0)
             time.sleep(2)
             Carlacommunication.world = client.get_world()  # get world object (contains everything)
@@ -143,18 +142,14 @@ class Carlavehicle(Carlacommunication):
             self._vehicleTab.btnDestroy.setEnabled(True)
             self._vehicleTab.spinSpawnpoints.setEnabled(False)
 
-    def getControldata(self):
-
-        pass
-
     def get_vehicle_id(self):
         return self._BP.id
 
     def applycontrol(self, data):
-        self._control.steer = data['Keyboard 1']['SteeringInput'] / 450
-        self._control.throttle = data['Keyboard 1']['ThrottleInput'] / 100
-        self._control.brake = data['Keyboard 1']['BrakeInput'] / 100
-        self._control.reverse = data['Keyboard 1']['Reverse']
-        self._control.hand_brake = data['Keyboard 1']['Handbrake']
-
-        self.spawnedVehicle.apply_control(self._control)
+        if self._selected_input != 'None':
+            self._control.steer = data[self._selected_input]['SteeringInput'] / 450
+            self._control.throttle = data[self._selected_input]['ThrottleInput'] / 100
+            self._control.brake = data[self._selected_input]['BrakeInput'] / 100
+            self._control.reverse = data[self._selected_input]['Reverse']
+            self._control.hand_brake = data[self._selected_input]['Handbrake']
+            self.spawnedVehicle.apply_control(self._control)
