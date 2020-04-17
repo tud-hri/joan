@@ -15,6 +15,7 @@ class CarlainterfaceWidget(Control):
         self.createWidget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)), "carlainterfaceWidget.ui"))
 
         self.data = {}
+        self.data['vehicles'] = None
         self._data_from_hardware = {}
         self.writeNews(channel=self, news=self.data)
         self.is_connected = False
@@ -25,7 +26,7 @@ class CarlainterfaceWidget(Control):
         self.masterStateHandler.stateChanged.connect(self.handlemasterstate)
 
         self.moduleStateHandler.requestStateChange(self.moduleStates.SIMULATION)
-        self.widget.spinVehicles.setRange(0, 1)
+        self.widget.spinVehicles.setRange(0, 5)
         self.widget.spinVehicles.lineEdit().setReadOnly(True)
 
         self.widget.spinVehicles.valueChanged.connect(self.update_cars)
@@ -42,6 +43,7 @@ class CarlainterfaceWidget(Control):
         self.widget.groupVehicles.setEnabled(self.is_connected)
         self.widget.spinVehicles.setEnabled(self.is_connected)
         self.widget.btnConnect.setEnabled(not self.is_connected)
+        self.do()
 
     def update_cars(self):
         # Delete excess vehicles if any
@@ -58,10 +60,15 @@ class CarlainterfaceWidget(Control):
         self.data['vehicles'] = self.vehicles
         self.writeNews(channel=self, news=self.data)
 
+        print(self.data)
+
         self._data_from_hardware = self.readNews('modules.hardwarecommunication.widget.hardwarecommunication.HardwarecommunicationWidget')
-        for items in self.vehicles:
-            if items.spawned:
-                items.applycontrol(self._data_from_hardware)
+        try:
+            for items in self.vehicles:
+                if items.spawned:
+                    items.applycontrol(self._data_from_hardware)
+        except Exception as inst:
+            print('Could not apply control', inst)
 
    
         
