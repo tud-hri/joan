@@ -4,6 +4,8 @@
 # Mac/OSX
 .DS_Store
 
+venv
+
 # Windows
 Thumbs.db
 
