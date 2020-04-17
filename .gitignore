@@ -5,6 +5,9 @@
 # Mac/OSX
 .DS_Store
 
+# python
+venv
+
 # Windows
 Thumbs.db
 
