@@ -206,7 +206,7 @@ class Keyboard(BaseInput):
         self._set_key_counter = 0
         self._settings_tab.label_steer_left.setStyleSheet("background-color: lightgreen")
 
-    def settings_key_press_event(self,event):
+    def settings_key_press_event(self, event):
         text = ""
         if self._settings_tab.btn_set_keys.isChecked():
             self._set_key_counter += 1

@@ -184,7 +184,7 @@ class Control(Pulsar):
         except Exception as e:
             print('Exception in Control', e)
 
-    def write_news(self, channel='', news={}):
+    def write_news(self, channel='', news=dict):
         """write new data to channel"""
 
         assert channel != '', 'argument "channel" should be the writer class'
@@ -235,4 +235,4 @@ class Control(Pulsar):
 
     def get_module_settings(self, module=''):
         return module in self.get_available_module_settings() and self.singleton_settings.settings[module] or None
-        
+

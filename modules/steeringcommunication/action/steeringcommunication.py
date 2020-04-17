@@ -8,7 +8,7 @@ import platform
 
 class SteeringcommunicationAction(Control):
     def __init__(self, *args, **kwargs):
-        Control.__init__(self,*args, **kwargs)
+        Control.__init__(self, *args, **kwargs)
         self.module_states = None
         self.module_state_handler = None
         try:

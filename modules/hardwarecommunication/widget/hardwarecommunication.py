@@ -100,7 +100,7 @@ class HardwarecommunicationWidget(Control):
                 self._stop()
 
             # update the state label
-            self.widget.lblState.setText(str(state_as_state))
+            self.widget.lbl_state.setText(str(state_as_state))
             self.widget.repaint()
 
         except Exception as inst:

@@ -93,7 +93,7 @@ class SteeringcommunicationWidget(Control):
                 self.stop()
 
             # update the state label
-            self.widget.lblState.setText(state_as_state.name)
+            self.widget.lbl_state.setText(state_as_state.name)
             self.widget.repaint()
 
         except Exception as inst:
@@ -114,7 +114,7 @@ class SteeringcommunicationWidget(Control):
                 self.stop()
 
             # update the state label
-            self.widget.lblState.setText(state_as_state.name)
+            self.widget.lbl_state.setText(state_as_state.name)
             self.widget.repaint()
 
 

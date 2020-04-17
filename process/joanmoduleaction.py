@@ -31,7 +31,7 @@ class JoanModuleAction(QtCore.QObject):
 
         # initialize own data and create channel in news
         self.data = {}
-        # self.write_news(news=self.data)
+        self.write_news(channel=self, news=self.data)
 
         self.module_state_handler.state_changed.connect(self.handle_module_state)
         self.master_state_handler.state_changed.connect(self.handle_master_state)
@@ -71,11 +71,17 @@ class JoanModuleAction(QtCore.QObject):
         if state_as_state == self.module_states.ERROR:
             self.stop_pulsar()
 
-    def write_news(self, news: dict):
+    def write_news(self, channel='', news=dict):
         """write new data to channel"""
-        assert isinstance(news, dict), 'argument "news" should be of type dict and will contain news(=data) of this channel'
 
-        self.singleton_news = News({self.module: news})
+        assert channel != '', 'argument "channel" should be the writer class'
+        assert type(news) == dict, 'argument "news" should be of type dict and will contain news(=data) of this channel'
+        try:
+            channel_key = '%s.%s' % (channel.__class__.__module__, channel.__class__.__name__)
+            # if channel_key not in self.get_available_news_channels():
+            self.singleton_news = News({channel_key: news})
+        except Exception as e:
+            print(e)
 
     def get_all_news(self):
         return self.singleton_news.news

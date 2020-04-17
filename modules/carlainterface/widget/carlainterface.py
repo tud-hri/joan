@@ -120,7 +120,7 @@ class CarlainterfaceWidget(Control):
                 self._stop()
 
             # update the state label
-            self.state_widget.lblState.setText(str(state_as_state))
+            self.state_widget.lbl_state.setText(str(state_as_state))
 
         except Exception as inst:
             print(inst)
