@@ -1,9 +1,9 @@
 """Base class for modules"""
 
 import os
-from PyQt5 import uic, QtCore, QtGui
+from PyQt5 import uic, QtCore
 
-from signals import Pulsar
+from .pulsar import Pulsar
 from .statehandler import StateHandler, MasterStates
 from .mainmodulewidget import MainModuleWidget
 from .settings import ModuleSettings

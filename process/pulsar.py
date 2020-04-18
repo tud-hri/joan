@@ -1,7 +1,4 @@
-import sys
 from PyQt5 import QtCore
-
-import sys
 
 class Pulsar(QtCore.QThread):
     '''
