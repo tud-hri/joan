@@ -1,3 +1,5 @@
+from PyQt5 import QtCore
+
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
 from .states import TemplateStates
@@ -9,11 +11,16 @@ class TemplateAction(JoanModuleAction):
 
         self.module_state_handler.request_state_change(TemplateStates.TEMPLATE.READY)
 
+        self.data['t'] = 0
+        self.write_news(channel=self, news=self.data)
+        self.time = QtCore.QTime()
+
     def do(self):
         """
         This function is called every controller tick of this module implement your main calculations here
         """
-        pass
+        self.data['t'] = self.time.elapsed()
+        self.write_news(channel=self, news=self.data)
 
     def initialize(self):
         """
@@ -24,6 +31,7 @@ class TemplateAction(JoanModuleAction):
     def start(self):
         try:
             self.module_state_handler.request_state_change(TemplateStates.TEMPLATE.RUNNING)
+            self.time.restart()
         except RuntimeError:
             return False
         return super().start()
@@ -31,6 +39,7 @@ class TemplateAction(JoanModuleAction):
     def stop(self):
         try:
             self.module_state_handler.request_state_change(TemplateStates.TEMPLATE.STOPPED)
+            self.time.stop()
         except RuntimeError:
             return False
         return super().start()

@@ -6,6 +6,9 @@
         "modules.feedbackcontroller.widget.feedbackcontroller.FeedbackcontrollerWidget": {
             "SteeringWheelAngle": true,
             "Throttle": true
+        },
+        "modules.template.action.templateaction.TemplateAction": {
+            "t": false
         }
     }
 }

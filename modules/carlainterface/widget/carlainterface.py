@@ -141,7 +141,7 @@ class CarlainterfaceWidget(Control):
                 self._stop()
 
             # update the state label
-            self.state_widget.lblModuleState.setText(str(state_as_state.name))
+            self.state_widget.lbl_module_state.setText(str(state_as_state.name))
 
             if state_as_state == self.module_states.SIMULATION.RUNNING:
                 self.state_widget.btn_start.setStyleSheet("background-color: green")
