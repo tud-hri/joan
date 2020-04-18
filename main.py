@@ -7,28 +7,22 @@ import sys
 
 from PyQt5 import QtWidgets
 
-from modules import *
-from modules import JOANMenuAction, JOANMenuWindow
 from modules.joanmodules import JOANModules
+from process import JoanHQAction, JoanHQWindow
+
 
 if __name__ == '__main__':
     APP = QtWidgets.QApplication(sys.argv)
 
-    JOANMENUACTION = JOANMenuAction()
-    JOANMENUWINDOW = JOANMenuWindow(JOANMENUACTION)
-    JOANMENUWINDOW.show()
+    JOANHQACTION = JoanHQAction()
+    JOANHQWINDOW = JoanHQWindow(JOANHQACTION)
+    JOANHQACTION.window = JOANHQWINDOW
+    JOANHQWINDOW.show()
 
     # adding modules (instantiates them too)
-    JOANMENUWINDOW.add_module(JOANModules.TEMPLATE)
-    JOANMENUWINDOW.add_module(JOANModules.DATA_RECORDER)
-    JOANMENUWINDOW.add_module(JOANModules.FEED_BACK_CONTROLLER)
-    JOANMENUWINDOW.add_module(JOANModules.CARLA_INTERFACE)
-
-    # # printing widget folders
-    # WIDGETFOLDERS = os.listdir(os.path.join(os.path.dirname(os.path.realpath(__file__)), "modules"))
-    # for widgetfolder in WIDGETFOLDERS:
-    #     if widgetfolder not in ('__pycache__', 'interface', 'template', 'menu', '__init__.py'):
-    #         module = '%s%s' % (widgetfolder.title(), 'Widget')
-    #         print(module)
+    JOANHQACTION.add_module(JOANModules.TEMPLATE)
+    JOANHQACTION.add_module(JOANModules.DATA_RECORDER)
+    JOANHQACTION.add_module(JOANModules.FEED_BACK_CONTROLLER)
+    JOANHQACTION.add_module(JOANModules.CARLA_INTERFACE)
 
     APP.exec_()

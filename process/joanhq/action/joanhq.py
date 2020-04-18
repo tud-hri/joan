@@ -7,8 +7,8 @@ from modules.joanmodules import JOANModules
 from process import Status, News
 
 
-class JOANMenuAction(QtCore.QObject):
-    """Action class for JOANMenuWidget"""
+class JoanHQAction(QtCore.QObject):
+    """Action class for JoanHQ"""
 
     def __init__(self):
         super(QtCore.QObject, self).__init__()
@@ -22,6 +22,8 @@ class JOANMenuAction(QtCore.QObject):
         self.singleton_news = News({})
         # self._data = {}
         # self.write_news(news=self._data)
+
+        self.window = None
 
         # path to modules directory
         self.path_modules = os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../", "modules"))
@@ -69,6 +71,8 @@ class JOANMenuAction(QtCore.QObject):
 
             module_widget = module.dialog()
             module_widget.setObjectName(name)
+
+        self.window.add_module(module_widget)
 
         # add instantiated module to dictionary
         # note: here, we are storing the enums for easy access to both action and widget classes

@@ -7,8 +7,8 @@ from process.joanmoduleaction import JoanModuleAction
 from modules.joanmodules import JOANModules
 
 
-class JOANMenuWindow(QtWidgets.QMainWindow):
-    """JOAN Menu main window"""
+class JoanHQWindow(QtWidgets.QMainWindow):
+    """Joan HQ Window"""
 
     app_is_quiting = QtCore.pyqtSignal()
 
@@ -24,7 +24,7 @@ class JOANMenuWindow(QtWidgets.QMainWindow):
 
         # setup
         self.setWindowTitle('JOAN HQ')
-        self._main_widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "joanmenu.ui"))
+        self._main_widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "joanhq.ui"))
         self._main_widget.lbl_master_state.setText(self.master_state_handler.get_current_state().name)
         self.setCentralWidget(self._main_widget)
         self.resize(400, 400)
@@ -54,25 +54,23 @@ class JOANMenuWindow(QtWidgets.QMainWindow):
         self._file_menu.addAction('Add module...', self.process_menu_add_module)
         self._file_menu.addAction('Remove module...', self.process_menu_remove_module)
 
-    def add_module(self, module: JOANModules, name=''):
-        """Instantiate module, create a widget and add to main window"""
-        # instantiate module (in Action)
-        module_widget, action = self.action.add_module(module, name, parent=self)
-        if not module_widget:
-            return
+    def add_module(self, module_widget):
+        """Create a widget and add to main window"""
 
         # create a widget per module (show & close buttons, state)
-        name = str(module)
+        name = str(module_widget)
 
-        widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "modulewidget.ui"))
+        widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "modulecard.ui"))
         widget.setObjectName(name)
         widget.grpbox.setTitle(name)
 
-        if module is JOANModules.TEMPLATE:  # syntax is changed slightly in new example: wrapping show() in _show() is unnecessary
+        if isinstance(module_widget, JOANModules.TEMPLATE.dialog):  # syntax is changed slightly in new example: wrapping show() in _show() is unnecessary
             widget.btn_show.clicked.connect(module_widget.show)
             widget.btn_close.clicked.connect(module_widget.close)
 
-            action.module_state_handler.state_changed.connect(lambda state: widget.lbl_state.setText(action.module_state_handler.get_state(state).name))
+            module_widget.module_action.module_state_handler.state_changed.connect(
+                lambda state: widget.lbl_state.setText(module_widget.module_action.module_state_handler.get_state(state).name)
+            )
         else:
             widget.btn_show.clicked.connect(module_widget._show)
             widget.btn_close.clicked.connect(module_widget._close)
@@ -120,7 +118,6 @@ class JOANMenuWindow(QtWidgets.QMainWindow):
             self._main_widget.adjustSize()
             self.adjustSize()
 
-
     def closeEvent(self, event):
         """redefined closeEvent"""
 
@@ -138,4 +135,3 @@ class JOANMenuWindow(QtWidgets.QMainWindow):
             # if we end up here, it means we didn't want to quit
             # hence, ignore the event (for Qt)
             event.ignore()
-
