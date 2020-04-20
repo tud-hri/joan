@@ -7,16 +7,17 @@ import sys
 
 from PyQt5 import QtWidgets
 
-from modules import *
-from modules import JOANMenuAction, JOANMenuWindow
 from modules.joanmodules import JOANModules
+from process import JoanHQAction, JoanHQWindow
+
 
 if __name__ == '__main__':
     APP = QtWidgets.QApplication(sys.argv)
 
-    JOANMENUACTION = JOANMenuAction()
-    JOANMENUWINDOW = JOANMenuWindow(JOANMENUACTION)
-    JOANMENUWINDOW.show()
+    JOANHQACTION = JoanHQAction()
+    JOANHQWINDOW = JoanHQWindow(JOANHQACTION)
+    JOANHQACTION.window = JOANHQWINDOW
+    JOANHQWINDOW.show()
 
     # adding modules (instantiates them too)
     JOANMENUWINDOW.add_module(JOANModules.TEMPLATE)

@@ -39,7 +39,6 @@ class TemplateAction(JoanModuleAction):
     def stop(self):
         try:
             self.module_state_handler.request_state_change(TemplateStates.TEMPLATE.STOPPED)
-            self.time.stop()
         except RuntimeError:
             return False
         return super().start()
