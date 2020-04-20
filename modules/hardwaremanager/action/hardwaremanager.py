@@ -5,18 +5,18 @@ import hid
 import platform 
 
 
-class HardwarecommunicationAction(Control):
+class HardwaremanagerAction(Control):
     def __init__(self, *args, **kwargs):
         Control.__init__(self, *args, **kwargs)
         # get state information from module Widget
         self.module_states = 'module_states' in kwargs.keys() and kwargs['module_states'] or None
         self.module_state_handler = 'module_state_handler' in kwargs.keys() and kwargs['module_state_handler'] or None
-        HardwarecommunicationAction.input_devices_classes = {}
-        HardwarecommunicationAction.input_devices_widgets = {}
-        HardwarecommunicationAction._nr_of_mouses = 0
-        HardwarecommunicationAction._nr_of_keyboards = 0
-        HardwarecommunicationAction._nr_of_joysticks = 0
-        HardwarecommunicationAction._nr_of_sensodrives = 0
+        HardwaremanagerAction.input_devices_classes = {}
+        HardwaremanagerAction.input_devices_widgets = {}
+        HardwaremanagerAction._nr_of_mouses = 0
+        HardwaremanagerAction._nr_of_keyboards = 0
+        HardwaremanagerAction._nr_of_joysticks = 0
+        HardwaremanagerAction._nr_of_sensodrives = 0
 
         
 
@@ -24,61 +24,61 @@ class HardwarecommunicationAction(Control):
         self._selected_input_device = self.widget._input_type_dialog.combo_hardware_inputtype.currentText()
 
         if "Mouse" in self._selected_input_device:
-            HardwarecommunicationAction._nr_of_mouses = HardwarecommunicationAction._nr_of_mouses + 1
+            HardwaremanagerAction._nr_of_mouses = HardwaremanagerAction._nr_of_mouses + 1
             device_title = "Mouse " + str(self._nr_of_mouses)
-            HardwarecommunicationAction.input_devices_widgets.update(
+            HardwaremanagerAction.input_devices_widgets.update(
                 [(device_title, uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "UIs/hardware_tab.ui")))])
-            HardwarecommunicationAction.input_devices_classes.update([(device_title, Mouse(self, self.input_devices_widgets[device_title]))])
+            HardwaremanagerAction.input_devices_classes.update([(device_title, Mouse(self, self.input_devices_widgets[device_title]))])
 
         if "Keyboard" in self._selected_input_device:
-            HardwarecommunicationAction._nr_of_keyboards = HardwarecommunicationAction._nr_of_keyboards + 1
+            HardwaremanagerAction._nr_of_keyboards = HardwaremanagerAction._nr_of_keyboards + 1
             device_title = "Keyboard " + str(self._nr_of_keyboards)
-            HardwarecommunicationAction.input_devices_widgets.update(
+            HardwaremanagerAction.input_devices_widgets.update(
                 [(device_title, uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "UIs/hardware_tab.ui")))])
-            HardwarecommunicationAction.input_devices_classes.update([(device_title, Keyboard(self, self.input_devices_widgets[device_title]))])
+            HardwaremanagerAction.input_devices_classes.update([(device_title, Keyboard(self, self.input_devices_widgets[device_title]))])
 
         if "Joystick" in self._selected_input_device:
-            HardwarecommunicationAction._nr_of_joysticks = HardwarecommunicationAction._nr_of_joysticks + 1
+            HardwaremanagerAction._nr_of_joysticks = HardwaremanagerAction._nr_of_joysticks + 1
             device_title = "Joystick " + str(self._nr_of_joysticks)
-            HardwarecommunicationAction.input_devices_widgets.update(
+            HardwaremanagerAction.input_devices_widgets.update(
                 [(device_title, uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "UIs/hardware_tab.ui")))])
-            HardwarecommunicationAction.input_devices_classes.update([(device_title, Joystick(self, self.input_devices_widgets[device_title]))])
+            HardwaremanagerAction.input_devices_classes.update([(device_title, Joystick(self, self.input_devices_widgets[device_title]))])
 
         if "SensoDrive" in self._selected_input_device:
-            HardwarecommunicationAction._nr_of_sensodrives = HardwarecommunicationAction._nr_of_sensodrives + 1
+            HardwaremanagerAction._nr_of_sensodrives = HardwaremanagerAction._nr_of_sensodrives + 1
             device_title = "SensoDrive " + str(self._nr_of_sensodrives)
-            HardwarecommunicationAction.input_devices_widgets.update(
+            HardwaremanagerAction.input_devices_widgets.update(
                 [(device_title, uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "UIs/hardware_tab.ui")))])
-            HardwarecommunicationAction.input_devices_classes.update([(device_title, SensoDrive(self, self.input_devices_widgets[device_title]))])
+            HardwaremanagerAction.input_devices_classes.update([(device_title, SensoDrive(self, self.input_devices_widgets[device_title]))])
 
-        HardwarecommunicationAction.input_devices_widgets[device_title].groupBox.setTitle(device_title)
+        HardwaremanagerAction.input_devices_widgets[device_title].groupBox.setTitle(device_title)
         
-        #print(HardwarecommunicationAction.input_devices_classes)
+        #print(HardwaremanagerAction.input_devices_classes)
 
     def remove(tabtitle):
-        del HardwarecommunicationAction.input_devices_widgets[tabtitle]
-        del HardwarecommunicationAction.input_devices_classes[tabtitle]
+        del HardwaremanagerAction.input_devices_widgets[tabtitle]
+        del HardwaremanagerAction.input_devices_classes[tabtitle]
 
         if "Keyboard" in tabtitle:
-            HardwarecommunicationAction._nr_of_keyboards = HardwarecommunicationAction._nr_of_keyboards - 1
+            HardwaremanagerAction._nr_of_keyboards = HardwaremanagerAction._nr_of_keyboards - 1
 
         if "Mouse" in tabtitle:
-            HardwarecommunicationAction._nr_of_mouses = HardwarecommunicationAction._nr_of_mouses - 1
+            HardwaremanagerAction._nr_of_mouses = HardwaremanagerAction._nr_of_mouses - 1
 
         if "Joystick" in tabtitle:
-            HardwarecommunicationAction._nr_of_joysticks = HardwarecommunicationAction._nr_of_joysticks - 1
+            HardwaremanagerAction._nr_of_joysticks = HardwaremanagerAction._nr_of_joysticks - 1
 
         if "Sensodrive" in tabtitle:
-            HardwarecommunicationAction._nr_of_sensodrives = HardwarecommunicationAction._nr_of_sensodrives - 1
+            HardwaremanagerAction._nr_of_sensodrives = HardwaremanagerAction._nr_of_sensodrives - 1
 
-        #print(HardwarecommunicationAction.input_devices_classes)
+        #print(HardwaremanagerAction.input_devices_classes)
 
 
 class BaseInput():
-    def __init__(self, HardwarecommunicationWidget, HardwarecommunicationAction):
-        self._parentWidget = HardwarecommunicationWidget.widget
-        self._carla_interface_data = HardwarecommunicationWidget.read_news('modules.carlainterface.widget.carlainterface.CarlainterfaceWidget')
-        self._action = HardwarecommunicationAction
+    def __init__(self, HardwaremanagerWidget, HardwaremanagerAction):
+        self._parentWidget = HardwaremanagerWidget.widget
+        self._carla_interface_data = HardwaremanagerWidget.read_news('modules.carlainterface.widget.carlainterface.CarlainterfaceWidget')
+        self._action = HardwaremanagerAction
         self._data = {}
         self._data['SteeringInput'] = 0
         self._data['ThrottleInput'] = 0
@@ -102,8 +102,8 @@ class BaseInput():
 
 
 class Keyboard(BaseInput):
-    def __init__(self, HardwarecommunicationWidget, keyboard_tab):
-        BaseInput.__init__(self, HardwarecommunicationWidget, HardwarecommunicationAction)
+    def __init__(self, HardwaremanagerWidget, keyboard_tab):
+        BaseInput.__init__(self, HardwaremanagerWidget, HardwaremanagerAction)
         self._keyboard_tab = keyboard_tab
         self._parentWidget.widget.hardware_list_layout.addWidget(self._keyboard_tab)
 
@@ -345,8 +345,8 @@ class Keyboard(BaseInput):
 
 
 class Mouse(BaseInput):
-    def __init__(self, HardwarecommunicationWidget, mouse_tab):
-        BaseInput.__init__(self, HardwarecommunicationWidget, HardwarecommunicationAction)
+    def __init__(self, HardwaremanagerWidget, mouse_tab):
+        BaseInput.__init__(self, HardwaremanagerWidget, HardwaremanagerAction)
         self.currentInput = 'Mouse'
         # Add the tab to the widget
         self._mouse_tab = mouse_tab
@@ -382,8 +382,8 @@ class Mouse(BaseInput):
 
 # Arbitratry Joystick
 class Joystick(BaseInput):
-    def __init__(self, HardwarecommunicationWidget, joystick_tab):
-        BaseInput.__init__(self, HardwarecommunicationWidget, HardwarecommunicationAction)
+    def __init__(self, HardwaremanagerWidget, joystick_tab):
+        BaseInput.__init__(self, HardwaremanagerWidget, HardwaremanagerAction)
         self.currentInput = 'Joystick'
         self._joystick_tab = joystick_tab
         self._parentWidget.widget.hardware_list_layout.addWidget(self._joystick_tab)
@@ -489,8 +489,8 @@ class Joystick(BaseInput):
 
 
 class SensoDrive(BaseInput):
-    def __init__(self, HardwarecommunicationWidget, sensodrive_tab):
-        BaseInput.__init__(self, HardwarecommunicationWidget, HardwarecommunicationAction)
+    def __init__(self, HardwaremanagerWidget, sensodrive_tab):
+        BaseInput.__init__(self, HardwaremanagerWidget, HardwaremanagerAction)
         self.currentInput = 'SensoDrive'
         self._sensodrive_tab = sensodrive_tab
         self._parentWidget.widget.hardware_list_layout.addWidget(self._sensodrive_tab)

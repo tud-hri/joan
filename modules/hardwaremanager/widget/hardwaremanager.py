@@ -1,10 +1,10 @@
 from process import Control, State, translate
 from PyQt5 import QtCore, uic
-from modules.hardwarecommunication.action.states import HardwarecommunicationStates
-from modules.hardwarecommunication.action.hardwarecommunication import HardwarecommunicationAction, BaseInput
+from modules.hardwaremanager.action.states import HardwaremanagerStates
+from modules.hardwaremanager.action.hardwaremanager import HardwaremanagerAction, BaseInput
 import os
 
-class HardwarecommunicationWidget(Control):
+class HardwaremanagerWidget(Control):
     def __init__(self, *args, **kwargs):
         kwargs['millis'] = 'millis' in kwargs.keys() and kwargs['millis'] or 2
         kwargs['callback'] = [self.do]  # method will run each given millis
@@ -15,13 +15,13 @@ class HardwarecommunicationWidget(Control):
         self._inputlist = {}
         self.counter = 0
         # creating a self.module_state_handler which also has the module_states in self.module_state_handler.states
-        self.define_module_state_handler(module=self, module_states=HardwarecommunicationStates())
+        self.define_module_state_handler(module=self, module_states=HardwaremanagerStates())
         self.module_state_handler.state_changed.connect(self.handle_module_state)
         self.master_state_handler.state_changed.connect(self.handle_master_state)
         
         # use Action with state handling, using only this widgets state changes
         try:
-            self.action = HardwarecommunicationAction()
+            self.action = HardwaremanagerAction()
             self.action.widget = self
         except Exception as inst:
             print(inst)
@@ -67,7 +67,7 @@ class HardwarecommunicationWidget(Control):
         self.window.show()
         module_states_dict = self.module_states.get_states()
         for state in module_states_dict:
-            print('in HardwarecommunicationStates bij show', state, module_states_dict[state])
+            print('in HardwaremanagerStates bij show', state, module_states_dict[state])
 
 
     def start(self):

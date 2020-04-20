@@ -23,6 +23,7 @@ if __name__ == '__main__':
     JOANMENUWINDOW.add_module(JOANModules.DATA_RECORDER)
     JOANMENUWINDOW.add_module(JOANModules.FEED_BACK_CONTROLLER)
     JOANMENUWINDOW.add_module(JOANModules.CARLA_INTERFACE)
+    JOANMENUWINDOW.add_module(JOANModules.HARDWARE_MANAGER)
 
     # # printing widget folders
     # WIDGETFOLDERS = os.listdir(os.path.join(os.path.dirname(os.path.realpath(__file__)), "modules"))

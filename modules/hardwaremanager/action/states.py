@@ -1,6 +1,6 @@
 from process import State, MasterStates, translate
 
-class HardwarecommunicationStates(MasterStates):
+class HardwaremanagerStates(MasterStates):
     # SensoDrive states
     HARDWARECOMMUNICATION                   = State(200, translate('HardwarecommunicationState', 'Hardwarecommunication State'), -1,150)
     HARDWARECOMMUNICATION.STOPPED           = State(201, translate('HardwarecommunicationState', 'Hardwarecommunication Off'), -1,150, 202, 204,2040)
