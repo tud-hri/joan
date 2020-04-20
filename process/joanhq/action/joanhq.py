@@ -1,7 +1,6 @@
 """Action class for JOAN menu"""
 import os
-import sys
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore
 
 from modules.joanmodules import JOANModules
 from process import Status, News

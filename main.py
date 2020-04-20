@@ -20,17 +20,10 @@ if __name__ == '__main__':
     JOANHQWINDOW.show()
 
     # adding modules (instantiates them too)
-    JOANMENUWINDOW.add_module(JOANModules.TEMPLATE)
-    JOANMENUWINDOW.add_module(JOANModules.DATA_RECORDER)
-    JOANMENUWINDOW.add_module(JOANModules.FEED_BACK_CONTROLLER)
-    JOANMENUWINDOW.add_module(JOANModules.CARLA_INTERFACE)
-    JOANMENUWINDOW.add_module(JOANModules.HARDWARE_MANAGER)
-
-    # # printing widget folders
-    # WIDGETFOLDERS = os.listdir(os.path.join(os.path.dirname(os.path.realpath(__file__)), "modules"))
-    # for widgetfolder in WIDGETFOLDERS:
-    #     if widgetfolder not in ('__pycache__', 'interface', 'template', 'menu', '__init__.py'):
-    #         module = '%s%s' % (widgetfolder.title(), 'Widget')
-    #         print(module)
+    JOANHQACTION.add_module(JOANModules.TEMPLATE)
+    JOANHQACTION.add_module(JOANModules.DATA_RECORDER)
+    JOANHQACTION.add_module(JOANModules.FEED_BACK_CONTROLLER)
+    JOANHQACTION.add_module(JOANModules.CARLA_INTERFACE)
+    JOANHQACTION.add_module(JOANModules.HARDWARE_MANAGER)
 
     APP.exec_()
