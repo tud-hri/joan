@@ -94,7 +94,7 @@ class Carlavehicle(Carlacommunication):
         print(self._selected_input)
 
     def get_available_inputs(self):
-        self._hardware_data = self._parentWidget.read_news('modules.hardwarecommunication.widget.hardwarecommunication.HardwarecommunicationWidget')
+        self._hardware_data = self._parentWidget.read_news('modules.hardwaremanager.widget.hardwaremanager.HardwaremanagerWidget')
         for keys in self._hardware_data:
             self._vehicle_tab.combo_input.addItem(str(keys))
 

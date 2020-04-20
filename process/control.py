@@ -219,7 +219,10 @@ class Control(Pulsar):
         return self.singleton_news.news.keys()
 
     def read_news(self, channel=''):
-        return channel in self.get_available_news_channels() and self.singleton_news.news[channel] or {}
+        if channel not in self.get_available_news_channels():
+            raise ValueError('Trying to read news from '+channel+'... channel not found!')
+
+        return self.singleton_news.news[channel]
 
     def get_all_module_state_packages(self):
         return self.singleton_status.module_state_packages

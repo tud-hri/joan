@@ -60,7 +60,7 @@ class CarlainterfaceWidget(Control):
         self.data['vehicles'] = self.vehicles
         self.write_news(channel=self, news=self.data)
 
-        self._data_from_hardware = self.read_news('modules.hardwarecommunication.widget.hardwarecommunication.HardwarecommunicationWidget')
+        self._data_from_hardware = self.read_news('modules.hardwaremanager.widget.hardwaremanager.HardwaremanagerWidget')
         try:
             for items in self.vehicles:
                 if items.spawned:
