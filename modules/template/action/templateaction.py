@@ -12,7 +12,7 @@ class TemplateAction(JoanModuleAction):
         self.module_state_handler.request_state_change(TemplateStates.TEMPLATE.READY)
 
         self.data['t'] = 0
-        self.write_news(channel=self, news=self.data)
+        self.write_news(news=self.data)
         self.time = QtCore.QTime()
 
     def do(self):
@@ -20,7 +20,7 @@ class TemplateAction(JoanModuleAction):
         This function is called every controller tick of this module implement your main calculations here
         """
         self.data['t'] = self.time.elapsed()
-        self.write_news(channel=self, news=self.data)
+        self.write_news(news=self.data)
 
     def initialize(self):
         """
