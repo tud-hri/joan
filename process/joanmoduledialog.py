@@ -1,9 +1,9 @@
 import os
-import sys
 
-from PyQt5 import QtCore, QtGui, QtWidgets, uic
-from process.joanmoduleaction import JoanModuleAction
+from PyQt5 import QtWidgets, uic
+
 from modules.joanmodules import JOANModules
+from process.joanmoduleaction import JoanModuleAction
 
 
 class JoanModuleDialog(QtWidgets.QDialog):
@@ -69,20 +69,3 @@ class JoanModuleDialog(QtWidgets.QDialog):
             self.state_widget.btn_start.setStyleSheet("background-color: green")
         else:
             self.state_widget.btn_start.setStyleSheet("background-color: none")
-
-
-if __name__ == '__main__':
-    app = QtWidgets.QApplication(sys.argv)
-
-    callback_1 = lambda: print('Hello World')
-    action = JoanModuleAction(JOANModules.DATA_RECORDER, callbacks=[callback_1])
-    dialog = JoanModuleDialog(JOANModules.DATA_RECORDER, action)
-
-    dialog.show()
-
-    callback_2 = lambda: print('Olger is cool!')
-    action.add_callback(callback_2)
-    action.remove_callback(callback_2)
-    action.add_callback(callback_2)
-
-    app.exec_()

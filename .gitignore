@@ -42,5 +42,11 @@ __pycache__/
 pip-log.txt
 pip-delete-this-directory.txt
 
+# jetbrains
+.idea
+
 # ignore data files
 *.csv
+
+# ignore settings files
+*.json
