@@ -71,6 +71,13 @@ class JoanHQWindow(QtWidgets.QMainWindow):
             module_widget.module_action.module_state_handler.state_changed.connect(
                 lambda state: widget.lbl_state.setText(module_widget.module_action.module_state_handler.get_state(state).name)
             )
+        elif isinstance(module_widget, JOANModules.CARLA_INTERFACE.dialog):  # syntax is changed slightly in new example: wrapping show() in _show() is unnecessary
+            widget.btn_show.clicked.connect(module_widget.show)
+            widget.btn_close.clicked.connect(module_widget.close)
+
+            module_widget.module_action.module_state_handler.state_changed.connect(
+                lambda state: widget.lbl_state.setText(module_widget.module_action.module_state_handler.get_state(state).name)
+            )
         else:
             widget.btn_show.clicked.connect(module_widget._show)
             widget.btn_close.clicked.connect(module_widget._close)

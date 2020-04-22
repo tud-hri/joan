@@ -4,5 +4,5 @@
 from .datarecorder.widget.datarecorder import DatarecorderWidget
 from .hardwaremanager.widget.hardwaremanager import HardwaremanagerWidget
 from .feedbackcontroller.widget.feedbackcontroller import FeedbackcontrollerWidget
-from .carlainterface.widget.carlainterface import CarlainterfaceWidget
+from .carlainterface.dialog.carlainterfacedialog import CarlainterfaceDialog
 from .trajectoryrecorder.widget.trajectoryrecorder import TrajectoryrecorderWidget
