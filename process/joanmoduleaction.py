@@ -1,9 +1,10 @@
-from PyQt5 import QtWidgets, QtGui, QtCore
+from PyQt5 import QtCore
+
 from modules.joanmodules import JOANModules
-from process.control import Status, News
-from process.states import MasterStates
+from process.news import News
 from process.statehandler import StateHandler
-import abc
+from process.states import MasterStates
+from process.status import Status
 
 
 class JoanModuleAction(QtCore.QObject):
@@ -18,15 +19,16 @@ class JoanModuleAction(QtCore.QObject):
         self.timer.setInterval(millis)
         self.timer.timeout.connect(self.do)
 
-        self.singleton_status = Status({})
-        self.singleton_news = News({})
+        self.singleton_status = Status()
+        self.singleton_news = News()
 
         # initialize states and state handler
         self.master_state_handler = master_state_handler
         self.module_states = module.states()
         self.module_state_handler = StateHandler(first_state=MasterStates.VOID, states_dict=self.module_states.get_states())
         module_state_package = {'module_states': self.module_states, 'module_state_handler': self.module_state_handler}
-        self.singleton_status = Status({module: module_state_package})
+
+        self.singleton_status.register_module_state_package(module, module_state_package)
         self.handle_module_state(self.module_state_handler.state)
 
         # initialize own data and create channel in news
@@ -71,39 +73,29 @@ class JoanModuleAction(QtCore.QObject):
         if state_as_state == self.module_states.ERROR:
             self.stop_pulsar()
 
-    def write_news(self, news=dict):
+    def write_news(self, news: dict):
         """write new data to channel"""
         assert isinstance(news, dict), 'argument "news" should be of type dict and will contain news(=data) of this channel'
-        try:
-            channel_key = '%s.%s' % (self.__class__.__module__, self.__class__.__name__)
-            # if channel_key not in self.get_available_news_channels():
-            self.singleton_news = News({channel_key: news})
-        except ValueError as error:
-            print(error)
+
+        self.singleton_news.write_news(self.module, news)
 
     def get_all_news(self):
-        return self.singleton_news.news
+        return self.singleton_news.all_news
 
     def get_available_news_channels(self):
-        return self.singleton_news.news.keys()
+        return self.singleton_news.all_news_keys
 
     def read_news(self, channel):
-        try:
-            return self.singleton_news.news[channel]
-        except KeyError:
-            return {}
+        return self.singleton_news.read_news(channel)
 
     def get_all_module_state_packages(self):
-        return self.singleton_status.module_state_packages
+        return self.singleton_status.all_module_state_packages
 
     def get_available_module_state_packages(self):
-        return self.singleton_status.module_state_packages.keys()
+        return self.singleton_status.all_module_state_package_keys
 
     def get_module_state_package(self, module):
-        try:
-            return self.singleton_status.module_state_packages[module]
-        except KeyError:
-            return {}
+        return self.singleton_status.get_module_state_package(module)
 
     @property
     def millis(self):
