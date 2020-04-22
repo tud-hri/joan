@@ -1,0 +1,42 @@
+from process import Control, State, translate
+from process.joanmoduledialog import JoanModuleDialog
+from process.joanmoduleaction import JoanModuleAction
+from PyQt5 import QtCore, uic
+from modules.joanmodules import JOANModules
+from modules.hardwaremanager.action.states import HardwaremanagerStates
+from modules.hardwaremanager.action.hardwaremanageraction import HardwaremanagerAction, BaseInput
+import os
+
+class HardwaremanagerDialog(JoanModuleDialog):
+    def __init__(self, module_action: JoanModuleAction, master_state_handler, parent=None):
+        super().__init__(module=JOANModules.HARDWARE_MANAGER, module_action=module_action, master_state_handler=master_state_handler, parent=parent)
+        self._input_data = {}
+        self._inputlist = {}
+        self.counter = 0
+
+   
+        
+        self._input_type_dialog = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../action/UIs/inputtype_ui.ui"))
+        self._input_type_dialog.btns_hardware_inputtype.accepted.connect(self.selected_input)
+
+        #self._input_type_dialog.btns_hardware_inputtype.accepted.connect(self.do)
+        self.module_widget.btn_add_hardware.clicked.connect(self._input_type_dialog.show)
+
+        #self._inputlist = self.module_action.input_devices_classes
+
+        self._input = BaseInput(self, self.module_action)
+
+    def selected_input(self):
+        #add the selected input to the list
+        self.hardware_widgets = self.module_action.selected_input(self._input_type_dialog.combo_hardware_inputtype.currentText())
+        self.module_widget.hardware_list_layout.addWidget(self.hardware_widgets[list(self.hardware_widgets.keys())[-1]])
+        
+
+    def remove_tab(self):
+        #Dit is dus 1 grote tering zooi om aan elkaar te krijgen omdat je in verschillende UI's zit en weet ik veel wat. Dus echt geen flauw idee
+        #joee fijn weekend
+        # Joris
+        pass
+        
+       
+        

@@ -1,16 +1,15 @@
-from process import Control
-from PyQt5 import uic, QtCore, QtGui
+from PyQt5 import QtCore, uic, QtGui
+from modules.joanmodules import JOANModules
+from process.joanmoduleaction import JoanModuleAction
+from .states import HardwaremanagerStates
 import os
 import hid
-import platform 
 
 
-class HardwaremanagerAction(Control):
-    def __init__(self, *args, **kwargs):
-        Control.__init__(self, *args, **kwargs)
-        # get state information from module Widget
-        self.module_states = 'module_states' in kwargs.keys() and kwargs['module_states'] or None
-        self.module_state_handler = 'module_state_handler' in kwargs.keys() and kwargs['module_state_handler'] or None
+class HardwaremanagerAction(JoanModuleAction):
+    def __init__(self, master_state_handler, millis=100):
+        super().__init__(module=JOANModules.HARDWARE_MANAGER, master_state_handler=master_state_handler, millis=millis)
+
         HardwaremanagerAction.input_devices_classes = {}
         HardwaremanagerAction.input_devices_widgets = {}
         HardwaremanagerAction._nr_of_mouses = 0
@@ -18,10 +17,40 @@ class HardwaremanagerAction(Control):
         HardwaremanagerAction._nr_of_joysticks = 0
         HardwaremanagerAction._nr_of_sensodrives = 0
 
-        
+        self.data['t'] = 0
+        self.write_news(news=self.data)
+        self.time = QtCore.QTime()
 
-    def selected_input(self):
-        self._selected_input_device = self.widget._input_type_dialog.combo_hardware_inputtype.currentText()
+    def do(self):
+        """
+        This function is called every controller tick of this module implement your main calculations here
+        """
+        self.data['t'] = self.time.elapsed()
+        self.write_news(self.data)
+
+    def initialize(self):
+        """
+        This function is called before the module is started
+        """
+        pass
+
+    def start(self):
+        try:
+            self.module_state_handler.request_state_change(HardwaremanagerStates.HARDWARECOMMUNICATION.RUNNING)
+            self.time.restart()
+        except RuntimeError:
+            return False
+        return super().start()
+
+    def stop(self):
+        try:
+            self.module_state_handler.request_state_change(HardwaremanagerStates.HARDWARECOMMUNICATION.STOPPED)
+        except RuntimeError:
+            return False
+        return super().start() 
+
+    def selected_input(self, input_string):
+        self._selected_input_device = input_string
 
         if "Mouse" in self._selected_input_device:
             HardwaremanagerAction._nr_of_mouses = HardwaremanagerAction._nr_of_mouses + 1
@@ -52,10 +81,12 @@ class HardwaremanagerAction(Control):
             HardwaremanagerAction.input_devices_classes.update([(device_title, SensoDrive(self, self.input_devices_widgets[device_title]))])
 
         HardwaremanagerAction.input_devices_widgets[device_title].groupBox.setTitle(device_title)
+
+        return HardwaremanagerAction.input_devices_widgets
         
         #print(HardwaremanagerAction.input_devices_classes)
 
-    def remove(tabtitle):
+    def remove(self, tabtitle):
         del HardwaremanagerAction.input_devices_widgets[tabtitle]
         del HardwaremanagerAction.input_devices_classes[tabtitle]
 
@@ -71,13 +102,20 @@ class HardwaremanagerAction(Control):
         if "Sensodrive" in tabtitle:
             HardwaremanagerAction._nr_of_sensodrives = HardwaremanagerAction._nr_of_sensodrives - 1
 
+        
+
         #print(HardwaremanagerAction.input_devices_classes)
+
+
+
+
+
 
 
 class BaseInput():
     def __init__(self, HardwaremanagerWidget, HardwaremanagerAction):
-        self._parentWidget = HardwaremanagerWidget.widget
-        self._carla_interface_data = HardwaremanagerWidget.read_news('modules.carlainterface.dialog.carlainterfacedialog.CarlainterfaceDialog')
+        
+        self._carla_interface_data = HardwaremanagerAction.read_news('modules.carlainterface.action.carlainterfaceaction.CarlainterfaceAction')
         self._action = HardwaremanagerAction
         self._data = {}
         self._data['SteeringInput'] = 0
@@ -102,11 +140,9 @@ class BaseInput():
 
 
 class Keyboard(BaseInput):
-    def __init__(self, HardwaremanagerWidget, keyboard_tab):
-        BaseInput.__init__(self, HardwaremanagerWidget, HardwaremanagerAction)
+    def __init__(self, HardwaremanagerAction, keyboard_tab):
         self._keyboard_tab = keyboard_tab
-        self._parentWidget.widget.hardware_list_layout.addWidget(self._keyboard_tab)
-
+        self.HardwaremanagerAction = HardwaremanagerAction
         # Initialize needed variables:
         self._throttle = False
         self._brake = False
@@ -145,8 +181,8 @@ class Keyboard(BaseInput):
         self.settings_set_default_values()
 
         # Overwriting keypress events to handle keypresses for controlling
-        self._parentWidget.window.keyPressEvent = self.key_press_event
-        self._parentWidget.window.keyReleaseEvent = self.key_release_event
+        # self._parentWidget.window.keyPressEvent = self.key_press_event
+        # self._parentWidget.window.keyReleaseEvent = self.key_release_event
 
     def settings_update_sliders(self):
         self._settings_tab.label_steer_sensitivity.setText(str(self._settings_tab.slider_steer_sensitivity.value()))
@@ -261,10 +297,8 @@ class Keyboard(BaseInput):
                 self._settings_tab.btn_set_keys.setEnabled(True)
 
     def remove_tab(self):
-        self._parentWidget.do()
-        self._action.remove(self._keyboard_tab.groupBox.title())
-        self._parentWidget.widget.hardware_list_layout.removeWidget(self._keyboard_tab)
-        self._keyboard_tab.setParent(None)
+        return self._keyboard_tab.groupBox.title()
+        
 
     def key_press_event(self, event):
         key = event.key()
@@ -304,7 +338,7 @@ class Keyboard(BaseInput):
     def process(self):
         # # If there are cars in the simulation add them to the controllable car combobox
         if(self._carla_interface_data['vehicles'] is not None):
-            self._carla_interface_data = self._parentWidget.read_news('modules.carlainterface.dialog.carlainterfacedialog.CarlainterfaceDialog')
+            self._carla_interface_data = self._action.read_news('modules.carlainterface.dialog.carlainterfacedialog.CarlainterfaceDialog')
 
             for vehicles in self._carla_interface_data['vehicles']:
                 if vehicles.selected_input == self._keyboard_tab.groupBox.title():
@@ -438,7 +472,6 @@ class Joystick(BaseInput):
         self._settings_tab.line_edit_max_steer.setText(str(self._max_steer))
 
     def remove_tab(self):
-        self._parentWidget.do()
         self._action.remove(self._joystick_tab.groupBox.title())
         self._parentWidget.widget.hardware_list_layout.removeWidget(self._joystick_tab)
         self._joystick_tab.setParent(None)
@@ -490,26 +523,27 @@ class Joystick(BaseInput):
 
 class SensoDrive(BaseInput):
     def __init__(self, HardwaremanagerWidget, sensodrive_tab):
-        BaseInput.__init__(self, HardwaremanagerWidget, HardwaremanagerAction)
-        self.currentInput = 'SensoDrive'
-        self._sensodrive_tab = sensodrive_tab
-        self._parentWidget.widget.hardware_list_layout.addWidget(self._sensodrive_tab)
+        print('joe')
+    #     BaseInput.__init__(self, HardwaremanagerWidget, HardwaremanagerAction)
+    #     self.currentInput = 'SensoDrive'
+    #     self._sensodrive_tab = sensodrive_tab
+    #     self._parentWidget.widget.hardware_list_layout.addWidget(self._sensodrive_tab)
 
-        self._sensodrive_tab.btn_remove_hardware.clicked.connect(self.remove_tab)
+    #     self._sensodrive_tab.btn_remove_hardware.clicked.connect(self.remove_tab)
 
-    def remove_tab(self):
-        self._parentWidget.do()
-        self._action.remove(self._sensodrive_tab.groupBox.title())
-        self._parentWidget.widget.hardware_list_layout.removeWidget(self._sensodrive_tab)
-        self._sensodrive_tab.setParent(None)
+    # def remove_tab(self):
+    #     self._parentWidget.do()
+    #     self._action.remove(self._sensodrive_tab.groupBox.title())
+    #     self._parentWidget.widget.hardware_list_layout.removeWidget(self._sensodrive_tab)
+    #     self._sensodrive_tab.setParent(None)
 
-    def process(self):
-        if(self._carla_interface_data['vehicles'] is not None):
-            for vehicles in self._carla_interface_data['vehicles']:
-                if vehicles.selected_input == self._sensodrive_tab.groupBox.title():
-                    self._sensodrive_tab.btn_remove_hardware.setEnabled(False)
-                    break
-                else:
-                    self._sensodrive_tab.btn_remove_hardware.setEnabled(True)
+    # def process(self):
+    #     if(self._carla_interface_data['vehicles'] is not None):
+    #         for vehicles in self._carla_interface_data['vehicles']:
+    #             if vehicles.selected_input == self._sensodrive_tab.groupBox.title():
+    #                 self._sensodrive_tab.btn_remove_hardware.setEnabled(False)
+    #                 break
+    #             else:
+    #                 self._sensodrive_tab.btn_remove_hardware.setEnabled(True)
                 
-        return self._data
+    #     return self._data

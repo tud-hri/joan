@@ -36,10 +36,7 @@ class CarlainterfaceAction(JoanModuleAction):
         self.connected = False
         self.vehicle_tags = []
         self.vehicles = []
-        # self._vehicle_bp_library = None
-        # self._world_map = None
-        # self._spawnpoints = None
-
+  
     @property 
     def vehicle_bp_library(self):
         return self._vehicle_bp_library
@@ -116,10 +113,8 @@ class CarlainterfaceAction(JoanModuleAction):
 
 class Carlavehicle():
     def __init__(self, CarlainterfaceAction, carnr, nr_spawn_points, tags):
-        #self._parentWidget = Carlainterfacedialog
         self.module_action = CarlainterfaceAction
         self._vehicle_tab = uic.loadUi(uifile=os.path.join(os.path.dirname(os.path.realpath(__file__)), "vehicletab.ui"))
-        #self._parentWidget.widget.layOut.addWidget(self._vehicle_tab)
         self._vehicle_tab.group_car.setTitle('Car ' + str(carnr+1))
         self._spawned = False
         self._hardware_data = {}
@@ -136,10 +131,6 @@ class Carlavehicle():
 
         self._selected_input = str('None')
 
-    
-
-
-
     @property
     def vehicle_tab(self):
         return self._vehicle_tab
@@ -151,6 +142,10 @@ class Carlavehicle():
     @property
     def selected_input(self):
         return self._selected_input
+
+    @property
+    def vehicle_id(self):
+        return self._BP.id
 
     def update_input(self):
         self._selected_input = self._vehicle_tab.combo_input.currentText()
@@ -166,8 +161,6 @@ class Carlavehicle():
 
 
     def spawn_car(self):
-        # random.choice(Carlacommunication.BlueprintLibrary.filter("vehicle." + str(self._vehicle_tab.comboCartype.currentText())))
-        #print(self.module_action.vehicle_bp_library.filter)
         self._BP = random.choice(self.module_action.vehicle_bp_library.filter("vehicle." + str(self._vehicle_tab.comboCartype.currentText())))
         self._control = carla.VehicleControl()
         try:
@@ -199,9 +192,6 @@ class Carlavehicle():
             self._vehicle_tab.btn_spawn.setEnabled(False)
             self._vehicle_tab.btn_destroy.setEnabled(True)
             self._vehicle_tab.spin_spawn_points.setEnabled(False)
-
-    def get_vehicle_id(self):
-        return self._BP.id
 
     def apply_control(self, data):
         if self._selected_input != 'None':

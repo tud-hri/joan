@@ -21,7 +21,7 @@ class JOANModules(enum.Enum):
         from modules.template.action.templateaction import TemplateAction
         from modules.datarecorder.action.datarecorder import DatarecorderAction
         from modules.feedbackcontroller.action.feedbackcontroller import FeedbackcontrollerAction
-        from modules.hardwaremanager.action.hardwaremanager import HardwaremanagerAction
+        from modules.hardwaremanager.action.hardwaremanageraction import HardwaremanagerAction
         from modules.carlainterface.action.carlainterfaceaction import CarlainterfaceAction
         from modules.trajectoryrecorder.action.trajectoryrecorder import TrajectoryrecorderAction
 
@@ -37,14 +37,14 @@ class JOANModules(enum.Enum):
         from modules.template.dialog.templatedialog import TemplateDialog
         from modules.datarecorder.widget.datarecorder import DatarecorderWidget
         from modules.feedbackcontroller.widget.feedbackcontroller import FeedbackcontrollerWidget
-        from modules.hardwaremanager.widget.hardwaremanager import HardwaremanagerWidget
+        from modules.hardwaremanager.dialog.hardwaremanagerdialog import HardwaremanagerDialog
         from modules.carlainterface.dialog.carlainterfacedialog import CarlainterfaceDialog
         from modules.trajectoryrecorder.widget.trajectoryrecorder import TrajectoryrecorderWidget
 
         return {JOANModules.TEMPLATE: TemplateDialog,
                 JOANModules.DATA_RECORDER: DatarecorderWidget,
                 JOANModules.FEED_BACK_CONTROLLER: FeedbackcontrollerWidget,
-                JOANModules.HARDWARE_MANAGER: HardwaremanagerWidget,
+                JOANModules.HARDWARE_MANAGER: HardwaremanagerDialog,
                 JOANModules.CARLA_INTERFACE: CarlainterfaceDialog,
                 JOANModules.TRAJECTORY_RECORDER: TrajectoryrecorderWidget}[self]
 
@@ -70,7 +70,7 @@ class JOANModules(enum.Enum):
         return {JOANModules.TEMPLATE: os.path.join(path_to_modules, "template/dialog/templatewidget.ui"),
                 JOANModules.DATA_RECORDER: os.path.join(path_to_modules, "datarecorder/widget/datarecorder.ui"),
                 JOANModules.FEED_BACK_CONTROLLER: os.path.join(path_to_modules, "feedbackcontroller/widget/feedbackcontroller.ui"),
-                JOANModules.HARDWARE_MANAGER: os.path.join(path_to_modules, "hardwaremanager/widget/hardwaremanager.ui"),
+                JOANModules.HARDWARE_MANAGER: os.path.join(path_to_modules, "hardwaremanager/dialog/hardwaremanager_ui.ui"),
                 JOANModules.CARLA_INTERFACE: os.path.join(path_to_modules, "carlainterface/dialog/carlainterface.ui"),
                 JOANModules.TRAJECTORY_RECORDER: os.path.join(path_to_modules, "trajectoryrecorder/widget/trajectoryrecorder.ui")}[self]
 
