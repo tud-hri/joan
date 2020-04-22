@@ -154,7 +154,6 @@ class Carlavehicle():
 
     def update_input(self):
         self._selected_input = self._vehicle_tab.combo_input.currentText()
-        print(self._selected_input)
 
     def get_available_inputs(self):
         self._hardware_data = self.module_action.read_news('modules.hardwaremanager.widget.hardwaremanager.HardwaremanagerWidget')
@@ -165,14 +164,11 @@ class Carlavehicle():
         self._vehicle_tab.combo_input.clear()
         self._vehicle_tab.combo_input.addItem('None')
 
-    def destroy_tab(self):
-        self.destroy_car()
-        self._spawned = False
-        self._parentWidget.widget.layOut.removeWidget(self._vehicle_tab)
-        self._vehicle_tab.setParent(None)
 
     def spawn_car(self):
-        self._BP = random.choice(self.module_action.vehicle_bp_library)
+        # random.choice(Carlacommunication.BlueprintLibrary.filter("vehicle." + str(self._vehicle_tab.comboCartype.currentText())))
+        #print(self.module_action.vehicle_bp_library.filter)
+        self._BP = random.choice(self.module_action.vehicle_bp_library.filter("vehicle." + str(self._vehicle_tab.comboCartype.currentText())))
         self._control = carla.VehicleControl()
         try:
             spawnpointnr = self._vehicle_tab.spin_spawn_points.value()-1
