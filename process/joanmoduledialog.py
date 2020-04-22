@@ -13,6 +13,10 @@ class JoanModuleDialog(QtWidgets.QDialog):
 
         self.module_action = module_action
 
+        self.module_action.module_state_handler.state_changed.connect(self.handle_module_state)
+        master_state_handler.state_changed.connect(self.handle_master_state)
+        self.master_state_handler = master_state_handler
+
         self.setLayout(QtWidgets.QVBoxLayout(self))
 
         self.state_widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../resources/statewidget.ui"))
@@ -27,9 +31,7 @@ class JoanModuleDialog(QtWidgets.QDialog):
         self.setWindowTitle(str(module))
         self.state_widget.input_tick_millis.setPlaceholderText(str(self.module_action.millis))
 
-        self.module_action.module_state_handler.state_changed.connect(self.handle_module_state)
-        master_state_handler.state_changed.connect(self.handle_master_state)
-        self.master_state_handler = master_state_handler
+        
 
     def _button_start_clicked(self):
         self.module_action.start()
