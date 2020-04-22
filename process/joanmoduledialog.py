@@ -1,9 +1,9 @@
 import os
-import sys
 
-from PyQt5 import QtCore, QtGui, QtWidgets, uic
-from process.joanmoduleaction import JoanModuleAction
+from PyQt5 import QtWidgets, uic
+
 from modules.joanmodules import JOANModules
+from process.joanmoduleaction import JoanModuleAction
 
 
 class JoanModuleDialog(QtWidgets.QDialog):
