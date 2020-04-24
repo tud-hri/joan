@@ -67,7 +67,8 @@ class JoanModuleDialog(QtWidgets.QDialog):
         # update the state label
         self.state_widget.lb_module_state.setText(str(state_as_state.name))
 
-        if state_as_state == self.module_action.module_states.TEMPLATE.RUNNING:
-            self.state_widget.btn_start.setStyleSheet("background-color: green")
-        else:
-            self.state_widget.btn_start.setStyleSheet("background-color: none")
+        # TODO: does not work for other modules than Template, so remark it for now (Andre, 20200424)
+        #if state_as_state == self.module_action.module_states.TEMPLATE.RUNNING:
+        #    self.state_widget.btn_start.setStyleSheet("background-color: green")
+        #else:
+        #    self.state_widget.btn_start.setStyleSheet("background-color: none")

@@ -10,7 +10,7 @@ from PyQt5 import QtWidgets, QtGui
 from functools import partial
 
 
-class DatarecorderWidget(Control):
+class DeprecatedDatarecorderWidget(Control):
     """
     DatarecorderWidget
     """

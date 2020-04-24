@@ -3,7 +3,7 @@ from modules.datarecorder.action.datawriter import DataWriter
 from datetime import datetime
 
 
-class DatarecorderAction(Control):
+class DeprecatedDatarecorderAction(Control):
     def __init__(self, *args, **kwargs):
         Control.__init__(self, *args, **kwargs)
         self.module_states = None

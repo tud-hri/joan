@@ -64,7 +64,7 @@ class JoanHQWindow(QtWidgets.QMainWindow):
         widget.setObjectName(name)
         widget.grpbox.setTitle(name)
 
-        if isinstance(module_widget, JOANModules.TEMPLATE.dialog):  # syntax is changed slightly in new example: wrapping show() in _show() is unnecessary
+        if isinstance(module_widget, (JOANModules.TEMPLATE.dialog, JOANModules.DATA_RECORDER.dialog)):  # syntax is changed slightly in new example: wrapping show() in _show() is unnecessary
             widget.btn_show.clicked.connect(module_widget.show)
             widget.btn_close.clicked.connect(module_widget.close)
 

@@ -19,7 +19,8 @@ class JOANModules(enum.Enum):
     @property
     def action(self):
         from modules.template.action.templateaction import TemplateAction
-        from modules.datarecorder.action.datarecorder import DatarecorderAction
+        #from modules.datarecorder.action.datarecorder import DatarecorderAction
+        from modules.datarecorder.action.datarecorderaction import DatarecorderAction
         from modules.feedbackcontroller.action.feedbackcontroller import FeedbackcontrollerAction
         from modules.hardwaremanager.action.hardwaremanager import HardwaremanagerAction
         from modules.carlainterface.action.carlainterface import CarlainterfaceAction
@@ -35,14 +36,16 @@ class JOANModules(enum.Enum):
     @property
     def dialog(self):
         from modules.template.dialog.templatedialog import TemplateDialog
-        from modules.datarecorder.widget.datarecorder import DatarecorderWidget
+        #from modules.datarecorder.widget.datarecorder import DatarecorderWidget
+        from modules.datarecorder.dialog.datarecorderdialog import DatarecorderDialog
         from modules.feedbackcontroller.widget.feedbackcontroller import FeedbackcontrollerWidget
         from modules.hardwaremanager.widget.hardwaremanager import HardwaremanagerWidget
         from modules.carlainterface.widget.carlainterface import CarlainterfaceWidget
         from modules.trajectoryrecorder.widget.trajectoryrecorder import TrajectoryrecorderWidget
 
         return {JOANModules.TEMPLATE: TemplateDialog,
-                JOANModules.DATA_RECORDER: DatarecorderWidget,
+                #JOANModules.DATA_RECORDER: DatarecorderWidget,
+                JOANModules.DATA_RECORDER: DatarecorderDialog,
                 JOANModules.FEED_BACK_CONTROLLER: FeedbackcontrollerWidget,
                 JOANModules.HARDWARE_MANAGER: HardwaremanagerWidget,
                 JOANModules.CARLA_INTERFACE: CarlainterfaceWidget,
