@@ -15,6 +15,7 @@ class JOANModules(enum.Enum):
     HARDWARE_MANAGER = 2
     CARLA_INTERFACE = 3
     TRAJECTORY_RECORDER = 4
+    EXPERIMENT_MANAGER = 5
 
     @property
     def action(self):
@@ -24,13 +25,15 @@ class JOANModules(enum.Enum):
         from modules.hardwaremanager.action.hardwaremanager import HardwaremanagerAction
         from modules.carlainterface.action.carlainterface import CarlainterfaceAction
         from modules.trajectoryrecorder.action.trajectoryrecorder import TrajectoryrecorderAction
+        from modules.experimentmanager.action.experimentmanageraction import ExperimentManagerAction
 
         return {JOANModules.TEMPLATE: TemplateAction,
                 JOANModules.DATA_RECORDER: DatarecorderAction,
                 JOANModules.FEED_BACK_CONTROLLER: FeedbackcontrollerAction,
                 JOANModules.HARDWARE_MANAGER: HardwaremanagerAction,
                 JOANModules.CARLA_INTERFACE: CarlainterfaceAction,
-                JOANModules.TRAJECTORY_RECORDER: TrajectoryrecorderAction}[self]
+                JOANModules.TRAJECTORY_RECORDER: TrajectoryrecorderAction,
+                JOANModules.EXPERIMENT_MANAGER: ExperimentManagerAction}[self]
 
     @property
     def dialog(self):
@@ -40,13 +43,15 @@ class JOANModules(enum.Enum):
         from modules.hardwaremanager.widget.hardwaremanager import HardwaremanagerWidget
         from modules.carlainterface.widget.carlainterface import CarlainterfaceWidget
         from modules.trajectoryrecorder.widget.trajectoryrecorder import TrajectoryrecorderWidget
+        from modules.experimentmanager.dialog.experimentmanagerdialog import ExperimentManagerDialog
 
         return {JOANModules.TEMPLATE: TemplateDialog,
                 JOANModules.DATA_RECORDER: DatarecorderWidget,
                 JOANModules.FEED_BACK_CONTROLLER: FeedbackcontrollerWidget,
                 JOANModules.HARDWARE_MANAGER: HardwaremanagerWidget,
                 JOANModules.CARLA_INTERFACE: CarlainterfaceWidget,
-                JOANModules.TRAJECTORY_RECORDER: TrajectoryrecorderWidget}[self]
+                JOANModules.TRAJECTORY_RECORDER: TrajectoryrecorderWidget,
+                JOANModules.EXPERIMENT_MANAGER: ExperimentManagerDialog}[self]
 
     @property
     def states(self):
@@ -56,13 +61,15 @@ class JOANModules(enum.Enum):
         from modules.hardwaremanager.action.states import HardwaremanagerStates
         from modules.carlainterface.action.states import CarlainterfaceStates
         from modules.trajectoryrecorder.action.states import TrajectoryrecorderStates
+        from modules.experimentmanager.action.states import ExperimentManagerStates
 
         return {JOANModules.TEMPLATE: TemplateStates,
                 JOANModules.DATA_RECORDER: DatarecorderStates,
                 JOANModules.FEED_BACK_CONTROLLER: FeedbackcontrollerStates,
                 JOANModules.HARDWARE_MANAGER: HardwaremanagerStates,
                 JOANModules.CARLA_INTERFACE: CarlainterfaceStates,
-                JOANModules.TRAJECTORY_RECORDER: TrajectoryrecorderStates}[self]
+                JOANModules.TRAJECTORY_RECORDER: TrajectoryrecorderStates,
+                JOANModules.EXPERIMENT_MANAGER: ExperimentManagerStates}[self]
 
     @property
     def ui_file(self):
@@ -72,7 +79,8 @@ class JOANModules(enum.Enum):
                 JOANModules.FEED_BACK_CONTROLLER: os.path.join(path_to_modules, "feedbackcontroller/widget/feedbackcontroller.ui"),
                 JOANModules.HARDWARE_MANAGER: os.path.join(path_to_modules, "hardwaremanager/widget/hardwaremanager.ui"),
                 JOANModules.CARLA_INTERFACE: os.path.join(path_to_modules, "carlainterface/widget/carlainterface.ui"),
-                JOANModules.TRAJECTORY_RECORDER: os.path.join(path_to_modules, "trajectoryrecorder/widget/trajectoryrecorder.ui")}[self]
+                JOANModules.TRAJECTORY_RECORDER: os.path.join(path_to_modules, "trajectoryrecorder/widget/trajectoryrecorder.ui"),
+                JOANModules.EXPERIMENT_MANAGER: os.path.join(path_to_modules, "experimentmanager/dialog/experimentmanager.ui")}[self]
 
     def __str__(self):
         return {JOANModules.TEMPLATE: 'Template Module',
@@ -80,4 +88,5 @@ class JOANModules(enum.Enum):
                 JOANModules.FEED_BACK_CONTROLLER: 'Feed Back Controller',
                 JOANModules.HARDWARE_MANAGER: 'Hardware Communication',
                 JOANModules.CARLA_INTERFACE: 'Carla Interface',
-                JOANModules.TRAJECTORY_RECORDER: 'Trajectory Recorder'}[self]
+                JOANModules.TRAJECTORY_RECORDER: 'Trajectory Recorder',
+                JOANModules.EXPERIMENT_MANAGER: 'Experiment Manager'}[self]
