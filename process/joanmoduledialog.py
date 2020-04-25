@@ -9,7 +9,7 @@ from process.joanmoduleaction import JoanModuleAction
 class JoanModuleDialog(QtWidgets.QDialog):
 
     def __init__(self, module: JOANModules, module_action: JoanModuleAction, master_state_handler, parent=None):
-        super().__init__(parent)
+        super().__init__(parent=parent)
 
         # reference to the action class of this module
         self.module_action = module_action

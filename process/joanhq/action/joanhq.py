@@ -62,7 +62,7 @@ class JoanHQAction(QtCore.QObject):
             # millis = default_millis_for_this_module
 
             module_action = module.action(self.master_state_handler, millis=100)
-            module_dialog = module.dialog(module_action, self.master_state_handler, parent=parent)
+            module_dialog = module.dialog(module_action, self.master_state_handler, parent=self.window)
 
             module_widget = module_dialog  # to keep the names equal, should be removed when the if template statement is removed
         else:  # module has old style TODO: remove statements below when moving to new style
