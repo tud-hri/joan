@@ -12,7 +12,7 @@ class ExperimentManagerAction(JoanModuleAction):
         self.module_state_handler.request_state_change(ExperimentManagerStates.EXPERIMENTMANAGER.READY)
 
         self.data = {}
-        self.write_news(news=self.data)
+        self.write_news(news=self.data)   
 
     def do(self):
         """
@@ -29,7 +29,6 @@ class ExperimentManagerAction(JoanModuleAction):
     def start(self):
         try:
             self.module_state_handler.request_state_change(ExperimentManagerStates.EXPERIMENTMANAGER.RUNNING)
-            self.time.restart()
         except RuntimeError:
             return False
         return super().start()
@@ -40,3 +39,11 @@ class ExperimentManagerAction(JoanModuleAction):
         except RuntimeError:
             return False
         return super().stop()
+
+    def initialize_condition(self, condition_nr):
+        '''Initialize JOAN for the chosen condition'''
+        print('settings for condition '+str(condition_nr))
+
+    def load_experiment(self, experiment_settings_file):
+        '''All the action stuff for loading a new experiment settings file'''
+        print('loading experiment_settings_file: '+str(experiment_settings_file))
