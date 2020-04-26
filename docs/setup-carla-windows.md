@@ -26,8 +26,9 @@ In order to properly setup the simulation software on Windows several packages a
 Please make sure you have the following programs installed before continuing. If you will be installing them now, please read the instructions below carefully to prevent problems later on in the installation process.
 
 * __[CMake](https://cmake.org/download/)__ *A small software package to make the CARLA build can compile C-code.* Please follow the link, scroll down and download the "Windows win64-x64 Installer" (there is no need to download the source). When installing select the option "Add CMake to the system `PATH` for all users"
-* __[Git](https://git-scm.com/downloads/win)__ *Ensures version control of both the python software and CARLA64-bit Git for Windows Setup.* Please follow the link and download the "64-bit Git for Windows Setup.". During installation you can keep all the default settings but especially make sure to select the (default) option "Use Git from the Windows command prompt".
+* __[Git](https://git-scm.com/download/win)__ *Ensures version control of both the python software and CARLA64-bit Git for Windows Setup.* Please follow the link and download the "64-bit Git for Windows Setup.". During installation you can keep all the default settings but especially make sure to select the (default) option "Use Git from the Windows command prompt".
 * __[Make](http://gnuwin32.sourceforge.net/packages/make.htm)__ *Generates the executables.* Please follow the link and download the "Complete package, except sources" setup. Install it and after installing add the binary folder (C:\Program Files (x86)\GnuWin32\bin by default) the the system `PATH` variable. follow the link in the info box below if you're not sure how to do this.
+* __[PowerShell 5.0 or newer](https://www.microsoft.com/en-us/download/details.aspx?id=54616)__ If you have Windows 10, it already includes this. If however you are still using Windows 7, you need to update PowerShell to version 5.0 or newer to be able to use out-of-the-box build scripts provided with carla. Follow steps 1 to 3 [here](https://www.csoonline.com/article/3343048/how-to-install-powershell-5-on-windows-7.html)
 
 !!! Important
     When you already have installed versions of the above mentioned software please make sure that the binary folders are added to the system's `PATH` variable! If you don't know how to do so, check 'Adding to System Variables'. If you have followed the instructions above, only make has to be added to the `PATH` manually.
@@ -43,7 +44,7 @@ Please make sure you have the following programs installed before continuing. If
 
 For building CARLA, only the VS 2017 and .NET build tools are required, which requires significantly less disk space then a full version of Visual Studio. The build tools can be downloaded and installed by following the [link](https://visualstudio.microsoft.com/vs/older-downloads/) above. You need to log in with your Microsoft account (Hotmail, Live, etc). Please make sure to download the "Build Tools for Visual Studio 2017 (version 15.9)" executable (Check Visual Studio 2017 (version 15.9) under "Filter by product family"). Download and run the installer. 
 
-In the installer, select the "VS 2017 build tools" and ".NET build tools" checkboxes in the left pane of the visual studio installer and select all the default options plus "Windows 8.1 SDK" in the column on the right. See the GIF below"
+In the installer, select the "Visual C++ build tools" and ".NET build tools" checkboxes in the left pane of the visual studio installer and select all the default options plus "Windows 8.1 SDK" in the column on the right. See the GIF below"
 ![install options](gifs/MSVC-installer-selectpackages.gif)
 
 #### Approach 2: Visual Studio 2017 community edition
@@ -127,7 +128,7 @@ After cloning, verify that you have actually cloned the repository, it should lo
 
 ### Step 2: Getting latest CARLA assets
 
-To get the latest CARLA assets open up the folder `Utils` in the `carla` folder that you have just created in step 1, and open the file `contentversions.txt`, see below:
+To get the latest CARLA assets open up the folder `Util` in the `carla` folder that you have just created in step 1, and open the file `contentversions.txt`, see below:
 ![alt text](imgs/utilScreenshot.png "cloned repository")
 
 This text file contains the instructions of what to do to download the latest assets, for now get the 0.9.8 version. You can also click this [link](http://carla-assets.s3.amazonaws.com/20200306_06b6cb1.tar.gz). Note: this file is almost 10GB. To extract the compressed file, you can use [7-zip](https://www.7-zip.org/), for example.
@@ -135,9 +136,6 @@ This text file contains the instructions of what to do to download the latest as
 Unpack these assets in `\carla\Unreal\CarlaUE4\Content\Carla`. If the directory does not exist, create it.
 
 ### Step 3: Get specific JOAN Assets
-
-To have a nice car interior which also turns the steering wheel, some extra assets are required. You can download them __[here](https://www.dropbox.com/s/7cboucrb81sdlxq/JOAN_Assets.zip?dl=0)__ The file contains:
-
 To have a nice car interior which also turns the steering wheel when you turn your physical steering wheel, some extra assets are required. You can download them [here](https://www.dropbox.com/s/7cboucrb81sdlxq/JOAN_Assets.zip?dl=0). The file contains:
 
 * `JOAN_Blueprints`
@@ -151,8 +149,6 @@ Copy the contents of `JOAN_Static` (only cars) to `\carla\Unreal\CarlaUE4\Conten
 Then, copy all `.xodr` files in `JOAN_Map` to `\carla\Unreal\CarlaUE4\Content\Carla\Maps\OpenDrive`. Copy the remaining files in `JOAN_Map` to `\carla\Unreal\CarlaUE4\Content\Carla\Maps`. 
 
 ### Step 4: Build the PythonAPI
-
-In order to build the python API open the "x64 Native Tools Command Prompt for VS 2017" terminal. 
 
 In order to build the python API open the 'x64 Native Tools Command Prompt for VS 2017' terminal. 
 
