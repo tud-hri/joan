@@ -54,6 +54,8 @@ class CarlainterfaceAction(JoanModuleAction):
         This function is called every controller tick of this module implement your main calculations here
         """
         self.write_news(self.data)
+        for items in self.data['vehicles']:
+            items.apply_control()
 
     def connect(self):
         try:
@@ -151,7 +153,7 @@ class Carlavehicle():
         self._selected_input = self._vehicle_tab.combo_input.currentText()
 
     def get_available_inputs(self):
-        self._hardware_data = self.module_action.read_news('modules.hardwaremanager.dialog.hardwaremanagerdialog.HardwaremanagerDialog')
+        self._hardware_data = self.module_action.read_news('modules.hardwaremanager.action.hardwaremanageraction.HardwaremanagerAction')
         for keys in self._hardware_data:
             self._vehicle_tab.combo_input.addItem(str(keys))
 

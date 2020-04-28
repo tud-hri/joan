@@ -7,7 +7,7 @@ import hid
 
 
 class HardwaremanagerAction(JoanModuleAction):
-    def __init__(self, master_state_handler, millis=100):
+    def __init__(self, master_state_handler, millis=2):
         super().__init__(module=JOANModules.HARDWARE_MANAGER, master_state_handler=master_state_handler, millis=millis)
 
         HardwaremanagerAction.input_devices_classes = {}
