@@ -7,7 +7,7 @@ import hid
 
 
 class HardwaremanagerAction(JoanModuleAction):
-    def __init__(self, master_state_handler, millis=2):
+    def __init__(self, master_state_handler, millis=5):
         super().__init__(module=JOANModules.HARDWARE_MANAGER, master_state_handler=master_state_handler, millis=millis)
 
         HardwaremanagerAction.input_devices_classes = {}
@@ -328,7 +328,7 @@ class Keyboard(BaseInput):
     def process(self):
         # # If there are cars in the simulation add them to the controllable car combobox
         if (self._carla_interface_data['vehicles'] is not None):
-            self._carla_interface_data = self._action.read_news('modules.carlainterface.dialog.carlainterfacedialog.CarlainterfaceDialog')
+            self._carla_interface_data = self._action.read_news('modules.carlainterface.action.carlainterfaceaction.CarlainterfaceAction')
             #print(self._carla_interface_data)
 
             for vehicles in self._carla_interface_data['vehicles']:
@@ -392,7 +392,7 @@ class Mouse(BaseInput):
 
     def process(self):
         if (self._carla_interface_data['vehicles'] is not None):
-            self._carla_interface_data = self._parentWidget.read_news('modules.carlainterface.dialog.carlainterfacedialog.CarlainterfaceDialog')
+            self._carla_interface_data = self._action.read_news('modules.carlainterface.action.carlainterfaceaction.CarlainterfaceAction')
 
             for vehicles in self._carla_interface_data['vehicles']:
                 if vehicles.selected_input == self._mouse_tab.groupBox.title():
@@ -466,7 +466,7 @@ class Joystick(BaseInput):
 
     def process(self):
         if (self._carla_interface_data['vehicles'] is not None):
-            self._carla_interface_data = self._action.read_news('modules.carlainterface.dialog.carlainterfacedialog.CarlainterfaceDialog')
+            self._carla_interface_data = self._action.read_news('modules.carlainterface.action.carlainterfaceaction.CarlainterfaceAction')
 
             for vehicles in self._carla_interface_data['vehicles']:
                 if vehicles.selected_input == self._joystick_tab.groupBox.title():

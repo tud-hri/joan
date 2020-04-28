@@ -21,7 +21,7 @@ except IndexError:
     pass
 
 class CarlainterfaceAction(JoanModuleAction):
-    def __init__(self, master_state_handler, millis=100):
+    def __init__(self, master_state_handler, millis=5):
         super().__init__(module=JOANModules.CARLA_INTERFACE, master_state_handler=master_state_handler, millis=millis)
 
         self.module_state_handler.request_state_change(CarlainterfaceStates.SIMULATION.INITIALIZING)
@@ -29,6 +29,7 @@ class CarlainterfaceAction(JoanModuleAction):
         self.data['vehicles'] = None
         self.write_news(news=self.data)
         self.time = QtCore.QTime()
+        self._data_from_hardware = {}
 
         #Carla connection variables:
         self.host = 'localhost'
@@ -53,9 +54,16 @@ class CarlainterfaceAction(JoanModuleAction):
         """
         This function is called every controller tick of this module implement your main calculations here
         """
-        self.write_news(self.data)
-        for items in self.data['vehicles']:
-            items.apply_control()
+        self.data['vehicles'] = self.vehicles
+        self.write_news(news=self.data)
+
+        self._data_from_hardware = self.read_news('modules.hardwaremanager.action.hardwaremanageraction.HardwaremanagerAction')
+        try:
+            for items in self.vehicles:
+                if items.spawned:
+                    items.apply_control(self._data_from_hardware)
+        except Exception as inst:
+            print('Could not apply control', inst)
 
     def connect(self):
         try:
