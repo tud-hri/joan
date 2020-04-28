@@ -25,8 +25,8 @@ class CarlainterfaceAction(JoanModuleAction):
         super().__init__(module=JOANModules.CARLA_INTERFACE, master_state_handler=master_state_handler, millis=millis)
 
         self.module_state_handler.request_state_change(CarlainterfaceStates.SIMULATION.INITIALIZING)
-
-        self.data['vehicles'] = {}
+        self.data = {}
+        self.data['vehicles'] = None
         self.write_news(news=self.data)
         self.time = QtCore.QTime()
 
@@ -151,7 +151,7 @@ class Carlavehicle():
         self._selected_input = self._vehicle_tab.combo_input.currentText()
 
     def get_available_inputs(self):
-        self._hardware_data = self.module_action.read_news('modules.hardwaremanager.widget.hardwaremanager.HardwaremanagerWidget')
+        self._hardware_data = self.module_action.read_news('modules.hardwaremanager.dialog.hardwaremanagerdialog.HardwaremanagerDialog')
         for keys in self._hardware_data:
             self._vehicle_tab.combo_input.addItem(str(keys))
 

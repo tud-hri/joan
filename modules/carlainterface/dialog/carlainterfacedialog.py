@@ -14,7 +14,6 @@ class CarlainterfaceDialog(JoanModuleDialog):
         super().__init__(module=JOANModules.CARLA_INTERFACE, module_action=module_action, master_state_handler=master_state_handler, parent=parent)
         
         self.data = {}
-        self.data['vehicles'] = None
         self._data_from_hardware = {}
         self.connected = False
         self.old_nr_cars = 0

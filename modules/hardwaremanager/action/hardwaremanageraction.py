@@ -16,8 +16,8 @@ class HardwaremanagerAction(JoanModuleAction):
         HardwaremanagerAction._nr_of_keyboards = 0
         HardwaremanagerAction._nr_of_joysticks = 0
         HardwaremanagerAction._nr_of_sensodrives = 0
+        self.data = {}
 
-        self.data['t'] = 0
         self.write_news(news=self.data)
         self.time = QtCore.QTime()
 
@@ -25,7 +25,9 @@ class HardwaremanagerAction(JoanModuleAction):
         """
         This function is called every controller tick of this module implement your main calculations here
         """
-        self.data['t'] = self.time.elapsed()
+        for inputs in HardwaremanagerAction.input_devices_classes:
+            self.data[inputs] = HardwaremanagerAction.input_devices_classes[inputs].process()
+            print(self.data)
         self.write_news(self.data)
 
     def initialize(self):
@@ -108,6 +110,7 @@ class HardwaremanagerAction(JoanModuleAction):
 class BaseInput:
     def __init__(self, hardware_manager_action):
         self._carla_interface_data = hardware_manager_action.read_news('modules.carlainterface.action.carlainterfaceaction.CarlainterfaceAction')
+        #print(self._carla_interface_data)
         self._action = hardware_manager_action
         self._data = {'SteeringInput': 0, 'ThrottleInput': 0, 'BrakeInput': 0, 'Reverse': False, 'Handbrake': False}
 
@@ -326,6 +329,7 @@ class Keyboard(BaseInput):
         # # If there are cars in the simulation add them to the controllable car combobox
         if (self._carla_interface_data['vehicles'] is not None):
             self._carla_interface_data = self._action.read_news('modules.carlainterface.dialog.carlainterfacedialog.CarlainterfaceDialog')
+            #print(self._carla_interface_data)
 
             for vehicles in self._carla_interface_data['vehicles']:
                 if vehicles.selected_input == self._keyboard_tab.groupBox.title():
@@ -462,7 +466,7 @@ class Joystick(BaseInput):
 
     def process(self):
         if (self._carla_interface_data['vehicles'] is not None):
-            self._carla_interface_data = self._parentWidget.read_news('modules.carlainterface.dialog.carlainterfacedialog.CarlainterfaceDialog')
+            self._carla_interface_data = self._action.read_news('modules.carlainterface.dialog.carlainterfacedialog.CarlainterfaceDialog')
 
             for vehicles in self._carla_interface_data['vehicles']:
                 if vehicles.selected_input == self._joystick_tab.groupBox.title():
