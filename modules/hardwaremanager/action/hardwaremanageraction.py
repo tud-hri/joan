@@ -4,6 +4,7 @@ from process.joanmoduleaction import JoanModuleAction
 from .states import HardwaremanagerStates
 import os
 import hid
+import keyboard
 
 
 class HardwaremanagerAction(JoanModuleAction):
@@ -166,10 +167,20 @@ class Keyboard(BaseInput):
 
         # set the default settings when constructing:
         self.settings_set_default_values()
+        
+        keyboard.on_press(self.key_press_event, False)
+        keyboard.on_release(self.key_release_event, True)
+
+        
 
         # Overwriting keypress events to handle keypresses for controlling
         # self._parentWidget.window.keyPressEvent = self.key_press_event
         # self._parentWidget.window.keyReleaseEvent = self.key_release_event
+    # def printshit(self,key):
+    #     print(key.name)
+
+    # def printookshit(self, key):
+    #     print('RELEASE')
 
     def settings_update_sliders(self):
         self._settings_tab.label_steer_sensitivity.setText(str(self._settings_tab.slider_steer_sensitivity.value()))
@@ -186,12 +197,12 @@ class Keyboard(BaseInput):
 
     def settings_set_default_values(self):
         # Keys
-        self._steer_left_key = QtCore.Qt.Key_A
-        self._steer_right_key = QtCore.Qt.Key_D
-        self._throttle_key = QtCore.Qt.Key_W
-        self._brake_key = QtCore.Qt.Key_S
-        self._reverse_key = QtCore.Qt.Key_R
-        self._handbrake_key = QtCore.Qt.Key_K
+        self._steer_left_key = 'a'
+        self._steer_right_key = 'd'
+        self._throttle_key = 'w'
+        self._brake_key = 's'
+        self._reverse_key = 'r'
+        self._handbrake_key = 'space'
 
         # Key Names
         self._settings_tab.label_steer_left.setText("A")
@@ -251,75 +262,78 @@ class Keyboard(BaseInput):
                 self._settings_tab.label_steer_left.setText(text)
                 self._settings_tab.label_steer_left.setStyleSheet("background-color: none")
                 self._settings_tab.label_steer_right.setStyleSheet("background-color: lightgreen")
-                self._steer_left_key = event.key()
+                self._steer_left_key = event.text()
             elif self._set_key_counter == 2:
                 self._settings_tab.label_steer_right.setText(text)
                 self._settings_tab.label_steer_right.setStyleSheet("background-color: none")
                 self._settings_tab.label_throttle.setStyleSheet("background-color: lightgreen")
-                self._steer_right_key = event.key()
+                self._steer_right_key = event.text()
             elif self._set_key_counter == 3:
                 self._settings_tab.label_throttle.setText(text)
                 self._settings_tab.label_throttle.setStyleSheet("background-color: none")
                 self._settings_tab.label_brake.setStyleSheet("background-color: lightgreen")
-                self._throttle_key = event.key()
+                self._throttle_key = event.text()
             elif self._set_key_counter == 4:
                 self._settings_tab.label_brake.setText(text)
                 self._settings_tab.label_brake.setStyleSheet("background-color: none")
                 self._settings_tab.label_reverse.setStyleSheet("background-color: lightgreen")
-                self.brake_key = event.key()
+                self.brake_key = event.text()
             elif self._set_key_counter == 5:
                 self._settings_tab.label_reverse.setText(text)
                 self._settings_tab.label_reverse.setStyleSheet("background-color: none")
                 self._settings_tab.label_handbrake.setStyleSheet("background-color: lightgreen")
-                self._reverse_key = event.key()
+                self._reverse_key = event.text()
             elif self._set_key_counter == 6:
                 self._settings_tab.label_handbrake.setText(text)
                 self._settings_tab.label_handbrake.setStyleSheet("background-color: none")
-                self._handbrake_key = event.key()
+                self._handbrake_key = event.text()
                 self._settings_tab.btn_set_keys.setChecked(False)
                 self._settings_tab.btn_set_keys.setStyleSheet("background-color: none")
                 self._set_key_counter = 0
                 self._settings_tab.button_box_settings.setEnabled(True)
                 self._settings_tab.btn_set_keys.setEnabled(True)
 
+        
+
     def remove_tab(self):
         self._action.remove(self._keyboard_tab.groupBox.title())
         self._keyboard_tab.setParent(None)
 
-    def key_press_event(self, event):
-        key = event.key()
-        if key == self._throttle_key:
+    def key_press_event(self, key):
+        if key.name == self._throttle_key:
             self._throttle = True
-        elif key == self._brake_key:
+        elif key.name == self._brake_key:
             self._brake = True
-        elif key == self._steer_left_key:
+        elif key.name == self._steer_left_key:
             self._steer_left = True
             self._steer_right = False
-        elif key == self._steer_right_key:
+        elif key.name == self._steer_right_key:
             self._steer_right = True
             self._steer_left = False
-        elif key == self._handbrake_key:
+        elif key.name == self._handbrake_key:
             self._handbrake = True
 
-    def key_release_event(self, event):
-        key = event.key()
-        if key == self._throttle_key:
+
+
+    def key_release_event(self, key):
+        if key.name == self._throttle_key:
             self._throttle = False
-        elif key == self._brake_key:
+        elif key.name == self._brake_key:
             self._brake = False
-        elif key == self._steer_left_key:
+        elif key.name == self._steer_left_key:
             self._steer_left = False
             self._steer_right = False
-        elif key == self._steer_right_key:
+        elif key.name == self._steer_right_key:
             self._steer_right = False
             self._steer_left = False
-        elif key == self._handbrake_key:
+        elif key.name == self._handbrake_key:
             self._handbrake = False
-        elif key == self._reverse_key:
+        elif key.name == self._reverse_key:
             if not self._reverse:
                 self._reverse = True
             elif self._reverse:
                 self._reverse = False
+
 
     def process(self):
         # # If there are cars in the simulation add them to the controllable car combobox
@@ -441,6 +455,8 @@ class Joystick(BaseInput):
             self._joystick_open = True
         except:
             self._joystick_open = False
+
+        print(self._joystick_open)
 
     def settings_set_newvalues(self):
         self._min_steer = int(self._settings_tab.line_edit_min_steer.text())
