@@ -23,7 +23,7 @@ if __name__ == '__main__':
     # JOANHQACTION.add_module(JOANModules.TEMPLATE)
     # JOANHQACTION.add_module(JOANModules.DATA_RECORDER)
     # JOANHQACTION.add_module(JOANModules.FEED_BACK_CONTROLLER)
-    JOANHQACTION.add_module(JOANModules.CARLA_INTERFACE)
-    JOANHQACTION.add_module(JOANModules.HARDWARE_MANAGER, millis=10)
+    JOANHQACTION.add_module(JOANModules.CARLA_INTERFACE, millis=50)
+    JOANHQACTION.add_module(JOANModules.HARDWARE_MANAGER, millis=5)
 
     APP.exec_()

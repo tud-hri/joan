@@ -26,7 +26,6 @@ class HardwaremanagerAction(JoanModuleAction):
         """
         for inputs in HardwaremanagerAction.input_devices_classes:
             self.data[inputs] = HardwaremanagerAction.input_devices_classes[inputs].process()
-            print(self.data)
         self.write_news(self.data)
 
     def initialize(self):
@@ -89,6 +88,7 @@ class HardwaremanagerAction(JoanModuleAction):
     def remove(self, tabtitle):
         del HardwaremanagerAction.input_devices_widgets[tabtitle]
         del HardwaremanagerAction.input_devices_classes[tabtitle]
+        del self.data[tabtitle]
 
         if "Keyboard" in tabtitle:
             HardwaremanagerAction._nr_of_keyboards = HardwaremanagerAction._nr_of_keyboards - 1
@@ -101,8 +101,6 @@ class HardwaremanagerAction(JoanModuleAction):
 
         if "Sensodrive" in tabtitle:
             HardwaremanagerAction._nr_of_sensodrives = HardwaremanagerAction._nr_of_sensodrives - 1
-
-        # print(HardwaremanagerAction.input_devices_classes)
 
 
 class BaseInput:
@@ -367,7 +365,7 @@ class Keyboard(BaseInput):
         return self._data
 
 
-class Mouse(BaseInput):
+class Mouse(BaseInput): #DEPRECATED FOR NOW
     def __init__(self, hardware_manager_action, mouse_tab):
         super().__init__(hardware_manager_action)
         self.currentInput = 'Mouse'
@@ -381,23 +379,23 @@ class Mouse(BaseInput):
         self._action.remove(self._mouse_tab.groupBox.title())
         self._mouse_tab.setParent(None)
 
-    def displayInputs(self):
-        pass
+    # def displayInputs(self):
+    #     pass
 
-    def setCurrentInput(self):
+    # def setCurrentInput(self):
 
-        pass
+    #     pass
 
     def process(self):
         if (self._carla_interface_data['vehicles'] is not None):
-            self._carla_interface_data = self._action.read_news('modules.carlainterface.action.carlainterfaceaction.CarlainterfaceAction')
+            # self._carla_interface_data = self._action.read_news('modules.carlainterface.action.carlainterfaceaction.CarlainterfaceAction')
 
-            for vehicles in self._carla_interface_data['vehicles']:
-                if vehicles.selected_input == self._mouse_tab.groupBox.title():
-                    self._mouse_tab.btn_remove_hardware.setEnabled(False)
-                    break
-                else:
-                    self._mouse_tab.btn_remove_hardware.setEnabled(True)
+            # for vehicles in self._carla_interface_data['vehicles']:
+            #     if vehicles.selected_input == self._mouse_tab.groupBox.title():
+            #         self._mouse_tab.btn_remove_hardware.setEnabled(False)
+            #         break
+            #     else:
+            #         self._mouse_tab.btn_remove_hardware.setEnabled(True)
 
             return self._data
 
@@ -409,6 +407,7 @@ class Joystick(BaseInput):
         self.currentInput = 'Joystick'
         self._joystick_tab = joystick_tab
         # self._parentWidget.widget.hardware_list_layout.addWidget(self._joystick_tab)
+        self._joystick_open = False
 
         self._joystick_tab.btn_remove_hardware.clicked.connect(self.remove_tab)
 
@@ -436,8 +435,12 @@ class Joystick(BaseInput):
         for device in self._available_devices:
             if device['product_string'] == self._settings_tab.combo_available_devices.currentText():
                 chosen_device = device
-
-        self._joystick.open(chosen_device['vendor_id'], chosen_device['product_id'])
+                
+        try:
+            self._joystick.open(chosen_device['vendor_id'], chosen_device['product_id'])
+            self._joystick_open = True
+        except:
+            self._joystick_open = False
 
     def settings_set_newvalues(self):
         self._min_steer = int(self._settings_tab.line_edit_min_steer.text())
@@ -463,7 +466,8 @@ class Joystick(BaseInput):
         self._joystick_tab.setParent(None)
 
     def process(self):
-        if (self._carla_interface_data['vehicles'] is not None):
+        joystickdata = []
+        if (self._carla_interface_data['vehicles'] is not None and self._joystick_open):
             self._carla_interface_data = self._action.read_news('modules.carlainterface.action.carlainterfaceaction.CarlainterfaceAction')
 
             for vehicles in self._carla_interface_data['vehicles']:
@@ -473,8 +477,8 @@ class Joystick(BaseInput):
                 else:
                     self._joystick_tab.btn_remove_hardware.setEnabled(True)
 
-        joystickdata = []
-        joystickdata = self._joystick.read(12, 1)
+            joystickdata = self._joystick.read(12, 1)
+            
 
         if joystickdata != []:
             print(joystickdata)
@@ -505,9 +509,10 @@ class Joystick(BaseInput):
         return self._data
 
 
-class SensoDrive(BaseInput):
+class SensoDrive(BaseInput): #DEPRECATED FOR NOW
     def __init__(self, hardware_manager_action, sensodrive_tab):
         super().__init__(hardware_manager_action)
+        self.currentInput = 'SensoDrive'
         self._sensodrive_tab = sensodrive_tab
     #     BaseInput.__init__(self, HardwaremanagerWidget, HardwaremanagerAction)
     #     self.currentInput = 'SensoDrive'
