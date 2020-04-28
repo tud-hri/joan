@@ -54,14 +54,14 @@ class JoanHQAction(QtCore.QObject):
             except AttributeError:  # module has new style TODO: remove statement above when moving to new style
                 module.stop()
 
-    def add_module(self, module: JOANModules, name='', parent=None):
+    def add_module(self, module: JOANModules, name='', parent=None, millis=100):
         """Add module, instantiated module, find unique name"""
 
         if module is JOANModules.TEMPLATE or JOANModules.CARLA_INTERFACE or JOANModules.HARDWARE_MANAGER:  # Example of how the new style could be
             # TODO Load the default settings for this module here, this can be from a saved settings file or from another source
             # millis = default_millis_for_this_module
 
-            module_action = module.action(self.master_state_handler, millis=100)
+            module_action = module.action(self.master_state_handler, millis=millis)
             module_dialog = module.dialog(module_action, self.master_state_handler, parent=parent)
 
             module_widget = module_dialog  # to keep the names equal, should be removed when the if template statement is removed

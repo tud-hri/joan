@@ -16,6 +16,7 @@ class JoanModuleAction(QtCore.QObject):
         self.timer = QtCore.QTimer()
         self.timer.setTimerType(QtCore.Qt.PreciseTimer)
         self.timer.setInterval(millis)
+        print(millis)
         self.timer.timeout.connect(self.do)
 
         self.singleton_status = Status({})
