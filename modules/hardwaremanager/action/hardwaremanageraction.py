@@ -16,10 +16,9 @@ class HardwaremanagerAction(JoanModuleAction):
         HardwaremanagerAction._nr_of_keyboards = 0
         HardwaremanagerAction._nr_of_joysticks = 0
         HardwaremanagerAction._nr_of_sensodrives = 0
-        self.data = {}
 
+        self.data = {}
         self.write_news(news=self.data)
-        self.time = QtCore.QTime()
 
     def do(self):
         """
@@ -39,7 +38,6 @@ class HardwaremanagerAction(JoanModuleAction):
     def start(self):
         try:
             self.module_state_handler.request_state_change(HardwaremanagerStates.HARDWARECOMMUNICATION.RUNNING)
-            self.time.restart()
         except RuntimeError:
             return False
         return super().start()
@@ -49,7 +47,7 @@ class HardwaremanagerAction(JoanModuleAction):
             self.module_state_handler.request_state_change(HardwaremanagerStates.HARDWARECOMMUNICATION.STOPPED)
         except RuntimeError:
             return False
-        return super().start()
+        return super().stop()
 
     def selected_input(self, input_string):
         self._selected_input_device = input_string

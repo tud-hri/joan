@@ -9,7 +9,7 @@ from modules.joanmodules import JOANModules
 class JoanModuleDialog(QtWidgets.QDialog):
 
     def __init__(self, module: JOANModules, module_action: JoanModuleAction, master_state_handler, parent=None):
-        super().__init__(parent)
+        super().__init__(parent=parent)
 
         self.module_action = module_action
 

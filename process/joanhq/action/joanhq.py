@@ -57,6 +57,9 @@ class JoanHQAction(QtCore.QObject):
     def add_module(self, module: JOANModules, name='', parent=None, millis=100):
         """Add module, instantiated module, find unique name"""
 
+        if not parent:
+            parent = self.window
+
         if module is JOANModules.TEMPLATE or JOANModules.CARLA_INTERFACE or JOANModules.HARDWARE_MANAGER:  # Example of how the new style could be
             # TODO Load the default settings for this module here, this can be from a saved settings file or from another source
             # millis = default_millis_for_this_module

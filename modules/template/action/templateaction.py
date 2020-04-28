@@ -41,4 +41,4 @@ class TemplateAction(JoanModuleAction):
             self.module_state_handler.request_state_change(TemplateStates.TEMPLATE.STOPPED)
         except RuntimeError:
             return False
-        return super().start()
+        return super().stop()
