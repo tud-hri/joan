@@ -168,19 +168,7 @@ class Keyboard(BaseInput):
         # set the default settings when constructing:
         self.settings_set_default_values()
         
-        keyboard.on_press(self.key_press_event, False)
-        keyboard.on_release(self.key_release_event, True)
-
-        
-
-        # Overwriting keypress events to handle keypresses for controlling
-        # self._parentWidget.window.keyPressEvent = self.key_press_event
-        # self._parentWidget.window.keyReleaseEvent = self.key_release_event
-    # def printshit(self,key):
-    #     print(key.name)
-
-    # def printookshit(self, key):
-    #     print('RELEASE')
+        keyboard.hook(self.key_event, False)
 
     def settings_update_sliders(self):
         self._settings_tab.label_steer_sensitivity.setText(str(self._settings_tab.slider_steer_sensitivity.value()))
@@ -298,6 +286,46 @@ class Keyboard(BaseInput):
     def remove_tab(self):
         self._action.remove(self._keyboard_tab.groupBox.title())
         self._keyboard_tab.setParent(None)
+        keyboard.unhook(self.key_event)
+
+    def key_event(self,key):
+        print(key)
+        if (key.event_type == keyboard.KEY_DOWN):
+            if key.name == self._throttle_key:
+                self._throttle = True
+            elif key.name == self._brake_key:
+                self._brake = True
+            elif key.name == self._steer_left_key:
+                self._steer_left = True
+                self._steer_right = False
+            elif key.name == self._steer_right_key:
+                self._steer_right = True
+                self._steer_left = False
+            elif key.name == self._handbrake_key:
+                self._handbrake = True
+
+        if (key.event_type == keyboard.KEY_UP):        
+            if key.name == self._throttle_key:
+                self._throttle = False
+            elif key.name == self._brake_key:
+                self._brake = False
+            elif key.name == self._steer_left_key:
+                self._steer_left = False
+                self._steer_right = False
+            elif key.name == self._steer_right_key:
+                self._steer_right = False
+                self._steer_left = False
+            elif key.name == self._handbrake_key:
+                self._handbrake = False
+            elif key.name == self._reverse_key:
+                if not self._reverse:
+                    self._reverse = True
+                elif self._reverse:
+                    self._reverse = False
+
+        print(self._throttle)
+
+
 
     def key_press_event(self, key):
         if key.name == self._throttle_key:
