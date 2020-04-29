@@ -323,46 +323,6 @@ class Keyboard(BaseInput):
                 elif self._reverse:
                     self._reverse = False
 
-        print(self._throttle)
-
-
-
-    def key_press_event(self, key):
-        if key.name == self._throttle_key:
-            self._throttle = True
-        elif key.name == self._brake_key:
-            self._brake = True
-        elif key.name == self._steer_left_key:
-            self._steer_left = True
-            self._steer_right = False
-        elif key.name == self._steer_right_key:
-            self._steer_right = True
-            self._steer_left = False
-        elif key.name == self._handbrake_key:
-            self._handbrake = True
-
-
-
-    def key_release_event(self, key):
-        if key.name == self._throttle_key:
-            self._throttle = False
-        elif key.name == self._brake_key:
-            self._brake = False
-        elif key.name == self._steer_left_key:
-            self._steer_left = False
-            self._steer_right = False
-        elif key.name == self._steer_right_key:
-            self._steer_right = False
-            self._steer_left = False
-        elif key.name == self._handbrake_key:
-            self._handbrake = False
-        elif key.name == self._reverse_key:
-            if not self._reverse:
-                self._reverse = True
-            elif self._reverse:
-                self._reverse = False
-
-
     def process(self):
         # # If there are cars in the simulation add them to the controllable car combobox
         if (self._carla_interface_data['vehicles'] is not None):
