@@ -17,6 +17,7 @@ class HardwaremanagerAction(JoanModuleAction):
         HardwaremanagerAction._nr_of_keyboards = 0
         HardwaremanagerAction._nr_of_joysticks = 0
         HardwaremanagerAction._nr_of_sensodrives = 0
+        self._selected_input_device = ''
 
         self.data = {}
         self.write_news(news=self.data)
@@ -87,12 +88,9 @@ class HardwaremanagerAction(JoanModuleAction):
         # print(HardwaremanagerAction.input_devices_classes)
 
     def remove(self, tabtitle):
-        del HardwaremanagerAction.input_devices_widgets[tabtitle]
-        del HardwaremanagerAction.input_devices_classes[tabtitle]
-        del self.data[tabtitle]
-
         if "Keyboard" in tabtitle:
             HardwaremanagerAction._nr_of_keyboards = HardwaremanagerAction._nr_of_keyboards - 1
+            keyboard.unhook(HardwaremanagerAction.input_devices_classes[tabtitle].key_event)
 
         if "Mouse" in tabtitle:
             HardwaremanagerAction._nr_of_mouses = HardwaremanagerAction._nr_of_mouses - 1
@@ -103,6 +101,10 @@ class HardwaremanagerAction(JoanModuleAction):
         if "Sensodrive" in tabtitle:
             HardwaremanagerAction._nr_of_sensodrives = HardwaremanagerAction._nr_of_sensodrives - 1
 
+        del HardwaremanagerAction.input_devices_widgets[tabtitle]
+        del HardwaremanagerAction.input_devices_classes[tabtitle]
+        del self.data[tabtitle]
+
 
 class BaseInput:
     def __init__(self, hardware_manager_action):
@@ -111,17 +113,12 @@ class BaseInput:
         self._data = {'SteeringInput': 0, 'ThrottleInput': 0, 'BrakeInput': 0, 'Reverse': False, 'Handbrake': False}
         self.currentInput = 'None'
 
+    def remove_tab(self, tab):
+        self._action.remove(tab.groupBox.title())
+        tab.setParent(None)
+        
     def process(self):
         return self._data
-
-    def changeInputSource(self):
-        pass
-
-    def setUsingtext(self):
-        pass
-
-    def displayInputs(self):
-        pass
 
 class JOAN_Keyboard(BaseInput):
     def __init__(self, hardware_manager_action, keyboard_tab):
@@ -136,11 +133,19 @@ class JOAN_Keyboard(BaseInput):
         self._handbrake = False
         self._reverse = False
 
-        # nr vehicles
-        self._spawned_list = [None] * 10
-        self._already_added = [None] * 10
-        self.k = 0
-        self.i = 0
+        # Initialize keyboard settings
+        self._min_steer = 0
+        self._max_steer = 0
+        self._autocenter = False
+        self._steer_sensitivity = 0
+        self._brake_sensitivity = 0
+        self._throttle_sensitivity = 0
+        self._steer_left_key = ''
+        self._steer_right_key = ''
+        self._throttle_key = ''
+        self._brake_key = ''
+        self._reverse_key = ''
+        self._handbrake_key = ''
 
         # Load the appropriate settings window and show it:
         self._settings_tab = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "UIs/keyboard_settings_ui.ui"))
@@ -150,7 +155,7 @@ class JOAN_Keyboard(BaseInput):
         self._keyboard_tab.btn_settings.clicked.connect(self._settings_tab.show)
 
         # Connect the hardware remove button to removing routine
-        self._keyboard_tab.btn_remove_hardware.clicked.connect(self.remove_tab)
+        self._keyboard_tab.btn_remove_hardware.clicked.connect(self.remove_func)
 
         # Connect buttons of settings menu to methods:
         self._settings_tab.btn_set_keys.clicked.connect(self.settings_set_keys)
@@ -167,18 +172,8 @@ class JOAN_Keyboard(BaseInput):
         
         keyboard.hook(self.key_event, False)
 
-    def settings_update_sliders(self):
-        self._settings_tab.label_steer_sensitivity.setText(str(self._settings_tab.slider_steer_sensitivity.value()))
-        self._settings_tab.label_throttle_sensitivity.setText(str(self._settings_tab.slider_throttle_sensitivity.value()))
-        self._settings_tab.label_brake_sensitivity.setText(str(self._settings_tab.slider_brake_sensitivity.value()))
-
-    def settings_set_newvalues(self):
-        self._min_steer = int(self._settings_tab.line_edit_min_steer.text())
-        self._max_steer = int(self._settings_tab.line_edit_max_steer.text())
-        self._autocenter = self._settings_tab.checkbox_autocenter.isChecked()
-        self._steer_sensitivity = self._settings_tab.slider_steer_sensitivity.value()
-        self._brake_sensitivity = self._settings_tab.slider_brake_sensitivity.value()
-        self._throttle_sensitivity = self._settings_tab.slider_throttle_sensitivity.value()
+    def remove_func(self):
+        self.remove_tab(self._keyboard_tab)
 
     def settings_set_default_values(self):
         # Keys
@@ -216,6 +211,19 @@ class JOAN_Keyboard(BaseInput):
         self._settings_tab.slider_steer_sensitivity.setValue(self._steer_sensitivity)
         self._settings_tab.slider_throttle_sensitivity.setValue(self._throttle_sensitivity)
         self._settings_tab.slider_brake_sensitivity.setValue(self._brake_sensitivity)
+
+    def settings_update_sliders(self):
+        self._settings_tab.label_steer_sensitivity.setText(str(self._settings_tab.slider_steer_sensitivity.value()))
+        self._settings_tab.label_throttle_sensitivity.setText(str(self._settings_tab.slider_throttle_sensitivity.value()))
+        self._settings_tab.label_brake_sensitivity.setText(str(self._settings_tab.slider_brake_sensitivity.value()))
+
+    def settings_set_newvalues(self):
+        self._min_steer = int(self._settings_tab.line_edit_min_steer.text())
+        self._max_steer = int(self._settings_tab.line_edit_max_steer.text())
+        self._autocenter = self._settings_tab.checkbox_autocenter.isChecked()
+        self._steer_sensitivity = self._settings_tab.slider_steer_sensitivity.value()
+        self._brake_sensitivity = self._settings_tab.slider_brake_sensitivity.value()
+        self._throttle_sensitivity = self._settings_tab.slider_throttle_sensitivity.value()
 
     def settings_set_keys(self):
         self._settings_tab.btn_set_keys.setStyleSheet("background-color: lightgreen")
@@ -262,7 +270,7 @@ class JOAN_Keyboard(BaseInput):
                 self._settings_tab.label_brake.setText(text)
                 self._settings_tab.label_brake.setStyleSheet("background-color: none")
                 self._settings_tab.label_reverse.setStyleSheet("background-color: lightgreen")
-                self.brake_key = event.text()
+                self._brake_key = event.text()
             elif self._set_key_counter == 5:
                 self._settings_tab.label_reverse.setText(text)
                 self._settings_tab.label_reverse.setStyleSheet("background-color: none")
@@ -277,11 +285,6 @@ class JOAN_Keyboard(BaseInput):
                 self._set_key_counter = 0
                 self._settings_tab.button_box_settings.setEnabled(True)
                 self._settings_tab.btn_set_keys.setEnabled(True)
-
-    def remove_tab(self):
-        self._action.remove(self._keyboard_tab.groupBox.title())
-        self._keyboard_tab.setParent(None)
-        keyboard.unhook(self.key_event)
 
     def key_event(self, key):
         if (key.event_type == keyboard.KEY_DOWN):
@@ -298,7 +301,7 @@ class JOAN_Keyboard(BaseInput):
             elif key.name == self._handbrake_key:
                 self._handbrake = True
 
-        if (key.event_type == keyboard.KEY_UP):        
+        if (key.event_type == keyboard.KEY_UP):
             if key.name == self._throttle_key:
                 self._throttle = False
             elif key.name == self._brake_key:
@@ -366,13 +369,11 @@ class JOAN_Mouse(BaseInput): #DEPRECATED FOR NOW
         self.currentInput = 'Mouse'
         # Add the tab to the widget
         self._mouse_tab = mouse_tab
-        self._mouse_tab.btn_remove_hardware.clicked.connect(self.remove_tab)
+        self._mouse_tab.btn_remove_hardware.clicked.connect(self.remove_func)
 
-    def remove_tab(self):
-        self._action.remove(self._mouse_tab.groupBox.title())
-        self._mouse_tab.setParent(None)
-
-
+    def remove_func(self):
+        self.remove_tab(self._mouse_tab)
+    
     def process(self):
         if (self._carla_interface_data['vehicles'] is not None):
             # self._carla_interface_data = self._action.read_news('modules.carlainterface.action.carlainterfaceaction.CarlainterfaceAction')
@@ -393,12 +394,18 @@ class JOAN_Joystick(BaseInput):
         super().__init__(hardware_manager_action)
         self.currentInput = 'Joystick'
         self._joystick_tab = joystick_tab
-        # self._parentWidget.widget.hardware_list_layout.addWidget(self._joystick_tab)
         self._joystick_open = False
-
-        self._joystick_tab.btn_remove_hardware.clicked.connect(self.remove_tab)
-
+        self._joystick_tab.btn_remove_hardware.clicked.connect(self.remove_func)
         self._joystick = hid.device()
+
+        #Initialize Variables
+        self._min_steer = 0
+        self._max_steer = 0
+        self.brake = 0
+        self.steer = 0
+        self.throttle = 0
+        self.handbrake = False
+        self.reverse = False
 
         # Load the appropriate settings tab and show it:
         self._settings_tab = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "UIs/joystick_settings_ui.ui"))
@@ -429,8 +436,6 @@ class JOAN_Joystick(BaseInput):
         except:
             self._joystick_open = False
 
-        print(self._joystick_open)
-
     def settings_set_newvalues(self):
         self._min_steer = int(self._settings_tab.line_edit_min_steer.text())
         self._max_steer = int(self._settings_tab.line_edit_max_steer.text())
@@ -450,9 +455,8 @@ class JOAN_Joystick(BaseInput):
         self._settings_tab.line_edit_min_steer.setText(str(self._min_steer))
         self._settings_tab.line_edit_max_steer.setText(str(self._max_steer))
 
-    def remove_tab(self):
-        self._action.remove(self._joystick_tab.groupBox.title())
-        self._joystick_tab.setParent(None)
+    def remove_func(self):
+        self.remove_tab(self._joystick_tab)
 
     def process(self):
         joystickdata = []
@@ -488,7 +492,7 @@ class JOAN_Joystick(BaseInput):
                 self.reverse = False
 
             self.steer = round((((joystickdata[0]) + (joystickdata[1]) * 256) / (256 * 256)) * (self._max_steer - self._min_steer) - self._max_steer)
-            
+
         self._data['BrakeInput'] = self.brake
         self._data['ThrottleInput'] = self.throttle
         self._data['SteeringInput'] = self.steer
@@ -503,27 +507,7 @@ class JOAN_SensoDrive(BaseInput): #DEPRECATED FOR NOW
         super().__init__(hardware_manager_action)
         self.currentInput = 'SensoDrive'
         self._sensodrive_tab = sensodrive_tab
-    #     BaseInput.__init__(self, HardwaremanagerWidget, HardwaremanagerAction)
-    #     self.currentInput = 'SensoDrive'
-    #     self._sensodrive_tab = sensodrive_tab
-    #     self._parentWidget.widget.hardware_list_layout.addWidget(self._sensodrive_tab)
-        self._sensodrive_tab.btn_remove_hardware.clicked.connect(self.remove_tab)
+        self._sensodrive_tab.btn_remove_hardware.clicked.connect(self.remove_func)
 
-    def remove_tab(self):
-        self._action.remove(self._sensodrive_tab.groupBox.title())
-        self._sensodrive_tab.setParent(None)
-    #     self._parentWidget.do()
-    #     self._action.remove(self._sensodrive_tab.groupBox.title())
-    #     self._parentWidget.widget.hardware_list_layout.removeWidget(self._sensodrive_tab)
-    #     self._sensodrive_tab.setParent(None)
-
-    # def process(self):
-    #     if(self._carla_interface_data['vehicles'] is not None):
-    #         for vehicles in self._carla_interface_data['vehicles']:
-    #             if vehicles.selected_input == self._sensodrive_tab.groupBox.title():
-    #                 self._sensodrive_tab.btn_remove_hardware.setEnabled(False)
-    #                 break
-    #             else:
-    #                 self._sensodrive_tab.btn_remove_hardware.setEnabled(True)
-
-    #     return self._data
+    def remove_func(self):
+        self.remove_tab(self._sensodrive_tab)
