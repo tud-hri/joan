@@ -1,64 +1,70 @@
 import threading
 import io
 import csv
-from modules.datarecorder.action.datarecordersettings import DatarecorderSettings
-
 
 class DataWriter(threading.Thread):
-    def __init__(self, news=None, channels=[]):
+    def __init__(self, news=None, channels=[], settings_object=None):
         threading.Thread.__init__(self)
-        self.filehandle = None
-        self.dictWriter = None
+        self.file_handle = None
+        self.dict_writer = None
         self.news = news
         self.channels = channels
 
         self.fieldnames = []
-        self.datarecorderSettings = DatarecorderSettings()
-        self.settings = None
+        self.settings_object = settings_object
+        self.settings_dict = {}
 
     def run(self):
         print(self.is_alive())
 
-    def filterFirstRow(self, news=None, channels=[]):
+    def filter_first_row(self):
         # define first row, the headers for the columns
         row = ['time']
         for channel in self.channels:
-            latestNews = self.news[channel]
-            for key in latestNews:
-                if self.settings['modules'][channel][key] is True:
-                    row.append('%s.%s' % (channel.split('.')[1], key))
+            latest_news = self.news[channel]
+            try:
+                channel = channel.name
+            except:
+                pass
+            for key in latest_news:
+                if self.settings_dict['data'][channel][key] is True:
+                    #row.append('%s.%s' % (channel.split('.')[1], key))
+                    row.append('%s.%s' % (channel, key))
         self.columnnames(row)
-        print('first', row)
 
-    def filterRow(self, news=None, channels=[]):
+    def filter_row(self, news=None, channels=[]):
         row = {}
         for channel in channels:
-            latestNews = news[channel]
-            for key in latestNews:
-                if self.settings['modules'][channel][key] is True:
-                    row.update({'%s.%s' % (channel.split('.')[1], key): latestNews[key]})
+            latest_news = news[channel]
+            try:
+                channel = channel.name
+            except:
+                pass
+            for key in latest_news:
+                if self.settings_dict['data'][channel][key] is True:
+                    #row.update({'%s.%s' % (channel.split('.')[1], key): latest_news[key]})
+                    row.update({'%s.%s' % (channel, key): latest_news[key]})
         return row
 
     def columnnames(self, keys=[]):
         # filters keys you want from the data and put them as header in the csv file
         self.fieldnames = keys
 
-    def getFirstRow(self):
+    def get_first_row(self):
         return self.fieldnames
 
     def open(self, filename, buffersize=io.DEFAULT_BUFFER_SIZE):
         # renew settings
-        self.settings = self.datarecorderSettings.read()
-        self.filterFirstRow()
+        self.settings_dict = self.settings_object.read_settings()
+        self.filter_first_row()
 
         # open file and write the first row
-        print('buffersize', buffersize)
-        self.filehandle = open(filename, 'w', buffering=buffersize, newline='')
-        self.dictWriter = csv.DictWriter(self.filehandle, fieldnames=self.getFirstRow())
-        self.dictWriter.writeheader()
+        self.file_handle = open(filename, 'w', buffering=buffersize, newline='')
+        self.dict_writer = csv.DictWriter(self.file_handle, fieldnames=self.get_first_row())
+        self.dict_writer.writeheader()
 
     def close(self):
-        self.filehandle.close()
+        self.file_handle.close()
 
     def write(self, timestamp=None, news=None, channels=[]):
         # get ALL news here, filter in self.filter and write
@@ -67,5 +73,5 @@ class DataWriter(threading.Thread):
         row = {}
         row['time'] = time  # datetime.now()
 
-        row.update(self.filterRow(news=news, channels=channels))
-        self.dictWriter.writerow(row)
+        row.update(self.filter_row(news=news, channels=channels))
+        self.dict_writer.writerow(row)

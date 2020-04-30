@@ -39,7 +39,7 @@ Basecontroller<br>
 Arbitrarycontroller(Basecontroller)<br><br>
 moduleWidget(Control) <br>
 moduleAction(Control) <br>
-moduleStates(MasterStates)<br><br>
+module_states(MasterStates)<br><br>
 
 module is something like DataRecorder
 # Main class diagram
@@ -56,7 +56,7 @@ module is something like DataRecorder
         class QThread
         class MainModuleWidget
         class moduleAction
-        class moduleStates
+        class module_states
         class DataRecorderWidget
         class FeedbackcontrollerWidget
         class Basecontroller
@@ -85,8 +85,8 @@ module is something like DataRecorder
 
         Control --|> moduleAction : Inheritance
         Control  --|> MainModuleWidget : Inheritance
-        MasterStates --|> moduleStates : Inheritance
-        moduleStates "1" ..|> "*" State : Realization
+        MasterStates --|> module_states : Inheritance
+        module_states "1" ..|> "*" State : Realization
 ```
 
 # datarecorder class diagram

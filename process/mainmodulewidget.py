@@ -18,24 +18,27 @@ class MainModuleWidget(QMainWindow):
         super().__init__()
 
         self._showClosePrompt = kwargs['showcloseprompt'] if 'showcloseprompt' in kwargs.keys() else False
+        window_name = kwargs['name'] if 'name' in kwargs.keys() else ''
+        self.setWindowTitle(window_name)
+
         # main widget
-        self.mainWidget = QWidget()
+        self.main_widget = QWidget()
 
         # default layout
         self.layout = QVBoxLayout()
-        self.mainWidget.setLayout(self.layout)
-        self.setCentralWidget(self.mainWidget)
+        self.main_widget.setLayout(self.layout)
+        self.setCentralWidget(self.main_widget)
 
         # file menu
         # this menu always has a close action, and allows for customized actions per module (after the close action).
-        self.fileMenu = self.menuBar().addMenu('File')
-        self.fileMenu.addAction('Close', self.close)
-        self.fileMenu.addSeparator()
+        self.file_menu = self.menuBar().addMenu('File')
+        self.file_menu.addAction('Close', self.close)
+        self.file_menu.addSeparator()
 
         # show menu
         # enables the user to set the visibility of all widgets loaded in the window.
-        self.showMenu = self.menuBar().addMenu('Show')
-        self.showMenu.triggered.connect(self.processTriggerShowMenu)
+        self.show_menu = self.menuBar().addMenu('Show')
+        self.show_menu.triggered.connect(self.processTriggerShowMenu)
 
     def addWidget(self, widget, name):
         """Add widgets to the window and to the 'view' menu."""
@@ -43,24 +46,24 @@ class MainModuleWidget(QMainWindow):
         widget.setObjectName(name)
 
         # add action for each  in the view menu: this is used to show the widget
-        self.showMenu.addAction(QAction(name, self.showMenu,
+        self.show_menu.addAction(QAction(name, self.show_menu,
                                         checkable=True, checked=True))
 
-        # and finally add the widget to the layout of the mainWidget
+        # and finally add the widget to the layout of the main_widget
         self.layout.addWidget(widget)
 
-        # adjust the size of the mainWidget and the window
-        self.mainWidget.adjustSize()
+        # adjust the size of the main_widget and the window
+        self.main_widget.adjustSize()
         self.adjustSize()
 
     def processTriggerShowMenu(self, action):
         """Set visibility of the clicked widget in the view menu"""
 
-        widget = self.mainWidget.findChild(QWidget, action.text())
+        widget = self.main_widget.findChild(QWidget, action.text())
         if widget is not None:
             widget.setVisible(action.isChecked())
             # adjust the size of the window
-            self.mainWidget.adjustSize()
+            self.main_widget.adjustSize()
             self.adjustSize()
 
     def closeEvent(self, event):
@@ -81,4 +84,3 @@ class MainModuleWidget(QMainWindow):
             # window is closed, emit closed signal and accept the event
             self.closed.emit()
             event.accept()
-             

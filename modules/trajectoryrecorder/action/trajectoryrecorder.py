@@ -5,8 +5,8 @@ class TrajectoryrecorderAction(Control):
     def __init__(self, *args, **kwargs):
         Control.__init__(self, *args, **kwargs)
         # get state information from module Widget
-        self.moduleStates = 'moduleStates' in kwargs.keys() and kwargs['moduleStates'] or None
-        self.moduleStateHandler = 'moduleStateHandler' in kwargs.keys() and kwargs['moduleStateHandler'] or None
+        self.module_states = 'module_states' in kwargs.keys() and kwargs['module_states'] or None
+        self.module_state_handler = 'module_state_handler' in kwargs.keys() and kwargs['module_state_handler'] or None
         self._data = [0, 0, 0, 0, 0, 0]
         self._TrajData = ([1,2,3,4,5,6],[2,3,4,5,6,7])
         self._Traveled = 0

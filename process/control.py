@@ -1,12 +1,29 @@
 """Base class for modules"""
 
-import os 
+import os
 from PyQt5 import uic, QtCore
 
-from signals import Pulsar
+from .pulsar import Pulsar
 from .statehandler import StateHandler, MasterStates
 from .mainmodulewidget import MainModuleWidget
+from .settings import ModuleSettings
 
+
+class Settings:
+    '''
+    The Settings class is a singleton that holds settings of module, 
+    so they can be used from Experiment classes, using the module_key
+    '''
+    instance = None
+
+    def __new__(klass, *args, **kwargs):
+        if not klass.instance:
+            klass.instance = object.__new__(Settings)
+            klass.settings = {}
+        return klass.instance
+
+    def __init__(self, settings_dict):
+        self.settings.update(settings_dict)
 
 class News:
     '''
@@ -38,15 +55,15 @@ class Status:
     def __new__(klass, *args, **kwargs):
         if not klass.instance:
             klass.instance = object.__new__(Status)
-            klass.masterStates = MasterStates()
-            klass.masterStateHandler = StateHandler(firstState=MasterStates.VOID, statesDict=klass.masterStates.getStates())
-            klass.moduleStatePackages = {}
+            klass.master_states = MasterStates()
+            klass.master_state_handler = StateHandler(first_state=MasterStates.VOID, states_dict=klass.master_states.get_states())
+            klass.module_state_packages = {}
         return klass.instance
 
-    def __init__(self, moduleStatePackage):
+    def __init__(self, module_state_package):
         # TODO find out if self.gui is necessary, also see klass.gui
         # self.gui.update(guiDict)
-        self.moduleStatePackages.update(moduleStatePackage)
+        self.module_state_packages.update(module_state_package)
 
 
 class Control(Pulsar):
@@ -58,34 +75,39 @@ class Control(Pulsar):
         Pulsar.__init__(self, *args, **kwargs)
 
         # for use in child classes
-        self.singletonStatus = Status({})
-        self.singletonNews = News({})
-        self.masterStateHandler = self.singletonStatus.masterStateHandler
-        self.masterStates = self.singletonStatus.masterStates
+        self.singleton_status = Status({})
+        self.singleton_news = News({})
+        self.singleton_settings = Settings({})
+        self.master_state_handler = self.singleton_status.master_state_handler
+        self.master_states = self.singleton_status.master_states
+        #self.Settings(file=os.path.join(os.path.dirname(ui), 'modulesettings.json'))
+
 
         self.window = None  # main widget (container for widget and controlWidget)
-        self.widget = None  # will contain a value after calling createWidget
-        self.stateWidget = None
-        self.moduleStateHandler = None  # will contain  a value after calling defineModuleStateHandler
-        self.moduleStates = None  # will contain  a value after calling defineModuleStateHandler
+        self.widget = None  # will contain a value after calling create_widget
+        self.state_widget = None
+        self.module_state_handler = None  # will contain  a value after calling define_module_state_handler
+        self.module_states = None  # will contain  a value after calling define_module_state_handler
         self.initialized = False
 
     def initialize(self):
         """Method to initialize the module before start"""
         # self.initialized = True
 
-    def createWidget(self, ui=''):
+    def create_widget(self, ui=''):
         assert ui != '', 'argument "ui" should point to a PyQt ui file (e.g. ui=<absolute path>menu.ui)'
 
         # window is a QMainWindow, and the container for all widgets
         self.window = MainModuleWidget()
 
-        self.stateWidget = self._getGui(os.path.join(os.path.dirname(
+        #self.settings = Settings(file=os.path.join(os.path.dirname(ui), 'modulesettings.json'))
+
+        self.state_widget = self._get_gui(os.path.join(os.path.dirname(
             os.path.realpath(__file__)), "../resources/statewidget.ui"))
-        self.window.addWidget(self.stateWidget, name='State widget')
+        self.window.addWidget(self.state_widget, name='State widget')
 
         # load widget UI ()
-        self.widget = self._getGui(ui)
+        self.widget = uic.loadUi(ui)
         assert self.widget is not None, 'could not create a widget, is %s the correct filename?' % ui
         self.window.addWidget(self.widget, name='Module widget')
 
@@ -96,33 +118,34 @@ class Control(Pulsar):
             pass
 
         # connect stateWidget widgets (buttons, line edit)
-        self.stateWidget.inputTickMillis.setPlaceholderText(str(self.millis))
-        self.stateWidget.inputTickMillis.textChanged.connect(lambda dt=self.millis: self._setmillis(dt))
-        self.stateWidget.btnStart.clicked.connect(self._btnStartClicked)
-        self.stateWidget.btnStop.clicked.connect(self._btnStopClicked)
+        self.state_widget.input_tick_millis.setPlaceholderText(str(self.millis))
+        self.state_widget.input_tick_millis.textChanged.connect(lambda dt=1: self._setmillis(dt))
+        # self.state_widget.input_tick_millis.setValidator(QtGui.QIntValidator(0, 2000, self))  # only allow 0-2000ms and int
+        self.state_widget.btn_start.clicked.connect(self._btn_start_clicked)
+        self.state_widget.btn_stop.clicked.connect(self._btn_stop_clicked)
 
         try:
-            self.stateWidget.lbModuleState.setText(self.moduleStateHandler.getCurrentState().name)
-            self.moduleStateHandler.stateChanged.connect(
-                lambda state: self.stateWidget.lbModuleState.setText(self.moduleStateHandler.getState(state).name)
+            self.state_widget.lb_module_state.setText(self.module_state_handler.get_current_state().name)
+            self.module_state_handler.state_changed.connect(
+                lambda state: self.state_widget.lb_module_state.setText(self.module_state_handler.get_state(state).name)
             )
         except Exception as e:
-            print("TODO: we should create the moduleStateHandler first thing per module in __init__ before calling createWidget")
+            print("TODO: we should create the module_state_handler first thing per module in __init__ before calling create_widget")
 
-    def _btnStartClicked(self):
+    def _btn_start_clicked(self):
         self.start()
-        self.stateWidget.inputTickMillis.setEnabled(False)
-        self.stateWidget.inputTickMillis.clear()
-        self.stateWidget.inputTickMillis.clearFocus()
-        self.stateWidget.inputTickMillis.setPlaceholderText(str(self.millis))
+        self.state_widget.input_tick_millis.setEnabled(False)
+        self.state_widget.input_tick_millis.clear()
+        self.state_widget.input_tick_millis.clearFocus()
+        self.state_widget.input_tick_millis.setPlaceholderText(str(self.millis))
 
-    def _btnStopClicked(self):
+    def _btn_stop_clicked(self):
         self.stop()
-        self.stateWidget.inputTickMillis.setEnabled(True)
-        self.stateWidget.inputTickMillis.clear()
-        self.stateWidget.inputTickMillis.setPlaceholderText(str(self.millis))
+        self.state_widget.input_tick_millis.setEnabled(True)
+        self.state_widget.input_tick_millis.clear()
+        self.state_widget.input_tick_millis.setPlaceholderText(str(self.millis))
 
-    def _getGui(self, ui=''):
+    def _get_gui(self, ui=''):
         try:
             return uic.loadUi(ui)
         except OSError as inst:
@@ -131,6 +154,7 @@ class Control(Pulsar):
 
     @QtCore.pyqtSlot(str)
     def _setmillis(self, millis):
+        print(millis)
         try:
             millis = int(millis)
             assert millis > 0, 'QTimer tick interval needs to be larger than 0'
@@ -144,48 +168,74 @@ class Control(Pulsar):
     def _close(self):
         self.window.close()
 
-    def defineModuleStateHandler(self, module='', moduleStates=None):
+    def define_module_state_handler(self, module='', module_states=None):
         assert module != '', 'argument "module" should containt the name of the module, which is the calling class'
         # states example:     VOID = State(0, translate('BootStates', 'Null state'), -1,150)
-        moduleStatesDict = moduleStates.getStates()
-        self.moduleStateHandler = StateHandler(firstState=MasterStates.VOID, statesDict=moduleStatesDict)
-        self.moduleStates = moduleStates
-    
+        module_states_dict = module_states.get_states()
+        self.module_state_handler = StateHandler(first_state=MasterStates.VOID, states_dict=module_states_dict)
+        self.module_states = module_states
+
         try:
-            moduleKey = '%s.%s' % (module.__class__.__module__, module.__class__.__name__)
-            moduleStatePackage = {}
-            moduleStatePackage['moduleStates'] = moduleStates
-            moduleStatePackage['moduleStateHandler'] = self.moduleStateHandler
-            self.singletonStatus = Status({moduleKey: moduleStatePackage})
+            module_key = '%s.%s' % (module.__class__.__module__, module.__class__.__name__)
+            module_state_package = {}
+            module_state_package['module_states'] = module_states
+            module_state_package['module_state_handler'] = self.module_state_handler
+            self.singleton_status = Status({module_key: module_state_package})
         except Exception as e:
             print('Exception in Control', e)
 
-    def writeNews(self, channel='', news={}):
+    def write_news(self, channel='', news=dict):
         """write new data to channel"""
 
         assert channel != '', 'argument "channel" should be the writer class'
         assert type(news) == dict, 'argument "news" should be of type dict and will contain news(=data) of this channel'
         try:
-            channelKey = '%s.%s' % (channel.__class__.__module__, channel.__class__.__name__)
-            # if channelKey not in self.getAvailableNewsChannels():
-            self.singletonNews = News({channelKey: news})
+            channel_key = '%s.%s' % (channel.__class__.__module__, channel.__class__.__name__)
+            # if channel_key not in self.get_available_news_channels():
+            self.singleton_news = News({channel_key: news})
         except Exception as e:
             print(e)
 
-    def getAllNews(self):
-        return self.singletonNews.news
+    def create_settings(self, module='', file=''):
+        """ 
+        When called, other childs of Control can use these settings from modules
+        File should be placed within the calling module directory. 
+        When removing a module the corresponding settings are also removed, which is a good thing.
+        """
+        assert module != '', 'argument "module" should containt the name of the module, which is the calling class'
+        assert file != '', 'argument "file" should contain the full path with a filename that ends with ".json"'
+        assert file.endswith('.json'), 'argument "file" should contain the full path with a filename that ends with ".json"'
+        try:
+            module_key = '%s.%s' % (module.__class__.__module__, module.__class__.__name__)
+            settings = ModuleSettings(file=file)
+            self.singleton_settings = Settings({module_key: settings})
+        except Exception as e:
+            print('Exception in Control', e)
 
-    def getAvailableNewsChannels(self):
-        return self.singletonNews.news.keys()
+    def get_all_news(self):
+        return self.singleton_news.news
 
-    def readNews(self, channel=''):
-        return channel in self.getAvailableNewsChannels() and self.singletonNews.news[channel] or {}
+    def get_available_news_channels(self):
+        return self.singleton_news.news.keys()
 
-    def getAllModuleStatePackages(self):
-        return self.singletonStatus.moduleStatePackages
+    def read_news(self, channel=''):
+        if channel not in self.get_available_news_channels():
+            raise ValueError('Trying to read news from '+channel+'... channel not found!')
 
-    def getAvailableModuleStatePackages(self):
-        return self.singletonStatus.moduleStatePackages.keys()
+        return self.singleton_news.news[channel]
 
-    def getModuleStatePackage(self, module=''):
-        return module in self.getAvailableModuleStatePackages() and self.singletonStatus.moduleStatePackages[module] or {}
+    def get_all_module_state_packages(self):
+        return self.singleton_status.module_state_packages
+
+    def get_available_module_state_packages(self):
+        return self.singleton_status.module_state_packages.keys()
+
+    def get_module_state_package(self, module=''):
+        return module in self.get_available_module_state_packages() and self.singleton_status.module_state_packages[module] or {}
+
+    def get_available_module_settings(self):
+        return self.singleton_settings.settings.keys()
+
+    def get_module_settings(self, module=''):
+        return module in self.get_available_module_settings() and self.singleton_settings.settings[module] or None
+

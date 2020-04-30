@@ -19,7 +19,7 @@ class State:
     * nr: the integer state number, can be obtaine by calling int() on the object.
     * parent: the integer state number for the parent state
     * name: a short description of the state
-    * key: the uppercase name by which the state is stored in the MasterStates class and in the ModuleStates class
+    * key: the uppercase name by which the state is stored in the MasterStates class and in the module_states class
     * transitions: tuple of possible state transitions
     
     """
@@ -70,7 +70,7 @@ class MasterStates:
     instance = None
     """ 
     The MasterStates collection class should only contain the global singleton MasterStates
-    Each module has its own moduleStates that inherits this global MasterStates class
+    Each module has its own module_states that inherits this global MasterStates class
     """
     
     # void state. The program starts in VOID
@@ -124,8 +124,9 @@ class MasterStates:
     ERROR.INTERFACE.INIT_DEV        = State(154,  translate('ErrorStates', 'Error - Interface initialization, DEV'), 100,111,151,152,153)
     ERROR.EXPERIMENT                = State(155,  translate('ErrorStates', 'Error - Experiment'), -1, 150) 
 
+    QUIT                            = State(999, translate('Quit', 'Quit'), -1)
     '''
-    States is only used by SingletonStatus
+    States is only used by singleton_status
     __instance = None
 
     def __new__(klass, *args, **kwargs):
@@ -169,7 +170,7 @@ class MasterStates:
         tagStates(self, '')
         #self.states = states
     
-    def getStates(self):
+    def get_states(self):
         return self.states
     
     ''' not used 20200316
@@ -213,7 +214,7 @@ class MasterStates:
     '''
 
     ''' 20200316: moved to statehandler
-    def getState(self,no):
+    def get_state(self,no):
         """Given a state number (as an int), it returns the state object.
         Raises a KeyError if no state with the given number exists.
         If a state itself is given (i.e., an object of type State, it is
@@ -229,7 +230,7 @@ class MasterStates:
         else:
             raise TypeError("variable 'no' should be an int (or State).")
 
-    def allowedTransitions(self, currentstate):
+    def allowed_transitions(self, currentstate):
         """ Return allowed state transitions for current state. """
         state = currentstate
         
@@ -243,10 +244,10 @@ class MasterStates:
 
         return allowed_transitions
         
-    def isStateTransitionAllowed(self, currentstate, requestedstate):
+    def is_state_transition_allowed(self, currentstate, requestedstate):
         """ Return true/false if state transition is allowed """
         
-        allowed_transitions = self.allowedTransitions(currentstate)
+        allowed_transitions = self.allowed_transitions(currentstate)
 
         if (requestedstate in allowed_transitions) or (-1 in allowed_transitions):
             return True
@@ -310,7 +311,7 @@ class MasterStates:
 #             self._halt = True
 #     
 #     
-#     def requestStateChange(self, s):
+#     def request_state_change(self, s):
 #         """ requestState(s)
 #         
 #         Request the state to be changed to a new state. The given value can be
@@ -382,7 +383,7 @@ class MasterStates:
 #                 return False
 #     
 #     
-#     def allowedTransitions(self):
+#     def allowed_transitions(self):
 #         """ Return allowed state transitions for current state. """
 #         state = self._latestState
 #         allowed_transitions = state.transitions

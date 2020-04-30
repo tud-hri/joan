@@ -24,7 +24,7 @@ MainModuleWidget(Control) <br>
         class MainModuleWidget
         class moduleWidget
         class moduleAction
-        class moduleStates
+        class module_states
 
         MasterStates "1" ..|> "*" State : Realization
         Status ..|> MasterStates : Realization of singleton
@@ -37,6 +37,6 @@ MainModuleWidget(Control) <br>
         Control --|> moduleWidget : Inheritance
         Control --|> moduleAction : Inheritance
         Control  --|> MainModuleWidget : Inheritance
-        MasterStates --|> moduleStates : Inheritance
-        moduleStates "1" ..|> "*" State : Realization
+        MasterStates --|> module_states : Inheritance
+        module_states "1" ..|> "*" State : Realization
 ```
