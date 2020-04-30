@@ -1,7 +1,7 @@
 import os
 import keyboard
 from PyQt5 import QtCore, uic
-
+from modules.joanmodules import JOANModules
 from modules.hardwaremanager.action.inputclasses.baseinput import BaseInput
 
 
@@ -208,7 +208,7 @@ class JOAN_Keyboard(BaseInput):
     def process(self):
         # # If there are cars in the simulation add them to the controllable car combobox
         if (self._carla_interface_data['vehicles'] is not None):
-            self._carla_interface_data = self._action.read_news('modules.carlainterface.action.carlainterfaceaction.CarlainterfaceAction')
+            self._carla_interface_data = self._action.read_news(JOANModules.CARLA_INTERFACE)
 
             for vehicles in self._carla_interface_data['vehicles']:
                 if vehicles.selected_input == self._keyboard_tab.groupBox.title():

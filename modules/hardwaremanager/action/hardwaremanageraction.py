@@ -90,8 +90,6 @@ class HardwaremanagerAction(JoanModuleAction):
 
         return HardwaremanagerAction.input_devices_widgets
 
-        # print(HardwaremanagerAction.input_devices_classes)
-
     def remove(self, tabtitle):
         if "Keyboard" in tabtitle:
             HardwaremanagerAction._nr_of_keyboards = HardwaremanagerAction._nr_of_keyboards - 1
