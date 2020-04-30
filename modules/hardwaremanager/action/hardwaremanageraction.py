@@ -57,28 +57,28 @@ class HardwaremanagerAction(JoanModuleAction):
             device_title = "Mouse " + str(self._nr_of_mouses)
             HardwaremanagerAction.input_devices_widgets.update(
                 [(device_title, uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "UIs/hardware_tab.ui")))])
-            HardwaremanagerAction.input_devices_classes.update([(device_title, Mouse(self, self.input_devices_widgets[device_title]))])
+            HardwaremanagerAction.input_devices_classes.update([(device_title, JOAN_Mouse(self, self.input_devices_widgets[device_title]))])
 
         if "Keyboard" in self._selected_input_device:
             HardwaremanagerAction._nr_of_keyboards = HardwaremanagerAction._nr_of_keyboards + 1
             device_title = "Keyboard " + str(self._nr_of_keyboards)
             HardwaremanagerAction.input_devices_widgets.update(
                 [(device_title, uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "UIs/hardware_tab.ui")))])
-            HardwaremanagerAction.input_devices_classes.update([(device_title, Keyboard(self, self.input_devices_widgets[device_title]))])
+            HardwaremanagerAction.input_devices_classes.update([(device_title, JOAN_Keyboard(self, self.input_devices_widgets[device_title]))])
 
         if "Joystick" in self._selected_input_device:
             HardwaremanagerAction._nr_of_joysticks = HardwaremanagerAction._nr_of_joysticks + 1
             device_title = "Joystick " + str(self._nr_of_joysticks)
             HardwaremanagerAction.input_devices_widgets.update(
                 [(device_title, uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "UIs/hardware_tab.ui")))])
-            HardwaremanagerAction.input_devices_classes.update([(device_title, Joystick(self, self.input_devices_widgets[device_title]))])
+            HardwaremanagerAction.input_devices_classes.update([(device_title, JOAN_Joystick(self, self.input_devices_widgets[device_title]))])
 
         if "SensoDrive" in self._selected_input_device:
             HardwaremanagerAction._nr_of_sensodrives = HardwaremanagerAction._nr_of_sensodrives + 1
             device_title = "SensoDrive " + str(self._nr_of_sensodrives)
             HardwaremanagerAction.input_devices_widgets.update(
                 [(device_title, uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "UIs/hardware_tab.ui")))])
-            HardwaremanagerAction.input_devices_classes.update([(device_title, SensoDrive(self, self.input_devices_widgets[device_title]))])
+            HardwaremanagerAction.input_devices_classes.update([(device_title, JOAN_SensoDrive(self, self.input_devices_widgets[device_title]))])
 
         HardwaremanagerAction.input_devices_widgets[device_title].groupBox.setTitle(device_title)
 
@@ -107,10 +107,8 @@ class HardwaremanagerAction(JoanModuleAction):
 class BaseInput:
     def __init__(self, hardware_manager_action):
         self._carla_interface_data = hardware_manager_action.read_news('modules.carlainterface.action.carlainterfaceaction.CarlainterfaceAction')
-        #print(self._carla_interface_data)
         self._action = hardware_manager_action
         self._data = {'SteeringInput': 0, 'ThrottleInput': 0, 'BrakeInput': 0, 'Reverse': False, 'Handbrake': False}
-
         self.currentInput = 'None'
 
     def process(self):
@@ -125,8 +123,7 @@ class BaseInput:
     def displayInputs(self):
         pass
 
-
-class Keyboard(BaseInput):
+class JOAN_Keyboard(BaseInput):
     def __init__(self, hardware_manager_action, keyboard_tab):
         super().__init__(hardware_manager_action)
         self._keyboard_tab = keyboard_tab
@@ -281,15 +278,12 @@ class Keyboard(BaseInput):
                 self._settings_tab.button_box_settings.setEnabled(True)
                 self._settings_tab.btn_set_keys.setEnabled(True)
 
-        
-
     def remove_tab(self):
         self._action.remove(self._keyboard_tab.groupBox.title())
         self._keyboard_tab.setParent(None)
         keyboard.unhook(self.key_event)
 
-    def key_event(self,key):
-        print(key)
+    def key_event(self, key):
         if (key.event_type == keyboard.KEY_DOWN):
             if key.name == self._throttle_key:
                 self._throttle = True
@@ -327,7 +321,6 @@ class Keyboard(BaseInput):
         # # If there are cars in the simulation add them to the controllable car combobox
         if (self._carla_interface_data['vehicles'] is not None):
             self._carla_interface_data = self._action.read_news('modules.carlainterface.action.carlainterfaceaction.CarlainterfaceAction')
-            #print(self._carla_interface_data)
 
             for vehicles in self._carla_interface_data['vehicles']:
                 if vehicles.selected_input == self._keyboard_tab.groupBox.title():
@@ -367,26 +360,18 @@ class Keyboard(BaseInput):
         return self._data
 
 
-class Mouse(BaseInput): #DEPRECATED FOR NOW
+class JOAN_Mouse(BaseInput): #DEPRECATED FOR NOW
     def __init__(self, hardware_manager_action, mouse_tab):
         super().__init__(hardware_manager_action)
         self.currentInput = 'Mouse'
         # Add the tab to the widget
         self._mouse_tab = mouse_tab
-        # self._parentWidget.widget.hardware_list_layout.addWidget(self._mouse_tab)
-
         self._mouse_tab.btn_remove_hardware.clicked.connect(self.remove_tab)
 
     def remove_tab(self):
         self._action.remove(self._mouse_tab.groupBox.title())
         self._mouse_tab.setParent(None)
 
-    # def displayInputs(self):
-    #     pass
-
-    # def setCurrentInput(self):
-
-    #     pass
 
     def process(self):
         if (self._carla_interface_data['vehicles'] is not None):
@@ -403,7 +388,7 @@ class Mouse(BaseInput): #DEPRECATED FOR NOW
 
 
 # Arbitratry Joystick
-class Joystick(BaseInput):
+class JOAN_Joystick(BaseInput):
     def __init__(self, hardware_manager_action, joystick_tab):
         super().__init__(hardware_manager_action)
         self.currentInput = 'Joystick'
@@ -483,7 +468,6 @@ class Joystick(BaseInput):
 
             joystickdata = self._joystick.read(12, 1)
             
-
         if joystickdata != []:
             print(joystickdata)
             self.throttle = 100 - round((((joystickdata[9]) / 128)) * 100)
@@ -504,6 +488,7 @@ class Joystick(BaseInput):
                 self.reverse = False
 
             self.steer = round((((joystickdata[0]) + (joystickdata[1]) * 256) / (256 * 256)) * (self._max_steer - self._min_steer) - self._max_steer)
+            
         self._data['BrakeInput'] = self.brake
         self._data['ThrottleInput'] = self.throttle
         self._data['SteeringInput'] = self.steer
@@ -513,7 +498,7 @@ class Joystick(BaseInput):
         return self._data
 
 
-class SensoDrive(BaseInput): #DEPRECATED FOR NOW
+class JOAN_SensoDrive(BaseInput): #DEPRECATED FOR NOW
     def __init__(self, hardware_manager_action, sensodrive_tab):
         super().__init__(hardware_manager_action)
         self.currentInput = 'SensoDrive'
