@@ -2,7 +2,7 @@ import os
 import keyboard
 from PyQt5 import QtCore, uic
 
-from modules.hardwaremanager.action.baseinput import BaseInput
+from modules.hardwaremanager.action.inputclasses.baseinput import BaseInput
 
 
 class JOAN_Keyboard(BaseInput):

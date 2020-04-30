@@ -1,4 +1,4 @@
-from modules.hardwaremanager.action.baseinput import BaseInput
+from modules.hardwaremanager.action.inputclasses.baseinput import BaseInput
 
 
 class JOAN_Mouse(BaseInput):  # DEPRECATED FOR NOW

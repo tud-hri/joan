@@ -1,4 +1,4 @@
-from modules.hardwaremanager.action.baseinput import BaseInput
+from modules.hardwaremanager.action.inputclasses.baseinput import BaseInput
 
 
 class JOAN_SensoDrive(BaseInput):  # DEPRECATED FOR NOW

@@ -6,10 +6,10 @@ from PyQt5 import uic
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
 from .states import HardwaremanagerStates
-from modules.hardwaremanager.action.keyboard import JOAN_Keyboard
-from modules.hardwaremanager.action.mouse import JOAN_Mouse
-from modules.hardwaremanager.action.joystick import JOAN_Joystick
-from modules.hardwaremanager.action.sensodrive import JOAN_SensoDrive
+from modules.hardwaremanager.action.inputclasses.JOAN_keyboard import JOAN_Keyboard
+from modules.hardwaremanager.action.inputclasses.JOAN_mouse import JOAN_Mouse
+from modules.hardwaremanager.action.inputclasses.JOAN_joystick import JOAN_Joystick
+from modules.hardwaremanager.action.inputclasses.JOAN_sensodrive import JOAN_SensoDrive
 
 
 class HardwaremanagerAction(JoanModuleAction):

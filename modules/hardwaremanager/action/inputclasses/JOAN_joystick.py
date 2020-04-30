@@ -1,7 +1,7 @@
 import os
 import hid
 from PyQt5 import uic
-from modules.hardwaremanager.action.baseinput import BaseInput
+from modules.hardwaremanager.action.inputclasses.baseinput import BaseInput
 
 
 # Arbitratry Joystick
