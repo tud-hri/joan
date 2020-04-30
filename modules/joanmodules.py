@@ -71,7 +71,8 @@ class JOANModules(enum.Enum):
     def ui_file(self):
         path_to_modules = os.path.dirname(os.path.realpath(__file__))
         return {JOANModules.TEMPLATE: os.path.join(path_to_modules, "template/dialog/templatewidget.ui"),
-                JOANModules.DATA_RECORDER: os.path.join(path_to_modules, "datarecorder/widget/datarecorder.ui"),
+                #JOANModules.DATA_RECORDER: os.path.join(path_to_modules, "datarecorder/widget/datarecorder.ui"),
+                JOANModules.DATA_RECORDER: os.path.join(path_to_modules, "datarecorder/dialog/datarecorder.ui"),
                 JOANModules.FEED_BACK_CONTROLLER: os.path.join(path_to_modules, "feedbackcontroller/widget/feedbackcontroller.ui"),
                 JOANModules.HARDWARE_MANAGER: os.path.join(path_to_modules, "hardwaremanager/widget/hardwaremanager.ui"),
                 JOANModules.CARLA_INTERFACE: os.path.join(path_to_modules, "carlainterface/widget/carlainterface.ui"),

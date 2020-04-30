@@ -1,11 +1,9 @@
-from PyQt5 import QtCore
+from datetime import datetime
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
-from .states import DatarecorderStates
+from modules.datarecorder.action.states import DatarecorderStates
 from modules.datarecorder.action.datawriter import DataWriter
-from datetime import datetime
 from process.settings import ModuleSettings
-
 
 # for editWidgets
 from PyQt5 import QtWidgets, QtGui
@@ -103,47 +101,6 @@ class DatarecorderAction(JoanModuleAction):
     def get_filename(self):
         return self.filename
 
-
-    '''
-    # dit komt oorspronkelijik uit action/datarecorder.py 
-    def __init__(self, master_state_handler, millis=200):
-        super().__init__(module=JOANModules.DATA_RECORDER, master_state_handler=master_state_handler, millis=millis)
-
-        self.datarecorder_settings = None
-        self.module_state_handler.request_state_change(DatarecorderStates.DATARECORDER.NOTINITIALIZED)
-        try:
-            self.datarecorder_settings = self.get_module_settings(module=JOANModules.DATA_RECORDER)
-        except AttributeError:
-            pass
-        self.filename = ''
-        self.data_writer = DataWriter(news=self.get_all_news(), channels=self.get_available_news_channels(), settings_object=self.datarecorder_settings)
-
-    def initialize(self):
-        self.filename = self._create_filename(extension='csv')
-        return True
-
-
-    def stop(self):
-        """
-        Close the threaded filehandle(s)
-        """
-        self.data_writer.close()
-
-    def start(self):
-        self.data_writer.open(filename=self.get_filename())
-
-    def _create_filename(self, extension=''):
-        now = datetime.now()
-        now_string = now.strftime('%Y%m%d_%H%M%S')
-        filename = '%s_%s' % ('data', now_string)
-        if extension != '':
-            extension = extension[0] == '.' or '.%s' % extension
-            filename = '%s%s' % (filename, extension)
-        return filename
-
-    def get_filename(self):
-        return self.filename
-    '''
     def _editWidget(self, layout=None):
         try:
 
