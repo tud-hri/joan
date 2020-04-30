@@ -7,3 +7,4 @@ PyQt5-sip>=12.7.1
 hidapi
 flake8
 bandit
+keyboard
