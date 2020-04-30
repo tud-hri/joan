@@ -57,7 +57,14 @@ class JoanHQAction(QtCore.QObject):
     def add_module(self, module: JOANModules, name='', parent=None):
         """Add module, instantiated module, find unique name"""
 
-        if module is JOANModules.TEMPLATE or module is JOANModules.EXPERIMENT_MANAGER:  # Example of how the new style could be
+        if module is JOANModules.CARLA_INTERFACE or module is JOANModules.HARDWARE_MANAGER or module is JOANModules.FEED_BACK_CONTROLLER:  # Example of how the new style could be
+            module_action = None
+
+            module_widget = module.dialog()
+            module_widget.setObjectName(name)
+            module_dialog = module_widget
+            
+        else:  # module has old style TODO: remove statements below when moving to new style
             # TODO Load the default settings for this module here, this can be from a saved settings file or from another source
             # millis = default_millis_for_this_module
 
@@ -65,13 +72,8 @@ class JoanHQAction(QtCore.QObject):
             module_dialog = module.dialog(module_action, self.master_state_handler, parent=self.window)
 
             module_widget = module_dialog  # to keep the names equal, should be removed when the if template statement is removed
-        else:  # module has old style TODO: remove statements below when moving to new style
-            module_action = None
 
-            module_widget = module.dialog()
-            module_widget.setObjectName(name)
-
-        self.window.add_module(module_widget)
+        self.window.add_module(module_dialog)
 
         # add instantiated module to dictionary
         # note: here, we are storing the enums for easy access to both action and widget classes
