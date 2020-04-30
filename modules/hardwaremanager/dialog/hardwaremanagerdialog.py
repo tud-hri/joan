@@ -3,7 +3,7 @@ import os
 
 from PyQt5 import uic
 
-from modules.hardwaremanager.action.hardwaremanageraction import BaseInput
+from modules.hardwaremanager.action.baseinput import BaseInput
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
 from process.joanmoduledialog import JoanModuleDialog
