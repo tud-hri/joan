@@ -60,31 +60,26 @@ class JoanHQAction(QtCore.QObject):
         if not parent:
             parent = self.window
 
-        if module is JOANModules.TEMPLATE or JOANModules.CARLA_INTERFACE or JOANModules.HARDWARE_MANAGER:  # Example of how the new style could be
-            # TODO Load the default settings for this module here, this can be from a saved settings file or from another source
-            # millis = default_millis_for_this_module
-
-            module_action = module.action(self.master_state_handler, millis=millis)
-            module_dialog = module.dialog(module_action, self.master_state_handler, parent=parent)
-
-            module_widget = module_dialog  # to keep the names equal, should be removed when the if template statement is removed
-        else:  # module has old style TODO: remove statements below when moving to new style
+        if module is JOANModules.FEED_BACK_CONTROLLER or module is JOANModules.TRAJECTORY_RECORDER: 
+            # old style
             module_action = None
 
             module_widget = module.dialog()
             module_widget.setObjectName(name)
+            module_dialog = module_widget
+        else:
+            # TODO Load the default settings for this module here, this can be from a saved settings file or from another source
+            # millis = default_millis_for_this_module
+            module_action = module.action(self.master_state_handler, millis=millis)
+            module_dialog = module.dialog(module_action, self.master_state_handler, parent=parent)
 
-        self.window.add_module(module_widget)
+        self.window.add_module(module_dialog)
 
         # add instantiated module to dictionary
         # note: here, we are storing the enums for easy access to both action and widget classes
-        self._instantiated_modules[module] = module_action if module_action else module_widget  # TODO remove if else statement when moving to new style
-
-        # update news
-        # self._data['instantiated_modules'] = self._instantiated_modules
-        # self.write_news(news=self._data)
+        self._instantiated_modules[module] = module_action
         
-        return module_widget, module_action
+        return module_dialog, module_action
 
     def remove_module(self, module: JOANModules):
         """ Remove module by name"""

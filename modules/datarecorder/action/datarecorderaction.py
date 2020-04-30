@@ -27,9 +27,11 @@ class DatarecorderAction(JoanModuleAction):
         self.settings_object = ModuleSettings(file=os.path.join(os.path.dirname(os.path.realpath(__file__)),'datarecordersettings.json'))
         self.update_settings(self.settings_object)
         self.settings = self.settings_object.read_settings()
-
+        
         self.filename = ''
-        self.data_writer = DataWriter(news=self.get_all_news(), channels=self.get_available_news_channels(), settings_object=self.get_module_settings(JOANModules.DATA_RECORDER))
+        self.data_writer = DataWriter(
+            news=self.get_all_news(), channels=self.get_available_news_channels(), settings_object=self.get_module_settings(JOANModules.DATA_RECORDER)
+        )
 
         #self.initialize()
 
