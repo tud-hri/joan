@@ -64,34 +64,20 @@ class JoanHQWindow(QtWidgets.QMainWindow):
         widget.setObjectName(name)
         widget.grpbox.setTitle(name)
 
-        if isinstance(module_widget, (JOANModules.TEMPLATE.dialog, JOANModules.DATA_RECORDER.dialog)):  # syntax is changed slightly in new example: wrapping show() in _show() is unnecessary
-            widget.btn_show.clicked.connect(module_widget.show)
-            widget.btn_close.clicked.connect(module_widget.close)
-
-            module_widget.module_action.module_state_handler.state_changed.connect(
-                lambda state: widget.lbl_state.setText(module_widget.module_action.module_state_handler.get_state(state).name)
-            )
-        elif isinstance(module_widget, JOANModules.CARLA_INTERFACE.dialog):  # syntax is changed slightly in new example: wrapping show() in _show() is unnecessary
-            widget.btn_show.clicked.connect(module_widget.show)
-            widget.btn_close.clicked.connect(module_widget.close)
-
-            module_widget.module_action.module_state_handler.state_changed.connect(
-                lambda state: widget.lbl_state.setText(module_widget.module_action.module_state_handler.get_state(state).name)
-            )
-        elif isinstance(module_widget, JOANModules.HARDWARE_MANAGER.dialog):  # syntax is changed slightly in new example: wrapping show() in _show() is unnecessary
-            widget.btn_show.clicked.connect(module_widget.show)
-            widget.btn_close.clicked.connect(module_widget.close)
-
-            module_widget.module_action.module_state_handler.state_changed.connect(
-                lambda state: widget.lbl_state.setText(module_widget.module_action.module_state_handler.get_state(state).name)
-            )
-        else:
+        if isinstance(module_widget, (JOANModules.FEED_BACK_CONTROLLER.dialog, JOANModules.TRAJECTORY_RECORDER.dialog)):  # syntax is changed slightly in new example: wrapping show() in _show() is unnecessary
             widget.btn_show.clicked.connect(module_widget._show)
             widget.btn_close.clicked.connect(module_widget._close)
 
             widget.lbl_state.setText(module_widget.module_state_handler.get_current_state().name)
             module_widget.module_state_handler.state_changed.connect(
                 lambda state: widget.lbl_state.setText(module_widget.module_state_handler.get_state(state).name)
+            )
+        else:
+            widget.btn_show.clicked.connect(module_widget.show)
+            widget.btn_close.clicked.connect(module_widget.close)
+
+            module_widget.module_action.module_state_handler.state_changed.connect(
+                lambda state: widget.lbl_state.setText(module_widget.module_action.module_state_handler.get_state(state).name)
             )
 
         # add it to the layout

@@ -11,6 +11,7 @@ class TemplateAction(JoanModuleAction):
 
         self.module_state_handler.request_state_change(TemplateStates.TEMPLATE.READY)
 
+        self.data = {}
         self.data['t'] = 0
         self.write_news(news=self.data)
         self.time = QtCore.QTime()
