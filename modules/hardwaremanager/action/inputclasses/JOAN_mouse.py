@@ -1,3 +1,4 @@
+from modules.joanmodules import JOANModules
 from modules.hardwaremanager.action.inputclasses.baseinput import BaseInput
 
 
@@ -14,7 +15,7 @@ class JOAN_Mouse(BaseInput):  # DEPRECATED FOR NOW
 
     def process(self):
         if (self._carla_interface_data['vehicles'] is not None):
-            # self._carla_interface_data = self._action.read_news('modules.carlainterface.action.carlainterfaceaction.CarlainterfaceAction')
+            # self._carla_interface_data = self._action.read_news(JoanModules.CARLA_INTERFACE)
 
             # for vehicles in self._carla_interface_data['vehicles']:
             #     if vehicles.selected_input == self._mouse_tab.groupBox.title():

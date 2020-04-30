@@ -61,7 +61,7 @@ class CarlainterfaceAction(JoanModuleAction):
         self.data['t'] = self.time.elapsed()
         self.write_news(news=self.data)
 
-        self._data_from_hardware = self.read_news('modules.hardwaremanager.action.hardwaremanageraction.HardwaremanagerAction')
+        self._data_from_hardware = self.read_news(JOANModules.HARDWARE_MANAGER)
         try:
             for items in self.vehicles:
                 if items.spawned:
@@ -137,7 +137,6 @@ class Carlavehicle():
         self._vehicle_tab.spin_spawn_points.lineEdit().setReadOnly(True)
         self._vehicle_tab.btn_destroy.setEnabled(False)
         self._vehicle_tab.combo_input.currentTextChanged.connect(self.update_input)
-        
 
         self._vehicle_tab.btn_spawn.clicked.connect(self.spawn_car)
         self._vehicle_tab.btn_destroy.clicked.connect(self.destroy_car)
@@ -166,7 +165,7 @@ class Carlavehicle():
         self._selected_input = self._vehicle_tab.combo_input.currentText()
 
     def get_available_inputs(self):
-        self._hardware_data = self.module_action.read_news('modules.hardwaremanager.action.hardwaremanageraction.HardwaremanagerAction')
+        self._hardware_data = self.module_action.read_news(JOANModules.HARDWARE_MANAGER)
         for keys in self._hardware_data:
             self._vehicle_tab.combo_input.addItem(str(keys))
         
