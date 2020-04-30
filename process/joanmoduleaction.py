@@ -47,10 +47,12 @@ class JoanModuleAction(QtCore.QObject):
         pass
 
     def start(self):
+        print('start called')
         self.timer.start()
         return True
 
     def stop(self):
+        print('stop called')
         self.timer.stop()
         return True
 
