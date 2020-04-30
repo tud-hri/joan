@@ -24,7 +24,7 @@ class DatarecorderAction(JoanModuleAction):
         # 2. self.write_news(news=self.data)
         # 3. self.time = QtCore.QTime()
         
-        self.settings_object = ModuleSettings(file=os.path.join(os.path.dirname(os.path.realpath(__file__)),'datarecordersettings.json'))
+        self.settings_object = ModuleSettings(file=os.path.join(os.path.dirname(os.path.realpath(__file__)), 'datarecordersettings.json'))
         self.update_settings(self.settings_object)
         self.settings = self.settings_object.read_settings()
         
@@ -134,8 +134,10 @@ class DatarecorderAction(JoanModuleAction):
             item_widget = {}
 
             current_settings = self.settings_object and self.settings_object.read_settings() or {'data': {}}
+
             for channel in self.get_available_news_channels():
                 if channel != module_key:
+                    
                     if channel not in current_settings['data'].keys():
                         current_settings['data'].update({channel.name: {}})
                     #news_checkbox[channel] = QtWidgets.QLabel(channel.split('.')[1])
