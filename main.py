@@ -19,6 +19,7 @@ if __name__ == '__main__':
     JOANHQACTION.window = JOANHQWINDOW
     JOANHQWINDOW.show()
 
+
     # adding modules (instantiates them too)
     JOANHQACTION.add_module(JOANModules.TEMPLATE)
     JOANHQACTION.add_module(JOANModules.DATA_RECORDER)

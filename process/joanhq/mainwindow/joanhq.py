@@ -62,10 +62,9 @@ class JoanHQWindow(QtWidgets.QMainWindow):
 
         widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "modulecard.ui"))
         widget.setObjectName(name)
-        widget.parent = self
         widget.grpbox.setTitle(name)
 
-        if isinstance(module_widget, (JOANModules.TEMPLATE.dialog, JOANModules.EXPERIMENT_MANAGER.dialog)):  # syntax is changed slightly in new example: wrapping show() in _show() is unnecessary
+        if isinstance(module_widget, (JOANModules.TEMPLATE.dialog, JOANModules.DATA_RECORDER.dialog)):  # syntax is changed slightly in new example: wrapping show() in _show() is unnecessary
             widget.btn_show.clicked.connect(module_widget.show)
             widget.btn_close.clicked.connect(module_widget.close)
 
@@ -99,7 +98,7 @@ class JoanHQWindow(QtWidgets.QMainWindow):
         module = '%s%s' % (os.path.basename(os.path.normpath(path_module_dir)), 'Widget')
 
         # add the module
-        self.action.add_module(module)
+        self.add_module(module)
 
     def process_menu_remove_module(self):
         """User hit remove module, ask them which one to remove"""

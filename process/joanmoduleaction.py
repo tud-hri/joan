@@ -2,6 +2,7 @@ from PyQt5 import QtCore
 
 from modules.joanmodules import JOANModules
 from process.news import News
+from process.settings import Settings
 from process.statehandler import StateHandler
 from process.states import MasterStates
 from process.status import Status
@@ -21,6 +22,7 @@ class JoanModuleAction(QtCore.QObject):
 
         self.singleton_status = Status()
         self.singleton_news = News()
+        self.singleton_settings = Settings()
 
         # initialize states and state handler
         self.master_state_handler = master_state_handler
@@ -29,13 +31,13 @@ class JoanModuleAction(QtCore.QObject):
         module_state_package = {'module_states': self.module_states, 'module_state_handler': self.module_state_handler}
 
         self.singleton_status.register_module_state_package(module, module_state_package)
-        self.handle_module_state(self.module_state_handler.state)
+        #self.handle_module_state(self.module_state_handler.state)
 
         # initialize own data and create channel in news
         self.data = {}
         self.write_news(news=self.data)
 
-        self.module_state_handler.state_changed.connect(self.handle_module_state)
+        #self.module_state_handler.state_changed.connect(self.handle_module_state)
         self.master_state_handler.state_changed.connect(self.handle_master_state)
 
     def do(self):
@@ -62,6 +64,7 @@ class JoanModuleAction(QtCore.QObject):
         if state_as_state == self.module_states.ERROR:
             self.module_action.stop_pulsar()
 
+    ''' TODO: remarked because handle_module_state is hendled in the child-moduleaction (Andre 20200424)
     def handle_module_state(self, state):
         """
         Handle the state transition by updating the status label and have the
@@ -72,12 +75,16 @@ class JoanModuleAction(QtCore.QObject):
         # emergency stop
         if state_as_state == self.module_states.ERROR:
             self.stop_pulsar()
-
+    '''
+    
     def write_news(self, news: dict):
         """write new data to channel"""
         assert isinstance(news, dict), 'argument "news" should be of type dict and will contain news(=data) of this channel'
 
         self.singleton_news.write_news(self.module, news)
+
+    def update_settings(self, module_settings):
+        self.singleton_settings.update_settings(self.module, module_settings)
 
     def get_all_news(self):
         return self.singleton_news.all_news
@@ -96,6 +103,13 @@ class JoanModuleAction(QtCore.QObject):
 
     def get_module_state_package(self, module):
         return self.singleton_status.get_module_state_package(module)
+
+    def get_available_module_settings(self):
+        return self.singleton_settings.all_settings_keys
+
+    def get_module_settings(self, module=''):
+        return self.singleton_settings.get_settings(module)
+
 
     @property
     def millis(self):
