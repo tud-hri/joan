@@ -57,7 +57,7 @@ class JoanHQAction(QtCore.QObject):
     def add_module(self, module: JOANModules, name='', parent=None):
         """Add module, instantiated module, find unique name"""
 
-        if module is JOANModules.TEMPLATE:  # Example of how the new style could be
+        if module in (JOANModules.TEMPLATE, JOANModules.DATA_RECORDER):  # Example of how the new style could be
             # TODO Load the default settings for this module here, this can be from a saved settings file or from another source
             # millis = default_millis_for_this_module
 
