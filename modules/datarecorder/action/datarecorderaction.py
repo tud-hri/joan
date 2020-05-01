@@ -134,7 +134,7 @@ class DatarecorderAction(JoanModuleAction):
             current_settings = self.settings_object and self.settings_object.read_settings() or {'data': {}}
             for channel in self.get_available_news_channels():
                 if channel != module_key:
-                    if channel not in current_settings['data'].keys():
+                    if channel.name not in current_settings['data'].keys():
                         current_settings['data'].update({channel.name: {}})
                     #news_checkbox[channel] = QtWidgets.QLabel(channel.split('.')[1])
                     news_checkbox[channel.name] = QtWidgets.QLabel(channel.name)

@@ -26,5 +26,15 @@ class ExperimentManagerDialog(JoanModuleDialog):
         dialog = QtWidgets.QFileDialog(self)
         dialog.setNameFilter("Settings files (*.xml *.json)")
         dialog.setViewMode(QtWidgets.QFileDialog.Detail)
+
         if dialog.exec():
-            self.module_action.load_experiment(dialog.selectedFiles())
+            result = self.module_action.load_experiment(dialog.selectedFiles())
+            if type(result) != dict:
+                self.module_widget.label.setText(result)   # catch json errors and show them on screen
+                print('Error reading JSON:', result)
+            else:
+                self.process_experiment_conditions()
+
+    def process_experiment_conditions(self):
+        self.module_widget.combobox_conditions.clear()
+        self.module_widget.combobox_conditions.addItems(self.module_action.get_experiment_conditions())

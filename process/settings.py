@@ -1,6 +1,7 @@
-from modules.joanmodules import JOANModules
 import json
+from json import JSONDecodeError
 import copy
+from modules.joanmodules import JOANModules
 
 class Settings:
     '''
@@ -75,13 +76,14 @@ class ModuleSettings:
         item: a dictionary with {key: value}
         filter: if empty, no filtering takes place, if not empty settings are filtered and will only contain module_keys, given in the filter-list
         """
-        self.read_settings()
+        # if type(result) == str then something went wrong with reading the JSON file
+        result = self.read_settings()
         # add/remove/change content to self._module_settings
         # remove settings from removed data
         if len(filter) > 0:
             self._filter_settings(keys=filter)
         # add/change content of self._module_settings
-        if group_key:
+        if group_key and type(result) == dict:
             group_data = {}
             if group_key in self._module_settings['data'].keys():
                 group_data = self._module_settings['data'][group_key]
@@ -108,6 +110,8 @@ class ModuleSettings:
         try:
             with open(self._file, 'r') as module_settings_file:
                 self._module_settings = json.load(module_settings_file)
+        except JSONDecodeError as inst:
+            return inst
         except OSError:
             if self._module_settings is None:
                 self._module_settings = {}
