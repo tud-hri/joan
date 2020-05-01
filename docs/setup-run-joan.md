@@ -22,7 +22,7 @@ To install all requirements from the command prompt or PyCharm terminal, make su
 
     pip3 install -r requirements.txt 
 
-The only dependency not in the requirements.txt is the CARLA PythonAPI which we build earlier. To install this dependency navigate to your CARLA folder, to `carla\PythonAPI\carla\dist`. Make sure you still have the virtual environment activated. Now type:
+The only dependency not in the `requirements.txt` is the CARLA PythonAPI which we build earlier. To install this dependency navigate to your CARLA folder, to `carla\PythonAPI\carla\dist`. Make sure you still have the virtual environment activated. Now type:
 
     pip3 install carla.whl
     
