@@ -2,15 +2,26 @@ from process import State, MasterStates, translate
 
 
 class TemplateStates(MasterStates):
-    # SensoDrive states
-    TEMPLATE = State(200, translate('TemplateState', 'Template State'), -1, 150)
-    TEMPLATE.STOPPED = State(201, translate('TemplateState', 'Template Off'), -1, 150, 202, 204, 205)
-    TEMPLATE.READY = State(202, translate('TemplateState', 'Template Ready'), -1, 150, 201, 203, 204)
-    TEMPLATE.RUNNING = State(203, translate('TemplateState', 'Template On'), -1, 150, 202, 204)
-    TEMPLATE.ERROR = State(204, translate('TemplateState', 'Template Error'), -1, 150, 201)
-    TEMPLATE.ERROR.INIT = State(205, translate('TemplateState', 'Template Initialization Error'), -1, 150, 201)
-    TEMPLATE.INITIALIZED = State(206, translate('TemplateState', 'Template Initialized'),
-                                 -1, 150, 201, 202, 203, 204, 205)
+    # Template States
+    #Idle
+    IDLE                          = State(100, translate('CarlainterfaceState', 'Idle'), -1,150)
+
+    #Initialization States
+    INIT                          = State(200, translate('CarlainterfaceState', 'Init'), -1,150)
+    INIT.INITIALIZING             = State(201, translate('CarlainterfaceState', 'Initializing'), -1, 400)
+    INIT.INITIALIZED              = State(202, translate('CarlainterfaceState', 'Init'), -1,150)
+
+    #Execution States
+    EXEC                          = State(300, translate('CarlainterfaceState', 'Exec'), -1, 150,400)
+    EXEC.READY                    = State(301, translate('CarlainterfaceState', 'Ready'), -1, 150,400)
+    EXEC.RUNNING                  = State(302, translate('CarlainterfaceState', 'Running'), -1, 150,400)
+    EXEC.STOPPED                  = State(303, translate('CarlainterfaceState', 'Stopped'), -1, 150,400)
+
+    #Error States
+    ERROR                         = State(400, translate('CarlainterfaceState', 'Error'), -1,150,100)
+    ERROR.INIT                    = State(401, translate('CarlainterfaceState', 'Initialization Error'), -1,150,100)
+    ERROR.EXEC                    = State(402, translate('CarlainterfaceState', 'Execution Error'), -1,150,100)
+    ERROR.OTHER                   = State(403, translate('CarlainterfaceState', 'Other Error'), -1,150,100)
 
     def __init__(self, *args, **kwargs):
         MasterStates.__init__(self)

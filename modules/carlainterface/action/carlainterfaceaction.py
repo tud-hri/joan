@@ -26,7 +26,7 @@ class CarlainterfaceAction(JoanModuleAction):
     def __init__(self, master_state_handler, millis=5):
         super().__init__(module=JOANModules.CARLA_INTERFACE, master_state_handler=master_state_handler, millis=millis)
 
-        self.module_state_handler.request_state_change(CarlainterfaceStates.SIMULATION.INITIALIZING)
+        self.module_state_handler.request_state_change(CarlainterfaceStates.INIT.INITIALIZING)
         self.data = {}
         self.data['vehicles'] = None
         self.data['t'] = -1
@@ -111,7 +111,7 @@ class CarlainterfaceAction(JoanModuleAction):
 
     def start(self):
         try:
-            self.module_state_handler.request_state_change(CarlainterfaceStates.SIMULATION.RUNNING)
+            self.module_state_handler.request_state_change(CarlainterfaceStates.EXEC.RUNNING)
             self.time.restart()
         except RuntimeError:
             return False
@@ -119,7 +119,7 @@ class CarlainterfaceAction(JoanModuleAction):
 
     def stop(self):
         try:
-            self.module_state_handler.request_state_change(CarlainterfaceStates.SIMULATION.STOPPED)
+            self.module_state_handler.request_state_change(CarlainterfaceStates.EXEC.STOPPED)
         except RuntimeError:
             return False
         return super().stop()
