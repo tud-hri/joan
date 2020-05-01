@@ -20,6 +20,9 @@ ENV/
 env.bak/
 venv.bak/
 
+# mkdocs
+site/
+
 # Cython debug symbols
 cython_debug/
 
