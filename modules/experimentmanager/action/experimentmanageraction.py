@@ -7,6 +7,7 @@ from .states import ExperimentManagerStates
 # Used for Settings
 import os
 from process.settings import ModuleSettings
+from process.settings import Settings
 import json
 from json import JSONDecodeError
 
@@ -22,12 +23,14 @@ class ExperimentManagerAction(JoanModuleAction):
 
         #self.settings_object = ModuleSettings(file=os.path.join(os.path.dirname(os.path.realpath(__file__)), 'default_experiment_settings.json'))
         self.settings_object = ModuleSettings(file=os.path.join('.', 'default_experiment_settings.json'))
-        self.update_settings(self.settings_object)
         self.settings = self.settings_object.read_settings()
+        self.update_settings(self.settings)                                                                                                    
+        print ('a a a', self.settings)
 
         # create/get default experiment_settings
         self.default_experiment()
         self.experiment_settings = {}  # will contain experiment_settings
+        self.condition_names = []      # will contain condition_names for use in getting correct settings
 
         # TODO: weghalen
         '''
@@ -96,6 +99,13 @@ class ExperimentManagerAction(JoanModuleAction):
     def initialize_condition(self, condition_nr):
         '''Initialize JOAN for the chosen condition'''
         print('settings for condition '+str(condition_nr))
+        print(self.condition_names)
+        if 'condition' in self.experiment_settings.keys():
+            for condition in self.experiment_settings['condition']:
+                if 'name' in condition.keys():
+                    if self.condition_names[condition_nr] == condition['name']:
+                        self._set_default_settings_in_singleton()
+                        self._set_condition_settings_in_singleton(condition)
 
     def load_experiment(self, experiment_settings_filenames):
         '''All the action stuff for loading a new experiment settings file'''
@@ -116,25 +126,53 @@ class ExperimentManagerAction(JoanModuleAction):
         """Creates a default_experiment_settings_file in JSON format with all settings from all modules"""
         for module_object in JOANModules:
             print(module_object.name)
-            module_settings_object = self.get_module_settings(module=module_object)
-            if type(module_settings_object) != dict:
-                self.item_dict = {}
+            #module_settings_object = self.get_module_settings(module=module_object)
+            module_settings = self.get_module_settings(module=module_object)
+            self.item_dict = {}
+            print(type(module_settings)) # != dict:
+            #    module_settings = module_settings_object.read_settings()
+            try:
+                self.item_dict = module_settings['data'][module_object.name]
+            except KeyError as inst:
+                print(inst)
+                #return False
+            self.settings_object.write_settings(group_key=module_object.name, item=self.item_dict)
+        return True
 
-                module_settings = module_settings_object.read_settings()
-                try:
-                    self.item_dict = module_settings['data'][module_object.name]
-                except KeyError:
-                    pass
-                self.settings_object.write_settings(group_key=module_object.name, item=self.item_dict)
-            else:
-                print('d d d', type(module_settings_object), module_settings_object)
-        
     def get_experiment_conditions(self):
-        condition_names = []
         if 'condition' in self.experiment_settings.keys():
             for condition in self.experiment_settings['condition']:
                 if 'name' in condition.keys():
-                    condition_names.append(condition['name'])
-        return condition_names
+                    self.condition_names.append(condition['name'])
+        return self.condition_names
 
+    def _set_default_settings_in_singleton(self):
+        if 'data' in self.settings.keys():
+            default_settings = self.settings['data']
+            #self._update_singleton_settings(data=default_settings)
+
+
+
+    def _set_condition_settings_in_singleton(self, condition):
+        #print('a a a', condition)
+        if 'data' in self.settings.keys():
+            update_settings = self.settings['data']
+            for joan_module in JOANModules:
+                if joan_module.name in update_settings.keys() and joan_module.name in condition.keys():
+                    item_keys = update_settings[joan_module.name].keys()
+                    for item in item_keys:
+                        if item in condition[joan_module.name].keys():
+                            update_settings[joan_module.name][item] = condition[joan_module.name][item]
+            self._update_singleton_settings(data=update_settings)
+
+
+    def _update_singleton_settings(self, data={}):
+        for joan_module in JOANModules:
+            if (joan_module.name in data.keys()):
+                settings = data[joan_module.name]
+
+                print('1 1 1', self.singleton_settings.get_settings(joan_module))
+
+                self.singleton_settings.update_settings(joan_module, settings)
+                print('2 2 2', self.singleton_settings.get_settings(joan_module))
 

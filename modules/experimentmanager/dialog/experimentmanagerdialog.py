@@ -30,9 +30,9 @@ class ExperimentManagerDialog(JoanModuleDialog):
         if dialog.exec():
             result = self.module_action.load_experiment(dialog.selectedFiles())
             if type(result) != dict:
-                self.module_widget.label.setText(result)   # catch json errors and show them on screen
-                print('Error reading JSON:', result)
+                self.module_widget.lbl_message_loadjson.setText(result)   # catch json errors and show them on screen
             else:
+                self.module_widget.lbl_message_loadjson.setText('JSON is valid!')
                 self.process_experiment_conditions()
 
     def process_experiment_conditions(self):

@@ -3,7 +3,7 @@ import io
 import csv
 
 class DataWriter(threading.Thread):
-    def __init__(self, news=None, channels=[], settings_object=None):
+    def __init__(self, news=None, channels=[], settings=None):
         threading.Thread.__init__(self)
         self.file_handle = None
         self.dict_writer = None
@@ -11,7 +11,7 @@ class DataWriter(threading.Thread):
         self.channels = channels
 
         self.fieldnames = []
-        self.settings_object = settings_object
+        self.settings = settings
         self.settings_dict = {}
 
     def run(self):
@@ -55,7 +55,7 @@ class DataWriter(threading.Thread):
 
     def open(self, filename, buffersize=io.DEFAULT_BUFFER_SIZE):
         # renew settings
-        self.settings_dict = self.settings_object.read_settings()
+        self.settings_dict = self.settings
         self.filter_first_row()
 
         # open file and write the first row

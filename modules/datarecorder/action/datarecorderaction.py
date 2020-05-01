@@ -24,14 +24,28 @@ class DatarecorderAction(JoanModuleAction):
         # 2. self.write_news(news=self.data)
         # 3. self.time = QtCore.QTime()
         
+
+        # start settings for this module
         self.settings_object = ModuleSettings(file=os.path.join(os.path.dirname(os.path.realpath(__file__)),'datarecordersettings.json'))
-        self.update_settings(self.settings_object)
         self.settings = self.settings_object.read_settings()
+        self.item_dict = {}
+        '''
+        try:
+            self.millis = self.settings['data'][JOANModules.DATA_RECORDER.name]['millis_pulse']
+        except KeyError:
+            self.millis = 100
+        self.item_dict['millis_pulse'] = self.millis
+        '''
+        self.settings_object.write_settings(group_key=JOANModules.DATA_RECORDER.name, item=self.item_dict)
+        
+        self.update_settings(self.settings)
+        # end settings for this module
+
 
         self.filename = ''
-        self.data_writer = DataWriter(news=self.get_all_news(), channels=self.get_available_news_channels(), settings_object=self.get_module_settings(JOANModules.DATA_RECORDER))
+        self.data_writer = DataWriter(news=self.get_all_news(), channels=self.get_available_news_channels(), settings=self.get_module_settings(JOANModules.DATA_RECORDER))
 
-        #self.initialize()
+        self.initialize()
 
     def initialize_file(self):
         self.filename = self._create_filename(extension='csv')
@@ -42,7 +56,7 @@ class DatarecorderAction(JoanModuleAction):
         """
         This function is called every controller tick of this module implement your main calculations here
         """
-        self.write()
+        self._write()
         
         # next two Template lines are not used for datarecorder
         # 1. self.data['t'] = self.time.elapsed()
@@ -53,24 +67,18 @@ class DatarecorderAction(JoanModuleAction):
         This function is called before the module is started
         """
         print('datarecorderaction initialize started')
-        pass
-        
-    ''' van Template
-    def start(self):
+        '''
+        # start settings from singleton
         try:
-            self.module_state_handler.request_state_change(TemplateStates.TEMPLATE.RUNNING)
-            self.time.restart()
-        except RuntimeError:
+            singleton_settings = self.singleton_settings.get_settings(JOANModules.DATA_RECORDER)
+            item_dict = singleton_settings['data'][JOANModules.DATA_RECORDER.name]
+            self.millis = item_dict['millis_pulse']
+        except KeyError as inst:
+            print('KeyError:', inst)
             return False
-        return super().start()
-
-    def stop(self):
-        try:
-            self.module_state_handler.request_state_change(TemplateStates.TEMPLATE.STOPPED)
-        except RuntimeError:
-            return False
-        return super().stop()
-    '''
+        return True
+        # end settings from singleton
+        '''
 
     def stop(self):
         """
@@ -85,7 +93,7 @@ class DatarecorderAction(JoanModuleAction):
         self.data_writer.open(filename=self.get_filename())
         super().start()
 
-    def write(self):
+    def _write(self):
         now = datetime.now()
         self.data_writer.write(timestamp=now, news=self.get_all_news(), channels=self.get_available_news_channels())
 
