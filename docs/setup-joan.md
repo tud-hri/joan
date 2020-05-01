@@ -8,8 +8,14 @@ JOAN is maintained in a GitLab repository by a team of contributors. There are a
 
 We will explain how to fork JOAN. This explanation will be tailored to TUDelft students who have access to the TUDelft GitLab server.
 
-## Fork JOAN
+## Fork JOAN on gitlab.tudelft.nl
 
+- Log in to the TUDelft's GitLab server at [gitlab.tudelft.nl](https://gitlab.tudelft.nl/) using your `netid`
+- Go to the JOAN repository. You can either search for it, or use this [link](https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan). Welcome!
+- Click on the button that says `fork`, then click on the badge with your own name
+
+
+https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan.git
 
 ## Clone JOAN
 Open a command window and navigate to the folder where you would like to clone the JOAN repository, remember that the clone command will create a new folder there to put the project in. 
