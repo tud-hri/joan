@@ -1,17 +1,32 @@
-# Setting up JOAN
-Please follow the following steps:
+# Getting your own version of JOAN
 
-1. __Cloning JOAN__
-1. __Setting up a Python Virtual Environment__
-2. __Getting the python libraries__
-3. __Run main.py__
+JOAN is maintained in a GitLab repository by a team of contributors. There are a couple of ways though which you can download JOAN:
 
-## Cloning JOAN
+- You can download a __zipped copy__ of the repository (note: you not receive any updates when we change the code)
+- You can __clone__ the repository. However, if you do not have write permission to the repository, you can't make your own changes and store them on a repository (well, not easily).
+- (_recommended for TUDelft students_) You can __fork__ the repository. This allows you to make a copy of the original JOAN repo, receive any updates in the JOAN code, make your own research-specific changes and commit (e.g. store) them in your own repository! Awesome!
+
+We will explain how to fork JOAN. This explanation will be tailored to TUDelft students who have access to the TUDelft GitLab server.
+
+## Fork JOAN
+
+
+## Clone JOAN
 Open a command window and navigate to the folder where you would like to clone the JOAN repository, remember that the clone command will create a new folder there to put the project in. 
 Clone the repository with the following code:
 
     ## clone repo
     git clone https://gitlab.tudelft.nl/delft-haptics-lab/vrsim/SharedControlDrivingSim.git
+
+---
+# Setting up JOAN
+Please follow the following steps:
+
+1. __Cloning JOAN__
+2. __Setting up a Python Virtual Environment__
+3. __Getting the python libraries__
+4. __Run main.py__
+
 
 ---
 ## Setting up a Python Virtual Environment
