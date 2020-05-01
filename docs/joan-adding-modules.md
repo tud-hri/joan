@@ -12,7 +12,7 @@ The `action` class takes care of most of the module's functionality in the backg
 The `dialog` is the graphical user interface of the module and takes all the credit for the `action`'s hard work. Here you can add your custom user interface file (`.ui`) such that you can control the module and more.
 
 !!! Important
-    We set up the action and dialog division to keep functionality and UI separately. Please stick to this division. Do not do any calculations or other operations in the dialog that are not necessary there. Only use the dialog to connect to functions in the action class (like starting and stopping the module).
+    We set up the `action` and `dialog` division to keep functionality and UI separately. Please stick to this division. Do not do any calculations or other operations in the `dialog` that are not necessary there. Only use the `dialog` to connect to functions in the `action` class (like starting and stopping the module).
 
 Of course you can change the modules that come shipped with JOAN to your liking, but perhaps you want to build your own module, for example to plot data in real-time. Go nuts! We will briefly explain how you can make your own module and include it. 
 
@@ -32,17 +32,15 @@ We will create a module called `joaniscool` which prints "JOAN is the best" ever
 
 The name of your module is very important. Other programmers should immediately understand what your module is meant to do, so the name shouldn't be too generic. Abbreviations also tend to make reading difficult, so please avoid them too. 
 
-Changing the name of your module once it is up and running can be very hard, since other people might rely on 
-the old name in their code. If you want to know more about naming modules, functions and variables in code, we would
-like to recommend chapter 2 of the book "clean code" by Robert C. Martin.
+Changing the name of your module once it is up and running can be very hard, since other people might rely on the old name in their code. If you want to know more about naming modules, functions and variables in code, we would like to recommend chapter 2 of the book "clean code" by Robert C. Martin.
 
-__#### __Examples of bad names__
+__Examples of bad names__
 
-- controller - too generic
-- htcfdbcnt - abbreviations are unreadable and unclear
-- olgershapticfeedbackcontrollerforpedals - too long and Olger doesn't do anything with haptic pedals anyway.
+- controller: too generic
+- htcfdbcnt: abbreviations are unreadable and unclear
+- olgershapticfeedbackcontrollerforpedals: too long and Olger doesn't do anything with haptic pedals anyway.
 
-__Example of a good name__
+__Example of a good name__: 
 
 - hapticpedalcontroller
    
@@ -54,17 +52,17 @@ Copy the `template` folder in the modules folder.
 (i.e. don't use a \_ or \-). Hence, we rename `template` to `joaniscool`
 - go into your folder, go to the `action` folder, and rename `templateaction.py` to `joaniscoolaction.py`
 - open `joaniscoolaction.py` and replace all 'Template' with 'JoanIsCool' (note, this is camelCase; words are capitalized in class names). You can use a replace function in PyCharm, but make sure to check that the case is matched. 
-- do the same for 'TEMPLATE', replace it with your _capitalized_ module name.
+- do the same for 'TEMPLATE', replace it with your _capitalized_ module name (i.e. `JOANISCOOL`).
 - open the file `states.py` and perform the same two steps.
 - now, go into the `dialog` folder, and rename `templatedialog.py` to `joaniscooldialog.py` and `templatewidget.ui` to `joaniscoolwidget.ui`. 
 - open `joaniscooldialog.py` and replace all 'Template' and 'TEMPLATE', as we did in its `action` partner.
 
 ### 2. Add the new module to JOANModules.py
 
-This one is a lot of work, but be precise! One little forgotten comma will render everything unfunctional. In the `modules` folder you can find a file named `joanmodules.py`. This contains an `Enum` class which holds all available modules. This class servers multiple purposes. It serves a a unique key to reference a certain module in `dict`s. And it provides access to a module's `dialog` and `action` classes. This `Enum` also allows for easy iteration over all available JOAN  modules. Once you add your module here, it can be found by JOAN and it can be added to the main menu.
+This one is a lot of work, but be precise! One little forgotten comma will render everything unfunctional. In the `modules` folder you can find a file named `joanmodules.py`. This contains an `Enum` class which holds all available modules. This class servers multiple purposes. It serves a a unique key to reference a certain module in `dicts`. And it provides access to a module's `dialog` and `action` classes. This `Enum` also allows for easy iteration over all available JOAN modules. Once you add your module here, it can be found by JOAN and it can be added to the main menu.
 
-Make sure to provide links to the modules action and widget classes in the Enums action and widget property functions. 
-Please also add your module to the \_\_\_str\_\_\_ function. This will return the string representation of your module,
+Make sure to provide links to the modules `action` and `dialog` classes in the `Enums` `action` and `dialog` property functions. 
+Please also add your module to the `___str___` function. This will return the string representation of your module,
 i.e. the name of your module for titles and save files.
 
 - open the file `joanmodules.py` in the `modules` folder
