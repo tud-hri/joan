@@ -35,7 +35,9 @@ Now we need to connect the JOAN repository to your own repository, so that you a
 In the terminal type the following commands in this order (or copy it, and right-click paste in the terminal, `ctrl+v` does not work). Perform these commands one-by-one. Do not continue to the next command if the previous one returned errors!
 
     git remote add upstream https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan.git
+
     git fetch upstream
+    
     git pull upstream master
 
 The last command pulls the latest version of JOAN's master branch. Check out your PyCharm editor: you will find all folders and files of the latest JOAN version there: 
