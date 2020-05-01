@@ -7,7 +7,8 @@ nav:
     - Setup:
       - Setup on Windows: setup-carla-windows.md
       - Setup on Linux: setup-carla-linux.md
-      - Setup JOAN: setup-joan.md
+      - Create your own JOAN project: setup-create-joan-project.md
+      - Setup and run your JOAN project: setup-run-joan.md
 
     - How to use JOAN:
       - Workflow: joan-workflow.md
