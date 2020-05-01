@@ -3,7 +3,12 @@ import os
 from PyQt5 import QtCore
 
 from modules.joanmodules import JOANModules
-from process import Status, News
+from process.news import News
+from process.settings import Settings
+from process.statehandler import StateHandler
+from process.states import MasterStates
+from process.status import Status
+
 
 
 class JoanHQAction(QtCore.QObject):
@@ -13,12 +18,12 @@ class JoanHQAction(QtCore.QObject):
         super(QtCore.QObject, self).__init__()
 
         # status, statehandlers and news
-        self.singleton_status = Status({})
-        self.master_state_handler = self.singleton_status.master_state_handler
-        self.master_states = self.singleton_status.master_states
+        self.singleton_status = Status()
+        self.master_state_handler = self.singleton_status._master_state_handler
+        self.master_states = self.singleton_status._master_states
         self.master_state_handler.state_changed.connect(self.handle_master_state)
 
-        self.singleton_news = News({})
+        self.singleton_news = News()
         # self._data = {}
         # self.write_news(news=self._data)
 
