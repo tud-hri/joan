@@ -1,4 +1,4 @@
-from process import Control, State, translate
+from process import State, translate
 from process.joanmoduledialog import JoanModuleDialog
 from process.joanmoduleaction import JoanModuleAction
 from PyQt5 import QtCore
