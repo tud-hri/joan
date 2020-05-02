@@ -1,5 +1,10 @@
 # Creating your own JOAN project
 
+## Python IDE
+Before we continue, JOAN is written in Python. To make your life a bit easier programming Python, use a Python editor. We recommend installing __[PyCharm Community](https://www.jetbrains.com/pycharm/)__ (in particular if these are your first steps in Python) or __[Visual Studio Code](https://code.visualstudio.com/)__ as your python editor.
+
+
+## How to get JOAN
 JOAN is maintained in a GitLab repository by a team of contributors. There are a couple of ways though which you can download JOAN:
 
 - You can download a __zipped copy__ of the repository (note: you not receive any updates when we change the code)
