@@ -5,6 +5,6 @@ pandas>=1.0.3
 PyQt5>=5.14.1
 PyQt5-sip>=12.7.1
 PyQt5-stubs>=5.14.2.1
-hidapi; platform_system == "Windows"
+hidapi
 flake8
 keyboard
