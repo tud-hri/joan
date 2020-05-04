@@ -1,0 +1,24 @@
+[MESSAGES CONTROL]
+max-line-length=160
+[MASTER]
+disable=I0011,I0013,E1121,E1126
+[TYPECHECK]
+ignored-modules=pygame,numpy,configparser,ConfigParser,PyQt5
+
+# Classes are to be named in mixed case, with the first letter capitalized,
+# each word separated by having its first letter capitalized.
+# class-rgx=(_{0,1})([A-Z][a-zA-Z0-9]+)$
+
+# Methods are to be named in mixed case (camelCase), with the first letter small,
+# each word separated by having its first letter capitalized.
+# method-rgx=(_{0,1})([a-z][a-zA-Z0-9]+)$
+
+# Regular expression which should only match correct variable names
+# good variable names:
+# f, foo, _foo, fooBar
+# bad variable names:
+# FooBar, Foo, FOO, foo_bar
+# variable-rgx=([a-z_][a-zA-Z0-9]*)$
+
+# Attributes also in camelCase
+# attr-rgx=([a-z_][a-zA-Z0-9]*)$

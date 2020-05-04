@@ -27,8 +27,8 @@ Please make sure you have the following programs installed before continuing. If
 
 * __[CMake](https://cmake.org/download/)__ *A small software package to make the CARLA build can compile C-code.* Please follow the link, scroll down and download the "Windows win64-x64 Installer" (there is no need to download the source). When installing select the option "Add CMake to the system `PATH` for all users"
 * __[Git](https://git-scm.com/download/win)__ *Ensures version control of both the python software and CARLA64-bit Git for Windows Setup.* Please follow the link and download the "64-bit Git for Windows Setup.". During installation you can keep all the default settings but especially make sure to select the (default) option "Use Git from the Windows command prompt".
-* __[Make](http://gnuwin32.sourceforge.net/packages/make.htm)__ *Generates the executables.* Please follow the link and download the "Complete package, except sources" setup. Install it and after installing add the binary folder (`C:\Program Files (x86)\GnuWin32\bin` by default) the the system `PATH` variable. follow the link in the info box below if you're not sure how to do this.
-* __[PowerShell 5.0 or newer](https://www.microsoft.com/en-us/download/details.aspx?id=54616)__ If you have Windows 10, it already includes this. If however you are still using Windows 7, you need to update PowerShell to version 5.0 or newer to be able to use out-of-the-box build scripts provided with CARLA. Follow steps 1 to 3 [here](https://www.csoonline.com/article/3343048/how-to-install-powershell-5-on-windows-7.html)
+* __[Make](http://gnuwin32.sourceforge.net/packages/make.htm)__ *Generates the executables.* Please follow the link and download the "Complete package, except sources" setup. Install it and after installing add the binary folder (C:\Program Files (x86)\GnuWin32\bin by default) the the system `PATH` variable. follow the link in the info box below if you're not sure how to do this.
+* __[PowerShell 5.0 or newer](https://www.microsoft.com/en-us/download/details.aspx?id=54616)__ If you have Windows 10, it already includes this. If however you are still using Windows 7, you need to update PowerShell to version 5.0 or newer to be able to use out-of-the-box build scripts provided with carla. Follow steps 1 to 3 [here](https://www.csoonline.com/article/3343048/how-to-install-powershell-5-on-windows-7.html)
 
 !!! Important
     When you already have installed versions of the above mentioned software please make sure that the binary folders are added to the system's `PATH` variable! If you don't know how to do so, check 'Adding to System Variables'. If you have followed the instructions above, only make has to be added to the `PATH` manually.
@@ -73,7 +73,7 @@ Download Unreal Engine 4.24.x and use the default install settings. Make sure to
 
  Install python 3 and __make sure you get the x64 version__ else it will not work, there is even some speculation that if you have a x32 version installed it can cause conflicts so its best to only have x64. At the time of writing this guide the working version of python is __[Python 3.8.2](https://www.python.org/downloads/release/python-382/)__
 
-To check if we can run Python from the command line. And if the Python command links to the correct version of Python, it might not if you have multiple versions of Python installed. Open a command line window and type:
+To check if we can run Python from the command line. And if the python command links to the correct version of Python, it might not if you have multiple versions of Python installed. Open a command line window and type:
 
     python
 
@@ -91,6 +91,11 @@ Please not the >>> symbols indicating that you are now within a python environme
 
 !!! Important
     Only use python 3, preferably python 3.8. Installing python 2.7 will be a waste of your time ;-)
+
+### Python editors
+
+We recommend installing __[Visual Studio Code](https://code.visualstudio.com/)__ as your python editor. __[PyCharm](https://www.jetbrains.com/pycharm/)__ is a good alternative.
+
 
 ---
 ## Building and installing CARLA & the CARLA PythonAPI
@@ -131,7 +136,6 @@ This text file contains the instructions of what to do to download the latest as
 Unpack these assets in `\carla\Unreal\CarlaUE4\Content\Carla`. If the directory does not exist, create it.
 
 ### Step 3: Get specific JOAN Assets
-
 To have a nice car interior which also turns the steering wheel when you turn your physical steering wheel, some extra assets are required. You can download them [here](https://www.dropbox.com/s/7cboucrb81sdlxq/JOAN_Assets.zip?dl=0). The file contains:
 
 * `JOAN_Blueprints`
