@@ -10,6 +10,9 @@ nav:
       - Create your own JOAN project: setup-create-joan-project.md
       - Setup and run your JOAN project: setup-run-joan.md
 
+    - How to use Unreal Editor:
+      - Unreal how-to: unreal-how-to.md
+
     - How to Git and your project:
       - git how-to: git-how-to.md
 
