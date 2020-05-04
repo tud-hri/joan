@@ -21,13 +21,13 @@ JOAN is developed by members of the Human-Robot Interaction group at Cognitive R
 * __[Setup and run your JOAN project](setup-run-joan.md)__ - Guide on how to run your JOAN project
 
 ## How to use Unreal Editor
-* __[Unreal how-to](unreal-how-to.md)__ - Quickstart guide with Unreal for CARLA and JOAN
+* __[Unreal how-to](unreal-how-to.md)__ - Quickstart guide with Unreal for CARLA and JOAN (under construction)
 
 ## How to GIT and your project
 * __[GIT how-to](git-how-to.md)__ - Quickstart guide with GIT
 
 ## How to use JOAN
-* __[Workflow](joan-workflow.md)__ - Explanation of barebones JOAN workflow
+* __[Workflow](joan-workflow.md)__ - Explanation of barebones JOAN workflow (under construction)
 * __[Adding Modules](joan-adding-modules.md)__ - Short guide on adding your own modules to JOAN
 
 ## Contributing
