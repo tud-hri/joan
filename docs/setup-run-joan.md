@@ -7,14 +7,11 @@ Using PyCharm, open the terminal again (in PyCharm), check if the directory is s
 
     python -m venv venv
 
-!!! Note
-    If you don't use PyCharm, just use any other terminal to do these steps.
-
 This will create a folder called `venv` containing a new and clean virtual environment. To start working in this environment, we have to activate it first. To do this type:
 
     venv\Scripts\activate
 
-If this succeeded, (`venv`) should have appeared in your command line trailing your current location. This indicates that the python command points to the virtual environment. 
+If this succeeded, (`venv`) should have appeared in your command line leading your current location. This indicates that the python command points to the virtual environment. 
 
 If you are using PyCharm, you might need to add your freshly created virtual environment as a Python interpreter. Click on the interpreter widget (it should say something with interpreter) and click `Add interpreter`. It should automatically select the `venv` Python interpreter. Confirm everything and wait for a bit. PyCharm needs some time to set everything up.
 
@@ -23,11 +20,11 @@ If you are using PyCharm, you might need to add your freshly created virtual env
 To get JOAN to work together with CARLA you will need several python packages (and if you want to use a SensoDrive steering wheel with CAN interface also a specific DLL). The list of required pip installs is saved in the `requirements.txt` file.
 To install all requirements from the command prompt or PyCharm terminal, make sure you are in the project folder and have the virtual environment activated. Now type: 
 
-    pip install -r requirements.txt 
+    pip3 install -r requirements.txt 
 
-The only dependency not in the requirements.txt is the CARLA PythonAPI which we build earlier. To install this dependency navigate to your CARLA folder, to `carla\PythonAPI\carla\dist`. Make sure you still have the virtual environment activated. Now type:
+The only dependency not in the `requirements.txt` is the CARLA PythonAPI which we build earlier. To install this dependency navigate to your CARLA folder, to `carla\PythonAPI\carla\dist`. Make sure you still have the virtual environment activated. Now type:
 
-    pip install  carla.whl
+    pip3 install carla.whl
     
 !!! Note
     Please note that the file name of the `*.egg` file might be slightly different in your case, it depends on the Python version.
