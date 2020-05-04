@@ -130,7 +130,8 @@ class CarlainterfaceAction(JoanModuleAction):
     def stop(self):
         try:
             self.module_state_handler.request_state_change(CarlainterfaceStates.EXEC.STOPPED)
-            self.module_state_handler.request_state_change(CarlainterfaceStates.EXEC.READY)
+            if(self.connected):
+                self.module_state_handler.request_state_change(CarlainterfaceStates.EXEC.READY)
         except RuntimeError:
             return False
         return super().stop()
