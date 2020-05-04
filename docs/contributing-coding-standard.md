@@ -3,12 +3,21 @@
 ---
 ## General
 
-We follow the coding standard as outlined in [PEP8][pep8link]. To make your life a bit easier, use linters. We recommend `flake8` or `pylint`.
+We follow the coding standard as outlined in [PEP8][pep8link], with one exception the maximum column length for code is increased to 160 since we all use 19:6 screens. 
+To make your life a bit easier, use linters. We recommend `flake8` or `pylint`, or the build-in functionality of pycharm
 
 Use in editors:
-* You can install these linters in Visual Studio Code, see their instructions [here][vscodelinterlink]
-* PyCharm also checks the code according to PEP8. Check [here][pycharmlinterlink] to set it up.
 
+*  You can install these linters in Visual Studio Code, see their instructions [here][vscodelinterlink]
+*  PyCharm checks the code according to PEP8 automatically. To change the maximum line length to 160 follow these steps:
+
+    1. Click: file -> settings
+    2. In the navigation bar on the left go to: editor -> code style -> python  
+    3. Open the line and wrapping tab 
+    4. Change the first option (hard wrap) from 120 (default) to 160 and click oke
+
+!!! Note
+    To auto format your code in PyCharm use ctrl + alt + L
 
 [pep8link]: https://www.python.org/dev/peps/pep-0008/
 [vscodelinterlink]: https://code.visualstudio.com/docs/python/linting
