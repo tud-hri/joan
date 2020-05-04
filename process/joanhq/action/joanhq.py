@@ -73,7 +73,7 @@ class JoanHQAction(QtCore.QObject):
             module_action = module.action(self.master_state_handler, millis=millis)
             module_dialog = module.dialog(module_action, self.master_state_handler, parent=parent)
 
-        self.window.add_module(module_dialog)
+        self.window.add_module(module_dialog, module)
 
         # add instantiated module to dictionary
         # note: here, we are storing the enums for easy access to both action and widget classes

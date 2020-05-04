@@ -54,11 +54,11 @@ class JoanHQWindow(QtWidgets.QMainWindow):
         self._file_menu.addAction('Add module...', self.process_menu_add_module)
         self._file_menu.addAction('Remove module...', self.process_menu_remove_module)
 
-    def add_module(self, module_widget):
+    def add_module(self, module_widget, module_enum):
         """Create a widget and add to main window"""
 
         # create a widget per module (show & close buttons, state)
-        name = str(module_widget)
+        name = str(module_enum)
 
         widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "modulecard.ui"))
         widget.setObjectName(name)
