@@ -112,5 +112,6 @@ class HardwaremanagerAction(JoanModuleAction):
         del self.data[tabtitle]
 
         if len(HardwaremanagerAction.input_devices_classes) == 0:
-            self.module_state_handler.request_state_change(HardwaremanagerStates.IDLE)
+            self.stop()
+            #self.module_state_handler.request_state_change(HardwaremanagerStates.IDLE)
 
