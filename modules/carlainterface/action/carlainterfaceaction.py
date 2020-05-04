@@ -1,4 +1,5 @@
-from PyQt5 import QtCore, QtWidgets, uic
+from PyQt5 import QtCore, uic
+from PyQt5.QtWidgets import QMessageBox
 
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
@@ -40,6 +41,8 @@ class CarlainterfaceAction(JoanModuleAction):
         self.connected = False
         self.vehicle_tags = []
         self.vehicles = []
+
+        self.msg = QMessageBox()
   
     @property 
     def vehicle_bp_library(self):
@@ -70,25 +73,32 @@ class CarlainterfaceAction(JoanModuleAction):
             print('Could not apply control', inst)
 
     def connect(self):
-        try:
-            print(' connecting')
-            client = carla.Client(self.host, self.port)  # connecting to server
-            client.set_timeout(2.0)
-            time.sleep(2)
-            self._world = client.get_world()  # get world object (contains everything)
-            blueprint_library = self.world.get_blueprint_library()
-            self._vehicle_bp_library = blueprint_library.filter('vehicle.*')
-            for items in self.vehicle_bp_library:
-                self.vehicle_tags.append(items.id[8:])
-            world_map = self._world.get_map()
-            self._spawn_points = world_map.get_spawn_points()
-            self.nr_spawn_points = len(self._spawn_points)
-            print('JOAN connected to CARLA Server!')
+        if not self.connected:
+            try:
+                print(' connecting')
+                client = carla.Client(self.host, self.port)  # connecting to server
+                client.set_timeout(2.0)
+                time.sleep(2)
+                self._world = client.get_world()  # get world object (contains everything)
+                blueprint_library = self.world.get_blueprint_library()
+                self._vehicle_bp_library = blueprint_library.filter('vehicle.*')
+                for items in self.vehicle_bp_library:
+                    self.vehicle_tags.append(items.id[8:])
+                world_map = self._world.get_map()
+                self._spawn_points = world_map.get_spawn_points()
+                self.nr_spawn_points = len(self._spawn_points)
+                print('JOAN connected to CARLA Server!')
 
-            self.connected = True
-        except RuntimeError as inst:
-            print('Could not connect error given:', inst)
-            self.connected = False
+                self.connected = True
+                self.module_state_handler.request_state_change(CarlainterfaceStates.EXEC.READY)
+            except RuntimeError as inst:
+                self.msg.setText('Could not connect check if CARLA is running in Unreal')
+                self.msg.exec()
+                self.connected = False
+                self.module_state_handler.request_state_change(CarlainterfaceStates.ERROR)
+        else:
+            self.msg.setText('Already Connected')
+            self.msg.exec()
 
         return self.connected
 
@@ -120,6 +130,7 @@ class CarlainterfaceAction(JoanModuleAction):
     def stop(self):
         try:
             self.module_state_handler.request_state_change(CarlainterfaceStates.EXEC.STOPPED)
+            self.module_state_handler.request_state_change(CarlainterfaceStates.EXEC.READY)
         except RuntimeError:
             return False
         return super().stop()

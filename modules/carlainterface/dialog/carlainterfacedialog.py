@@ -31,7 +31,7 @@ class CarlainterfaceDialog(JoanModuleDialog):
         self.connected = self.module_action.connect()
         self.module_widget.groupVehicles.setEnabled(self.connected)
         self.module_widget.spinVehicles.setEnabled(self.connected)
-        self.module_widget.btnConnect.setEnabled(not self.connected)
+        # self.module_widget.btnConnect.setEnabled(not self.connected)
     
     def update_vehicles(self, value):
         if value < self.old_nr_cars and self.vehicles:

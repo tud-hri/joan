@@ -109,6 +109,7 @@ class JOAN_Keyboard(BaseInput):
         self._steer_sensitivity = self._settings_tab.slider_steer_sensitivity.value()
         self._brake_sensitivity = self._settings_tab.slider_brake_sensitivity.value()
         self._throttle_sensitivity = self._settings_tab.slider_throttle_sensitivity.value()
+        
 
     def settings_set_keys(self):
         self._settings_tab.btn_set_keys.setStyleSheet("background-color: lightgreen")

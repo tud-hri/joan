@@ -43,14 +43,17 @@ class HardwaremanagerAction(JoanModuleAction):
 
     def start(self):
         try:
-            self.module_state_handler.request_state_change(HardwaremanagerStates.HARDWARECOMMUNICATION.RUNNING)
+            self.module_state_handler.request_state_change(HardwaremanagerStates.EXEC.RUNNING)
         except RuntimeError:
             return False
         return super().start()
 
     def stop(self):
         try:
-            self.module_state_handler.request_state_change(HardwaremanagerStates.HARDWARECOMMUNICATION.STOPPED)
+            self.module_state_handler.request_state_change(HardwaremanagerStates.EXEC.STOPPED)
+            if len(HardwaremanagerAction.input_devices_classes) != 0:
+                self.module_state_handler.request_state_change(HardwaremanagerStates.EXEC.READY)
+            
         except RuntimeError:
             return False
         return super().stop()
@@ -107,3 +110,7 @@ class HardwaremanagerAction(JoanModuleAction):
         del HardwaremanagerAction.input_devices_widgets[tabtitle]
         del HardwaremanagerAction.input_devices_classes[tabtitle]
         del self.data[tabtitle]
+
+        if len(HardwaremanagerAction.input_devices_classes) == 0:
+            self.module_state_handler.request_state_change(HardwaremanagerStates.IDLE)
+
