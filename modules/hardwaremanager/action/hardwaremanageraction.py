@@ -104,7 +104,7 @@ class HardwaremanagerAction(JoanModuleAction):
         if "Joystick" in tabtitle:
             HardwaremanagerAction._nr_of_joysticks = HardwaremanagerAction._nr_of_joysticks - 1
 
-        if "Sensodrive" in tabtitle:
+        if "SensoDrive" in tabtitle:
             HardwaremanagerAction._nr_of_sensodrives = HardwaremanagerAction._nr_of_sensodrives - 1
 
         del HardwaremanagerAction.input_devices_widgets[tabtitle]
