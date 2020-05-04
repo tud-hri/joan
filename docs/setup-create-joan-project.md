@@ -1,10 +1,5 @@
 # Creating your own JOAN project
 
-## Python IDE
-Before we continue, JOAN is written in Python. To make your life a bit easier programming Python, use a Python editor. We recommend installing __[PyCharm Community](https://www.jetbrains.com/pycharm/)__ (in particular if these are your first steps in Python) or __[Visual Studio Code](https://code.visualstudio.com/)__ as your python editor.
-
-
-## How to get JOAN
 JOAN is maintained in a GitLab repository by a team of contributors. There are a couple of ways though which you can download JOAN:
 
 - You can download a __zipped copy__ of the repository (note: you not receive any updates when we change the code)
@@ -40,9 +35,7 @@ Now we need to connect the JOAN repository to your own repository, so that you a
 In the terminal type the following commands in this order (or copy it, and right-click paste in the terminal, `ctrl+v` does not work). Perform these commands one-by-one. Do not continue to the next command if the previous one returned errors!
 
     git remote add upstream https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan.git
-
     git fetch upstream
-    
     git pull upstream master
 
 The last command pulls the latest version of JOAN's master branch. Check out your PyCharm editor: you will find all folders and files of the latest JOAN version there: 
