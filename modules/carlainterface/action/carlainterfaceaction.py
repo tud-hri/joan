@@ -35,6 +35,8 @@ class CarlainterfaceAction(JoanModuleAction):
         self.time = QtCore.QTime()
         self._data_from_hardware = {}
 
+        
+
         #Carla connection variables:
         self.host = 'localhost'
         self.port = 2000
@@ -73,31 +75,38 @@ class CarlainterfaceAction(JoanModuleAction):
             print('Could not apply control', inst)
 
     def connect(self):
-        if not self.connected:
-            try:
-                print(' connecting')
-                client = carla.Client(self.host, self.port)  # connecting to server
-                client.set_timeout(2.0)
-                time.sleep(2)
-                self._world = client.get_world()  # get world object (contains everything)
-                blueprint_library = self.world.get_blueprint_library()
-                self._vehicle_bp_library = blueprint_library.filter('vehicle.*')
-                for items in self.vehicle_bp_library:
-                    self.vehicle_tags.append(items.id[8:])
-                world_map = self._world.get_map()
-                self._spawn_points = world_map.get_spawn_points()
-                self.nr_spawn_points = len(self._spawn_points)
-                print('JOAN connected to CARLA Server!')
+        hardware_manager_state_package = self.get_module_state_package(JOANModules.HARDWARE_MANAGER)
+        hardware_manager_states = hardware_manager_state_package['module_states']
+        hardware_manager_current_state = hardware_manager_state_package['module_state_handler'].get_current_state()
+        if hardware_manager_current_state is hardware_manager_states.EXEC.RUNNING:
+            if not self.connected:
+                try:
+                    print(' connecting')
+                    client = carla.Client(self.host, self.port)  # connecting to server
+                    client.set_timeout(2.0)
+                    time.sleep(2)
+                    self._world = client.get_world()  # get world object (contains everything)
+                    blueprint_library = self.world.get_blueprint_library()
+                    self._vehicle_bp_library = blueprint_library.filter('vehicle.*')
+                    for items in self.vehicle_bp_library:
+                        self.vehicle_tags.append(items.id[8:])
+                    world_map = self._world.get_map()
+                    self._spawn_points = world_map.get_spawn_points()
+                    self.nr_spawn_points = len(self._spawn_points)
+                    print('JOAN connected to CARLA Server!')
 
-                self.connected = True
-                self.module_state_handler.request_state_change(CarlainterfaceStates.EXEC.READY)
-            except RuntimeError as inst:
-                self.msg.setText('Could not connect check if CARLA is running in Unreal')
+                    self.connected = True
+                    self.module_state_handler.request_state_change(CarlainterfaceStates.EXEC.READY)
+                except RuntimeError as inst:
+                    self.msg.setText('Could not connect check if CARLA is running in Unreal')
+                    self.msg.exec()
+                    self.connected = False
+                    self.module_state_handler.request_state_change(CarlainterfaceStates.ERROR)
+            else:
+                self.msg.setText('Already Connected')
                 self.msg.exec()
-                self.connected = False
-                self.module_state_handler.request_state_change(CarlainterfaceStates.ERROR)
-        else:
-            self.msg.setText('Already Connected')
+        else: 
+            self.msg.setText('Make sure hardware manager is up and running')
             self.msg.exec()
 
         return self.connected
