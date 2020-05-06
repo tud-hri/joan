@@ -82,10 +82,10 @@ class CarlainterfaceAction(JoanModuleAction):
             if not self.connected:
                 try:
                     print(' connecting')
-                    client = carla.Client(self.host, self.port)  # connecting to server
-                    client.set_timeout(2.0)
+                    self.client = carla.Client(self.host, self.port)  # connecting to server
+                    self.client.set_timeout(2.0)
                     time.sleep(2)
-                    self._world = client.get_world()  # get world object (contains everything)
+                    self._world = self.client.get_world()  # get world object (contains everything)
                     blueprint_library = self.world.get_blueprint_library()
                     self._vehicle_bp_library = blueprint_library.filter('vehicle.*')
                     for items in self.vehicle_bp_library:
@@ -108,6 +108,20 @@ class CarlainterfaceAction(JoanModuleAction):
         else: 
             self.msg.setText('Make sure hardware manager is up and running')
             self.msg.exec()
+
+        return self.connected
+
+    def disconnect(self):
+        if self.connected:
+            print('Disconnecting')
+            for cars in self.vehicles:
+                cars.destroy_car()
+
+            self.client = None
+            self._world = None
+            self.connected = False
+
+            self.module_state_handler.request_state_change(CarlainterfaceStates.EXEC.STOPPED)
 
         return self.connected
 
