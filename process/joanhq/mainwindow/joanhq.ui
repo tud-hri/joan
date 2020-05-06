@@ -75,19 +75,6 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="btn_start_all">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>50</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>Start all</string>
-            </property>
-           </widget>
-          </item>
-          <item>
            <widget class="QPushButton" name="btn_stop_all">
             <property name="minimumSize">
              <size>

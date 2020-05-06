@@ -35,7 +35,7 @@ class JoanHQAction(QtCore.QObject):
         # dictionary to keep track of the instantiated modules
         self._instantiated_modules = {}
 
-    def initialize(self):
+    def initialize_all(self):
         """Initialize modules"""
         for _, module in self._instantiated_modules.items():
             try:
@@ -43,7 +43,7 @@ class JoanHQAction(QtCore.QObject):
             except AttributeError:  # module has new style TODO: remove statement above when moving to new style
                 module.initialize()
 
-    def start(self):
+    def start_all(self):
         """Initialize modules"""
         for _, module in self._instantiated_modules.items():
             try:
@@ -51,7 +51,7 @@ class JoanHQAction(QtCore.QObject):
             except AttributeError:  # module has new style TODO: remove statement above when moving to new style
                 module.start()
 
-    def stop(self):
+    def stop_all(self):
         """Initialize modules"""
         for _, module in self._instantiated_modules.items():
             try:
