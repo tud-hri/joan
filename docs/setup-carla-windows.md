@@ -213,7 +213,7 @@ Open up this 'Blueprint' and then click on the array variable 'vehicles'. Now ad
 
 ![alt text](imgs/addvehicles.png "Adding Audi")
 
-If all of the steps succeeded than congrats! You have successfully built CARLA, the basis of the JOAN simulator! Please proceed to the [setting up JOAN](./setup-joan.md).
+If all of the steps succeeded than congrats! You have successfully built CARLA, the basis of the JOAN simulator! Please proceed to [setting up JOAN](./setup-run-joan.md).
 
 ---
 ## Adding to system variables
