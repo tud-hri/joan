@@ -41,3 +41,30 @@ Use in editors:
 [pylintlink]: https://www.pylint.org/
 [flake8link]: https://flake8.pycqa.org/en/latest/
 [pep8link]: https://www.python.org/dev/peps/pep-0008/
+
+## Git flow
+
+We try to use the Git flow workflow in terms of branching, feature implementation and testing and releases. For more information, visit this [link](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) and [this branching model](https://nvie.com/posts/a-successful-git-branching-model/)
+
+### Versioning
+
+I propose to use the [Semantic Versioning](https://semver.org/) convention for versions. Our first beta release will be v0.9.0. Each patch increases the last digit: v0.9.1. Every major version (no backwards compatibility) increases the first digit (v1.0.0); though I am not too sure about this one. Every minor version increases the second digit and resets the last: v0.10.0.
+
+## mkdocs
+
+We are using `mkdocs` and ReadTheDocs for our documentation. For more information on `mkdocs`, visit [this link](https://www.mkdocs.org). We have a branch for the documentation: `docs`. 
+
+To install `mkdocs`, run:
+```
+pip install mkdocs
+```
+
+You can build your documentation _locally_ through:
+
+```
+mkdocs serve
+```
+
+This command builds your Markdown files into HTML and starts a development server to browse your documentation. Open up [http://127.0.0.1:8000/](http://127.0.0.1:8000/) in your web browser to see your documentation. You can make changes to your Markdown files and your docs will automatically rebuild. 
+
+Check whether your changes in the documentation work correctly before pushing them to the `docs` branch.
