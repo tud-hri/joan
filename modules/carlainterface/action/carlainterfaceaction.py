@@ -1,6 +1,7 @@
 from PyQt5 import QtCore, uic
 from PyQt5.QtWidgets import QMessageBox
 
+
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
 from .states import CarlainterfaceStates
@@ -13,14 +14,24 @@ import os
 import sys
 import glob
 
+msg_box = QMessageBox()
+msg_box.setTextFormat(QtCore.Qt.RichText)
+
 try:
-    sys.path.append(glob.glob('../../carla/PythonAPI/carla/dist/carla-*%d.%d-%s.egg' % (
+    sys.path.append(glob.glob('carla_pythonapi/carla-*%d.%d-%s.egg' % (
         sys.version_info.major,
         sys.version_info.minor,
         'win-amd64' if os.name == 'nt' else 'linux-x86_64'))[0])
-    import carla  # Hier heb ik dus de PC voor nodig error is onzin!
+    import carla  
 
 except IndexError:
+    msg_box.setText("""
+                <h2> Could not find the carla python API! </h2>
+                <h2> Please check whether you copied the egg file correctly for guide:
+            <a href=\"https://joan.readthedocs.io/en/latest/setup-carla-windows/\">https://joan.readthedocs.io/en/latest/setup-carla-windows/</a>
+            </h2>
+            """)
+    msg_box.exec()
     pass
 
 class CarlainterfaceAction(JoanModuleAction):
@@ -34,6 +45,9 @@ class CarlainterfaceAction(JoanModuleAction):
         self.write_news(news=self.data)
         self.time = QtCore.QTime()
         self._data_from_hardware = {}
+
+        #Class Variable for the Carla import
+        CarlainterfaceStates.carla_import = None
 
         
 
