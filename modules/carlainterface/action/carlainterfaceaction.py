@@ -18,7 +18,7 @@ msg_box = QMessageBox()
 msg_box.setTextFormat(QtCore.Qt.RichText)
 
 try:
-    sys.path.append(glob.glob('crla_pythonapi/carla-*%d.%d-%s.egg' % (
+    sys.path.append(glob.glob('carla_pythonapi/carla-*%d.%d-%s.egg' % (
         sys.version_info.major,
         sys.version_info.minor,
         'win-amd64' if os.name == 'nt' else 'linux-x86_64'))[0])
