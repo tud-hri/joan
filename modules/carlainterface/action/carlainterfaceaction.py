@@ -18,7 +18,7 @@ msg_box = QMessageBox()
 msg_box.setTextFormat(QtCore.Qt.RichText)
 
 try:
-    sys.path.append(glob.glob('carla_pythonapi/carla-*%d.%d-%s.egg' % (
+    sys.path.append(glob.glob('crla_pythonapi/carla-*%d.%d-%s.egg' % (
         sys.version_info.major,
         sys.version_info.minor,
         'win-amd64' if os.name == 'nt' else 'linux-x86_64'))[0])
@@ -27,7 +27,7 @@ try:
 except IndexError:
     msg_box.setText("""
                 <h2> Could not find the carla python API! </h2>
-                <h2> Please check whether you copied the egg file correctly for guide:
+                <h2> Check whether you copied the egg file correctly, reference:
             <a href=\"https://joan.readthedocs.io/en/latest/setup-carla-windows/\">https://joan.readthedocs.io/en/latest/setup-carla-windows/</a>
             </h2>
             """)
