@@ -170,7 +170,7 @@ Furthermore, a `carla.egg` file should be in `..\carla\PythonAPI\carla\dist`:
 
 ![alt text](imgs/eggfile.png "eggfile")
 
-The exact filename depends on the CARLA version and python version (in our case python 3.8). Now copy the 'egg' file that has been
+The exact filename depends on the CARLA version and python version (in our case python 3.8). Now copy this egg file to the folder `carla_pythonapi` (replace the already existing `egg` file if it's there) in your JOAN project folder.
 
 ### Step 5: Building and launching CARLA
 
