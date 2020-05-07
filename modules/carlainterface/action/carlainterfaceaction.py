@@ -28,7 +28,7 @@ except IndexError:
     msg_box.setText("""
                 <h2> Could not find the carla python API! </h2>
                 <h2> Check whether you copied the egg file correctly, reference:
-            <a href=\"https://joan.readthedocs.io/en/latest/setup-carla-windows/\">https://joan.readthedocs.io/en/latest/setup-carla-windows/</a>
+            <a href=\"https://joan.readthedocs.io/en/latest/setup-run-joan/#getting-necessary-python3-libraries-to-run-joan\">https://joan.readthedocs.io/en/latest/setup-run-joan/#getting-necessary-python3-libraries-to-run-joan</a>
             </h2>
             """)
     msg_box.exec()
