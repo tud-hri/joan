@@ -170,7 +170,7 @@ Furthermore, a `carla.egg` file should be in `..\carla\PythonAPI\carla\dist`:
 
 ![alt text](imgs/eggfile.png "eggfile")
 
-The exact filename depends on the CARLA version and python version (in our case python 3.8).
+The exact filename depends on the CARLA version and python version (in our case python 3.8). Now copy the 'egg' file that has been
 
 ### Step 5: Building and launching CARLA
 

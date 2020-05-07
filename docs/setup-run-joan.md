@@ -25,12 +25,10 @@ To install all requirements from the command prompt or PyCharm terminal, make su
 
     pip install -r requirements.txt 
 
-The only dependency not in the requirements.txt is the CARLA PythonAPI which we build earlier. To install this dependency navigate to your CARLA folder, to `carla\PythonAPI\carla\dist`. Make sure you still have the virtual environment activated. Now type:
-
-    pip install  carla.whl
+The only dependency not in the requirements.txt is the CARLA PythonAPI which we build earlier. To use this dependency simply copy the `*.egg` file to the empty map carla_pythonapi in the JOAN file structure. 
     
 !!! Note
-    Please note that the file name of the `*.egg` file might be slightly different in your case, it depends on the Python version.
+    Please note that the file name of the `*.egg` file might be slightly different in your case, it depends on the Python version. If you have not done this step you will get an error message whenever you start joan.
 
 ---
 ## Running JOAN
