@@ -10,7 +10,6 @@ from process.states import MasterStates
 from process.status import Status
 
 
-
 class JoanHQAction(QtCore.QObject):
     """Action class for JoanHQ"""
 
@@ -22,10 +21,6 @@ class JoanHQAction(QtCore.QObject):
         self.master_state_handler = self.singleton_status._master_state_handler
         self.master_states = self.singleton_status._master_states
         self.master_state_handler.state_changed.connect(self.handle_master_state)
-
-        self.singleton_news = News()
-        # self._data = {}
-        # self.write_news(news=self._data)
 
         self.window = None
 
@@ -90,12 +85,6 @@ class JoanHQAction(QtCore.QObject):
         """ Remove module by name"""
 
         del self._instantiated_modules[module]
-
-    # def write_news(self, news: dict):
-    #     """write new data to channel"""
-    #     assert type(news) == dict, 'argument "news" should be of type dict and will contain news(=data) of this channel'
-
-    #     self.singleton_news = News({self.module: news})
 
     def handle_master_state(self, state):
         """
