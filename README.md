@@ -14,7 +14,7 @@ Please see our license if you want to use our framework.
 
 Please use the following citation:
 
-    TUD HRI group, *JOAN, a human-automated vehicle experiment framework*, https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan
+        TUD HRI group, *JOAN, a human-automated vehicle experiment framework*, https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan
 
 
 <!-- A start to combine classes in a lego-like way to make a driving simulator.<br>
