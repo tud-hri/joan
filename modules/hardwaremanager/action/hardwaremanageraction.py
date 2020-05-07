@@ -43,14 +43,17 @@ class HardwaremanagerAction(JoanModuleAction):
 
     def start(self):
         try:
-            self.module_state_handler.request_state_change(HardwaremanagerStates.HARDWARECOMMUNICATION.RUNNING)
+            self.module_state_handler.request_state_change(HardwaremanagerStates.EXEC.RUNNING)
         except RuntimeError:
             return False
         return super().start()
 
     def stop(self):
         try:
-            self.module_state_handler.request_state_change(HardwaremanagerStates.HARDWARECOMMUNICATION.STOPPED)
+            self.module_state_handler.request_state_change(HardwaremanagerStates.EXEC.STOPPED)
+            if len(HardwaremanagerAction.input_devices_classes) != 0:
+                self.module_state_handler.request_state_change(HardwaremanagerStates.EXEC.READY)
+            
         except RuntimeError:
             return False
         return super().stop()
@@ -101,9 +104,14 @@ class HardwaremanagerAction(JoanModuleAction):
         if "Joystick" in tabtitle:
             HardwaremanagerAction._nr_of_joysticks = HardwaremanagerAction._nr_of_joysticks - 1
 
-        if "Sensodrive" in tabtitle:
+        if "SensoDrive" in tabtitle:
             HardwaremanagerAction._nr_of_sensodrives = HardwaremanagerAction._nr_of_sensodrives - 1
 
         del HardwaremanagerAction.input_devices_widgets[tabtitle]
         del HardwaremanagerAction.input_devices_classes[tabtitle]
         del self.data[tabtitle]
+
+        if len(HardwaremanagerAction.input_devices_classes) == 0:
+            self.stop()
+            #self.module_state_handler.request_state_change(HardwaremanagerStates.IDLE)
+

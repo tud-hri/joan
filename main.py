@@ -24,7 +24,7 @@ if __name__ == '__main__':
     JOANHQACTION.add_module(JOANModules.HARDWARE_MANAGER, millis=5)
     # JOANHQACTION.add_module(JOANModules.FEED_BACK_CONTROLLER)
     JOANHQACTION.add_module(JOANModules.TEMPLATE)
-    JOANHQACTION.add_module(JOANModules.DATA_RECORDER)  # data recorder needs to be instantiated after all other modules
+    #JOANHQACTION.add_module(JOANModules.DATA_RECORDER)  # data recorder needs to be instantiated after all other modules
 
     APP.exec_()
 

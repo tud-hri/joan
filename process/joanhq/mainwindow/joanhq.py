@@ -50,11 +50,11 @@ class JoanHQWindow(QtWidgets.QMainWindow):
         self._file_menu = self.menuBar().addMenu('File')
         self._file_menu.addAction('Quit', self.action.quit)
 
-    def add_module(self, module_dialog):
+    def add_module(self, module_dialog, module_enum):
         """Create a widget and add to main window"""
 
         # create a widget per module (show & close buttons, state)
-        name = str(module_dialog)
+        name = str(module_enum)
 
         widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "modulecard.ui"))
         widget.setObjectName(name)

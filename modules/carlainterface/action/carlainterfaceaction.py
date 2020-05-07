@@ -1,4 +1,6 @@
-from PyQt5 import QtCore, QtWidgets, uic
+from PyQt5 import QtCore, uic
+from PyQt5.QtWidgets import QMessageBox
+
 
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
@@ -12,21 +14,31 @@ import os
 import sys
 import glob
 
+msg_box = QMessageBox()
+msg_box.setTextFormat(QtCore.Qt.RichText)
+
 try:
-    sys.path.append(glob.glob('../../carla/PythonAPI/carla/dist/carla-*%d.%d-%s.egg' % (
+    sys.path.append(glob.glob('carla_pythonapi/carla-*%d.%d-%s.egg' % (
         sys.version_info.major,
         sys.version_info.minor,
         'win-amd64' if os.name == 'nt' else 'linux-x86_64'))[0])
-    import carla  # Hier heb ik dus de PC voor nodig error is onzin!
+    import carla  
 
 except IndexError:
+    msg_box.setText("""
+                <h2> Could not find the carla python API! </h2>
+                <h2> Check whether you copied the egg file correctly, reference:
+            <a href=\"https://joan.readthedocs.io/en/latest/setup-run-joan/#getting-necessary-python3-libraries-to-run-joan\">https://joan.readthedocs.io/en/latest/setup-run-joan/#getting-necessary-python3-libraries-to-run-joan</a>
+            </h2>
+            """)
+    msg_box.exec()
     pass
 
 class CarlainterfaceAction(JoanModuleAction):
     def __init__(self, master_state_handler, millis=5):
         super().__init__(module=JOANModules.CARLA_INTERFACE, master_state_handler=master_state_handler, millis=millis)
 
-        self.module_state_handler.request_state_change(CarlainterfaceStates.SIMULATION.INITIALIZING)
+        self.module_state_handler.request_state_change(CarlainterfaceStates.INIT.INITIALIZING)
         self.data = {}
         self.data['vehicles'] = None
         self.data['t'] = -1
@@ -34,12 +46,19 @@ class CarlainterfaceAction(JoanModuleAction):
         self.time = QtCore.QTime()
         self._data_from_hardware = {}
 
+        #Class Variable for the Carla import
+        CarlainterfaceStates.carla_import = None
+
+        
+
         #Carla connection variables:
         self.host = 'localhost'
         self.port = 2000
         self.connected = False
         self.vehicle_tags = []
         self.vehicles = []
+
+        self.msg = QMessageBox()
   
     @property 
     def vehicle_bp_library(self):
@@ -70,25 +89,53 @@ class CarlainterfaceAction(JoanModuleAction):
             print('Could not apply control', inst)
 
     def connect(self):
-        try:
-            print(' connecting')
-            client = carla.Client(self.host, self.port)  # connecting to server
-            client.set_timeout(2.0)
-            time.sleep(2)
-            self._world = client.get_world()  # get world object (contains everything)
-            blueprint_library = self.world.get_blueprint_library()
-            self._vehicle_bp_library = blueprint_library.filter('vehicle.*')
-            for items in self.vehicle_bp_library:
-                self.vehicle_tags.append(items.id[8:])
-            world_map = self._world.get_map()
-            self._spawn_points = world_map.get_spawn_points()
-            self.nr_spawn_points = len(self._spawn_points)
-            print('JOAN connected to CARLA Server!')
+        hardware_manager_state_package = self.get_module_state_package(JOANModules.HARDWARE_MANAGER)
+        hardware_manager_states = hardware_manager_state_package['module_states']
+        hardware_manager_current_state = hardware_manager_state_package['module_state_handler'].get_current_state()
+        if hardware_manager_current_state is hardware_manager_states.EXEC.RUNNING:
+            if not self.connected:
+                try:
+                    print(' connecting')
+                    self.client = carla.Client(self.host, self.port)  # connecting to server
+                    self.client.set_timeout(2.0)
+                    time.sleep(2)
+                    self._world = self.client.get_world()  # get world object (contains everything)
+                    blueprint_library = self.world.get_blueprint_library()
+                    self._vehicle_bp_library = blueprint_library.filter('vehicle.*')
+                    for items in self.vehicle_bp_library:
+                        self.vehicle_tags.append(items.id[8:])
+                    world_map = self._world.get_map()
+                    self._spawn_points = world_map.get_spawn_points()
+                    self.nr_spawn_points = len(self._spawn_points)
+                    print('JOAN connected to CARLA Server!')
 
-            self.connected = True
-        except RuntimeError as inst:
-            print('Could not connect error given:', inst)
+                    self.connected = True
+                    self.module_state_handler.request_state_change(CarlainterfaceStates.EXEC.READY)
+                except RuntimeError as inst:
+                    self.msg.setText('Could not connect check if CARLA is running in Unreal')
+                    self.msg.exec()
+                    self.connected = False
+                    self.module_state_handler.request_state_change(CarlainterfaceStates.ERROR)
+            else:
+                self.msg.setText('Already Connected')
+                self.msg.exec()
+        else: 
+            self.msg.setText('Make sure hardware manager is up and running')
+            self.msg.exec()
+
+        return self.connected
+
+    def disconnect(self):
+        if self.connected:
+            print('Disconnecting')
+            for cars in self.vehicles:
+                cars.destroy_car()
+
+            self.client = None
+            self._world = None
             self.connected = False
+
+            self.module_state_handler.request_state_change(CarlainterfaceStates.EXEC.STOPPED)
 
         return self.connected
 
@@ -111,7 +158,7 @@ class CarlainterfaceAction(JoanModuleAction):
 
     def start(self):
         try:
-            self.module_state_handler.request_state_change(CarlainterfaceStates.SIMULATION.RUNNING)
+            self.module_state_handler.request_state_change(CarlainterfaceStates.EXEC.RUNNING)
             self.time.restart()
         except RuntimeError:
             return False
@@ -119,7 +166,9 @@ class CarlainterfaceAction(JoanModuleAction):
 
     def stop(self):
         try:
-            self.module_state_handler.request_state_change(CarlainterfaceStates.SIMULATION.STOPPED)
+            self.module_state_handler.request_state_change(CarlainterfaceStates.EXEC.STOPPED)
+            if(self.connected):
+                self.module_state_handler.request_state_change(CarlainterfaceStates.EXEC.READY)
         except RuntimeError:
             return False
         return super().stop()

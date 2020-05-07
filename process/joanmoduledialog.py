@@ -34,6 +34,9 @@ class JoanModuleDialog(QtWidgets.QDialog):
         self.module_widget = uic.loadUi(module.ui_file)
         self.layout().addWidget(self.module_widget)
 
+        # setup button enables
+        self.state_widget.btn_start.setEnabled(False)
+
     def _button_start_clicked(self):
         self.module_action.start()
         self.state_widget.input_tick_millis.setEnabled(False)
@@ -67,6 +70,31 @@ class JoanModuleDialog(QtWidgets.QDialog):
 
         # update the state label
         self.state_widget.lb_module_state.setText(str(state_as_state.name))
+        if state_as_state is self.module_action.module_states.EXEC.RUNNING:
+            self.state_widget.lb_module_state.setStyleSheet("background: green;")
+        elif state_as_state is self.module_action.module_states.EXEC.STOPPED:
+            self.state_widget.lb_module_state.setStyleSheet("background: orange;")
+        elif state_as_state is self.module_action.module_states.EXEC.READY:
+            self.state_widget.lb_module_state.setStyleSheet("background: yellow;")
+        elif 400 <= state_as_state.nr < 500:  # an Error state
+            self.state_widget.lb_module_state.setStyleSheet("background: red;")
+
+        if state_as_state == self.module_action.module_states.EXEC.READY:
+            self.state_widget.btn_start.setEnabled(True)
+            self.state_widget.btn_stop.setEnabled(False)
+        else:
+            self.state_widget.btn_start.setEnabled(False)
+            self.state_widget.btn_stop.setEnabled(True)
+
+        # If module is running change button color
+        if state_as_state == self.module_action.module_states.EXEC.RUNNING:
+            self.state_widget.btn_start.setStyleSheet("background-color: lightgreen")
+            self.state_widget.btn_start.setText('Running')
+            # self.state_widget.btn_start.setEnabled(False)
+        else:
+            self.state_widget.btn_start.setStyleSheet("background-color: none")
+            self.state_widget.btn_start.setText('Start')
+            # self.state_widget.btn_start.setEnabled(True)
 
     def toggle_show_close(self):
         """toggle visibility of this dialog"""
@@ -74,3 +102,5 @@ class JoanModuleDialog(QtWidgets.QDialog):
             self.show()
         else:
             self.close()
+        # Only make the module executable if in READY STATE
+
