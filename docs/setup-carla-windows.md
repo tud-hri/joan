@@ -115,13 +115,13 @@ The steps will be explained 1 step at the time with screenshots and command line
 
 ### Step 1: Cloning the CARLA repository
 
-To clone the repository either go to this [link](https://github.com/carla-simulator/carla) and download the zip file (click on 'Clone or download'), use a git client (SourceTree, GitHub desktop), or type in the following command in the command line of a Windows command prompt (make sure you are in the right directory!):
+JOAN was tested with Carla version 0.9.8, other versions might work but no guarantees are given. To clone version 0.9.8 of the repository open a command window and navigate to the folder where you want to clone carla (if you don't know how to use the `cd` command to navigate in a terminal, check out [this page](https://www.computerhope.com/issues/chusedos.htm) first). 
+Please remember that the git clone command will also create a project folder named carla at the current location. Now type the following command:
 
-    # Clone the CARLA repository (will clone in the folder you are currently in in your terminal)
-    git clone https://github.com/carla-simulator/carla
+    git clone https://github.com/carla-simulator/carla --branch 0.9.8
 
 !!! Important 
-    The CARLA build will fail if the `PATH` to CARLA contains spaces, so please clone CARLA to a folder without spaces in the path. If in doubt; use `C:\carla`. To do this navigate to `C:\` in a command prompt and call git clone from there, the `carla` folder will be created automatically. 
+    The CARLA build will fail if the path to CARLA contains spaces, so please clone CARLA to a folder without spaces in the path. If in doubt; use `C:\carla`. To do this navigate to `C:\` in a command prompt and call git clone from there, the `carla` folder will be created automatically. 
 
 After cloning, verify that you have actually cloned the repository, it should look like this:
 ![alt text](imgs/gitClone.png "cloned repository")
