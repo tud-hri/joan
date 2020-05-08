@@ -25,7 +25,7 @@ class JOAN_Joystick(BaseInput):
         self.reverse = False
 
         # Load the appropriate settings tab and show it:
-        self._settings_tab = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "UIs/joystick_settings_ui.ui"))
+        self._settings_tab = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/joystick_settings_ui.ui"))
         self._settings_tab.show()
 
         self._settings_tab.button_box_settings.button(self._settings_tab.button_box_settings.Save).clicked.connect(self.settings_set_newvalues)

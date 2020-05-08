@@ -65,28 +65,28 @@ class HardwaremanagerAction(JoanModuleAction):
             HardwaremanagerAction._nr_of_mouses = HardwaremanagerAction._nr_of_mouses + 1
             device_title = "Mouse " + str(self._nr_of_mouses)
             HardwaremanagerAction.input_devices_widgets.update(
-                [(device_title, uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "UIs/hardware_tab.ui")))])
+                [(device_title, uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/hardware_tab.ui")))])
             HardwaremanagerAction.input_devices_classes.update([(device_title, JOAN_Mouse(self, self.input_devices_widgets[device_title]))])
 
         if "Keyboard" in self._selected_input_device:
             HardwaremanagerAction._nr_of_keyboards = HardwaremanagerAction._nr_of_keyboards + 1
             device_title = "Keyboard " + str(self._nr_of_keyboards)
             HardwaremanagerAction.input_devices_widgets.update(
-                [(device_title, uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "UIs/hardware_tab.ui")))])
+                [(device_title, uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/hardware_tab.ui")))])
             HardwaremanagerAction.input_devices_classes.update([(device_title, JOAN_Keyboard(self, self.input_devices_widgets[device_title]))])
 
         if "Joystick" in self._selected_input_device:
             HardwaremanagerAction._nr_of_joysticks = HardwaremanagerAction._nr_of_joysticks + 1
             device_title = "Joystick " + str(self._nr_of_joysticks)
             HardwaremanagerAction.input_devices_widgets.update(
-                [(device_title, uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "UIs/hardware_tab.ui")))])
+                [(device_title, uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/hardware_tab.ui")))])
             HardwaremanagerAction.input_devices_classes.update([(device_title, JOAN_Joystick(self, self.input_devices_widgets[device_title]))])
 
         if "SensoDrive" in self._selected_input_device:
             HardwaremanagerAction._nr_of_sensodrives = HardwaremanagerAction._nr_of_sensodrives + 1
             device_title = "SensoDrive " + str(self._nr_of_sensodrives)
             HardwaremanagerAction.input_devices_widgets.update(
-                [(device_title, uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "UIs/hardware_tab.ui")))])
+                [(device_title, uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/hardware_tab.ui")))])
             HardwaremanagerAction.input_devices_classes.update([(device_title, JOAN_SensoDrive(self, self.input_devices_widgets[device_title]))])
 
         HardwaremanagerAction.input_devices_widgets[device_title].groupBox.setTitle(device_title)

@@ -33,7 +33,7 @@ class JOAN_Keyboard(BaseInput):
         self._handbrake_key = ''
 
         # Load the appropriate settings window and show it:
-        self._settings_tab = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "UIs/keyboard_settings_ui.ui"))
+        self._settings_tab = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/keyboard_settings_ui.ui"))
         self._settings_tab.show()
 
         # Connect the settings button to the settings window
