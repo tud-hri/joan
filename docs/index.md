@@ -12,7 +12,7 @@ On the left you see the overall layout of the documentation. Starting with setti
 !!! Note
     If you cannot read the text in the GIFS or images please zoom in in your webbrowser, the resolution should then be high enough to distinguish the text.
 
-JOAN is developed by members of the Human-Robot Interaction group at Cognitive Robotics of Delft University of Technology. This home-page serves as the table of contents of this document, a little bit below an overview is given with a short description of the sections and what they contain.
+JOAN is developed by members of the Human-Robot Interaction group at Cognitive Robotics of Delft University of Technology. This home-page serves as the table of contents of this document, a little bit below an overview is given with a short description of the sections and what they contain. 
 
 ## Setup
 * __[Setup on Windows](setup-carla-windows.md)__ - Guide on how to setup CARLA and JOAN on Windows OS
