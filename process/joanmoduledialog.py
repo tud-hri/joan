@@ -113,5 +113,4 @@ class JoanModuleDialog(QtWidgets.QDialog):
             self.show()
         else:
             self.close()
-        # Only make the module executable if in READY STATE
 

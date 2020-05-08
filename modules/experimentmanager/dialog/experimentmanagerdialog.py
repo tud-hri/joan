@@ -35,5 +35,6 @@ class ExperimentManagerDialog(JoanModuleDialog):
                 self.process_experiment_conditions()
 
     def process_experiment_conditions(self):
+        """process the experiment conditions"""
         self.module_widget.combobox_conditions.clear()
         self.module_widget.combobox_conditions.addItems(self.module_action.get_experiment_conditions())

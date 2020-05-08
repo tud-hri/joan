@@ -68,15 +68,12 @@ class JoanHQAction(QtCore.QObject):
             module_widget.setObjectName(name)
             module_dialog = module_widget
         else:
-            # TODO Load the default settings for this module here, this can be from a saved settings file or from another source
-            # millis = default_millis_for_this_module
             module_action = module.action(self.master_state_handler, millis=millis)
             module_dialog = module.dialog(module_action, self.master_state_handler, parent=parent)
 
         self.window.add_module(module_dialog, module)
 
         # add instantiated module to dictionary
-        # note: here, we are storing the enums for easy access to both action and widget classes
         self._instantiated_modules[module] = module_action
         
         return module_dialog, module_action
