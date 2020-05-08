@@ -60,16 +60,17 @@ class JoanHQAction(QtCore.QObject):
         if not parent:
             parent = self.window
 
-        if module is JOANModules.FEED_BACK_CONTROLLER or module is JOANModules.TRAJECTORY_RECORDER: 
-            # old style
-            module_action = None
+        # if module is JOANModules.FEED_BACK_CONTROLLER:
+        #     # old style
+        #     module_action = None
 
-            module_widget = module.dialog()
-            module_widget.setObjectName(name)
-            module_dialog = module_widget
-        else:
-            module_action = module.action(self.master_state_handler, millis=millis)
-            module_dialog = module.dialog(module_action, self.master_state_handler, parent=parent)
+        #     module_widget = module.dialog()
+        #     module_widget.setObjectName(name)
+        #     module_dialog = module_widget
+        # else:
+        
+        module_action = module.action(self.master_state_handler, millis=millis)
+        module_dialog = module.dialog(module_action, self.master_state_handler, parent=parent)
 
         self.window.add_module(module_dialog, module)
 
