@@ -98,12 +98,30 @@ print("JOAN is the best")
 in the `do` function. Once you hit the start button of the JOANISCOOL module, it will start printing this message at a frequency of 5 Hz.
 
 
-## Flow Diagram (barebones)
+## Workflow
 In this section an overview of the workflow of JOAN is presented. 
 
 !!! Note
-    This document will only contain a workflow of the essential bare-bone modules (Carlainterface, Hardwaremanager & Datarecorder) to drive a car and record some data. This flow might change depending on your own implemented modules.
+    This document will only contain a workflow of the essential bare-bone modules (Carlainterface, Hardwaremanager) to drive a car around. This flow might change depending on your own implemented modules.
 
-The workflow will be explained in several steps, a flow-diagram is also available at the end of this page.
+The workflow will be explained in several steps:
 
+1. __Add modules in main.py__
+2. __Start CARLA in unreal__
+3. __Run Main__
+4. __Setup Hardwaremanager__
+5. __Run Hardwaremanager__
+6. __Connect to Unreal (carla server)__
+7. __Add vehicles__
+8. __Spawn Vehicles__
+9. __Select Control Input__
+10. __Start Carlainterface__
+11. __Drive!__
+
+### 1.
+
+A flow-diagram is also available at the end of this page.
+
+
+## Workflow flow diagram
 ![workflow](imgs/JOAN_Workflow.png)
