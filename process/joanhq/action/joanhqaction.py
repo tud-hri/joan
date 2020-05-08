@@ -10,7 +10,6 @@ from process.states import MasterStates
 from process.status import Status
 
 
-
 class JoanHQAction(QtCore.QObject):
     """Action class for JoanHQ"""
 
@@ -23,10 +22,6 @@ class JoanHQAction(QtCore.QObject):
         self.master_states = self.singleton_status._master_states
         self.master_state_handler.state_changed.connect(self.handle_master_state)
 
-        self.singleton_news = News()
-        # self._data = {}
-        # self.write_news(news=self._data)
-
         self.window = None
 
         # path to modules directory
@@ -35,7 +30,7 @@ class JoanHQAction(QtCore.QObject):
         # dictionary to keep track of the instantiated modules
         self._instantiated_modules = {}
 
-    def initialize(self):
+    def initialize_all(self):
         """Initialize modules"""
         for _, module in self._instantiated_modules.items():
             try:
@@ -43,7 +38,7 @@ class JoanHQAction(QtCore.QObject):
             except AttributeError:  # module has new style TODO: remove statement above when moving to new style
                 module.initialize()
 
-    def start(self):
+    def start_all(self):
         """Initialize modules"""
         for _, module in self._instantiated_modules.items():
             try:
@@ -51,7 +46,7 @@ class JoanHQAction(QtCore.QObject):
             except AttributeError:  # module has new style TODO: remove statement above when moving to new style
                 module.start()
 
-    def stop(self):
+    def stop_all(self):
         """Initialize modules"""
         for _, module in self._instantiated_modules.items():
             try:
@@ -65,15 +60,20 @@ class JoanHQAction(QtCore.QObject):
         if not parent:
             parent = self.window
 
-        # TODO Load the default settings for this module here, this can be from a saved settings file or from another source
-        # millis = default_millis_for_this_module
-        module_action = module.action(self.master_state_handler, millis=millis)
-        module_dialog = module.dialog(module_action, self.master_state_handler, parent=parent)
+        if module is JOANModules.FEED_BACK_CONTROLLER or module is JOANModules.TRAJECTORY_RECORDER: 
+            # old style
+            module_action = None
 
-        self.window.add_module(module_dialog)
+            module_widget = module.dialog()
+            module_widget.setObjectName(name)
+            module_dialog = module_widget
+        else:
+            module_action = module.action(self.master_state_handler, millis=millis)
+            module_dialog = module.dialog(module_action, self.master_state_handler, parent=parent)
+
+        self.window.add_module(module_dialog, module)
 
         # add instantiated module to dictionary
-        # note: here, we are storing the enums for easy access to both action and widget classes
         self._instantiated_modules[module] = module_action
         
         return module_dialog, module_action
@@ -82,12 +82,6 @@ class JoanHQAction(QtCore.QObject):
         """ Remove module by name"""
 
         del self._instantiated_modules[module]
-
-    # def write_news(self, news: dict):
-    #     """write new data to channel"""
-    #     assert type(news) == dict, 'argument "news" should be of type dict and will contain news(=data) of this channel'
-
-    #     self.singleton_news = News({self.module: news})
 
     def handle_master_state(self, state):
         """
