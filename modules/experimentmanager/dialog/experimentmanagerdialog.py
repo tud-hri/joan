@@ -23,12 +23,13 @@ class ExperimentManagerDialog(JoanModuleDialog):
     def process_menu_load_experiment(self):
         '''Process menu command to load an experiment file'''
         dialog = QtWidgets.QFileDialog(self)
-        dialog.setNameFilter("Settings files (*.xml *.json)")
+        dialog.setNameFilter("Settings files (*.json)")
         dialog.setViewMode(QtWidgets.QFileDialog.Detail)
+        dialog.setDirectory(os.path.abspath(os.getcwd()))
 
         if dialog.exec():
             result = self.module_action.load_experiment(dialog.selectedFiles())
-            if type(result) != dict:
+            if not isinstance(result, dict):
                 self.module_widget.lbl_message_loadjson.setText(result)   # catch json errors and show them on screen
             else:
                 self.module_widget.lbl_message_loadjson.setText('JSON is valid!')
