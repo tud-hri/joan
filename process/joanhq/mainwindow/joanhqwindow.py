@@ -72,7 +72,8 @@ class JoanHQWindow(QtWidgets.QMainWindow):
         else:
             widget.btn_showclose.clicked.connect(module_dialog.toggle_show_close)
             widget.btn_showclose.setCheckable(True)
-            widget.btn_showclose.toggled.connect(lambda: self.button_showclose_checked(widget.btn_showclose))
+            widget.btn_showclose.toggled.connect(lambda: self.button_showclose_checked(widget.btn_showclose))  # change text in the button, based toggle status
+            module_dialog.closed.connect(lambda: widget.btn_showclose.setChecked(False))  # if the user closes the dialog, uncheck the button
 
             module_dialog.module_action.module_state_handler.state_changed.connect(
                 lambda state: widget.lbl_state.setText(module_dialog.module_action.module_state_handler.get_state(state).name)

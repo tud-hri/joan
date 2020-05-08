@@ -8,6 +8,9 @@ from process.joanmoduleaction import JoanModuleAction
 
 class JoanModuleDialog(QtWidgets.QDialog):
 
+    # signal when dialog is closed
+    closed = QtCore.pyqtSignal()
+
     def __init__(self, module: JOANModules, module_action: JoanModuleAction, master_state_handler, parent=None):
         super().__init__(parent=parent)
 
@@ -114,3 +117,7 @@ class JoanModuleDialog(QtWidgets.QDialog):
         else:
             self.close()
 
+    def closeEvent(self, event):
+        """close event"""
+        self.closed.emit()
+        super().closeEvent(event)
