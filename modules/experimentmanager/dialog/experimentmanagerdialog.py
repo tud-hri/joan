@@ -2,7 +2,7 @@ import os
 
 from PyQt5 import QtCore, QtWidgets
 
-from process import Control, State, translate
+from process import State, translate
 from process.joanmoduledialog import JoanModuleDialog
 from process.joanmoduleaction import JoanModuleAction
 from modules.joanmodules import JOANModules
@@ -18,8 +18,7 @@ class ExperimentManagerDialog(JoanModuleDialog):
             lambda idx: self.module_action.initialize_condition(self.module_widget.combobox_conditions.currentIndex())
         )
 
-        self._file_menu = self.menu_bar.addMenu('File')
-        self._file_menu.addAction('Load experiment', self.process_menu_load_experiment)
+        self.file_menu.addAction('Load experiment', self.process_menu_load_experiment)
 
     def process_menu_load_experiment(self):
         '''Process menu command to load an experiment file'''

@@ -19,10 +19,16 @@ class JoanModuleDialog(QtWidgets.QDialog):
         master_state_handler.state_changed.connect(self.handle_master_state)
         self.master_state_handler = master_state_handler
 
-        self.menu_bar = QtWidgets.QMenuBar(self)
+        
 
         self.setLayout(QtWidgets.QVBoxLayout(self))
         self.setWindowTitle(str(module))
+
+        self.menu_bar = QtWidgets.QMenuBar(self)
+        self.layout().setMenuBar(self.menu_bar)
+        self.file_menu = self.menu_bar.addMenu('File')
+        self.file_menu.addAction('Close', self.close)
+        self.file_menu.addSeparator()
 
         # setup state widget
         self.state_widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../resources/statewidget.ui"))
