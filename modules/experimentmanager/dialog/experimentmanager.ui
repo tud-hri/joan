@@ -73,7 +73,7 @@
     <item row="0" column="0">
      <widget class="QLabel" name="lbl_message_loadjson">
       <property name="text">
-       <string>&lt; load json message &gt;</string>
+       <string>&lt; load message &gt;</string>
       </property>
      </widget>
     </item>

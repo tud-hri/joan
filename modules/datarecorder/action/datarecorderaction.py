@@ -13,9 +13,7 @@ import os
 class DatarecorderAction(JoanModuleAction):
     def __init__(self, master_state_handler, millis=200):
         super().__init__(module=JOANModules.DATA_RECORDER, master_state_handler=master_state_handler, millis=millis)
-        
-        # set my own default
-        self.millis = 200
+
 
         self.module_state_handler.request_state_change(DatarecorderStates.DATARECORDER.NOTINITIALIZED)
 
@@ -29,25 +27,17 @@ class DatarecorderAction(JoanModuleAction):
         self.settings_object = ModuleSettings(file=os.path.join(os.path.dirname(os.path.realpath(__file__)),'datarecordersettings.json'))
         self.settings = self.settings_object.read_settings()
         self.item_dict = {}
-        '''
-        try:
-            self.millis = self.settings['data'][JOANModules.DATA_RECORDER.name]['millis_pulse']
-        except KeyError:
-            self.millis = 100
-        self.item_dict['millis_pulse'] = self.millis
-        '''
+
         self.settings_object.write_settings(group_key=JOANModules.DATA_RECORDER.name, item=self.item_dict)
         
         self.update_settings(self.settings)
         # end settings for this module
 
-
         self.filename = ''
         self.data_writer = DataWriter(news=self.get_all_news(), channels=self.get_available_news_channels(), settings=self.get_module_settings(JOANModules.DATA_RECORDER))
 
-        self.initialize()
-
     def initialize_file(self):
+        self.initialize()
         self.filename = self._create_filename(extension='csv')
         return True
 
@@ -67,18 +57,6 @@ class DatarecorderAction(JoanModuleAction):
         This function is called before the module is started
         """
         print('datarecorderaction initialize started')
-        '''
-        # start settings from singleton
-        try:
-            singleton_settings = self.singleton_settings.get_settings(JOANModules.DATA_RECORDER)
-            item_dict = singleton_settings['data'][JOANModules.DATA_RECORDER.name]
-            self.millis = item_dict['millis_pulse']
-        except KeyError as inst:
-            print('KeyError:', inst)
-            return False
-        return True
-        # end settings from singleton
-        '''
 
     def stop(self):
         """

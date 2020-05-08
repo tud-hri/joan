@@ -13,6 +13,7 @@ class Settings:
     def __new__(cls, *args, **kwargs):
         if not cls.instance:
             cls.instance = object.__new__(Settings)
+            cls._factory_settings = {}
             cls._settings = {}
 
         return cls.instance
@@ -20,12 +21,21 @@ class Settings:
     #def __init__(self, settings_dict):
     #    self._settings.update(settings_dict)
 
+    def update_factory_settings(self, module: JOANModules, module_settings):
+        self._factory_settings.update({module: module_settings})
+
     def update_settings(self, module: JOANModules, module_settings):
         self._settings.update({module: module_settings})
 
     def get_settings(self, module: JOANModules):
         try:
             return self._settings[module]
+        except KeyError:
+            return {}
+
+    def get_factory_settings(self, module: JOANModules):
+        try:
+            return self._factory_settings[module]
         except KeyError:
             return {}
 
