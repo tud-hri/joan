@@ -169,8 +169,17 @@
    <item>
     <widget class="QGroupBox" name="grpbox_modules">
      <property name="title">
-      <string>Modules</string>
+      <string>Modules:</string>
      </property>
+     <layout class="QGridLayout" name="gridlayout">
+      <item row="0" column="0">
+       <layout class="QVBoxLayout" name="module_list_layout">
+        <property name="spacing">
+         <number>1</number>
+        </property>
+       </layout>
+      </item>
+     </layout>
     </widget>
    </item>
   </layout>

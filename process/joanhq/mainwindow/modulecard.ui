@@ -14,6 +14,21 @@
    <string>stateWidget</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <property name="leftMargin">
+    <number>3</number>
+   </property>
+   <property name="topMargin">
+    <number>3</number>
+   </property>
+   <property name="rightMargin">
+    <number>3</number>
+   </property>
+   <property name="bottomMargin">
+    <number>3</number>
+   </property>
+   <property name="spacing">
+    <number>2</number>
+   </property>
    <item row="1" column="0">
     <widget class="QGroupBox" name="grpbox">
      <property name="font">

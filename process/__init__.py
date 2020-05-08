@@ -9,6 +9,6 @@ from .states import MasterStates
 from .states import State
 from .states import translate
 from .mainmodulewidget import MainModuleWidget
-from .joanhq.mainwindow.joanhq import JoanHQWindow
-from .joanhq.action.joanhq import JoanHQAction
+from .joanhq.mainwindow.joanhqwindow import JoanHQWindow
+from .joanhq.action.joanhqaction import JoanHQAction
 from .pulsar import Pulsar
