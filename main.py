@@ -24,7 +24,6 @@ if __name__ == '__main__':
     JOANHQACTION.add_module(JOANModules.HARDWARE_MANAGER, millis=10)
     JOANHQACTION.add_module(JOANModules.TEMPLATE)
     JOANHQACTION.add_module(JOANModules.DATA_RECORDER)
-    # JOANHQACTION.add_module(JOANModules.FEED_BACK_CONTROLLER)
 
     # add the EXPERIMENT_MANAGER last because this one collects settings from JOAN modules that are already loaded
     JOANHQACTION.add_module(JOANModules.EXPERIMENT_MANAGER)
