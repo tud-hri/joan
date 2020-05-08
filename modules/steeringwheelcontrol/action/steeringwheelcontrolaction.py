@@ -12,12 +12,14 @@ class SteeringWheelControlAction(JoanModuleAction):
         self.module_state_handler.request_state_change(SteeringWheelControlStates.EXEC.READY)
 
         self.data = {}
+        self.data['sw torque'] = 0
         self.write_news(news=self.data)
 
     def do(self):
         """
         This function is called every controller tick of this module implement your main calculations here
         """
+        
         self.write_news(news=self.data)
 
     def initialize(self):
