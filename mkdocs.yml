@@ -11,7 +11,7 @@ nav:
       - Setup and run your JOAN project: setup-run-joan.md
 
     - How to use:
-      - Unreal editor (under construction): how-to-unreal.md
+      - Unreal editor(under construction): how-to-unreal.md
       - Source Control (Git): how-to-git.md
       - JOAN (under construction): how-to-joan.md
 
