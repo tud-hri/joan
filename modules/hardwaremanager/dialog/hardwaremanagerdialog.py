@@ -18,7 +18,7 @@ class HardwaremanagerDialog(JoanModuleDialog):
         self._inputlist = {}
         self.hardware_widgets = {}
 
-        self._input_type_dialog = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../action/UIs/inputtype_ui.ui"))
+        self._input_type_dialog = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../action/UIs/inputtype.ui"))
         self._input_type_dialog.btns_hardware_inputtype.accepted.connect(self.selected_input)
 
         # self._input_type_dialog.btns_hardware_inputtype.accepted.connect(self.do)
