@@ -1,4 +1,4 @@
-# git how-to
+# How to GIT
 
 ## Some notes
 This is a not so complete how-to for using `git` for your project. We will try to add more `git` tutorials and documentation in the near future.
