@@ -1,4 +1,4 @@
-# How to use JOAN (under construction)
+# How to use JOAN
 Here we will guide you through how the developers have thought up to use JOAN, this guide will consist of several different not completely related sections therefore it might be easier to just scroll to the part your interested in and read up on it instead of going through from beginning to the end.
 
 ## Adding your own Modules
