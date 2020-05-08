@@ -158,4 +158,6 @@ If everything was done correctly you should now be able to drive the car with th
 
 
 ## Workflow flow diagram
+The steps described above are also shown in the flowchart below:
+
 ![workflow](imgs/JOAN_Workflow.png)
