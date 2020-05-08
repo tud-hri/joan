@@ -75,7 +75,6 @@ i.e. the name of your module for titles and save files.
 - check, double check and triple check if you copied every line with template in it.
 
 #### 3. Add the module to JOANHQ
-
 This step is easy! Add your new module to JOANHQ in `main.py`, this instantiates your module:
 
     JOANHQACTION.add_module(JOANMODULES.JOANISCOOL, millis=200)
@@ -111,14 +110,39 @@ The workflow will be explained in several steps:
 3. __Run Main__
 4. __Setup Hardwaremanager__
 5. __Run Hardwaremanager__
-6. __Connect to Unreal (carla server)__
-7. __Add vehicles__
-8. __Spawn Vehicles__
-9. __Select Control Input__
-10. __Start Carlainterface__
-11. __Drive!__
+6. __Setup CarlaInterface__
+7. __Run Carlainterface__
+8. __Drive!__
 
-### 1.
+### Step 1. Adding the modules in main.py
+This step is easy, just add the following piece of code to the main.py file (or uncomment them):
+
+    JOANHQACTION.add_module(JOANModules.CARLA_INTERFACE, millis=50)
+    JOANHQACTION.add_module(JOANModules.HARDWARE_MANAGER, millis=5)
+
+### Step 2. Start CARLA in unreal.
+To do this select the map you'd like to drive in, the CARLA default map is town03. However (for now) the JOAN default map is 'Debugmap'. Starting the level is easy just press the play button on the top bar see the figure below:
+
+![Carla Start](imgs/Carla_Default.png)
+
+Make sure you also have 'vehicle spawnpoints' in your level. You can check this by checking out the world content manager in the topright corner. Another note about these spawnpoints is that you should place them above the ground a bit (in this example it is 75cm, cm is the default unit in unreal) so you wont have a collision at spawning.
+
+### Step 3. Run Main
+This is the exact same step as described in __[Setup and run your JOAN project](setup-run-joan.md)__ at 'Running JOAN'.
+
+### Step 4. Setup Hardwaremanager
+To do this in the JOAN main menu show the 'Hardwaremanager' module. Now click the 'add new hardware button', this will open a selection menu in which you can choose what sort of input you'd like to add. For now only Keyboard and Joystick work. In this guide we will add a keyboard input. 
+So select keyboard, which will open a settings section of the keyboard. Default keys are:
+
+* W = Throttle
+* S = Brake
+* A = Steer Left
+* D = Steer Right
+* R = Toggle Reverse
+* K = Handbrake
+
+The other settings pertain to whether the steering wheel will autocenter and how fast it does this. The sensitivities of braking and throttle can also be adjusted but we'll leave them as it is for now. These steps will look like this:
+
 
 A flow-diagram is also available at the end of this page.
 
