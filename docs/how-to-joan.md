@@ -142,7 +142,7 @@ So select keyboard, which will open a settings section of the keyboard. Default 
 * K = Handbrake
 
 The other settings pertain to whether the steering wheel will autocenter and how fast it does this. The sensitivities of braking and throttle can also be adjusted but we'll leave them as it is for now. These steps will look like this:
-
+![Hardware Setup](gifs/HardwareSetup.gif)
 
 A flow-diagram is also available at the end of this page.
 
