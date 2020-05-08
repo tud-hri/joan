@@ -39,7 +39,7 @@ Changing the name of your module once it is up and running can be very hard, sin
 the old name in their code. If you want to know more about naming modules, functions and variables in code, we would
 like to recommend chapter 2 of the book "clean code" by Robert C. Martin.
 
-__#### __Examples of bad names__
+__Examples of bad names__
 
 - controller - too generic
 - htcfdbcnt - abbreviations are unreadable and unclear
