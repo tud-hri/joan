@@ -19,8 +19,6 @@ class JoanModuleDialog(QtWidgets.QDialog):
         master_state_handler.state_changed.connect(self.handle_master_state)
         self.master_state_handler = master_state_handler
 
-        
-
         self.setLayout(QtWidgets.QVBoxLayout(self))
         self.setWindowTitle(str(module))
 
