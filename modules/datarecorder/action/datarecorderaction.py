@@ -13,9 +13,7 @@ import os
 class DatarecorderAction(JoanModuleAction):
     def __init__(self, master_state_handler, millis=200):
         super().__init__(module=JOANModules.DATA_RECORDER, master_state_handler=master_state_handler, millis=millis)
-        
-        # set my own default
-        self.millis = 200
+
 
         self.module_state_handler.request_state_change(DatarecorderStates.DATARECORDER.NOTINITIALIZED)
 
@@ -24,18 +22,22 @@ class DatarecorderAction(JoanModuleAction):
         # 2. self.write_news(news=self.data)
         # 3. self.time = QtCore.QTime()
         
-        self.settings_object = ModuleSettings(file=os.path.join(os.path.dirname(os.path.realpath(__file__)), 'datarecordersettings.json'))
-        self.update_settings(self.settings_object)
-        self.settings = self.settings_object.read_settings()
-        
-        self.filename = ''
-        self.data_writer = DataWriter(
-            news=self.get_all_news(), channels=self.get_available_news_channels(), settings_object=self.get_module_settings(JOANModules.DATA_RECORDER)
-        )
 
-        #self.initialize()
+        # start settings for this module
+        self.settings_object = ModuleSettings(file=os.path.join(os.path.dirname(os.path.realpath(__file__)),'datarecordersettings.json'))
+        self.settings = self.settings_object.read_settings()
+        self.item_dict = {}
+
+        self.settings_object.write_settings(group_key=JOANModules.DATA_RECORDER.name, item=self.item_dict)
+        
+        self.update_settings(self.settings)
+        # end settings for this module
+
+        self.filename = ''
+        self.data_writer = DataWriter(news=self.get_all_news(), channels=self.get_available_news_channels(), settings=self.get_module_settings(JOANModules.DATA_RECORDER))
 
     def initialize_file(self):
+        self.initialize()
         self.filename = self._create_filename(extension='csv')
         return True
 
@@ -44,7 +46,7 @@ class DatarecorderAction(JoanModuleAction):
         """
         This function is called every controller tick of this module implement your main calculations here
         """
-        self.write()
+        self._write()
         
         # next two Template lines are not used for datarecorder
         # 1. self.data['t'] = self.time.elapsed()
@@ -55,24 +57,6 @@ class DatarecorderAction(JoanModuleAction):
         This function is called before the module is started
         """
         print('datarecorderaction initialize started')
-        pass
-        
-    ''' van Template
-    def start(self):
-        try:
-            self.module_state_handler.request_state_change(TemplateStates.TEMPLATE.RUNNING)
-            self.time.restart()
-        except RuntimeError:
-            return False
-        return super().start()
-
-    def stop(self):
-        try:
-            self.module_state_handler.request_state_change(TemplateStates.TEMPLATE.STOPPED)
-        except RuntimeError:
-            return False
-        return super().stop()
-    '''
 
     def stop(self):
         """
@@ -87,7 +71,7 @@ class DatarecorderAction(JoanModuleAction):
         self.data_writer.open(filename=self.get_filename())
         super().start()
 
-    def write(self):
+    def _write(self):
         now = datetime.now()
         self.data_writer.write(timestamp=now, news=self.get_all_news(), channels=self.get_available_news_channels())
 
@@ -137,8 +121,7 @@ class DatarecorderAction(JoanModuleAction):
 
             for channel in self.get_available_news_channels():
                 if channel != module_key:
-                    
-                    if channel not in current_settings['data'].keys():
+                    if channel.name not in current_settings['data'].keys():
                         current_settings['data'].update({channel.name: {}})
                     #news_checkbox[channel] = QtWidgets.QLabel(channel.split('.')[1])
                     news_checkbox[channel.name] = QtWidgets.QLabel(channel.name)

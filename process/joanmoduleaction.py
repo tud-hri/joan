@@ -52,6 +52,13 @@ class JoanModuleAction(QtCore.QObject):
         self.timer.stop()
         return True
 
+    def set_millis(self, millis):
+        try:
+            self.millis = int(millis)
+        except ValueError:
+            pass 
+
+
     def handle_master_state(self, state):
         """
         Handle the state transition by updating the status label and have the
@@ -107,6 +114,9 @@ class JoanModuleAction(QtCore.QObject):
 
     def get_module_settings(self, module=''):
         return self.singleton_settings.get_settings(module)
+
+    def get_module_factory_settings(self, module=''):
+        return self.singleton_settings.get_factory_settings(module)
 
 
     @property

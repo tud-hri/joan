@@ -1,6 +1,6 @@
 import os
 
-from PyQt5 import QtWidgets, uic, QtGui
+from PyQt5 import QtWidgets, uic, QtGui, QtCore
 
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
@@ -19,6 +19,8 @@ class JoanModuleDialog(QtWidgets.QDialog):
         master_state_handler.state_changed.connect(self.handle_master_state)
         self.master_state_handler = master_state_handler
 
+        self.menu_bar = QtWidgets.QMenuBar(self)
+
         self.setLayout(QtWidgets.QVBoxLayout(self))
         self.setWindowTitle(str(module))
 
@@ -29,6 +31,7 @@ class JoanModuleDialog(QtWidgets.QDialog):
         self.state_widget.btn_stop.clicked.connect(self._button_stop_clicked)
         self.state_widget.input_tick_millis.setValidator(QtGui.QIntValidator(0, 10000, parent=self))
         self.state_widget.input_tick_millis.setPlaceholderText(str(self.module_action.millis))
+        self.state_widget.input_tick_millis.textChanged.connect(self._set_millis)
 
         # setup module-specific widget
         self.module_widget = uic.loadUi(module.ui_file)
@@ -49,6 +52,10 @@ class JoanModuleDialog(QtWidgets.QDialog):
         self.state_widget.input_tick_millis.setEnabled(True)
         self.state_widget.input_tick_millis.clear()
         self.state_widget.input_tick_millis.setPlaceholderText(str(self.module_action.millis))
+
+    @QtCore.pyqtSlot(str)
+    def _set_millis(self, millis):
+        self.module_action.set_millis(millis)
 
     def handle_master_state(self, state):
         """
