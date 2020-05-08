@@ -12,7 +12,7 @@ nav:
 
     - How to use:
       - Unreal editor (under construction): how-to-unreal.md
-      - Source Control: how-to-git.md
+      - Source Control (Git): how-to-git.md
       - JOAN (under construction): how-to-joan.md
 
     - Contributing:
