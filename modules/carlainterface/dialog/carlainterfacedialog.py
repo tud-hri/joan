@@ -24,14 +24,30 @@ class CarlainterfaceDialog(JoanModuleDialog):
 
         self.module_widget.spinVehicles.valueChanged.connect(lambda value: self.update_vehicles(value))
         self.module_widget.btnConnect.clicked.connect(self.connect)
+        self.module_widget.btnDisconnect.clicked.connect(self.disconnect)
         self.module_widget.groupVehicles.setEnabled(False)
         self.module_widget.spinVehicles.setEnabled(False)
+        self.module_widget.btnDisconnect.setEnabled(False)
 
     def connect(self):
         self.connected = self.module_action.connect()
         self.module_widget.groupVehicles.setEnabled(self.connected)
         self.module_widget.spinVehicles.setEnabled(self.connected)
         self.module_widget.btnConnect.setEnabled(not self.connected)
+        self.module_widget.btnDisconnect.setEnabled(self.connected)
+
+    def disconnect(self):
+        self.connected = self.module_action.disconnect()
+        self.module_widget.groupVehicles.setEnabled(self.connected)
+        self.module_widget.spinVehicles.setEnabled(self.connected)
+        self.module_widget.btnDisconnect.setEnabled(self.connected)
+        self.module_widget.btnConnect.setEnabled(not self.connected)
+        for cars in self.vehicles:
+            self.module_widget.layOut.removeWidget(cars.vehicle_tab)
+            cars.vehicle_tab.setParent(None)
+        self.module_widget.spinVehicles.setValue(0)
+        
+
     
     def update_vehicles(self, value):
         if value < self.old_nr_cars and self.vehicles:

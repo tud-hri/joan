@@ -31,13 +31,11 @@ class JoanModuleAction(QtCore.QObject):
         module_state_package = {'module_states': self.module_states, 'module_state_handler': self.module_state_handler}
 
         self.singleton_status.register_module_state_package(module, module_state_package)
-        #self.handle_module_state(self.module_state_handler.state)
 
         # initialize own data and create channel in news
         self.data = {}
         self.write_news(news=self.data)
 
-        #self.module_state_handler.state_changed.connect(self.handle_module_state)
         self.master_state_handler.state_changed.connect(self.handle_master_state)
 
     def do(self):
@@ -47,12 +45,10 @@ class JoanModuleAction(QtCore.QObject):
         pass
 
     def start(self):
-        print('start called')
         self.timer.start()
         return True
 
     def stop(self):
-        print('stop called')
         self.timer.stop()
         return True
 
@@ -81,7 +77,7 @@ class JoanModuleAction(QtCore.QObject):
     
     def write_news(self, news: dict):
         """write new data to channel"""
-        assert isinstance(news, dict), 'argument "news" should be of type dict and will contain news(=data) of this channel'
+        # assert isinstance(news, dict), 'argument "news" should be of type dict and will contain news(=data) of this channel'
 
         self.singleton_news.write_news(self.module, news)
 

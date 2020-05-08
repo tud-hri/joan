@@ -6,6 +6,9 @@ import math
 
 import pandas as pd
 import time
+
+from modules.joanmodules import JOANModules
+
 # #overriding the showpopup so that we can add new trajectories in the combobox on the go
 # class ComboBox(QtWidgets.QComboBox):
 #     popupAboutToBeShown = QtCore.pyqtSignal()
@@ -125,7 +128,7 @@ class Manualcontrol(Basecontroller):
         self._parentWidget.widget.tabWidget.addTab(self.manualTab,'Manual')
     
     def process(self):
-        self._data = self._parentWidget.read_news('modules.carlainterface.widget.carlainterface.CarlainterfaceWidget')
+        self._data = self._parentWidget.read_news(JOANModules.CARLA_INTERFACE)
         "Processes all information and returns parameters needed for steeringcommunication"
         return self._data
 
@@ -277,7 +280,7 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
         
     def process(self):
         try:
-            self._data = self._parentWidget.read_news('modules.carlainterface.widget.carlainterface.CarlainterfaceWidget')
+            self._data = self._parentWidget.read_news(JOANModules.CARLA_INTERFACE)
             print(self._data)
             egoCar = self._data['vehicles'][0].spawned_vehicle
             
@@ -420,7 +423,7 @@ class PDcontrol(Basecontroller):
 
     def process(self):
         try:
-            self._data= self._parentWidget.read_news('modules.siminterface.widget.siminterface.SiminterfaceWidget')
+            self._data= self._parentWidget.read_news(JOANModules.CARLA_INTERFACE)
             egoCar = self._data['egoCar']
             self._T1 = time.time()
             self._Error = self.Error_Calc(self._t_ahead, self._HCR, egoCar)

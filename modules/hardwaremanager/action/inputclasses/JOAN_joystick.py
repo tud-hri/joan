@@ -2,6 +2,7 @@ import os
 import hid
 from PyQt5 import uic
 from modules.hardwaremanager.action.inputclasses.baseinput import BaseInput
+from modules.joanmodules import JOANModules
 
 
 # Arbitratry Joystick
@@ -77,7 +78,7 @@ class JOAN_Joystick(BaseInput):
     def process(self):
         joystickdata = []
         if (self._carla_interface_data['vehicles'] is not None and self._joystick_open):
-            self._carla_interface_data = self._action.read_news('modules.carlainterface.action.carlainterfaceaction.CarlainterfaceAction')
+            self._carla_interface_data = self._action.read_news(JOANModules.CARLA_INTERFACE)
 
             for vehicles in self._carla_interface_data['vehicles']:
                 if vehicles.selected_input == self._joystick_tab.groupBox.title():

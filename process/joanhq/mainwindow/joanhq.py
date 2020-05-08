@@ -35,9 +35,8 @@ class JoanHQWindow(QtWidgets.QMainWindow):
         self._main_widget.btn_quit.setStyleSheet("background-color: darkred")
         self._main_widget.btn_quit.clicked.connect(self.close)
 
-        self._main_widget.btn_initialize_all.clicked.connect(self.action.initialize)
-        self._main_widget.btn_start_all.clicked.connect(self.action.start)
-        self._main_widget.btn_stop_all.clicked.connect(self.action.stop)
+        self._main_widget.btn_initialize_all.clicked.connect(self.action.initialize_all)
+        self._main_widget.btn_stop_all.clicked.connect(self.action.stop_all)
 
         # layout for the module groupbox
         # TODO Dit kan mooi in de UI ook al gezet worden, zie Joris' hardwaremanager
@@ -45,53 +44,38 @@ class JoanHQWindow(QtWidgets.QMainWindow):
         self._main_widget.grpbox_modules.setLayout(self._layout_modules)
 
         # dictionary to store all the module widgets
-        self._module_widgets = {}
+        self._module_cards = {}
 
         # add file menu
         self._file_menu = self.menuBar().addMenu('File')
         self._file_menu.addAction('Quit', self.action.quit)
-        self._file_menu.addSeparator()
-        self._file_menu.addAction('Add module...', self.process_menu_add_module)
-        self._file_menu.addAction('Remove module...', self.process_menu_remove_module)
 
-    def add_module(self, module_widget):
+    def add_module(self, module_dialog, module_enum):
         """Create a widget and add to main window"""
 
         # create a widget per module (show & close buttons, state)
-        name = str(module_widget)
+        name = str(module_enum)
 
         widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "modulecard.ui"))
         widget.setObjectName(name)
         widget.grpbox.setTitle(name)
 
-        if isinstance(module_widget, (JOANModules.TEMPLATE.dialog, JOANModules.DATA_RECORDER.dialog)):  # syntax is changed slightly in new example: wrapping show() in _show() is unnecessary
-            widget.btn_show.clicked.connect(module_widget.show)
-            widget.btn_close.clicked.connect(module_widget.close)
+        if isinstance(module_dialog, (JOANModules.FEED_BACK_CONTROLLER.dialog, JOANModules.TRAJECTORY_RECORDER.dialog)):  # syntax is changed slightly in new example: wrapping show() in _show() is unnecessary
+            widget.btn_showclose.clicked.connect(module_dialog._show)
+            widget.btn_showclose.setCheckable(True)
+            widget.btn_showclose.toggled.connect(lambda: self.button_showclose_checked(widget.btn_showclose))
 
-            module_widget.module_action.module_state_handler.state_changed.connect(
-                lambda state: widget.lbl_state.setText(module_widget.module_action.module_state_handler.get_state(state).name)
-            )
-        elif isinstance(module_widget, JOANModules.CARLA_INTERFACE.dialog):  # syntax is changed slightly in new example: wrapping show() in _show() is unnecessary
-            widget.btn_show.clicked.connect(module_widget.show)
-            widget.btn_close.clicked.connect(module_widget.close)
-
-            module_widget.module_action.module_state_handler.state_changed.connect(
-                lambda state: widget.lbl_state.setText(module_widget.module_action.module_state_handler.get_state(state).name)
-            )
-        elif isinstance(module_widget, JOANModules.HARDWARE_MANAGER.dialog):  # syntax is changed slightly in new example: wrapping show() in _show() is unnecessary
-            widget.btn_show.clicked.connect(module_widget.show)
-            widget.btn_close.clicked.connect(module_widget.close)
-
-            module_widget.module_action.module_state_handler.state_changed.connect(
-                lambda state: widget.lbl_state.setText(module_widget.module_action.module_state_handler.get_state(state).name)
+            widget.lbl_state.setText(module_dialog.module_state_handler.get_current_state().name)
+            module_dialog.module_state_handler.state_changed.connect(
+                lambda state: widget.lbl_state.setText(module_dialog.module_state_handler.get_state(state).name)
             )
         else:
-            widget.btn_show.clicked.connect(module_widget._show)
-            widget.btn_close.clicked.connect(module_widget._close)
+            widget.btn_showclose.clicked.connect(module_dialog.toggle_show_close)
+            widget.btn_showclose.setCheckable(True)
+            widget.btn_showclose.toggled.connect(lambda: self.button_showclose_checked(widget.btn_showclose))
 
-            widget.lbl_state.setText(module_widget.module_state_handler.get_current_state().name)
-            module_widget.module_state_handler.state_changed.connect(
-                lambda state: widget.lbl_state.setText(module_widget.module_state_handler.get_state(state).name)
+            module_dialog.module_action.module_state_handler.state_changed.connect(
+                lambda state: widget.lbl_state.setText(module_dialog.module_action.module_state_handler.get_state(state).name)
             )
 
         # add it to the layout
@@ -100,37 +84,7 @@ class JoanHQWindow(QtWidgets.QMainWindow):
         self.adjustSize()
 
         # and to the list
-        self._module_widgets[name] = widget
-
-    def process_menu_add_module(self):
-        """Add module in menu clicked, add user-defined module"""
-        path_module_dir = QtWidgets.QFileDialog.getExistingDirectory(
-            self, caption="Select module directory", directory=self._path_modules, options=QtWidgets.QFileDialog.ShowDirsOnly
-        )
-
-        # extract module folder name
-        module = '%s%s' % (os.path.basename(os.path.normpath(path_module_dir)), 'Widget')
-
-        # add the module
-        self.add_module(module)
-
-    def process_menu_remove_module(self):
-        """User hit remove module, ask them which one to remove"""
-        name, _ = QtWidgets.QInputDialog.getItem(
-            self.window, "Select module to remove", "Modules", list(self.action.instantiated_modules.keys())
-        )
-
-        # remove the module in action
-        self.action.remove_module(name)
-
-        # remove the widget in the main menu
-        if name in self._module_widgets.keys():
-            self._module_widgets[name].setParent(None)  # setting parent to None destroys the widget (garbage collector)
-            del self._module_widgets[name]
-            # adjust size
-            self._main_widget.grpBoxModules.adjustSize()
-            self._main_widget.adjustSize()
-            self.adjustSize()
+        self._module_cards[name] = widget
 
     def closeEvent(self, event):
         """redefined closeEvent"""
@@ -149,3 +103,40 @@ class JoanHQWindow(QtWidgets.QMainWindow):
             # if we end up here, it means we didn't want to quit
             # hence, ignore the event (for Qt)
             event.ignore()
+
+    def button_showclose_checked(self, button):
+        """change the text of the module card's show/close button"""
+        if button.isChecked():
+            button.setText("Close")
+        else:
+            button.setText("Show")
+
+    # def process_menu_add_module(self):
+    #     """Add module in menu clicked, add user-defined module"""
+    #     path_module_dir = QtWidgets.QFileDialog.getExistingDirectory(
+    #         self, caption="Select module directory", directory=self._path_modules, options=QtWidgets.QFileDialog.ShowDirsOnly
+    #     )
+
+    #     # extract module folder name
+    #     module = '%s%s' % (os.path.basename(os.path.normpath(path_module_dir)), 'Widget')
+
+    #     # add the module
+    #     self.add_module(module)
+
+    # def process_menu_remove_module(self):
+    #     """User hit remove module, ask them which one to remove"""
+    #     name, _ = QtWidgets.QInputDialog.getItem(
+    #         self.window, "Select module to remove", "Modules", list(self.action.instantiated_modules.keys())
+    #     )
+
+    #     # remove the module in action
+    #     self.action.remove_module(name)
+
+    #     # remove the widget in the main menu
+    #     if name in self._module_cards.keys():
+    #         self._module_cards[name].setParent(None)  # setting parent to None destroys the widget (garbage collector)
+    #         del self._module_cards[name]
+    #         # adjust size
+    #         self._main_widget.grpBoxModules.adjustSize()
+    #         self._main_widget.adjustSize()
+    #         self.adjustSize()
