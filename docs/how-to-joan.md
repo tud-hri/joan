@@ -108,11 +108,9 @@ The workflow will be explained in several steps:
 1. __Add modules in main.py__
 2. __Start CARLA in unreal__
 3. __Run Main__
-4. __Setup Hardwaremanager__
-5. __Run Hardwaremanager__
-6. __Setup CarlaInterface__
-7. __Run Carlainterface__
-8. __Drive!__
+4. __Setup and run Hardwaremanager__
+6. __Setup and run CarlaInterface__
+7. __Drive!__
 
 ### Step 1. Adding the modules in main.py
 This step is easy, just add the following piece of code to the main.py file (or uncomment them):
@@ -130,7 +128,7 @@ Make sure you also have 'vehicle spawnpoints' in your level. You can check this 
 ### Step 3. Run Main
 This is the exact same step as described in __[Setup and run your JOAN project](setup-run-joan.md)__ at 'Running JOAN'.
 
-### Step 4. Setup Hardwaremanager
+### Step 4. Setup and run Hardwaremanager
 To do this in the JOAN main menu show the 'Hardwaremanager' module. Now click the 'add new hardware button', this will open a selection menu in which you can choose what sort of input you'd like to add. For now only Keyboard and Joystick work. In this guide we will add a keyboard input. 
 So select keyboard, which will open a settings section of the keyboard. Default keys are:
 
@@ -145,6 +143,13 @@ The other settings pertain to whether the steering wheel will autocenter and how
 ![Hardware Setup](gifs/HardwareSetup.gif)
 
 A flow-diagram is also available at the end of this page.
+
+### Step 5. Setup and run CarlaInterface
+Next step is to setup the Carla Interface module. This module has some built in fail safes so that you will always use the correct order. There is however an important step you should not miss to actually drive around a car which is __select your input device!!__. A short gif of setting it up is shown below:
+
+!!! Note
+    CARLA in unreal should be running! It is also shown what kind of error you will receive if you have not got it running in unreal.
+
 
 
 ## Workflow flow diagram
