@@ -1,12 +1,15 @@
 import os
 
-from PyQt5 import QtWidgets, uic, QtGui
+from PyQt5 import QtWidgets, uic, QtGui, QtCore
 
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
 
 
 class JoanModuleDialog(QtWidgets.QDialog):
+
+    # signal when dialog is closed
+    closed = QtCore.pyqtSignal()
 
     def __init__(self, module: JOANModules, module_action: JoanModuleAction, master_state_handler, parent=None):
         super().__init__(parent=parent)
@@ -22,6 +25,12 @@ class JoanModuleDialog(QtWidgets.QDialog):
         self.setLayout(QtWidgets.QVBoxLayout(self))
         self.setWindowTitle(str(module))
 
+        self.menu_bar = QtWidgets.QMenuBar(self)
+        self.layout().setMenuBar(self.menu_bar)
+        self.file_menu = self.menu_bar.addMenu('File')
+        self.file_menu.addAction('Close', self.close)
+        self.file_menu.addSeparator()
+
         # setup state widget
         self.state_widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../resources/statewidget.ui"))
         self.layout().addWidget(self.state_widget)
@@ -29,6 +38,7 @@ class JoanModuleDialog(QtWidgets.QDialog):
         self.state_widget.btn_stop.clicked.connect(self._button_stop_clicked)
         self.state_widget.input_tick_millis.setValidator(QtGui.QIntValidator(0, 10000, parent=self))
         self.state_widget.input_tick_millis.setPlaceholderText(str(self.module_action.millis))
+        self.state_widget.input_tick_millis.textChanged.connect(self._set_millis)
 
         # setup module-specific widget
         self.module_widget = uic.loadUi(module.ui_file)
@@ -49,6 +59,10 @@ class JoanModuleDialog(QtWidgets.QDialog):
         self.state_widget.input_tick_millis.setEnabled(True)
         self.state_widget.input_tick_millis.clear()
         self.state_widget.input_tick_millis.setPlaceholderText(str(self.module_action.millis))
+
+    @QtCore.pyqtSlot(str)
+    def _set_millis(self, millis):
+        self.module_action.set_millis(millis)
 
     def handle_master_state(self, state):
         """
@@ -102,5 +116,8 @@ class JoanModuleDialog(QtWidgets.QDialog):
             self.show()
         else:
             self.close()
-        # Only make the module executable if in READY STATE
 
+    def closeEvent(self, event):
+        """close event"""
+        self.closed.emit()
+        super().closeEvent(event)

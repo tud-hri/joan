@@ -38,10 +38,10 @@ class JoanHQWindow(QtWidgets.QMainWindow):
         self._main_widget.btn_initialize_all.clicked.connect(self.action.initialize_all)
         self._main_widget.btn_stop_all.clicked.connect(self.action.stop_all)
 
-        # layout for the module groupbox
-        # TODO Dit kan mooi in de UI ook al gezet worden, zie Joris' hardwaremanager
-        self._layout_modules = QtWidgets.QVBoxLayout()
-        self._main_widget.grpbox_modules.setLayout(self._layout_modules)
+        # # layout for the module groupbox
+        # # TODO Dit kan mooi in de UI ook al gezet worden, zie Joris' hardwaremanager
+        # self._layout_modules = QtWidgets.QVBoxLayout()
+        # self._main_widget.grpbox_modules.setLayout(self._layout_modules)
 
         # dictionary to store all the module widgets
         self._module_cards = {}
@@ -72,15 +72,16 @@ class JoanHQWindow(QtWidgets.QMainWindow):
         else:
             widget.btn_showclose.clicked.connect(module_dialog.toggle_show_close)
             widget.btn_showclose.setCheckable(True)
-            widget.btn_showclose.toggled.connect(lambda: self.button_showclose_checked(widget.btn_showclose))
+            widget.btn_showclose.toggled.connect(lambda: self.button_showclose_checked(widget.btn_showclose))  # change text in the button, based toggle status
+            module_dialog.closed.connect(lambda: widget.btn_showclose.setChecked(False))  # if the user closes the dialog, uncheck the button
 
             module_dialog.module_action.module_state_handler.state_changed.connect(
                 lambda state: widget.lbl_state.setText(module_dialog.module_action.module_state_handler.get_state(state).name)
             )
 
         # add it to the layout
-        self._layout_modules.addWidget(widget)
-        # self._main_widget.scrollArea.adjustSize()
+        self._main_widget.module_list_layout.addWidget(widget)
+        self._main_widget.adjustSize()
         self.adjustSize()
 
         # and to the list
