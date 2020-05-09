@@ -260,7 +260,7 @@
           </spacer>
          </item>
          <item row="2" column="0">
-          <widget class="QPushButton" name="btnReset">
+          <widget class="QPushButton" name="btn_reset">
            <property name="font">
             <font>
              <pointsize>12</pointsize>
@@ -514,7 +514,7 @@
     </widget>
    </item>
    <item row="2" column="1">
-    <widget class="QPushButton" name="btnApply">
+    <widget class="QPushButton" name="btn_apply">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
        <horstretch>0</horstretch>

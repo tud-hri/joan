@@ -53,7 +53,7 @@
        </widget>
       </item>
       <item row="3" column="4">
-       <widget class="QLineEdit" name="lineTahead">
+       <widget class="QLineEdit" name="edit_t_ahead">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -63,7 +63,7 @@
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QLineEdit" name="linePropgain">
+       <widget class="QLineEdit" name="edit_gain_prop">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -90,7 +90,7 @@
        </widget>
       </item>
       <item row="3" column="1">
-       <widget class="QLineEdit" name="lineDerivgain">
+       <widget class="QLineEdit" name="edit_gain_deriv">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -159,7 +159,7 @@
        </widget>
       </item>
       <item row="5" column="1">
-       <widget class="QLineEdit" name="lineWeightlat">
+       <widget class="QLineEdit" name="edit_weight_lat">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -198,7 +198,7 @@
        </widget>
       </item>
       <item row="1" column="4">
-       <widget class="QLineEdit" name="lineWeightheading">
+       <widget class="QLineEdit" name="edit_weight_heading">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -244,7 +244,7 @@
      <widget class="QGroupBox" name="groupBox_2">
       <property name="font">
        <font>
-        <pointsize>15</pointsize>
+        <pointsize>10</pointsize>
        </font>
       </property>
       <property name="title">
@@ -277,7 +277,12 @@
           </widget>
          </item>
          <item row="1" column="1">
-          <widget class="QLabel" name="lblDerivgainvalue">
+          <widget class="QLabel" name="lbl_current_gain_deriv">
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>0</string>
            </property>
@@ -287,7 +292,12 @@
           </widget>
          </item>
          <item row="2" column="1">
-          <widget class="QLabel" name="lblWeightlatvalue">
+          <widget class="QLabel" name="lbl_current_weight_lat">
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>0</string>
            </property>
@@ -314,7 +324,12 @@
           </widget>
          </item>
          <item row="3" column="1">
-          <widget class="QLabel" name="lblWeightheadingvalue">
+          <widget class="QLabel" name="lbl_current_weight_heading">
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>0</string>
            </property>
@@ -341,7 +356,12 @@
           </widget>
          </item>
          <item row="4" column="1">
-          <widget class="QLabel" name="lblTaheadvalue">
+          <widget class="QLabel" name="lbl_current_t_lookahead">
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>0</string>
            </property>
@@ -368,7 +388,12 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QLabel" name="lblPropgainvalue">
+          <widget class="QLabel" name="lbl_current_gain_prop">
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>0</string>
            </property>
@@ -397,7 +422,7 @@
         </layout>
        </item>
        <item row="1" column="0">
-        <widget class="QPushButton" name="btnReset">
+        <widget class="QPushButton" name="btn_reset">
          <property name="font">
           <font>
            <pointsize>12</pointsize>
@@ -414,7 +439,7 @@
      </widget>
     </item>
     <item row="3" column="0" colspan="3">
-     <widget class="QPushButton" name="btnApply">
+     <widget class="QPushButton" name="btn_apply">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
         <horstretch>0</horstretch>

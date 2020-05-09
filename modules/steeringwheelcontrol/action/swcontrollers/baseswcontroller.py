@@ -9,6 +9,8 @@ class BaseSWController:
     def __init__(self, controller_type: SWContollerTypes, module_action: JOANModules):
         self._action = module_action
         self._controller_type = controller_type
+
+        # widget
         self._controller_tab = uic.loadUi(self._controller_type.tab_ui_file)
 
         self._data_in = {}

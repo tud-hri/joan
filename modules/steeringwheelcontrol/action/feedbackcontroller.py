@@ -147,14 +147,14 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
         # connect to widgets
         self._FDCATab.btnUpdate.clicked.connect(self.updateAvailableTrajectoryList)
         self._FDCATab.comboHCR.currentIndexChanged.connect(self.newHCRSelected)
-        self._FDCATab.btnApply.clicked.connect(self.updateParameters)
-        self._FDCATab.btnReset.clicked.connect(self.resetParameters)
+        self._FDCATab.btn_apply.clicked.connect(self.updateParameters)
+        self._FDCATab.btn_reset.clicked.connect(self.resetParameters)
         self._FDCATab.sliderKloha.valueChanged.connect(self.updateLoHA)
 
         #Initialize local Variables
         self._HCR = []
         self._HCRIndex = 0
-        self._t_aheadFF = 0
+        self._t_lookaheadFF = 0
         self._Ky = 0.1
         self._Kpsi = 0.4
         self._LoHS = 1
@@ -284,7 +284,7 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
             print(self._data)
             egoCar = self._data['vehicles'][0].spawned_vehicle
             
-            self._Error = self.Error_Calc(self._t_aheadFF, self._HCR, egoCar)
+            self._Error = self.Error_Calc(self._t_lookaheadFF, self._HCR, egoCar)
             print(self._Error)
 
         # SWAngle_FB = self.SoHFFunc(self.K_y,self.K_psi,self.SoHF,self.Error[0],self.Error[1])
@@ -344,15 +344,15 @@ class PDcontrol(Basecontroller):
         self._parentWidget.widget.tabWidget.addTab(self._PDTab,'PD')
 
         #Attach apply button to variables
-        self._PDTab.btnApply.clicked.connect(self.updateParameters)
-        self._PDTab.btnReset.clicked.connect(self.resetParameters)
+        self._PDTab.btn_apply.clicked.connect(self.updateParameters)
+        self._PDTab.btn_reset.clicked.connect(self.resetParameters)
 
 
         #intialize class variables
         self._T1 = time.time()
         self._T2 = 0
         self._ErrorT2  = [0,0]
-        self._t_ahead = 0.6
+        self._t_lookahead = 0.6
         self._Kp = 8
         self._Kd = 1
         self._Wlat = 1
@@ -363,56 +363,56 @@ class PDcontrol(Basecontroller):
         self._HCR = tmp.values
 
         # Show default values
-        self._PDTab.lblPropgainvalue.setText(str(self._Kp))
-        self._PDTab.lblDerivgainvalue.setText(str(self._Kd))
-        self._PDTab.lblWeightlatvalue.setText(str(self._Wlat))
-        self._PDTab.lblWeightheadingvalue.setText(str(self._Whead))
-        self._PDTab.lblTaheadvalue.setText(str(self._t_ahead))
+        self._PDTab.lbl_current_gain_prop.setText(str(self._Kp))
+        self._PDTab.lbl_current_gain_deriv.setText(str(self._Kd))
+        self._PDTab.lbl_current_weight_lat.setText(str(self._Wlat))
+        self._PDTab.lbl_current_weight_heading.setText(str(self._Whead))
+        self._PDTab.lbl_current_t_lookahead.setText(str(self._t_lookahead))
         
         
     def updateParameters(self):
         try:
-            self._Kp = float(self._PDTab.linePropgain.text())
+            self._Kp = float(self._PDTab.edit_gain_prop.text())
         except:
             pass
         try:
-            self._Kd = float(self._PDTab.lineDerivgain.text())
+            self._Kd = float(self._PDTab.edit_gain_deriv.text())
         except:
             pass
         try:
-            self._Wlat = float(self._PDTab.lineWeightlat.text())
+            self._Wlat = float(self._PDTab.edit_weight_lat.text())
         except:
             pass
         try:
-            self._Whead = float(self._PDTab.lineWeightheading.text())
+            self._Whead = float(self._PDTab.edit_weight_heading.text())
         except:
             pass
         try:
-            self._t_ahead = float(self._PDTab.lineTahead.text())
+            self._t_lookahead = float(self._PDTab.edit_t_ahead.text())
         except:
             pass
        
 
-        self._PDTab.lblPropgainvalue.setText(str(self._Kp))
-        self._PDTab.lblDerivgainvalue.setText(str(self._Kd))
-        self._PDTab.lblWeightlatvalue.setText(str(self._Wlat))
-        self._PDTab.lblWeightheadingvalue.setText(str(self._Whead))
-        self._PDTab.lblTaheadvalue.setText(str(self._t_ahead))
+        self._PDTab.lbl_current_gain_prop.setText(str(self._Kp))
+        self._PDTab.lbl_current_gain_deriv.setText(str(self._Kd))
+        self._PDTab.lbl_current_weight_lat.setText(str(self._Wlat))
+        self._PDTab.lbl_current_weight_heading.setText(str(self._Whead))
+        self._PDTab.lbl_current_t_lookahead.setText(str(self._t_lookahead))
 
-        self._PDTab.linePropgain.clear()
-        self._PDTab.lineDerivgain.clear()
-        self._PDTab.lineWeightlat.clear()
-        self._PDTab.lineWeightheading.clear()
-        self._PDTab.lineTahead.clear()
+        self._PDTab.edit_gain_prop.clear()
+        self._PDTab.edit_gain_deriv.clear()
+        self._PDTab.edit_weight_lat.clear()
+        self._PDTab.edit_weight_heading.clear()
+        self._PDTab.edit_t_ahead.clear()
 
     def resetParameters(self):
-        self._PDTab.linePropgain.clear()
-        self._PDTab.lineDerivgain.clear()
-        self._PDTab.lineWeightlat.clear()
-        self._PDTab.lineWeightheading.clear()
-        self._PDTab.lineTahead.clear()
+        self._PDTab.edit_gain_prop.clear()
+        self._PDTab.edit_gain_deriv.clear()
+        self._PDTab.edit_weight_lat.clear()
+        self._PDTab.edit_weight_heading.clear()
+        self._PDTab.edit_t_ahead.clear()
 
-        self._t_ahead = 0.6
+        self._t_lookahead = 0.6
         self._Kp = 8
         self._Kd = 1
         self._Wlat = 1
@@ -426,7 +426,7 @@ class PDcontrol(Basecontroller):
             self._data= self._parentWidget.read_news(JOANModules.CARLA_INTERFACE)
             egoCar = self._data['egoCar']
             self._T1 = time.time()
-            self._Error = self.Error_Calc(self._t_ahead, self._HCR, egoCar)
+            self._Error = self.Error_Calc(self._t_lookahead, self._HCR, egoCar)
             DeltaT = self._T1 - self._T2
             DeltaError = self._Error - self._ErrorT2
             SWangle = self.PD(self._Error, DeltaError, DeltaT, self._Wlat, self._Whead, self._Kp, self._Kd)
