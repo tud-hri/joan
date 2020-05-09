@@ -22,7 +22,7 @@ if __name__ == '__main__':
     # adding modules (instantiates them too)
     JOANHQACTION.add_module(JOANModules.CARLA_INTERFACE, millis=50)
     JOANHQACTION.add_module(JOANModules.HARDWARE_MANAGER, millis=5)
-    JOANHQACTION.add_module(JOANModules.STEERING_WHEEL_CONTROL)
+    JOANHQACTION.add_module(JOANModules.STEERING_WHEEL_CONTROL, millis=10)
     JOANHQACTION.add_module(JOANModules.TEMPLATE)
     #JOANHQACTION.add_module(JOANModules.DATA_RECORDER)  # data recorder needs to be instantiated after all other modules
 
