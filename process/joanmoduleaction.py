@@ -67,9 +67,10 @@ class JoanModuleAction(QtCore.QObject):
         GUI reflect the possibilities of the current state.
         """
         state_as_state = self.master_state_handler.get_state(state)  # ensure we have the State object (not the int)
+        
         # emergency stop
         if state_as_state == self.module_states.ERROR:
-            self.module_action.stop_pulsar()
+            self.stop()
 
     ''' TODO: remarked because handle_module_state is hendled in the child-moduleaction (Andre 20200424)
     def handle_module_state(self, state):
