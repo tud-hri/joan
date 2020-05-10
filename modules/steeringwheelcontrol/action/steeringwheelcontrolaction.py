@@ -1,5 +1,7 @@
 from PyQt5 import QtCore
 
+import numpy as np
+
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
 from .states import SteeringWheelControlStates
@@ -18,15 +20,24 @@ class SteeringWheelControlAction(JoanModuleAction):
         self.add_controller(controller_type=SWContollerTypes.PD_SWCONTROLLER)
         self.add_controller(controller_type=SWContollerTypes.FDCA_SWCONTROLLER)
 
+        self._current_controller = None
+        self.set_current_controller(SWContollerTypes.MANUAL)
+
         # set up news
         self.data = {}
-        self.data['sw torque'] = 0
+        self.data['sw_torque'] = 0
         self.write_news(news=self.data)
 
     def do(self):
         """
         This function is called every controller tick of this module implement your main calculations here
         """
+        # data_in = self.read_news(JOANModules.CARLA_INTERFACE)
+        data_in = {}
+        data_out = self._current_controller.do(data_in)
+
+        # extract from controller's output data_out
+        self.data['sw_torque'] = data_out['sw_torque']
 
         self.write_news(news=self.data)
 
@@ -38,6 +49,9 @@ class SteeringWheelControlAction(JoanModuleAction):
 
     def add_controller(self, controller_type: SWContollerTypes):
         self._controllers[controller_type] = controller_type.klass(self)
+
+    def set_current_controller(self, controller_type: SWContollerTypes):
+        self._current_controller = self._controllers[controller_type]
 
     def start(self):
         try:
@@ -56,3 +70,7 @@ class SteeringWheelControlAction(JoanModuleAction):
     @property
     def controllers(self):
         return self._controllers
+
+    @property
+    def current_controller(self):
+        return self._current_controller

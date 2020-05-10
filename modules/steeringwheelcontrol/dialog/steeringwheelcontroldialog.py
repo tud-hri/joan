@@ -18,6 +18,18 @@ class SteeringWheelControlDialog(JoanModuleDialog):
         # add controller tabs
         for klass in self.module_action.controllers.values():
             self.add_controller_tab(klass)
+
+        self.module_widget.lbl_current_controller.setText("Current controller: " + self.module_action.current_controller.name)
+
+        self.module_widget.btn_apply_controller.clicked.connect(self.apply_selected_controller)
   
     def add_controller_tab(self, controller):
         self.module_widget.controller_tab_widgets.addTab(controller.get_controller_tab, controller.name)
+        
+    def apply_selected_controller(self):
+        current_widget = self.module_widget.controller_tab_widgets.currentWidget()
+
+        for key, value in self.module_action.controllers.items():
+            if current_widget is value.get_controller_tab:
+                self.module_action.set_current_controller(key)
+                self.module_widget.lbl_current_controller.setText("Current controller: " + str(key))

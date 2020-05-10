@@ -17,11 +17,11 @@ class PDSWController(BaseSWController):
         self._k_d = 1
         self._w_lat = 1
         self._w_heading = 2
-        self.reset_parameters()
+        self.set_default_parameter_values()
 
         # connect widget
-        self._controller_tab.btn_apply.clicked.connect(self.update_parameters)
-        self._controller_tab.btn_reset.clicked.connect(self.reset_parameters)
+        self._controller_tab.btn_apply.clicked.connect(self.set_parameter_values_from_ui)
+        self._controller_tab.btn_reset.clicked.connect(self.set_default_parameter_values)
 
     def do(self, data_in):
         """In manual, the controller has no additional control. We could add some self-centering torque, if we want.
@@ -29,7 +29,7 @@ class PDSWController(BaseSWController):
 
         self.data_out['sw_torque'] = 0
 
-    def update_parameters(self):
+    def set_parameter_values_from_ui(self):
         """update controller parameters from ui"""
         self._t_lookahead = float(self._controller_tab.edit_t_ahead.text())
         self._k_p = float(self._controller_tab.edit_gain_prop.text())
@@ -37,26 +37,15 @@ class PDSWController(BaseSWController):
         self._w_lat = float(self._controller_tab.edit_weight_lat.text())
         self._w_heading = float(self._controller_tab.edit_weight_heading.text())
 
-        self._controller_tab.lbl_current_gain_prop.setText(str(self._k_p))
-        self._controller_tab.lbl_current_gain_deriv.setText(str(self._k_d))
-        self._controller_tab.lbl_current_weight_lat.setText(str(self._w_lat))
-        self._controller_tab.lbl_current_weight_heading.setText(str(self._w_heading))
-        self._controller_tab.lbl_current_t_lookahead.setText(str(self._t_lookahead))
+        self.update_ui()
 
-    def reset_parameters(self):
-        """reset controller parameters"""
+    def update_ui(self):
+        # update the line edits
         self._controller_tab.edit_gain_prop.clear()
         self._controller_tab.edit_gain_deriv.clear()
         self._controller_tab.edit_weight_lat.clear()
         self._controller_tab.edit_weight_heading.clear()
         self._controller_tab.edit_t_ahead.clear()
-
-        # default values
-        self._t_lookahead = 0.6
-        self._k_p = 8
-        self._k_d = 1
-        self._w_lat = 1
-        self._w_heading = 2
 
         self._controller_tab.edit_gain_prop.setText(str(self._k_p))
         self._controller_tab.edit_gain_deriv.setText(str(self._k_d))
@@ -64,4 +53,21 @@ class PDSWController(BaseSWController):
         self._controller_tab.edit_weight_heading.setText(str(self._w_heading))
         self._controller_tab.edit_t_ahead.setText(str(self._t_lookahead))
 
-        self.update_parameters()
+        # update the current controller settings
+        self._controller_tab.lbl_current_gain_prop.setText(str(self._k_p))
+        self._controller_tab.lbl_current_gain_deriv.setText(str(self._k_d))
+        self._controller_tab.lbl_current_weight_lat.setText(str(self._w_lat))
+        self._controller_tab.lbl_current_weight_heading.setText(str(self._w_heading))
+        self._controller_tab.lbl_current_t_lookahead.setText(str(self._t_lookahead))
+
+    def set_default_parameter_values(self):
+        """set the default controller parameters"""
+        # default values
+        self._t_lookahead = 0.6
+        self._k_p = 8
+        self._k_d = 1
+        self._w_lat = 1
+        self._w_heading = 2
+
+        self.update_ui()
+        self.set_parameter_values_from_ui()

@@ -60,7 +60,6 @@ class JoanModuleAction(QtCore.QObject):
         except ValueError:
             pass 
 
-
     def handle_master_state(self, state):
         """
         Handle the state transition by updating the status label and have the

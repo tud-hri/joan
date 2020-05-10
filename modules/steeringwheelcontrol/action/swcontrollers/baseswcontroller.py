@@ -31,3 +31,7 @@ class BaseSWController:
     @property
     def name(self):
         return str(self._controller_type)
+
+    @property
+    def controller_type(self):
+        return self._controller_type
