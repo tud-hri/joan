@@ -5,7 +5,9 @@ from PyQt5 import uic
 
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
+from process.settings import ModuleSettings
 from .states import HardwaremanagerStates
+from modules.hardwaremanager.action.settings import KeyBoardSettings, JoyStickSettings, HardWareManagerSettings
 from modules.hardwaremanager.action.inputclasses.JOAN_keyboard import JOAN_Keyboard
 from modules.hardwaremanager.action.inputclasses.JOAN_mouse import JOAN_Mouse
 from modules.hardwaremanager.action.inputclasses.JOAN_joystick import JOAN_Joystick
@@ -26,6 +28,11 @@ class HardwaremanagerAction(JoanModuleAction):
 
         self.data = {}
         self.write_news(news=self.data)
+
+        self.settings = HardWareManagerSettings()
+        self.module_settings_object = ModuleSettings(file=os.path.join(os.path.dirname(os.path.realpath(__file__)), 'hardware_settings.json'))
+        self.update_settings(self.settings.as_dict())
+        # end settings for this module
 
     def do(self):
         """
@@ -73,14 +80,18 @@ class HardwaremanagerAction(JoanModuleAction):
             device_title = "Keyboard " + str(self._nr_of_keyboards)
             HardwaremanagerAction.input_devices_widgets.update(
                 [(device_title, uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "UIs/hardware_tab.ui")))])
-            HardwaremanagerAction.input_devices_classes.update([(device_title, JOAN_Keyboard(self, self.input_devices_widgets[device_title]))])
+            keyboard_settings = KeyBoardSettings()
+            HardwaremanagerAction.input_devices_classes.update([(device_title, JOAN_Keyboard(self, self.input_devices_widgets[device_title], keyboard_settings))])
+            self.settings.key_boards.append(keyboard_settings)
 
         if "Joystick" in self._selected_input_device:
             HardwaremanagerAction._nr_of_joysticks = HardwaremanagerAction._nr_of_joysticks + 1
             device_title = "Joystick " + str(self._nr_of_joysticks)
             HardwaremanagerAction.input_devices_widgets.update(
                 [(device_title, uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "UIs/hardware_tab.ui")))])
-            HardwaremanagerAction.input_devices_classes.update([(device_title, JOAN_Joystick(self, self.input_devices_widgets[device_title]))])
+            joystick_settings = JoyStickSettings()
+            HardwaremanagerAction.input_devices_classes.update([(device_title, JOAN_Joystick(self, self.input_devices_widgets[device_title], joystick_settings))])
+            self.settings.joy_sticks.append(joystick_settings)
 
         if "SensoDrive" in self._selected_input_device:
             HardwaremanagerAction._nr_of_sensodrives = HardwaremanagerAction._nr_of_sensodrives + 1
