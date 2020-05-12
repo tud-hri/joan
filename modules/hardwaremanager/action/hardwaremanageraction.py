@@ -3,43 +3,41 @@ import os
 import keyboard
 from PyQt5 import uic
 
+from modules.hardwaremanager.action.inputclasses.JOAN_joystick import JOAN_Joystick
+from modules.hardwaremanager.action.inputclasses.JOAN_keyboard import JOAN_Keyboard
+from modules.hardwaremanager.action.inputclasses.JOAN_mouse import JOAN_Mouse
+from modules.hardwaremanager.action.inputclasses.JOAN_sensodrive import JOAN_SensoDrive
+from modules.hardwaremanager.action.settings import KeyBoardSettings, JoyStickSettings, HardWareManagerSettings
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
 from process.settings import ModuleSettings
 from .states import HardwaremanagerStates
-from modules.hardwaremanager.action.settings import KeyBoardSettings, JoyStickSettings, HardWareManagerSettings
-from modules.hardwaremanager.action.inputclasses.JOAN_keyboard import JOAN_Keyboard
-from modules.hardwaremanager.action.inputclasses.JOAN_mouse import JOAN_Mouse
-from modules.hardwaremanager.action.inputclasses.JOAN_joystick import JOAN_Joystick
-from modules.hardwaremanager.action.inputclasses.JOAN_sensodrive import JOAN_SensoDrive
 
 
 class HardwaremanagerAction(JoanModuleAction):
     def __init__(self, master_state_handler, millis=5):
         super().__init__(module=JOANModules.HARDWARE_MANAGER, master_state_handler=master_state_handler, millis=millis)
 
-        HardwaremanagerAction.input_devices_classes = {}
-        HardwaremanagerAction.input_devices_widgets = {}
-        HardwaremanagerAction._nr_of_mouses = 0
-        HardwaremanagerAction._nr_of_keyboards = 0
-        HardwaremanagerAction._nr_of_joysticks = 0
-        HardwaremanagerAction._nr_of_sensodrives = 0
-        self._selected_input_device = ''
+        self.input_devices_classes = {}
 
         self.data = {}
         self.write_news(news=self.data)
 
         self.settings = HardWareManagerSettings()
         self.module_settings_object = ModuleSettings(file=os.path.join(os.path.dirname(os.path.realpath(__file__)), 'hardware_settings.json'))
+        loaded_dict = self.module_settings_object.read_settings()
+
+        if bool(loaded_dict['data']):
+            self.settings.set_from_loaded_dict(loaded_dict['data'][str(JOANModules.HARDWARE_MANAGER)])
+
         self.update_settings(self.settings.as_dict())
-        # end settings for this module
 
     def do(self):
         """
         This function is called every controller tick of this module implement your main calculations here
         """
-        for inputs in HardwaremanagerAction.input_devices_classes:
-            self.data[inputs] = HardwaremanagerAction.input_devices_classes[inputs].process()
+        for inputs in self.input_devices_classes:
+            self.data[inputs] = self.input_devices_classes[inputs].process()
         self.write_news(self.data)
 
     def initialize(self):
@@ -58,71 +56,45 @@ class HardwaremanagerAction(JoanModuleAction):
     def stop(self):
         try:
             self.module_state_handler.request_state_change(HardwaremanagerStates.EXEC.STOPPED)
-            if len(HardwaremanagerAction.input_devices_classes) != 0:
+            if len(self.input_devices_classes) != 0:
                 self.module_state_handler.request_state_change(HardwaremanagerStates.EXEC.READY)
-            
+
         except RuntimeError:
             return False
         return super().stop()
 
-    def selected_input(self, input_string):
-        self._selected_input_device = input_string
-
-        if "Mouse" in self._selected_input_device:
-            HardwaremanagerAction._nr_of_mouses = HardwaremanagerAction._nr_of_mouses + 1
-            device_title = "Mouse " + str(self._nr_of_mouses)
-            HardwaremanagerAction.input_devices_widgets.update(
-                [(device_title, uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "UIs/hardware_tab.ui")))])
-            HardwaremanagerAction.input_devices_classes.update([(device_title, JOAN_Mouse(self, self.input_devices_widgets[device_title]))])
-
-        if "Keyboard" in self._selected_input_device:
-            HardwaremanagerAction._nr_of_keyboards = HardwaremanagerAction._nr_of_keyboards + 1
-            device_title = "Keyboard " + str(self._nr_of_keyboards)
-            HardwaremanagerAction.input_devices_widgets.update(
-                [(device_title, uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "UIs/hardware_tab.ui")))])
+    def add_a_keyboard(self, widget, keyboard_settings=None):
+        is_a_new_keyboard = not keyboard_settings
+        if is_a_new_keyboard:
             keyboard_settings = KeyBoardSettings()
-            HardwaremanagerAction.input_devices_classes.update([(device_title, JOAN_Keyboard(self, self.input_devices_widgets[device_title], keyboard_settings))])
+
+        number_of_keyboards = sum([bool("Keyboard" in k) for k in self.input_devices_classes.keys()])
+        device_title = "Keyboard %s" % (number_of_keyboards + 1)
+        self.input_devices_classes.update([(device_title, JOAN_Keyboard(self, widget, keyboard_settings))])
+        if is_a_new_keyboard:
             self.settings.key_boards.append(keyboard_settings)
+        return device_title
 
-        if "Joystick" in self._selected_input_device:
-            HardwaremanagerAction._nr_of_joysticks = HardwaremanagerAction._nr_of_joysticks + 1
-            device_title = "Joystick " + str(self._nr_of_joysticks)
-            HardwaremanagerAction.input_devices_widgets.update(
-                [(device_title, uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "UIs/hardware_tab.ui")))])
+    def add_a_joystick(self, widget, joystick_settings=None):
+        is_a_new_joystick = not joystick_settings
+        if is_a_new_joystick:
             joystick_settings = JoyStickSettings()
-            HardwaremanagerAction.input_devices_classes.update([(device_title, JOAN_Joystick(self, self.input_devices_widgets[device_title], joystick_settings))])
+
+        number_of_joysticks = sum([bool("Joystick" in k) for k in self.input_devices_classes.keys()])
+        device_title = "Joystick %s" % (number_of_joysticks + 1)
+
+        self.input_devices_classes.update([(device_title, JOAN_Joystick(self, widget, joystick_settings))])
+        if is_a_new_joystick:
             self.settings.joy_sticks.append(joystick_settings)
-
-        if "SensoDrive" in self._selected_input_device:
-            HardwaremanagerAction._nr_of_sensodrives = HardwaremanagerAction._nr_of_sensodrives + 1
-            device_title = "SensoDrive " + str(self._nr_of_sensodrives)
-            HardwaremanagerAction.input_devices_widgets.update(
-                [(device_title, uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "UIs/hardware_tab.ui")))])
-            HardwaremanagerAction.input_devices_classes.update([(device_title, JOAN_SensoDrive(self, self.input_devices_widgets[device_title]))])
-
-        HardwaremanagerAction.input_devices_widgets[device_title].groupBox.setTitle(device_title)
-
-        return HardwaremanagerAction.input_devices_widgets
+        return device_title
 
     def remove(self, tabtitle):
         if "Keyboard" in tabtitle:
-            HardwaremanagerAction._nr_of_keyboards = HardwaremanagerAction._nr_of_keyboards - 1
-            keyboard.unhook(HardwaremanagerAction.input_devices_classes[tabtitle].key_event)
+            keyboard.unhook(self.input_devices_classes[tabtitle].key_event)
 
-        if "Mouse" in tabtitle:
-            HardwaremanagerAction._nr_of_mouses = HardwaremanagerAction._nr_of_mouses - 1
-
-        if "Joystick" in tabtitle:
-            HardwaremanagerAction._nr_of_joysticks = HardwaremanagerAction._nr_of_joysticks - 1
-
-        if "SensoDrive" in tabtitle:
-            HardwaremanagerAction._nr_of_sensodrives = HardwaremanagerAction._nr_of_sensodrives - 1
-
-        del HardwaremanagerAction.input_devices_widgets[tabtitle]
-        del HardwaremanagerAction.input_devices_classes[tabtitle]
+        del self.input_devices_classes[tabtitle]
         del self.data[tabtitle]
 
-        if len(HardwaremanagerAction.input_devices_classes) == 0:
+        if not self.input_devices_classes:
             self.stop()
-            #self.module_state_handler.request_state_change(HardwaremanagerStates.IDLE)
-
+            # self.module_state_handler.request_state_change(HardwaremanagerStates.IDLE)

@@ -5,9 +5,21 @@ from enum import Enum
 class HardWareManagerSettings:
     def __init__(self):
         self.key_boards = []
-        self.mice = []
         self.joy_sticks = []
-        self.senso_drives = []
+
+    def set_from_loaded_dict(self, loaded_dict):
+        #  TODO: write more general and robust version
+        self.key_boards = []
+        for keyboard in loaded_dict['key_boards']:
+            keyboard_settings = KeyBoardSettings()
+            keyboard_settings.set_from_loaded_dict(keyboard)
+            self.key_boards.append(keyboard_settings)
+
+        self.joy_sticks = []
+        for joystick in loaded_dict['joy_sticks']:
+            joystick_settings = JoyStickSettings()
+            joystick_settings.set_from_loaded_dict(joystick)
+            self.joy_sticks.append(joystick_settings)
 
     def as_dict(self):
         output_dict = {}
@@ -29,10 +41,11 @@ class HardWareManagerSettings:
                 # recognize custom class object by checking if these have a __dict__, Enums and static classes should be copied as a whole
                 # convert custom classes to dictionaries
                 try:
-                    destination[key]  # make sure that the destination dict has an entry at key
-                except KeyError:
+                    # make use of the as_dict function is it exists
+                    destination[key] = value.as_dict()
+                except NotImplementedError:
                     destination[key] = dict()
-                HardWareManagerSettings._copy_dict(value.__dict__, destination[key])
+                    HardWareManagerSettings._copy_dict(value.__dict__, destination[key])
             else:
                 destination[key] = source[key]
 
@@ -45,8 +58,12 @@ class HardWareManagerSettings:
             elif hasattr(item, '__dict__') and not isinstance(item, Enum) and not inspect.isclass(item):
                 # recognize custom class object by checking if these have a __dict__, Enums and static classes should be copied as a whole
                 # convert custom classes to dictionaries
-                output_list.append(dict())
-                HardWareManagerSettings._copy_dict(item.__dict__, output_list[index])
+                try:
+                    # make use of the as_dict function is it exists
+                    output_list.append(item.as_dict())
+                except NotImplementedError:
+                    output_list.append(dict())
+                    HardWareManagerSettings._copy_dict(item.__dict__, output_list[index])
             else:
                 output_list.append(item)
         return output_list
@@ -76,8 +93,9 @@ class KeyBoardSettings:
     def as_dict(self):
         return self.__dict__
 
-    def set_from_loaded_dict(self):
-        pass
+    def set_from_loaded_dict(self, loaded_dict):
+        for key, value in loaded_dict.items():
+            self.__setattr__(key, value)
 
 
 class JoyStickSettings:
@@ -90,5 +108,6 @@ class JoyStickSettings:
     def as_dict(self):
         return self.__dict__
 
-    def set_from_loaded_dict(self):
-        pass
+    def set_from_loaded_dict(self, loaded_dict):
+        for key, value in loaded_dict.items():
+            self.__setattr__(key, value)
