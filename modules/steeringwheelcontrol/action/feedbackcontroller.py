@@ -145,8 +145,8 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
 
 
         # connect to widgets
-        self._FDCATab.btnUpdate.clicked.connect(self.updateAvailableTrajectoryList)
-        self._FDCATab.comboHCR.currentIndexChanged.connect(self.newHCRSelected)
+        self._FDCATab.btnUpdate.clicked.connect(self.update_hcr_trajectory_list)
+        self._FDCATab.cmbbox_hcr_selection.currentIndexChanged.connect(self.newHCRSelected)
         self._FDCATab.btn_apply.clicked.connect(self.updateParameters)
         self._FDCATab.btn_reset.clicked.connect(self.resetParameters)
         self._FDCATab.slider_loha.valueChanged.connect(self.updateLoHA)
@@ -168,19 +168,19 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
         self._FDCATab.lbl_sohf.setText(str(self._SoHF))
         self._FDCATab.lbl_loha.setText(str(self._LoHA))
         # path to HCR trajectory dir and add to list
-        self._nameCurrentHCR = 'defaultHCRTrajectory.csv'
-        self._pathHCRDirectory = os.path.join(os.path.dirname(os.path.realpath(__file__)),'HCRTrajectories')
+        self._current_hcr_name = 'defaultHCRTrajectory.csv'
+        self._path_hcr_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)),'HCRTrajectories')
         
         try:
             
-            print(self._pathHCRDirectory)
-            self.updateAvailableTrajectoryList()
+            print(self._path_hcr_directory)
+            self.update_hcr_trajectory_list()
             # load a default trajectory first
-            idx = self._FDCATab.comboHCR.findText(self._nameCurrentHCR)
+            idx = self._FDCATab.cmbbox_hcr_selection.findText(self._current_hcr_name)
             if idx < 0:
                 idx = 0 # in case the default trajectory file is not found, load the first one
             
-            self._FDCATab.comboHCR.setCurrentIndex(idx) # this will also trigger the function newHCRSelected
+            self._FDCATab.cmbbox_hcr_selection.setCurrentIndex(idx) # this will also trigger the function newHCRSelected
 
         except Exception as e:
             print('Error loading list of available HCR trajectories: ', e)
@@ -232,9 +232,9 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
         self.updateParameters()
 
 
-    def updateAvailableTrajectoryList(self):
+    def update_hcr_trajectory_list(self):
         # get list of csv files in directory
-        filenames = os.listdir(self._pathHCRDirectory)
+        filenames = os.listdir(self._path_hcr_directory)
         files = [ filename for filename in filenames if filename.endswith('csv') ]
 
         # os.chdir() # undesired change dir. 
@@ -242,40 +242,40 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
 
 
         # run through the combobox to check for files that are in the list, but not in the directory anymore
-        listitems = [self._FDCATab.comboHCR.itemText(i) for i in range(self._FDCATab.comboHCR.count())]
+        listitems = [self._FDCATab.cmbbox_hcr_selection.itemText(i) for i in range(self._FDCATab.cmbbox_hcr_selection.count())]
         for l in listitems:
             if l not in files:
-                idx = self._FDCATab.comboHCR.findText(l)
+                idx = self._FDCATab.cmbbox_hcr_selection.findText(l)
                 if idx >= 0:
-                    self._FDCATab.comboHCR.removeItem(idx)
+                    self._FDCATab.cmbbox_hcr_selection.removeItem(idx)
 
 
-        # self._FDCATab.comboHCR.clear() # we don't want this for reasons: (1) it resets the currentIndex(), which triggers a reload of a new trajectory, something we don't want to occur 'randomly'
+        # self._FDCATab.cmbbox_hcr_selection.clear() # we don't want this for reasons: (1) it resets the currentIndex(), which triggers a reload of a new trajectory, something we don't want to occur 'randomly'
 
         # add items that are in files but not yet in the combobox
         for fname in files:
-            idx = self._FDCATab.comboHCR.findText(fname)
+            idx = self._FDCATab.cmbbox_hcr_selection.findText(fname)
             if idx < 0:
-                self._FDCATab.comboHCR.addItem(fname)
+                self._FDCATab.cmbbox_hcr_selection.addItem(fname)
     
 
     def newHCRSelected(self):
         # new index selected
 
         # load based on filename, not index. Index can change if we remove items from the combobox list, which could yield undesired loading of HCR trajectories
-        fname = self._FDCATab.comboHCR.itemText(self._FDCATab.comboHCR.currentIndex())
+        fname = self._FDCATab.cmbbox_hcr_selection.itemText(self._FDCATab.cmbbox_hcr_selection.currentIndex())
 
-        if fname != self._nameCurrentHCR:
-            # fname is different from _nameCurrentHCR, load it!
+        if fname != self._current_hcr_name:
+            # fname is different from _current_hcr_name, load it!
             print('Loading HCR trajectory: ' + fname)
 
             try:
-                tmp = pd.read_csv(os.path.join(self._pathHCRDirectory, fname))
+                tmp = pd.read_csv(os.path.join(self._path_hcr_directory, fname))
                 self._HCR = tmp.values
             except Exception as e:
                 print('Error loading HCR trajectory file (newHCRSelected): ', e)
 
-            self._nameCurrentHCR = fname
+            self._current_hcr_name = fname
 
         
     def process(self):
@@ -358,8 +358,8 @@ class PDcontrol(Basecontroller):
         self._Wlat = 1
         self._Whead = 2
         self._defaultHCR = 'defaultHCRTrajectory.csv'
-        self._pathHCRDirectory = os.path.join(os.path.dirname(os.path.realpath(__file__)),'HCRTrajectories')
-        tmp = pd.read_csv(os.path.join(self._pathHCRDirectory, self._defaultHCR))
+        self._path_hcr_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)),'HCRTrajectories')
+        tmp = pd.read_csv(os.path.join(self._path_hcr_directory, self._defaultHCR))
         self._HCR = tmp.values
 
         # Show default values

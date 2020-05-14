@@ -46,7 +46,7 @@ pip-delete-this-directory.txt
 .idea
 
 # ignore data files
-*.csv
+.*.csv
 
 # ignore settings files
 *.json

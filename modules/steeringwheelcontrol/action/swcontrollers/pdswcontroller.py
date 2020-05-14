@@ -29,6 +29,21 @@ class PDSWController(BaseSWController):
 
         self.data_out['sw_torque'] = 0
 
+    def set_default_parameter_values(self):
+        """set the default controller parameters
+        In the near future, this should be from the controller settings class
+        """
+        
+        # default values
+        self._t_lookahead = 0.6
+        self._k_p = 8
+        self._k_d = 1
+        self._w_lat = 1
+        self._w_heading = 2
+
+        self.update_ui()
+        self.get_set_parameter_values_from_ui()
+
     def get_set_parameter_values_from_ui(self):
         """update controller parameters from ui"""
         self._t_lookahead = float(self._controller_tab.edit_t_ahead.text())
@@ -54,18 +69,3 @@ class PDSWController(BaseSWController):
         self._controller_tab.lbl_current_weight_lat.setText(str(self._w_lat))
         self._controller_tab.lbl_current_weight_heading.setText(str(self._w_heading))
         self._controller_tab.lbl_current_t_lookahead.setText(str(self._t_lookahead))
-
-    def set_default_parameter_values(self):
-        """set the default controller parameters
-        In the near future, this should be from the controller settings class
-        """
-        
-        # default values
-        self._t_lookahead = 0.6
-        self._k_p = 8
-        self._k_d = 1
-        self._w_lat = 1
-        self._w_heading = 2
-
-        self.update_ui()
-        self.get_set_parameter_values_from_ui()

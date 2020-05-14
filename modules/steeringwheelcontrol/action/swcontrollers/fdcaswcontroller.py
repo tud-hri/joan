@@ -1,5 +1,7 @@
 import os
 
+import pandas as pd
+
 from PyQt5 import QtWidgets
 
 from modules.joanmodules import JOANModules
@@ -11,16 +13,9 @@ class FDCASWController(BaseSWController):
     def __init__(self, module_action):
         super().__init__(controller_type=SWContollerTypes.FDCA_SWCONTROLLER, module_action=module_action)
 
-        # connect widgets
-        self._controller_tab.btn_apply.clicked.connect(self.get_set_parameter_values_from_ui)
-        self._controller_tab.btn_reset.clicked.connect(self.set_default_parameter_values)
-        self._controller_tab.slider_loha.valueChanged.connect(
-            lambda: self._controller_tab.lbl_loha.setText(str(self._controller_tab.slider_loha.value()/100.0))
-        )
-
         # Initialize local Variables
         self._hcr_list = []
-        self._current_hcr = 0
+        self._hcr = []
         self._t_lookahead_feedforward = 0.0
         self._k_y = 0.1
         self._k_psi = 0.4
@@ -28,12 +23,46 @@ class FDCASWController(BaseSWController):
         self._sohf = 1.0
         self._loha = 0.0
 
+        self._current_hcr_name = ''
+        self._path_hcr_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'hcr_trajectories')
+        self.update_hcr_trajectory_list()
+
         self.set_default_parameter_values()
+
+        # connect widgets
+        self._controller_tab.btn_apply.clicked.connect(self.get_set_parameter_values_from_ui)
+        self._controller_tab.btn_reset.clicked.connect(self.set_default_parameter_values)
+        self._controller_tab.slider_loha.valueChanged.connect(
+            lambda: self._controller_tab.lbl_loha.setText(str(self._controller_tab.slider_loha.value()/100.0))
+        )
 
     def do(self, data_in):
         """In manual, the controller has no additional control. We could add some self-centering torque, if we want.
         For now, steeringwheel torque is zero"""
         self.data_out['sw_torque'] = 0.0
+
+    def set_default_parameter_values(self):
+        """set the default controller parameters
+        In the near future, this should be from the controller settings class
+        """
+
+        # default values
+        self._current_hcr = 0
+        self._t_lookahead_feedforward = 0.0
+        self._k_y = 0.1
+        self._k_psi = 0.4
+        self._lohs = 1.0
+        self._sohf = 1.0
+        self._loha = 0.25
+        
+        self.update_ui()
+
+        self.get_set_parameter_values_from_ui()
+
+        # load the default HCR
+        self._current_hcr_name = 'default_hcr_trajectory.csv'
+        self.update_hcr_trajectory_list()
+        self.load_hcr()
 
     def get_set_parameter_values_from_ui(self):
         """update controller parameters from ui"""
@@ -43,6 +72,8 @@ class FDCASWController(BaseSWController):
         self._lohs = float(self._controller_tab.edit_lohs.text())
         self._sohf = float(self._controller_tab.edit_sohf.text())
         self._loha = self._controller_tab.slider_loha.value() / 100
+
+        self.load_hcr()
 
         self.update_ui()
 
@@ -61,19 +92,28 @@ class FDCASWController(BaseSWController):
         self._controller_tab.lbl_lohs.setText(str(self._lohs))
         self._controller_tab.lbl_sohf.setText(str(self._sohf))
 
-    def set_default_parameter_values(self):
-        """set the default controller parameters
-        In the near future, this should be from the controller settings class
-        """
+    def load_hcr(self):
+        """new HCR selected"""
 
-        # default values
-        self._current_hcr = 0
-        self._t_lookahead_feedforward = 0.0
-        self._k_y = 0.1
-        self._k_psi = 0.4
-        self._lohs = 1.0
-        self._sohf = 1.0
-        self._loha = 0.25
+        # load based on filename, not index. Index can change if we remove items from the combobox list, which could yield undesired loading of HCR trajectories
+        fname = self._controller_tab.cmbbox_hcr_selection.itemText(self._controller_tab.cmbbox_hcr_selection.currentIndex())
 
-        self.update_ui()
-        self.get_set_parameter_values_from_ui()
+        if fname != self._current_hcr_name:
+            # fname is different from _current_hcr_name, load it!
+            try:
+                tmp = pd.read_csv(os.path.join(self._path_hcr_directory, fname))
+                self._hcr = tmp.values
+                self._current_hcr_name = fname
+            except OSError as err:
+                print('Error loading HCR trajectory file: ', err)
+
+    def update_hcr_trajectory_list(self):
+        # get list of csv files in directory
+        files = [filename for filename in os.listdir(self._path_hcr_directory) if filename.endswith('csv')]
+
+        self._controller_tab.cmbbox_hcr_selection.clear()
+        self._controller_tab.cmbbox_hcr_selection.addItems(files)
+
+        idx = self._controller_tab.cmbbox_hcr_selection.findText(self._current_hcr_name)
+        if idx != -1:
+            self._controller_tab.cmbbox_hcr_selection.setCurrentIndex(idx)
