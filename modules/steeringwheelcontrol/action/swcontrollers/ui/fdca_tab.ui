@@ -80,7 +80,7 @@
             </widget>
            </item>
            <item row="3" column="1">
-            <widget class="QLineEdit" name="lineKlohs">
+            <widget class="QLineEdit" name="edit_lohs">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -95,7 +95,7 @@
             </widget>
            </item>
            <item row="6" column="1">
-            <widget class="QSlider" name="sliderKloha">
+            <widget class="QSlider" name="slider_loha">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -153,7 +153,7 @@
             </widget>
            </item>
            <item row="6" column="2">
-            <widget class="QLabel" name="lblKlohavalue">
+            <widget class="QLabel" name="lbl_loha">
              <property name="font">
               <font>
                <pointsize>10</pointsize>
@@ -168,7 +168,7 @@
             </widget>
            </item>
            <item row="1" column="1">
-            <widget class="QLineEdit" name="lineKsohf">
+            <widget class="QLineEdit" name="edit_sohf">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -211,7 +211,7 @@
             </widget>
            </item>
            <item row="1" column="2">
-            <widget class="QLabel" name="lblKsohfvalue">
+            <widget class="QLabel" name="lbl_sohf">
              <property name="font">
               <font>
                <pointsize>10</pointsize>
@@ -228,7 +228,7 @@
             </widget>
            </item>
            <item row="3" column="2">
-            <widget class="QLabel" name="lblKlohsvalue">
+            <widget class="QLabel" name="lbl_lohs">
              <property name="font">
               <font>
                <pointsize>10</pointsize>
@@ -308,7 +308,7 @@
          <item row="0" column="1">
           <layout class="QGridLayout" name="gridLayout_3">
            <item row="4" column="1">
-            <widget class="QLineEdit" name="lineKpsi">
+            <widget class="QLineEdit" name="edit_k_psi">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -337,7 +337,7 @@
             </widget>
            </item>
            <item row="2" column="1">
-            <widget class="QLineEdit" name="lineKy">
+            <widget class="QLineEdit" name="edit_k_y">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -472,7 +472,7 @@
             </widget>
            </item>
            <item row="2" column="2">
-            <widget class="QLabel" name="lblKyvalue">
+            <widget class="QLabel" name="lbl_k_y">
              <property name="font">
               <font>
                <pointsize>10</pointsize>
@@ -489,7 +489,7 @@
             </widget>
            </item>
            <item row="4" column="2">
-            <widget class="QLabel" name="lblKpsivalue">
+            <widget class="QLabel" name="lbl_k_psi">
              <property name="font">
               <font>
                <pointsize>10</pointsize>

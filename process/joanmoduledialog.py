@@ -66,14 +66,11 @@ class JoanModuleDialog(QtWidgets.QDialog):
 
     def handle_master_state(self, state):
         """
-        Handle the state transition by updating the status label and have the
-        GUI reflect the possibilities of the current state.
+        Handle a master state transition (dialog)
         """
 
         state_as_state = self.master_state_handler.get_state(state)  # ensure we have the State object (not the int)
-
-        # update the state label
-        self.state_widget.lb_module_state.setText(str(state_as_state))
+        
 
     def handle_module_state(self, state):
         """

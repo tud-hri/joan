@@ -19,8 +19,8 @@ class PDSWController(BaseSWController):
         self._w_heading = 2
         self.set_default_parameter_values()
 
-        # connect widget
-        self._controller_tab.btn_apply.clicked.connect(self.set_parameter_values_from_ui)
+        # connect widgets
+        self._controller_tab.btn_apply.clicked.connect(self.get_set_parameter_values_from_ui)
         self._controller_tab.btn_reset.clicked.connect(self.set_default_parameter_values)
 
     def do(self, data_in):
@@ -29,7 +29,7 @@ class PDSWController(BaseSWController):
 
         self.data_out['sw_torque'] = 0
 
-    def set_parameter_values_from_ui(self):
+    def get_set_parameter_values_from_ui(self):
         """update controller parameters from ui"""
         self._t_lookahead = float(self._controller_tab.edit_t_ahead.text())
         self._k_p = float(self._controller_tab.edit_gain_prop.text())
@@ -40,12 +40,7 @@ class PDSWController(BaseSWController):
         self.update_ui()
 
     def update_ui(self):
-        # update the line edits
-        self._controller_tab.edit_gain_prop.clear()
-        self._controller_tab.edit_gain_deriv.clear()
-        self._controller_tab.edit_weight_lat.clear()
-        self._controller_tab.edit_weight_heading.clear()
-        self._controller_tab.edit_t_ahead.clear()
+        """update the labels and line edits in the controller_tab with the latest values"""
 
         self._controller_tab.edit_gain_prop.setText(str(self._k_p))
         self._controller_tab.edit_gain_deriv.setText(str(self._k_d))
@@ -61,7 +56,10 @@ class PDSWController(BaseSWController):
         self._controller_tab.lbl_current_t_lookahead.setText(str(self._t_lookahead))
 
     def set_default_parameter_values(self):
-        """set the default controller parameters"""
+        """set the default controller parameters
+        In the near future, this should be from the controller settings class
+        """
+        
         # default values
         self._t_lookahead = 0.6
         self._k_p = 8
@@ -70,4 +68,4 @@ class PDSWController(BaseSWController):
         self._w_heading = 2
 
         self.update_ui()
-        self.set_parameter_values_from_ui()
+        self.get_set_parameter_values_from_ui()

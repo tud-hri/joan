@@ -149,7 +149,7 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
         self._FDCATab.comboHCR.currentIndexChanged.connect(self.newHCRSelected)
         self._FDCATab.btn_apply.clicked.connect(self.updateParameters)
         self._FDCATab.btn_reset.clicked.connect(self.resetParameters)
-        self._FDCATab.sliderKloha.valueChanged.connect(self.updateLoHA)
+        self._FDCATab.slider_loha.valueChanged.connect(self.updateLoHA)
 
         #Initialize local Variables
         self._HCR = []
@@ -162,11 +162,11 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
         self._LoHA = 0
 
         #Set values on widget labels
-        self._FDCATab.lblKyvalue.setText(str(self._Ky))
-        self._FDCATab.lblKpsivalue.setText(str(self._Kpsi))
-        self._FDCATab.lblKlohsvalue.setText(str(self._LoHS))
-        self._FDCATab.lblKsohfvalue.setText(str(self._SoHF))
-        self._FDCATab.lblKlohavalue.setText(str(self._LoHA))
+        self._FDCATab.lbl_k_y.setText(str(self._Ky))
+        self._FDCATab.lbl_k_psi.setText(str(self._Kpsi))
+        self._FDCATab.lbl_lohs.setText(str(self._LoHS))
+        self._FDCATab.lbl_sohf.setText(str(self._SoHF))
+        self._FDCATab.lbl_loha.setText(str(self._LoHA))
         # path to HCR trajectory dir and add to list
         self._nameCurrentHCR = 'defaultHCRTrajectory.csv'
         self._pathHCRDirectory = os.path.join(os.path.dirname(os.path.realpath(__file__)),'HCRTrajectories')
@@ -186,48 +186,48 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
             print('Error loading list of available HCR trajectories: ', e)
 
     def updateLoHA(self):
-        self._LoHA = self._FDCATab.sliderKloha.value()/100
-        self._FDCATab.lblKlohavalue.setText(str(self._LoHA))
+        self._LoHA = self._FDCATab.slider_loha.value()/100
+        self._FDCATab.lbl_loha.setText(str(self._LoHA))
 
     def updateParameters(self):
         try:
-            self._Ky = float(self._FDCATab.lineKy.text())
+            self._Ky = float(self._FDCATab.edit_k_y.text())
         except:
             pass
         try:
-            self._Kpsi = float(self._FDCATab.lineKpsi.text())
+            self._Kpsi = float(self._FDCATab.edit_k_psi.text())
         except:
             pass
         try:
-            self._LoHS = float(self._FDCATab.lineKlohs.text())
+            self._LoHS = float(self._FDCATab.edit_lohs.text())
         except:
             pass
         try:
-            self._SoHF = float(self._FDCATab.lineKsohf.text())
+            self._SoHF = float(self._FDCATab.edit_sohf.text())
         except:
             pass
 
-        self._FDCATab.lblKyvalue.setText(str(self._Ky))
-        self._FDCATab.lblKpsivalue.setText(str(self._Kpsi))
-        self._FDCATab.lblKlohsvalue.setText(str(self._LoHS))
-        self._FDCATab.lblKsohfvalue.setText(str(self._SoHF))
+        self._FDCATab.lbl_k_y.setText(str(self._Ky))
+        self._FDCATab.lbl_k_psi.setText(str(self._Kpsi))
+        self._FDCATab.lbl_lohs.setText(str(self._LoHS))
+        self._FDCATab.lbl_sohf.setText(str(self._SoHF))
 
-        self._FDCATab.lineKy.clear()
-        self._FDCATab.lineKpsi.clear()
-        self._FDCATab.lineKlohs.clear()
-        self._FDCATab.lineKsohf.clear()
+        self._FDCATab.edit_k_y.clear()
+        self._FDCATab.edit_k_psi.clear()
+        self._FDCATab.edit_lohs.clear()
+        self._FDCATab.edit_sohf.clear()
 
     def resetParameters(self):
-        self._FDCATab.lineKy.clear()
-        self._FDCATab.lineKpsi.clear()
-        self._FDCATab.lineKlohs.clear()
-        self._FDCATab.lineKsohf.clear()
+        self._FDCATab.edit_k_y.clear()
+        self._FDCATab.edit_k_psi.clear()
+        self._FDCATab.edit_lohs.clear()
+        self._FDCATab.edit_sohf.clear()
         
         self._Ky = 0.1
         self._Kpsi = 0.4
         self._LoHS = 1
         self._SoHF = 1
-        self._FDCATab.sliderKloha.setValue(0)
+        self._FDCATab.slider_loha.setValue(0)
 
         self.updateParameters()
 
