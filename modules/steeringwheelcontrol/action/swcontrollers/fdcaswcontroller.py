@@ -35,6 +35,7 @@ class FDCASWController(BaseSWController):
         self._controller_tab.slider_loha.valueChanged.connect(
             lambda: self._controller_tab.lbl_loha.setText(str(self._controller_tab.slider_loha.value()/100.0))
         )
+        self._controller_tab.btn_update_hcr_list.clicked.connect(self.update_hcr_trajectory_list)
 
     def do(self, data_in):
         """In manual, the controller has no additional control. We could add some self-centering torque, if we want.

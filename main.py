@@ -13,7 +13,7 @@ from process import JoanHQAction, JoanHQWindow
 
 if __name__ == '__main__':
     APP = QtWidgets.QApplication(sys.argv)
-   
+
     JOANHQACTION = JoanHQAction()
     JOANHQWINDOW = JoanHQWindow(JOANHQACTION)
     JOANHQACTION.window = JOANHQWINDOW
