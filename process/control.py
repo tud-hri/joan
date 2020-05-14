@@ -125,9 +125,9 @@ class Control(Pulsar):
         self.state_widget.btn_stop.clicked.connect(self._btn_stop_clicked)
 
         try:
-            self.state_widget.lb_module_state.setText(self.module_state_handler.get_current_state().name)
+            self.state_widget.lbl_module_state.setText(self.module_state_handler.get_current_state().name)
             self.module_state_handler.state_changed.connect(
-                lambda state: self.state_widget.lb_module_state.setText(self.module_state_handler.get_state(state).name)
+                lambda state: self.state_widget.lbl_module_state.setText(self.module_state_handler.get_state(state).name)
             )
         except Exception as e:
             print("TODO: we should create the module_state_handler first thing per module in __init__ before calling create_widget")

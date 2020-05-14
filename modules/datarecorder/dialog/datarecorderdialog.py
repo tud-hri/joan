@@ -72,7 +72,7 @@ class DatarecorderDialog(JoanModuleDialog):
                 self.module_widget.lbl_message_recorder.setStyleSheet('color: orange')
 
             # update the state label
-            self.state_widget.lb_module_state.setText(state_as_state.name)
+            self.state_widget.lbl_module_state.setText(state_as_state.name)
             self.module_widget.repaint()
 
             if state_as_state == DatarecorderStates.DATARECORDER.START:

@@ -73,7 +73,7 @@ class JoanModuleDialog(QtWidgets.QDialog):
         state_as_state = self.master_state_handler.get_state(state)  # ensure we have the State object (not the int)
 
         # update the state label
-        self.state_widget.lb_module_state.setText(str(state_as_state))
+        self.state_widget.lbl_module_state.setText(str(state_as_state))
 
     def handle_module_state(self, state):
         """
@@ -83,15 +83,15 @@ class JoanModuleDialog(QtWidgets.QDialog):
         state_as_state = self.module_action.module_state_handler.get_state(state)  # ensure we have the State object (not the int)
 
         # update the state label
-        self.state_widget.lb_module_state.setText(str(state_as_state.name))
+        self.state_widget.lbl_module_state.setText(str(state_as_state.name))
         if state_as_state is self.module_action.module_states.EXEC.RUNNING:
-            self.state_widget.lb_module_state.setStyleSheet("background: green;")
+            self.state_widget.lbl_module_state.setStyleSheet("background: green;")
         elif state_as_state is self.module_action.module_states.EXEC.STOPPED:
-            self.state_widget.lb_module_state.setStyleSheet("background: orange;")
+            self.state_widget.lbl_module_state.setStyleSheet("background: orange;")
         elif state_as_state is self.module_action.module_states.EXEC.READY:
-            self.state_widget.lb_module_state.setStyleSheet("background: yellow;")
+            self.state_widget.lbl_module_state.setStyleSheet("background: yellow;")
         elif 400 <= state_as_state.nr < 500:  # an Error state
-            self.state_widget.lb_module_state.setStyleSheet("background: red;")
+            self.state_widget.lbl_module_state.setStyleSheet("background: red;")
 
         if state_as_state == self.module_action.module_states.EXEC.READY:
             self.state_widget.btn_start.setEnabled(True)
