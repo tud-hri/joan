@@ -85,17 +85,25 @@ class ExperimentManagerAction(JoanModuleAction):
         called from 'menu->file->load'
         """
         experiment_settings_filename = experiment_settings_filenames
-        if type(experiment_settings_filename) == list:
+        if isinstance(experiment_settings_filename, list):
             for element in experiment_settings_filename:
                 experiment_settings_filename = element
 
+        self.condition_names.clear()
         try:
             with open(experiment_settings_filename, 'r') as experiment_settings_file:
                 self.experiment_settings = json.load(experiment_settings_file)
         except JSONDecodeError as inst:
             return '%s line: %s column: %s, characterposition: %s' % (inst.msg, inst.lineno, inst.colno, inst.pos)
         except IsADirectoryError as inst:
-            return 'Error: %s is a Directory' % experiment_settings_filename
+            return 'Error: %s , %s is a directory' % (inst, experiment_settings_filename)
+
+        # fill condition_names again with the conditions ins self.experiment_settings (just loaded)
+        if 'condition' in self.experiment_settings.keys():
+            for condition in self.experiment_settings['condition']:
+                if 'name' in condition.keys():
+                    self.condition_names.append(condition['name'])
+
         return self.experiment_settings
 
     def write_default_experiment(self):
@@ -117,10 +125,6 @@ class ExperimentManagerAction(JoanModuleAction):
             self.settings_object.write_settings(group_key=module_object.name, item=self.item_dict)
 
     def get_experiment_conditions(self):
-        if 'condition' in self.experiment_settings.keys():
-            for condition in self.experiment_settings['condition']:
-                if 'name' in condition.keys():
-                    self.condition_names.append(condition['name'])
         return self.condition_names
 
     def _get_attention_message(self):
