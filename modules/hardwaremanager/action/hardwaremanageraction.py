@@ -60,6 +60,18 @@ class HardwaremanagerAction(JoanModuleAction):
             return False
         return super().stop()
 
+    def load_settings_from_file(self, settings_file_to_load):
+        self.module_settings_object = ModuleSettings(file=settings_file_to_load)
+        loaded_dict = self.module_settings_object.read_settings()
+
+        if bool(loaded_dict['data']):
+            self.settings.set_from_loaded_dict(loaded_dict['data'][str(JOANModules.HARDWARE_MANAGER)])
+            self.update_settings(self.settings.as_dict())
+
+    def save_settings_to_file(self, file_to_save_in):
+        self.module_settings_object = ModuleSettings(file=file_to_save_in)
+        self.module_settings_object.write_settings(item={'data': self.settings.as_dict()})
+
     def add_a_keyboard(self, widget, keyboard_settings=None):
         is_a_new_keyboard = not keyboard_settings
         if is_a_new_keyboard:

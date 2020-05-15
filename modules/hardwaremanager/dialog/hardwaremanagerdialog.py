@@ -1,6 +1,6 @@
 import os
 
-from PyQt5 import uic
+from PyQt5 import uic, QtWidgets, QtGui, QtCore
 
 from modules.hardwaremanager.action.states import HardwaremanagerStates
 from modules.joanmodules import JOANModules
@@ -18,9 +18,28 @@ class HardwaremanagerDialog(JoanModuleDialog):
         self._input_type_dialog = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../action/UIs/inputtype.ui"))
         self._input_type_dialog.btns_hardware_inputtype.accepted.connect(self._add_selected_input)
 
-        # self._input_type_dialog.btns_hardware_inputtype.accepted.connect(self.do)
+        self.settings_menu = QtWidgets.QMenu('Settings')
+        self.load_settings = QtWidgets.QAction('Load Settings')
+        self.load_settings.triggered.connect(self._load_settings)
+        self.settings_menu.addAction(self.load_settings)
+        self.save_settings = QtWidgets.QAction('Save Settings')
+        self.save_settings.triggered.connect(self._save_settings)
+        self.settings_menu.addAction(self.save_settings)
+        self.menu_bar.addMenu(self.settings_menu)
+
         self.module_widget.btn_add_hardware.clicked.connect(self._input_type_dialog.show)
         self.initialize_widgets_from_settings()
+
+    def _load_settings(self):
+        settings_file_to_load, _ = QtWidgets.QFileDialog.getOpenFileName(self, 'load settings', filter='*.json')
+        if settings_file_to_load:
+            self.module_action.load_settings_from_file(settings_file_to_load)
+            self.initialize_widgets_from_settings()
+
+    def _save_settings(self):
+        file_to_save_in, _ = QtWidgets.QFileDialog.getSaveFileName(self, 'save settings', filter='*.json')
+        if file_to_save_in:
+            self.module_action.save_settings_to_file(file_to_save_in)
 
     def _add_selected_input(self):
         # add the selected input to the list
