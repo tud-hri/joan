@@ -12,5 +12,11 @@ class ExperimentManagerStates(MasterStates):
     EXPERIMENTMANAGER.INITIALIZED = State(206, translate('ExperimentManagerState', 'ExperimentManager Initialized'),
                                             -1, 150, 201, 202, 203, 204, 205)
 
+    #Execution States
+    EXEC                          = State(300, translate('ExperimentManager State', 'ExperimentManager Exec'), -1, 150,400)
+    EXEC.READY                    = State(301, translate('ExperimentManager State', 'ExperimentManager Ready'), -1, 150,400)
+    EXEC.RUNNING                  = State(302, translate('ExperimentManager State', 'ExperimentManager Running'), -1, 150,400)
+    EXEC.STOPPED                  = State(303, translate('ExperimentManager State', 'ExperimentManager Stopped'), -1, 150,400)
+
     def __init__(self, *args, **kwargs):
         MasterStates.__init__(self)

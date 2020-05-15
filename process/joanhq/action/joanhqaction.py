@@ -20,8 +20,8 @@ class JoanHQAction(QtCore.QObject):
         self.singleton_status = Status()
         self.master_state_handler = self.singleton_status._master_state_handler
         self.master_states = self.singleton_status._master_states
-        self.master_state_handler.state_changed.connect(self.handle_master_state)
-
+        #self.master_state_handler.state_changed.connect(self.handle_master_state)
+        
         self.window = None
 
         # path to modules directory
@@ -37,6 +37,8 @@ class JoanHQAction(QtCore.QObject):
                 module.action.initialize()
             except AttributeError:  # module has new style TODO: remove statement above when moving to new style
                 module.initialize()
+        #self.master_state_handler.request_state_change(self.master_states.INITIALIZED)
+        
 
     def start_all(self):
         """Initialize modules"""
@@ -45,15 +47,16 @@ class JoanHQAction(QtCore.QObject):
                 module.action.start()
             except AttributeError:  # module has new style TODO: remove statement above when moving to new style
                 module.start()
-
+        #self.master_state_handler.request_state_change(self.master_states.INITIALIZING)
+ 
     def stop_all(self):
-        """Initialize modules"""
+        """Stop all modules"""
         for _, module in self._instantiated_modules.items():
             try:
                 module.action.stop()
             except AttributeError:  # module has new style TODO: remove statement above when moving to new style
                 module.stop()
-
+ 
     def add_module(self, module: JOANModules, name='', parent=None, millis=100):
         """Add module, instantiated module, find unique name"""
 
@@ -68,8 +71,12 @@ class JoanHQAction(QtCore.QObject):
             module_widget.setObjectName(name)
             module_dialog = module_widget
         else:
+            '''
             module_action = module.action(self.master_state_handler, millis=millis)
             module_dialog = module.dialog(module_action, self.master_state_handler, parent=parent)
+            '''
+            module_action = module.action(millis=millis)
+            module_dialog = module.dialog(module_action, parent=parent)
 
         self.window.add_module(module_dialog, module)
 
@@ -83,26 +90,13 @@ class JoanHQAction(QtCore.QObject):
 
         del self._instantiated_modules[module]
 
-    def handle_master_state(self, state):
-        """
-        Handle the state transition by updating the status label and have the
-        GUI reflect the possibilities of the current state.
-        """
-        try:
-            state_as_state = self.master_state_handler.get_state(state)  # ensure we have the State object (not the int)
-
-            # emergency stop
-            if state_as_state == self.master_states.ERROR:
-                self.stop()
-
-        except Exception as inst:
-            print(inst)
-
     def emergency(self):
         """Emergency button processing"""
-        self.master_state_handler.request_state_change(self.master_states.ERROR)
+        #self.stop_all()
+        self.master_state_handler.request_state_change(self.master_states.EMERGENCY)
 
     def quit(self):
+        #self.stop_all()
         self.master_state_handler.request_state_change(self.master_states.QUIT)
 
     @property

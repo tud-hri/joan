@@ -4,23 +4,32 @@ from PyQt5 import QtWidgets, uic, QtGui, QtCore
 
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
-
+from process.statehandler import StateHandler
+from process.states import MasterStates
+from process.status import Status
 
 class JoanModuleDialog(QtWidgets.QDialog):
 
     # signal when dialog is closed
     closed = QtCore.pyqtSignal()
 
-    def __init__(self, module: JOANModules, module_action: JoanModuleAction, master_state_handler, parent=None):
+    def __init__(self, module: JOANModules, module_action: JoanModuleAction, parent=None):
+    #def __init__(self, module: JOANModules, module_action: JoanModuleAction, master_state_handler, parent=None):
         super().__init__(parent=parent)
 
         # reference to the action class of this module
         self.module_action = module_action
 
         # module and master state handling
-        self.module_action.module_state_handler.state_changed.connect(self.handle_module_state)
-        master_state_handler.state_changed.connect(self.handle_master_state)
-        self.master_state_handler = master_state_handler
+        # status, statehandlers and news
+        #self.singleton_status = Status()
+        #self.master_state_handler = self.singleton_status._master_state_handler
+        #self.master_states = self.singleton_status._master_states
+        #self.master_state_handler.state_changed.connect(self.handle_master_state)
+        
+        #self.module_action.module_state_handler.state_changed.connect(self.handle_module_state)
+        #self.module_action.master_state_handler.state_changed.connect(self.handle_master_state)
+        #self.master_state_handler = master_state_handler
 
         self.setLayout(QtWidgets.QVBoxLayout(self))
         self.setWindowTitle(str(module))
@@ -69,12 +78,15 @@ class JoanModuleDialog(QtWidgets.QDialog):
         Handle the state transition by updating the status label and have the
         GUI reflect the possibilities of the current state.
         """
-
+        '''
         state_as_state = self.master_state_handler.get_state(state)  # ensure we have the State object (not the int)
 
         # update the state label
         self.state_widget.lbl_module_state.setText(str(state_as_state))
-
+        '''
+        print('handle_master_state in joanmoduledialog')
+        pass
+        
     def handle_module_state(self, state):
         """
         Handle the state transition by updating the status label and have the

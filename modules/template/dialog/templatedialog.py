@@ -9,5 +9,7 @@ import os
 
 
 class TemplateDialog(JoanModuleDialog):
-    def __init__(self, module_action: JoanModuleAction, master_state_handler, parent=None):
-        super().__init__(module=JOANModules.TEMPLATE, module_action=module_action, master_state_handler=master_state_handler, parent=parent)
+    def __init__(self, module_action: JoanModuleAction, parent=None):
+        super().__init__(module=JOANModules.TEMPLATE, module_action=module_action, parent=parent)
+    #def __init__(self, module_action: JoanModuleAction, master_state_handler, parent=None):
+    #    super().__init__(module=JOANModules.TEMPLATE, module_action=module_action, master_state_handler=master_state_handler, parent=parent)

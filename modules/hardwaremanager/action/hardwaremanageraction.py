@@ -13,8 +13,10 @@ from modules.hardwaremanager.action.inputclasses.JOAN_sensodrive import JOAN_Sen
 
 
 class HardwaremanagerAction(JoanModuleAction):
-    def __init__(self, master_state_handler, millis=5):
-        super().__init__(module=JOANModules.HARDWARE_MANAGER, master_state_handler=master_state_handler, millis=millis)
+    def __init__(self, millis=5):
+        super().__init__(module=JOANModules.HARDWARE_MANAGER, millis=millis)
+    #def __init__(self, master_state_handler, millis=5):
+    #    super().__init__(module=JOANModules.HARDWARE_MANAGER, master_state_handler=master_state_handler, millis=millis)
 
         HardwaremanagerAction.input_devices_classes = {}
         HardwaremanagerAction.input_devices_widgets = {}

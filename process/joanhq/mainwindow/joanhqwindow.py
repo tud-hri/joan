@@ -5,7 +5,10 @@ import os
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 from process.joanmoduleaction import JoanModuleAction
 from modules.joanmodules import JOANModules
-
+#from process.joanhq.action.joanhqaction import JoanHQAction
+from process.statehandler import StateHandler
+from process.states import MasterStates
+from process.status import Status
 
 class JoanHQWindow(QtWidgets.QMainWindow):
     """Joan HQ Window"""
@@ -16,7 +19,14 @@ class JoanHQWindow(QtWidgets.QMainWindow):
         super().__init__(parent)
 
         self.action = action
-        self.master_state_handler = self.action.master_state_handler
+        #self.master_state_handler = self.action.master_state_handler
+
+        # status, statehandlers and news
+        self.singleton_status = Status()
+        self.master_state_handler = self.singleton_status._master_state_handler
+        self.master_states = self.singleton_status._master_states
+        self.master_state_handler.state_changed.connect(self.handle_master_state)
+
 
         # path to resources folder
         self._path_resources = os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../", "resources"))
@@ -26,6 +36,7 @@ class JoanHQWindow(QtWidgets.QMainWindow):
         self.setWindowTitle('JOAN HQ')
         self._main_widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "joanhq.ui"))
         self._main_widget.lbl_master_state.setText(self.master_state_handler.get_current_state().name)
+        
         self.setCentralWidget(self._main_widget)
         self.resize(400, 400)
 
@@ -49,6 +60,24 @@ class JoanHQWindow(QtWidgets.QMainWindow):
         # add file menu
         self._file_menu = self.menuBar().addMenu('File')
         self._file_menu.addAction('Quit', self.action.quit)
+
+    def handle_master_state(self, state):
+        """
+        Handle the state transition by updating the status label and have the
+        GUI reflect the possibilities of the current state.
+        """
+        try:
+            state_as_state = self.master_state_handler.get_state(state)  # ensure we have the State object (not the int)
+           # emergency stop
+            if state_as_state == self.master_states.EMERGENCY:
+                self.action.stop_all()
+            elif state_as_state == self.master_states.INITIALIZING:
+                self.action.initialize_all
+            elif state_as_state == self.master_states.QUIT:
+                self.action.quit()
+        except Exception as inst:
+            print(inst)
+        #self._main_widget.lbl_master_state.setText(self.action.master_state_handler.get_current_state().name)
 
     def add_module(self, module_dialog, module_enum):
         """Create a widget and add to main window"""

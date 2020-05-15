@@ -12,8 +12,10 @@ from PyQt5 import QtWidgets, QtGui
 from functools import partial
 
 class DatarecorderDialog(JoanModuleDialog):
-    def __init__(self, module_action: JoanModuleAction, master_state_handler, parent=None):
-        super().__init__(module=JOANModules.DATA_RECORDER, module_action=module_action, master_state_handler=master_state_handler, parent=parent)
+    def __init__(self, module_action: JoanModuleAction, parent=None):
+        super().__init__(module=JOANModules.DATA_RECORDER, module_action=module_action, parent=parent)
+    #def __init__(self, module_action: JoanModuleAction, master_state_handler, parent=None):
+    #    super().__init__(module=JOANModules.DATA_RECORDER, module_action=module_action, master_state_handler=master_state_handler, parent=parent)
 
         #self.create_widget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)), "datarecorder.ui"))
         #self.create_settings(module=self, file=os.path.join(os.path.dirname(os.path.realpath(__file__)), "datarecordersettings.json"))

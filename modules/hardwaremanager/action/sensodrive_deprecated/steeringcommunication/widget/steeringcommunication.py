@@ -19,7 +19,7 @@ class SteeringcommunicationWidget(Control):
         # creating a self.module_state_handler which also has the module_states in self.module_state_handler.states
         self.define_module_state_handler(module=self, module_states=SteeringcommunicationStates())
         self.module_state_handler.state_changed.connect(self.handle_module_state)
-        self.master_state_handler.state_changed.connect(self.handle_master_state)
+        #self.master_state_handler.state_changed.connect(self.handle_master_state)
 
         try:
             self.action = SteeringcommunicationAction()
