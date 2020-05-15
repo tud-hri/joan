@@ -1,12 +1,9 @@
 import os
 
 import keyboard
-from PyQt5 import uic
 
 from modules.hardwaremanager.action.inputclasses.JOAN_joystick import JOAN_Joystick
 from modules.hardwaremanager.action.inputclasses.JOAN_keyboard import JOAN_Keyboard
-from modules.hardwaremanager.action.inputclasses.JOAN_mouse import JOAN_Mouse
-from modules.hardwaremanager.action.inputclasses.JOAN_sensodrive import JOAN_SensoDrive
 from modules.hardwaremanager.action.settings import KeyBoardSettings, JoyStickSettings, HardWareManagerSettings
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
@@ -93,7 +90,11 @@ class HardwaremanagerAction(JoanModuleAction):
             keyboard.unhook(self.input_devices_classes[tabtitle].key_event)
 
         del self.input_devices_classes[tabtitle]
-        del self.data[tabtitle]
+
+        try:
+            del self.data[tabtitle]
+        except KeyError:  # data is only present if the hardware manager ran since the hardware was added
+            pass
 
         if not self.input_devices_classes:
             self.stop()
