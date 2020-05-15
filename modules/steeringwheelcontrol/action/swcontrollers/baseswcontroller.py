@@ -2,6 +2,7 @@ import abc
 import os
 
 import pandas as pd
+import numpy as np
 
 from PyQt5 import QtWidgets, uic
 
@@ -17,9 +18,9 @@ class BaseSWController:
         self._controller_tab = uic.loadUi(self._controller_type.tab_ui_file)
 
         # trajectory
-        self._hcr = []
-        self._current_hcr_name = ''
-        self._path_hcr_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'hcr_trajectories')
+        self._trajectory = []
+        self._current_trajectory_name = ''
+        self._path_trajectory_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'trajectories')
 
         self._data_in = {}
         self._data_out = {}
@@ -32,29 +33,38 @@ class BaseSWController:
         """
         return self._data_out
 
-    def load_hcr(self):
+    def load_trajectory(self):
         """Load HCR trajectory"""
-        fname = self._controller_tab.cmbbox_hcr_selection.itemText(self._controller_tab.cmbbox_hcr_selection.currentIndex())
+        fname = self._controller_tab.cmbbox_hcr_selection.itemText(
+            self._controller_tab.cmbbox_hcr_selection.currentIndex()
+        )
 
-        if fname != self._current_hcr_name:
+        if fname != self._current_trajectory_name:
             # fname is different from _current_hcr_name, load it!
             try:
-                tmp = pd.read_csv(os.path.join(self._path_hcr_directory, fname))
-                self._hcr = tmp.values
-                self._current_hcr_name = fname
+                tmp = pd.read_csv(os.path.join(self._path_trajectory_directory, fname))
+                self._trajectory = tmp.values
+                self._current_trajectory_name = fname
             except OSError as err:
                 print('Error loading HCR trajectory file: ', err)
 
-    def update_hcr_trajectory_list(self):
+    def update_trajectory_list(self):
         # get list of csv files in directory
-        files = [filename for filename in os.listdir(self._path_hcr_directory) if filename.endswith('csv')]
+        files = [filename for filename in os.listdir(self._path_trajectory_directory) if filename.endswith('csv')]
 
         self._controller_tab.cmbbox_hcr_selection.clear()
         self._controller_tab.cmbbox_hcr_selection.addItems(files)
 
-        idx = self._controller_tab.cmbbox_hcr_selection.findText(self._current_hcr_name)
+        idx = self._controller_tab.cmbbox_hcr_selection.findText(self._current_trajectory_name)
         if idx != -1:
             self._controller_tab.cmbbox_hcr_selection.setCurrentIndex(idx)
+
+    def closestNode(self, node, nodes):
+        """find the node in the nodes list (trajectory)"""
+        nodes = np.asarray(nodes)
+        deltas = nodes - node
+        dist_squared = np.einsum('ij,ij->i', deltas, deltas)
+        return np.argmin(dist_squared)
 
     @property
     def get_controller_tab(self):

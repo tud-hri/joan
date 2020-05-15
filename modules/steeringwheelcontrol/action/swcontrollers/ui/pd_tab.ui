@@ -518,7 +518,7 @@
        </font>
       </property>
       <property name="text">
-       <string>Reference trajectory (Human-Compatible Reference)</string>
+       <string>Reference trajectory</string>
       </property>
      </widget>
     </item>

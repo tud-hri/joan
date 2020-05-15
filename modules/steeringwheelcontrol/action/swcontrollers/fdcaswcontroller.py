@@ -16,16 +16,15 @@ class FDCASWController(BaseSWController):
         # Initialize local Variables
         self._hcr_list = []
         self._hcr = []
-        self._t_lookahead_feedforward = 0.0
+        self._t_lookahead = 0.0
         self._k_y = 0.1
         self._k_psi = 0.4
         self._lohs = 1.0
         self._sohf = 1.0
         self._loha = 0.0
 
-        self._current_hcr_name = ''
-        self._path_hcr_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'hcr_trajectories')
-        self.update_hcr_trajectory_list()
+        self._current_trajectory_name = ''
+        self.update_trajectory_list()
 
         # connect widgets
         self._controller_tab.btn_apply.clicked.connect(self.get_set_parameter_values_from_ui)
@@ -33,7 +32,7 @@ class FDCASWController(BaseSWController):
         self._controller_tab.slider_loha.valueChanged.connect(
             lambda: self._controller_tab.lbl_loha.setText(str(self._controller_tab.slider_loha.value()/100.0))
         )
-        self._controller_tab.btn_update_hcr_list.clicked.connect(self.update_hcr_trajectory_list)
+        self._controller_tab.btn_update_hcr_list.clicked.connect(self.update_trajectory_list)
 
         self.set_default_parameter_values()
 
@@ -48,7 +47,7 @@ class FDCASWController(BaseSWController):
         """
 
         # default values
-        self._t_lookahead_feedforward = 0.0
+        self._t_lookahead = 0.0
         self._k_y = 0.1
         self._k_psi = 0.4
         self._lohs = 1.0
@@ -60,9 +59,9 @@ class FDCASWController(BaseSWController):
         self.get_set_parameter_values_from_ui()
 
         # load the default HCR
-        self._current_hcr_name = 'default_hcr_trajectory.csv'
-        self.update_hcr_trajectory_list()
-        self.load_hcr()
+        self._current_trajectory_name = 'default_hcr_trajectory.csv'
+        self.update_trajectory_list()
+        self.load_trajectory()
 
     def get_set_parameter_values_from_ui(self):
         """update controller parameters from ui"""
@@ -73,7 +72,7 @@ class FDCASWController(BaseSWController):
         self._sohf = float(self._controller_tab.edit_sohf.text())
         self._loha = self._controller_tab.slider_loha.value() / 100
 
-        self.load_hcr()
+        self.load_trajectory()
 
         self.update_ui()
 
@@ -92,26 +91,3 @@ class FDCASWController(BaseSWController):
         self._controller_tab.lbl_lohs.setText(str(self._lohs))
         self._controller_tab.lbl_sohf.setText(str(self._sohf))
 
-    def load_hcr(self):
-        """new HCR selected"""
-        fname = self._controller_tab.cmbbox_hcr_selection.itemText(self._controller_tab.cmbbox_hcr_selection.currentIndex())
-
-        if fname != self._current_hcr_name:
-            # fname is different from _current_hcr_name, load it!
-            try:
-                tmp = pd.read_csv(os.path.join(self._path_hcr_directory, fname))
-                self._hcr = tmp.values
-                self._current_hcr_name = fname
-            except OSError as err:
-                print('Error loading HCR trajectory file: ', err)
-
-    def update_hcr_trajectory_list(self):
-        # get list of csv files in directory
-        files = [filename for filename in os.listdir(self._path_hcr_directory) if filename.endswith('csv')]
-
-        self._controller_tab.cmbbox_hcr_selection.clear()
-        self._controller_tab.cmbbox_hcr_selection.addItems(files)
-
-        idx = self._controller_tab.cmbbox_hcr_selection.findText(self._current_hcr_name)
-        if idx != -1:
-            self._controller_tab.cmbbox_hcr_selection.setCurrentIndex(idx)

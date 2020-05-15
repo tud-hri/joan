@@ -1,6 +1,4 @@
-import os
-
-import pandas as pd
+import numpy as np
 
 from modules.steeringwheelcontrol.action.swcontrollertypes import SWContollerTypes
 from .baseswcontroller import BaseSWController
@@ -18,12 +16,19 @@ class PDSWController(BaseSWController):
         self._w_lat = 1
         self._w_heading = 2
 
-        self.update_hcr_trajectory_list()
+        # controller errors
+        # [0]: lateral error
+        # [1]: heading error
+        # [2]: lateral rate error
+        # [3]: heading rate error
+        self._controller_error = np.array([0.0, 0.0, 0.0, 0.0])
+
+        self.update_trajectory_list()
 
         # connect widgets
         self._controller_tab.btn_apply.clicked.connect(self.get_set_parameter_values_from_ui)
         self._controller_tab.btn_reset.clicked.connect(self.set_default_parameter_values)
-        self._controller_tab.btn_update_hcr_list.clicked.connect(self.update_hcr_trajectory_list)
+        self._controller_tab.btn_update_hcr_list.clicked.connect(self.update_trajectory_list)
 
         self.set_default_parameter_values()
 
@@ -33,8 +38,9 @@ class PDSWController(BaseSWController):
 
         self.data_out['sw_torque'] = 0
 
-    def error(self):
-        """ """
+    def error(self, pos_car, heading_car, vel_car, heading_rate_car):
+        """Calculate the controller error"""
+        pos_future_car = pos_car + vel_car * self._t_lookahead
 
     def set_default_parameter_values(self):
         """set the default controller parameters
@@ -52,9 +58,9 @@ class PDSWController(BaseSWController):
         self.get_set_parameter_values_from_ui()
 
         # load the default HCR
-        self._current_hcr_name = 'default_hcr_trajectory.csv'
-        self.update_hcr_trajectory_list()
-        self.load_hcr()
+        self._current_trajectory_name = 'default_hcr_trajectory.csv'
+        self.update_trajectory_list()
+        self.load_trajectory()
 
     def get_set_parameter_values_from_ui(self):
         """update controller parameters from ui"""
@@ -63,6 +69,8 @@ class PDSWController(BaseSWController):
         self._k_d = float(self._controller_tab.edit_gain_deriv.text())
         self._w_lat = float(self._controller_tab.edit_weight_lat.text())
         self._w_heading = float(self._controller_tab.edit_weight_heading.text())
+
+        self.load_trajectory()
 
         self.update_ui()
 
