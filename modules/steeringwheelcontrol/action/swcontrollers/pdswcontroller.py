@@ -1,4 +1,5 @@
 import numpy as np
+import math
 
 from modules.steeringwheelcontrol.action.swcontrollertypes import SWContollerTypes
 from .baseswcontroller import BaseSWController
@@ -33,20 +34,73 @@ class PDSWController(BaseSWController):
         self.set_default_parameter_values()
 
     def do(self, data_in):
-        """In manual, the controller has no additional control. We could add some self-centering torque, if we want.
-        For now, steeringwheel torque is zero"""
+        """Perform the controller-specific calculations"""
 
-        self.data_out['sw_torque'] = 0
+        # extract data
+        car = data_in['vehicles'][0].spawned_vehicle
+        pos_car = np.array([car.get_location().x, car.get_location().y])
+        vel_car = np.array([car.get_velocity().x, car.get_velocity().y])
+        heading_car = car.get_transform().rotation.yaw
+        heading_rate_car = 0.0
 
-    def error(self, pos_car, heading_car, vel_car, heading_rate_car):
+        # find error
+        self._controller_error = self.error(pos_car, heading_car, vel_car, heading_rate_car)
+
+        # TODO calculate steering wheel torque
+
+        self.data_out['sw_torque'] = 0.0
+
+    def error(self, pos_car, heading_car, vel_car=np.array([0.0, 0.0, 0.0]), heading_rate_car=0.0):
         """Calculate the controller error"""
-        pos_future_car = pos_car + vel_car * self._t_lookahead
+        pos_car_future = pos_car + vel_car * self._t_lookahead  # linear extrapolation, should be updated
+
+        # Find waypoint index of the point that the car would be in the future (compared to own driven trajectory)
+        index_closest_waypoint = self.find_closest_node(pos_car_future, self._trajectory[:, 1:3])
+
+        if index_closest_waypoint >= len(self._trajectory) - 3:
+            index_closest_waypoint_next = 0
+        else:
+            index_closest_waypoint_next = index_closest_waypoint + 3
+
+        # calculate lateral error
+        pos_ref_future = self._trajectory[index_closest_waypoint, 1:3]
+        pos_ref_future_next = self._trajectory[index_closest_waypoint_next, 1:3]
+
+        vec_pos_future = pos_car_future - pos_ref_future
+        vec_dir_future = pos_ref_future_next - pos_ref_future
+
+        error_lat_sign = np.math.atan2(np.linalg.det([vec_dir_future, vec_pos_future]),
+                                       np.dot(vec_dir_future, vec_pos_future))
+
+        error_pos_lat = np.sqrt(vec_pos_future.dot(vec_pos_future))
+
+        if error_lat_sign < 0:
+            error_pos_lat = -error_pos_lat
+
+        # calculate the lateral position error rate
+        error_vel_lat = np.dot(vel_car, vec_pos_future) / np.linalg.norm(vec_pos_future)
+
+        # calculate heading error
+        heading_ref = self._trajectory[index_closest_waypoint, 6]
+
+        error_heading = -(math.radians(heading_ref) - math.radians(heading_car))
+
+        # Make sure you dont get jumps (basically unwrap the angle with a threshold of pi radians (180 degrees))
+        if error_heading > math.pi:
+            error_heading = error_heading - 2.0 * math.pi
+        if error_heading < -math.pi:
+            error_heading = error_heading + 2.0 * math.pi
+
+        # heading rate error
+        error_heading_rate = 0.0
+
+        return np.array([error_pos_lat, error_heading, error_vel_lat, error_heading_rate])
 
     def set_default_parameter_values(self):
         """set the default controller parameters
         In the near future, this should be from the controller settings class
         """
-        
+
         # default values
         self._t_lookahead = 0.6
         self._k_p = 8
