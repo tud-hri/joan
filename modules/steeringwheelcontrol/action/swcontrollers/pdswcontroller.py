@@ -1,10 +1,10 @@
 import os
 
-from PyQt5 import QtWidgets
+import pandas as pd
 
-from modules.joanmodules import JOANModules
 from modules.steeringwheelcontrol.action.swcontrollertypes import SWContollerTypes
 from .baseswcontroller import BaseSWController
+
 
 class PDSWController(BaseSWController):
 
@@ -17,17 +17,24 @@ class PDSWController(BaseSWController):
         self._k_d = 1
         self._w_lat = 1
         self._w_heading = 2
-        self.set_default_parameter_values()
+
+        self.update_hcr_trajectory_list()
 
         # connect widgets
         self._controller_tab.btn_apply.clicked.connect(self.get_set_parameter_values_from_ui)
         self._controller_tab.btn_reset.clicked.connect(self.set_default_parameter_values)
+        self._controller_tab.btn_update_hcr_list.clicked.connect(self.update_hcr_trajectory_list)
+
+        self.set_default_parameter_values()
 
     def do(self, data_in):
         """In manual, the controller has no additional control. We could add some self-centering torque, if we want.
         For now, steeringwheel torque is zero"""
 
         self.data_out['sw_torque'] = 0
+
+    def error(self):
+        """ """
 
     def set_default_parameter_values(self):
         """set the default controller parameters
@@ -43,6 +50,11 @@ class PDSWController(BaseSWController):
 
         self.update_ui()
         self.get_set_parameter_values_from_ui()
+
+        # load the default HCR
+        self._current_hcr_name = 'default_hcr_trajectory.csv'
+        self.update_hcr_trajectory_list()
+        self.load_hcr()
 
     def get_set_parameter_values_from_ui(self):
         """update controller parameters from ui"""

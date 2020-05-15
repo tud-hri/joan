@@ -394,7 +394,7 @@
               </font>
              </property>
              <property name="text">
-              <string>Human Compatible Reference:</string>
+              <string>Reference trajectory (Human-Compatible Reference)</string>
              </property>
             </widget>
            </item>
@@ -463,38 +463,14 @@
              </property>
             </widget>
            </item>
-           <item row="6" column="0">
-            <widget class="QLabel" name="lblHcr">
-             <property name="font">
-              <font>
-               <pointsize>10</pointsize>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>HCR:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="6" column="1">
-            <widget class="QComboBox" name="cmbbox_hcr_selection">
+           <item row="6" column="2">
+            <widget class="QPushButton" name="btn_update_hcr_list">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
-             <property name="font">
-              <font>
-               <weight>50</weight>
-               <bold>false</bold>
-              </font>
-             </property>
-            </widget>
-           </item>
-           <item row="6" column="2">
-            <widget class="QPushButton" name="btn_update_hcr_list">
              <property name="font">
               <font>
                <pointsize>10</pointsize>
@@ -502,6 +478,28 @@
              </property>
              <property name="text">
               <string>Update List</string>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="0">
+            <widget class="QComboBox" name="cmbbox_hcr_selection">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>250</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <weight>50</weight>
+               <bold>false</bold>
+              </font>
              </property>
             </widget>
            </item>
