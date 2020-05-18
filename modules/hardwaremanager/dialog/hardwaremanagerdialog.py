@@ -51,6 +51,8 @@ class HardwaremanagerDialog(JoanModuleDialog):
             device_title = self.module_action.add_a_keyboard(new_widget)
         elif "Joystick" in self._input_type_dialog.combo_hardware_inputtype.currentText():
             device_title = self.module_action.add_a_joystick(new_widget)
+        elif "SensoDrive" in self._input_type_dialog.combo_hardware_inputtype.currentText():
+            device_title = self.module_action.add_a_sensodrive(new_widget)
 
         new_widget.groupBox.setTitle(device_title)
         self.module_widget.hardware_list_layout.addWidget(new_widget)

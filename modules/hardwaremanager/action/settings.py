@@ -6,6 +6,7 @@ class HardWareManagerSettings:
     def __init__(self):
         self.key_boards = []
         self.joy_sticks = []
+        self.sensodrives = []
 
     def set_from_loaded_dict(self, loaded_dict):
         #  TODO: write more general and robust version
@@ -20,6 +21,12 @@ class HardWareManagerSettings:
             joystick_settings = JoyStickSettings()
             joystick_settings.set_from_loaded_dict(joystick)
             self.joy_sticks.append(joystick_settings)
+
+        self.sensodrives = []
+        for sensodrive in loaded_dict['sensodrives']:
+            sensodrive_settings = SensoDriveSettings()
+            sensodrive_settings.set_from_loaded_dict(sensodrive)
+            self.sensodrives.append(sensodrive_settings)
 
     def as_dict(self):
         output_dict = {}
@@ -104,6 +111,17 @@ class JoyStickSettings:
         self.max_steer = 90
         self.device_vendor_id = 0
         self.device_product_id = 0
+
+    def as_dict(self):
+        return self.__dict__
+
+    def set_from_loaded_dict(self, loaded_dict):
+        for key, value in loaded_dict.items():
+            self.__setattr__(key, value)
+
+class SensoDriveSettings:
+    def __init__(self):
+        self.test = 0
 
     def as_dict(self):
         return self.__dict__

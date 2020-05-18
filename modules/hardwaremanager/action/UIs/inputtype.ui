@@ -58,6 +58,11 @@
        <string>USB Joystick (HID)</string>
       </property>
      </item>
+     <item>
+      <property name="text">
+       <string>SensoDrive</string>
+      </property>
+     </item>
     </widget>
    </item>
   </layout>

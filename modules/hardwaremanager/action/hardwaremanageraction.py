@@ -4,7 +4,9 @@ import keyboard
 
 from modules.hardwaremanager.action.inputclasses.JOAN_joystick import JOAN_Joystick
 from modules.hardwaremanager.action.inputclasses.JOAN_keyboard import JOAN_Keyboard
-from modules.hardwaremanager.action.settings import KeyBoardSettings, JoyStickSettings, HardWareManagerSettings
+from modules.hardwaremanager.action.inputclasses.JOAN_sensodrive import JOAN_SensoDrive
+
+from modules.hardwaremanager.action.settings import KeyBoardSettings, JoyStickSettings, SensoDriveSettings,  HardWareManagerSettings
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
 from process.settings import ModuleSettings
@@ -95,6 +97,19 @@ class HardwaremanagerAction(JoanModuleAction):
         self.input_devices_classes.update([(device_title, JOAN_Joystick(self, widget, joystick_settings))])
         if is_a_new_joystick:
             self.settings.joy_sticks.append(joystick_settings)
+        return device_title
+
+    def add_a_sensodrive(self, widget, sensodrive_settings=None):
+        is_a_new_sensodrive = not sensodrive_settings
+        if is_a_new_sensodrive:
+            sensodrive_settings = SensoDriveSettings()
+
+        number_of_sensodrives = sum([bool("SensoDrive" in k) for k in self.input_devices_classes.keys()])
+        device_title = "Sensodrive %s" % (number_of_sensodrives + 1)
+
+        self.input_devices_classes.update([(device_title, JOAN_SensoDrive(self, widget, sensodrive_settings))])
+        if is_a_new_sensodrive:
+            self.settings.sensodrives.append(sensodrive_settings)
         return device_title
 
     def remove(self, tabtitle):
