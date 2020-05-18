@@ -19,7 +19,7 @@ class ExperimentManagerAction(JoanModuleAction):
     #def __init__(self, master_state_handler, millis=100):
     #    super().__init__(module=JOANModules.EXPERIMENT_MANAGER, master_state_handler=master_state_handler, millis=millis)
 
-        self.module_state_handler.request_state_change(ExperimentManagerStates.EXPERIMENTMANAGER.READY)
+        self.module_state_handler.request_state_change(ExperimentManagerStates.EXEC.READY)
 
         self.data = {}
         self.write_news(news=self.data)
@@ -51,18 +51,22 @@ class ExperimentManagerAction(JoanModuleAction):
         """
         This function is called before the module is started
         """
-        pass
+        try:
+            self.module_state_handler.request_state_change(ExperimentManagerStates.INIT.INITIALIZING)
+        except RuntimeError:
+            return False
+        return super().initialize()
 
     def start(self):
         try:
-            self.module_state_handler.request_state_change(ExperimentManagerStates.EXPERIMENTMANAGER.RUNNING)
+            self.module_state_handler.request_state_change(ExperimentManagerStates.EXEC.RUNNING)
         except RuntimeError:
             return False
         return super().start()
 
     def stop(self):
         try:
-            self.module_state_handler.request_state_change(ExperimentManagerStates.EXPERIMENTMANAGER.STOPPED)
+            self.module_state_handler.request_state_change(ExperimentManagerStates.EXEC.STOPPED)
         except RuntimeError:
             return False
         return super().stop()

@@ -16,12 +16,6 @@ class JoanHQAction(QtCore.QObject):
     def __init__(self):
         super(QtCore.QObject, self).__init__()
 
-        # status, statehandlers and news
-        self.singleton_status = Status()
-        self.master_state_handler = self.singleton_status._master_state_handler
-        self.master_states = self.singleton_status._master_states
-        #self.master_state_handler.state_changed.connect(self.handle_master_state)
-        
         self.window = None
 
         # path to modules directory
@@ -37,8 +31,6 @@ class JoanHQAction(QtCore.QObject):
                 module.action.initialize()
             except AttributeError:  # module has new style TODO: remove statement above when moving to new style
                 module.initialize()
-        #self.master_state_handler.request_state_change(self.master_states.INITIALIZED)
-        
 
     def start_all(self):
         """Initialize modules"""
@@ -47,7 +39,6 @@ class JoanHQAction(QtCore.QObject):
                 module.action.start()
             except AttributeError:  # module has new style TODO: remove statement above when moving to new style
                 module.start()
-        #self.master_state_handler.request_state_change(self.master_states.INITIALIZING)
  
     def stop_all(self):
         """Stop all modules"""
@@ -92,12 +83,10 @@ class JoanHQAction(QtCore.QObject):
 
     def emergency(self):
         """Emergency button processing"""
-        #self.stop_all()
-        self.master_state_handler.request_state_change(self.master_states.EMERGENCY)
+        self.stop_all()
 
     def quit(self):
-        #self.stop_all()
-        self.master_state_handler.request_state_change(self.master_states.QUIT)
+        self.stop_all()
 
     @property
     def instantiated_modules(self):

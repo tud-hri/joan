@@ -41,7 +41,11 @@ class HardwaremanagerAction(JoanModuleAction):
         """
         This function is called before the module is started
         """
-        pass
+        try:
+            self.module_state_handler.request_state_change(HardwaremanagerStates.INIT.INITIALIZING)
+        except RuntimeError:
+            return False
+        return super().initialize()
 
     def start(self):
         try:

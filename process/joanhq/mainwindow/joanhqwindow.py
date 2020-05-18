@@ -6,9 +6,10 @@ from PyQt5 import QtCore, QtGui, QtWidgets, uic
 from process.joanmoduleaction import JoanModuleAction
 from modules.joanmodules import JOANModules
 #from process.joanhq.action.joanhqaction import JoanHQAction
-from process.statehandler import StateHandler
-from process.states import MasterStates
+#from process.statehandler import StateHandler
+#from process.states import MasterStates
 from process.status import Status
+
 
 class JoanHQWindow(QtWidgets.QMainWindow):
     """Joan HQ Window"""
@@ -19,9 +20,8 @@ class JoanHQWindow(QtWidgets.QMainWindow):
         super().__init__(parent)
 
         self.action = action
-        #self.master_state_handler = self.action.master_state_handler
 
-        # status, statehandlers and news
+        # state, statehandlers
         self.singleton_status = Status()
         self.master_state_handler = self.singleton_status._master_state_handler
         self.master_states = self.singleton_status._master_states
@@ -41,13 +41,15 @@ class JoanHQWindow(QtWidgets.QMainWindow):
         self.resize(400, 400)
 
         self._main_widget.btn_emergency.setIcon(QtGui.QIcon(QtGui.QPixmap(os.path.join(self._path_resources, "stop.png"))))
-        self._main_widget.btn_emergency.clicked.connect(self.action.emergency)
+        self._main_widget.btn_emergency.clicked.connect(self.emergency)
 
         self._main_widget.btn_quit.setStyleSheet("background-color: darkred")
         self._main_widget.btn_quit.clicked.connect(self.close)
 
-        self._main_widget.btn_initialize_all.clicked.connect(self.action.initialize_all)
-        self._main_widget.btn_stop_all.clicked.connect(self.action.stop_all)
+        #self._main_widget.btn_initialize_all.clicked.connect(self.action.initialize_all)
+        self._main_widget.btn_initialize_all.clicked.connect(self.initialize_all)
+        #self._main_widget.btn_stop_all.clicked.connect(self.action.stop_all)
+        self._main_widget.btn_stop_all.clicked.connect(self.stop_all)
 
         # # layout for the module groupbox
         # # TODO Dit kan mooi in de UI ook al gezet worden, zie Joris' hardwaremanager
@@ -61,6 +63,18 @@ class JoanHQWindow(QtWidgets.QMainWindow):
         self._file_menu = self.menuBar().addMenu('File')
         self._file_menu.addAction('Quit', self.action.quit)
 
+    def emergency(self):
+        """ Needed here to show what is is happening in the Action-part """
+        self.master_state_handler.request_state_change(self.master_states.EMERGENCY)
+
+    def initialize_all(self):
+        """ Needed here to show what is is happening in the Action-part """
+        self.master_state_handler.request_state_change(self.master_states.INITIALIZED)
+
+    def stop_all(self):
+        """ Needed here to show what is is happening in the Action-part """
+        self.master_state_handler.request_state_change(self.master_states.STOP)
+
     def handle_master_state(self, state):
         """
         Handle the state transition by updating the status label and have the
@@ -68,16 +82,21 @@ class JoanHQWindow(QtWidgets.QMainWindow):
         """
         try:
             state_as_state = self.master_state_handler.get_state(state)  # ensure we have the State object (not the int)
+
            # emergency stop
             if state_as_state == self.master_states.EMERGENCY:
                 self.action.stop_all()
             elif state_as_state == self.master_states.INITIALIZING:
-                self.action.initialize_all
+                self.action.initialize_all()
+                #self.master_state_handler.request_state_change(self.master_states.INITIALIZED)
+            elif state_as_state == self.master_states.STOP:
+                self.action.stop_all()
             elif state_as_state == self.master_states.QUIT:
                 self.action.quit()
+                #self.action.stop_all()
         except Exception as inst:
             print(inst)
-        #self._main_widget.lbl_master_state.setText(self.action.master_state_handler.get_current_state().name)
+        self._main_widget.lbl_master_state.setText(self.master_state_handler.get_current_state().name)
 
     def add_module(self, module_dialog, module_enum):
         """Create a widget and add to main window"""

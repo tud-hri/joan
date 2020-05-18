@@ -68,8 +68,11 @@ class MasterStates:
     # Error state
     ERROR                           = State(150, translate('ErrorStates', 'Error'), 100, 110)
 
+    # Stop
+    STOP                            = State(101, translate('StopStates', 'Systems stopped'), -1, 999)
+
     # Emergengy stop
-    EMERGENCY                       = State(101, translate('EmergencyStates', 'Emergency stop'), -1, 999)
+    EMERGENCY                       = State(112, translate('EmergencyStates', 'Emergency stop'), -1, 999)
 
     QUIT                            = State(999, translate('Quit', 'Quit'), -1)
 

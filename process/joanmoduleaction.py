@@ -25,19 +25,6 @@ class JoanModuleAction(QtCore.QObject):
         self.singleton_news = News()
         self.singleton_settings = Settings()
 
-        
-        # status, statehandlers and news
-        self.singleton_status = Status()
-        self.master_state_handler = self.singleton_status._master_state_handler
-        self.master_states = self.singleton_status._master_states
-        #self.master_state_handler.state_changed.connect(self.handle_master_state)
-        
-
-
-        '''
-        # initialize states and state handler
-        self.master_state_handler = master_state_handler
-        '''
         self.module_states = module.states()
         self.module_state_handler = StateHandler(first_state=MasterStates.VOID, states_dict=self.module_states.get_states())
         module_state_package = {'module_states': self.module_states, 'module_state_handler': self.module_state_handler}
@@ -47,9 +34,7 @@ class JoanModuleAction(QtCore.QObject):
         # initialize own data and create channel in news
         self.data = {}
         self.write_news(news=self.data)
-        '''
-        self.master_state_handler.state_changed.connect(self.handle_master_state)
-        '''
+
     def do(self):
         pass
 
