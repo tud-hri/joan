@@ -27,7 +27,7 @@ import platform
 # Type definitions
 #///////////////////////////////////////////////////////////
 
-TPCANHandle                   = c_ushort    # Represents a PCAN hardware channel handle
+TPCANHandle                   = c_ushort    # Represents a PCAN hardware channel handle 
 TPCANStatus                   = int         # Represents a PCAN status/error code
 TPCANParameter                = c_ubyte     # Represents a PCAN parameter to be read or set
 TPCANDevice                   = c_ubyte     # Represents a PCAN device
