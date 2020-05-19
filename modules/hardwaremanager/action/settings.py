@@ -122,6 +122,7 @@ class JoyStickSettings:
 class SensoDriveSettings:
     def __init__(self):
         self.test = 0
+        self.PCANError = False
 
     def as_dict(self):
         return self.__dict__

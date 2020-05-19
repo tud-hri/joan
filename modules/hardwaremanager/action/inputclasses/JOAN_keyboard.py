@@ -35,7 +35,7 @@ class KeyBoardSettingsDialog(QtWidgets.QDialog):
                             self.label_reverse.text(), self.label_handbrake.text()]
         if len(all_desired_keys) != len(set(all_desired_keys)):
             answer = QtWidgets.QMessageBox.warning(self, 'Warning',
-                                                    'So are trying to set the same key for two command, this may lead to undesired behavior. Are you sure?',
+                                                    'You are trying to set the same key for two commands, this may lead to undesired behavior. Are you sure?',
                                                     buttons=QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)
             if answer == QtWidgets.QMessageBox.Cancel:
                 return
