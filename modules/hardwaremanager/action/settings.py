@@ -121,8 +121,13 @@ class JoyStickSettings:
 
 class SensoDriveSettings:
     def __init__(self):
-        self.test = 0
-        self.PCANError = False
+        self.endstops = 360                    # degrees
+        self.torque_limit_between_endstop = 20 # percent
+        self.torque_limit_beyond_endstop = 20  # percent
+        self.friction = 300                    # mNm
+        self.damping = 30                      # mNm/rev/min
+        self.spring_stiffness = 20             # mNm/deg
+   
 
     def as_dict(self):
         return self.__dict__

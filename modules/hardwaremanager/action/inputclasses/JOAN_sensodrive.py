@@ -15,16 +15,15 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
         super().__init__(parent)
         self.sensodrive_settings = sensodrive_settings
         uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "UIs/sensodrive_settings_ui.ui"), self)
-        # if(self.sensodrive_settings.PCAN_object.GetStatus(PCAN_USBBUS1) != PCAN_ERROR_OK) and self.sensodrive_settings.pcan_initialization_result != PCAN_ERROR_OK:
-        #     self.sensodrive_settings.pcan_initialization_result = self.sensodrive_settings.PCAN_object.Initialize(PCAN_USBBUS1,PCAN_BAUD_1M)
+        # Weet nog niet zeker of dit ook werkt met meerdere channels (USBBUS1 is de default maar dunno wat er gebeurt als je er 2 inplugt)
         if self.sensodrive_settings.pcan_initialization_result is None:
             self.sensodrive_settings.pcan_initialization_result = self.sensodrive_settings.PCAN_object.Initialize(PCAN_USBBUS1,PCAN_BAUD_1M)
 
         self.button_box_settings.button(self.button_box_settings.RestoreDefaults).clicked.connect(self._set_default_values)
+        self._display_values()
         self.show()
 
     def accept(self):
-        print('jjoe')
         if self.sensodrive_settings.pcan_initialization_result != PCAN_ERROR_OK:
             answer = QtWidgets.QMessageBox.warning(self, 'Warning',
                                                         (self.sensodrive_settings.PCAN_object.GetErrorText(self.sensodrive_settings.pcan_initialization_result)[1].decode("utf-8")\
@@ -37,12 +36,31 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
         else:
             self.sensodrive_settings.pcan_error = False
 
+        self.endstops = self.spin_endstop_position.value()
+        self.torque_limit_between_endstop = self.spin_torque_limit_between_endstops.value()
+        self.torque_limit_beyond_endstop = self.spin_torque_limit_beyond_endstops.value()
+        self.friction = self.spin_friction.value()
+        self.damping = self.spin_damping.value()
+        self.spring_stiffness = self.spin_spring_stiffness.value()
+
+
         super().accept()
 
         # Hier moeten alle settings van demping, veersterkte, frictie etc (zijn allemaal bytes in dezelfde message)
 
+    def _display_values(self, settings_to_display=None):
+        if not settings_to_display:
+            settings_to_display = self.sensodrive_settings
+
+        self.spin_endstop_position.setValue(settings_to_display.endstops)
+        self.spin_torque_limit_between_endstops.setValue(settings_to_display.torque_limit_between_endstop)
+        self.spin_torque_limit_beyond_endstops.setValue(settings_to_display.torque_limit_beyond_endstop)
+        self.spin_friction.setValue(settings_to_display.friction)
+        self.spin_damping.setValue(settings_to_display.damping)
+        self.spin_spring_stiffness.setValue(settings_to_display.spring_stiffness)
+
     def _set_default_values(self):
-        print('Settings reset')
+        self._display_values(SensoDriveSettings())
         #hier moeten de default settings
 
     
@@ -60,9 +78,6 @@ class JOAN_SensoDrive(BaseInput):  # DEPRECATED FOR NOW TODO: remove from interf
         # Create PCAN object
         self.settings.PCAN_object = PCANBasic()
         self.settings.pcan_initialization_result = None
-
-        
-
 
         #  hook up buttons
         self._sensodrive_tab.btn_settings.clicked.connect(self._open_settings_dialog)

@@ -97,7 +97,7 @@
          </widget>
         </item>
         <item row="1" column="1">
-         <widget class="QSpinBox" name="spin_torque_limit_between_endstop">
+         <widget class="QSpinBox" name="spin_torque_limit_between_endstops">
           <property name="font">
            <font>
             <weight>50</weight>
@@ -234,6 +234,9 @@
             <bold>false</bold>
            </font>
           </property>
+          <property name="maximum">
+           <number>1000</number>
+          </property>
           <property name="value">
            <number>30</number>
           </property>
@@ -246,6 +249,9 @@
             <weight>50</weight>
             <bold>false</bold>
            </font>
+          </property>
+          <property name="maximum">
+           <number>500</number>
           </property>
           <property name="value">
            <number>20</number>
