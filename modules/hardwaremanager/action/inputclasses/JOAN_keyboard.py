@@ -6,6 +6,7 @@ from modules.hardwaremanager.action.inputclasses.baseinput import BaseInput
 
 
 class JOAN_Keyboard(BaseInput):
+    """Input class for JOAN_keyboard"""
     def __init__(self, hardware_manager_action, keyboard_tab):
         super().__init__(hardware_manager_action)
         self._keyboard_tab = keyboard_tab
