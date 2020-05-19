@@ -35,9 +35,9 @@ Now we need to connect the JOAN repository to your own repository, so that you a
 
 In the terminal type the following commands in this order (or copy it, and right-click paste in the terminal, `ctrl+v` does not work). Perform these commands one-by-one. Do not continue to the next command if the previous one returned errors!
 
-    git remote add upstream https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan.git
-    git fetch upstream
-    git pull upstream master
+    git remote add upstream-joan https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan.git
+    git fetch upstream-joan
+    git pull upstream-joan master
 
 The last command pulls the latest version of JOAN's master branch. Check out your PyCharm editor: you will find all folders and files of the latest JOAN version there: 
 
@@ -45,10 +45,34 @@ The last command pulls the latest version of JOAN's master branch. Check out you
 
 You also need to set your user name and email address for your repository (replace NETID and TUDELFT EMAIL ADDRESS, but lead the quotation marks):
 
-    git config user.name "NETID"
-    git config user.email "TUDELFT EMAIL ADDRESS"
+    git config --local user.name "NETID"
+    git config --local user.email "TUDELFT EMAIL ADDRESS"
 
-We now need to make sure that you `push` your first version of your own JOAN project to your repository. 
+
+Furthermore, we will set your user name such that GitLab knows who is pushing stuff to your repository. First, check the URL of the remote that is already setup for your repository. 
+
+    git remote -v
+
+You should see something like this:
+
+    (venv) (base) PS C:\Users\USER\repositories\joan-niek-myfirstjoanproject> git remote -v
+    origin  https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan-students/joan-niek-myfirstjoanproject.git (fetch)
+    origin  https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan-students/joan-niek-myfirstjoanproject.git (push)
+    upstream-joan        https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan.git (fetch)
+    upstream-joan        https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan.git (push)
+    (venv) (base) PS C:\Users\USER\repositories\joan-niek-myfirstjoanproject>
+
+The first two labeled `origin` are the URLs to your own project. The ones labeled `upstream-joan` are for the JOAN repository. We need the `origin` one for the next step. We are going to add your NetID to the `origin` URL as follows (replace NETID with your own NetID, note the '@' and make sure to copy your own origin URL):
+
+    git remote set-url origin https://NETID@gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan-students/joan-niek-myfirstjoanproject.git
+
+Check if the URL is changed properly:
+
+    git remote -v
+
+You should see your NETID in the `origin` URL now.
+
+We now need to make sure that you `push` your first version of your own JOAN project to your repository. It is possible that on your first `push`, the git credential manager might ask you for your password. Use the password associated with your NetID.
 
 ![push-git-firsttime](imgs/pycharm-git-push-firsttime.png)
 
