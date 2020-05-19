@@ -26,6 +26,7 @@ class KeyBoardSettingsDialog(QtWidgets.QDialog):
         self.set_key_sequence_labels = [self.label_steer_left, self.label_steer_right, self.label_throttle, self.label_brake, self.label_reverse,
                                         self.label_handbrake]
 
+
         self._display_values()
         self.show()
 
