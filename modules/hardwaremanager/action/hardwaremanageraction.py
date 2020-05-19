@@ -105,7 +105,7 @@ class HardwaremanagerAction(JoanModuleAction):
             sensodrive_settings = SensoDriveSettings()
 
         number_of_sensodrives = sum([bool("SensoDrive" in k) for k in self.input_devices_classes.keys()])
-        device_title = "Sensodrive %s" % (number_of_sensodrives + 1)
+        device_title = "SensoDrive %s" % (number_of_sensodrives + 1)
 
         self.input_devices_classes.update([(device_title, JOAN_SensoDrive(self, widget, sensodrive_settings))])
         if is_a_new_sensodrive:

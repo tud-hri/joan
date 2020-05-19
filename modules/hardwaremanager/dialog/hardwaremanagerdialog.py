@@ -69,3 +69,10 @@ class HardwaremanagerDialog(JoanModuleDialog):
             device_title = self.module_action.add_a_joystick(new_widget, joystick_settings=joystick_settings)
             new_widget.groupBox.setTitle(device_title)
             self.module_widget.hardware_list_layout.addWidget(new_widget)
+
+        for sensodrive_settings in self.module_action.settings.sensodrives:
+            new_widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../action/UIs/hardware_tab.ui"))
+            device_title = self.module_action.add_a_sensodrive(new_widget, sensodrive_settings=sensodrive_settings)
+            new_widget.groupBox.setTitle(device_title)
+            self.module_widget.hardware_list_layout.addWidget(new_widget)
+

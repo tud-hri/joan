@@ -79,6 +79,8 @@ class JOAN_Joystick(BaseInput):
         self._joystick_tab.btn_visualization.setEnabled(False)
         self._joystick_tab.btn_remove_hardware.clicked.connect(self.remove_func)
 
+        self._open_settings_dialog()
+
     def _open_settings_dialog(self):
         self.settings_dialog = JoystickSettingsDialog(self.settings)
         self.settings_dialog.accepted.connect(self._open_connection_to_device)
