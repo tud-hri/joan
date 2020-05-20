@@ -69,6 +69,7 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
         self.sensodrive_settings.sensodrive_initialization_message.DATA[7] =  torque_limit_beyond_endstop_bytes[1]
 
         self.sensodrive_settings.PCAN_object.Write(self.sensodrive_settings.PCAN_channel, self.sensodrive_settings.sensodrive_initialization_message)
+    
 
         # Set the data structure for the steeringwheel message with the just applied values
         # (this is double because you might want to change some parameters dynamically, without changing initial settings)
@@ -161,6 +162,9 @@ class JOAN_SensoDrive(BaseInput):  # DEPRECATED FOR NOW TODO: remove from interf
 
         
 
+
+        
+
         self._open_settings_dialog()
 
     def _open_settings_dialog(self):
@@ -171,10 +175,6 @@ class JOAN_SensoDrive(BaseInput):  # DEPRECATED FOR NOW TODO: remove from interf
         self.remove_tab(self._sensodrive_tab)
 
     def on_off(self):
-        self.response = self.settings.PCAN_object.Read(self.settings.PCAN_channel)
-        print(self.response[1].DATA[0]) 
-       
-            
         if self.settings.pcan_error:
             answer = QtWidgets.QMessageBox.warning(self._sensodrive_tab, 'Warning',
                                                    "The PCAN connection was not initialized properly, please reopen settings menu to try and reinitialize.",
@@ -184,52 +184,54 @@ class JOAN_SensoDrive(BaseInput):  # DEPRECATED FOR NOW TODO: remove from interf
         else:
             # We have to send different messages to cycle through the states of the SensoDrive depending on current state:
             # There should be a message in the buffer due to the fact that we have sent one when accepting the settings.
-            
-        
-
-            
-            
             # run different state change depending on answer:
-            if(self.response[0] == PCAN_ERROR_OK):
-                if(self.response[1].ID == 0x210):
-                    print('joe')
-                    if(self.response[1].DATA[0] == 0x10):
-                        self.off_to_ready(self.state_change_message)
-                        return
-                    
-                    if(self.response[1].DATA[0] == 0x12):
-                        self.ready_to_off(self.state_change_message)
-                        return
-                    
-                    if(self.response[1].DATA[0] == 0x14):
-                        self.on_to_ready(self.state_change_message)
-                        return
-                    
-                    if(self.response[1].DATA[0] == 0x18):
-                        print('DIKKE ERROR')
-                        return
+            try:
+                if(self.response[0] == PCAN_ERROR_OK):
+                    if(self.response[1].ID == 0x210):
+                        if(self.response[1].DATA[0] == 0x10):
+                            print('hey')
+                            self.off_to_ready(self.state_change_message)
+                            return
+
+                        if(self.response[1].DATA[0] == 0x12):
+                            print('hoi')
+                            self.ready_to_off(self.state_change_message)
+                            return
+                        
+                        if(self.response[1].DATA[0] == 0x14):
+                            self.on_to_ready(self.state_change_message)
+                            return
+                        
+                        if(self.response[1].DATA[0] == 0x18):
+                            print('DIKKE ERROR')
+                            return
+            except:
+                self.ready_to_off(self.state_change_message)
+                print('first time')
+                   
         
             
-                        
             # if(sensodrive_current_message[0] == PCAN_ERROR_OK):
             #     print('Message received successully')
             #     print(sensodrive_current_message)
         
 
     def off_to_ready(self,message):
-        print('EEN')
-        #self.settings.PCAN_object.Reset(self.settings.PCAN_channel)
+        self.settings.PCAN_object.Reset(self.settings.PCAN_channel)
         message.DATA[0] = 0x12
         self.settings.PCAN_object.Write(self.settings.PCAN_channel,message)
+        time.sleep(0.02)
+        self.response = self.settings.PCAN_object.Read(self.settings.PCAN_channel)
         
         
         
 
     def ready_to_off(self,message):
-        print('TWEE')
-        #self.settings.PCAN_object.Reset(self.settings.PCAN_channel)
+        self.settings.PCAN_object.Reset(self.settings.PCAN_channel)
         message.DATA[0] = 0x10
         self.settings.PCAN_object.Write(self.settings.PCAN_channel,message)
+        time.sleep(0.02)
+        self.response = self.settings.PCAN_object.Read(self.settings.PCAN_channel)
         
         
         
