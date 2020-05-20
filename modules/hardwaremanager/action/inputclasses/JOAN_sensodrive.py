@@ -1,5 +1,6 @@
 import os
 from enum import Enum
+import time
 
 from PyQt5 import uic, QtWidgets
 from PyQt5.QtWidgets import QMessageBox
@@ -9,6 +10,14 @@ from modules.hardwaremanager.action.inputclasses.baseinput import BaseInput
 from modules.hardwaremanager.action.settings import SensoDriveSettings
 from modules.joanmodules import JOANModules
 
+INITIALIZATION_MESSAGE_ID = 0x200
+INITIALIZATION_MESSAGE_LENGTH = 8
+
+STEERINGWHEEL_MESSAGE_ID = 0x201
+STEERINGWHEEL_MESSAGE_LENGTH = 8
+
+PEDAL_MESSAGE_ID = 0x20C
+PEDAL_MESSAGE_LENGTH = 2
 
 class SensoDriveSettingsDialog(QtWidgets.QDialog):
     def __init__(self, sensodrive_settings, parent=None):
@@ -16,10 +25,10 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
         self.sensodrive_settings = sensodrive_settings
         uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "UIs/sensodrive_settings_ui.ui"), self)
         # Weet nog niet zeker of dit ook werkt met meerdere channels (USBBUS1 is de default maar dunno wat er gebeurt als je er 2 inplugt)
+        self.sensodrive_settings.PCAN_channel = PCAN_USBBUS1
         if self.sensodrive_settings.pcan_initialization_result is None:
-            self.sensodrive_settings.pcan_initialization_result = self.sensodrive_settings.PCAN_object.Initialize(PCAN_USBBUS1, PCAN_BAUD_1M)
+            self.sensodrive_settings.pcan_initialization_result = self.sensodrive_settings.PCAN_object.Initialize(self.sensodrive_settings.PCAN_channel, PCAN_BAUD_1M)
         
-        print(self.sensodrive_settings.pcan_initialization_result)
         
         self.steering_wheel_parameters = {}
 
@@ -28,6 +37,44 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
         self.show()
 
     def accept(self):
+        self.sensodrive_settings.endstops = self.spin_endstop_position.value()
+        self.sensodrive_settings.torque_limit_between_endstop = self.spin_torque_limit_between_endstops.value()
+        self.sensodrive_settings.torque_limit_beyond_endstop = self.spin_torque_limit_beyond_endstops.value()
+        self.sensodrive_settings.friction = self.spin_friction.value()
+        self.sensodrive_settings.damping = self.spin_damping.value()
+        self.sensodrive_settings.spring_stiffness = self.spin_spring_stiffness.value()
+
+        #Convert integers to bytes:
+        endstops_bytes = int.to_bytes(self.sensodrive_settings.endstops, 2, byteorder='little', signed=True)
+        torque_limit_between_endstop_bytes = int.to_bytes(self.sensodrive_settings.torque_limit_between_endstop, 2, byteorder='little', signed=True)
+        torque_limit_beyond_endstop_bytes = int.to_bytes(self.sensodrive_settings.torque_limit_beyond_endstop, 2, byteorder='little', signed=True)
+
+        ## Load the chosen settings in an initialization message:
+        # We need to have our init message here as well
+        self.sensodrive_settings.sensodrive_initialization_message.ID = INITIALIZATION_MESSAGE_ID
+        self.sensodrive_settings.sensodrive_initialization_message.LEN = INITIALIZATION_MESSAGE_LENGTH
+        self.sensodrive_settings.sensodrive_initialization_message.TYPE = PCAN_MESSAGE_STANDARD
+        #mode of operation
+        self.sensodrive_settings.sensodrive_initialization_message.DATA[0] = 10
+        # reserved
+        self.sensodrive_settings.sensodrive_initialization_message.DATA[1] =  0
+        #Endstop position
+        self.sensodrive_settings.sensodrive_initialization_message.DATA[2] =  endstops_bytes[0]
+        self.sensodrive_settings.sensodrive_initialization_message.DATA[3] =  endstops_bytes[1]
+        # Torque between endstops:
+        self.sensodrive_settings.sensodrive_initialization_message.DATA[4] =  torque_limit_between_endstop_bytes[0]
+        self.sensodrive_settings.sensodrive_initialization_message.DATA[5] =  torque_limit_beyond_endstop_bytes[1]
+        # Torque beyond endstops:
+        self.sensodrive_settings.sensodrive_initialization_message.DATA[6] = torque_limit_beyond_endstop_bytes[0]
+        self.sensodrive_settings.sensodrive_initialization_message.DATA[7] =  torque_limit_beyond_endstop_bytes[1]
+
+        # Set the data structure for the steeringwheel message with the just applied values
+        # (this is double because you might want to change some parameters dynamically, without changing initial settings)
+        self.steering_wheel_parameters['torque'] = 0 # (You dont want to start to turn the wheel at startup)
+        self.steering_wheel_parameters['friction'] = self.sensodrive_settings.friction
+        self.steering_wheel_parameters['damping'] =self.sensodrive_settings.damping
+        self.steering_wheel_parameters['spring_stiffness'] =self.sensodrive_settings.spring_stiffness
+
         if self.sensodrive_settings.pcan_initialization_result != PCAN_ERROR_OK:
             answer = QtWidgets.QMessageBox.warning(self, 'Warning',
                                                    (self.sensodrive_settings.PCAN_object.GetErrorText(self.sensodrive_settings.pcan_initialization_result)[
@@ -40,21 +87,11 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
                 self.sensodrive_settings.pcan_error = True
         else:
             self.sensodrive_settings.pcan_error = False
-
-        self.sensodrive_settings.endstops = self.spin_endstop_position.value()
-        self.sensodrive_settings.torque_limit_between_endstop = self.spin_torque_limit_between_endstops.value()
-        self.sensodrive_settings.torque_limit_beyond_endstop = self.spin_torque_limit_beyond_endstops.value()
-        self.sensodrive_settings.friction = self.spin_friction.value()
-        self.sensodrive_settings.damping = self.spin_damping.value()
-        self.sensodrive_settings.spring_stiffness = self.spin_spring_stiffness.value()
-
-        # Set the data structure for the steeringwheel message with the just applied values
-        # (this is double because you might want to change some parameters dynamically, without changing initial settings)
-        self.steering_wheel_parameters['torque'] = 0 # (You dont want to start to turn the wheel at startup)
-        self.steering_wheel_parameters['friction'] = self.sensodrive_settings.friction
-        self.steering_wheel_parameters['damping'] =self.sensodrive_settings.damping
-        self.steering_wheel_parameters['spring_stiffness'] =self.sensodrive_settings.spring_stiffness
-
+            #send init message to check connection
+            self.sensodrive_settings.PCAN_object.Write(self.sensodrive_settings.PCAN_channel, self.sensodrive_settings.sensodrive_initialization_message)
+            time.sleep(0.02)
+            self.sensodrive_settings.sensodrive_init_response = self.sensodrive_settings.PCAN_object.Read(self.sensodrive_settings.PCAN_channel)
+            self.sensodrive_settings.PCAN_object.Reset(self.sensodrive_settings.PCAN_channel)
         
 
         super().accept()
@@ -100,6 +137,7 @@ class JOAN_SensoDrive(BaseInput):  # DEPRECATED FOR NOW TODO: remove from interf
         # Initialize message structures
         self.steering_wheel_message = TPCANMsg()
         self.pedal_message = TPCANMsg()
+        self.settings.sensodrive_initialization_message = TPCANMsg()
 
         # Initialize data structures
         self.steering_wheel_senddata = {}
@@ -110,21 +148,59 @@ class JOAN_SensoDrive(BaseInput):  # DEPRECATED FOR NOW TODO: remove from interf
         self.settings_dialog = SensoDriveSettingsDialog(self.settings)
 
     def remove_func(self):
-        self.settings.PCAN_object.Uninitialize(PCAN_USBBUS1)
+        self.settings.PCAN_object.Uninitialize(self.settings.PCAN_channel)
         self.remove_tab(self._sensodrive_tab)
 
     def on_off(self):
-        # if self.settings.pcan_error:
-        #     answer = QtWidgets.QMessageBox.warning(self._sensodrive_tab, 'Warning',
-        #                                            "The PCAN connection was not initialized properly, please reopen settings menu to try and reinitialize.",
-        #                                            buttons=QtWidgets.QMessageBox.Ok)
-        #     if answer == QtWidgets.QMessageBox.Ok:
-        #         self.settings.pcan_error = True
-        # else:
-        #     #doe stuff
-        #     print('aan uit')
-        print('joe')
+        if self.settings.pcan_error:
+            answer = QtWidgets.QMessageBox.warning(self._sensodrive_tab, 'Warning',
+                                                   "The PCAN connection was not initialized properly, please reopen settings menu to try and reinitialize.",
+                                                   buttons=QtWidgets.QMessageBox.Ok)
+            if answer == QtWidgets.QMessageBox.Ok:
+                self.settings.pcan_error = True
+        else:
+            # We have to send different messages to cycle through the states of the SensoDrive depending on current state:
+            # There should be a message in the buffer due to the fact that we have sent one when accepting the settings.
+            
+        
 
+            
+            
+            # run different state change depending on answer:
+            if(self.settings.sensodrive_init_response[0] == PCAN_ERROR_OK):
+                if(self.settings.sensodrive_init_response[1].ID == 0x210):
+                    if(self.settings.sensodrive_init_response[1].DATA[0] == 0x10):
+                        self.off_to_ready(self.settings.sensodrive_initialization_message)
+                    elif(self.settings.sensodrive_init_response[1].DATA[0] == 0x12):
+                        self.ready_to_off(self.settings.sensodrive_initialization_message)
+                    elif(self.settings.sensodrive_init_response[1].DATA[0] == 0x14):
+                        self.on_to_ready(self.settings.sensodrive_initialization_message)
+                    elif(self.settings.sensodrive_init_response[1].DATA[0] == 0x18):
+                        print('DIKKE ERROR')
+        
+            
+                        
+            # if(sensodrive_current_message[0] == PCAN_ERROR_OK):
+            #     print('Message received successully')
+            #     print(sensodrive_current_message)
+        
+
+    def off_to_ready(self,message):
+        self.settings.PCAN_object.Reset(self.settings.PCAN_channel)
+        message.DATA[0] = 0x02
+        self.settings.PCAN_object.Write(self.settings.PCAN_channel,message)
+        time.sleep(0.05)
+        self.settings.sensodrive_init_response = self.settings.PCAN_object.Read(self.settings.PCAN_channel)
+        print(hex(self.settings.sensodrive_init_response[1].DATA[0]))
+
+    def ready_to_off(self,message):
+        self.settings.PCAN_object.Reset(self.settings.PCAN_channel)
+        message.DATA[0] = 0x00
+        self.settings.PCAN_object.Write(self.settings.PCAN_channel,message)
+        time.sleep(0.05)
+        self.settings.sensodrive_init_response = self.settings.PCAN_object.Read(self.settings.PCAN_channel)
+        print(hex(self.settings.sensodrive_init_response[1].DATA[0]))
+        
 
 
     def process(self):
@@ -165,6 +241,7 @@ class JOAN_SensoDrive(BaseInput):  # DEPRECATED FOR NOW TODO: remove from interf
 
         pcanmessage.ID = STEERINGWHEEL_MESSAGE_ID
         pcanmessage.LEN = STEERINGWHEEL_MESSAGE_LENGTH
+        pcanmessage.TYPE = PCAN_MESSAGE_STANDARD
         pcanmessage.DATA[0] = torque_bytes[0]
         pcanmessage.DATA[1] = torque_bytes[1]
         pcanmessage.DATA[2] = friction_bytes[0]
@@ -178,12 +255,5 @@ class JOAN_SensoDrive(BaseInput):  # DEPRECATED FOR NOW TODO: remove from interf
             self.PCAN_object.write(PCAN_USBBUS1, pcanmessage)
 
 
-class MessageOut(Enum):
-    INITIALIZATION_MESSAGE_ID = 0x200
-    INITIALIZATION_MESSAGE_LENGTH = 8
 
-    STEERINGWHEEL_MESSAGE_ID = 0x201
-    STEERINGWHEEL_MESSAGE_LENGTH = 8
 
-    PEDAL_MESSAGE_ID = 0x20C
-    PEDAL_MESSAGE_LENGTH = 2
