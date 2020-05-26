@@ -71,6 +71,9 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
         time.sleep(0.02)
         self.sensodrive_settings.response = self.sensodrive_settings.PCAN_object.Read(self.sensodrive_settings.PCAN_channel)
 
+        self.sensodrive_settings.state_message = self.sensodrive_settings.sensodrive_initialization_message 
+        self.sensodrive_settings.state_message.DATA[0] = 0x11
+
     
 
         # Set the data structure for the steeringwheel message with the just applied values
@@ -131,6 +134,7 @@ class JOAN_SensoDrive(BaseInput):  # DEPRECATED FOR NOW TODO: remove from interf
         self.settings.PCAN_object = PCANBasic()
         self.settings.pcan_initialization_result = None
         self.settings.steering_wheel_parameters = {}
+        self._current_state_hex = 0x00
         
 
         #  hook up buttons
@@ -138,9 +142,13 @@ class JOAN_SensoDrive(BaseInput):  # DEPRECATED FOR NOW TODO: remove from interf
         self._sensodrive_tab.btn_visualization.setEnabled(False)
         self._sensodrive_tab.btn_remove_hardware.clicked.connect(self.remove_func)
         self._sensodrive_tab.btn_on_off.clicked.connect(self.on_off)
+        self._sensodrive_tab.btn_on_off.setStyleSheet("background-color: orange")
+        self._sensodrive_tab.btn_on_off.setText('Off')
+        self._sensodrive_tab.btn_on_off.setEnabled(False)
 
         # Initialize message structures
         self.steering_wheel_message = TPCANMsg()
+        self.settings.state_message = TPCANMsg()
         self.pedal_message = TPCANMsg()
         self.settings.sensodrive_initialization_message = TPCANMsg()
         self.state_change_message = TPCANMsg()
@@ -149,7 +157,7 @@ class JOAN_SensoDrive(BaseInput):  # DEPRECATED FOR NOW TODO: remove from interf
         self.state_change_message.LEN = INITIALIZATION_MESSAGE_LENGTH
         self.state_change_message.TYPE = PCAN_MESSAGE_STANDARD
         #mode of operation
-        self.state_change_message.DATA[0] = 0x10
+        self.state_change_message.DATA[0] = 0x11
         self.state_change_message.DATA[1] =  0x00
         #Endstop position
         self.state_change_message.DATA[2] =  0xB4
@@ -164,6 +172,9 @@ class JOAN_SensoDrive(BaseInput):  # DEPRECATED FOR NOW TODO: remove from interf
         
 
         self._open_settings_dialog()
+
+    def _toggle_on_off(self, connected):
+        self._sensodrive_tab.btn_on_off.setEnabled(connected)
 
     def _open_settings_dialog(self):
         self.settings_dialog = SensoDriveSettingsDialog(self.settings)
@@ -180,64 +191,58 @@ class JOAN_SensoDrive(BaseInput):  # DEPRECATED FOR NOW TODO: remove from interf
             if answer == QtWidgets.QMessageBox.Ok:
                 self.settings.pcan_error = True
         else:
-            
-          
-            if(self.settings.response[1].ID == 0x210):
-                if(self.settings.response[1].DATA[0] == 0x10 ):
-                    self.off_to_ready(self.settings.sensodrive_initialization_message)                 
-                    
-                elif(self.settings.response[1].DATA[0] == 0x12):
-                    self.ready_to_on(self.settings.sensodrive_initialization_message)  
+            if(self._current_state_hex == 0x10):
+                self.off_to_on(self.settings.sensodrive_initialization_message)      
 
-                elif(self.settings.response[1].DATA[0] == 0x14):
-                    self.on_to_ready(self.settings.sensodrive_initialization_message)
+            elif(self._current_state_hex == 0x14):
+                self.on_to_off(self.settings.sensodrive_initialization_message)
+            
+            elif(self._current_state_hex == 0x18):
+                self.clear_error(self.settings.sensodrive_initialization_message)
                 
-                elif(self.settings.response[1].DATA[0] == 0x18):
-                    self.clear_error(self.settings.sensodrive_initialization_message)
-            else:
-                print(hex(self.settings.response[1].ID))
+          
         
             
             
 
-    def off_to_ready(self,message):
+    def off_to_on(self,message):
+        print('off to on')
         message.DATA[0] = 0x10
         self.settings.PCAN_object.Write(PCAN_USBBUS1, message)
-        time.sleep(0.04)
-        SwitchStateResult = self.settings.PCAN_object.Read(PCAN_USBBUS1)
-        print("Init Message: ", hex(SwitchStateResult[1].DATA[0]))
+        time.sleep(0.02)
             
         message.DATA[0] = 0x12
         self.settings.PCAN_object.Write(PCAN_USBBUS1, message)
-        time.sleep(0.04)
-        SwitchStateResult = self.settings.PCAN_object.Read(PCAN_USBBUS1)
-        print("1 Hexadecimal State: ", hex(SwitchStateResult[1].DATA[0]))
-    
+        time.sleep(0.02)
+
         message.DATA[0] = 0x14
         self.settings.PCAN_object.Write(PCAN_USBBUS1, message)
-        self.sensodrive_running = True
+        self._sensodrive_tab.btn_on_off.setStyleSheet("background-color: lightgreen")
+        self._sensodrive_tab.btn_on_off.setText('On')
+ 
 
-    
-        
-  
-
-    def ready_to_on(self,message):
-        message.DATA[0] = 0x14
-        self.settings.PCAN_object.Write(self.settings.PCAN_channel,message)
-        self.sensodrive_running = True
-
-    def on_to_ready(self,message):
+    def on_to_off(self,message):
+        print('on to off')
         message.DATA[0] = 0x12
         self.settings.PCAN_object.Write(self.settings.PCAN_channel,message)
-        self.sensodrive_running = False
+        time.sleep(0.02)
+        message.DATA[0] = 0x10
+        self.settings.PCAN_object.Write(self.settings.PCAN_channel,message)
+        time.sleep(0.02)
+        self._sensodrive_tab.btn_on_off.setStyleSheet("background-color: orange")
+        self._sensodrive_tab.btn_on_off.setText('Off')
+
+
+
 
     def clear_error(self,message): 
+        print('clear error')
         message.DATA[0] = 0x1F
         self.settings.PCAN_object.Write(self.settings.PCAN_channel,message)
-        self.sensodrive_running = False
         time.sleep(0.02)
-        self.settings.response = self.settings.PCAN_object.Read(PCAN_USBBUS1)
-        print("Error Clear Result ", hex(self.settings.response[1].DATA[0]))
+        self._sensodrive_tab.btn_on_off.setStyleSheet("background-color: orange")
+        self._sensodrive_tab.btn_on_off.setText('Off')
+
  
 
         
@@ -258,12 +263,7 @@ class JOAN_SensoDrive(BaseInput):  # DEPRECATED FOR NOW TODO: remove from interf
                 else:
                     self._sensodrive_tab.btn_remove_hardware.setEnabled(True)
 
-        # Throttle:
-        self._data['ThrottleInput'] = 0
-        # Brake:
-        self._data['BrakeInput'] = 0
-        # Steering:
-        self._data['SteeringInput'] = 0
+
         # Reverse
         self._data['Reverse'] = 0
         # Handbrake
@@ -271,33 +271,89 @@ class JOAN_SensoDrive(BaseInput):  # DEPRECATED FOR NOW TODO: remove from interf
 
        
 
-        # ## Request Data from Steering Wheel
-        if(self.sensodrive_running == True):
-            print(self.settings.steering_wheel_parameters)
-            self.write_message_steering_wheel(self.settings.PCAN_object, self.steering_wheel_message, self.settings.steering_wheel_parameters)
-            received = self.settings.PCAN_object.Read(self.settings.PCAN_channel)
-            if (received[0] == PCAN_ERROR_OK):
-                # self.settings.PCAN_object.Reset(self.settings.PCAN_channel)
-                #print("Message Received Succesfully")
-                #print(hex(result[1].DATA[3]),hex(result[1].DATA[2]),hex(result[1].DATA[1]),hex(result[1].DATA[0]))
-                if(received[1].ID == 0x211):
-                    Increments = int.from_bytes(received[1].DATA[0:4],byteorder = 'little',signed = True)
-                    Angle = round(Increments * 0.009,4)
-                    # Steering:
-                    self._data['SteeringInput'] = Angle
-                    # print(Angle)
-            elif(received[1].ID == 0x210):
-                print(hex(received[1].DATA[3]),hex(received[1].DATA[4]))
-                self.settings.response = received
-                print('IN LOOP IS = ', hex(self.settings.response[1].DATA[0]))
-        else:
-            pass
-        # else: 
-        #     pass
+     
+        #request steering wheel data
+        self.write_message_steering_wheel(self.settings.PCAN_object, self.steering_wheel_message, self.settings.steering_wheel_parameters)
+        received = self.settings.PCAN_object.Read(self.settings.PCAN_channel)
 
-        
+        #request state data
+        self.settings.PCAN_object.Write(self.settings.PCAN_channel, self.settings.state_message)
+        received2 = self.settings.PCAN_object.Read(self.settings.PCAN_channel)
+
+        #request pedal data
+        self.write_message_pedals(self.settings.PCAN_object, self.pedal_message)
+        received3 = self.settings.PCAN_object.Read(self.settings.PCAN_channel)
+
+        # print(hex(received[1].ID), hex(received2[1].ID), hex(received3[1].ID))
+
+
+        if (received[0] or received2[0] or received3[0] == PCAN_ERROR_OK):
+            # self.settings.PCAN_object.Reset(self.settings.PCAN_channel)
+            #print("Message Received Succesfully")
+            #print(hex(result[1].DATA[3]),hex(result[1].DATA[2]),hex(result[1].DATA[1]),hex(result[1].DATA[0]))
+            if(received[1].ID == 0x211):
+                Increments = int.from_bytes(received[1].DATA[0:4],byteorder = 'little',signed = True)
+                Angle = round(Increments * 0.009,4)
+                # Steering:
+                self._data['SteeringInput'] = Angle
+            elif(received[1].ID == 0x210):
+                self._current_state_hex = received[1].DATA[0]
+            elif(received[1].ID == 0x21C):
+                self._data['ThrottleInput'] = (int.from_bytes(received[1].DATA[2:4], byteorder ='little')-1100)/2460 * 100
+                self._data['BrakeInput'] = (int.from_bytes(received[1].DATA[4:6], byteorder = 'little')-1)/500 * 100
+
+
+            if(received2[1].ID == 0x211):
+                Increments = int.from_bytes(received2[1].DATA[0:4],byteorder = 'little',signed = True)
+                Angle = round(Increments * 0.009,4)
+                # Steering:
+                self._data['SteeringInput'] = Angle
+            elif(received2[1].ID == 0x210):
+                self._current_state_hex = received2[1].DATA[0]
+            elif(received2[1].ID == 0x21C):
+                self._data['ThrottleInput'] = (int.from_bytes(received2[1].DATA[2:4], byteorder ='little')-1100)/2460 * 100
+                self._data['BrakeInput'] = (int.from_bytes(received2[1].DATA[4:6], byteorder = 'little')-1)/500 * 100
+                #self._data['Clut'] = int.from_bytes(result[1].DATA[6:], byteorder = 'little')
+
+
+            if(received3[1].ID == 0x211):
+                Increments = int.from_bytes(received3[1].DATA[0:4],byteorder = 'little',signed = True)
+                Angle = round(Increments * 0.009,4)
+                # Steering:
+                self._data['SteeringInput'] = Angle
+            elif(received3[1].ID == 0x210):
+                self._current_state_hex = received3[1].DATA[0]
+            elif(received3[1].ID == 0x21C):
+                self._data['ThrottleInput'] = (int.from_bytes(received3[1].DATA[2:4], byteorder ='little')-1100)/2460 * 100
+                self._data['BrakeInput'] = (int.from_bytes(received3[1].DATA[4:6], byteorder = 'little')-1)/500 * 100
+
+
+        if(self._current_state_hex == 0x18):
+            self._sensodrive_tab.btn_on_off.setStyleSheet("background-color: red")
+            self._sensodrive_tab.btn_on_off.setText('Clear Error')
+
+           
+            
+            
+            
+   
 
         return self._data
+
+    def write_message_pedals(self,pcan_object , pcanmessage):
+        pcanmessage.ID = 0x20C
+        pcanmessage.LEN =  1
+        pcanmessage.MSGTYPE = PCAN_MESSAGE_STANDARD
+
+        pcanmessage.DATA[0] = 0x1
+
+        if not self.settings.pcan_error:
+            #print('writing message')
+            self.settings.PCAN_object.Write(self.settings.PCAN_channel, pcanmessage)
+
+
+
+
 
     def write_message_steering_wheel(self, pcan_object, pcanmessage, data):
         torque_bytes = int.to_bytes(data['torque'], 2, byteorder='little', signed=True)

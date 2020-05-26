@@ -22,6 +22,8 @@ class HardwaremanagerAction(JoanModuleAction):
         self.data = {}
         self.write_news(news=self.data)
 
+        self.carla_interface_data = self.read_news(JOANModules.CARLA_INTERFACE)
+
         self.settings = HardWareManagerSettings()
         self.module_settings_object = ModuleSettings(file=os.path.join(os.path.dirname(os.path.realpath(__file__)), 'hardware_settings.json'))
         loaded_dict = self.module_settings_object.read_settings()
@@ -35,6 +37,12 @@ class HardwaremanagerAction(JoanModuleAction):
         """
         This function is called every controller tick of this module implement your main calculations here
         """
+        self.carla_interface_data = self.read_news(JOANModules.CARLA_INTERFACE)
+
+        for inputs in self.input_devices_classes:
+            if 'SensoDrive' in inputs:
+                    self.input_devices_classes[inputs]._toggle_on_off(self.carla_interface_data['connected'])
+                
         for inputs in self.input_devices_classes:
             self.data[inputs] = self.input_devices_classes[inputs].process()
         self.write_news(self.data)
@@ -46,13 +54,23 @@ class HardwaremanagerAction(JoanModuleAction):
         pass
 
     def start(self):
+        self.carla_interface_data = self.read_news(JOANModules.CARLA_INTERFACE)
+        for inputs in self.input_devices_classes:
+            if 'SensoDrive' in inputs:
+                self.input_devices_classes[inputs]._toggle_on_off(self.carla_interface_data['connected'])
         try:
             self.module_state_handler.request_state_change(HardwaremanagerStates.EXEC.RUNNING)
+
         except RuntimeError:
             return False
         return super().start()
 
     def stop(self):
+        self.carla_interface_data = self.read_news(JOANModules.CARLA_INTERFACE)
+        for inputs in self.input_devices_classes:
+            if 'SensoDrive' in inputs:
+                self.input_devices_classes[inputs]._toggle_on_off(False)
+
         try:
             self.module_state_handler.request_state_change(HardwaremanagerStates.EXEC.STOPPED)
             if len(self.input_devices_classes) != 0:
