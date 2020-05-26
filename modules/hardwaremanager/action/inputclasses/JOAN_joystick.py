@@ -98,7 +98,7 @@ class JOAN_Joystick(BaseInput):
 
     def process(self):
         joystick_data = []
-        if self._carla_interface_data['vehicles'] is not None and self._joystick_open:
+        if self._carla_interface_data['vehicles'] is not None:
             self._carla_interface_data = self._action.read_news(JOANModules.CARLA_INTERFACE)
 
             for vehicles in self._carla_interface_data['vehicles']:
@@ -108,10 +108,11 @@ class JOAN_Joystick(BaseInput):
                 else:
                     self._joystick_tab.btn_remove_hardware.setEnabled(True)
 
+        if self._joystick_open:
             joystick_data = self._joystick.read(12, 1)
 
         if joystick_data:
-            print(joystick_data)
+            #print(joystick_data)
             self.throttle = 100 - round(((joystick_data[9]) / 128) * 100)
             if self.throttle > 0:
                 self.throttle = self.throttle
@@ -137,5 +138,6 @@ class JOAN_Joystick(BaseInput):
         self._data['SteeringInput'] = self.steer
         self._data['Handbrake'] = self.handbrake
         self._data['Reverse'] = self.reverse
+
 
         return self._data
