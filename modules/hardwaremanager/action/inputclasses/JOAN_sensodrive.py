@@ -135,6 +135,8 @@ class JOAN_SensoDrive(BaseInput):  # DEPRECATED FOR NOW TODO: remove from interf
         self.settings.pcan_initialization_result = None
         self.settings.steering_wheel_parameters = {}
         self._current_state_hex = 0x00
+        self._error_state = [0x00, 0x00]
+  
         
 
         #  hook up buttons
@@ -298,6 +300,8 @@ class JOAN_SensoDrive(BaseInput):  # DEPRECATED FOR NOW TODO: remove from interf
                 self._data['SteeringInput'] = Angle
             elif(received[1].ID == 0x210):
                 self._current_state_hex = received[1].DATA[0]
+                self._error_state[0] = received[1].DATA[2]
+                self._error_state[1] = received[1].DATA[3]
             elif(received[1].ID == 0x21C):
                 self._data['ThrottleInput'] = (int.from_bytes(received[1].DATA[2:4], byteorder ='little')-1100)/2460 * 100
                 self._data['BrakeInput'] = (int.from_bytes(received[1].DATA[4:6], byteorder = 'little')-1)/500 * 100
@@ -310,6 +314,8 @@ class JOAN_SensoDrive(BaseInput):  # DEPRECATED FOR NOW TODO: remove from interf
                 self._data['SteeringInput'] = Angle
             elif(received2[1].ID == 0x210):
                 self._current_state_hex = received2[1].DATA[0]
+                self._error_state[0] = received2[1].DATA[2]
+                self._error_state[1] = received2[1].DATA[3]
             elif(received2[1].ID == 0x21C):
                 self._data['ThrottleInput'] = (int.from_bytes(received2[1].DATA[2:4], byteorder ='little')-1100)/2460 * 100
                 self._data['BrakeInput'] = (int.from_bytes(received2[1].DATA[4:6], byteorder = 'little')-1)/500 * 100
@@ -323,12 +329,25 @@ class JOAN_SensoDrive(BaseInput):  # DEPRECATED FOR NOW TODO: remove from interf
                 self._data['SteeringInput'] = Angle
             elif(received3[1].ID == 0x210):
                 self._current_state_hex = received3[1].DATA[0]
+                self._error_state[0] = received3[1].DATA[2]
+                self._error_state[1] = received3[1].DATA[3]
             elif(received3[1].ID == 0x21C):
                 self._data['ThrottleInput'] = (int.from_bytes(received3[1].DATA[2:4], byteorder ='little')-1100)/2460 * 100
                 self._data['BrakeInput'] = (int.from_bytes(received3[1].DATA[4:6], byteorder = 'little')-1)/500 * 100
 
 
         if(self._current_state_hex == 0x18):
+            scale = 16
+            num_of_bits = 8
+
+            
+
+            joe = bin(self._error_state[0])[2:].zfill(num_of_bits)
+            hai = bin(self._error_state[1])[2:].zfill(num_of_bits)
+
+            print(hai,joe, hex(self._error_state[0]), hex(self._error_state[1]))
+            
+            
             self._sensodrive_tab.btn_on_off.setStyleSheet("background-color: red")
             self._sensodrive_tab.btn_on_off.setText('Clear Error')
 
