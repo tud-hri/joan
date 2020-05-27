@@ -1,4 +1,3 @@
-
 """
 TemplateAction class
 
@@ -14,10 +13,13 @@ from PyQt5 import QtCore
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
 from .states import TemplateStates
+from .templatesettings import TemplateSettings
 from process.settings import ModuleSettings
+
 
 class TemplateAction(JoanModuleAction):
     """Example JOAN module"""
+
     def __init__(self, master_state_handler, millis=100):
         super().__init__(module=JOANModules.TEMPLATE, master_state_handler=master_state_handler, millis=millis)
 
@@ -37,32 +39,23 @@ class TemplateAction(JoanModuleAction):
 
         # start settings for this module
         # each module has its own settings, which are stored in a .json file (e.g. template_settings.json)
-        self.settings_object = ModuleSettings(file=os.path.join(os.path.dirname(os.path.realpath(__file__)), 'template_settings.json'))
-        self.settings = self.settings_object.read_settings()
-        
-        try:
-            self.millis = self.settings['data'][JOANModules.TEMPLATE.name]['millis_pulse']
-        except KeyError:
-            self.millis = 100
+        # To create settings for your costum module create a settings class and enherit JOANMOduleSetting, as in the example TempleSettings
+        # All attributes you add to your settings class will automatically be save if you call setting.save_to_file
+        # when loading setting, all attribute in the JSON file are copied, but missing values will keep their default value as defined in your setting class
 
-        # you can customize the settings of your module. Below we add a couple of examples.
-        # you could also add these manually to the json file directly, but make sure that you properly 
-        # read the settings from the json and set the variable here in self.update_settings
-        self.my_settings_dict = {}
-        self.some_settings = 'value'
-        self.steer_sensitivity = 50
-        self.throttle_sensitivity = 50
-        self.brake_sensitivity = 50
-        self.my_settings_dict['millis_pulse'] = self.millis
-        self.my_settings_dict['some_settings'] = self.some_settings
-        self.my_settings_dict['steer_sensitivity'] = self.steer_sensitivity
-        self.my_settings_dict['throttle_sensitivity'] = self.throttle_sensitivity
-        self.my_settings_dict['brake_sensitivity'] = self.brake_sensitivity
+        # first create a settings object containing the default values
+        self.settings = TemplateSettings()
 
-        # and we write these settings to the json file
-        self.settings_object.write_settings(group_key=JOANModules.TEMPLATE.name, item=self.my_settings_dict)
-        # and update the new setting to the settings singleton (such that other modules can also see this module's settings)
-        self.update_settings(self.settings)
+        # then load the saved value from a file, this can be done here, or implement a button with wich the user can specify the file to load from.
+        default_settings_file_location = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'template_settings.json')
+        if os.path.isfile(default_settings_file_location):
+            self.settings.load_from_file(default_settings_file_location)
+
+        # now you can copy the current settings as attributes of the action class, but please note that it is also possible to access the settings directly.
+        self.millis = self.settings.millis
+
+        # finale update the new setting to the settings singleton (such that other modules can also see this module's settings)
+        self.update_settings(self.settings.as_dict())
         # end settings for this module
 
     def do(self):
@@ -85,11 +78,7 @@ class TemplateAction(JoanModuleAction):
         try:
             singleton_settings = self.singleton_settings.get_settings(JOANModules.TEMPLATE)
             settings_dict = singleton_settings['data'][JOANModules.TEMPLATE.name]
-            self.millis = settings_dict['millis_pulse']
-            self.some_settings = settings_dict['some_settings']
-            self.steer_sensitivity = settings_dict['steer_sensitivity']
-            self.throttle_sensitivity = settings_dict['throttle_sensitivity']
-            self.brake_sensitivity = settings_dict['brake_sensitivity']
+            self.millis = self.settings.millis
         except KeyError as inst:
             print('KeyError:', inst)
             return False
