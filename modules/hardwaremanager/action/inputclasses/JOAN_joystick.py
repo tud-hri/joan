@@ -12,7 +12,7 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
     def __init__(self, joystick_settings, parent=None):
         super().__init__(parent)
         self.joystick_settings = joystick_settings
-        uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "UIs/joystick_settings_ui.ui"), self)
+        uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/joystick_settings_ui.ui"), self)
 
         self.button_box_settings.button(self.button_box_settings.RestoreDefaults).clicked.connect(self._set_default_values)
 

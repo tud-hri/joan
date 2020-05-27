@@ -23,7 +23,7 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
     def __init__(self, sensodrive_settings, parent=None):
         super().__init__(parent)
         self.sensodrive_settings = sensodrive_settings
-        uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "UIs/sensodrive_settings_ui.ui"), self)
+        uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/sensodrive_settings_ui.ui"), self)
         # Weet nog niet zeker of dit ook werkt met meerdere channels (USBBUS1 is de default maar dunno wat er gebeurt als je er 2 inplugt)
         self.sensodrive_settings.PCAN_channel = PCAN_USBBUS1
         if self.sensodrive_settings.pcan_initialization_result is None:
