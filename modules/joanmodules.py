@@ -16,7 +16,6 @@ class JOANModules(enum.Enum):
     EXPERIMENT_MANAGER = 3
     STEERING_WHEEL_CONTROL = 4
     TRAJECTORY_RECORDER = 5
-    
 
     @property
     def action(self):

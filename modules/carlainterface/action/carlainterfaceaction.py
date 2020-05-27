@@ -42,6 +42,7 @@ class CarlainterfaceAction(JoanModuleAction):
         self.data = {}
         self.data['vehicles'] = None
         self.data['t'] = -1
+        self.data['connected'] = False
         self.write_news(news=self.data)
         self.time = QtCore.QTime()
         self._data_from_hardware = {}
@@ -77,6 +78,7 @@ class CarlainterfaceAction(JoanModuleAction):
         This function is called every controller tick of this module implement your main calculations here
         """
         self.data['vehicles'] = self.vehicles
+
         self.data['t'] = self.time.elapsed()
         self.write_news(news=self.data)
 
@@ -116,6 +118,10 @@ class CarlainterfaceAction(JoanModuleAction):
                     self.msg.exec()
                     self.connected = False
                     self.module_state_handler.request_state_change(CarlainterfaceStates.ERROR)
+
+                self.data['connected'] = self.connected
+                self.write_news(news=self.data)
+
             else:
                 self.msg.setText('Already Connected')
                 self.msg.exec()
@@ -134,6 +140,8 @@ class CarlainterfaceAction(JoanModuleAction):
             self.client = None
             self._world = None
             self.connected = False
+            self.data['connected'] = self.connected
+            self.write_news(news=self.data)
 
             self.module_state_handler.request_state_change(CarlainterfaceStates.EXEC.STOPPED)
 

@@ -60,7 +60,7 @@ class JoanHQAction(QtCore.QObject):
         if not parent:
             parent = self.window
 
-        if module is JOANModules.TRAJECTORY_RECORDER: 
+        if module is JOANModules.FEED_BACK_CONTROLLER or module is JOANModules.TRAJECTORY_RECORDER: 
             # old style
             module_action = None
 
