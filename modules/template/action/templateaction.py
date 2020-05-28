@@ -46,7 +46,7 @@ class TemplateAction(JoanModuleAction):
         # first create a settings object containing the default values
         self.settings = TemplateSettings(module_enum=JOANModules.TEMPLATE)
 
-        # then load the saved value from a file, this can be done here, or implement a button with wich the user can specify the file to load from.
+        # then load the saved value from a file, this can be done here, or implement a button with which the user can specify the file to load from.
         default_settings_file_location = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'template_settings.json')
         if os.path.isfile(default_settings_file_location):
             self.settings.load_from_file(default_settings_file_location)
@@ -80,17 +80,16 @@ class TemplateAction(JoanModuleAction):
         """
         This function is called before the module is started
         """
-        print("initialized")
-        # start settings from singleton
+        # This is de place to do all initialization needed. In the example here, the necessary settings are copied from the settings object.
+        # This is done during the initialization to prevent settings from changing while the module is running. This does mean that the module needs to be
+        # reinitialised every time the settings are changed.
+        self.millis = self.settings.millis
+
         try:
-            singleton_settings = self.singleton_settings.get_settings(JOANModules.TEMPLATE)
-            settings_dict = singleton_settings['data'][JOANModules.TEMPLATE.name]
-            self.millis = self.settings.millis
-        except KeyError as inst:
-            print('KeyError:', inst)
+            self.module_state_handler.request_state_change(TemplateStates.INITIALIZED)
+        except RuntimeError:
             return False
         return True
-        # end settings from singleton
 
     def start(self):
         """start the module"""
