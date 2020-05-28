@@ -32,10 +32,8 @@ class DatarecorderDialog(JoanModuleDialog):
         self.module_widget.lbl_message_recorder.setStyleSheet('color: orange')
 
         # reads settings if available and expands the datarecorder widget
-        try:
-            self.module_action._editWidget(layout=self.module_widget.verticalLayout_items)
-        except Exception as inst:
-            print(inst)
+        self.module_action._editWidget(layout=self.module_widget.verticalLayout_items)
+
 
     def handle_module_state(self, state):
         """
