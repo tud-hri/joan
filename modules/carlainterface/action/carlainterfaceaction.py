@@ -156,7 +156,10 @@ class CarlainterfaceAction(JoanModuleAction):
         """
         This function is called before the module is started
         """
-        pass
+        try:
+            self.module_state_handler.request_state_change(CarlainterfaceStates.INIT.INITIALIZING)
+        except RuntimeError:
+            return False
 
     def start(self):
         try:

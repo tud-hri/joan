@@ -82,6 +82,11 @@ class TemplateAction(JoanModuleAction):
         """
         This function is called before the module is started
         """
+        try:
+            self.module_state_handler.request_state_change(TemplateStates.INIT.INITIALIZING)
+        except RuntimeError:
+            return False
+
         # start settings from singleton
         try:
             singleton_settings = self.singleton_settings.get_settings(JOANModules.TEMPLATE)

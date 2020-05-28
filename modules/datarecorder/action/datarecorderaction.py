@@ -58,7 +58,11 @@ class DatarecorderAction(JoanModuleAction):
         """
         This function is called before the module is started
         """
-        self.module_state_handler.request_state_change(DatarecorderStates.DATARECORDER.INITIALIZED)
+        try:
+            self.module_state_handler.request_state_change(DatarecorderStates.INIT.INITIALIZING)
+        except RuntimeError:
+            return False
+        return True
 
     def stop(self):
         """

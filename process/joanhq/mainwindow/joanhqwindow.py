@@ -69,7 +69,7 @@ class JoanHQWindow(QtWidgets.QMainWindow):
 
     def initialize_all(self):
         """ Needed here to show what is is happening in the Action-part """
-        self.master_state_handler.request_state_change(self.master_states.INITIALIZED)
+        self.master_state_handler.request_state_change(self.master_states.INITIALIZING)
 
     def stop_all(self):
         """ Needed here to show what is is happening in the Action-part """
