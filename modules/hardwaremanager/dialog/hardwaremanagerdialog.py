@@ -33,6 +33,14 @@ class HardwaremanagerDialog(JoanModuleDialog):
     def _load_settings(self):
         settings_file_to_load, _ = QtWidgets.QFileDialog.getOpenFileName(self, 'load settings', filter='*.json')
         if settings_file_to_load:
+
+            # remove all current hardware elements first
+            while self.module_widget.hardware_list_layout.count():
+                hardware_tab_widget = self.module_widget.hardware_list_layout.takeAt(0).widget()
+                hardware_title = hardware_tab_widget.groupBox.title()
+                hardware_tab_widget.setParent(None)
+                self.module_action.remove(hardware_title)
+
             self.module_action.load_settings_from_file(settings_file_to_load)
             self.initialize_widgets_from_settings()
 
