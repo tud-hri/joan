@@ -55,16 +55,6 @@
      </item>
      <item>
       <property name="text">
-       <string>Mouse</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>SensoDrive</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
        <string>USB Joystick (HID)</string>
       </property>
      </item>

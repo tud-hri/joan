@@ -2,9 +2,10 @@ from modules.joanmodules import JOANModules
 from modules.hardwaremanager.action.inputclasses.baseinput import BaseInput
 
 
-class JOAN_Mouse(BaseInput):  # DEPRECATED FOR NOW
+class JOAN_Mouse(BaseInput):  # DEPRECATED FOR NOW  TODO: remove from interface for now
     def __init__(self, hardware_manager_action, mouse_tab):
         super().__init__(hardware_manager_action)
+        raise NotImplementedError('Mouse input is not yet implemented')
         self.currentInput = 'Mouse'
         # Add the tab to the widget
         self._mouse_tab = mouse_tab
