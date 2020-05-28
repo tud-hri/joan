@@ -55,7 +55,7 @@ class TemplateAction(JoanModuleAction):
         self.millis = self.settings.millis
 
         # finale update the new setting to the settings singleton (such that other modules can also see this module's settings)
-        self.update_settings(self.settings.as_dict())
+        self.share_settings(self.settings)
         # end settings for this module
 
     def do(self):

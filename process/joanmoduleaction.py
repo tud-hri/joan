@@ -58,7 +58,6 @@ class JoanModuleAction(QtCore.QObject):
         except ValueError:
             pass 
 
-
     def handle_master_state(self, state):
         """
         Handle the state transition by updating the status label and have the
@@ -88,7 +87,12 @@ class JoanModuleAction(QtCore.QObject):
 
         self.singleton_news.write_news(self.module, news)
 
-    def update_settings(self, module_settings):
+    def share_settings(self, module_settings):
+        """
+        Shares the settings of this module with all other modules through the settings singleton.
+        :param module_settings: a JoanModuleSettings child object containing this modules settings
+        :return:
+        """
         self.singleton_settings.update_settings(self.module, module_settings)
 
     def get_all_news(self):

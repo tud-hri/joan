@@ -30,7 +30,7 @@ class DatarecorderAction(JoanModuleAction):
 
         self.settings_object.write_settings(group_key=JOANModules.DATA_RECORDER.name, item=self.item_dict)
         
-        self.update_settings(self.settings)
+        self.share_settings(self.settings)
         # end settings for this module
 
         self.filename = ''

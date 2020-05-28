@@ -33,7 +33,7 @@ class ExperimentManagerAction(JoanModuleAction):
         self.settings_object = ModuleSettings(file=self.my_file)
         self.settings = self.settings_object.read_settings()
         self.settings.update(self._get_attention_message())
-        self.update_settings(self.settings)
+        self.share_settings(self.settings)
 
         self.write_default_experiment()  # maybe used as an example for experiment conditions
         self.experiment_settings = {}    # will contain experiment_settings
@@ -122,6 +122,9 @@ class ExperimentManagerAction(JoanModuleAction):
             except KeyError:
                 pass
                 #print('Info: Module %s has no settings' % module_object.name)
+            except TypeError:  # Module settings are of new style, TODO: remove old style above
+                self.item_dict = module_factory_settings.as_dict()
+
             self.settings_object.write_settings(group_key=module_object.name, item=self.item_dict)
 
     def get_experiment_conditions(self):
@@ -167,8 +170,8 @@ class ExperimentManagerAction(JoanModuleAction):
         for module_object in JOANModules:
             module_factory_settings = self.get_module_factory_settings(module=module_object)
             module_settings = copy.deepcopy(module_factory_settings)
-            self.singleton_settings.update_settings(module_object, {})
-            self.singleton_settings.update_settings(module_object, module_settings)
+            self.singleton_settings.share_settings(module_object, {})
+            self.singleton_settings.share_settings(module_object, module_settings)
 
     def _set_condition_settings_in_singleton(self, condition):
         """ Set the condition settings per module, must be read through the module 'def initialize'
@@ -184,6 +187,6 @@ class ExperimentManagerAction(JoanModuleAction):
                     for item in item_keys:
                         if item in condition[joan_module.name].keys():
                             update_settings[joan_module.name][item] = condition[joan_module.name][item]
-                            self.singleton_settings.update_settings(joan_module, update_settings)
+                            self.singleton_settings.share_settings(joan_module, update_settings)
             except KeyError:
                 pass
