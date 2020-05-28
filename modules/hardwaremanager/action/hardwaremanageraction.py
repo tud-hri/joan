@@ -21,13 +21,12 @@ class HardwaremanagerAction(JoanModuleAction):
         self.write_news(news=self.data)
 
         self.settings = HardWareManagerSettings(module_enum=JOANModules.HARDWARE_MANAGER)
-        self.module_settings_object = ModuleSettings(file=os.path.join(os.path.dirname(os.path.realpath(__file__)), 'hardware_settings.json'))
-        loaded_dict = self.module_settings_object.read_settings()
 
-        if bool(loaded_dict['data']):
-            self.settings.set_from_loaded_dict(loaded_dict['data'][str(JOANModules.HARDWARE_MANAGER)])
+        default_settings_file_location = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'hardware_settings.json')
+        if os.path.isfile(default_settings_file_location):
+            self.settings.load_from_file(default_settings_file_location)
 
-        self.share_settings(self.settings.as_dict())
+        self.share_settings(self.settings)
 
     def do(self):
         """
