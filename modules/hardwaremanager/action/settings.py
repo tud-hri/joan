@@ -1,4 +1,6 @@
 import inspect
+
+from PyQt5 import QtGui
 from enum import Enum
 
 
@@ -78,12 +80,13 @@ class HardWareManagerSettings:
 
 class KeyBoardSettings:
     def __init__(self):
-        self.steer_left_key = 'a'
-        self.steer_right_key = 'd'
-        self.throttle_key = 'w'
-        self.brake_key = 's'
-        self.reverse_key = 'r'
-        self.handbrake_key = 'space'
+        self.steer_left_key = QtGui.QKeySequence('a')[0]
+        self.steer_right_key = QtGui.QKeySequence('d')[0]
+        self.throttle_key = QtGui.QKeySequence('w')[0]
+        self.brake_key = QtGui.QKeySequence('s')[0]
+        self.reverse_key = QtGui.QKeySequence('r')[0]
+        self.handbrake_key = QtGui.QKeySequence('space')[0]
+
 
         # Steering Range
         self.min_steer = -90
