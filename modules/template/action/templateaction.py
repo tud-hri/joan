@@ -58,6 +58,13 @@ class TemplateAction(JoanModuleAction):
         self.share_settings(self.settings)
         # end settings for this module
 
+    def load_settings_from_file(self, settings_file_to_load):
+        self.settings.load_from_file(settings_file_to_load)
+        self.share_settings(self.settings)
+
+    def save_settings_to_file(self, file_to_save_in):
+        self.settings.save_to_file(file_to_save_in)
+
     def do(self):
         """
         This function is called every controller tick of this module implement your main calculations here
