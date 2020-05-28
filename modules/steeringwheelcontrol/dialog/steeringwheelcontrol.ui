@@ -6,15 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1018</width>
-    <height>253</height>
+    <width>812</width>
+    <height>174</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
+   <item row="2" column="0">
     <widget class="QLabel" name="lbl_current_controller">
      <property name="font">
       <font>
@@ -29,28 +29,56 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="0">
+   <item row="1" column="0">
+    <widget class="QComboBox" name="combobox_vehicle_list">
+     <item>
+      <property name="text">
+       <string>Car 1</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QLabel" name="lbl_vehicle_list">
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Please select which vehicle the controller should apply to:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QPushButton" name="btn_update_vehicle_list">
+     <property name="text">
+      <string>Update List</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0" colspan="2">
+    <widget class="QPushButton" name="btn_apply_controller">
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Apply selected controller</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0" colspan="2">
     <widget class="QTabWidget" name="controller_tab_widgets">
      <property name="minimumSize">
       <size>
-       <width>1000</width>
+       <width>800</width>
        <height>0</height>
       </size>
      </property>
      <property name="currentIndex">
       <number>-1</number>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0">
-    <widget class="QPushButton" name="btn_apply_controller">
-     <property name="font">
-      <font>
-       <pointsize>12</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>Apply selected controller</string>
      </property>
     </widget>
    </item>
