@@ -4,7 +4,7 @@ import keyboard
 from PyQt5 import QtWidgets, QtGui, uic
 
 from modules.hardwaremanager.action.inputclasses.baseinput import BaseInput
-from modules.hardwaremanager.action.settings import KeyBoardSettings
+from modules.hardwaremanager.action.hardwaremanagersettings import KeyBoardSettings
 from modules.joanmodules import JOANModules
 
 

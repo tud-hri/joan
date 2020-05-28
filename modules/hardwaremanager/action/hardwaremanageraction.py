@@ -4,7 +4,7 @@ import keyboard
 
 from modules.hardwaremanager.action.inputclasses.JOAN_joystick import JOAN_Joystick
 from modules.hardwaremanager.action.inputclasses.JOAN_keyboard import JOAN_Keyboard
-from modules.hardwaremanager.action.settings import KeyBoardSettings, JoyStickSettings, HardWareManagerSettings
+from modules.hardwaremanager.action.hardwaremanagersettings import KeyBoardSettings, JoyStickSettings, HardWareManagerSettings
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
 from process.settings import ModuleSettings
@@ -20,14 +20,14 @@ class HardwaremanagerAction(JoanModuleAction):
         self.data = {}
         self.write_news(news=self.data)
 
-        self.settings = HardWareManagerSettings()
+        self.settings = HardWareManagerSettings(module_enum=JOANModules.HARDWARE_MANAGER)
         self.module_settings_object = ModuleSettings(file=os.path.join(os.path.dirname(os.path.realpath(__file__)), 'hardware_settings.json'))
         loaded_dict = self.module_settings_object.read_settings()
 
         if bool(loaded_dict['data']):
             self.settings.set_from_loaded_dict(loaded_dict['data'][str(JOANModules.HARDWARE_MANAGER)])
 
-        self.update_settings(self.settings.as_dict())
+        self.share_settings(self.settings.as_dict())
 
     def do(self):
         """
@@ -61,16 +61,11 @@ class HardwaremanagerAction(JoanModuleAction):
         return super().stop()
 
     def load_settings_from_file(self, settings_file_to_load):
-        self.module_settings_object = ModuleSettings(file=settings_file_to_load)
-        loaded_dict = self.module_settings_object.read_settings()
-
-        if bool(loaded_dict['data']):
-            self.settings.set_from_loaded_dict(loaded_dict['data'][str(JOANModules.HARDWARE_MANAGER)])
-            self.update_settings(self.settings.as_dict())
+        self.settings.load_from_file(settings_file_to_load)
+        self.share_settings(self.settings.as_dict())
 
     def save_settings_to_file(self, file_to_save_in):
-        self.module_settings_object = ModuleSettings(file=file_to_save_in)
-        self.module_settings_object.write_settings(item={'data': self.settings.as_dict()})
+        self.settings.save_to_file(file_to_save_in)
 
     def add_a_keyboard(self, widget, keyboard_settings=None):
         is_a_new_keyboard = not keyboard_settings
