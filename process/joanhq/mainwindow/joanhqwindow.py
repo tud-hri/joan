@@ -5,6 +5,7 @@ import os
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 from process.joanmoduleaction import JoanModuleAction
 from modules.joanmodules import JOANModules
+from .settingsviewdialog import SettingsViewDialog
 
 
 class JoanHQWindow(QtWidgets.QMainWindow):
@@ -49,6 +50,9 @@ class JoanHQWindow(QtWidgets.QMainWindow):
         # add file menu
         self._file_menu = self.menuBar().addMenu('File')
         self._file_menu.addAction('Quit', self.action.quit)
+
+        self._view_menu = self.menuBar().addMenu('View')
+        self._view_menu.addAction('Show all current settings..', self.show_all_current_settings)
 
     def add_module(self, module_dialog, module_enum):
         """Create a widget and add to main window"""
@@ -104,6 +108,9 @@ class JoanHQWindow(QtWidgets.QMainWindow):
             # if we end up here, it means we didn't want to quit
             # hence, ignore the event (for Qt)
             event.ignore()
+
+    def show_all_current_settings(self):
+        SettingsViewDialog(self.action.singleton_settings.all_settings, parent=self)
 
     def button_showclose_checked(self, button):
         """change the text of the module card's show/close button"""

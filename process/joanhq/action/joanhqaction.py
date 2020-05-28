@@ -18,6 +18,7 @@ class JoanHQAction(QtCore.QObject):
 
         # status, statehandlers and news
         self.singleton_status = Status()
+        self.singleton_settings = Settings()
         self.master_state_handler = self.singleton_status._master_state_handler
         self.master_states = self.singleton_status._master_states
         self.master_state_handler.state_changed.connect(self.handle_master_state)
