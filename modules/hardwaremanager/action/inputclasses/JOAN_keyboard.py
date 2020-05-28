@@ -130,35 +130,25 @@ class JOAN_Keyboard(BaseInput):
         self.settings_dialog = KeyBoardSettingsDialog(self.settings)
 
     def key_event(self, key):
-        if key.event_type == keyboard.KEY_DOWN:
-            if key.name == self.settings.throttle_key:
-                self._throttle = True
-            elif key.name == self.settings.brake_key:
-                self._brake = True
-            elif key.name == self.settings.steer_left_key:
-                self._steer_left = True
-                self._steer_right = False
-            elif key.name == self.settings.steer_right_key:
-                self._steer_right = True
-                self._steer_left = False
-            elif key.name == self.settings.handbrake_key:
-                self._handbrake = True
+        boolean_key_press_value = key.event_type == keyboard.KEY_DOWN
+        int_key_identifier = QtGui.QKeySequence(key.name)[0]
 
-        if key.event_type == keyboard.KEY_UP:
-            if key.name == self.settings.throttle_key:
-                self._throttle = False
-            elif key.name == self.settings.brake_key:
-                self._brake = False
-            elif key.name == self.settings.steer_left_key:
-                self._steer_left = False
+        if int_key_identifier == self.settings.throttle_key:
+            self._throttle = boolean_key_press_value
+        elif int_key_identifier == self.settings.brake_key:
+            self._brake = boolean_key_press_value
+        elif int_key_identifier == self.settings.steer_left_key:
+            self._steer_left = boolean_key_press_value
+            if boolean_key_press_value:
                 self._steer_right = False
-            elif key.name == self.settings.steer_right_key:
-                self._steer_right = False
+        elif int_key_identifier == self.settings.steer_right_key:
+            self._steer_right = boolean_key_press_value
+            if boolean_key_press_value:
                 self._steer_left = False
-            elif key.name == self.settings.handbrake_key:
-                self._handbrake = False
-            elif key.name == self.settings.reverse_key:
-                self._reverse = not self._reverse
+        elif int_key_identifier == self.settings.handbrake_key:
+            self._handbrake = boolean_key_press_value
+        elif int_key_identifier == self.settings.reverse_key and boolean_key_press_value:
+            self._reverse = not self._reverse
 
     def process(self):
         # # If there are cars in the simulation add them to the controllable car combobox
