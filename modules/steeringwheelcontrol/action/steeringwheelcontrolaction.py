@@ -28,11 +28,19 @@ class SteeringWheelControlAction(JoanModuleAction):
         self.data['sw_torque'] = 0
         self.write_news(news=self.data)
 
+    def update_vehicle_list(self):
+        carla_data = self.read_news(JOANModules.CARLA_INTERFACE)
+        vehicle_list = carla_data['vehicles']
+        return vehicle_list
+        
+        
+
     def do(self):
         """
         This function is called every controller tick of this module implement your main calculations here
         """
-        # data_in = self.read_news(JOANModules.CARLA_INTERFACE)
+
+        data_in = self.read_news(JOANModules.CARLA_INTERFACE)
         data_in = {}
         data_out = self._current_controller.do(data_in)
 

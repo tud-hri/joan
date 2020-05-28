@@ -189,6 +189,7 @@ class Carlavehicle():
         self._vehicle_tab.group_car.setTitle('Car ' + str(carnr+1))
         self._spawned = False
         self._hardware_data = {}
+        self._vehicle_nr = 'Car ' + str(carnr+1)
 
         self._vehicle_tab.spin_spawn_points.setRange(0, nr_spawn_points)
         self._vehicle_tab.spin_spawn_points.lineEdit().setReadOnly(True)
@@ -217,6 +218,11 @@ class Carlavehicle():
     @property
     def vehicle_id(self):
         return self._BP.id
+
+    @property
+    def vehicle_nr(self):
+        return self._vehicle_nr
+
 
     def update_input(self):
         self._selected_input = self._vehicle_tab.combo_input.currentText()
@@ -250,6 +256,7 @@ class Carlavehicle():
             self._vehicle_tab.spin_spawn_points.setEnabled(True)
             self._spawned = False
 
+
     def destroy_car(self):
         try:
             self._spawned = False
@@ -264,6 +271,8 @@ class Carlavehicle():
             self._vehicle_tab.btn_spawn.setEnabled(False)
             self._vehicle_tab.btn_destroy.setEnabled(True)
             self._vehicle_tab.spin_spawn_points.setEnabled(False)
+
+        
 
     def apply_control(self, data):
         if self._selected_input != 'None':
