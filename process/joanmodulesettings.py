@@ -1,11 +1,16 @@
-from enum import Enum
-
 import inspect
 import abc
 import json
 
+from enum import Enum
+
+from modules.joanmodules import JOANModules
+
 
 class JoanModuleSettings(abc.ABC):
+    def __init__(self, module_enum: JOANModules):
+        self._module_enum = module_enum
+
     def save_to_file(self, file_path, keys_to_omit=()):
         dict_to_save = self.as_dict()
 
@@ -25,11 +30,22 @@ class JoanModuleSettings(abc.ABC):
         self.set_from_loaded_dict(loaded_dict)
 
     def set_from_loaded_dict(self, loaded_dict):
-        self._copy_dict_to_class_dict(loaded_dict, self.__dict__)
+        try:
+            self._copy_dict_to_class_dict(loaded_dict[str(self._module_enum)], self.__dict__)
+        except KeyError:
+            warning_message = "WARNING: loading settings for the " + str(self._module_enum) + \
+                              " module from a dictionary failed. The loaded dictionary did not contain " + str(self._module_enum) + " settings." + \
+                              (" It did contain settings for: " + ", ".join(loaded_dict.keys()) if loaded_dict.keys() else "")
+
+            print(warning_message)
 
     def as_dict(self):
-        output_dict = {}
-        self._copy_dict_to_dict(self.__dict__, output_dict)
+        output_dict = {str(self._module_enum): {}}
+
+        # omit attributes of the ABC from the source dict since they are not of interest when displaying the settings as a dict
+        source_dict = {key: item for key, item in self.__dict__.items() if key not in JoanModuleSettings(None).__dict__.keys()}
+
+        self._copy_dict_to_dict(source_dict, output_dict[str(self._module_enum)])
         return output_dict
 
     def _copy_dict_to_class_dict(self, source, destination):
@@ -50,7 +66,7 @@ class JoanModuleSettings(abc.ABC):
                     destination[key] = value
             except KeyError:
                 print("WARNING: a saved setting called " + key + " was found to restore in " + str(
-                    self.__class__) + ", but this setting did not exist. It was created.")
+                    self._module_enum) + " settings, but this setting did not exist. It was created.")
                 destination[key] = value
 
     @staticmethod

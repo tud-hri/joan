@@ -44,7 +44,7 @@ class TemplateAction(JoanModuleAction):
         # when loading setting, all attribute in the JSON file are copied, but missing values will keep their default value as defined in your setting class
 
         # first create a settings object containing the default values
-        self.settings = TemplateSettings()
+        self.settings = TemplateSettings(module_enum=JOANModules.TEMPLATE)
 
         # then load the saved value from a file, this can be done here, or implement a button with wich the user can specify the file to load from.
         default_settings_file_location = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'template_settings.json')
