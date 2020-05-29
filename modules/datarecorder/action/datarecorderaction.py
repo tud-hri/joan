@@ -47,6 +47,8 @@ class DatarecorderAction(JoanModuleAction):
         This function is called every controller tick of this module implement your main calculations here
         """
         self._write()
+
+        
         
         # next two Template lines are not used for datarecorder
         # 1. self.data['t'] = self.time.elapsed()

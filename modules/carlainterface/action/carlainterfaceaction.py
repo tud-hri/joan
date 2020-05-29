@@ -41,7 +41,6 @@ class CarlainterfaceAction(JoanModuleAction):
         self.module_state_handler.request_state_change(CarlainterfaceStates.INIT.INITIALIZING)
         self.data = {}
         self.data['vehicles'] = None
-        self.data['t'] = -1
         self.data['connected'] = False
         self.write_news(news=self.data)
         self.time = QtCore.QTime()
@@ -78,8 +77,6 @@ class CarlainterfaceAction(JoanModuleAction):
         This function is called every controller tick of this module implement your main calculations here
         """
         self.data['vehicles'] = self.vehicles
-
-        self.data['t'] = self.time.elapsed()
         self.write_news(news=self.data)
 
         self._data_from_hardware = self.read_news(JOANModules.HARDWARE_MANAGER)
