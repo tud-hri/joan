@@ -28,12 +28,12 @@ class SteeringWheelControlAction(JoanModuleAction):
         self.data['sw_torque'] = 0
         self.write_news(news=self.data)
 
+        
+
     def update_vehicle_list(self):
         carla_data = self.read_news(JOANModules.CARLA_INTERFACE)
         vehicle_list = carla_data['vehicles']
         return vehicle_list
-        
-        
 
     def do(self):
         """
@@ -41,7 +41,6 @@ class SteeringWheelControlAction(JoanModuleAction):
         """
 
         data_in = self.read_news(JOANModules.CARLA_INTERFACE)
-        data_in = {}
         data_out = self._current_controller.do(data_in)
 
         # extract from controller's output data_out
@@ -60,6 +59,10 @@ class SteeringWheelControlAction(JoanModuleAction):
 
     def set_current_controller(self, controller_type: SWContollerTypes):
         self._current_controller = self._controllers[controller_type]
+        current_state = self.module_state_handler.get_current_state()
+        
+        if current_state is not SteeringWheelControlStates.EXEC.RUNNING:
+            self.module_state_handler.request_state_change(SteeringWheelControlStates.EXEC.READY)
 
     def start(self):
         try:
@@ -71,6 +74,7 @@ class SteeringWheelControlAction(JoanModuleAction):
     def stop(self):
         try:
             self.module_state_handler.request_state_change(SteeringWheelControlStates.EXEC.STOPPED)
+            self.module_state_handler.request_state_change(SteeringWheelControlStates.EXEC.READY)
         except RuntimeError:
             return False
         return super().stop()
