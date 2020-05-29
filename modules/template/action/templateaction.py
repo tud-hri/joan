@@ -19,9 +19,10 @@ from process.settings import ModuleSettings
 
 class TemplateAction(JoanModuleAction):
     """Example JOAN module"""
-
-    def __init__(self, master_state_handler, millis=100):
-        super().__init__(module=JOANModules.TEMPLATE, master_state_handler=master_state_handler, millis=millis)
+    def __init__(self, millis=100):
+        super().__init__(module=JOANModules.TEMPLATE, millis=millis)
+    #def __init__(self, master_state_handler, millis=100):
+    #    super().__init__(module=JOANModules.TEMPLATE, master_state_handler=master_state_handler, millis=millis)
 
         # The modules work with states.
         # Each JOAN module has its own module states (e.g. states specific for the module, see states.py in the template action folder) 
@@ -85,6 +86,12 @@ class TemplateAction(JoanModuleAction):
         # reinitialised every time the settings are changed.
         self.millis = self.settings.millis
 
+        try:
+            self.module_state_handler.request_state_change(TemplateStates.INIT.INITIALIZING)
+        except RuntimeError:
+            return False
+
+        # start settings from singleton
         try:
             self.module_state_handler.request_state_change(TemplateStates.INITIALIZED)
         except RuntimeError:

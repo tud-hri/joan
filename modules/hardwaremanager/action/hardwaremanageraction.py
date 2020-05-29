@@ -12,8 +12,10 @@ from .states import HardwaremanagerStates
 
 
 class HardwaremanagerAction(JoanModuleAction):
-    def __init__(self, master_state_handler, millis=5):
-        super().__init__(module=JOANModules.HARDWARE_MANAGER, master_state_handler=master_state_handler, millis=millis)
+    def __init__(self, millis=5):
+        super().__init__(module=JOANModules.HARDWARE_MANAGER, millis=millis)
+    #def __init__(self, master_state_handler, millis=5):
+    #    super().__init__(module=JOANModules.HARDWARE_MANAGER, master_state_handler=master_state_handler, millis=millis)
 
         self.input_devices_classes = {}
 
@@ -40,7 +42,11 @@ class HardwaremanagerAction(JoanModuleAction):
         """
         This function is called before the module is started
         """
-        pass
+        try:
+            self.module_state_handler.request_state_change(HardwaremanagerStates.INIT.INITIALIZING)
+        except RuntimeError:
+            return False
+        return super().initialize()
 
     def start(self):
         try:

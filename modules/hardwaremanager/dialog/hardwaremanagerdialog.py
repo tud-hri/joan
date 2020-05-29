@@ -9,8 +9,11 @@ from process.joanmoduledialog import JoanModuleDialog
 
 
 class HardwaremanagerDialog(JoanModuleDialog):
-    def __init__(self, module_action: JoanModuleAction, master_state_handler, parent=None):
-        super().__init__(module=JOANModules.HARDWARE_MANAGER, module_action=module_action, master_state_handler=master_state_handler, parent=parent)
+    def __init__(self, module_action: JoanModuleAction, parent=None):
+        super().__init__(module=JOANModules.HARDWARE_MANAGER, module_action=module_action, parent=parent)
+    #def __init__(self, module_action: JoanModuleAction, master_state_handler, parent=None):
+    #    super().__init__(module=JOANModules.HARDWARE_MANAGER, module_action=module_action, master_state_handler=master_state_handler, parent=parent)
+
         self._input_data = {}
         self._inputlist = {}
         self.hardware_widgets = {}

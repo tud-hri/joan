@@ -23,7 +23,7 @@ class FeedbackcontrollerWidget(Control):
 
         self.define_module_state_handler(module=self, module_states=FeedbackcontrollerStates())
         self.module_state_handler.state_changed.connect(self.handle_module_state)
-        self.master_state_handler.state_changed.connect(self.handle_master_state)
+        #self.master_state_handler.state_changed.connect(self.handle_master_state)
 
         try:
             self.action = FeedbackcontrollerAction()

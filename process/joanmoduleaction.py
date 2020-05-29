@@ -9,7 +9,8 @@ from process.status import Status
 
 
 class JoanModuleAction(QtCore.QObject):
-    def __init__(self, module: JOANModules, master_state_handler, millis=100):
+    def __init__(self, module: JOANModules, millis=100):
+    #def __init__(self, module: JOANModules, master_state_handler, millis=100):
         super(QtCore.QObject, self).__init__()
 
         self._millis = millis
@@ -24,8 +25,6 @@ class JoanModuleAction(QtCore.QObject):
         self.singleton_news = News()
         self.singleton_settings = Settings()
 
-        # initialize states and state handler
-        self.master_state_handler = master_state_handler
         self.module_states = module.states()
         self.module_state_handler = StateHandler(first_state=MasterStates.VOID, states_dict=self.module_states.get_states())
         module_state_package = {'module_states': self.module_states, 'module_state_handler': self.module_state_handler}
@@ -35,8 +34,6 @@ class JoanModuleAction(QtCore.QObject):
         # initialize own data and create channel in news
         self.data = {}
         self.write_news(news=self.data)
-
-        self.master_state_handler.state_changed.connect(self.handle_master_state)
 
     def do(self):
         pass
@@ -57,29 +54,6 @@ class JoanModuleAction(QtCore.QObject):
             self.millis = int(millis)
         except ValueError:
             pass 
-
-    def handle_master_state(self, state):
-        """
-        Handle the state transition by updating the status label and have the
-        GUI reflect the possibilities of the current state.
-        """
-        state_as_state = self.master_state_handler.get_state(state)  # ensure we have the State object (not the int)
-        # emergency stop
-        if state_as_state == self.module_states.ERROR:
-            self.module_action.stop_pulsar()
-
-    ''' TODO: remarked because handle_module_state is hendled in the child-moduleaction (Andre 20200424)
-    def handle_module_state(self, state):
-        """
-        Handle the state transition by updating the status label and have the
-        GUI reflect the possibilities of the current state.
-        """
-        state_as_state = self.module_state_handler.get_state(state)  # ensure we have the State object (not the int)
-        
-        # emergency stop
-        if state_as_state == self.module_states.ERROR:
-            self.stop_pulsar()
-    '''
     
     def write_news(self, news: dict):
         """write new data to channel"""

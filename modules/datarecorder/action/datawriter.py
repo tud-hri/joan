@@ -64,7 +64,10 @@ class DataWriter(threading.Thread):
         self.dict_writer.writeheader()
 
     def close(self):
-        self.file_handle.close()
+        try:
+            self.file_handle.close()
+        except AttributeError:
+            pass
 
     def write(self, timestamp=None, news=None, channels=[]):
         # get ALL news here, filter in self.filter and write

@@ -13,8 +13,10 @@ import os
 
 
 class DatarecorderAction(JoanModuleAction):
-    def __init__(self, master_state_handler, millis=200):
-        super().__init__(module=JOANModules.DATA_RECORDER, master_state_handler=master_state_handler, millis=millis)
+    def __init__(self, millis=200):
+        super().__init__(module=JOANModules.DATA_RECORDER, millis=millis)
+    #def __init__(self, master_state_handler, millis=200):
+    #    super().__init__(module=JOANModules.DATA_RECORDER, master_state_handler=master_state_handler, millis=millis)
 
         self.module_state_handler.request_state_change(DatarecorderStates.DATARECORDER.NOTINITIALIZED)
 
@@ -55,7 +57,11 @@ class DatarecorderAction(JoanModuleAction):
         """
         This function is called before the module is started
         """
-        print('datarecorderaction initialize started')
+        try:
+            self.module_state_handler.request_state_change(DatarecorderStates.INIT.INITIALIZING)
+        except RuntimeError:
+            return False
+        return True
 
     def stop(self):
         """

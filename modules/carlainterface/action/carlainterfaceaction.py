@@ -35,8 +35,10 @@ except IndexError:
     pass
 
 class CarlainterfaceAction(JoanModuleAction):
-    def __init__(self, master_state_handler, millis=5):
-        super().__init__(module=JOANModules.CARLA_INTERFACE, master_state_handler=master_state_handler, millis=millis)
+    def __init__(self, millis=5):
+    #def __init__(self, master_state_handler, millis=5):
+        super().__init__(module=JOANModules.CARLA_INTERFACE, millis=millis)
+        #super().__init__(module=JOANModules.CARLA_INTERFACE, master_state_handler=master_state_handler, millis=millis)
 
         self.module_state_handler.request_state_change(CarlainterfaceStates.INIT.INITIALIZING)
         self.data = {}
@@ -154,7 +156,10 @@ class CarlainterfaceAction(JoanModuleAction):
         """
         This function is called before the module is started
         """
-        pass
+        try:
+            self.module_state_handler.request_state_change(CarlainterfaceStates.INIT.INITIALIZING)
+        except RuntimeError:
+            return False
 
     def start(self):
         try:

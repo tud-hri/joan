@@ -20,7 +20,7 @@ class TrajectoryrecorderWidget(Control):
 
         self.define_module_state_handler(module=self, module_states=TrajectoryrecorderStates())
         self.module_state_handler.state_changed.connect(self.handle_module_state)
-        self.master_state_handler.state_changed.connect(self.handle_master_state)
+        #self.master_state_handler.state_changed.connect(self.handle_master_state)
 
         try:
             self.action = TrajectoryrecorderAction(module_states = self.module_states,
