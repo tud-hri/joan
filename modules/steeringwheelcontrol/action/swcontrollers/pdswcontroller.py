@@ -48,7 +48,8 @@ class PDSWController(BaseSWController):
 
         # TODO calculate steering wheel torque
 
-        self.data_out['sw_torque'] = 0.0
+        self._data_out['sw_torque'] = 0.0
+        return self._data_out
 
     def error(self, pos_car, heading_car, vel_car=np.array([0.0, 0.0, 0.0]), heading_rate_car=0.0):
         """Calculate the controller error"""
