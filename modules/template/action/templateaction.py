@@ -35,6 +35,8 @@ class TemplateAction(JoanModuleAction):
             self.time.restart()
         except RuntimeError:
             return False
+
+        # Always call the super start method if you override start. This super method is what starts the actual loop.
         return super().start()
 
     def stop(self):
@@ -42,4 +44,6 @@ class TemplateAction(JoanModuleAction):
             self.module_state_handler.request_state_change(TemplateStates.TEMPLATE.STOPPED)
         except RuntimeError:
             return False
+
+        # Always call the super stop method if you override stop. This super method is what stops the actual loop.
         return super().stop()

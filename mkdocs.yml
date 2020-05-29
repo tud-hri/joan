@@ -21,3 +21,4 @@ nav:
 
 markdown_extensions:
   - admonition
+  - attr_list
