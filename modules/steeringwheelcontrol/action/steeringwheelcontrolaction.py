@@ -27,9 +27,6 @@ class SteeringWheelControlAction(JoanModuleAction):
         self.data = {}
         self.data['sw_torque'] = 0
         self.write_news(news=self.data)
-
-        
-
     def update_vehicle_list(self):
         carla_data = self.read_news(JOANModules.CARLA_INTERFACE)
         vehicle_list = carla_data['vehicles']
@@ -52,7 +49,6 @@ class SteeringWheelControlAction(JoanModuleAction):
         """
         This function is called before the module is started
         """
-        pass
 
     def add_controller(self, controller_type: SWContollerTypes):
         self._controllers[controller_type] = controller_type.klass(self)

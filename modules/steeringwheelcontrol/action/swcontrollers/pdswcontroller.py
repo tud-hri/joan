@@ -45,7 +45,6 @@ class PDSWController(BaseSWController):
 
         # find error
         self._controller_error = self.error(pos_car, heading_car, vel_car, heading_rate_car)
-
         # TODO calculate steering wheel torque
 
         self._data_out['sw_torque'] = 0.0
