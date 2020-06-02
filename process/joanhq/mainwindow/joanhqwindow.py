@@ -10,6 +10,7 @@ from modules.joanmodules import JOANModules
 # from process.states import MasterStates
 from process.status import Status
 from .settingsoverviewdialog import SettingsOverviewDialog
+from .performancemonitordialog import PerformanceMonitorDialog
 
 
 class JoanHQWindow(QtWidgets.QMainWindow):
@@ -64,7 +65,8 @@ class JoanHQWindow(QtWidgets.QMainWindow):
         self._file_menu.addAction('Quit', self.action.quit)
 
         self._view_menu = self.menuBar().addMenu('View')
-        self._view_menu.addAction('Show all current settings..', self.show_all_current_settings)
+        self._view_menu.addAction('Show all current settings..', self.show_settings_overview)
+        self._view_menu.addAction('Show performance monitor..', self.show_performance_monitor)
 
     def emergency(self):
         """ Needed here to show what is is happening in the Action-part """
@@ -157,10 +159,11 @@ class JoanHQWindow(QtWidgets.QMainWindow):
             # hence, ignore the event (for Qt)
             event.ignore()
 
-    def show_all_current_settings(self):
-        for enum, module in self.action._instantiated_modules.items():
-            print(str(enum) + ': ' + str(module.average_tick_time) + ' - ' + str(module._millis))
+    def show_settings_overview(self):
         SettingsOverviewDialog(self.action.singleton_settings.all_settings, parent=self)
+
+    def show_performance_monitor(self):
+        PerformanceMonitorDialog(self.action._instantiated_modules, parent=self)
 
     def button_showclose_checked(self, button):
         """change the text of the module card's show/close button"""

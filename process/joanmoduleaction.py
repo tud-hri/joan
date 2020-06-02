@@ -17,7 +17,7 @@ class JoanModuleAction(QtCore.QObject):
 
         self._millis = millis
         self._performance_monitor_enabled = enable_performance_monitor
-        self.time_of_last_tick = time.time_ns() * 10 ** 6
+        self.time_of_last_tick = time.time_ns() / 10 ** 6
         self._average_tick_time = AveragedFloat(samples=int(1000 / millis))
 
         self.module = module
@@ -45,7 +45,7 @@ class JoanModuleAction(QtCore.QObject):
         self.write_news(news=self.data)
 
     def _do_with_performance_monitor(self):
-        self._average_tick_time.value = (time.time_ns() - self.time_of_last_tick) * 10 ** 6
+        self._average_tick_time.value = (time.time_ns() - self.time_of_last_tick) / 10 ** 6
         self.time_of_last_tick = time.time_ns()
         self.do()
 
