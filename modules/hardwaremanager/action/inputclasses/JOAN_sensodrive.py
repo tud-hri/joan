@@ -44,8 +44,8 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
 
         #Convert integers to bytes:
         self.sensodrive_settings.endstops_bytes = int.to_bytes(self.sensodrive_settings.endstops, 2, byteorder='little', signed=True)
-        self.sensodrive_settings.torque_limit_between_endstop_bytes = int.to_bytes(self.sensodrive_settings.torque_limit_between_endstop, 1, byteorder='little', signed=True)
-        self.sensodrive_settings.torque_limit_beyond_endstop_bytes = int.to_bytes(self.sensodrive_settings.torque_limit_beyond_endstop, 1, byteorder='little', signed=True)
+        self.sensodrive_settings.torque_limit_between_endstop_bytes = int.to_bytes(self.sensodrive_settings.torque_limit_between_endstop, 1, byteorder='little', signed=False)
+        self.sensodrive_settings.torque_limit_beyond_endstop_bytes = int.to_bytes(self.sensodrive_settings.torque_limit_beyond_endstop, 1, byteorder='little', signed=False)
 
         ## Load the chosen settings in an initialization message:
         # We need to have our init message here as well
@@ -265,16 +265,22 @@ class JOAN_SensoDrive(BaseInput):  # DEPRECATED FOR NOW TODO: remove from interf
                 else:
                     self._sensodrive_tab.btn_remove_hardware.setEnabled(True)
 
+        
+
 
         # Reverse
         self._data['Reverse'] = 0
         # Handbrake
         self._data['Handbrake'] = 0
 
-       
+       #check whether we have a sw_controller that should be updated
+        self._steering_wheel_control_data = self._action.read_news(JOANModules.STEERING_WHEEL_CONTROL)
+        print(self._steering_wheel_control_data)
+
+        self.settings.steering_wheel_parameters['torque'] = self._steering_wheel_control_data['sw_torque']
 
      
-        #request steering wheel data
+        #request and set steering wheel data
         self.write_message_steering_wheel(self.settings.PCAN_object, self.steering_wheel_message, self.settings.steering_wheel_parameters)
         received = self.settings.PCAN_object.Read(self.settings.PCAN_channel)
 
@@ -340,12 +346,10 @@ class JOAN_SensoDrive(BaseInput):  # DEPRECATED FOR NOW TODO: remove from interf
             scale = 16
             num_of_bits = 8
 
-            
+            # joe = bin(self._error_state[0])[2:].zfill(num_of_bits)
+            # hai = bin(self._error_state[1])[2:].zfill(num_of_bits)
 
-            joe = bin(self._error_state[0])[2:].zfill(num_of_bits)
-            hai = bin(self._error_state[1])[2:].zfill(num_of_bits)
-
-            print(hai,joe, hex(self._error_state[0]), hex(self._error_state[1]))
+            # print(hai,joe, hex(self._error_state[0]), hex(self._error_state[1]))
             
             
             self._sensodrive_tab.btn_on_off.setStyleSheet("background-color: red")
@@ -355,7 +359,7 @@ class JOAN_SensoDrive(BaseInput):  # DEPRECATED FOR NOW TODO: remove from interf
             
             
             
-   
+        self._data['spring_stiffness'] = self.settings.steering_wheel_parameters['spring_stiffness']
 
         return self._data
 
@@ -405,6 +409,8 @@ class JOAN_SensoDrive(BaseInput):  # DEPRECATED FOR NOW TODO: remove from interf
         if not self.settings.pcan_error:
             #print('writing message')
             self.settings.PCAN_object.Write(self.settings.PCAN_channel, pcanmessage)
+
+        
 
 
 

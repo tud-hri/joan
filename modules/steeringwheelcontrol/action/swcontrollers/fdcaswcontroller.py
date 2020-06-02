@@ -36,7 +36,7 @@ class FDCASWController(BaseSWController):
 
         self.set_default_parameter_values()
 
-    def do(self, data_in):
+    def do(self, data_in, hw_data_in):
         """In manual, the controller has no additional control. We could add some self-centering torque, if we want.
         For now, steeringwheel torque is zero"""
         self._data_out['sw_torque'] = 0.0

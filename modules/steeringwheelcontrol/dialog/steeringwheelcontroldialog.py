@@ -51,13 +51,17 @@ class SteeringWheelControlDialog(JoanModuleDialog):
                     if current_widget is value.get_controller_tab:
                         self.module_action.set_current_controller(key)
                         self.module_widget.lbl_current_controller.setText("Current controller: " + str(key))
+                        if self.module_action.module_state_handler.get_current_state() is not SteeringWheelControlStates.EXEC.RUNNING:
+                            self.module_action.module_state_handler.request_state_change(SteeringWheelControlStates.EXEC.READY)
             else:
+                self.module_action.module_state_handler.request_state_change(SteeringWheelControlStates.ERROR)
                 answer = QtWidgets.QMessageBox.warning(self, 'Warning',
                                                 'You cannot apply a controller if car 1 is not spawned!',
                                                 buttons=QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)
                 if answer == QtWidgets.QMessageBox.Cancel:
                     return
         else:
+            self.module_action.module_state_handler.request_state_change(SteeringWheelControlStates.ERROR)
             answer = QtWidgets.QMessageBox.warning(self, 'Warning',
                                                 'No vehicles available dude.',
                                                 buttons=QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)

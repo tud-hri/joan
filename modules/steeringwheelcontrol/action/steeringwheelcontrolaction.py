@@ -37,8 +37,10 @@ class SteeringWheelControlAction(JoanModuleAction):
         This function is called every controller tick of this module implement your main calculations here
         """
 
-        data_in = self.read_news(JOANModules.CARLA_INTERFACE)
-        data_out = self._current_controller.do(data_in)
+        sim_data_in = self.read_news(JOANModules.CARLA_INTERFACE)
+        hw_data_in = self.read_news(JOANModules.HARDWARE_MANAGER)
+
+        data_out = self._current_controller.do(sim_data_in, hw_data_in)
 
         # extract from controller's output data_out
         self.data['sw_torque'] = data_out['sw_torque']

@@ -1,6 +1,8 @@
 import numpy as np
 import math
+import time
 
+from utils.utils import Biquad
 from modules.steeringwheelcontrol.action.swcontrollertypes import SWContollerTypes
 from .baseswcontroller import BaseSWController
 
@@ -17,12 +19,24 @@ class PDSWController(BaseSWController):
         self._w_lat = 1
         self._w_heading = 2
 
+        self._t2 = 0
+
+        self._bq_filter_heading = Biquad()
+        self._bq_filter_velocity = Biquad()
+
+        self.stiffness = 1
+
+
+        
+
+
         # controller errors
         # [0]: lateral error
         # [1]: heading error
         # [2]: lateral rate error
         # [3]: heading rate error
         self._controller_error = np.array([0.0, 0.0, 0.0, 0.0])
+        self.error_static_old = np.array([0.0, 0.0])
 
         self.update_trajectory_list()
 
@@ -33,24 +47,50 @@ class PDSWController(BaseSWController):
 
         self.set_default_parameter_values()
 
-    def do(self, data_in):
-        """Perform the controller-specific calculations"""
+    def do(self, data_in, hw_data_in):
+        if 'SensoDrive 1' in hw_data_in:
+            stiffness = hw_data_in['SensoDrive 1']['spring_stiffness']
 
-        # extract data
-        car = data_in['vehicles'][0].spawned_vehicle
-        pos_car = np.array([car.get_location().x, car.get_location().y])
-        vel_car = np.array([car.get_velocity().x, car.get_velocity().y])
-        heading_car = car.get_transform().rotation.yaw
-        heading_rate_car = 0.0
+            """Perform the controller-specific calculations"""
+            #get delta_t (we could also use 'millis' but this is a bit more precise)
+            t1 = time.time()
+            delta_t = t1 - self._t2
 
-        # find error
-        self._controller_error = self.error(pos_car, heading_car, vel_car, heading_rate_car)
-        # TODO calculate steering wheel torque
+            # extract data
+            car = data_in['vehicles'][0].spawned_vehicle
+            pos_car = np.array([car.get_location().x, car.get_location().y])
+            vel_car = np.array([car.get_velocity().x, car.get_velocity().y])
+            heading_car = car.get_transform().rotation.yaw
 
-        self._data_out['sw_torque'] = 0.0
+            # find static error and error rate:
+            error_static = self.error(pos_car, heading_car, vel_car)
+            error_rate = self.error_rates(error_static, self.error_static_old, delta_t)
+
+            #filter the error rate with biquad filter
+            error_lateral_rate_filtered = self._bq_filter_velocity.process(error_rate[0])
+            error_heading_rate_filtered = self._bq_filter_heading.process(error_rate[1])
+
+            #put errors in 1 variable
+            self._controller_error[0:2] = error_static
+            self._controller_error[2:] = np.array([error_lateral_rate_filtered, error_heading_rate_filtered])
+            
+            #put error through controller to get sw torque out
+            self._data_out['sw_torque'] = self.pd_controller(self._controller_error, stiffness)
+
+            #update variables
+            self.error_static_old = error_static
+            self._t2 = t1
+
+        else:
+            self._data_out['sw_torque'] = 0
+ 
+        
+
+        
+
         return self._data_out
 
-    def error(self, pos_car, heading_car, vel_car=np.array([0.0, 0.0, 0.0]), heading_rate_car=0.0):
+    def error(self, pos_car, heading_car, vel_car=np.array([0.0, 0.0, 0.0])):
         """Calculate the controller error"""
         pos_car_future = pos_car + vel_car * self._t_lookahead  # linear extrapolation, should be updated
 
@@ -77,9 +117,6 @@ class PDSWController(BaseSWController):
         if error_lat_sign < 0:
             error_pos_lat = -error_pos_lat
 
-        # calculate the lateral position error rate
-        error_vel_lat = np.dot(vel_car, vec_pos_future) / np.linalg.norm(vec_pos_future)
-
         # calculate heading error
         heading_ref = self._trajectory[index_closest_waypoint, 6]
 
@@ -91,10 +128,29 @@ class PDSWController(BaseSWController):
         if error_heading < -math.pi:
             error_heading = error_heading + 2.0 * math.pi
 
-        # heading rate error
-        error_heading_rate = 0.0
+  
 
-        return np.array([error_pos_lat, error_heading, error_vel_lat, error_heading_rate])
+        return np.array([error_pos_lat, error_heading])
+
+    def error_rates(self, error, error_old, delta_t):
+        """Calculate the controller error rates"""
+        
+        heading_error_rate = (error[0] - error_old[0])/delta_t
+        velocity_error_rate = (error[1] - error_old[1])/delta_t
+
+        return np.array([velocity_error_rate, heading_error_rate])
+
+    def pd_controller(self, error, stiffness):
+        torque_gain_lateral = self._w_lat * (self._k_p * error[0] + self._k_d* error[2])
+        torque_gain_heading = self._w_heading * (self._k_p * error[1] + self._k_d* error[3])
+
+        torque_gain = torque_gain_lateral + torque_gain_heading
+
+        torque = -stiffness * torque_gain
+
+        return int(torque)
+
+
 
     def set_default_parameter_values(self):
         """set the default controller parameters
