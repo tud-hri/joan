@@ -26,6 +26,7 @@ class PDSWController(BaseSWController):
 
         self.stiffness = 1
 
+
         
 
 
@@ -47,41 +48,42 @@ class PDSWController(BaseSWController):
         self.set_default_parameter_values()
 
     def do(self, data_in, hw_data_in):
-        try:
+        if 'SensoDrive 1' in hw_data_in:
             stiffness = hw_data_in['SensoDrive 1']['spring_stiffness']
-        except:
-            stiffness = 1
-        """Perform the controller-specific calculations"""
-        #get delta_t (we could also use 'millis' but this is a bit more precise)
-        t1 = time.time()
-        delta_t = t1 - self._t2
 
-        # extract data
-        car = data_in['vehicles'][0].spawned_vehicle
-        pos_car = np.array([car.get_location().x, car.get_location().y])
-        vel_car = np.array([car.get_velocity().x, car.get_velocity().y])
-        heading_car = car.get_transform().rotation.yaw
+            """Perform the controller-specific calculations"""
+            #get delta_t (we could also use 'millis' but this is a bit more precise)
+            t1 = time.time()
+            delta_t = t1 - self._t2
 
-        # find static error and error rate:
-        error_static = self.error(pos_car, heading_car, vel_car)
-        error_rate = self.error_rates(error_static, self.error_static_old, delta_t)
+            # extract data
+            car = data_in['vehicles'][0].spawned_vehicle
+            pos_car = np.array([car.get_location().x, car.get_location().y])
+            vel_car = np.array([car.get_velocity().x, car.get_velocity().y])
+            heading_car = car.get_transform().rotation.yaw
 
-        #filter the error rate with biquad filter
-        error_lateral_rate_filtered = self._bq_filter_velocity.process(error_rate[0])
-        error_heading_rate_filtered = self._bq_filter_heading.process(error_rate[1])
+            # find static error and error rate:
+            error_static = self.error(pos_car, heading_car, vel_car)
+            error_rate = self.error_rates(error_static, self.error_static_old, delta_t)
 
-        #put errors in 1 variable
-        self._controller_error[0:2] = error_static
-        self._controller_error[2:] = np.array([error_lateral_rate_filtered, error_heading_rate_filtered])
-        
-    	#put error through controller to get sw torque out
-        self._data_out['sw_torque'] = self.pd_controller(self._controller_error, stiffness)
+            #filter the error rate with biquad filter
+            error_lateral_rate_filtered = self._bq_filter_velocity.process(error_rate[0])
+            error_heading_rate_filtered = self._bq_filter_heading.process(error_rate[1])
 
+            #put errors in 1 variable
+            self._controller_error[0:2] = error_static
+            self._controller_error[2:] = np.array([error_lateral_rate_filtered, error_heading_rate_filtered])
+            
+            #put error through controller to get sw torque out
+            self._data_out['sw_torque'] = self.pd_controller(self._controller_error, stiffness)
 
-        #update variables
-        self.error_static_old = error_static
-        self._t2 = t1
+            #update variables
+            self.error_static_old = error_static
+            self._t2 = t1
 
+        else:
+            self._data_out['sw_torque'] = 0
+ 
         
 
         
