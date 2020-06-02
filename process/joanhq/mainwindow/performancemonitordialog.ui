@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>480</width>
-    <height>640</height>
+    <width>640</width>
+    <height>480</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -46,7 +46,12 @@
      </column>
      <column>
       <property name="text">
-       <string>Desired frequency</string>
+       <string>Set frequency</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Maximum frequency</string>
       </property>
      </column>
     </widget>

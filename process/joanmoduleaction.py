@@ -19,6 +19,7 @@ class JoanModuleAction(QtCore.QObject):
         self._performance_monitor_enabled = enable_performance_monitor
         self.time_of_last_tick = time.time_ns() / 10 ** 6
         self._average_tick_time = AveragedFloat(samples=int(1000 / millis))
+        self._average_run_time = AveragedFloat(samples=int(1000 / millis))
 
         self.module = module
         self.timer = QtCore.QTimer()
@@ -48,6 +49,7 @@ class JoanModuleAction(QtCore.QObject):
         self._average_tick_time.value = (time.time_ns() - self.time_of_last_tick) / 10 ** 6
         self.time_of_last_tick = time.time_ns()
         self.do()
+        self._average_run_time.value = (time.time_ns() - self.time_of_last_tick) / 10 ** 6
 
     def do(self):
         pass
@@ -130,8 +132,22 @@ class JoanModuleAction(QtCore.QObject):
         return self._average_tick_time.value
 
     @property
+    def average_run_time(self):
+        """
+        :return: the average true tick time in ms
+        """
+        return self._average_run_time.value
+
+    @property
     def running_frequency(self):
         try:
             return 1000 / self.average_tick_time
+        except ZeroDivisionError:
+            return 0.0
+
+    @property
+    def maximum_frequency(self):
+        try:
+            return 1000 / self.average_run_time
         except ZeroDivisionError:
             return 0.0
