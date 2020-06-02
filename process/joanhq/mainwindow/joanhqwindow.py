@@ -5,10 +5,12 @@ import os
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 from process.joanmoduleaction import JoanModuleAction
 from modules.joanmodules import JOANModules
-#from process.joanhq.action.joanhqaction import JoanHQAction
-#from process.statehandler import StateHandler
-#from process.states import MasterStates
+# from process.joanhq.action.joanhqaction import JoanHQAction
+# from process.statehandler import StateHandler
+# from process.states import MasterStates
 from process.status import Status
+from .settingsoverviewdialog import SettingsOverviewDialog
+from .performancemonitordialog import PerformanceMonitorDialog
 
 
 class JoanHQWindow(QtWidgets.QMainWindow):
@@ -27,7 +29,6 @@ class JoanHQWindow(QtWidgets.QMainWindow):
         self.master_states = self.singleton_status._master_states
         self.master_state_handler.state_changed.connect(self.handle_master_state)
 
-
         # path to resources folder
         self._path_resources = os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../", "resources"))
         self._path_modules = self.action.path_modules
@@ -36,7 +37,7 @@ class JoanHQWindow(QtWidgets.QMainWindow):
         self.setWindowTitle('JOAN HQ')
         self._main_widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "joanhq.ui"))
         self._main_widget.lbl_master_state.setText(self.master_state_handler.get_current_state().name)
-        
+
         self.setCentralWidget(self._main_widget)
         self.resize(400, 400)
 
@@ -46,9 +47,9 @@ class JoanHQWindow(QtWidgets.QMainWindow):
         self._main_widget.btn_quit.setStyleSheet("background-color: darkred")
         self._main_widget.btn_quit.clicked.connect(self.close)
 
-        #self._main_widget.btn_initialize_all.clicked.connect(self.action.initialize_all)
+        # self._main_widget.btn_initialize_all.clicked.connect(self.action.initialize_all)
         self._main_widget.btn_initialize_all.clicked.connect(self.initialize_all)
-        #self._main_widget.btn_stop_all.clicked.connect(self.action.stop_all)
+        # self._main_widget.btn_stop_all.clicked.connect(self.action.stop_all)
         self._main_widget.btn_stop_all.clicked.connect(self.stop_all)
 
         # # layout for the module groupbox
@@ -64,7 +65,8 @@ class JoanHQWindow(QtWidgets.QMainWindow):
         self._file_menu.addAction('Quit', self.action.quit)
 
         self._view_menu = self.menuBar().addMenu('View')
-        self._view_menu.addAction('Show all current settings..', self.show_all_current_settings)
+        self._view_menu.addAction('Show all current settings..', self.show_settings_overview)
+        self._view_menu.addAction('Show performance monitor..', self.show_performance_monitor)
 
     def emergency(self):
         """ Needed here to show what is is happening in the Action-part """
@@ -86,22 +88,20 @@ class JoanHQWindow(QtWidgets.QMainWindow):
         try:
             state_as_state = self.master_state_handler.get_state(state)  # ensure we have the State object (not the int)
 
-           # emergency stop
+            # emergency stop
             if state_as_state == self.master_states.EMERGENCY:
                 self.action.stop_all()
             elif state_as_state == self.master_states.INITIALIZING:
                 self.action.initialize_all()
-                #self.master_state_handler.request_state_change(self.master_states.INITIALIZED)
+                # self.master_state_handler.request_state_change(self.master_states.INITIALIZED)
             elif state_as_state == self.master_states.STOP:
                 self.action.stop_all()
             elif state_as_state == self.master_states.QUIT:
                 self.action.quit()
-                #self.action.stop_all()
+                # self.action.stop_all()
         except Exception as inst:
             print(inst)
         self._main_widget.lbl_master_state.setText(self.master_state_handler.get_current_state().name)
-
-        
 
     def add_module(self, module_dialog, module_enum):
         """Create a widget and add to main window"""
@@ -113,7 +113,8 @@ class JoanHQWindow(QtWidgets.QMainWindow):
         widget.setObjectName(name)
         widget.grpbox.setTitle(name)
 
-        if isinstance(module_dialog, (JOANModules.FEED_BACK_CONTROLLER.dialog, JOANModules.TRAJECTORY_RECORDER.dialog)):  # syntax is changed slightly in new example: wrapping show() in _show() is unnecessary
+        if isinstance(module_dialog, (JOANModules.FEED_BACK_CONTROLLER.dialog,
+                                      JOANModules.TRAJECTORY_RECORDER.dialog)):  # syntax is changed slightly in new example: wrapping show() in _show() is unnecessary
             widget.btn_showclose.clicked.connect(module_dialog._show)
             widget.btn_showclose.setCheckable(True)
             widget.btn_showclose.toggled.connect(lambda: self.button_showclose_checked(widget.btn_showclose))
@@ -158,8 +159,11 @@ class JoanHQWindow(QtWidgets.QMainWindow):
             # hence, ignore the event (for Qt)
             event.ignore()
 
-    def show_all_current_settings(self):
-        SettingsViewDialog(self.action.singleton_settings.all_settings, parent=self)
+    def show_settings_overview(self):
+        SettingsOverviewDialog(self.action.singleton_settings.all_settings, parent=self)
+
+    def show_performance_monitor(self):
+        PerformanceMonitorDialog(self.action._instantiated_modules, parent=self)
 
     def button_showclose_checked(self, button):
         """change the text of the module card's show/close button"""

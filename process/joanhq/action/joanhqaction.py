@@ -18,6 +18,9 @@ class JoanHQAction(QtCore.QObject):
 
         self.window = None
 
+        # settings
+        self.singleton_settings = Settings()
+
         # path to modules directory
         self.path_modules = os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../", "modules"))
 
