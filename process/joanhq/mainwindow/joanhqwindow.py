@@ -9,7 +9,7 @@ from modules.joanmodules import JOANModules
 # from process.statehandler import StateHandler
 # from process.states import MasterStates
 from process.status import Status
-from .settingsviewdialog import SettingsViewDialog
+from .settingsoverviewdialog import SettingsOverviewDialog
 
 
 class JoanHQWindow(QtWidgets.QMainWindow):
@@ -160,7 +160,7 @@ class JoanHQWindow(QtWidgets.QMainWindow):
     def show_all_current_settings(self):
         for enum, module in self.action._instantiated_modules.items():
             print(str(enum) + ': ' + str(module.average_tick_time) + ' - ' + str(module._millis))
-        SettingsViewDialog(self.action.singleton_settings.all_settings, parent=self)
+        SettingsOverviewDialog(self.action.singleton_settings.all_settings, parent=self)
 
     def button_showclose_checked(self, button):
         """change the text of the module card's show/close button"""

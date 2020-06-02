@@ -3,10 +3,10 @@ import os
 from PyQt5 import QtWidgets, QtGui, QtCore, uic
 
 
-class SettingsViewDialog(QtWidgets.QDialog):
+class SettingsOverviewDialog(QtWidgets.QDialog):
     def __init__(self, all_settings, parent=None):
         super().__init__(parent)
-        uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "view_all_settings_dialog.ui"), self)
+        uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "settingsoverviewdialog.ui"), self)
 
         for module_key, settings_object in all_settings.items():
             try:
@@ -24,14 +24,14 @@ class SettingsViewDialog(QtWidgets.QDialog):
             item.setData(0, 0, str(key))
 
             for inner_key, inner_value in value.items():
-                SettingsViewDialog._create_tree_item(item, inner_key, inner_value)
+                SettingsOverviewDialog._create_tree_item(item, inner_key, inner_value)
             return item
         if isinstance(value, list):
             item = QtWidgets.QTreeWidgetItem(parent)
             item.setData(0, 0, str(key))
 
             for index, inner_value in enumerate(value):
-                SettingsViewDialog._create_tree_item(item, str(index), inner_value)
+                SettingsOverviewDialog._create_tree_item(item, str(index), inner_value)
             return item
         else:
             item = QtWidgets.QTreeWidgetItem(parent)
