@@ -274,8 +274,7 @@ class JOAN_SensoDrive(BaseInput):  # DEPRECATED FOR NOW TODO: remove from interf
         self._data['Handbrake'] = 0
 
        #check whether we have a sw_controller that should be updated
-        self._steering_wheel_control_data = self._action.read_news(JOANModules.STEERING_WHEEL_CONTROL)
-        print(self._steering_wheel_control_data)
+        self._steering_wheel_control_data = self._action.read_news(JOANModules.STEERING_WHEEL_CONTROL) 
 
         self.settings.steering_wheel_parameters['torque'] = self._steering_wheel_control_data['sw_torque']
 

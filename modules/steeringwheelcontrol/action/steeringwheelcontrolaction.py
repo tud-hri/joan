@@ -26,6 +26,10 @@ class SteeringWheelControlAction(JoanModuleAction):
         # set up news
         self.data = {}
         self.data['sw_torque'] = 0
+        self.data['lat_error'] = 0
+        self.data['heading_error'] = 0
+        self.data['lat_error_rate'] =0
+        self.data['heading_error_rate'] = 0
         self.write_news(news=self.data)
     def update_vehicle_list(self):
         carla_data = self.read_news(JOANModules.CARLA_INTERFACE)
@@ -44,6 +48,11 @@ class SteeringWheelControlAction(JoanModuleAction):
 
         # extract from controller's output data_out
         self.data['sw_torque'] = data_out['sw_torque']
+        self.data['sw_torque'] = data_out['sw_torque']
+        self.data['lat_error'] = data_out['lat_error']
+        self.data['heading_error'] = data_out['heading_error']
+        self.data['lat_error_rate'] = data_out['lat_error_rate']
+        self.data['heading_error_rate'] = data_out['heading_error_rate']
 
         self.write_news(news=self.data)
 

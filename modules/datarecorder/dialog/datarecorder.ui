@@ -6,46 +6,89 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>545</width>
-    <height>600</height>
+    <width>544</width>
+    <height>648</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>0</width>
-    <height>600</height>
+    <height>0</height>
    </size>
   </property>
   <property name="windowTitle">
    <string>Data Recorder</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="2" column="0" colspan="2">
-    <widget class="QGroupBox" name="grpBoxDataRecorderSettings">
-     <property name="title">
-      <string>Data Recorder Settings</string>
+   <item row="0" column="1">
+    <widget class="QGroupBox" name="groupBox">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_items"/>
+     <property name="title">
+      <string>Trajectory Generator</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_3">
+      <item row="2" column="0" colspan="3">
+       <widget class="QLineEdit" name="line_trajectory_title"/>
+      </item>
+      <item row="5" column="1">
+       <widget class="QPushButton" name="btn_save">
+        <property name="text">
+         <string>Save</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0" colspan="2">
+       <widget class="QLabel" name="label_trajectory_title">
+        <property name="text">
+         <string>Trajectory title:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QPushButton" name="btn_discard">
+        <property name="text">
+         <string>Discard </string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0" colspan="2">
+       <widget class="QCheckBox" name="check_trajectory">
+        <property name="text">
+         <string>Generate Trajectory</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0" colspan="2">
+       <widget class="QLabel" name="label_trajectory_filename">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
    <item row="0" column="0">
     <widget class="QGroupBox" name="grpBoxDataRecorder">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="title">
       <string>Data Recorder</string>
      </property>
-     <layout class="QGridLayout" name="gridLayout_2">
-      <item row="0" column="2">
-       <layout class="QVBoxLayout" name="verticalLayout_2">
-        <item alignment="Qt::AlignRight">
-         <widget class="QLabel" name="lbl_message_recorder">
-          <property name="text">
-           <string>&lt;Message&gt;</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item row="0" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
        <widget class="QPushButton" name="btn_initialize">
         <property name="minimumSize">
          <size>
@@ -58,7 +101,7 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
+      <item>
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
          <widget class="QLabel" name="lblCurrentDataFile">
@@ -76,39 +119,51 @@
         </item>
        </layout>
       </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item alignment="Qt::AlignRight">
+         <widget class="QLabel" name="lbl_message_recorder">
+          <property name="text">
+           <string>&lt;Message&gt;</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
      </layout>
     </widget>
    </item>
-   <item row="0" column="1">
-    <widget class="QGroupBox" name="grpBoxTrajectoryGenerator">
+   <item row="1" column="0" colspan="2">
+    <widget class="QGroupBox" name="grpBoxDataRecorderSettings">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+      <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-     <property name="title">
-      <string>Trajectory Generator</string>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>500</height>
+      </size>
      </property>
-     <layout class="QGridLayout" name="gridLayout_3">
-      <item row="1" column="1">
-       <widget class="QLineEdit" name="line_trajectory_name"/>
-      </item>
-      <item row="0" column="1">
-       <widget class="QLabel" name="label_trajectory_name">
-        <property name="text">
-         <string>Trajectory Name:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QPushButton" name="btn_generate_trajectory">
-        <property name="text">
-         <string>Generate and Save</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
+     <property name="title">
+      <string>Data Recorder Settings</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_items"/>
     </widget>
    </item>
   </layout>

@@ -9,6 +9,7 @@ from process.settings import ModuleSettings
 from PyQt5 import QtWidgets, QtGui
 from functools import partial
 import os
+import numpy as np
 
 class DatarecorderAction(JoanModuleAction):
     def __init__(self, master_state_handler, millis=200):
@@ -21,6 +22,15 @@ class DatarecorderAction(JoanModuleAction):
         # 1. self.data['t'] = 0
         # 2. self.write_news(news=self.data)
         # 3. self.time = QtCore.QTime()
+
+        # Variables to save trajectory data to
+        #self._trajectory_data = np.array([[0, 0, 0, 0, 0, 0]])
+        self._trajectory_data_spaced = np.array([[0,0,0,0,0,0],
+                                                [0,0,0,0,0,0]])
+        self._traveled_distance = 0
+        self._overall_distance = 0
+
+        self.should_record_trajectory = False
         
 
         # start settings for this module
@@ -36,6 +46,56 @@ class DatarecorderAction(JoanModuleAction):
         self.filename = ''
         self.data_writer = DataWriter(news=self.get_all_news(), channels=self.get_available_news_channels(), settings=self.get_module_settings(JOANModules.DATA_RECORDER))
 
+    def save_current_trajectory(self):
+        print('saved')
+
+    def discard_current_trajectory(self):
+        self._trajectory_data = np.array([[0, 0, 0, 0, 0, 0],
+                                         [0, 0, 0, 0, 0, 0]])
+        self._trajectory_data_spaced = np.array([[1,2,3,4,5,6],
+                                                [2,3,4,5,6,7]])
+        print('discarded')
+
+    def make_trajectory_array(self, waypoint_distance):
+
+        temp_diff = self._trajectory_data[-1] - self._trajectory_data[-2]
+
+
+        position_difference = temp_diff[0:2]
+        small_distance = np.linalg.norm(position_difference)
+        self._overall_distance = self._overall_distance + small_distance
+        self._traveled_distance = self._traveled_distance + small_distance
+
+        print(temp_diff, position_difference, small_distance, self._overall_distance, waypoint_distance)
+
+        if(self._overall_distance >= waypoint_distance):
+            self._trajectory_data_spaced = np.append(self._trajectory_data_spaced, [self._trajectory_data[-1]], axis=0)
+            self._overall_distance = self._overall_distance - waypoint_distance
+
+    def trajectory_record_boolean(self, trajectory_boolean):
+        self.should_record_trajectory = trajectory_boolean
+
+    def generate_trajectory(self):
+        return self._trajectory_data_spaced
+
+    def _write_trajectory(self):
+        _data = self.read_news(JOANModules.CARLA_INTERFACE)
+        car = _data['vehicles'][0].spawned_vehicle
+        control = car.get_control()
+
+        x_pos = car.get_transform().location.x
+        y_pos = car.get_transform().location.y
+        steering_wheel_angle = control.steer
+        throttle_input = control.throttle
+        brake_input = control.brake
+        heading = car.get_transform().rotation.yaw
+
+        self._trajectory_data = np.append(self._trajectory_data, [[x_pos, y_pos, steering_wheel_angle, throttle_input, brake_input, heading]], axis = 0)
+
+
+        self.make_trajectory_array(0.1)
+
+
     def initialize_file(self):
         self.initialize()
         self.filename = self._create_filename(extension='csv')
@@ -47,8 +107,9 @@ class DatarecorderAction(JoanModuleAction):
         This function is called every controller tick of this module implement your main calculations here
         """
         self._write()
+        if self.should_record_trajectory:
+            self._write_trajectory()
 
-        
         
         # next two Template lines are not used for datarecorder
         # 1. self.data['t'] = self.time.elapsed()
@@ -59,6 +120,23 @@ class DatarecorderAction(JoanModuleAction):
         This function is called before the module is started
         """
         print('datarecorderaction initialize started')
+        # Try and get the current position of car if you want to record a trajectory
+        try:
+            _data = self.read_news(JOANModules.CARLA_INTERFACE)
+            car = _data['vehicles'][0].spawned_vehicle
+            control = car.get_control()
+
+            x_pos = car.get_transform().location.x
+            y_pos = car.get_transform().location.y
+            steering_wheel_angle = control.steer
+            throttle_input = control.throttle
+            brake_input = control.brake
+            heading = car.get_transform().rotation.yaw
+            self._trajectory_data = np.array([[x_pos, y_pos, steering_wheel_angle, throttle_input, brake_input, heading]])
+        except Exception as inst:
+            print(inst)
+        
+        
 
     def stop(self):
         """
@@ -171,6 +249,8 @@ class DatarecorderAction(JoanModuleAction):
     def _clicked_btn_initialize(self):
         """initialize the data recorder (mainly setting the data directory and data file prefix"""
         self.module_state_handler.request_state_change(DatarecorderStates.DATARECORDER.INITIALIZING)
+        self.update_settings(self.settings)
+
         if self.initialize_file():
             self.module_state_handler.request_state_change(DatarecorderStates.DATARECORDER.INITIALIZED)
  
