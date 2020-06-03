@@ -169,6 +169,8 @@ class DatarecorderAction(JoanModuleAction):
     def _clicked_btn_initialize(self):
         """initialize the data recorder (mainly setting the data directory and data file prefix"""
         self.module_state_handler.request_state_change(DatarecorderStates.DATARECORDER.INITIALIZING)
+        self.update_settings(self.settings)
+
         if self.initialize_file():
             self.module_state_handler.request_state_change(DatarecorderStates.DATARECORDER.INITIALIZED)
  

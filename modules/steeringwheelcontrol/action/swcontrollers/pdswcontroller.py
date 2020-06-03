@@ -76,6 +76,10 @@ class PDSWController(BaseSWController):
             
             #put error through controller to get sw torque out
             self._data_out['sw_torque'] = self.pd_controller(self._controller_error, stiffness)
+            self._data_out['lat_error'] = self._controller_error[0]
+            self._data_out['heading_error'] = self._controller_error[1]
+            self._data_out['lat_error_rate'] = self._controller_error[2]
+            self._data_out['heading_error_rate'] = self._controller_error[3]
 
             #update variables
             self.error_static_old = error_static
@@ -83,6 +87,11 @@ class PDSWController(BaseSWController):
 
         else:
             self._data_out['sw_torque'] = 0
+            self._data_out['lat_error'] = 0
+            self._data_out['heading_error'] = 0
+            self._data_out['lat_error_rate'] = 0
+            self._data_out['heading_error_rate'] = 0
+
  
         
 

@@ -22,7 +22,7 @@ class DatarecorderDialog(JoanModuleDialog):
         #self.data = {}
         #self.write_news(channel=self, news=self.data)
 
-        self.module_widget.btn_initialize.clicked.connect(self.module_action._clicked_btn_initialize)
+        self.module_widget.btn_initialize.clicked.connect(self.initialize)
 
         # set current data file name
         self.module_widget.lbl_data_filename.setText("< none >")
@@ -31,11 +31,16 @@ class DatarecorderDialog(JoanModuleDialog):
         self.module_widget.lbl_message_recorder.setText("not recording")
         self.module_widget.lbl_message_recorder.setStyleSheet('color: orange')
 
-        # reads settings if available and expands the datarecorder widget
+
+
+    def initialize(self):
+        self.module_action._clicked_btn_initialize()
+                # reads settings if available and expands the datarecorder widget
         try:
             self.module_action._editWidget(layout=self.module_widget.verticalLayout_items)
         except Exception as inst:
             print(inst)
+
 
     def handle_module_state(self, state):
         """
