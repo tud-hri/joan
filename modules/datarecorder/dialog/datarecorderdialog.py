@@ -74,6 +74,7 @@ class DatarecorderDialog(JoanModuleDialog):
 
     def save_trajectory(self):
         self.trajectory_data = self.module_action.trajectory_recorder.generate_trajectory()
+        self.trajectory_data_visual = self.trajectory_data[0:len(self.trajectory_data):5]
         curpath = os.path.dirname(os.path.realpath(__file__))
         path = os.path.dirname(os.path.dirname(curpath))
         hcr_path = os.path.join(path,'steeringwheelcontrol/action/swcontrollers/trajectories/')  #Dit moet handiger kunnen
@@ -81,6 +82,7 @@ class DatarecorderDialog(JoanModuleDialog):
         # Save 2D numpy array to csv file
         try:
             np.savetxt(hcr_path + self.trajectory_title + '.csv', self.trajectory_data, delimiter=',', fmt='%i, %1.8f, %1.8f, %1.8f, %1.8f, %1.8f, %1.8f')
+            np.savetxt(hcr_path + self.trajectory_title + '_VISUAL.csv', self.trajectory_data_visual, delimiter=',', fmt='%i, %1.8f, %1.8f, %1.8f, %1.8f, %1.8f, %1.8f', header="Row Name,PosX,PosY,SteeringAngle,Throttle,Brake,Psi", comments='')
             self.module_widget.label_trajectory_filename.setText('Saved file as: '+ self.trajectory_title + '.csv')
             self.module_widget.line_trajectory_title.clear()
             self.module_widget.btn_save.setEnabled(False)
