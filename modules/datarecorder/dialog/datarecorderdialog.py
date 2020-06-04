@@ -44,7 +44,7 @@ class DatarecorderDialog(JoanModuleDialog):
         self.module_widget.line_trajectory_title.textEdited.connect(self.check_trajectory_filename)
 
     def check_trajectory_checkbox(self):
-        self.module_action.trajectory_record_boolean(self.module_widget.check_trajectory.isChecked())
+        self.module_action.trajectory_recorder.trajectory_record_boolean(self.module_widget.check_trajectory.isChecked())
 
 
     def check_trajectory_filename(self):
@@ -73,7 +73,7 @@ class DatarecorderDialog(JoanModuleDialog):
             print(inst)
 
     def save_trajectory(self):
-        self.trajectory_data = self.module_action.generate_trajectory()
+        self.trajectory_data = self.module_action.trajectory_recorder.generate_trajectory()
         curpath = os.path.dirname(os.path.realpath(__file__))
         path = os.path.dirname(os.path.dirname(curpath))
         hcr_path = os.path.join(path,'steeringwheelcontrol/action/swcontrollers/trajectories/')  #Dit moet handiger kunnen
@@ -100,7 +100,7 @@ class DatarecorderDialog(JoanModuleDialog):
         
 
     def discard_trajectory(self):
-        self.module_action.discard_current_trajectory()
+        self.module_action.trajectory_recorder.discard_current_trajectory()
         self.module_widget.label_trajectory_filename.setText('Discarded trajectory')
         self.module_widget.line_trajectory_title.clear()
         self.module_widget.btn_save.setEnabled(False)
