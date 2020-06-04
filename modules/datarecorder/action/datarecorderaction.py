@@ -23,10 +23,7 @@ class DatarecorderAction(JoanModuleAction):
         # 2. self.write_news(news=self.data)
         # 3. self.time = QtCore.QTime()
 
-        # Variables to save trajectory data to
-        #self._trajectory_data = np.array([[0, 0, 0, 0, 0, 0]])
-        self._trajectory_data_spaced = np.array([[0,0,0,0,0,0],
-                                                [0,0,0,0,0,0]])
+  
         self._traveled_distance = 0
         self._overall_distance = 0
 
@@ -50,10 +47,8 @@ class DatarecorderAction(JoanModuleAction):
         print('saved')
 
     def discard_current_trajectory(self):
-        self._trajectory_data = np.array([[0, 0, 0, 0, 0, 0],
-                                         [0, 0, 0, 0, 0, 0]])
-        self._trajectory_data_spaced = np.array([[1,2,3,4,5,6],
-                                                [2,3,4,5,6,7]])
+        self._trajectory_data = None
+        self._trajectory_data_spaced = None
         print('discarded')
 
     def make_trajectory_array(self, waypoint_distance):
@@ -76,6 +71,9 @@ class DatarecorderAction(JoanModuleAction):
         self.should_record_trajectory = trajectory_boolean
 
     def generate_trajectory(self):
+        # Add index nr to the trajectory
+        indices = np.arange(len(self._trajectory_data_spaced))
+        self._trajectory_data_spaced = np.insert(self._trajectory_data_spaced, 0, indices, axis=1)
         return self._trajectory_data_spaced
 
     def _write_trajectory(self):
@@ -132,7 +130,10 @@ class DatarecorderAction(JoanModuleAction):
             throttle_input = control.throttle
             brake_input = control.brake
             heading = car.get_transform().rotation.yaw
-            self._trajectory_data = np.array([[x_pos, y_pos, steering_wheel_angle, throttle_input, brake_input, heading]])
+
+            #initialize variables here because we want the current position as first entry!
+            self._trajectory_data = [[x_pos, y_pos, steering_wheel_angle, throttle_input, brake_input, heading]]
+            self._trajectory_data_spaced = [[x_pos, y_pos, steering_wheel_angle, throttle_input, brake_input, heading]]
         except Exception as inst:
             print(inst)
         
@@ -253,4 +254,4 @@ class DatarecorderAction(JoanModuleAction):
 
         if self.initialize_file():
             self.module_state_handler.request_state_change(DatarecorderStates.DATARECORDER.INITIALIZED)
- 
+

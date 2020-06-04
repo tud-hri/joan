@@ -80,7 +80,7 @@ class DatarecorderDialog(JoanModuleDialog):
         	
         # Save 2D numpy array to csv file
         try:
-            np.savetxt(hcr_path + self.trajectory_title + '.csv', self.trajectory_data, delimiter=',', fmt='%1.8f')
+            np.savetxt(hcr_path + self.trajectory_title + '.csv', self.trajectory_data, delimiter=',', fmt='%i, %1.8f, %1.8f, %1.8f, %1.8f, %1.8f, %1.8f')
             self.module_widget.label_trajectory_filename.setText('Saved file as: '+ self.trajectory_title + '.csv')
             self.module_widget.line_trajectory_title.clear()
             self.module_widget.btn_save.setEnabled(False)
