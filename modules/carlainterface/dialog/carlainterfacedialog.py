@@ -10,8 +10,10 @@ from modules.carlainterface.action.carlainterfaceaction import CarlainterfaceAct
 import os
 
 class CarlainterfaceDialog(JoanModuleDialog):
-    def __init__(self, module_action: JoanModuleAction, master_state_handler, parent=None):
-        super().__init__(module=JOANModules.CARLA_INTERFACE, module_action=module_action, master_state_handler=master_state_handler, parent=parent)
+    def __init__(self, module_action: JoanModuleAction,  parent=None):
+        super().__init__(module=JOANModules.CARLA_INTERFACE, module_action=module_action, parent=parent)
+    #def __init__(self, module_action: JoanModuleAction, master_state_handler, parent=None):
+    #    super().__init__(module=JOANModules.CARLA_INTERFACE, module_action=module_action, master_state_handler=master_state_handler, parent=parent)
         
         self.data = {}
         self._data_from_hardware = {}

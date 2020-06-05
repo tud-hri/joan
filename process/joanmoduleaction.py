@@ -1,5 +1,7 @@
 from PyQt5 import QtCore
+import time
 
+from tools import AveragedFloat
 from modules.joanmodules import JOANModules
 from process.news import News
 from process.settings import Settings
@@ -9,25 +11,32 @@ from process.status import Status
 
 
 class JoanModuleAction(QtCore.QObject):
-    def __init__(self, module: JOANModules, master_state_handler, millis=100):
+    def __init__(self, module: JOANModules, millis=100, enable_performance_monitor=True):
+        # def __init__(self, module: JOANModules, master_state_handler, millis=100):
         super(QtCore.QObject, self).__init__()
 
         self.module_dialog = None
 
         self._millis = millis
-        self.module = module
+        self._performance_monitor_enabled = enable_performance_monitor
+        self.time_of_last_tick = time.time_ns() / 10 ** 6
+        self._average_tick_time = AveragedFloat(samples=int(1000 / millis))
+        self._average_run_time = AveragedFloat(samples=int(1000 / millis))
 
+        self.module = module
         self.timer = QtCore.QTimer()
         self.timer.setTimerType(QtCore.Qt.PreciseTimer)
         self.timer.setInterval(millis)
-        self.timer.timeout.connect(self.do)
+
+        if enable_performance_monitor:
+            self.timer.timeout.connect(self._do_with_performance_monitor)
+        else:
+            self.timer.timeout.connect(self.do)
 
         self.singleton_status = Status()
         self.singleton_news = News()
         self.singleton_settings = Settings()
 
-        # initialize states and state handler
-        self.master_state_handler = master_state_handler
         self.module_states = module.states()
         self.module_state_handler = StateHandler(first_state=MasterStates.VOID, states_dict=self.module_states.get_states())
         module_state_package = {'module_states': self.module_states, 'module_state_handler': self.module_state_handler}
@@ -38,7 +47,11 @@ class JoanModuleAction(QtCore.QObject):
         self.data = {}
         self.write_news(news=self.data)
 
-        self.master_state_handler.state_changed.connect(self.handle_master_state)
+    def _do_with_performance_monitor(self):
+        self._average_tick_time.value = (time.time_ns() - self.time_of_last_tick) / 10 ** 6
+        self.time_of_last_tick = time.time_ns()
+        self.do()
+        self._average_run_time.value = (time.time_ns() - self.time_of_last_tick) / 10 ** 6
 
     def do(self):
         pass
@@ -58,40 +71,20 @@ class JoanModuleAction(QtCore.QObject):
         try:
             self.millis = int(millis)
         except ValueError:
-            pass 
+            pass
 
-
-    def handle_master_state(self, state):
-        """
-        Handle the state transition by updating the status label and have the
-        GUI reflect the possibilities of the current state.
-        """
-        state_as_state = self.master_state_handler.get_state(state)  # ensure we have the State object (not the int)
-        
-        # emergency stop
-        if state_as_state == self.module_states.ERROR:
-            self.stop()
-
-    ''' TODO: remarked because handle_module_state is hendled in the child-moduleaction (Andre 20200424)
-    def handle_module_state(self, state):
-        """
-        Handle the state transition by updating the status label and have the
-        GUI reflect the possibilities of the current state.
-        """
-        state_as_state = self.module_state_handler.get_state(state)  # ensure we have the State object (not the int)
-        
-        # emergency stop
-        if state_as_state == self.module_states.ERROR:
-            self.stop_pulsar()
-    '''
-    
     def write_news(self, news: dict):
         """write new data to channel"""
         # assert isinstance(news, dict), 'argument "news" should be of type dict and will contain news(=data) of this channel'
 
         self.singleton_news.write_news(self.module, news)
 
-    def update_settings(self, module_settings):
+    def share_settings(self, module_settings):
+        """
+        Shares the settings of this module with all other modules through the settings singleton.
+        :param module_settings: a JoanModuleSettings child object containing this modules settings
+        :return:
+        """
         self.singleton_settings.update_settings(self.module, module_settings)
 
     def get_all_news(self):
@@ -121,7 +114,6 @@ class JoanModuleAction(QtCore.QObject):
     def get_module_factory_settings(self, module=''):
         return self.singleton_settings.get_factory_settings(module)
 
-
     @property
     def millis(self):
         return self._millis
@@ -133,3 +125,31 @@ class JoanModuleAction(QtCore.QObject):
 
         self._millis = val
         self.timer.setInterval(val)
+
+    @property
+    def average_tick_time(self):
+        """
+        :return: the average true tick time in ms
+        """
+        return self._average_tick_time.value
+
+    @property
+    def average_run_time(self):
+        """
+        :return: the average true tick time in ms
+        """
+        return self._average_run_time.value
+
+    @property
+    def running_frequency(self):
+        try:
+            return 1000 / self.average_tick_time
+        except ZeroDivisionError:
+            return 0.0
+
+    @property
+    def maximum_frequency(self):
+        try:
+            return 1000 / self.average_run_time
+        except ZeroDivisionError:
+            return 0.0

@@ -4,7 +4,7 @@ import hid
 from PyQt5 import uic, QtWidgets
 
 from modules.hardwaremanager.action.inputclasses.baseinput import BaseInput
-from modules.hardwaremanager.action.settings import JoyStickSettings
+from modules.hardwaremanager.action.hardwaremanagersettings import JoyStickSettings
 from modules.joanmodules import JOANModules
 
 

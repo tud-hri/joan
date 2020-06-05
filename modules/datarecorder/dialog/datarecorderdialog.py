@@ -14,8 +14,10 @@ from PyQt5 import QtWidgets, QtGui
 from functools import partial
 
 class DatarecorderDialog(JoanModuleDialog):
-    def __init__(self, module_action: JoanModuleAction, master_state_handler, parent=None):
-        super().__init__(module=JOANModules.DATA_RECORDER, module_action=module_action, master_state_handler=master_state_handler, parent=parent)
+    def __init__(self, module_action: JoanModuleAction, parent=None):
+        super().__init__(module=JOANModules.DATA_RECORDER, module_action=module_action, parent=parent)
+    #def __init__(self, module_action: JoanModuleAction, master_state_handler, parent=None):
+    #    super().__init__(module=JOANModules.DATA_RECORDER, module_action=module_action, master_state_handler=master_state_handler, parent=parent)
 
         #self.create_widget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)), "datarecorder.ui"))
         #self.create_settings(module=self, file=os.path.join(os.path.dirname(os.path.realpath(__file__)), "datarecordersettings.json"))
@@ -51,7 +53,7 @@ class DatarecorderDialog(JoanModuleDialog):
         curpath = os.path.dirname(os.path.realpath(__file__))
         path = os.path.dirname(os.path.dirname(curpath))
         hcr_path = os.path.join(path,'steeringwheelcontrol/action/swcontrollers/trajectories/*.csv')  #Dit moet handiger kunnen
-        
+
         self.trajectory_title = self.module_widget.line_trajectory_title.text()
 
         for fname in glob.glob(hcr_path):
@@ -67,10 +69,7 @@ class DatarecorderDialog(JoanModuleDialog):
     def initialize(self):
         self.module_action._clicked_btn_initialize()
                 # reads settings if available and expands the datarecorder widget
-        try:
-            self.module_action._editWidget(layout=self.module_widget.verticalLayout_items)
-        except Exception as inst:
-            print(inst)
+        self.module_action._editWidget(layout=self.module_widget.verticalLayout_items)
 
     def save_trajectory(self):
         self.trajectory_data = self.module_action.trajectory_recorder.generate_trajectory()
@@ -78,7 +77,7 @@ class DatarecorderDialog(JoanModuleDialog):
         curpath = os.path.dirname(os.path.realpath(__file__))
         path = os.path.dirname(os.path.dirname(curpath))
         hcr_path = os.path.join(path,'steeringwheelcontrol/action/swcontrollers/trajectories/')  #Dit moet handiger kunnen
-        	
+
         # Save 2D numpy array to csv file
         try:
             np.savetxt(hcr_path + self.trajectory_title + '.csv', self.trajectory_data, delimiter=',', fmt='%i, %1.8f, %1.8f, %1.8f, %1.8f, %1.8f, %1.8f')
@@ -99,7 +98,7 @@ class DatarecorderDialog(JoanModuleDialog):
             self.module_widget.check_trajectory.setEnabled(True)
             self.module_widget.check_trajectory.setChecked(True)
 
-        
+
 
     def discard_trajectory(self):
         self.module_action.trajectory_recorder.discard_current_trajectory()
@@ -166,7 +165,7 @@ class DatarecorderDialog(JoanModuleDialog):
                 self.module_widget.lbl_message_recorder.setStyleSheet('color: orange')
 
             # update the state label
-            self.state_widget.lb_module_state.setText(state_as_state.name)
+            self.state_widget.lbl_module_state.setText(state_as_state.name)
             self.module_widget.repaint()
 
             if state_as_state == DatarecorderStates.DATARECORDER.START:

@@ -4,7 +4,7 @@ import keyboard
 from PyQt5 import QtWidgets, QtGui, uic
 
 from modules.hardwaremanager.action.inputclasses.baseinput import BaseInput
-from modules.hardwaremanager.action.settings import KeyBoardSettings
+from modules.hardwaremanager.action.hardwaremanagersettings import KeyBoardSettings
 from modules.joanmodules import JOANModules
 
 
@@ -101,6 +101,7 @@ class KeyBoardSettingsDialog(QtWidgets.QDialog):
 
 
 class JOAN_Keyboard(BaseInput):
+    """Input class for JOAN_keyboard"""
     def __init__(self, hardware_manager_action, keyboard_tab, settings: KeyBoardSettings):
         super().__init__(hardware_manager_action)
         self._keyboard_tab = keyboard_tab

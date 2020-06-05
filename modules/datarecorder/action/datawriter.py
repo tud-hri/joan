@@ -27,7 +27,7 @@ class DataWriter(threading.Thread):
             except:
                 pass
             for key in latest_news:
-                if self.settings_dict['data'][channel][key] is True:
+                if self.settings.variables_to_save[channel][key] is True:
                     #row.append('%s.%s' % (channel.split('.')[1], key))
                     row.append('%s.%s' % (channel, key))
         self.columnnames(row)
@@ -41,7 +41,7 @@ class DataWriter(threading.Thread):
             except:
                 pass
             for key in latest_news:
-                if self.settings_dict['data'][channel][key] is True:
+                if self.settings.variables_to_save[channel][key] is True:
                     #row.update({'%s.%s' % (channel.split('.')[1], key): latest_news[key]})
                     row.update({'%s.%s' % (channel, key): latest_news[key]})
         return row
@@ -64,7 +64,10 @@ class DataWriter(threading.Thread):
         self.dict_writer.writeheader()
 
     def close(self):
-        self.file_handle.close()
+        try:
+            self.file_handle.close()
+        except AttributeError:
+            pass
 
     def write(self, timestamp=None, news=None, channels=[]):
         # get ALL news here, filter in self.filter and write

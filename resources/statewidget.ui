@@ -37,7 +37,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="lb_module_state">
+        <widget class="QLabel" name="lbl_module_state">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
            <horstretch>0</horstretch>

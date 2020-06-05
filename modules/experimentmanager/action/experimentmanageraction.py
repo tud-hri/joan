@@ -14,10 +14,12 @@ from json import JSONDecodeError
 
 
 class ExperimentManagerAction(JoanModuleAction):
-    def __init__(self, master_state_handler, millis=100):
-        super().__init__(module=JOANModules.EXPERIMENT_MANAGER, master_state_handler=master_state_handler, millis=millis)
+    def __init__(self, millis=100):
+        super().__init__(module=JOANModules.EXPERIMENT_MANAGER, millis=millis)
+    #def __init__(self, master_state_handler, millis=100):
+    #    super().__init__(module=JOANModules.EXPERIMENT_MANAGER, master_state_handler=master_state_handler, millis=millis)
 
-        self.module_state_handler.request_state_change(ExperimentManagerStates.EXPERIMENTMANAGER.READY)
+        self.module_state_handler.request_state_change(ExperimentManagerStates.EXEC.READY)
 
         self.data = {}
         self.write_news(news=self.data)
@@ -33,7 +35,7 @@ class ExperimentManagerAction(JoanModuleAction):
         self.settings_object = ModuleSettings(file=self.my_file)
         self.settings = self.settings_object.read_settings()
         self.settings.update(self._get_attention_message())
-        self.update_settings(self.settings)
+        self.share_settings(self.settings)
 
         self.write_default_experiment()  # maybe used as an example for experiment conditions
         self.experiment_settings = {}    # will contain experiment_settings
@@ -49,18 +51,22 @@ class ExperimentManagerAction(JoanModuleAction):
         """
         This function is called before the module is started
         """
-        pass
+        try:
+            self.module_state_handler.request_state_change(ExperimentManagerStates.INIT.INITIALIZING)
+        except RuntimeError:
+            return False
+        return super().initialize()
 
     def start(self):
         try:
-            self.module_state_handler.request_state_change(ExperimentManagerStates.EXPERIMENTMANAGER.RUNNING)
+            self.module_state_handler.request_state_change(ExperimentManagerStates.EXEC.RUNNING)
         except RuntimeError:
             return False
         return super().start()
 
     def stop(self):
         try:
-            self.module_state_handler.request_state_change(ExperimentManagerStates.EXPERIMENTMANAGER.STOPPED)
+            self.module_state_handler.request_state_change(ExperimentManagerStates.EXEC.STOPPED)
         except RuntimeError:
             return False
         return super().stop()
@@ -85,17 +91,25 @@ class ExperimentManagerAction(JoanModuleAction):
         called from 'menu->file->load'
         """
         experiment_settings_filename = experiment_settings_filenames
-        if type(experiment_settings_filename) == list:
+        if isinstance(experiment_settings_filename, list):
             for element in experiment_settings_filename:
                 experiment_settings_filename = element
 
+        self.condition_names.clear()
         try:
             with open(experiment_settings_filename, 'r') as experiment_settings_file:
                 self.experiment_settings = json.load(experiment_settings_file)
         except JSONDecodeError as inst:
             return '%s line: %s column: %s, characterposition: %s' % (inst.msg, inst.lineno, inst.colno, inst.pos)
         except IsADirectoryError as inst:
-            return 'Error: %s is a Directory' % experiment_settings_filename
+            return 'Error: %s , %s is a directory' % (inst, experiment_settings_filename)
+
+        # fill condition_names again with the conditions ins self.experiment_settings (just loaded)
+        if 'condition' in self.experiment_settings.keys():
+            for condition in self.experiment_settings['condition']:
+                if 'name' in condition.keys():
+                    self.condition_names.append(condition['name'])
+
         return self.experiment_settings
 
     def write_default_experiment(self):
@@ -114,13 +128,12 @@ class ExperimentManagerAction(JoanModuleAction):
             except KeyError:
                 pass
                 #print('Info: Module %s has no settings' % module_object.name)
+            except TypeError:  # Module settings are of new style, TODO: remove old style above
+                self.item_dict = module_factory_settings.as_dict()
+
             self.settings_object.write_settings(group_key=module_object.name, item=self.item_dict)
 
     def get_experiment_conditions(self):
-        if 'condition' in self.experiment_settings.keys():
-            for condition in self.experiment_settings['condition']:
-                if 'name' in condition.keys():
-                    self.condition_names.append(condition['name'])
         return self.condition_names
 
     def _get_attention_message(self):
@@ -163,8 +176,8 @@ class ExperimentManagerAction(JoanModuleAction):
         for module_object in JOANModules:
             module_factory_settings = self.get_module_factory_settings(module=module_object)
             module_settings = copy.deepcopy(module_factory_settings)
-            self.singleton_settings.update_settings(module_object, {})
-            self.singleton_settings.update_settings(module_object, module_settings)
+            self.singleton_settings.share_settings(module_object, {})
+            self.singleton_settings.share_settings(module_object, module_settings)
 
     def _set_condition_settings_in_singleton(self, condition):
         """ Set the condition settings per module, must be read through the module 'def initialize'
@@ -180,6 +193,6 @@ class ExperimentManagerAction(JoanModuleAction):
                     for item in item_keys:
                         if item in condition[joan_module.name].keys():
                             update_settings[joan_module.name][item] = condition[joan_module.name][item]
-                            self.singleton_settings.update_settings(joan_module, update_settings)
+                            self.singleton_settings.share_settings(joan_module, update_settings)
             except KeyError:
                 pass

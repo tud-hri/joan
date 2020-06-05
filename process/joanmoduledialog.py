@@ -4,23 +4,32 @@ from PyQt5 import QtWidgets, uic, QtGui, QtCore
 
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
-
+from process.statehandler import StateHandler
+from process.states import MasterStates
+from process.status import Status
 
 class JoanModuleDialog(QtWidgets.QDialog):
 
     # signal when dialog is closed
     closed = QtCore.pyqtSignal()
 
-    def __init__(self, module: JOANModules, module_action: JoanModuleAction, master_state_handler, parent=None):
+    def __init__(self, module: JOANModules, module_action: JoanModuleAction, parent=None):
+    #def __init__(self, module: JOANModules, module_action: JoanModuleAction, master_state_handler, parent=None):
         super().__init__(parent=parent)
 
         # reference to the action class of this module
         self.module_action = module_action
 
         # module and master state handling
+        # status, statehandlers and news
+        #self.singleton_status = Status()
+        #self.master_state_handler = self.singleton_status._master_state_handler
+        #self.master_states = self.singleton_status._master_states
+        #self.master_state_handler.state_changed.connect(self.handle_master_state)
+
         self.module_action.module_state_handler.state_changed.connect(self.handle_module_state)
-        master_state_handler.state_changed.connect(self.handle_master_state)
-        self.master_state_handler = master_state_handler
+        #self.module_action.master_state_handler.state_changed.connect(self.handle_master_state)
+        #self.master_state_handler = master_state_handler
 
         self.setLayout(QtWidgets.QVBoxLayout(self))
         self.setWindowTitle(str(module))
@@ -64,14 +73,6 @@ class JoanModuleDialog(QtWidgets.QDialog):
     def _set_millis(self, millis):
         self.module_action.set_millis(millis)
 
-    def handle_master_state(self, state):
-        """
-        Handle a master state transition (dialog)
-        """
-
-        state_as_state = self.master_state_handler.get_state(state)  # ensure we have the State object (not the int)
-        
-
     def handle_module_state(self, state):
         """
         Handle the state transition by updating the status label and have the
@@ -80,15 +81,16 @@ class JoanModuleDialog(QtWidgets.QDialog):
         state_as_state = self.module_action.module_state_handler.get_state(state)  # ensure we have the State object (not the int)
 
         # update the state label
-        self.state_widget.lb_module_state.setText(str(state_as_state.name))
+        self.state_widget.lbl_module_state.setText(str(state_as_state.name))
+
         if state_as_state is self.module_action.module_states.EXEC.RUNNING:
-            self.state_widget.lb_module_state.setStyleSheet("background: green;")
+            self.state_widget.lbl_module_state.setStyleSheet("background: green;")
         elif state_as_state is self.module_action.module_states.EXEC.STOPPED:
-            self.state_widget.lb_module_state.setStyleSheet("background: orange;")
+            self.state_widget.lbl_module_state.setStyleSheet("background: orange;")
         elif state_as_state is self.module_action.module_states.EXEC.READY:
-            self.state_widget.lb_module_state.setStyleSheet("background: yellow;")
+            self.state_widget.lbl_module_state.setStyleSheet("background: yellow;")
         elif 400 <= state_as_state.nr < 500:  # an Error state
-            self.state_widget.lb_module_state.setStyleSheet("background: red;")
+            self.state_widget.lbl_module_state.setStyleSheet("background: red;")
 
         if state_as_state == self.module_action.module_states.EXEC.READY:
             self.state_widget.btn_start.setEnabled(True)
@@ -111,8 +113,10 @@ class JoanModuleDialog(QtWidgets.QDialog):
         """toggle visibility of this dialog"""
         if not self.isVisible():
             self.show()
+            self.module_action.module_state_handler.request_state_change(self.module_action.module_states.IDLE)
         else:
             self.close()
+            self.module_action.module_state_handler.request_state_change(self.module_action.module_states.EXEC.STOPPED)
 
     def closeEvent(self, event):
         """close event"""

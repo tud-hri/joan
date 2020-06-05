@@ -6,7 +6,7 @@ from modules.hardwaremanager.action.inputclasses.JOAN_joystick import JOAN_Joyst
 from modules.hardwaremanager.action.inputclasses.JOAN_keyboard import JOAN_Keyboard
 from modules.hardwaremanager.action.inputclasses.JOAN_sensodrive import JOAN_SensoDrive
 
-from modules.hardwaremanager.action.settings import KeyBoardSettings, JoyStickSettings, SensoDriveSettings,  HardWareManagerSettings
+from modules.hardwaremanager.action.hardwaremanagersettings import KeyBoardSettings, JoyStickSettings, SensoDriveSettings,  HardWareManagerSettings
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
 from process.settings import ModuleSettings
@@ -14,8 +14,10 @@ from .states import HardwaremanagerStates
 
 
 class HardwaremanagerAction(JoanModuleAction):
-    def __init__(self, master_state_handler, millis=5):
-        super().__init__(module=JOANModules.HARDWARE_MANAGER, master_state_handler=master_state_handler, millis=millis)
+    def __init__(self, millis=5):
+        super().__init__(module=JOANModules.HARDWARE_MANAGER, millis=millis)
+    #def __init__(self, master_state_handler, millis=5):
+    #    super().__init__(module=JOANModules.HARDWARE_MANAGER, master_state_handler=master_state_handler, millis=millis)
 
         self.input_devices_classes = {}
 
@@ -24,14 +26,13 @@ class HardwaremanagerAction(JoanModuleAction):
 
         self.carla_interface_data = self.read_news(JOANModules.CARLA_INTERFACE)
 
-        self.settings = HardWareManagerSettings()
-        self.module_settings_object = ModuleSettings(file=os.path.join(os.path.dirname(os.path.realpath(__file__)), 'hardware_settings.json'))
-        loaded_dict = self.module_settings_object.read_settings()
+        self.settings = HardWareManagerSettings(module_enum=JOANModules.HARDWARE_MANAGER)
 
-        if bool(loaded_dict['data']):
-            self.settings.set_from_loaded_dict(loaded_dict['data'][str(JOANModules.HARDWARE_MANAGER)])
+        default_settings_file_location = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'hardware_settings.json')
+        if os.path.isfile(default_settings_file_location):
+            self.settings.load_from_file(default_settings_file_location)
 
-        self.update_settings(self.settings.as_dict())
+        self.share_settings(self.settings)
 
     def do(self):
         """
@@ -42,7 +43,7 @@ class HardwaremanagerAction(JoanModuleAction):
         for inputs in self.input_devices_classes:
             if 'SensoDrive' in inputs:
                     self.input_devices_classes[inputs]._toggle_on_off(self.carla_interface_data['connected'])
-                
+
         for inputs in self.input_devices_classes:
             self.data[inputs] = self.input_devices_classes[inputs].process()
         self.write_news(self.data)
@@ -51,7 +52,11 @@ class HardwaremanagerAction(JoanModuleAction):
         """
         This function is called before the module is started
         """
-        pass
+        try:
+            self.module_state_handler.request_state_change(HardwaremanagerStates.INIT.INITIALIZING)
+        except RuntimeError:
+            return False
+        return super().initialize()
 
     def start(self):
         self.carla_interface_data = self.read_news(JOANModules.CARLA_INTERFACE)
@@ -81,16 +86,11 @@ class HardwaremanagerAction(JoanModuleAction):
         return super().stop()
 
     def load_settings_from_file(self, settings_file_to_load):
-        self.module_settings_object = ModuleSettings(file=settings_file_to_load)
-        loaded_dict = self.module_settings_object.read_settings()
-
-        if bool(loaded_dict['data']):
-            self.settings.set_from_loaded_dict(loaded_dict['data'][str(JOANModules.HARDWARE_MANAGER)])
-            self.update_settings(self.settings.as_dict())
+        self.settings.load_from_file(settings_file_to_load)
+        self.share_settings(self.settings)
 
     def save_settings_to_file(self, file_to_save_in):
-        self.module_settings_object = ModuleSettings(file=file_to_save_in)
-        self.module_settings_object.write_settings(item={'data': self.settings.as_dict()})
+        self.settings.save_to_file(file_to_save_in)
 
     def add_a_keyboard(self, widget, keyboard_settings=None):
         is_a_new_keyboard = not keyboard_settings
