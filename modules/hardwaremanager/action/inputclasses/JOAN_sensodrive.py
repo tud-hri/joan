@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QMessageBox
 
 from modules.hardwaremanager.action.inputclasses.PCANBasic import *
 from modules.hardwaremanager.action.inputclasses.baseinput import BaseInput
-from modules.hardwaremanager.action.settings import SensoDriveSettings
+from modules.hardwaremanager.action.hardwaremanagersettings import SensoDriveSettings
 from modules.joanmodules import JOANModules
 
 INITIALIZATION_MESSAGE_ID = 0x200

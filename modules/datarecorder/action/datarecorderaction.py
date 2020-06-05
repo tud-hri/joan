@@ -16,8 +16,8 @@ import numpy as np
 class DatarecorderAction(JoanModuleAction):
     def __init__(self, millis=200):
         super().__init__(module=JOANModules.DATA_RECORDER, millis=millis)
-    #def __init__(self, master_state_handler, millis=200):
-    #    super().__init__(module=JOANModules.DATA_RECORDER, master_state_handler=master_state_handler, millis=millis)
+        # def __init__(self, master_state_handler, millis=200):
+        #    super().__init__(module=JOANModules.DATA_RECORDER, master_state_handler=master_state_handler, millis=millis)
         self.module_state_handler.request_state_change(DatarecorderStates.DATARECORDER.NOTINITIALIZED)
 
         # next three Template lines are not used for datarecorder' 
@@ -25,7 +25,7 @@ class DatarecorderAction(JoanModuleAction):
         # 2. self.write_news(news=self.data)
         # 3. self.time = QtCore.QTime()
 
-        #trajectory recorder:
+        # trajectory recorder:
         self.trajectory_recorder = Trajectory_recorder(self, 0.1)
 
         # start settings for this module
@@ -51,9 +51,8 @@ class DatarecorderAction(JoanModuleAction):
         This function is called every controller tick of this module implement your main calculations here
         """
         self._write()
-if self.trajectory_recorder.should_record_trajectory:
+        if self.trajectory_recorder.should_record_trajectory:
             self.trajectory_recorder.write_trajectory()
-
 
         # next two Template lines are not used for datarecorder
         # 1. self.data['t'] = self.time.elapsed()
@@ -69,7 +68,7 @@ if self.trajectory_recorder.should_record_trajectory:
             # Try and get the current position of car if you want to record a trajectory
             self.trajectory_recorder.initialize_trajectory_recorder_variables()
 
-except RuntimeError:
+        except RuntimeError:
             return False
         return True
 
@@ -177,7 +176,7 @@ except RuntimeError:
 
 
 class Trajectory_recorder():
-    def __init__(self,  data_recorder_action, waypoint_distance):
+    def __init__(self, data_recorder_action, waypoint_distance):
         self._traveled_distance = 0
         self._overall_distance = 0
         self.data_recorder_action = data_recorder_action
@@ -193,13 +192,12 @@ class Trajectory_recorder():
 
         temp_diff = self._trajectory_data[-1] - self._trajectory_data[-2]
 
-
         position_difference = temp_diff[0:2]
         small_distance = np.linalg.norm(position_difference)
         self._overall_distance = self._overall_distance + small_distance
         self._traveled_distance = self._traveled_distance + small_distance
 
-        if(self._overall_distance >= waypoint_distance):
+        if (self._overall_distance >= waypoint_distance):
             self._trajectory_data_spaced = np.append(self._trajectory_data_spaced, [self._trajectory_data[-1]], axis=0)
             self._overall_distance = self._overall_distance - waypoint_distance
 
@@ -224,7 +222,7 @@ class Trajectory_recorder():
         brake_input = control.brake
         heading = car.get_transform().rotation.yaw
 
-        self._trajectory_data = np.append(self._trajectory_data, [[x_pos, y_pos, steering_wheel_angle, throttle_input, brake_input, heading]], axis = 0)
+        self._trajectory_data = np.append(self._trajectory_data, [[x_pos, y_pos, steering_wheel_angle, throttle_input, brake_input, heading]], axis=0)
 
         self.make_trajectory_array(self.waypoint_distance)
 
@@ -241,7 +239,7 @@ class Trajectory_recorder():
             brake_input = control.brake
             heading = car.get_transform().rotation.yaw
 
-            #initialize variables here because we want the current position as first entry!
+            # initialize variables here because we want the current position as first entry!
             self._trajectory_data = [[x_pos, y_pos, steering_wheel_angle, throttle_input, brake_input, heading]]
             self._trajectory_data_spaced = [[x_pos, y_pos, steering_wheel_angle, throttle_input, brake_input, heading]]
         except Exception as inst:

@@ -3,6 +3,7 @@ from json import JSONDecodeError
 import copy
 from modules.joanmodules import JOANModules
 
+
 class Settings:
     '''
     The Settings class is a singleton that holds settings of module, 
@@ -18,7 +19,7 @@ class Settings:
 
         return cls.instance
 
-    #def __init__(self, settings_dict):
+    # def __init__(self, settings_dict):
     #    self._settings.update(settings_dict)
 
     def update_factory_settings(self, module: JOANModules, module_settings):
@@ -65,6 +66,7 @@ class ModuleSettings:
         }
     }
     """
+
     def __init__(self, file='settings.json'):
         self._file = file
         self._module_settings = None
@@ -78,7 +80,7 @@ class ModuleSettings:
                 pass
             if channel not in list(map(lambda x: x.name, keys)):  # iterate through keys, extract name of each module
                 del copy_settings['data'][channel]
-                
+
         self._module_settings = copy.deepcopy(copy_settings)
 
     def write_settings(self, group_key=None, item=None, filter=[]):

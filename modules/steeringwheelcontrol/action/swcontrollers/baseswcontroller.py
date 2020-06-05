@@ -54,6 +54,8 @@ class BaseSWController:
     def update_trajectory_list(self):
         """Check what trajectory files are present and update the selection list"""
         # get list of csv files in directory
+        if not os.path.isdir(self._path_trajectory_directory):
+            os.mkdir(self._path_trajectory_directory)
         files = [filename for filename in os.listdir(self._path_trajectory_directory) if filename.endswith('csv')]
 
         self._controller_tab.cmbbox_hcr_selection.clear()

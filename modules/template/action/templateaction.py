@@ -19,10 +19,11 @@ from process.settings import ModuleSettings
 
 class TemplateAction(JoanModuleAction):
     """Example JOAN module"""
+
     def __init__(self, millis=100):
         super().__init__(module=JOANModules.TEMPLATE, millis=millis)
-    #def __init__(self, master_state_handler, millis=100):
-    #    super().__init__(module=JOANModules.TEMPLATE, master_state_handler=master_state_handler, millis=millis)
+        # def __init__(self, master_state_handler, millis=100):
+        #    super().__init__(module=JOANModules.TEMPLATE, master_state_handler=master_state_handler, millis=millis)
 
         # The modules work with states.
         # Each JOAN module has its own module states (e.g. states specific for the module, see states.py in the template action folder) 
@@ -40,7 +41,7 @@ class TemplateAction(JoanModuleAction):
 
         # start settings for this module
         # each module has its own settings, which are stored in a .json file (e.g. template_settings.json)
-        # To create settings for your costum module create a settings class and enherit JOANMOduleSetting, as in the example TempleSettings
+        # To create settings for your custom module create a settings class and enherit JOANMOduleSetting, as in the example TempleSettings
         # All attributes you add to your settings class will automatically be save if you call setting.save_to_file
         # when loading setting, all attribute in the JSON file are copied, but missing values will keep their default value as defined in your setting class
 

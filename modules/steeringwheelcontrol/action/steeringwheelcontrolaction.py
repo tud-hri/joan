@@ -8,10 +8,11 @@ from .states import SteeringWheelControlStates
 from .swcontrollertypes import SWContollerTypes
 from .swcontrollers.manualswcontroller import ManualSWController
 
+
 class SteeringWheelControlAction(JoanModuleAction):
 
-    def __init__(self, master_state_handler, millis=10):
-        super().__init__(module=JOANModules.STEERING_WHEEL_CONTROL, master_state_handler=master_state_handler, millis=millis)
+    def __init__(self, millis=10):
+        super().__init__(module=JOANModules.STEERING_WHEEL_CONTROL, millis=millis)
 
         self.module_state_handler.request_state_change(SteeringWheelControlStates.EXEC.READY)
 
@@ -28,9 +29,10 @@ class SteeringWheelControlAction(JoanModuleAction):
         self.data['sw_torque'] = 0
         self.data['lat_error'] = 0
         self.data['heading_error'] = 0
-        self.data['lat_error_rate'] =0
+        self.data['lat_error_rate'] = 0
         self.data['heading_error_rate'] = 0
         self.write_news(news=self.data)
+
     def update_vehicle_list(self):
         carla_data = self.read_news(JOANModules.CARLA_INTERFACE)
         vehicle_list = carla_data['vehicles']
@@ -66,7 +68,7 @@ class SteeringWheelControlAction(JoanModuleAction):
     def set_current_controller(self, controller_type: SWContollerTypes):
         self._current_controller = self._controllers[controller_type]
         current_state = self.module_state_handler.get_current_state()
-        
+
         if current_state is not SteeringWheelControlStates.EXEC.RUNNING:
             self.module_state_handler.request_state_change(SteeringWheelControlStates.EXEC.READY)
 

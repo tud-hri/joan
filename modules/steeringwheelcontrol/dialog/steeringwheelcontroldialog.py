@@ -12,8 +12,8 @@ from modules.steeringwheelcontrol.action.steeringwheelcontrolaction import Steer
 
 
 class SteeringWheelControlDialog(JoanModuleDialog):
-    def __init__(self, module_action: JoanModuleAction, master_state_handler, parent=None):
-        super().__init__(module=JOANModules.STEERING_WHEEL_CONTROL, module_action=module_action, master_state_handler=master_state_handler, parent=parent)
+    def __init__(self, module_action: JoanModuleAction, parent=None):
+        super().__init__(module=JOANModules.STEERING_WHEEL_CONTROL, module_action=module_action, parent=parent)
 
         # add controller tabs
         for klass in self.module_action.controllers.values():
@@ -24,13 +24,13 @@ class SteeringWheelControlDialog(JoanModuleDialog):
         self.module_widget.btn_apply_controller.clicked.connect(self.apply_selected_controller)
         self.module_widget.btn_update_vehicle_list.setEnabled(False)
         self.module_widget.combobox_vehicle_list.setEnabled(False)
-        #self.module_widget.btn_update_vehicle_list.clicked.connect(self.update_vehicle_list_dialog)
-  
+        # self.module_widget.btn_update_vehicle_list.clicked.connect(self.update_vehicle_list_dialog)
+
     def add_controller_tab(self, controller):
         self.module_widget.controller_tab_widgets.addTab(controller.get_controller_tab, controller.name)
 
     def update_vehicle_list_dialog(self):
-        #only add the availability to control the steering wheel if the car is spawned (Is for later implemenation of multi-agent simulator)
+        # only add the availability to control the steering wheel if the car is spawned (Is for later implemenation of multi-agent simulator)
         # self.module_widget.combobox_vehicle_list.clear()
         # self.module_widget.combobox_vehicle_list.addItem('None')
         # vehicle_list = self.module_action.update_vehicle_list()
@@ -39,8 +39,6 @@ class SteeringWheelControlDialog(JoanModuleDialog):
         #         if vehicle.spawned is True:
         #             self.module_widget.combobox_vehicle_list.addItem(vehicle.vehicle_nr)
         pass
-
-
 
     def apply_selected_controller(self):
         vehicle_list = self.module_action.update_vehicle_list()
@@ -56,15 +54,14 @@ class SteeringWheelControlDialog(JoanModuleDialog):
             else:
                 self.module_action.module_state_handler.request_state_change(SteeringWheelControlStates.ERROR)
                 answer = QtWidgets.QMessageBox.warning(self, 'Warning',
-                                                'You cannot apply a controller if car 1 is not spawned!',
-                                                buttons=QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)
+                                                       'You cannot apply a controller if car 1 is not spawned!',
+                                                       buttons=QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)
                 if answer == QtWidgets.QMessageBox.Cancel:
                     return
         else:
             self.module_action.module_state_handler.request_state_change(SteeringWheelControlStates.ERROR)
             answer = QtWidgets.QMessageBox.warning(self, 'Warning',
-                                                'No vehicles available dude.',
-                                                buttons=QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)
+                                                   'No vehicles available dude.',
+                                                   buttons=QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)
             if answer == QtWidgets.QMessageBox.Cancel:
                 return
-
