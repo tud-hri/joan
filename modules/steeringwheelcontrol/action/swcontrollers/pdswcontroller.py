@@ -26,10 +26,6 @@ class PDSWController(BaseSWController):
 
         self.stiffness = 1
 
-
-        
-
-
         # controller errors
         # [0]: lateral error
         # [1]: heading error
