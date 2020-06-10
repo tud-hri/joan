@@ -89,27 +89,25 @@ class FDCASWController(BaseSWController):
             
             ############## FDCA SPECIFIC CALCULATIONS HERE ##############
             self._data_out['sw_torque'] = 0
-            SWAngle_FB = self._sohf_func(self._k_y, self._k_psi, self._sohf, -self._controller_error[0], self._controller_error[1])
-            SWAngle_FFdes = self._feed_forward_controller(0, car)
-            SWAngle_FF = self._lohs_func(self._lohs, SWAngle_FFdes)
-            SWAngleFB_FFDes = SWAngle_FB + SWAngle_FFdes #in radians
-            SWAngle_Current = math.radians(sw_angle)
-            delta_SW = SWAngleFB_FFDes - SWAngle_Current
-            SWAngle_FF_FB = SWAngle_FF + SWAngle_FB
-            Torque_LoHA = self._loha_func(self._loha, delta_SW) #Torque resulting from feedback
-            K_stiffnessDeg = stiffness # 40mNm/deg [DEGREES! CONVERT TO RADIANS!!]
-            K_stiffnessRad = K_stiffnessDeg  * (math.pi/180)
-            #print(K_stiffnessRad, math.radians(K_stiffnessDeg))
-            #Torque_FF_FB = self.InverseSteeringDyn(SWAngle_FF_FB,K_stiffness)
-            Torque_FF_FB = self._inverse_steering_dyn(SWAngle_FF_FB,K_stiffnessRad)
+            sw_angle_fb = self._sohf_func(self._k_y, self._k_psi, self._sohf, -self._controller_error[0], self._controller_error[1])
+            sw_angle_ff_des = self._feed_forward_controller(0, car)
+            sw_angle_ff = self._lohs_func(self._lohs, sw_angle_ff_des)
+            sw_angle_fb_ff_des = sw_angle_fb + sw_angle_ff_des #in radians
+            sw_angle_current = math.radians(sw_angle)
+            delta_sw = sw_angle_fb_ff_des - sw_angle_current
+            sw_angle_ff_fb = sw_angle_ff + sw_angle_fb
+            torque_loha = self._loha_func(self._loha, delta_sw) #Torque resulting from feedback
+            k_stiffness_deg = stiffness # 40mNm/deg [DEGREES! CONVERT TO RADIANS!!]
+            k_stiffness_rad = k_stiffness_deg  * (math.pi/180)
+            torque_ff_fb = self._inverse_steering_dyn(sw_angle_ff_fb, k_stiffness_rad)
 
-            Torque_FDCA = Torque_LoHA + Torque_FF_FB
+            torque_fdca = torque_loha + torque_ff_fb
             
 
             #print(round(Torque_FDCA*1000))
-            intTorque = int(round(Torque_FDCA*1000))
-            print(self._controller_error[0], math.degrees(self._controller_error[1]), intTorque)
-            self._data_out['sw_torque'] =  intTorque
+            torque_integer = int(round(torque_fdca*1000))
+            print(self._controller_error[0], math.degrees(self._controller_error[1]), torque_integer)
+            self._data_out['sw_torque'] = torque_integer
     
 
             #update variables
@@ -174,9 +172,9 @@ class FDCASWController(BaseSWController):
 
 
     def _sohf_func(self, _k_y, _k_psi, _sohf, DeltaY, DeltaPsi):
-        Temp = _sohf* (_k_y * DeltaY + _k_psi * DeltaPsi)
+        temp = _sohf* (_k_y * DeltaY + _k_psi * DeltaPsi)
 
-        return Temp
+        return temp
 
     def _feed_forward_controller(self, t_ahead, car):
         car_location = car.get_location()
@@ -195,27 +193,27 @@ class FDCASWController(BaseSWController):
             feed_forward_index_plus1 = feed_forward_index + 20
 
 
-        SWangle_FFdes = math.radians(self._trajectory[feed_forward_index_plus1, 3]*450)
+        sw_angle_ff_des = math.radians(self._trajectory[feed_forward_index_plus1, 3]*450)
 
 
-        return SWangle_FFdes
+        return sw_angle_ff_des
 
 
-    def _lohs_func(self,_lohs,SWangle_FFDES):
-        SWangle_FF = SWangle_FFDES * _lohs
+    def _lohs_func(self, _lohs, sw_angle_ff_des):
+        sw_angle_ff = sw_angle_ff_des * _lohs
 
-        return SWangle_FF
+        return sw_angle_ff
 
-    def _loha_func(self, _loha, delta_SW):
-        Torque_loha = _loha * delta_SW
+    def _loha_func(self, _loha, delta_sw):
+        torque_loha = _loha * delta_sw
 
         
-        return Torque_loha
+        return torque_loha
 
-    def _inverse_steering_dyn(self, SWangle,K_Stiffness):
-        Torque = SWangle * 1/(1.0/K_Stiffness)
+    def _inverse_steering_dyn(self, sw_angle, k_stiffness):
+        torque = sw_angle * 1/(1.0/k_stiffness)
 
-        return Torque
+        return torque
 
 
 
