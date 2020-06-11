@@ -81,6 +81,9 @@ class JOAN_Joystick(BaseInput):
 
         self._open_settings_dialog()
 
+    def initialize(self):
+        print('initializing Joystick')
+
     def _open_settings_dialog(self):
         self.settings_dialog = JoystickSettingsDialog(self.settings)
         self.settings_dialog.accepted.connect(self._open_connection_to_device)

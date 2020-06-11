@@ -119,7 +119,7 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
         # hier moeten de default settings
 
 
-class JOAN_SensoDrive(BaseInput):  # DEPRECATED FOR NOW TODO: remove from interface for now
+class JOAN_SensoDrive(BaseInput):
     def __init__(self, hardware_manager_action, sensodrive_tab, settings: SensoDriveSettings):
         super().__init__(hardware_manager_action)
 
@@ -174,6 +174,9 @@ class JOAN_SensoDrive(BaseInput):  # DEPRECATED FOR NOW TODO: remove from interf
         
 
         self._open_settings_dialog()
+
+    def initialize(self):
+        print('initializing SensoDrive')
 
     def _toggle_on_off(self, connected):
         self._sensodrive_tab.btn_on_off.setEnabled(connected)
