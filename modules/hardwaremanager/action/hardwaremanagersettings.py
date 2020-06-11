@@ -130,6 +130,18 @@ class JoyStickSettings:
         self.device_vendor_id = 0
         self.device_product_id = 0
 
+        self.degrees_of_freedom = 12
+        self.gas_channel = 9
+        self.use_separate_brake_channel = False
+        self.brake_channel = -1
+        self.first_steer_channel = 0
+        self.use_double_steering_resolution = True
+        self.second_steer_channel = 1
+        self.hand_brake_channel = 10
+        self.hand_brake_value = 2
+        self.reverse_channel = 10
+        self.reverse_value = 8
+
     def as_dict(self):
         return self.__dict__
 

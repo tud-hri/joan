@@ -1,10 +1,10 @@
 import os
 
 import hid
-from PyQt5 import uic, QtWidgets
+from PyQt5 import uic, QtWidgets, QtCore
 
-from modules.hardwaremanager.action.inputclasses.baseinput import BaseInput
 from modules.hardwaremanager.action.hardwaremanagersettings import JoyStickSettings
+from modules.hardwaremanager.action.inputclasses.baseinput import BaseInput
 from modules.joanmodules import JOANModules
 
 
@@ -19,8 +19,35 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
         for available_device in hid.enumerate():
             self.combo_available_devices.addItem(available_device['product_string'], userData=available_device)
 
+        self._joystick = hid.device()
+        self.update_timer = QtCore.QTimer()
+        self.update_timer.setInterval(100)
+        self.update_timer.timeout.connect(self.show_joystick_values)
+
+        self.useSeparateBrakeChannelCheckBox.stateChanged.connect(self._update_brake_channel_enabled)
+        self.useDoubleSteerResolutionCheckBox.stateChanged.connect(self._update_second_steer_channel_enabled)
+        self.displayCurrentInputCheckBox.stateChanged.connect(self._enable_displaying_values)
+        self.dofSpinBox.valueChanged.connect(self._update_degrees_of_freedom)
+        self.combo_available_devices.currentIndexChanged.connect(self._enable_displaying_checkbox)
+
+        self.value_preview_labels = []
+        self.value_preview_check_boxes = []
+
         self._display_values()
         self.show()
+
+    def show_joystick_values(self):
+        try:
+            joystick_data = self._joystick.read(self.dofSpinBox.value())
+
+            for index, value in enumerate(joystick_data):
+                if self.value_preview_check_boxes[index].isChecked():
+                    self.value_preview_labels[index].setText(str(value))
+                else:
+                    self.value_preview_labels[index].setText(" - ")
+
+        except ValueError:
+            pass  # joystick connection is not open
 
     def accept(self):
         self.joystick_settings.min_steer = self.spin_box_min_steer.value()
@@ -33,6 +60,18 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
         else:
             self.joystick_settings.device_vendor_id = 0
             self.joystick_settings.device_product_id = 0
+
+        self.joystick_settings.degrees_of_freedom = self.dofSpinBox.value()
+        self.joystick_settings.gas_channel = self.gasChannelSpinBox.value()
+        self.joystick_settings.use_separate_brake_channel = self.useSeparateBrakeChannelCheckBox.isChecked()
+        self.joystick_settings.brake_channel = self.brakeChannelSpinBox.value()
+        self.joystick_settings.first_steer_channel = self.steerFirstChannelSpinBox.value()
+        self.joystick_settings.use_double_steering_resolution = self.useDoubleSteerResolutionCheckBox.isChecked()
+        self.joystick_settings.second_steer_channel = self.steerSecondChannelSpinBox.value()
+        self.joystick_settings.hand_brake_channel = self.handBrakeChannelSpinBox.value()
+        self.joystick_settings.hand_brake_value = self.handBrakeValueSpinBox.value()
+        self.joystick_settings.reverse_channel = self.reverseChannelSpinBox.value()
+        self.joystick_settings.reverse_value = self.reverseValueSpinBox.value()
 
         super().accept()
 
@@ -52,8 +91,74 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
             else:
                 self.combo_available_devices.setCurrentIndex(0)
 
+        self.dofSpinBox.setValue(self.joystick_settings.degrees_of_freedom)
+        self.gasChannelSpinBox.setValue(self.joystick_settings.gas_channel)
+        self.useSeparateBrakeChannelCheckBox.setChecked(self.joystick_settings.use_separate_brake_channel)
+        self.brakeChannelSpinBox.setValue(self.joystick_settings.brake_channel)
+        self.steerFirstChannelSpinBox.setValue(self.joystick_settings.first_steer_channel)
+        self.useDoubleSteerResolutionCheckBox.setChecked(self.joystick_settings.use_double_steering_resolution)
+        self.steerSecondChannelSpinBox.setValue(self.joystick_settings.second_steer_channel)
+        self.handBrakeChannelSpinBox.setValue(self.joystick_settings.hand_brake_channel)
+        self.handBrakeValueSpinBox.setValue(self.joystick_settings.hand_brake_value)
+        self.reverseChannelSpinBox.setValue(self.joystick_settings.reverse_channel)
+        self.reverseValueSpinBox.setValue(self.joystick_settings.reverse_value)
+
     def _set_default_values(self):
         self._display_values(JoyStickSettings())
+
+    def _update_brake_channel_enabled(self, value):
+        self.brakeChannelSpinBox.setEnabled(value)
+
+    def _update_second_steer_channel_enabled(self, value):
+        self.steerSecondChannelSpinBox.setEnabled(value)
+
+    def _enable_displaying_checkbox(self):
+        if self.combo_available_devices.currentData():
+            self.displayCurrentInputCheckBox.setEnabled(True)
+        else:
+            self.displayCurrentInputCheckBox.setChecked(False)
+            self.displayCurrentInputCheckBox.setEnabled(False)
+
+    def _enable_displaying_values(self, value):
+        if value:
+            selected_device = self.combo_available_devices.currentData()
+            self._joystick.open(selected_device['vendor_id'], selected_device['product_id'])
+            self.update_timer.start()
+        else:
+            self.update_timer.stop()
+            self._joystick.close()
+
+        for widget in self.value_preview_labels:
+            widget.setEnabled(value)
+
+        for widget in self.value_preview_check_boxes:
+            widget.setEnabled(value)
+
+    def _update_degrees_of_freedom(self, value):
+        self.displayCurrentInputCheckBox.setChecked(False)
+
+        for index in reversed(range(self.currentInputGroupBox.layout().count())):
+            widget = self.currentInputGroupBox.layout().itemAt(index).widget()
+            widget.setParent(None)
+            widget.deleteLater()
+
+        self.value_preview_labels = []
+        self.value_preview_check_boxes = []
+
+        for index in range(value):
+            check_box = QtWidgets.QCheckBox()
+            check_box.setEnabled(self.displayCurrentInputCheckBox.isChecked())
+            check_box.setChecked(True)
+
+            display_label = QtWidgets.QLabel(" - ")
+            display_label.setEnabled(self.displayCurrentInputCheckBox.isChecked())
+
+            self.currentInputGroupBox.layout().addWidget(check_box, index, 0)
+            self.currentInputGroupBox.layout().addWidget(QtWidgets.QLabel("value #" + str(index)), index, 1)
+            self.currentInputGroupBox.layout().addWidget(display_label, index, 2)
+
+            self.value_preview_labels.append(display_label)
+            self.value_preview_check_boxes.append(check_box)
 
 
 class JOAN_Joystick(BaseInput):
@@ -112,35 +217,42 @@ class JOAN_Joystick(BaseInput):
                     self._joystick_tab.btn_remove_hardware.setEnabled(True)
 
         if self._joystick_open:
-            joystick_data = self._joystick.read(12, 1)
+            joystick_data = self._joystick.read(self.settings.degrees_of_freedom)
 
         if joystick_data:
-            #print(joystick_data)
-            self.throttle = 100 - round(((joystick_data[9]) / 128) * 100)
-            if self.throttle > 0:
-                self.throttle = self.throttle
-                self.brake = 0
-            elif self.throttle < 0:
-                temp = self.throttle
-                self.throttle = 0
-                self.brake = -temp
+            # print(joystick_data)
+            if self.settings.use_separate_brake_channel:
+                self.throttle = round(((joystick_data[self.settings.gas_channel]) / 255) * 100)
+                self.brake = - round(((joystick_data[self.settings.brake_channel]) / 255) * 100)
+            else:
+                input_value = 100 - round(((joystick_data[self.settings.gas_channel]) / 128) * 100)
+                if input_value > 0:
+                    self.throttle = self.throttle
+                    self.brake = 0
+                elif input_value < 0:
+                    self.throttle = 0
+                    self.brake = -input_value
 
-            if joystick_data[10] == 2:
+            if joystick_data[self.settings.hand_brake_channel] == self.settings.hand_brake_value:
                 self.handbrake = True
-            elif joystick_data[10] == 8:
+            elif joystick_data[self.settings.reverse_channel] == self.settings.reverse_value:
                 self.reverse = True
             else:
                 self.handbrake = False
                 self.reverse = False
 
-            self.steer = round(
-                (((joystick_data[0]) + (joystick_data[1]) * 256) / (256 * 256)) * (self.settings.max_steer - self.settings.min_steer) - self.settings.max_steer)
+            if self.settings.use_double_steering_resolution:
+                self.steer = round(
+                    (((joystick_data[self.settings.first_steer_channel]) + (joystick_data[self.settings.second_steer_channel]) * 256) / (256 * 256)) * (
+                            self.settings.max_steer - self.settings.min_steer) - self.settings.max_steer)
+            else:
+                self.steer = round(
+                    ((joystick_data[self.settings.first_steer_channel]) / 255) * (self.settings.max_steer - self.settings.min_steer) - self.settings.max_steer)
 
         self._data['BrakeInput'] = self.brake
         self._data['ThrottleInput'] = self.throttle
         self._data['SteeringInput'] = self.steer
         self._data['Handbrake'] = self.handbrake
         self._data['Reverse'] = self.reverse
-
 
         return self._data
