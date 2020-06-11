@@ -86,6 +86,15 @@ class TemplateAction(JoanModuleAction):
         # This is done during the initialization to prevent settings from changing while the module is running. This does mean that the module needs to be
         # reinitialised every time the settings are changed.
         self.millis = self.settings.millis
+        try:
+            self.module_state_handler.request_state_change(TemplateStates.INIT.INITIALIZING)
+            # Initialize the module here
+
+            self.module_state_handler.request_state_change(TemplateStates.EXEC.READY)
+
+        except RuntimeError:
+            return False
+        return super().initialize()
 
         try:
             self.module_state_handler.request_state_change(TemplateStates.INIT.INITIALIZING)
