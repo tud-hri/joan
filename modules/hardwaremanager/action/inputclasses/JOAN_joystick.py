@@ -29,6 +29,23 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
         self.displayCurrentInputCheckBox.stateChanged.connect(self._enable_displaying_values)
         self.dofSpinBox.valueChanged.connect(self._update_degrees_of_freedom)
         self.combo_available_devices.currentIndexChanged.connect(self._enable_displaying_checkbox)
+        self.presetsComboBox.currentIndexChanged.connect(self._set_presets)
+
+        self.presetsComboBox.addItem("Custom")
+        self.presetsComboBox.addItem("XBOX")
+        self.presetsComboBox.addItem("PlayStation")
+
+        self.dofSpinBox.valueChanged.connect(self._set_preset_combo_box_to_custom)
+        self.gasChannelSpinBox.valueChanged.connect(self._set_preset_combo_box_to_custom)
+        self.useSeparateBrakeChannelCheckBox.stateChanged.connect(self._set_preset_combo_box_to_custom)
+        self.brakeChannelSpinBox.valueChanged.connect(self._set_preset_combo_box_to_custom)
+        self.steerFirstChannelSpinBox.valueChanged.connect(self._set_preset_combo_box_to_custom)
+        self.useDoubleSteerResolutionCheckBox.stateChanged.connect(self._set_preset_combo_box_to_custom)
+        self.steerSecondChannelSpinBox.valueChanged.connect(self._set_preset_combo_box_to_custom)
+        self.handBrakeChannelSpinBox.valueChanged.connect(self._set_preset_combo_box_to_custom)
+        self.handBrakeValueSpinBox.valueChanged.connect(self._set_preset_combo_box_to_custom)
+        self.reverseChannelSpinBox.valueChanged.connect(self._set_preset_combo_box_to_custom)
+        self.reverseValueSpinBox.valueChanged.connect(self._set_preset_combo_box_to_custom)
 
         self.value_preview_labels = []
         self.value_preview_check_boxes = []
@@ -75,33 +92,42 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
 
         super().accept()
 
-    def _display_values(self, settings_to_display=None):
+    def _set_preset_combo_box_to_custom(self):
+        self.presetsComboBox.setCurrentIndex(0)
+
+    def _set_presets(self):
+        if self.presetsComboBox.currentText().lower() != 'custom':
+            preset_settings = JoyStickSettings.get_preset_settings(self.presetsComboBox.currentText().lower())
+            self._display_values(settings_to_display=preset_settings, only_keymap=True)
+
+    def _display_values(self, settings_to_display=None, only_keymap=False):
         if not settings_to_display:
             settings_to_display = self.joystick_settings
 
-        self.spin_box_min_steer.setValue(settings_to_display.min_steer)
-        self.spin_box_max_steer.setValue(settings_to_display.max_steer)
+        if not only_keymap:
+            self.spin_box_min_steer.setValue(settings_to_display.min_steer)
+            self.spin_box_max_steer.setValue(settings_to_display.max_steer)
 
-        for index in range(self.combo_available_devices.count()):
-            current_device = self.combo_available_devices.itemData(index)
-            if current_device and settings_to_display.device_vendor_id == current_device['vendor_id'] and \
-                    settings_to_display.device_product_id == current_device['product_id']:
-                self.combo_available_devices.setCurrentIndex(index)
-                break
-            else:
-                self.combo_available_devices.setCurrentIndex(0)
+            for index in range(self.combo_available_devices.count()):
+                current_device = self.combo_available_devices.itemData(index)
+                if current_device and settings_to_display.device_vendor_id == current_device['vendor_id'] and \
+                        settings_to_display.device_product_id == current_device['product_id']:
+                    self.combo_available_devices.setCurrentIndex(index)
+                    break
+                else:
+                    self.combo_available_devices.setCurrentIndex(0)
 
-        self.dofSpinBox.setValue(self.joystick_settings.degrees_of_freedom)
-        self.gasChannelSpinBox.setValue(self.joystick_settings.gas_channel)
-        self.useSeparateBrakeChannelCheckBox.setChecked(self.joystick_settings.use_separate_brake_channel)
-        self.brakeChannelSpinBox.setValue(self.joystick_settings.brake_channel)
-        self.steerFirstChannelSpinBox.setValue(self.joystick_settings.first_steer_channel)
-        self.useDoubleSteerResolutionCheckBox.setChecked(self.joystick_settings.use_double_steering_resolution)
-        self.steerSecondChannelSpinBox.setValue(self.joystick_settings.second_steer_channel)
-        self.handBrakeChannelSpinBox.setValue(self.joystick_settings.hand_brake_channel)
-        self.handBrakeValueSpinBox.setValue(self.joystick_settings.hand_brake_value)
-        self.reverseChannelSpinBox.setValue(self.joystick_settings.reverse_channel)
-        self.reverseValueSpinBox.setValue(self.joystick_settings.reverse_value)
+        self.dofSpinBox.setValue(settings_to_display.degrees_of_freedom)
+        self.gasChannelSpinBox.setValue(settings_to_display.gas_channel)
+        self.useSeparateBrakeChannelCheckBox.setChecked(settings_to_display.use_separate_brake_channel)
+        self.brakeChannelSpinBox.setValue(settings_to_display.brake_channel)
+        self.steerFirstChannelSpinBox.setValue(settings_to_display.first_steer_channel)
+        self.useDoubleSteerResolutionCheckBox.setChecked(settings_to_display.use_double_steering_resolution)
+        self.steerSecondChannelSpinBox.setValue(settings_to_display.second_steer_channel)
+        self.handBrakeChannelSpinBox.setValue(settings_to_display.hand_brake_channel)
+        self.handBrakeValueSpinBox.setValue(settings_to_display.hand_brake_value)
+        self.reverseChannelSpinBox.setValue(settings_to_display.reverse_channel)
+        self.reverseValueSpinBox.setValue(settings_to_display.reverse_value)
 
     def _set_default_values(self):
         self._display_values(JoyStickSettings())

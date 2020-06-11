@@ -149,6 +149,37 @@ class JoyStickSettings:
         for key, value in loaded_dict.items():
             self.__setattr__(key, value)
 
+    @staticmethod
+    def get_preset_settings(device='default'):
+        settings_to_return = JoyStickSettings()
+
+        if device == 'xbox':
+            settings_to_return.degrees_of_freedom = 12
+            settings_to_return.gas_channel = 9
+            settings_to_return.use_separate_brake_channel = False
+            settings_to_return.brake_channel = -1
+            settings_to_return.first_steer_channel = 0
+            settings_to_return.use_double_steering_resolution = True
+            settings_to_return.second_steer_channel = 1
+            settings_to_return.hand_brake_channel = 10
+            settings_to_return.hand_brake_value = 2
+            settings_to_return.reverse_channel = 10
+            settings_to_return.reverse_value = 8
+        elif device == 'playstation':
+            settings_to_return.degrees_of_freedom = 12
+            settings_to_return.gas_channel = 9
+            settings_to_return.use_separate_brake_channel = True
+            settings_to_return.brake_channel = 8
+            settings_to_return.first_steer_channel = 1
+            settings_to_return.use_double_steering_resolution = False
+            settings_to_return.second_steer_channel = -1
+            settings_to_return.hand_brake_channel = 5
+            settings_to_return.hand_brake_value = 40
+            settings_to_return.reverse_channel = 6
+            settings_to_return.reverse_value = 10
+
+        return settings_to_return
+
 
 class SensoDriveSettings:
     def __init__(self):
