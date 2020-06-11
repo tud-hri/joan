@@ -54,7 +54,6 @@ class HardwaremanagerDialog(JoanModuleDialog):
 
     def _add_selected_input(self):
         # add the selected input to the list
-        self.module_action.module_state_handler.request_state_change(HardwaremanagerStates.EXEC.READY)
 
         if "Keyboard" in self._input_type_dialog.combo_hardware_inputtype.currentText():
             new_widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../action/ui/hardware_tab.ui"))
