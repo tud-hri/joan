@@ -15,6 +15,8 @@ from process.joanmoduleaction import JoanModuleAction
 from .states import TemplateStates
 from .templatesettings import TemplateSettings
 from process.settings import ModuleSettings
+from process.statesenum import State
+from modules.hardwaremanager.action.states import HardwaremanagerStates
 
 
 class TemplateAction(JoanModuleAction):
@@ -25,10 +27,19 @@ class TemplateAction(JoanModuleAction):
     #    super().__init__(module=JOANModules.TEMPLATE, master_state_handler=master_state_handler, millis=millis)
 
         # The modules work with states.
-        # Each JOAN module has its own module states (e.g. states specific for the module, see states.py in the template action folder) 
-        # and master states, which control the entire program.
-        # Checkout other modules for examples how to implement these states
-        self.module_state_handler.request_state_change(TemplateStates.EXEC.READY)
+        # Each JOAN module has its own state machine that can be customized by adding module specific transition conditions
+        # Besides that the state machine supports entry actions and and exit actions per state. For more info on the state machine check process/statemachine.py
+        # for more info on the possible states check process/statesenum.py
+        #
+        # transition conditions are called when transitioning and can impose simple or more complex rules to check is a state transition is legal.
+        # If a state change is illegal it is also possible to add an error message explaining why the state change is illegal
+        # what follows are an example of a simple en more complex condition:
+        self.state_machine.set_transition_condition(State.IDLE, State.READY, lambda: self.millis > 10)
+        self.state_machine.set_transition_condition(State.READY, State.RUNNING, self._starting_condition)
+
+        # another possibility is to add entry and exit actions for states. This actions are executed when a state is entered or exited for example
+        self.state_machine.set_entry_action(State.RUNNING, lambda: print('Template is starting.'))
+        self.state_machine.set_exit_action(State.RUNNING, self._clean_up_after_run)
 
         # start news for the datarecorder.
         # here, we are added a variable called 'datawriter output' to this modules News. 
@@ -86,34 +97,36 @@ class TemplateAction(JoanModuleAction):
         # reinitialised every time the settings are changed.
         self.millis = self.settings.millis
 
-        try:
-            self.module_state_handler.request_state_change(TemplateStates.INIT.INITIALIZING)
-        except RuntimeError:
-            return False
-
-        # start settings from singleton
-        try:
-            self.module_state_handler.request_state_change(TemplateStates.INITIALIZED)
-        except RuntimeError:
-            return False
-        return True
+        self.state_machine.request_state_change(target_state=State.READY)
 
     def start(self):
         """start the module"""
-        try:
-            # here you perform any operation that is needed to start the module. 
-            # In our case, we start the timer.
-            self.module_state_handler.request_state_change(TemplateStates.EXEC.RUNNING)
-            self.time.restart()
-        except RuntimeError:
-            return False
+        self.state_machine.request_state_change(target_state=State.RUNNING)
         return super().start()
 
     def stop(self):
         """stop the module"""
-        try:
-            # do anything that is needed when the module is stopped
-            self.module_state_handler.request_state_change(TemplateStates.EXEC.STOPPED)
-        except RuntimeError:
-            return False
+        self.state_machine.request_state_change(target_state=State.IDLE)
         return super().stop()
+
+    def _starting_condition(self):
+        """
+        This is an example of a transition condition for the state machine. If this condition is true, the transition to the running state is allowed. Also
+        check the setting of this condition in the constructor of this class.
+
+        :return: (bool) legality of state change, (str) error message
+        """
+        if self.singleton_status.get_module_state_package(JOANModules.HARDWARE_MANAGER)['module_state_handler'].state is HardwaremanagerStates.EXEC.RUNNING:  # TODO: move this example to the new enum
+            return True, ''
+        else:
+            return False, 'The hardware manager should be running before starting the Template module'
+
+    def _clean_up_after_run(self):
+        """
+        This is an example of an exit action for a state, if the running state is exited, this function is executed. This can be used to clean up connections,
+        close files or do other final actions. Also check the setting of this action in the constructor of this class. Please note that this action is always
+        called, no matter the target state after the state change. It can be compared with the finally statement in exeption handling.
+        :return: None
+        """
+        # do some interesting multi line cleaning up of the mess I made during execution.
+        pass

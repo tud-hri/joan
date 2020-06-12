@@ -6,6 +6,7 @@ from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
 from process.statehandler import StateHandler
 from process.states import MasterStates
+from process.statesenum import State
 from process.status import Status
 
 class JoanModuleDialog(QtWidgets.QDialog):
@@ -26,8 +27,11 @@ class JoanModuleDialog(QtWidgets.QDialog):
         #self.master_state_handler = self.singleton_status._master_state_handler
         #self.master_states = self.singleton_status._master_states
         #self.master_state_handler.state_changed.connect(self.handle_master_state)
-        
-        self.module_action.module_state_handler.state_changed.connect(self.handle_module_state)
+
+        if module is not JOANModules.TEMPLATE:  # TODO: remove this old style
+            self.module_action.module_state_handler.state_changed.connect(self.handle_module_state)
+        else:
+            self.module_action.state_machine.add_state_change_listener(self.handle_state_change)
         #self.module_action.master_state_handler.state_changed.connect(self.handle_master_state)
         #self.master_state_handler = master_state_handler
 
@@ -48,6 +52,8 @@ class JoanModuleDialog(QtWidgets.QDialog):
         self.state_widget.input_tick_millis.setValidator(QtGui.QIntValidator(0, 10000, parent=self))
         self.state_widget.input_tick_millis.setPlaceholderText(str(self.module_action.millis))
         self.state_widget.input_tick_millis.textChanged.connect(self._set_millis)
+        # reflect current state
+        self.handle_state_change()
 
         # setup module-specific widget
         self.module_widget = uic.loadUi(module.ui_file)
@@ -72,7 +78,40 @@ class JoanModuleDialog(QtWidgets.QDialog):
     @QtCore.pyqtSlot(str)
     def _set_millis(self, millis):
         self.module_action.set_millis(millis)
-       
+
+    def handle_state_change(self):
+        current_state = self.module_action.state_machine.current_state
+        message = self.module_action.state_machine.state_message
+
+        # update the state label
+        self.state_widget.lbl_module_state.setText(str(current_state) + (' | ' + message if message else ''))
+
+        if current_state is State.RUNNING:
+            self.state_widget.lbl_module_state.setStyleSheet("background: green;")
+        elif current_state is State.IDLE:
+            self.state_widget.lbl_module_state.setStyleSheet("background: orange;")
+        elif current_state is State.READY:
+            self.state_widget.lbl_module_state.setStyleSheet("background: yellow;")
+        elif current_state is State.ERROR:  # an Error state
+            self.state_widget.lbl_module_state.setStyleSheet("background: red;")
+
+        if current_state == State.READY:
+            self.state_widget.btn_start.setEnabled(True)
+            self.state_widget.btn_stop.setEnabled(False)
+        else:
+            self.state_widget.btn_start.setEnabled(False)
+            self.state_widget.btn_stop.setEnabled(True)
+
+        # If module is running change button color
+        if current_state == State.RUNNING:
+            self.state_widget.btn_start.setStyleSheet("background-color: lightgreen")
+            self.state_widget.btn_start.setText('Running')
+            # self.state_widget.btn_start.setEnabled(False)
+        else:
+            self.state_widget.btn_start.setStyleSheet("background-color: none")
+            self.state_widget.btn_start.setText('Start')
+            # self.state_widget.btn_start.setEnabled(True)
+
     def handle_module_state(self, state):
         """
         Handle the state transition by updating the status label and have the

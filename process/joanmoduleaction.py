@@ -8,6 +8,7 @@ from process.settings import Settings
 from process.statehandler import StateHandler
 from process.states import MasterStates
 from process.status import Status
+from process.statemachine import StateMachine
 
 
 class JoanModuleAction(QtCore.QObject):
@@ -40,6 +41,9 @@ class JoanModuleAction(QtCore.QObject):
         module_state_package = {'module_states': self.module_states, 'module_state_handler': self.module_state_handler}
 
         self.singleton_status.register_module_state_package(module, module_state_package)
+
+        # initialize state machine
+        self.state_machine = StateMachine(module)
 
         # initialize own data and create channel in news
         self.data = {}
