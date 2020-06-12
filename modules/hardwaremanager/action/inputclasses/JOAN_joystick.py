@@ -14,7 +14,7 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
         self.joystick_settings = joystick_settings
         uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/joystick_settings_ui.ui"), self)
 
-        self.button_box_settings.button(self.button_box_settings.RestoreDefaults).clicked.connect(self._set_default_values)
+        self.button_box_settings.button(self.button_box_settings.RestoreDefaults).clicked.connect(self._set_default_settings)
 
         for available_device in hid.enumerate():
             self.combo_available_devices.addItem(available_device['product_string'], userData=available_device)
@@ -22,13 +22,13 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
         self._joystick = hid.device()
         self.update_timer = QtCore.QTimer()
         self.update_timer.setInterval(100)
-        self.update_timer.timeout.connect(self.show_joystick_values)
+        self.update_timer.timeout.connect(self.prview_joystick_values)
 
         self.useSeparateBrakeChannelCheckBox.stateChanged.connect(self._update_brake_channel_enabled)
         self.useDoubleSteerResolutionCheckBox.stateChanged.connect(self._update_second_steer_channel_enabled)
-        self.displayCurrentInputCheckBox.stateChanged.connect(self._enable_displaying_values)
+        self.displayCurrentInputCheckBox.stateChanged.connect(self._enable_previewing_values)
         self.dofSpinBox.valueChanged.connect(self._update_degrees_of_freedom)
-        self.combo_available_devices.currentIndexChanged.connect(self._enable_displaying_checkbox)
+        self.combo_available_devices.currentIndexChanged.connect(self._enable_preview_checkbox)
         self.presetsComboBox.currentIndexChanged.connect(self._set_presets)
 
         self.presetsComboBox.addItem("Custom")
@@ -50,10 +50,10 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
         self.value_preview_labels = []
         self.value_preview_check_boxes = []
 
-        self._display_values()
+        self._display_settings()
         self.show()
 
-    def show_joystick_values(self):
+    def prview_joystick_values(self):
         try:
             joystick_data = self._joystick.read(self.dofSpinBox.value())
 
@@ -98,9 +98,9 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
     def _set_presets(self):
         if self.presetsComboBox.currentText().lower() != 'custom':
             preset_settings = JoyStickSettings.get_preset_settings(self.presetsComboBox.currentText().lower())
-            self._display_values(settings_to_display=preset_settings, only_keymap=True)
+            self._display_settings(settings_to_display=preset_settings, only_keymap=True)
 
-    def _display_values(self, settings_to_display=None, only_keymap=False):
+    def _display_settings(self, settings_to_display=None, only_keymap=False):
         if not settings_to_display:
             settings_to_display = self.joystick_settings
 
@@ -129,8 +129,8 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
         self.reverseChannelSpinBox.setValue(settings_to_display.reverse_channel)
         self.reverseValueSpinBox.setValue(settings_to_display.reverse_value)
 
-    def _set_default_values(self):
-        self._display_values(JoyStickSettings())
+    def _set_default_settings(self):
+        self._display_settings(JoyStickSettings())
 
     def _update_brake_channel_enabled(self, value):
         self.brakeChannelSpinBox.setEnabled(value)
@@ -138,14 +138,14 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
     def _update_second_steer_channel_enabled(self, value):
         self.steerSecondChannelSpinBox.setEnabled(value)
 
-    def _enable_displaying_checkbox(self):
+    def _enable_preview_checkbox(self):
         if self.combo_available_devices.currentData():
             self.displayCurrentInputCheckBox.setEnabled(True)
         else:
             self.displayCurrentInputCheckBox.setChecked(False)
             self.displayCurrentInputCheckBox.setEnabled(False)
 
-    def _enable_displaying_values(self, value):
+    def _enable_previewing_values(self, value):
         if value:
             selected_device = self.combo_available_devices.currentData()
             self._joystick.open(selected_device['vendor_id'], selected_device['product_id'])
