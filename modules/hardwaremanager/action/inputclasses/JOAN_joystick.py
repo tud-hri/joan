@@ -22,7 +22,7 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
         self._joystick = hid.device()
         self.update_timer = QtCore.QTimer()
         self.update_timer.setInterval(100)
-        self.update_timer.timeout.connect(self.prview_joystick_values)
+        self.update_timer.timeout.connect(self.preview_joystick_values)
 
         self.useSeparateBrakeChannelCheckBox.stateChanged.connect(self._update_brake_channel_enabled)
         self.useDoubleSteerResolutionCheckBox.stateChanged.connect(self._update_second_steer_channel_enabled)
@@ -53,7 +53,7 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
         self._display_settings()
         self.show()
 
-    def prview_joystick_values(self):
+    def preview_joystick_values(self):
         try:
             joystick_data = self._joystick.read(self.dofSpinBox.value())
 
