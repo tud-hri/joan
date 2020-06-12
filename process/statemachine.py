@@ -26,10 +26,13 @@ class StateMachine:
 
         self._entry_actions = {}
         self._exit_actions = {}
+        self._automatic_transitions = {}
 
         for state in State:
             self._entry_actions[state] = None
             self._exit_actions[state] = None
+            if state is not State.ERROR:
+                self._automatic_transitions[state] = None
 
         self._state_change_listeners = []
 
@@ -58,10 +61,37 @@ class StateMachine:
 
         self._transition_conditions[departing_state][target_state] = condition_function
 
+    def set_automatic_transition(self, departing_state: State, target_state: State):
+        """
+        Method to set an automatic transition from a state to a next state. Every state can have one possible automatic transition, which is executed subject
+        to the normal conditions after the departing state is entered. Note that the departing state is not skipped, it is fully entered and exited like
+        normally, but it is done automatically.
+
+        :param departing_state: (State) The state which should be automatically left when entered if the transition to the target state is immediately legal
+        :param target_state: (State) The state to automatically move to
+        :return: None
+        """
+        if departing_state is State.ERROR:
+            raise ValueError('Automatic transitioning out of the error state is disabled for safety reasons.')
+
+        self._automatic_transitions[departing_state] = target_state
+
     def set_exit_action(self, state: State, action: callable):
+        """
+        Set an exit action for a state. This action is called every time the state is departed.
+        :param state: (State) State for which the action should be executed
+        :param action: (callable) The method to be called when the state is departed
+        :return: None
+        """
         self._exit_actions[state] = action
 
     def set_entry_action(self, state: State, action: callable):
+        """
+        Set an entry action for a state. This action is called every time the state is entered.
+        :param state: (State) State for which the action should be executed
+        :param action: (callable) The method to be called when the state is entered
+        :return: None
+        """
         self._entry_actions[state] = action
 
     def request_state_change(self, target_state, state_message_on_success=''):
@@ -92,3 +122,15 @@ class StateMachine:
 
             for listener in self._state_change_listeners:
                 listener()
+
+            if self._automatic_transitions[self.current_state]:
+                automatic_target_state = self._automatic_transitions[self.current_state]
+                condition_evaluation = self._transition_conditions[self.current_state][automatic_target_state]()
+
+                if isinstance(condition_evaluation, bool):
+                    state_change_is_legal = condition_evaluation
+                else:
+                    state_change_is_legal, _ = condition_evaluation
+
+                if state_change_is_legal:
+                    self.request_state_change(automatic_target_state)
