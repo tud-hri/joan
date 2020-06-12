@@ -114,8 +114,9 @@ class JoanHQWindow(QtWidgets.QMainWindow):
         widget.setObjectName(name)
         widget.grpbox.setTitle(name)
 
-        if isinstance(module_dialog, (JOANModules.FEED_BACK_CONTROLLER.dialog,
-                                      JOANModules.TRAJECTORY_RECORDER.dialog)):  # syntax is changed slightly in new example: wrapping show() in _show() is unnecessary
+        '''
+        if isinstance(module_dialog, (JOANModules.FEED_BACK_CONTROLLER.dialog)): # ,
+                                      # JOANModules.TRAJECTORY_RECORDER.dialog)):  # syntax is changed slightly in new example: wrapping show() in _show() is unnecessary
             widget.btn_showclose.clicked.connect(module_dialog._show)
             widget.btn_showclose.setCheckable(True)
             widget.btn_showclose.toggled.connect(lambda: self.button_showclose_checked(widget.btn_showclose))
@@ -129,11 +130,13 @@ class JoanHQWindow(QtWidgets.QMainWindow):
                 module_dialog.module_action.state_machine.add_state_change_listener(
                     lambda: widget.lbl_state.setText(str(module_dialog.module_action.state_machine.current_state)))
         else:
-            widget.btn_showclose.clicked.connect(module_dialog.toggle_show_close)
-            widget.btn_showclose.setCheckable(True)
-            widget.btn_showclose.toggled.connect(lambda: self.button_showclose_checked(widget.btn_showclose))  # change text in the button, based toggle status
-            module_dialog.closed.connect(lambda: widget.btn_showclose.setChecked(False))  # if the user closes the dialog, uncheck the button
+        '''
+        widget.btn_showclose.clicked.connect(module_dialog.toggle_show_close)
+        widget.btn_showclose.setCheckable(True)
+        widget.btn_showclose.toggled.connect(lambda: self.button_showclose_checked(widget.btn_showclose))  # change text in the button, based toggle status
+        module_dialog.closed.connect(lambda: widget.btn_showclose.setChecked(False))  # if the user closes the dialog, uncheck the button
 
+        if not isinstance(module_dialog, (JOANModules.TEMPLATE.dialog)):
             module_dialog.module_action.module_state_handler.state_changed.connect(
                 lambda state: widget.lbl_state.setText(module_dialog.module_action.module_state_handler.get_state(state).name)
             )

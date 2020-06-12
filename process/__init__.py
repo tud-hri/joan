@@ -1,5 +1,4 @@
 # relative import used by sibling packages
-from .control import Control
 # from .control import Status
 # from .control import News
 from .news import News
@@ -11,4 +10,3 @@ from .states import translate
 from .mainmodulewidget import MainModuleWidget
 from .joanhq.mainwindow.joanhqwindow import JoanHQWindow
 from .joanhq.action.joanhqaction import JoanHQAction
-from .pulsar import Pulsar

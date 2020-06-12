@@ -12,7 +12,6 @@ from PyQt5 import QtCore
 
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
-from .states import TemplateStates
 from .templatesettings import TemplateSettings
 from process.settings import ModuleSettings
 from process.statesenum import State
@@ -103,7 +102,8 @@ class TemplateAction(JoanModuleAction):
         # reinitialised every time the settings are changed.
         self.millis = self.settings.millis
 
-        self.state_machine.request_state_change(target_state=State.READY)
+        self.state_machine.request_state_change(State.READY, "Now you may start ...")
+        #self.state_machine.request_state_change(target_state=State.READY)
 
     def start(self):
         """start the module"""
@@ -112,7 +112,7 @@ class TemplateAction(JoanModuleAction):
 
     def stop(self):
         """stop the module"""
-        self.state_machine.request_state_change(target_state=State.IDLE)
+        self.state_machine.request_state_change(State.IDLE)  # Will automatically go to READY as defined above in self.state_machine.set_automatic_transition
         return super().stop()
 
     def _starting_condition(self):
@@ -122,10 +122,12 @@ class TemplateAction(JoanModuleAction):
 
         :return: (bool) legality of state change, (str) error message
         """
-        if self.singleton_status.get_module_state_package(JOANModules.HARDWARE_MANAGER)['module_state_handler'].state is HardwaremanagerStates.EXEC.RUNNING:  # TODO: move this example to the new enum
-            return True, ''
-        else:
-            return False, 'The hardware manager should be running before starting the Template module'
+        print( 'in templateaction current state of template', self.singleton_status.get_module_current_state(JOANModules.TEMPLATE) )
+        
+        #if self.singleton_status.get_module_state_package(JOANModules.HARDWARE_MANAGER)['module_state_handler'].state is HardwaremanagerStates.EXEC.RUNNING:  # TODO: move this example to the new enum
+        #    return True, ''
+        #else:
+        #    return False, 'The hardware manager should be running before starting the Template module'
 
     def _clean_up_after_run(self):
         """

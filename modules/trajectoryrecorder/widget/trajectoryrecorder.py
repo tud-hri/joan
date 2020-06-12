@@ -1,4 +1,4 @@
-from process import Control, State, translate
+from process import State, translate
 from PyQt5 import QtCore
 import os, glob
 from modules.trajectoryrecorder.action.trajectoryrecorder import TrajectoryrecorderAction

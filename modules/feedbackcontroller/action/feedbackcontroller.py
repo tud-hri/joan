@@ -1,6 +1,5 @@
 from PyQt5 import QtCore, QtWidgets, uic
 import os, glob
-from process import Control
 import numpy as np
 import math
 

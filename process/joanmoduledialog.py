@@ -152,10 +152,11 @@ class JoanModuleDialog(QtWidgets.QDialog):
         """toggle visibility of this dialog"""
         if not self.isVisible():
             self.show()
-            self.module_action.module_state_handler.request_state_change(self.module_action.module_states.IDLE)
+
+            #self.module_action.module_state_handler.request_state_change(self.module_action.module_states.IDLE)
         else:
             self.close()
-            self.module_action.module_state_handler.request_state_change(self.module_action.module_states.EXEC.STOPPED)
+            #self.module_action.module_state_handler.request_state_change(self.module_action.module_states.EXEC.STOPPED)
 
     def closeEvent(self, event):
         """close event"""

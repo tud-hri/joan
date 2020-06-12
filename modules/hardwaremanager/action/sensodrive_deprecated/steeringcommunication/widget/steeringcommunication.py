@@ -1,4 +1,3 @@
-from process import Control
 from PyQt5 import QtCore
 import os
 from modules.steeringcommunication.action.states import SteeringcommunicationStates

@@ -1,4 +1,4 @@
-from process import Control, State, translate
+from process import State, translate
 from PyQt5 import QtCore, QtWidgets, uic
 from modules.feedbackcontroller.action.states import FeedbackcontrollerStates
 # from PyQt5.QtWidgets import QWidget
