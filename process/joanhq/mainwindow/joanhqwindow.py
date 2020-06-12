@@ -3,14 +3,15 @@
 import os
 
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
-from process.joanmoduleaction import JoanModuleAction
+
 from modules.joanmodules import JOANModules
+from process.joanmoduleaction import JoanModuleAction
 # from process.joanhq.action.joanhqaction import JoanHQAction
 # from process.statehandler import StateHandler
 # from process.states import MasterStates
 from process.status import Status
-from .settingsoverviewdialog import SettingsOverviewDialog
 from .performancemonitordialog import PerformanceMonitorDialog
+from .settingsoverviewdialog import SettingsOverviewDialog
 
 
 class JoanHQWindow(QtWidgets.QMainWindow):
@@ -120,9 +121,13 @@ class JoanHQWindow(QtWidgets.QMainWindow):
             widget.btn_showclose.toggled.connect(lambda: self.button_showclose_checked(widget.btn_showclose))
 
             widget.lbl_state.setText(module_dialog.module_state_handler.get_current_state().name)
-            module_dialog.module_state_handler.state_changed.connect(
-                lambda state: widget.lbl_state.setText(module_dialog.module_state_handler.get_state(state).name)
-            )
+            if module_enum is not JOANModules.TEMPLATE:
+                module_dialog.module_state_handler.state_changed.connect(
+                    lambda state: widget.lbl_state.setText(module_dialog.module_state_handler.get_state(state).name)
+                )
+            else:
+                module_dialog.module_action.state_machine.add_state_change_listener(
+                    lambda: widget.lbl_state.setText(str(module_dialog.module_action.state_machine.current_state)))
         else:
             widget.btn_showclose.clicked.connect(module_dialog.toggle_show_close)
             widget.btn_showclose.setCheckable(True)
