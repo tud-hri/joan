@@ -24,11 +24,6 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
         super().__init__(parent)
         self.sensodrive_settings = sensodrive_settings
         uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/sensodrive_settings_ui.ui"), self)
-        # Weet nog niet zeker of dit ook werkt met meerdere channels (USBBUS1 is de default maar dunno wat er gebeurt als je er 2 inplugt)
-        # self.sensodrive_settings.PCAN_channel = PCAN_USBBUS1
-        # if self.sensodrive_settings.pcan_initialization_result is None:
-        #     self.sensodrive_settings.pcan_initialization_result = self.sensodrive_settings.PCAN_object.Initialize(self.sensodrive_settings.PCAN_channel, PCAN_BAUD_1M)
-        #
 
         self.button_box_settings.button(self.button_box_settings.RestoreDefaults).clicked.connect(self._set_default_values)
         self._display_values()
@@ -42,85 +37,31 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
         self.sensodrive_settings.damping = self.spin_damping.value()
         self.sensodrive_settings.spring_stiffness = self.spin_spring_stiffness.value()
 
-        #Convert integers to bytes:
-        self.sensodrive_settings.endstops_bytes = int.to_bytes(self.sensodrive_settings.endstops, 2, byteorder='little', signed=True)
-        self.sensodrive_settings.torque_limit_between_endstops_bytes = int.to_bytes(self.sensodrive_settings.torque_limit_between_endstops, 1, byteorder='little', signed=False)
-        self.sensodrive_settings.torque_limit_beyond_endstops_bytes = int.to_bytes(self.sensodrive_settings.torque_limit_beyond_endstops, 1, byteorder='little', signed=False)
-
-        # ## Load the chosen settings in an initialization message:
-        # # We need to have our init message here as well
-        # self.sensodrive_settings.sensodrive_initialization_message.ID = INITIALIZATION_MESSAGE_ID
-        # self.sensodrive_settings.sensodrive_initialization_message.LEN = INITIALIZATION_MESSAGE_LENGTH
-        # self.sensodrive_settings.sensodrive_initialization_message.TYPE = PCAN_MESSAGE_STANDARD
-        # #mode of operation
-        # self.sensodrive_settings.sensodrive_initialization_message.DATA[0] = 0x10
-        # # reserved
-        # self.sensodrive_settings.sensodrive_initialization_message.DATA[1] =  0
-        # #Endstop position
-        # self.sensodrive_settings.sensodrive_initialization_message.DATA[2] =  self.sensodrive_settings.endstops_bytes[0]
-        # self.sensodrive_settings.sensodrive_initialization_message.DATA[3] =  self.sensodrive_settings.endstops_bytes[1]
-        #  # reserved
-        # self.sensodrive_settings.sensodrive_initialization_message.DATA[4] =  0
-        # self.sensodrive_settings.sensodrive_initialization_message.DATA[5] =  0
-        # # Torque between endstops:
-        # self.sensodrive_settings.sensodrive_initialization_message.DATA[6] = self.sensodrive_settings.torque_limit_between_endstop_bytes[0]
-        # # Torque beyond endstops:
-        # self.sensodrive_settings.sensodrive_initialization_message.DATA[7] =  self.sensodrive_settings.torque_limit_beyond_endstop_bytes[0]
-        #
-        # self.sensodrive_settings.PCAN_object.Write(self.sensodrive_settings.PCAN_channel, self.sensodrive_settings.sensodrive_initialization_message)
-        # time.sleep(0.02)
-        # self.sensodrive_settings.response = self.sensodrive_settings.PCAN_object.Read(self.sensodrive_settings.PCAN_channel)
-        #
-        # self.sensodrive_settings.state_message = self.sensodrive_settings.sensodrive_initialization_message
-        # self.sensodrive_settings.state_message.DATA[0] = 0x11
-
-
-        if self.sensodrive_settings.pcan_initialization_result != PCAN_ERROR_OK:
-            answer = QtWidgets.QMessageBox.warning(self, 'Warning',
-                                                   (self.sensodrive_settings.PCAN_object.GetErrorText(self.sensodrive_settings.pcan_initialization_result)[
-                                                        1].decode("utf-8") \
-                                                    + ". Do you want to continue?"),
-                                                   buttons=QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)
-            if answer == QtWidgets.QMessageBox.Cancel:
-                return
-            if answer == QtWidgets.QMessageBox.Ok:
-                self.sensodrive_settings.pcan_error = True
-        else:
-            self.sensodrive_settings.pcan_error = False
-  
-        
-        
-
         super().accept()
-
-        # Hier moeten alle settings van demping, veersterkte, frictie etc (zijn allemaal bytes in dezelfde message)
 
     def _display_values(self, settings_to_display=None):
         if not settings_to_display:
             settings_to_display = self.sensodrive_settings
 
         self.spin_endstop_position.setValue(settings_to_display.endstops)
-        self.spin_torque_limit_between_endstops.setValue(settings_to_display.torque_limit_between_endstop)
-        self.spin_torque_limit_beyond_endstops.setValue(settings_to_display.torque_limit_beyond_endstop)
+        self.spin_torque_limit_between_endstops.setValue(settings_to_display.torque_limit_between_endstops)
+        self.spin_torque_limit_beyond_endstops.setValue(settings_to_display.torque_limit_beyond_endstops)
         self.spin_friction.setValue(settings_to_display.friction)
         self.spin_damping.setValue(settings_to_display.damping)
         self.spin_spring_stiffness.setValue(settings_to_display.spring_stiffness)
 
     def _set_default_values(self):
         self._display_values(SensoDriveSettings())
-        # hier moeten de default settings
 
 
 class JOAN_SensoDrive(BaseInput):
     def __init__(self, hardware_manager_action, sensodrive_tab, settings: SensoDriveSettings):
         super().__init__(hardware_manager_action)
 
-
         self.currentInput = 'SensoDrive'
         self._sensodrive_tab = sensodrive_tab
         self.settings = settings
         self.sensodrive_running = False
-
 
         # Create PCAN object
         self.PCAN_object = PCANBasic()
@@ -128,6 +69,7 @@ class JOAN_SensoDrive(BaseInput):
         self.steering_wheel_parameters = {}
         self._current_state_hex = 0x00
         self._error_state = [0x00, 0x00]
+        self._pcan_error = False
 
         #  hook up buttons
         self._sensodrive_tab.btn_settings.clicked.connect(self._open_settings_dialog)
@@ -158,10 +100,47 @@ class JOAN_SensoDrive(BaseInput):
         self.state_change_message.DATA[6] = 0x14
         self.state_change_message.DATA[7] = 0x14
 
+        self.settings_dialog = SensoDriveSettingsDialog(self.settings)
+        self.settings_dialog.accepted.connect(self.update_settings)
 
-        self._open_settings_dialog()
+    def update_settings(self):
+        self.endstops_bytes = int.to_bytes(self.settings.endstops, 2, byteorder='little', signed=True)
+        self.torque_limit_between_endstops_bytes = int.to_bytes(self.settings.torque_limit_between_endstops, 1, byteorder='little', signed=False)
+        self.torque_limit_beyond_endstops_bytes = int.to_bytes(self.settings.torque_limit_beyond_endstops, 1, byteorder='little', signed=False)
+
+        self.steering_wheel_parameters['friction'] = self.settings.friction
+        self.steering_wheel_parameters['damping'] = self.settings.damping
+        self.steering_wheel_parameters['spring_stiffness'] = self.settings.spring_stiffness
+
+        # mode of operation
+        self.sensodrive_initialization_message.DATA[0] = 0x10
+        # reserved
+        self.sensodrive_initialization_message.DATA[1] = 0
+        # Endstop position
+        self.sensodrive_initialization_message.DATA[2] = self.endstops_bytes[0]
+        self.sensodrive_initialization_message.DATA[3] = self.endstops_bytes[1]
+        # reserved
+        self.sensodrive_initialization_message.DATA[4] = 0
+        self.sensodrive_initialization_message.DATA[5] = 0
+        # Torque between endstops:
+        self.sensodrive_initialization_message.DATA[6] = self.torque_limit_between_endstops_bytes[0]
+        # Torque beyond endstops:
+        self.sensodrive_initialization_message.DATA[7] = self.torque_limit_beyond_endstops_bytes[0]
+
+        try:
+            self.PCAN_object.Write(self.PCAN_channel, self.sensodrive_initialization_message)
+            time.sleep(0.02)
+            # read the response just to clear out the buffer (we will not do anything with the data)
+            self.response = self.PCAN_object.Read(self.PCAN_channel)
+        except Exception as inst:
+            print(inst, 'probably not initialized yet')
 
     def initialize(self):
+        # Convert integers to bytes:
+        self.endstops_bytes = int.to_bytes(self.settings.endstops, 2, byteorder='little', signed=True)
+        self.torque_limit_between_endstops_bytes = int.to_bytes(self.settings.torque_limit_between_endstops, 1, byteorder='little', signed=False)
+        self.torque_limit_beyond_endstops_bytes = int.to_bytes(self.settings.torque_limit_beyond_endstops, 1, byteorder='little', signed=False)
+
         self.PCAN_channel = PCAN_USBBUS1
         if self.pcan_initialization_result is None:
             self.pcan_initialization_result = self.PCAN_object.Initialize(
@@ -172,19 +151,19 @@ class JOAN_SensoDrive(BaseInput):
         self.sensodrive_initialization_message.LEN = INITIALIZATION_MESSAGE_LENGTH
         self.sensodrive_initialization_message.TYPE = PCAN_MESSAGE_STANDARD
         # mode of operation
-        self.sensodrive_initialization_message.DATA[0] = 0x10
+        self.sensodrive_initialization_message.DATA[0] = 0x11
         # reserved
         self.sensodrive_initialization_message.DATA[1] = 0
         # Endstop position
-        self.sensodrive_initialization_message.DATA[2] = self.settings.endstops_bytes[0]
-        self.sensodrive_initialization_message.DATA[3] = self.settings.endstops_bytes[1]
+        self.sensodrive_initialization_message.DATA[2] = self.endstops_bytes[0]
+        self.sensodrive_initialization_message.DATA[3] = self.endstops_bytes[1]
         # reserved
         self.sensodrive_initialization_message.DATA[4] = 0
         self.sensodrive_initialization_message.DATA[5] = 0
         # Torque between endstops:
-        self.sensodrive_initialization_message.DATA[6] = self.settings.torque_limit_between_endstop_bytes[0]
+        self.sensodrive_initialization_message.DATA[6] = self.torque_limit_between_endstops_bytes[0]
         # Torque beyond endstops:
-        self.sensodrive_initialization_message.DATA[7] = self.settings.torque_limit_beyond_endstop_bytes[0]
+        self.sensodrive_initialization_message.DATA[7] = self.torque_limit_beyond_endstops_bytes[0]
 
         self.PCAN_object.Write(self.PCAN_channel, self.sensodrive_initialization_message)
         time.sleep(0.02)
@@ -200,23 +179,48 @@ class JOAN_SensoDrive(BaseInput):
         self.steering_wheel_parameters['spring_stiffness'] = self.settings.spring_stiffness
         print('initializing SensoDrive')
 
+        self.PCAN_object.Write(self.PCAN_channel, self.sensodrive_initialization_message)
+        time.sleep(0.02)
+        response = self.PCAN_object.Read(self.PCAN_channel)
+        #
+        self.state_message = self.sensodrive_initialization_message
+        self.state_message.DATA[0] = 0x11
+
+        if self.pcan_initialization_result != PCAN_ERROR_OK:
+            answer = QtWidgets.QMessageBox.warning(self, 'Warning',
+                                                   (self.PCAN_object.GetErrorText(
+                                                       self.pcan_initialization_result)[
+                                                        1].decode("utf-8") \
+                                                    + ". Do you want to continue?"),
+                                                   buttons=QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)
+            if answer == QtWidgets.QMessageBox.Cancel:
+                return
+            if answer == QtWidgets.QMessageBox.Ok:
+                self._pcan_error = True
+        else:
+            self._pcan_error = False
+
     def _toggle_on_off(self, connected):
         self._sensodrive_tab.btn_on_off.setEnabled(connected)
 
     def _open_settings_dialog(self):
-        self.settings_dialog = SensoDriveSettingsDialog(self.settings)
+        self.settings_dialog.show()
+        pass
 
     def remove_func(self):
-        self.PCAN_object.Uninitialize(self.PCAN_channel)
+        try:
+            self.PCAN_object.Uninitialize(self.PCAN_channel)
+        except:
+            pass
         self.remove_tab(self._sensodrive_tab)
 
     def on_off(self):
-        if self.settings.pcan_error:
+        if self._pcan_error:
             answer = QtWidgets.QMessageBox.warning(self._sensodrive_tab, 'Warning',
                                                    "The PCAN connection was not initialized properly, please reopen settings menu to try and reinitialize.",
                                                    buttons=QtWidgets.QMessageBox.Ok)
             if answer == QtWidgets.QMessageBox.Ok:
-                self.settings.pcan_error = True
+                self._pcan_error = True
         else:
             if(self._current_state_hex == 0x10):
                 self.off_to_on(self.sensodrive_initialization_message)
@@ -226,11 +230,6 @@ class JOAN_SensoDrive(BaseInput):
             
             elif(self._current_state_hex == 0x18):
                 self.clear_error(self.sensodrive_initialization_message)
-                
-          
-        
-            
-            
 
     def off_to_on(self,message):
         print('off to on')
@@ -259,9 +258,6 @@ class JOAN_SensoDrive(BaseInput):
         self._sensodrive_tab.btn_on_off.setStyleSheet("background-color: orange")
         self._sensodrive_tab.btn_on_off.setText('Off')
 
-
-
-
     def clear_error(self,message): 
         print('clear error')
         message.DATA[0] = 0x1F
@@ -269,14 +265,6 @@ class JOAN_SensoDrive(BaseInput):
         time.sleep(0.02)
         self._sensodrive_tab.btn_on_off.setStyleSheet("background-color: orange")
         self._sensodrive_tab.btn_on_off.setText('Off')
-
- 
-
-        
-        
-        
-        
-
 
     def process(self):
         # # If there are cars in the simulation add them to the controllable car combobox
@@ -290,39 +278,28 @@ class JOAN_SensoDrive(BaseInput):
                 else:
                     self._sensodrive_tab.btn_remove_hardware.setEnabled(True)
 
-        
-
-
         # Reverse
         self._data['Reverse'] = 0
         # Handbrake
         self._data['Handbrake'] = 0
 
        #check whether we have a sw_controller that should be updated
-        self._steering_wheel_control_data = self._action.read_news(JOANModules.STEERING_WHEEL_CONTROL) 
-
-        self.settings.steering_wheel_parameters['torque'] = self._steering_wheel_control_data['sw_torque']
-
+        self._steering_wheel_control_data = self._action.read_news(JOANModules.STEERING_WHEEL_CONTROL)
+        self.steering_wheel_parameters['torque'] = self._steering_wheel_control_data['sw_torque']
      
         #request and set steering wheel data
-        self.write_message_steering_wheel(self.PCAN_object, self.steering_wheel_message, self.settings.steering_wheel_parameters)
+        self.write_message_steering_wheel(self.PCAN_object, self.steering_wheel_message, self.steering_wheel_parameters)
         received = self.PCAN_object.Read(self.PCAN_channel)
 
         #request state data
-        self.PCAN_object.Write(self.PCAN_channel, self.settings.state_message)
+        self.PCAN_object.Write(self.PCAN_channel, self.state_message)
         received2 = self.PCAN_object.Read(self.PCAN_channel)
 
         #request pedal data
         self.write_message_pedals(self.PCAN_object, self.pedal_message)
         received3 = self.PCAN_object.Read(self.PCAN_channel)
 
-        # print(hex(received[1].ID), hex(received2[1].ID), hex(received3[1].ID))
-
-
         if (received[0] or received2[0] or received3[0] == PCAN_ERROR_OK):
-            # self.PCAN_object.Reset(self.PCAN_channel)
-            #print("Message Received Succesfully")
-            #print(hex(result[1].DATA[3]),hex(result[1].DATA[2]),hex(result[1].DATA[1]),hex(result[1].DATA[0]))
             if(received[1].ID == 0x211):
                 Increments = int.from_bytes(received[1].DATA[0:4],byteorder = 'little',signed = True)
                 Angle = round(Increments * 0.009,4)
@@ -335,7 +312,6 @@ class JOAN_SensoDrive(BaseInput):
             elif(received[1].ID == 0x21C):
                 self._data['ThrottleInput'] = (int.from_bytes(received[1].DATA[2:4], byteorder ='little')-1100)/2460 * 100
                 self._data['BrakeInput'] = (int.from_bytes(received[1].DATA[4:6], byteorder = 'little')-1)/500 * 100
-
 
             if(received2[1].ID == 0x211):
                 Increments = int.from_bytes(received2[1].DATA[0:4],byteorder = 'little',signed = True)
@@ -351,7 +327,6 @@ class JOAN_SensoDrive(BaseInput):
                 self._data['BrakeInput'] = (int.from_bytes(received2[1].DATA[4:6], byteorder = 'little')-1)/500 * 100
                 #self._data['Clut'] = int.from_bytes(result[1].DATA[6:], byteorder = 'little')
 
-
             if(received3[1].ID == 0x211):
                 Increments = int.from_bytes(received3[1].DATA[0:4],byteorder = 'little',signed = True)
                 Angle = round(Increments * 0.009,4)
@@ -365,25 +340,12 @@ class JOAN_SensoDrive(BaseInput):
                 self._data['ThrottleInput'] = (int.from_bytes(received3[1].DATA[2:4], byteorder ='little')-1100)/2460 * 100
                 self._data['BrakeInput'] = (int.from_bytes(received3[1].DATA[4:6], byteorder = 'little')-1)/500 * 100
 
-
         if(self._current_state_hex == 0x18):
-            scale = 16
-            num_of_bits = 8
-
-            # joe = bin(self._error_state[0])[2:].zfill(num_of_bits)
-            # hai = bin(self._error_state[1])[2:].zfill(num_of_bits)
-
-            # print(hai,joe, hex(self._error_state[0]), hex(self._error_state[1]))
-            
-            
             self._sensodrive_tab.btn_on_off.setStyleSheet("background-color: red")
             self._sensodrive_tab.btn_on_off.setText('Clear Error')
 
-           
-            
-            
-            
-        self._data['spring_stiffness'] = self.settings.steering_wheel_parameters['spring_stiffness']
+        #writing the spring stiffness in news because we need this parameter in the 'steeringwheelcontrol' module :)
+        self._data['spring_stiffness'] = self.steering_wheel_parameters['spring_stiffness']
 
         return self._data
 
@@ -394,13 +356,8 @@ class JOAN_SensoDrive(BaseInput):
 
         pcanmessage.DATA[0] = 0x1
 
-        if not self.settings.pcan_error:
-            #print('writing message')
+        if not self._pcan_error:
             self.PCAN_object.Write(self.PCAN_channel, pcanmessage)
-
-
-
-
 
     def write_message_steering_wheel(self, pcan_object, pcanmessage, data):
         torque_bytes = int.to_bytes(data['torque'], 2, byteorder='little', signed=True)
@@ -420,22 +377,5 @@ class JOAN_SensoDrive(BaseInput):
         pcanmessage.DATA[6] = spring_stiffness_bytes[0]
         pcanmessage.DATA[7] = spring_stiffness_bytes[1]
 
-        # pcanmessage.DATA[0] = 0x00
-        # pcanmessage.DATA[1] = 0x00
-        # pcanmessage.DATA[2] = 0x2C
-        # pcanmessage.DATA[3] = 0x01
-        # pcanmessage.DATA[4] = 0x1E
-        # pcanmessage.DATA[5] = 0x00
-        # pcanmessage.DATA[6] = 0x14
-        # pcanmessage.DATA[7] = 00
-
-
-        if not self.settings.pcan_error:
-            #print('writing message')
-            self.PCAN_object.Write(self.PCAN_channel, pcanmessage)
-
-        
-
-
-
-
+        if not self._pcan_error:
+            pcan_object.Write(self.PCAN_channel, pcanmessage)
