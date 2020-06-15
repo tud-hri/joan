@@ -243,7 +243,7 @@ class JOAN_Joystick(BaseInput):
                     self._joystick_tab.btn_remove_hardware.setEnabled(True)
 
         if self._joystick_open:
-            joystick_data = self._joystick.read(self.settings.degrees_of_freedom)
+            joystick_data = self._joystick.read(self.settings.degrees_of_freedom, 1)
 
         if joystick_data:
             # print(joystick_data)
@@ -253,7 +253,7 @@ class JOAN_Joystick(BaseInput):
             else:
                 input_value = 100 - round(((joystick_data[self.settings.gas_channel]) / 128) * 100)
                 if input_value > 0:
-                    self.throttle = self.throttle
+                    self.throttle = input_value
                     self.brake = 0
                 elif input_value < 0:
                     self.throttle = 0
