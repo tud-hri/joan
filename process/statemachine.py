@@ -31,8 +31,7 @@ class StateMachine:
         for state in State:
             self._entry_actions[state] = None
             self._exit_actions[state] = None
-            if state is not State.ERROR:
-                self._automatic_transitions[state] = None
+            self._automatic_transitions[state] = None
 
         self._state_change_listeners = []
 
@@ -101,8 +100,11 @@ class StateMachine:
             if isinstance(condition_evaluation, bool):
                 state_change_is_legal = condition_evaluation
                 error_message = ''
-            else:
+            elif isinstance(condition_evaluation, tuple) and len(condition_evaluation) == 2:
                 state_change_is_legal, error_message = condition_evaluation
+            else:
+                raise RuntimeError("A transition condition function should return a boolean indicating if a transition is legal. Or a tuple conataining a "
+                                   "boolean and a (error) message to display. Received object was of type: " + str(type(condition_evaluation)))
 
             if state_change_is_legal:
                 if self._exit_actions[self.current_state]:

@@ -10,12 +10,11 @@ import os
 
 from PyQt5 import QtCore
 
+from modules.hardwaremanager.action.states import HardwaremanagerStates
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
-from .templatesettings import TemplateSettings
-from process.settings import ModuleSettings
 from process.statesenum import State
-from modules.hardwaremanager.action.states import HardwaremanagerStates
+from .templatesettings import TemplateSettings
 
 
 class TemplateAction(JoanModuleAction):
@@ -102,18 +101,9 @@ class TemplateAction(JoanModuleAction):
         # This is done during the initialization to prevent settings from changing while the module is running. This does mean that the module needs to be
         # reinitialised every time the settings are changed.
         self.millis = self.settings.millis
-        try:
-            self.module_state_handler.request_state_change(TemplateStates.INIT.INITIALIZING)
-            # Initialize the module here
-
-            self.module_state_handler.request_state_change(TemplateStates.EXEC.READY)
-
-        except RuntimeError:
-            return False
-        return super().initialize()
 
         self.state_machine.request_state_change(State.READY, "Now you may start ...")
-        #self.state_machine.request_state_change(target_state=State.READY)
+        return super().initialize()
 
     def start(self):
         """start the module"""
@@ -132,12 +122,16 @@ class TemplateAction(JoanModuleAction):
 
         :return: (bool) legality of state change, (str) error message
         """
-        print( 'in templateaction current state of template', self.singleton_status.get_module_current_state(JOANModules.TEMPLATE) )
-        
-        #if self.singleton_status.get_module_state_package(JOANModules.HARDWARE_MANAGER)['module_state_handler'].state is HardwaremanagerStates.EXEC.RUNNING:  # TODO: move this example to the new enum
-        #    return True, ''
-        #else:
-        #    return False, 'The hardware manager should be running before starting the Template module'
+        print('in templateaction current state of template', self.singleton_status.get_module_current_state(JOANModules.TEMPLATE))
+
+        try:
+            if self.singleton_status.get_module_state_package(JOANModules.HARDWARE_MANAGER)['module_state_handler'].state is HardwaremanagerStates.EXEC.RUNNING:
+                # TODO: move this example to the new enum
+                return True, ''
+            else:
+                return False, 'The hardware manager should be running before starting the Template module'
+        except KeyError:
+            return False, 'The hardware manager state could not be read, but it should be running before starting template.'
 
     def _clean_up_after_run(self):
         """
