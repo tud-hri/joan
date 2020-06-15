@@ -113,8 +113,7 @@ class JoanHQWindow(QtWidgets.QMainWindow):
         widget.setObjectName(name)
         widget.grpbox.setTitle(name)
 
-        if isinstance(module_dialog, (JOANModules.FEED_BACK_CONTROLLER.dialog,
-                                      JOANModules.TRAJECTORY_RECORDER.dialog)):  # syntax is changed slightly in new example: wrapping show() in _show() is unnecessary
+        if isinstance(module_dialog, JOANModules.TRAJECTORY_RECORDER.dialog):  # syntax is changed slightly in new example: wrapping show() in _show() is unnecessary
             widget.btn_showclose.clicked.connect(module_dialog._show)
             widget.btn_showclose.setCheckable(True)
             widget.btn_showclose.toggled.connect(lambda: self.button_showclose_checked(widget.btn_showclose))

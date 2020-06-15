@@ -26,7 +26,7 @@ class JoanModuleDialog(QtWidgets.QDialog):
         #self.master_state_handler = self.singleton_status._master_state_handler
         #self.master_states = self.singleton_status._master_states
         #self.master_state_handler.state_changed.connect(self.handle_master_state)
-        
+
         self.module_action.module_state_handler.state_changed.connect(self.handle_module_state)
         #self.module_action.master_state_handler.state_changed.connect(self.handle_master_state)
         #self.master_state_handler = master_state_handler
@@ -72,7 +72,7 @@ class JoanModuleDialog(QtWidgets.QDialog):
     @QtCore.pyqtSlot(str)
     def _set_millis(self, millis):
         self.module_action.set_millis(millis)
-       
+
     def handle_module_state(self, state):
         """
         Handle the state transition by updating the status label and have the
@@ -82,7 +82,7 @@ class JoanModuleDialog(QtWidgets.QDialog):
 
         # update the state label
         self.state_widget.lbl_module_state.setText(str(state_as_state.name))
-        
+
         if state_as_state is self.module_action.module_states.EXEC.RUNNING:
             self.state_widget.lbl_module_state.setStyleSheet("background: green;")
         elif state_as_state is self.module_action.module_states.EXEC.STOPPED:

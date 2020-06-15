@@ -12,7 +12,7 @@ class KeyBoardSettingsDialog(QtWidgets.QDialog):
     def __init__(self, keyboard_settings, parent=None):
         super().__init__(parent)
         self.keyboard_settings = keyboard_settings
-        uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "UIs/keyboard_settings_ui.ui"), self)
+        uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/keyboard_settings_ui.ui"), self)
 
         self.slider_steer_sensitivity.valueChanged.connect(lambda new_value: self.label_steer_sensitivity.setText(str(new_value)))
         self.slider_throttle_sensitivity.valueChanged.connect(lambda new_value: self.label_throttle_sensitivity.setText(str(new_value)))
@@ -123,6 +123,7 @@ class JOAN_Keyboard(BaseInput):
         self._keyboard_tab.btn_visualization.setEnabled(False)
 
         keyboard.hook(self.key_event, False)
+        self._open_settings_dialog()
 
     def remove_func(self):
         self.remove_tab(self._keyboard_tab)

@@ -4,7 +4,9 @@ import keyboard
 
 from modules.hardwaremanager.action.inputclasses.JOAN_joystick import JOAN_Joystick
 from modules.hardwaremanager.action.inputclasses.JOAN_keyboard import JOAN_Keyboard
-from modules.hardwaremanager.action.hardwaremanagersettings import KeyBoardSettings, JoyStickSettings, HardWareManagerSettings
+from modules.hardwaremanager.action.inputclasses.JOAN_sensodrive import JOAN_SensoDrive
+
+from modules.hardwaremanager.action.hardwaremanagersettings import KeyBoardSettings, JoyStickSettings, SensoDriveSettings,  HardWareManagerSettings
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
 from process.settings import ModuleSettings
@@ -22,6 +24,8 @@ class HardwaremanagerAction(JoanModuleAction):
         self.data = {}
         self.write_news(news=self.data)
 
+        self.carla_interface_data = self.read_news(JOANModules.CARLA_INTERFACE)
+
         self.settings = HardWareManagerSettings(module_enum=JOANModules.HARDWARE_MANAGER)
 
         default_settings_file_location = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'hardware_settings.json')
@@ -34,6 +38,12 @@ class HardwaremanagerAction(JoanModuleAction):
         """
         This function is called every controller tick of this module implement your main calculations here
         """
+        self.carla_interface_data = self.read_news(JOANModules.CARLA_INTERFACE)
+
+        for inputs in self.input_devices_classes:
+            if 'SensoDrive' in inputs:
+                    self.input_devices_classes[inputs]._toggle_on_off(self.carla_interface_data['connected'])
+
         for inputs in self.input_devices_classes:
             self.data[inputs] = self.input_devices_classes[inputs].process()
         self.write_news(self.data)
@@ -49,13 +59,23 @@ class HardwaremanagerAction(JoanModuleAction):
         return super().initialize()
 
     def start(self):
+        self.carla_interface_data = self.read_news(JOANModules.CARLA_INTERFACE)
+        for inputs in self.input_devices_classes:
+            if 'SensoDrive' in inputs:
+                self.input_devices_classes[inputs]._toggle_on_off(self.carla_interface_data['connected'])
         try:
             self.module_state_handler.request_state_change(HardwaremanagerStates.EXEC.RUNNING)
+
         except RuntimeError:
             return False
         return super().start()
 
     def stop(self):
+        self.carla_interface_data = self.read_news(JOANModules.CARLA_INTERFACE)
+        for inputs in self.input_devices_classes:
+            if 'SensoDrive' in inputs:
+                self.input_devices_classes[inputs]._toggle_on_off(False)
+
         try:
             self.module_state_handler.request_state_change(HardwaremanagerStates.EXEC.STOPPED)
             if len(self.input_devices_classes) != 0:
@@ -95,6 +115,19 @@ class HardwaremanagerAction(JoanModuleAction):
         self.input_devices_classes.update([(device_title, JOAN_Joystick(self, widget, joystick_settings))])
         if is_a_new_joystick:
             self.settings.joy_sticks.append(joystick_settings)
+        return device_title
+
+    def add_a_sensodrive(self, widget, sensodrive_settings=None):
+        is_a_new_sensodrive = not sensodrive_settings
+        if is_a_new_sensodrive:
+            sensodrive_settings = SensoDriveSettings()
+
+        number_of_sensodrives = sum([bool("SensoDrive" in k) for k in self.input_devices_classes.keys()])
+        device_title = "SensoDrive %s" % (number_of_sensodrives + 1)
+
+        self.input_devices_classes.update([(device_title, JOAN_SensoDrive(self, widget, sensodrive_settings))])
+        if is_a_new_sensodrive:
+            self.settings.sensodrives.append(sensodrive_settings)
         return device_title
 
     def remove(self, tabtitle):

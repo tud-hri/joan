@@ -12,7 +12,7 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
     def __init__(self, joystick_settings, parent=None):
         super().__init__(parent)
         self.joystick_settings = joystick_settings
-        uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "UIs/joystick_settings_ui.ui"), self)
+        uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/joystick_settings_ui.ui"), self)
 
         self.button_box_settings.button(self.button_box_settings.RestoreDefaults).clicked.connect(self._set_default_values)
 
@@ -79,6 +79,8 @@ class JOAN_Joystick(BaseInput):
         self._joystick_tab.btn_visualization.setEnabled(False)
         self._joystick_tab.btn_remove_hardware.clicked.connect(self.remove_func)
 
+        self._open_settings_dialog()
+
     def _open_settings_dialog(self):
         self.settings_dialog = JoystickSettingsDialog(self.settings)
         self.settings_dialog.accepted.connect(self._open_connection_to_device)
@@ -96,7 +98,7 @@ class JOAN_Joystick(BaseInput):
 
     def process(self):
         joystick_data = []
-        if self._carla_interface_data['vehicles'] is not None and self._joystick_open:
+        if self._carla_interface_data['vehicles'] is not None:
             self._carla_interface_data = self._action.read_news(JOANModules.CARLA_INTERFACE)
 
             for vehicles in self._carla_interface_data['vehicles']:
@@ -106,10 +108,11 @@ class JOAN_Joystick(BaseInput):
                 else:
                     self._joystick_tab.btn_remove_hardware.setEnabled(True)
 
+        if self._joystick_open:
             joystick_data = self._joystick.read(12, 1)
 
         if joystick_data:
-            print(joystick_data)
+            #print(joystick_data)
             self.throttle = 100 - round(((joystick_data[9]) / 128) * 100)
             if self.throttle > 0:
                 self.throttle = self.throttle
@@ -135,5 +138,6 @@ class JOAN_Joystick(BaseInput):
         self._data['SteeringInput'] = self.steer
         self._data['Handbrake'] = self.handbrake
         self._data['Reverse'] = self.reverse
+
 
         return self._data

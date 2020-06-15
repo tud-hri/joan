@@ -18,7 +18,7 @@ class HardwaremanagerDialog(JoanModuleDialog):
         self._inputlist = {}
         self.hardware_widgets = {}
 
-        self._input_type_dialog = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../action/UIs/inputtype.ui"))
+        self._input_type_dialog = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../action/ui/inputtype.ui"))
         self._input_type_dialog.btns_hardware_inputtype.accepted.connect(self._add_selected_input)
 
         self.settings_menu = QtWidgets.QMenu('Settings')
@@ -56,25 +56,35 @@ class HardwaremanagerDialog(JoanModuleDialog):
         # add the selected input to the list
         self.module_action.module_state_handler.request_state_change(HardwaremanagerStates.EXEC.READY)
 
-        new_widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../action/UIs/hardware_tab.ui"))
-
         if "Keyboard" in self._input_type_dialog.combo_hardware_inputtype.currentText():
+            new_widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../action/ui/hardware_tab.ui"))
             device_title = self.module_action.add_a_keyboard(new_widget)
         elif "Joystick" in self._input_type_dialog.combo_hardware_inputtype.currentText():
+            new_widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../action/ui/hardware_tab.ui"))
             device_title = self.module_action.add_a_joystick(new_widget)
+        elif "SensoDrive" in self._input_type_dialog.combo_hardware_inputtype.currentText():
+            new_widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../action/ui/hardware_tab_sensodrive.ui"))
+            device_title = self.module_action.add_a_sensodrive(new_widget)
 
         new_widget.groupBox.setTitle(device_title)
         self.module_widget.hardware_list_layout.addWidget(new_widget)
 
     def initialize_widgets_from_settings(self):
         for keyboard_settings in self.module_action.settings.key_boards:
-            new_widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../action/UIs/hardware_tab.ui"))
+            new_widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../action/ui/hardware_tab.ui"))
             device_title = self.module_action.add_a_keyboard(new_widget, keyboard_settings=keyboard_settings)
             new_widget.groupBox.setTitle(device_title)
             self.module_widget.hardware_list_layout.addWidget(new_widget)
 
         for joystick_settings in self.module_action.settings.joy_sticks:
-            new_widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../action/UIs/hardware_tab.ui"))
+            new_widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../action/ui/hardware_tab.ui"))
             device_title = self.module_action.add_a_joystick(new_widget, joystick_settings=joystick_settings)
             new_widget.groupBox.setTitle(device_title)
             self.module_widget.hardware_list_layout.addWidget(new_widget)
+
+        for sensodrive_settings in self.module_action.settings.sensodrives:
+            new_widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../action/ui/hardware_tab_sensodrive.ui"))
+            device_title = self.module_action.add_a_sensodrive(new_widget, sensodrive_settings=sensodrive_settings)
+            new_widget.groupBox.setTitle(device_title)
+            self.module_widget.hardware_list_layout.addWidget(new_widget)
+
