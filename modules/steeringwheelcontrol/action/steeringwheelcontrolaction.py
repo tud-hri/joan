@@ -61,6 +61,15 @@ class SteeringWheelControlAction(JoanModuleAction):
         """
         This function is called before the module is started
         """
+        try:
+            self.module_state_handler.request_state_change(SteeringWheelControlStates.INIT.INITIALIZING)
+            # Initialize the module here
+
+            self.module_state_handler.request_state_change(SteeringWheelControlStates.EXEC.READY)
+
+        except RuntimeError:
+            return False
+        return super().initialize()
 
     def add_controller(self, controller_type: SWContollerTypes):
         self._controllers[controller_type] = controller_type.klass(self)

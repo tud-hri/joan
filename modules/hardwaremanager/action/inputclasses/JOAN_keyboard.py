@@ -125,6 +125,9 @@ class JOAN_Keyboard(BaseInput):
         keyboard.hook(self.key_event, False)
         self._open_settings_dialog()
 
+    def initialize(self):
+        print('initializing keyboard')
+
     def remove_func(self):
         self.remove_tab(self._keyboard_tab)
 

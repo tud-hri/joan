@@ -52,8 +52,16 @@ class HardwaremanagerAction(JoanModuleAction):
         """
         This function is called before the module is started
         """
+
         try:
             self.module_state_handler.request_state_change(HardwaremanagerStates.INIT.INITIALIZING)
+            #doe shit
+            if len(self.input_devices_classes) != 0:
+                for input_device in self.input_devices_classes:
+                    self.input_devices_classes[input_device].initialize()
+                self.module_state_handler.request_state_change(HardwaremanagerStates.EXEC.READY)
+            else:
+                self.module_state_handler.request_state_change(HardwaremanagerStates.ERROR.INIT)
         except RuntimeError:
             return False
         return super().initialize()
