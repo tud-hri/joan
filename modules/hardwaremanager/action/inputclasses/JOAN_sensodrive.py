@@ -58,7 +58,6 @@ class JOAN_SensoDrive(BaseInput):
     def __init__(self, hardware_manager_action, sensodrive_tab, settings: SensoDriveSettings):
         super().__init__(hardware_manager_action)
 
-
         self.currentInput = 'SensoDrive'
         self._sensodrive_tab = sensodrive_tab
         self.settings = settings
@@ -135,8 +134,6 @@ class JOAN_SensoDrive(BaseInput):
             self.response = self.PCAN_object.Read(self.PCAN_channel)
         except Exception as inst:
             print(inst, 'probably not initialized yet')
-
-
 
     def initialize(self):
         # Convert integers to bytes:
@@ -316,7 +313,6 @@ class JOAN_SensoDrive(BaseInput):
                 self._data['ThrottleInput'] = (int.from_bytes(received[1].DATA[2:4], byteorder ='little')-1100)/2460 * 100
                 self._data['BrakeInput'] = (int.from_bytes(received[1].DATA[4:6], byteorder = 'little')-1)/500 * 100
 
-
             if(received2[1].ID == 0x211):
                 Increments = int.from_bytes(received2[1].DATA[0:4],byteorder = 'little',signed = True)
                 Angle = round(Increments * 0.009,4)
@@ -331,7 +327,6 @@ class JOAN_SensoDrive(BaseInput):
                 self._data['BrakeInput'] = (int.from_bytes(received2[1].DATA[4:6], byteorder = 'little')-1)/500 * 100
                 #self._data['Clut'] = int.from_bytes(result[1].DATA[6:], byteorder = 'little')
 
-
             if(received3[1].ID == 0x211):
                 Increments = int.from_bytes(received3[1].DATA[0:4],byteorder = 'little',signed = True)
                 Angle = round(Increments * 0.009,4)
@@ -344,7 +339,6 @@ class JOAN_SensoDrive(BaseInput):
             elif(received3[1].ID == 0x21C):
                 self._data['ThrottleInput'] = (int.from_bytes(received3[1].DATA[2:4], byteorder ='little')-1100)/2460 * 100
                 self._data['BrakeInput'] = (int.from_bytes(received3[1].DATA[4:6], byteorder = 'little')-1)/500 * 100
-
 
         if(self._current_state_hex == 0x18):
             self._sensodrive_tab.btn_on_off.setStyleSheet("background-color: red")
