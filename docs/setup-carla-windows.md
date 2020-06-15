@@ -190,6 +190,7 @@ Essentially the steps here are exactly the same as the PythonAPI build, however 
 !!! Note
     If you do not see this option of 'Generate Visual Studio Project Files', you probably have not selected the right engine version. Try and run the 'UnrealSelectEngine' version in: `C:\Program Files\Epic Games\UE_4.24\Engine\Binaries\Win64`
     If this program is not present it is possible it is located in: `C:\Program Files (x86)\Epic Games\Launcher\Engine\Binaries\Win64`. Just copy the 'UnrealSelectEngine' program to the first mentioned folder. It should now associate the engine with Visual Studio.
+     It is possible with newer versions of the unreal engine (unreal 4.24 has versions itself), the UnrealSelectEngine program does not exist, then please look for 'UnrealVersionSelector' it is possible that this one does exist.
 
 Now open a "x64 Native Tools Command Prompt for VS 2017" the same way as in step 4, go to the CARLA folder and run the following command:
 
