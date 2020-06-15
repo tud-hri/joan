@@ -10,8 +10,10 @@ from modules.joanmodules import JOANModules
 class HardWareManagerSettings(JoanModuleSettings):
     def __init__(self, module_enum: JOANModules):
         super().__init__(module_enum)
+
         self.key_boards = []
         self.joy_sticks = []
+        self.sensodrives = []
 
     def set_from_loaded_dict(self, loaded_dict):
         """
@@ -42,6 +44,54 @@ class HardWareManagerSettings(JoanModuleSettings):
             joystick_settings = JoyStickSettings()
             joystick_settings.set_from_loaded_dict(joystick_settings_dict)
             self.joy_sticks.append(joystick_settings)
+
+        self.sensodrives = []
+        for sensodrive in module_settings_to_load['sensodrives']:
+            sensodrive_settings = SensoDriveSettings()
+            sensodrive_settings.set_from_loaded_dict(sensodrive)
+            self.sensodrives.append(sensodrive_settings)
+
+    @staticmethod
+    def _copy_dict(source, destination):
+        for key, value in source.items():
+            if isinstance(value, list):
+                destination[key] = HardWareManagerSettings._copy_list(value)
+            elif isinstance(value, dict):
+                try:
+                    destination[key]  # make sure that the destination dict has an entry at key
+                except KeyError:
+                    destination[key] = dict()
+                HardWareManagerSettings._copy_dict(value, destination[key])
+            elif hasattr(value, '__dict__') and not isinstance(value, Enum) and not inspect.isclass(value):
+                # recognize custom class object by checking if these have a __dict__, Enums and static classes should be copied as a whole
+                # convert custom classes to dictionaries
+                try:
+                    # make use of the as_dict function is it exists
+                    destination[key] = value.as_dict()
+                except NotImplementedError:
+                    destination[key] = dict()
+                    HardWareManagerSettings._copy_dict(value.__dict__, destination[key])
+            else:
+                destination[key] = source[key]
+
+    @staticmethod
+    def _copy_list(source):
+        output_list = []
+        for index, item in enumerate(source):
+            if isinstance(item, list):
+                output_list.append(HardWareManagerSettings._copy_list(item))
+            elif hasattr(item, '__dict__') and not isinstance(item, Enum) and not inspect.isclass(item):
+                # recognize custom class object by checking if these have a __dict__, Enums and static classes should be copied as a whole
+                # convert custom classes to dictionaries
+                try:
+                    # make use of the as_dict function is it exists
+                    output_list.append(item.as_dict())
+                except NotImplementedError:
+                    output_list.append(dict())
+                    HardWareManagerSettings._copy_dict(item.__dict__, output_list[index])
+            else:
+                output_list.append(item)
+        return output_list
 
 
 class KeyBoardSettings:
@@ -79,6 +129,66 @@ class JoyStickSettings:
         self.max_steer = 90
         self.device_vendor_id = 0
         self.device_product_id = 0
+
+        self.degrees_of_freedom = 12
+        self.gas_channel = 9
+        self.use_separate_brake_channel = False
+        self.brake_channel = -1
+        self.first_steer_channel = 0
+        self.use_double_steering_resolution = True
+        self.second_steer_channel = 1
+        self.hand_brake_channel = 10
+        self.hand_brake_value = 2
+        self.reverse_channel = 10
+        self.reverse_value = 8
+
+    def as_dict(self):
+        return self.__dict__
+
+    def set_from_loaded_dict(self, loaded_dict):
+        for key, value in loaded_dict.items():
+            self.__setattr__(key, value)
+
+    @staticmethod
+    def get_preset_settings(device='default'):
+        settings_to_return = JoyStickSettings()
+
+        if device == 'xbox':
+            settings_to_return.degrees_of_freedom = 12
+            settings_to_return.gas_channel = 9
+            settings_to_return.use_separate_brake_channel = False
+            settings_to_return.brake_channel = -1
+            settings_to_return.first_steer_channel = 0
+            settings_to_return.use_double_steering_resolution = True
+            settings_to_return.second_steer_channel = 1
+            settings_to_return.hand_brake_channel = 10
+            settings_to_return.hand_brake_value = 2
+            settings_to_return.reverse_channel = 10
+            settings_to_return.reverse_value = 8
+        elif device == 'playstation':
+            settings_to_return.degrees_of_freedom = 12
+            settings_to_return.gas_channel = 9
+            settings_to_return.use_separate_brake_channel = True
+            settings_to_return.brake_channel = 8
+            settings_to_return.first_steer_channel = 1
+            settings_to_return.use_double_steering_resolution = False
+            settings_to_return.second_steer_channel = -1
+            settings_to_return.hand_brake_channel = 5
+            settings_to_return.hand_brake_value = 40
+            settings_to_return.reverse_channel = 6
+            settings_to_return.reverse_value = 10
+
+        return settings_to_return
+
+
+class SensoDriveSettings:
+    def __init__(self):
+        self.endstops = 360  # degrees
+        self.torque_limit_between_endstops = 100  # percent
+        self.torque_limit_beyond_endstops = 100  # percent
+        self.friction = 300  # mNm
+        self.damping = 30  # mNm/rev/min
+        self.spring_stiffness = 20  # mNm/deg
 
     def as_dict(self):
         return self.__dict__

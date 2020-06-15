@@ -144,16 +144,16 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
 
 
         # connect to widgets
-        self._FDCATab.btnUpdate.clicked.connect(self.updateAvailableTrajectoryList)
-        self._FDCATab.comboHCR.currentIndexChanged.connect(self.newHCRSelected)
-        self._FDCATab.btnApply.clicked.connect(self.updateParameters)
-        self._FDCATab.btnReset.clicked.connect(self.resetParameters)
-        self._FDCATab.sliderKloha.valueChanged.connect(self.updateLoHA)
+        self._FDCATab.btnUpdate.clicked.connect(self.update_hcr_trajectory_list)
+        self._FDCATab.cmbbox_hcr_selection.currentIndexChanged.connect(self.newHCRSelected)
+        self._FDCATab.btn_apply.clicked.connect(self.updateParameters)
+        self._FDCATab.btn_reset.clicked.connect(self.resetParameters)
+        self._FDCATab.slider_loha.valueChanged.connect(self.updateLoHA)
 
         #Initialize local Variables
         self._HCR = []
         self._HCRIndex = 0
-        self._t_aheadFF = 0
+        self._t_lookaheadFF = 0
         self._Ky = 0.1
         self._Kpsi = 0.4
         self._LoHS = 1
@@ -161,79 +161,79 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
         self._LoHA = 0
 
         #Set values on widget labels
-        self._FDCATab.lblKyvalue.setText(str(self._Ky))
-        self._FDCATab.lblKpsivalue.setText(str(self._Kpsi))
-        self._FDCATab.lblKlohsvalue.setText(str(self._LoHS))
-        self._FDCATab.lblKsohfvalue.setText(str(self._SoHF))
-        self._FDCATab.lblKlohavalue.setText(str(self._LoHA))
+        self._FDCATab.lbl_k_y.setText(str(self._Ky))
+        self._FDCATab.lbl_k_psi.setText(str(self._Kpsi))
+        self._FDCATab.lbl_lohs.setText(str(self._LoHS))
+        self._FDCATab.lbl_sohf.setText(str(self._SoHF))
+        self._FDCATab.lbl_loha.setText(str(self._LoHA))
         # path to HCR trajectory dir and add to list
-        self._nameCurrentHCR = 'defaultHCRTrajectory.csv'
-        self._pathHCRDirectory = os.path.join(os.path.dirname(os.path.realpath(__file__)),'HCRTrajectories')
+        self._current_hcr_name = 'defaultHCRTrajectory.csv'
+        self._path_hcr_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)),'HCRTrajectories')
         
         try:
             
-            print(self._pathHCRDirectory)
-            self.updateAvailableTrajectoryList()
+            print(self._path_hcr_directory)
+            self.update_hcr_trajectory_list()
             # load a default trajectory first
-            idx = self._FDCATab.comboHCR.findText(self._nameCurrentHCR)
+            idx = self._FDCATab.cmbbox_hcr_selection.findText(self._current_hcr_name)
             if idx < 0:
                 idx = 0 # in case the default trajectory file is not found, load the first one
             
-            self._FDCATab.comboHCR.setCurrentIndex(idx) # this will also trigger the function newHCRSelected
+            self._FDCATab.cmbbox_hcr_selection.setCurrentIndex(idx) # this will also trigger the function newHCRSelected
 
         except Exception as e:
             print('Error loading list of available HCR trajectories: ', e)
 
     def updateLoHA(self):
-        self._LoHA = self._FDCATab.sliderKloha.value()/100
-        self._FDCATab.lblKlohavalue.setText(str(self._LoHA))
+        self._LoHA = self._FDCATab.slider_loha.value()/100
+        self._FDCATab.lbl_loha.setText(str(self._LoHA))
 
     def updateParameters(self):
         try:
-            self._Ky = float(self._FDCATab.lineKy.text())
+            self._Ky = float(self._FDCATab.edit_k_y.text())
         except:
             pass
         try:
-            self._Kpsi = float(self._FDCATab.lineKpsi.text())
+            self._Kpsi = float(self._FDCATab.edit_k_psi.text())
         except:
             pass
         try:
-            self._LoHS = float(self._FDCATab.lineKlohs.text())
+            self._LoHS = float(self._FDCATab.edit_lohs.text())
         except:
             pass
         try:
-            self._SoHF = float(self._FDCATab.lineKsohf.text())
+            self._SoHF = float(self._FDCATab.edit_sohf.text())
         except:
             pass
 
-        self._FDCATab.lblKyvalue.setText(str(self._Ky))
-        self._FDCATab.lblKpsivalue.setText(str(self._Kpsi))
-        self._FDCATab.lblKlohsvalue.setText(str(self._LoHS))
-        self._FDCATab.lblKsohfvalue.setText(str(self._SoHF))
+        self._FDCATab.lbl_k_y.setText(str(self._Ky))
+        self._FDCATab.lbl_k_psi.setText(str(self._Kpsi))
+        self._FDCATab.lbl_lohs.setText(str(self._LoHS))
+        self._FDCATab.lbl_sohf.setText(str(self._SoHF))
 
-        self._FDCATab.lineKy.clear()
-        self._FDCATab.lineKpsi.clear()
-        self._FDCATab.lineKlohs.clear()
-        self._FDCATab.lineKsohf.clear()
+        self._FDCATab.edit_k_y.clear()
+        self._FDCATab.edit_k_psi.clear()
+        self._FDCATab.edit_lohs.clear()
+        self._FDCATab.edit_sohf.clear()
 
     def resetParameters(self):
-        self._FDCATab.lineKy.clear()
-        self._FDCATab.lineKpsi.clear()
-        self._FDCATab.lineKlohs.clear()
-        self._FDCATab.lineKsohf.clear()
+        self._FDCATab.edit_k_y.clear()
+        self._FDCATab.edit_k_psi.clear()
+        self._FDCATab.edit_lohs.clear()
+        self._FDCATab.edit_sohf.clear()
         
         self._Ky = 0.1
         self._Kpsi = 0.4
         self._LoHS = 1
         self._SoHF = 1
-        self._FDCATab.sliderKloha.setValue(0)
+        self._FDCATab.slider_loha.setValue(0)
 
         self.updateParameters()
 
 
-    def updateAvailableTrajectoryList(self):
+    def update_hcr_trajectory_list(self):
         # get list of csv files in directory
-        filenames = os.listdir(self._pathHCRDirectory)
+        filenames = os.listdir(self._path_hcr_directory)
         files = [ filename for filename in filenames if filename.endswith('csv') ]
 
         # os.chdir() # undesired change dir. 
@@ -241,40 +241,40 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
 
 
         # run through the combobox to check for files that are in the list, but not in the directory anymore
-        listitems = [self._FDCATab.comboHCR.itemText(i) for i in range(self._FDCATab.comboHCR.count())]
+        listitems = [self._FDCATab.cmbbox_hcr_selection.itemText(i) for i in range(self._FDCATab.cmbbox_hcr_selection.count())]
         for l in listitems:
             if l not in files:
-                idx = self._FDCATab.comboHCR.findText(l)
+                idx = self._FDCATab.cmbbox_hcr_selection.findText(l)
                 if idx >= 0:
-                    self._FDCATab.comboHCR.removeItem(idx)
+                    self._FDCATab.cmbbox_hcr_selection.removeItem(idx)
 
 
-        # self._FDCATab.comboHCR.clear() # we don't want this for reasons: (1) it resets the currentIndex(), which triggers a reload of a new trajectory, something we don't want to occur 'randomly'
+        # self._FDCATab.cmbbox_hcr_selection.clear() # we don't want this for reasons: (1) it resets the currentIndex(), which triggers a reload of a new trajectory, something we don't want to occur 'randomly'
 
         # add items that are in files but not yet in the combobox
         for fname in files:
-            idx = self._FDCATab.comboHCR.findText(fname)
+            idx = self._FDCATab.cmbbox_hcr_selection.findText(fname)
             if idx < 0:
-                self._FDCATab.comboHCR.addItem(fname)
+                self._FDCATab.cmbbox_hcr_selection.addItem(fname)
     
 
     def newHCRSelected(self):
         # new index selected
 
         # load based on filename, not index. Index can change if we remove items from the combobox list, which could yield undesired loading of HCR trajectories
-        fname = self._FDCATab.comboHCR.itemText(self._FDCATab.comboHCR.currentIndex())
+        fname = self._FDCATab.cmbbox_hcr_selection.itemText(self._FDCATab.cmbbox_hcr_selection.currentIndex())
 
-        if fname != self._nameCurrentHCR:
-            # fname is different from _nameCurrentHCR, load it!
+        if fname != self._current_hcr_name:
+            # fname is different from _current_hcr_name, load it!
             print('Loading HCR trajectory: ' + fname)
 
             try:
-                tmp = pd.read_csv(os.path.join(self._pathHCRDirectory, fname))
+                tmp = pd.read_csv(os.path.join(self._path_hcr_directory, fname))
                 self._HCR = tmp.values
             except Exception as e:
                 print('Error loading HCR trajectory file (newHCRSelected): ', e)
 
-            self._nameCurrentHCR = fname
+            self._current_hcr_name = fname
 
         
     def process(self):
@@ -283,7 +283,7 @@ class FDCAcontrol(Basecontroller): #NOG NIET AF
             print(self._data)
             egoCar = self._data['vehicles'][0].spawned_vehicle
             
-            self._Error = self.Error_Calc(self._t_aheadFF, self._HCR, egoCar)
+            self._Error = self.Error_Calc(self._t_lookaheadFF, self._HCR, egoCar)
             print(self._Error)
 
         # SWAngle_FB = self.SoHFFunc(self.K_y,self.K_psi,self.SoHF,self.Error[0],self.Error[1])
@@ -343,75 +343,75 @@ class PDcontrol(Basecontroller):
         self._parentWidget.widget.tabWidget.addTab(self._PDTab,'PD')
 
         #Attach apply button to variables
-        self._PDTab.btnApply.clicked.connect(self.updateParameters)
-        self._PDTab.btnReset.clicked.connect(self.resetParameters)
+        self._PDTab.btn_apply.clicked.connect(self.updateParameters)
+        self._PDTab.btn_reset.clicked.connect(self.resetParameters)
 
 
         #intialize class variables
         self._T1 = time.time()
         self._T2 = 0
         self._ErrorT2  = [0,0]
-        self._t_ahead = 0.6
+        self._t_lookahead = 0.6
         self._Kp = 8
         self._Kd = 1
         self._Wlat = 1
         self._Whead = 2
         self._defaultHCR = 'defaultHCRTrajectory.csv'
-        self._pathHCRDirectory = os.path.join(os.path.dirname(os.path.realpath(__file__)),'HCRTrajectories')
-        tmp = pd.read_csv(os.path.join(self._pathHCRDirectory, self._defaultHCR))
+        self._path_hcr_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)),'HCRTrajectories')
+        tmp = pd.read_csv(os.path.join(self._path_hcr_directory, self._defaultHCR))
         self._HCR = tmp.values
 
         # Show default values
-        self._PDTab.lblPropgainvalue.setText(str(self._Kp))
-        self._PDTab.lblDerivgainvalue.setText(str(self._Kd))
-        self._PDTab.lblWeightlatvalue.setText(str(self._Wlat))
-        self._PDTab.lblWeightheadingvalue.setText(str(self._Whead))
-        self._PDTab.lblTaheadvalue.setText(str(self._t_ahead))
+        self._PDTab.lbl_current_gain_prop.setText(str(self._Kp))
+        self._PDTab.lbl_current_gain_deriv.setText(str(self._Kd))
+        self._PDTab.lbl_current_weight_lat.setText(str(self._Wlat))
+        self._PDTab.lbl_current_weight_heading.setText(str(self._Whead))
+        self._PDTab.lbl_current_t_lookahead.setText(str(self._t_lookahead))
         
         
     def updateParameters(self):
         try:
-            self._Kp = float(self._PDTab.linePropgain.text())
+            self._Kp = float(self._PDTab.edit_gain_prop.text())
         except:
             pass
         try:
-            self._Kd = float(self._PDTab.lineDerivgain.text())
+            self._Kd = float(self._PDTab.edit_gain_deriv.text())
         except:
             pass
         try:
-            self._Wlat = float(self._PDTab.lineWeightlat.text())
+            self._Wlat = float(self._PDTab.edit_weight_lat.text())
         except:
             pass
         try:
-            self._Whead = float(self._PDTab.lineWeightheading.text())
+            self._Whead = float(self._PDTab.edit_weight_heading.text())
         except:
             pass
         try:
-            self._t_ahead = float(self._PDTab.lineTahead.text())
+            self._t_lookahead = float(self._PDTab.edit_t_ahead.text())
         except:
             pass
        
 
-        self._PDTab.lblPropgainvalue.setText(str(self._Kp))
-        self._PDTab.lblDerivgainvalue.setText(str(self._Kd))
-        self._PDTab.lblWeightlatvalue.setText(str(self._Wlat))
-        self._PDTab.lblWeightheadingvalue.setText(str(self._Whead))
-        self._PDTab.lblTaheadvalue.setText(str(self._t_ahead))
+        self._PDTab.lbl_current_gain_prop.setText(str(self._Kp))
+        self._PDTab.lbl_current_gain_deriv.setText(str(self._Kd))
+        self._PDTab.lbl_current_weight_lat.setText(str(self._Wlat))
+        self._PDTab.lbl_current_weight_heading.setText(str(self._Whead))
+        self._PDTab.lbl_current_t_lookahead.setText(str(self._t_lookahead))
 
-        self._PDTab.linePropgain.clear()
-        self._PDTab.lineDerivgain.clear()
-        self._PDTab.lineWeightlat.clear()
-        self._PDTab.lineWeightheading.clear()
-        self._PDTab.lineTahead.clear()
+        self._PDTab.edit_gain_prop.clear()
+        self._PDTab.edit_gain_deriv.clear()
+        self._PDTab.edit_weight_lat.clear()
+        self._PDTab.edit_weight_heading.clear()
+        self._PDTab.edit_t_ahead.clear()
 
     def resetParameters(self):
-        self._PDTab.linePropgain.clear()
-        self._PDTab.lineDerivgain.clear()
-        self._PDTab.lineWeightlat.clear()
-        self._PDTab.lineWeightheading.clear()
-        self._PDTab.lineTahead.clear()
+        self._PDTab.edit_gain_prop.clear()
+        self._PDTab.edit_gain_deriv.clear()
+        self._PDTab.edit_weight_lat.clear()
+        self._PDTab.edit_weight_heading.clear()
+        self._PDTab.edit_t_ahead.clear()
 
-        self._t_ahead = 0.6
+        self._t_lookahead = 0.6
         self._Kp = 8
         self._Kd = 1
         self._Wlat = 1
@@ -425,7 +425,7 @@ class PDcontrol(Basecontroller):
             self._data= self._parentWidget.read_news(JOANModules.CARLA_INTERFACE)
             egoCar = self._data['egoCar']
             self._T1 = time.time()
-            self._Error = self.Error_Calc(self._t_ahead, self._HCR, egoCar)
+            self._Error = self.Error_Calc(self._t_lookahead, self._HCR, egoCar)
             DeltaT = self._T1 - self._T2
             DeltaError = self._Error - self._ErrorT2
             SWangle = self.PD(self._Error, DeltaError, DeltaT, self._Wlat, self._Whead, self._Kp, self._Kd)

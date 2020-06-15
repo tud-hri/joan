@@ -26,10 +26,10 @@ try:
 
 except IndexError:
     msg_box.setText("""
-                <h2> Could not find the carla python API! </h2>
-                <h2> Check whether you copied the egg file correctly, reference:
+                <h3> Could not find the carla python API! </h3>
+                <h3> Check whether you copied the egg file correctly, reference:
             <a href=\"https://joan.readthedocs.io/en/latest/setup-run-joan/#getting-necessary-python3-libraries-to-run-joan\">https://joan.readthedocs.io/en/latest/setup-run-joan/#getting-necessary-python3-libraries-to-run-joan</a>
-            </h2>
+            </h3>
             """)
     msg_box.exec()
     pass
@@ -43,7 +43,7 @@ class CarlainterfaceAction(JoanModuleAction):
         self.module_state_handler.request_state_change(CarlainterfaceStates.INIT.INITIALIZING)
         self.data = {}
         self.data['vehicles'] = None
-        self.data['t'] = -1
+        self.data['connected'] = False
         self.write_news(news=self.data)
         self.time = QtCore.QTime()
         self._data_from_hardware = {}
@@ -79,7 +79,6 @@ class CarlainterfaceAction(JoanModuleAction):
         This function is called every controller tick of this module implement your main calculations here
         """
         self.data['vehicles'] = self.vehicles
-        self.data['t'] = self.time.elapsed()
         self.write_news(news=self.data)
 
         self._data_from_hardware = self.read_news(JOANModules.HARDWARE_MANAGER)
@@ -118,6 +117,10 @@ class CarlainterfaceAction(JoanModuleAction):
                     self.msg.exec()
                     self.connected = False
                     self.module_state_handler.request_state_change(CarlainterfaceStates.ERROR)
+
+                self.data['connected'] = self.connected
+                self.write_news(news=self.data)
+
             else:
                 self.msg.setText('Already Connected')
                 self.msg.exec()
@@ -136,6 +139,8 @@ class CarlainterfaceAction(JoanModuleAction):
             self.client = None
             self._world = None
             self.connected = False
+            self.data['connected'] = self.connected
+            self.write_news(news=self.data)
 
             self.module_state_handler.request_state_change(CarlainterfaceStates.EXEC.STOPPED)
 
@@ -156,10 +161,16 @@ class CarlainterfaceAction(JoanModuleAction):
         """
         This function is called before the module is started
         """
+
         try:
             self.module_state_handler.request_state_change(CarlainterfaceStates.INIT.INITIALIZING)
+            # Initialize the module here
+
+            #self.module_state_handler.request_state_change(CarlainterfaceStates.EXEC.READY)
+
         except RuntimeError:
             return False
+        return super().initialize()
 
     def start(self):
         try:
@@ -186,6 +197,7 @@ class Carlavehicle():
         self._vehicle_tab.group_car.setTitle('Car ' + str(carnr+1))
         self._spawned = False
         self._hardware_data = {}
+        self._vehicle_nr = 'Car ' + str(carnr+1)
 
         self._vehicle_tab.spin_spawn_points.setRange(0, nr_spawn_points)
         self._vehicle_tab.spin_spawn_points.lineEdit().setReadOnly(True)
@@ -214,6 +226,11 @@ class Carlavehicle():
     @property
     def vehicle_id(self):
         return self._BP.id
+
+    @property
+    def vehicle_nr(self):
+        return self._vehicle_nr
+
 
     def update_input(self):
         self._selected_input = self._vehicle_tab.combo_input.currentText()
@@ -247,6 +264,7 @@ class Carlavehicle():
             self._vehicle_tab.spin_spawn_points.setEnabled(True)
             self._spawned = False
 
+
     def destroy_car(self):
         try:
             self._spawned = False
@@ -261,6 +279,8 @@ class Carlavehicle():
             self._vehicle_tab.btn_spawn.setEnabled(False)
             self._vehicle_tab.btn_destroy.setEnabled(True)
             self._vehicle_tab.spin_spawn_points.setEnabled(False)
+
+        
 
     def apply_control(self, data):
         if self._selected_input != 'None':

@@ -22,6 +22,7 @@ class JOANModules(enum.Enum):
     def action(self):
         from modules.template.action.templateaction import TemplateAction
         from modules.datarecorder.action.datarecorderaction import DatarecorderAction
+        from modules.steeringwheelcontrol.action.steeringwheelcontrolaction import SteeringWheelControlAction
         from modules.hardwaremanager.action.hardwaremanageraction import HardwaremanagerAction
         from modules.carlainterface.action.carlainterfaceaction import CarlainterfaceAction
         from modules.experimentmanager.action.experimentmanageraction import ExperimentManagerAction
@@ -30,6 +31,7 @@ class JOANModules(enum.Enum):
         
         return {JOANModules.TEMPLATE: TemplateAction,
                 JOANModules.DATA_RECORDER: DatarecorderAction,
+                JOANModules.STEERING_WHEEL_CONTROL: SteeringWheelControlAction,
                 JOANModules.HARDWARE_MANAGER: HardwaremanagerAction,
                 JOANModules.CARLA_INTERFACE: CarlainterfaceAction,
                 JOANModules.EXPERIMENT_MANAGER: ExperimentManagerAction}[self]
@@ -40,6 +42,8 @@ class JOANModules(enum.Enum):
     def dialog(self):
         from modules.template.dialog.templatedialog import TemplateDialog
         from modules.datarecorder.dialog.datarecorderdialog import DatarecorderDialog
+        from modules.steeringwheelcontrol.dialog.steeringwheelcontroldialog import SteeringWheelControlDialog
+        from modules.trajectoryrecorder.widget.trajectoryrecorder import TrajectoryrecorderWidget
         from modules.hardwaremanager.dialog.hardwaremanagerdialog import HardwaremanagerDialog
         from modules.carlainterface.dialog.carlainterfacedialog import CarlainterfaceDialog
         from modules.experimentmanager.dialog.experimentmanagerdialog import ExperimentManagerDialog
@@ -48,6 +52,7 @@ class JOANModules(enum.Enum):
         
         return {JOANModules.TEMPLATE: TemplateDialog,
                 JOANModules.DATA_RECORDER: DatarecorderDialog,
+                JOANModules.STEERING_WHEEL_CONTROL: SteeringWheelControlDialog,
                 JOANModules.HARDWARE_MANAGER: HardwaremanagerDialog,
                 JOANModules.CARLA_INTERFACE: CarlainterfaceDialog,
                 JOANModules.EXPERIMENT_MANAGER: ExperimentManagerDialog}[self]
@@ -58,6 +63,7 @@ class JOANModules(enum.Enum):
     def states(self):
         from modules.template.action.states import TemplateStates
         from modules.datarecorder.action.states import DatarecorderStates
+        from modules.trajectoryrecorder.action.states import TrajectoryrecorderStates
         from modules.hardwaremanager.action.states import HardwaremanagerStates
         from modules.carlainterface.action.states import CarlainterfaceStates
         from modules.experimentmanager.action.states import ExperimentManagerStates
@@ -66,6 +72,8 @@ class JOANModules(enum.Enum):
         
         return {JOANModules.TEMPLATE: TemplateStates,
                 JOANModules.DATA_RECORDER: DatarecorderStates,
+                JOANModules.STEERING_WHEEL_CONTROL: SteeringWheelControlStates,
+                JOANModules.TRAJECTORY_RECORDER: TrajectoryrecorderStates,
                 JOANModules.HARDWARE_MANAGER: HardwaremanagerStates,
                 JOANModules.CARLA_INTERFACE: CarlainterfaceStates,
                 JOANModules.EXPERIMENT_MANAGER: ExperimentManagerStates}[self]
@@ -86,6 +94,7 @@ class JOANModules(enum.Enum):
     def __str__(self):
         return {JOANModules.TEMPLATE: 'Template',
                 JOANModules.DATA_RECORDER: 'Data Recorder',
+                JOANModules.STEERING_WHEEL_CONTROL: 'Steering Wheel Control',
                 JOANModules.HARDWARE_MANAGER: 'Hardware Communication',
                 JOANModules.CARLA_INTERFACE: 'Carla Interface',
                 JOANModules.EXPERIMENT_MANAGER: 'Experiment Manager'}[self]

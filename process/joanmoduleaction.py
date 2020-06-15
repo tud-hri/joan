@@ -14,6 +14,8 @@ class JoanModuleAction(QtCore.QObject):
         # def __init__(self, module: JOANModules, master_state_handler, millis=100):
         super(QtCore.QObject, self).__init__()
 
+        self.module_dialog = None
+
         self._millis = millis
         self._performance_monitor_enabled = enable_performance_monitor
         self.time_of_last_tick = time.time_ns() / 10 ** 6

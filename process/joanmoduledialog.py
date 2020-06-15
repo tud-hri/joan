@@ -49,6 +49,9 @@ class JoanModuleDialog(QtWidgets.QDialog):
         self.layout().addWidget(self.state_widget)
         self.state_widget.btn_start.clicked.connect(self._button_start_clicked)
         self.state_widget.btn_stop.clicked.connect(self._button_stop_clicked)
+        self.state_widget.btn_initialize.clicked.connect(self._button_initialize_clicked)
+        self.state_widget.btn_start.setEnabled(False)
+        self.state_widget.btn_stop.setEnabled(False)
         self.state_widget.input_tick_millis.setValidator(QtGui.QIntValidator(0, 10000, parent=self))
         self.state_widget.input_tick_millis.setPlaceholderText(str(self.module_action.millis))
         self.state_widget.input_tick_millis.textChanged.connect(self._set_millis)
@@ -74,6 +77,13 @@ class JoanModuleDialog(QtWidgets.QDialog):
         self.state_widget.input_tick_millis.setEnabled(True)
         self.state_widget.input_tick_millis.clear()
         self.state_widget.input_tick_millis.setPlaceholderText(str(self.module_action.millis))
+
+    def _button_initialize_clicked(self):
+        self.module_action.initialize()
+        self.state_widget.input_tick_millis.setEnabled(True)
+        self.state_widget.input_tick_millis.clear()
+        self.state_widget.input_tick_millis.setPlaceholderText(str(self.module_action.millis))
+
 
     @QtCore.pyqtSlot(str)
     def _set_millis(self, millis):
@@ -121,7 +131,7 @@ class JoanModuleDialog(QtWidgets.QDialog):
 
         # update the state label
         self.state_widget.lbl_module_state.setText(str(state_as_state.name))
-        
+
         if state_as_state is self.module_action.module_states.EXEC.RUNNING:
             self.state_widget.lbl_module_state.setStyleSheet("background: green;")
         elif state_as_state is self.module_action.module_states.EXEC.STOPPED:
@@ -134,9 +144,19 @@ class JoanModuleDialog(QtWidgets.QDialog):
         if state_as_state == self.module_action.module_states.EXEC.READY:
             self.state_widget.btn_start.setEnabled(True)
             self.state_widget.btn_stop.setEnabled(False)
-        else:
+            self.state_widget.btn_initialize.setEnabled(False)
+        elif state_as_state == self.module_action.module_states.EXEC.RUNNING:
             self.state_widget.btn_start.setEnabled(False)
+            self.state_widget.btn_initialize.setEnabled(False)
             self.state_widget.btn_stop.setEnabled(True)
+        elif state_as_state == self.module_action.module_states.EXEC.STOPPED:
+            self.state_widget.btn_start.setEnabled(False)
+            self.state_widget.btn_initialize.setEnabled(True)
+            self.state_widget.btn_stop.setEnabled(False)
+        elif 400 <= state_as_state.nr < 500:  # an Error state
+            self.state_widget.btn_start.setEnabled(False)
+            self.state_widget.btn_initialize.setEnabled(True)
+            self.state_widget.btn_stop.setEnabled(False)
 
         # If module is running change button color
         if state_as_state == self.module_action.module_states.EXEC.RUNNING:

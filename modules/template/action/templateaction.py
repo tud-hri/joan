@@ -20,10 +20,11 @@ from modules.hardwaremanager.action.states import HardwaremanagerStates
 
 class TemplateAction(JoanModuleAction):
     """Example JOAN module"""
+
     def __init__(self, millis=100):
         super().__init__(module=JOANModules.TEMPLATE, millis=millis)
-    #def __init__(self, master_state_handler, millis=100):
-    #    super().__init__(module=JOANModules.TEMPLATE, master_state_handler=master_state_handler, millis=millis)
+        # def __init__(self, master_state_handler, millis=100):
+        #    super().__init__(module=JOANModules.TEMPLATE, master_state_handler=master_state_handler, millis=millis)
 
         # The modules work with states.
         # Each JOAN module has its own state machine that can be customized by adding module specific transition conditions
@@ -56,7 +57,7 @@ class TemplateAction(JoanModuleAction):
 
         # start settings for this module
         # each module has its own settings, which are stored in a .json file (e.g. template_settings.json)
-        # To create settings for your costum module create a settings class and enherit JOANMOduleSetting, as in the example TempleSettings
+        # To create settings for your custom module create a settings class and enherit JOANMOduleSetting, as in the example TempleSettings
         # All attributes you add to your settings class will automatically be save if you call setting.save_to_file
         # when loading setting, all attribute in the JSON file are copied, but missing values will keep their default value as defined in your setting class
 
@@ -101,6 +102,15 @@ class TemplateAction(JoanModuleAction):
         # This is done during the initialization to prevent settings from changing while the module is running. This does mean that the module needs to be
         # reinitialised every time the settings are changed.
         self.millis = self.settings.millis
+        try:
+            self.module_state_handler.request_state_change(TemplateStates.INIT.INITIALIZING)
+            # Initialize the module here
+
+            self.module_state_handler.request_state_change(TemplateStates.EXEC.READY)
+
+        except RuntimeError:
+            return False
+        return super().initialize()
 
         self.state_machine.request_state_change(State.READY, "Now you may start ...")
         #self.state_machine.request_state_change(target_state=State.READY)
