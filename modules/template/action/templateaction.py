@@ -40,11 +40,13 @@ class TemplateAction(JoanModuleAction):
         self.state_machine.set_entry_action(State.RUNNING, lambda: print('Template is starting.'))
         self.state_machine.set_exit_action(State.RUNNING, self._clean_up_after_run)
 
+
         # Finally it is also possible to define automatic state changes. If state A is entered and the transition to state B is immediately legal, the state
         # machine will automatically progress to state B. It is possible to define one automatic state change per state, except for the Error state. It is
         # illegal to automatically leave the Error state for safety reasons. Not that state A wil not be skipped, but exited automatically. So the state changes
         # are subject to all normal conditions and entry and exit actions.
         self.state_machine.set_automatic_transition(State.IDLE, State.READY)
+
 
         # start news for the datarecorder.
         # here, we are added a variable called 'datawriter output' to this modules News. 
@@ -90,6 +92,7 @@ class TemplateAction(JoanModuleAction):
         # in this template example, we update the 'datawriter output' news with the elapsed time.
         self.data['datawriter output'] = self.time.elapsed()
 
+
         # and we write the news (actually update the news), such that all the other modules get the latest value of 'datawriter output'
         self.write_news(news=self.data)
 
@@ -102,7 +105,10 @@ class TemplateAction(JoanModuleAction):
         # reinitialised every time the settings are changed.
         self.millis = self.settings.millis
 
-        self.state_machine.request_state_change(State.READY, "Now you may start ...")
+        if (self.state_machine.current_state is State.IDLE):
+            self.state_machine.request_state_change(State.READY, "You can now start the module")
+        elif (self.state_machine.current_state is State.ERROR):
+            self.state_machine.request_state_change(State.IDLE)
         return super().initialize()
 
     def start(self):
