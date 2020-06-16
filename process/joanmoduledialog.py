@@ -28,10 +28,11 @@ class JoanModuleDialog(QtWidgets.QDialog):
         #self.master_states = self.singleton_status._master_states
         #self.master_state_handler.state_changed.connect(self.handle_master_state)
 
-        if module is not JOANModules.TEMPLATE:  # TODO: remove this old style
-            self.module_action.module_state_handler.state_changed.connect(self.handle_module_state)
-        else:
-            self.module_action.state_machine.add_state_change_listener(self.handle_state_change)
+        # if module is not JOANModules.TEMPLATE:  # TODO: remove this old style
+        #     self.module_action.module_state_handler.state_changed.connect(self.handle_module_state)
+        # else:
+        #
+        self.module_action.state_machine.add_state_change_listener(self.handle_state_change)
         #self.module_action.master_state_handler.state_changed.connect(self.handle_master_state)
         #self.master_state_handler = master_state_handler
 
@@ -107,18 +108,31 @@ class JoanModuleDialog(QtWidgets.QDialog):
 
         if current_state == State.READY:
             self.state_widget.btn_start.setEnabled(True)
-            self.state_widget.btn_stop.setEnabled(False)
         else:
             self.state_widget.btn_start.setEnabled(False)
+
+        if current_state == State.IDLE or current_state == State.ERROR:
+            self.state_widget.btn_initialize.setEnabled(True)
+        else:
+            self.state_widget.btn_initialize.setEnabled(False)
+
+        if current_state == State.RUNNING:
             self.state_widget.btn_stop.setEnabled(True)
+        else:
+            self.state_widget.btn_stop.setEnabled(False)
 
         # If module is running change button color
         if current_state == State.RUNNING:
             self.state_widget.btn_start.setStyleSheet("background-color: lightgreen")
             self.state_widget.btn_start.setText('Running')
             # self.state_widget.btn_start.setEnabled(False)
+        elif current_state == State.ERROR:
+            self.state_widget.btn_initialize.setStyleSheet("background-color: orange")
+            self.state_widget.btn_initialize.setText('Clear Error')
         else:
             self.state_widget.btn_start.setStyleSheet("background-color: none")
+            self.state_widget.btn_initialize.setStyleSheet("background-color: none")
+            self.state_widget.btn_initialize.setText('Initialize')
             self.state_widget.btn_start.setText('Start')
             # self.state_widget.btn_start.setEnabled(True)
 
