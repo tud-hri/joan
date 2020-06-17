@@ -50,18 +50,12 @@ class JOANModules(enum.Enum):
 
     @property
     def states(self):
-        from modules.template.action.states import TemplateStates
         from modules.datarecorder.action.states import DatarecorderStates
-        from modules.hardwaremanager.action.states import HardwaremanagerStates
-        from modules.carlainterface.action.states import CarlainterfaceStates
         from modules.experimentmanager.action.states import ExperimentManagerStates
         from modules.steeringwheelcontrol.action.states import SteeringWheelControlStates
         
-        return {JOANModules.TEMPLATE: TemplateStates,
-                JOANModules.DATA_RECORDER: DatarecorderStates,
+        return {JOANModules.DATA_RECORDER: DatarecorderStates,
                 JOANModules.STEERING_WHEEL_CONTROL: SteeringWheelControlStates,
-                JOANModules.HARDWARE_MANAGER: HardwaremanagerStates,
-                JOANModules.CARLA_INTERFACE: CarlainterfaceStates,
                 JOANModules.EXPERIMENT_MANAGER: ExperimentManagerStates}[self]
 
     @property

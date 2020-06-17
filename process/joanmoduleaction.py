@@ -38,7 +38,7 @@ class JoanModuleAction(QtCore.QObject):
 
         # initialize state machine
         self.state_machine = StateMachine(module)
-        self.singleton_status.update_state(module, self.state_machine)
+        self.singleton_status.update_state_machine(module, self.state_machine)
 
         # initialize own data and create channel in news
         self.data = {}

@@ -2,7 +2,6 @@ import os
 
 from PyQt5 import uic, QtWidgets, QtGui, QtCore
 
-from modules.hardwaremanager.action.states import HardwaremanagerStates
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
 from process.joanmoduledialog import JoanModuleDialog
