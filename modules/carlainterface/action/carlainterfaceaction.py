@@ -81,20 +81,6 @@ class CarlainterfaceAction(JoanModuleAction):
     def spawnpoints(self):
         return self._spawn_points
 
-    def _starting_condition(self):
-        try:
-            if self.connected is True:
-                # if hardware_manager_status == State.RUNNING:
-                #     return True, ''
-                # else:
-                #
-                #     return False, 'Hardware manager not running'
-                return True, ''
-            else:
-                return False, 'Carla is not connected!'
-        except KeyError:
-            return False, 'Could not check whether carla is connected'
-
     def _hardware_state_change_listener(self):
         " This function is linked to the state change of the hardware manager and updates the state whenever it changes"
 
@@ -102,6 +88,16 @@ class CarlainterfaceAction(JoanModuleAction):
 
         for vehicle in self.vehicles:
             vehicle.get_available_inputs()
+
+    def _starting_condition(self):
+        try:
+            if self.connected is True:
+
+                return True, ''
+            else:
+                return False, 'Carla is not connected!'
+        except KeyError:
+            return False, 'Could not check whether carla is connected'
 
 
     def _init_condition(self):
@@ -233,21 +229,17 @@ class CarlainterfaceAction(JoanModuleAction):
 
     def start(self):
         try:
-            if self.hardware_manager_state == State.RUNNING:
-                self.state_machine.request_state_change(State.RUNNING,"Carla interface Running")
-                self.time.restart()
-                return super().start()
-            else:
-                self.state_machine.request_state_change(State.READY, "Could not start, hw manager not running try again")
+            self.state_machine.request_state_change(State.RUNNING,"Carla interface Running")
+            self.time.restart()
+            return super().start()
 
-                return
         except RuntimeError:
             return False
 
 
     def stop(self):
         try:
-            self.state_machine.request_state_change(State.READY, "You can now add vehicles and start the module IF HW_MANAGER IS RUNNING!!")
+            self.state_machine.request_state_change(State.READY, "You can now add vehicles and start the module")
         except RuntimeError:
             return False
         return super().stop()
