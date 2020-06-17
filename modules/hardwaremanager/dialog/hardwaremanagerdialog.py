@@ -93,6 +93,8 @@ class HardwaremanagerDialog(JoanModuleDialog):
         else:
             self.module_action.state_machine.request_state_change(State.ERROR, 'Currently only 1 sensodrive is supported')
 
+        self.module_action._state_change_listener()
+
     def initialize_widgets_from_settings(self):
         for keyboard_settings in self.module_action.settings.key_boards:
             new_widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../action/ui/hardware_tab.ui"))

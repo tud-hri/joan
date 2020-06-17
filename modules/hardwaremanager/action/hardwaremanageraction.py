@@ -38,6 +38,9 @@ class HardwaremanagerAction(JoanModuleAction):
 
     def _state_change_listener(self):
         for inputs in self.input_devices_classes:
+            self.data[inputs] = self.input_devices_classes[inputs].process()
+
+        for inputs in self.input_devices_classes:
             if self.state_machine.current_state == State.READY or self.state_machine.current_state == State.IDLE:
                 self.input_devices_classes[inputs].enable_remove_button()
             else:
@@ -54,11 +57,13 @@ class HardwaremanagerAction(JoanModuleAction):
         self.carla_interface_status = self.status.get_module_current_state(JOANModules.CARLA_INTERFACE)
 
         for inputs in self.input_devices_classes:
+            self.data[inputs] = self.input_devices_classes[inputs].process()
             if 'SensoDrive' in inputs:
                     self.input_devices_classes[inputs]._toggle_on_off(self.carla_interface_data['connected'])
 
 
         self.write_news(self.data)
+
 
     def initialize(self):
         """

@@ -103,6 +103,14 @@ class JOAN_SensoDrive(BaseInput):
         self.settings_dialog = SensoDriveSettingsDialog(self.settings)
         self.settings_dialog.accepted.connect(self.update_settings)
 
+        self.steering_wheel_parameters['torque'] = 0  # (You dont want to start to turn the wheel at startup)
+        self.steering_wheel_parameters['friction'] = self.settings.friction
+        self.steering_wheel_parameters['damping'] = self.settings.damping
+        self.steering_wheel_parameters['spring_stiffness'] = self.settings.spring_stiffness
+
+        self.PCAN_channel = PCAN_USBBUS1
+
+
     def update_settings(self):
         self.endstops_bytes = int.to_bytes(self.settings.endstops, 2, byteorder='little', signed=True)
         self.torque_limit_between_endstops_bytes = int.to_bytes(self.settings.torque_limit_between_endstops, 1, byteorder='little', signed=False)
@@ -141,7 +149,7 @@ class JOAN_SensoDrive(BaseInput):
         self.torque_limit_between_endstops_bytes = int.to_bytes(self.settings.torque_limit_between_endstops, 1, byteorder='little', signed=False)
         self.torque_limit_beyond_endstops_bytes = int.to_bytes(self.settings.torque_limit_beyond_endstops, 1, byteorder='little', signed=False)
 
-        self.PCAN_channel = PCAN_USBBUS1
+
         if self.pcan_initialization_result is None:
             self.pcan_initialization_result = self.PCAN_object.Initialize(
                 self.PCAN_channel, PCAN_BAUD_1M)

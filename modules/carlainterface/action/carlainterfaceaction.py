@@ -99,7 +99,6 @@ class CarlainterfaceAction(JoanModuleAction):
         " This function is linked to the state change of the hardware manager and updates the state whenever it changes"
 
         self.hardware_manager_state = self.status.get_module_current_state(JOANModules.HARDWARE_MANAGER)
-        print(self.vehicles)
 
         for vehicle in self.vehicles:
             vehicle.get_available_inputs()
@@ -206,6 +205,7 @@ class CarlainterfaceAction(JoanModuleAction):
         return self.connected
 
     def update_cars(self, value):
+
         #Delete excess vehicles if any
         while value < len(self.vehicles):
             self.vehicles.pop(-1)
@@ -213,6 +213,9 @@ class CarlainterfaceAction(JoanModuleAction):
         # Create new vehicles:
         for carnr in range(len(self.vehicles), value):
             self.vehicles.append(Carlavehicle(self, carnr, self.nr_spawn_points, self.vehicle_tags))
+
+        for vehicle in self.vehicles:
+            vehicle.get_available_inputs()
 
         return self.vehicles
 
@@ -299,6 +302,7 @@ class Carlavehicle():
         self._vehicle_tab.combo_input.clear()
         self._vehicle_tab.combo_input.addItem('None')
         self._hardware_data = self.module_action.read_news(JOANModules.HARDWARE_MANAGER)
+        print(self._hardware_data)
         for keys in self._hardware_data:
             self._vehicle_tab.combo_input.addItem(str(keys))
         
