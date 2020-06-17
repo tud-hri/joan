@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import QMessageBox, QApplication
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
 from process.statesenum import State
+from process.status import Status
 
 import time
 import random
@@ -52,6 +53,12 @@ class CarlainterfaceAction(JoanModuleAction):
         self.vehicle_tags = []
         self.vehicles = []
 
+        #initialize modulewide state handler
+        self.status = Status()
+
+        joe = self.status.get_module_state_package(JOANModules.HARDWARE_MANAGER)
+        print(joe)
+
         #message box for error display
         self.msg = QMessageBox()
 
@@ -75,8 +82,13 @@ class CarlainterfaceAction(JoanModuleAction):
 
     def _starting_condition(self):
         try:
+            hardware_manager_status = self.status.get_module_current_state(JOANModules.HARDWARE_MANAGER)
             if self.connected is True:
-                # TODO: move this example to the new enum
+                # if hardware_manager_status == State.RUNNING:
+                #     return True, ''
+                # else:
+                #
+                #     return False, 'Hardware manager not running'
                 return True, ''
             else:
                 return False, 'Carla is not connected!'
@@ -201,7 +213,7 @@ class CarlainterfaceAction(JoanModuleAction):
         if(self.state_machine.current_state is State.IDLE):
 
             self.connect()
-            self.state_machine.request_state_change(State.READY, "You can now start the module")
+            self.state_machine.request_state_change(State.READY, "You can now add vehicles and start the module")
         elif (self.state_machine.current_state is State.ERROR):
             self.state_machine.request_state_change(State.IDLE)
         return super().initialize()
@@ -268,7 +280,6 @@ class Carlavehicle():
         self._selected_input = self._vehicle_tab.combo_input.currentText()
 
     def get_available_inputs(self):
-        ## TODO add this functionality to the state of hardware manager (make sure you cannot delete hardware that is being used even though HW_manager has stopped running)
         self._hardware_data = self.module_action.read_news(JOANModules.HARDWARE_MANAGER)
         for keys in self._hardware_data:
             self._vehicle_tab.combo_input.addItem(str(keys))

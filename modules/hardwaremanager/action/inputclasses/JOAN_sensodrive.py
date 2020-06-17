@@ -220,6 +220,18 @@ class JOAN_SensoDrive(BaseInput):
             pass
         self.remove_tab(self._sensodrive_tab)
 
+    def disable_remove_button(self):
+        if self._sensodrive_tab.btn_remove_hardware.isEnabled() is True:
+            self._sensodrive_tab.btn_remove_hardware.setEnabled(False)
+        else:
+            pass
+
+    def enable_remove_button(self):
+        if self._sensodrive_tab.btn_remove_hardware.isEnabled() is False:
+            self._sensodrive_tab.btn_remove_hardware.setEnabled(True)
+        else:
+            pass
+
     def on_off(self):
         if self._pcan_error:
             answer = QtWidgets.QMessageBox.warning(self._sensodrive_tab, 'Warning',
@@ -277,12 +289,6 @@ class JOAN_SensoDrive(BaseInput):
         if self._carla_interface_data['vehicles']:
             self._carla_interface_data = self._action.read_news(JOANModules.CARLA_INTERFACE)
 
-            for vehicles in self._carla_interface_data['vehicles']:
-                if vehicles.selected_input == self._sensodrive_tab.groupBox.title():
-                    self._sensodrive_tab.btn_remove_hardware.setEnabled(False)
-                    break
-                else:
-                    self._sensodrive_tab.btn_remove_hardware.setEnabled(True)
 
         # Reverse
         self._data['Reverse'] = 0
@@ -294,7 +300,7 @@ class JOAN_SensoDrive(BaseInput):
         try:
             self.steering_wheel_parameters['torque'] = self._steering_wheel_control_data['sw_torque']
         except:
-            pass
+            self.steering_wheel_parameters['torque'] = 0
      
         #request and set steering wheel data
         self.write_message_steering_wheel(self.PCAN_object, self.steering_wheel_message, self.steering_wheel_parameters)

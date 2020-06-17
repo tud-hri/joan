@@ -128,7 +128,7 @@ class TemplateAction(JoanModuleAction):
 
         :return: (bool) legality of state change, (str) error message
         """
-        print('in templateaction current state of template', self.singleton_status.get_module_current_state(JOANModules.TEMPLATE))
+
 
         try:
             if self.singleton_status.get_module_state_package(JOANModules.HARDWARE_MANAGER)['module_state_handler'].state is HardwaremanagerStates.EXEC.RUNNING:

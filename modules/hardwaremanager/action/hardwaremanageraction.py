@@ -11,6 +11,7 @@ from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
 
 from process.statesenum import State
+from process.status import Status
 from process.settings import ModuleSettings
 from .states import HardwaremanagerStates
 
@@ -23,6 +24,7 @@ class HardwaremanagerAction(JoanModuleAction):
         self.input_devices_classes = {}
         self.data = {}
         self.write_news(news=self.data)
+        self.status = Status()
 
         self.carla_interface_data = self.read_news(JOANModules.CARLA_INTERFACE)
         self.settings = HardWareManagerSettings(module_enum=JOANModules.HARDWARE_MANAGER)
@@ -38,6 +40,7 @@ class HardwaremanagerAction(JoanModuleAction):
         This function is called every controller tick of this module implement your main calculations here
         """
         self.carla_interface_data = self.read_news(JOANModules.CARLA_INTERFACE)
+        self.carla_interface_status = self.status.get_module_current_state(JOANModules.CARLA_INTERFACE)
 
         for inputs in self.input_devices_classes:
             if 'SensoDrive' in inputs:
@@ -45,6 +48,10 @@ class HardwaremanagerAction(JoanModuleAction):
 
         for inputs in self.input_devices_classes:
             self.data[inputs] = self.input_devices_classes[inputs].process()
+            if self.carla_interface_status == State.RUNNING:
+                self.input_devices_classes[inputs].disable_remove_button()
+            else:
+                self.input_devices_classes[inputs].enable_remove_button()
         self.write_news(self.data)
 
     def initialize(self):
