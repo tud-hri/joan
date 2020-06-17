@@ -202,6 +202,12 @@ class JOAN_SensoDrive(BaseInput):
 
     def _toggle_on_off(self, connected):
         self._sensodrive_tab.btn_on_off.setEnabled(connected)
+        if connected == False:
+            try:
+                self.on_to_off()
+            except:
+                pass
+
 
     def _open_settings_dialog(self):
         self.settings_dialog.show()
@@ -285,7 +291,10 @@ class JOAN_SensoDrive(BaseInput):
 
        #check whether we have a sw_controller that should be updated
         self._steering_wheel_control_data = self._action.read_news(JOANModules.STEERING_WHEEL_CONTROL)
-        self.steering_wheel_parameters['torque'] = self._steering_wheel_control_data['sw_torque']
+        try:
+            self.steering_wheel_parameters['torque'] = self._steering_wheel_control_data['sw_torque']
+        except:
+            pass
      
         #request and set steering wheel data
         self.write_message_steering_wheel(self.PCAN_object, self.steering_wheel_message, self.steering_wheel_parameters)
