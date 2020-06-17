@@ -9,6 +9,8 @@ from modules.hardwaremanager.action.inputclasses.JOAN_sensodrive import JOAN_Sen
 from modules.hardwaremanager.action.hardwaremanagersettings import KeyBoardSettings, JoyStickSettings, SensoDriveSettings,  HardWareManagerSettings
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
+
+from process.statesenum import State
 from process.settings import ModuleSettings
 from .states import HardwaremanagerStates
 
@@ -16,16 +18,13 @@ from .states import HardwaremanagerStates
 class HardwaremanagerAction(JoanModuleAction):
     def __init__(self, millis=5):
         super().__init__(module=JOANModules.HARDWARE_MANAGER, millis=millis)
-    #def __init__(self, master_state_handler, millis=5):
-    #    super().__init__(module=JOANModules.HARDWARE_MANAGER, master_state_handler=master_state_handler, millis=millis)
 
+        #Initialize dicts and variables
         self.input_devices_classes = {}
-
         self.data = {}
         self.write_news(news=self.data)
 
         self.carla_interface_data = self.read_news(JOANModules.CARLA_INTERFACE)
-
         self.settings = HardWareManagerSettings(module_enum=JOANModules.HARDWARE_MANAGER)
 
         default_settings_file_location = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'hardware_settings.json')
@@ -50,29 +49,35 @@ class HardwaremanagerAction(JoanModuleAction):
 
     def initialize(self):
         """
-        This function is called before the module is started
+        This function is called before the module is started and will try to initialize any added hardware inputs
         """
-
         try:
-            self.module_state_handler.request_state_change(HardwaremanagerStates.INIT.INITIALIZING)
-            #doe shit
-            if len(self.input_devices_classes) != 0:
-                for input_device in self.input_devices_classes:
-                    self.input_devices_classes[input_device].initialize()
-                self.module_state_handler.request_state_change(HardwaremanagerStates.EXEC.READY)
-            else:
-                self.module_state_handler.request_state_change(HardwaremanagerStates.ERROR.INIT)
+            if self.state_machine.current_state == State.IDLE:
+                if len(self.input_devices_classes) != 0:
+                    for input_device in self.input_devices_classes:
+                        self.input_devices_classes[input_device].initialize()
+                        self.state_machine.request_state_change(State.READY)
+                        for inputs in self.input_devices_classes:
+                            self.data[inputs] = self.input_devices_classes[inputs].process()
+                        self.write_news(self.data)
+                else:
+                    self.state_machine.request_state_change(State.ERROR, 'No hardware to Initialize')
+            elif self.state_machine.current_state == State.ERROR:
+                self.state_machine.request_state_change(State.IDLE)
+
         except RuntimeError:
             return False
         return super().initialize()
 
     def start(self):
         self.carla_interface_data = self.read_news(JOANModules.CARLA_INTERFACE)
+        #make sure you can only turn on the motor of the wheel if carla is connected
         for inputs in self.input_devices_classes:
             if 'SensoDrive' in inputs:
                 self.input_devices_classes[inputs]._toggle_on_off(self.carla_interface_data['connected'])
+
         try:
-            self.module_state_handler.request_state_change(HardwaremanagerStates.EXEC.RUNNING)
+            self.state_machine.request_state_change(State.RUNNING, 'Hardware manager running')
 
         except RuntimeError:
             return False
@@ -82,13 +87,14 @@ class HardwaremanagerAction(JoanModuleAction):
         self.carla_interface_data = self.read_news(JOANModules.CARLA_INTERFACE)
         for inputs in self.input_devices_classes:
             if 'SensoDrive' in inputs:
+                self.input_devices_classes[inputs]._sensodrive_tab.btn_on_off.setStyleSheet("background-color: orange")
+                self.input_devices_classes[inputs]._sensodrive_tab.btn_on_off.setText('Off')
                 self.input_devices_classes[inputs]._toggle_on_off(False)
 
         try:
-            self.module_state_handler.request_state_change(HardwaremanagerStates.EXEC.STOPPED)
+            self.state_machine.request_state_change(State.IDLE)
             if len(self.input_devices_classes) != 0:
-                self.module_state_handler.request_state_change(HardwaremanagerStates.EXEC.READY)
-
+                self.state_machine.request_state_change(State.READY)
         except RuntimeError:
             return False
         return super().stop()
@@ -130,13 +136,17 @@ class HardwaremanagerAction(JoanModuleAction):
         if is_a_new_sensodrive:
             sensodrive_settings = SensoDriveSettings()
 
+        ## This is a temporary fix so that we cannot add another sensodrive which will make pcan crash because we only have one PCAN usb interface dongle
         number_of_sensodrives = sum([bool("SensoDrive" in k) for k in self.input_devices_classes.keys()])
-        device_title = "SensoDrive %s" % (number_of_sensodrives + 1)
+        if number_of_sensodrives == 0:
+            device_title = "SensoDrive %s" % (number_of_sensodrives + 1)
 
-        self.input_devices_classes.update([(device_title, JOAN_SensoDrive(self, widget, sensodrive_settings))])
-        if is_a_new_sensodrive:
-            self.settings.sensodrives.append(sensodrive_settings)
-        return device_title
+            self.input_devices_classes.update([(device_title, JOAN_SensoDrive(self, widget, sensodrive_settings))])
+            if is_a_new_sensodrive:
+                self.settings.sensodrives.append(sensodrive_settings)
+            return device_title
+        else:
+            return 'DO_NOT_ADD'
 
     def remove(self, tabtitle):
         if "Keyboard" in tabtitle:
