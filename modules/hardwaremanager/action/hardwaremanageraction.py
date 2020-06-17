@@ -6,13 +6,12 @@ from modules.hardwaremanager.action.inputclasses.JOAN_joystick import JOAN_Joyst
 from modules.hardwaremanager.action.inputclasses.JOAN_keyboard import JOAN_Keyboard
 from modules.hardwaremanager.action.inputclasses.JOAN_sensodrive import JOAN_SensoDrive
 
-from modules.hardwaremanager.action.hardwaremanagersettings import KeyBoardSettings, JoyStickSettings, SensoDriveSettings,  HardWareManagerSettings
+from modules.hardwaremanager.action.hardwaremanagersettings import KeyBoardSettings, JoyStickSettings, SensoDriveSettings, HardWareManagerSettings
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
 
 from process.statesenum import State
 from process.settings import ModuleSettings
-from .states import HardwaremanagerStates
 
 
 class HardwaremanagerAction(JoanModuleAction):

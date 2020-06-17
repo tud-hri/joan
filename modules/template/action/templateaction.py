@@ -10,7 +10,6 @@ import os
 
 from PyQt5 import QtCore
 
-from modules.hardwaremanager.action.states import HardwaremanagerStates
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
 from process.statesenum import State
@@ -92,7 +91,6 @@ class TemplateAction(JoanModuleAction):
         # in this template example, we update the 'datawriter output' news with the elapsed time.
         self.data['datawriter output'] = self.time.elapsed()
 
-
         # and we write the news (actually update the news), such that all the other modules get the latest value of 'datawriter output'
         self.write_news(news=self.data)
 
@@ -131,11 +129,12 @@ class TemplateAction(JoanModuleAction):
         print('in templateaction current state of template', self.singleton_status.get_module_current_state(JOANModules.TEMPLATE))
 
         try:
-            if self.singleton_status.get_module_state_package(JOANModules.HARDWARE_MANAGER)['module_state_handler'].state is HardwaremanagerStates.EXEC.RUNNING:
-                # TODO: move this example to the new enum
-                return True, ''
-            else:
-                return False, 'The hardware manager should be running before starting the Template module'
+            # if self.singleton_status.get_module_state_package(JOANModules.HARDWARE_MANAGER)['module_state_handler'].state is HardwaremanagerStates.EXEC.RUNNING:
+            #     # TODO: move this example to the new enum
+            #     return True, ''
+            # else:
+            #     return False, 'The hardware manager should be running before starting the Template module'
+            print(self.singleton_status.get_module_current_state())
         except KeyError:
             return False, 'The hardware manager state could not be read, but it should be running before starting template.'
 
