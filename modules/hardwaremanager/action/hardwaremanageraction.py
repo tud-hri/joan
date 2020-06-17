@@ -178,4 +178,4 @@ class HardwaremanagerAction(JoanModuleAction):
 
         if not self.input_devices_classes:
             self.stop()
-            # self.module_state_handler.request_state_change(HardwaremanagerStates.IDLE)
+

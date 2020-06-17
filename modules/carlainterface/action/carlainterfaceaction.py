@@ -222,7 +222,7 @@ class CarlainterfaceAction(JoanModuleAction):
         if(self.state_machine.current_state is State.IDLE):
 
             self.connect()
-            self.state_machine.request_state_change(State.READY, "You can now add vehicles and start the module IF HW_MANAGER IS RUNNING!!")
+            self.state_machine.request_state_change(State.READY, "You can now add vehicles and start module")
         elif (self.state_machine.current_state is State.ERROR):
             self.state_machine.request_state_change(State.IDLE)
         return super().initialize()

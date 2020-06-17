@@ -78,7 +78,7 @@ class JOAN_SensoDrive(BaseInput):
         self._sensodrive_tab.btn_on_off.clicked.connect(self.on_off)
         self._sensodrive_tab.btn_on_off.setStyleSheet("background-color: orange")
         self._sensodrive_tab.btn_on_off.setText('Off')
-        self._sensodrive_tab.btn_on_off.setEnabled(False)
+        self._sensodrive_tab.btn_on_off.setEnabled(True)
 
         # Initialize message structures
         self.steering_wheel_message = TPCANMsg()
@@ -209,7 +209,7 @@ class JOAN_SensoDrive(BaseInput):
             self._pcan_error = False
 
     def _toggle_on_off(self, connected):
-        self._sensodrive_tab.btn_on_off.setEnabled(connected)
+        #self._sensodrive_tab.btn_on_off.setEnabled(connected)
         if connected == False:
             try:
                 self.on_to_off()
