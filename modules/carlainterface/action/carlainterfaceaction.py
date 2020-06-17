@@ -268,6 +268,7 @@ class Carlavehicle():
         self._selected_input = self._vehicle_tab.combo_input.currentText()
 
     def get_available_inputs(self):
+        ## TODO add this functionality to the state of hardware manager (make sure you cannot delete hardware that is being used even though HW_manager has stopped running)
         self._hardware_data = self.module_action.read_news(JOANModules.HARDWARE_MANAGER)
         for keys in self._hardware_data:
             self._vehicle_tab.combo_input.addItem(str(keys))
