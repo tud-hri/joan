@@ -128,6 +128,18 @@ class JOAN_Keyboard(BaseInput):
     def initialize(self):
         print('initializing keyboard')
 
+    def disable_remove_button(self):
+        if self._keyboard_tab.btn_remove_hardware.isEnabled() is True:
+            self._keyboard_tab.btn_remove_hardware.setEnabled(False)
+        else:
+            pass
+
+    def enable_remove_button(self):
+        if self._keyboard_tab.btn_remove_hardware.isEnabled() is False:
+            self._keyboard_tab.btn_remove_hardware.setEnabled(True)
+        else:
+            pass
+
     def remove_func(self):
         self.remove_tab(self._keyboard_tab)
 
@@ -160,12 +172,6 @@ class JOAN_Keyboard(BaseInput):
         if self._carla_interface_data['vehicles']:
             self._carla_interface_data = self._action.read_news(JOANModules.CARLA_INTERFACE)
 
-            for vehicles in self._carla_interface_data['vehicles']:
-                if vehicles.selected_input == self._keyboard_tab.groupBox.title():
-                    self._keyboard_tab.btn_remove_hardware.setEnabled(False)
-                    break
-                else:
-                    self._keyboard_tab.btn_remove_hardware.setEnabled(True)
 
         # Throttle:
         if self._throttle and self._data['ThrottleInput'] < 100:

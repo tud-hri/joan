@@ -18,7 +18,7 @@ class Status:
             cls._module_state_packages = {}
             # end deprecated
 
-            cls._current_state = {}  # enum style (e.g. JOANModules.HARDWARE_MANAGER: State.READY)
+            cls._module_state_machines = {}  # enum style (e.g. JOANModules.HARDWARE_MANAGER: State.READY)
         return cls.instance
 
     # will become deprecated after enum
@@ -32,13 +32,20 @@ class Status:
         except KeyError:
             return {}
 
-    def update_state(self, module: JOANModules, module_state_machine):
+    def update_state_machine(self, module: JOANModules, module_state_machine):
         " set state_machine of every module in the singleton, state_machine holds the current state for his/her own module "
-        self._current_state.update({module: module_state_machine})
+        self._module_state_machines.update({module: module_state_machine})
 
     def get_module_current_state(self, module: JOANModules):
         try:
-            return self._current_state[module].current_state
+            return self._module_state_machines[module].current_state
+        except KeyError:
+            return {}
+
+    def get_module_state_machine(self, module: JOANModules):
+        """ Return the state machine of the requested module"""
+        try:
+            return self._module_state_machines[module]
         except KeyError:
             return {}
  
