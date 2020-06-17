@@ -68,22 +68,14 @@ class JoanModuleDialog(QtWidgets.QDialog):
 
     def _button_start_clicked(self):
         self.module_action.start()
-        self.state_widget.input_tick_millis.setEnabled(False)
-        self.state_widget.input_tick_millis.clear()
-        self.state_widget.input_tick_millis.clearFocus()
-        self.state_widget.input_tick_millis.setPlaceholderText(str(self.module_action.millis))
+
 
     def _button_stop_clicked(self):
         self.module_action.stop()
-        self.state_widget.input_tick_millis.setEnabled(True)
-        self.state_widget.input_tick_millis.clear()
-        self.state_widget.input_tick_millis.setPlaceholderText(str(self.module_action.millis))
 
     def _button_initialize_clicked(self):
         self.module_action.initialize()
-        self.state_widget.input_tick_millis.setEnabled(True)
-        self.state_widget.input_tick_millis.clear()
-        self.state_widget.input_tick_millis.setPlaceholderText(str(self.module_action.millis))
+
 
 
     @QtCore.pyqtSlot(str)
@@ -108,6 +100,9 @@ class JoanModuleDialog(QtWidgets.QDialog):
 
         if current_state == State.READY:
             self.state_widget.btn_start.setEnabled(True)
+            self.state_widget.input_tick_millis.setEnabled(True)
+            self.state_widget.input_tick_millis.clear()
+            self.state_widget.input_tick_millis.setPlaceholderText(str(self.module_action.millis))
         else:
             self.state_widget.btn_start.setEnabled(False)
 
@@ -118,8 +113,17 @@ class JoanModuleDialog(QtWidgets.QDialog):
 
         if current_state == State.RUNNING:
             self.state_widget.btn_stop.setEnabled(True)
+            self.state_widget.input_tick_millis.setEnabled(False)
+            self.state_widget.input_tick_millis.clear()
+            self.state_widget.input_tick_millis.clearFocus()
+            self.state_widget.input_tick_millis.setPlaceholderText(str(self.module_action.millis))
         else:
             self.state_widget.btn_stop.setEnabled(False)
+
+        if current_state == State.IDLE:
+            self.state_widget.input_tick_millis.setEnabled(True)
+            self.state_widget.input_tick_millis.clear()
+            self.state_widget.input_tick_millis.setPlaceholderText(str(self.module_action.millis))
 
         # If module is running change button color
         if current_state == State.RUNNING:

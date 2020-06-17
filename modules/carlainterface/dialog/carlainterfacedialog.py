@@ -19,11 +19,15 @@ class CarlainterfaceDialog(JoanModuleDialog):
 
         self.module_widget.spinVehicles.valueChanged.connect(lambda value: self.update_vehicles(value))
         self.module_action.state_machine.add_state_change_listener(self._state_change_listener)
+        #self.module_action.hardware_manager_state_machine.add_state_change_listener(self._hardware_state_change_listener)
 
         self.module_widget.btnDisconnect.clicked.connect(self.disconnect)
         self.module_widget.groupVehicles.setEnabled(False)
         self.module_widget.spinVehicles.setEnabled(False)
         self.module_widget.btnDisconnect.setEnabled(False)
+
+    def _hardware_state_change_listener(self):
+        self._state_change_listener()
 
     def _state_change_listener(self):
         """"
@@ -37,12 +41,6 @@ class CarlainterfaceDialog(JoanModuleDialog):
             self.module_widget.groupVehicles.setEnabled(self.connected)
             self.module_widget.spinVehicles.setEnabled(self.connected)
         elif self.module_action.state_machine.current_state == State.ERROR:
-            # for items in self.vehicles:
-            #     self.vehicles[-1].destroy_car()
-            #     self.module_widget.layOut.removeWidget(self.vehicles[-1].vehicle_tab)
-            #     self.vehicles[-1].vehicle_tab.setParent(None)
-            #     #self.vehicles.pop(-1)
-            # self.module_widget.spinVehicles.setValue(0)
             self.module_widget.btnDisconnect.setEnabled(False)
             self.module_widget.groupVehicles.setEnabled(False)
             self.module_widget.spinVehicles.setEnabled(False)

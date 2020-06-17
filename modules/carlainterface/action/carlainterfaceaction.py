@@ -56,8 +56,10 @@ class CarlainterfaceAction(JoanModuleAction):
         #initialize modulewide state handler
         self.status = Status()
 
-        joe = self.status.get_module_state_package(JOANModules.HARDWARE_MANAGER)
-        print(joe)
+        self.hardware_manager_state_machine = self.status.get_module_state_machine(JOANModules.HARDWARE_MANAGER)
+        self.hardware_manager_state_machine.add_state_change_listener(self._hardware_state_change_listener)
+        self._hardware_state_change_listener()
+        #print(self.hardware_manager_state_machine.current_state)
 
         #message box for error display
         self.msg = QMessageBox()
@@ -67,7 +69,6 @@ class CarlainterfaceAction(JoanModuleAction):
         self.state_machine.set_transition_condition(State.READY, State.RUNNING, self._starting_condition)
         self.state_machine.set_transition_condition(State.RUNNING, State.READY, self._stopping_condition)
 
-  
     @property 
     def vehicle_bp_library(self):
         return self._vehicle_bp_library
@@ -82,7 +83,6 @@ class CarlainterfaceAction(JoanModuleAction):
 
     def _starting_condition(self):
         try:
-            hardware_manager_status = self.status.get_module_current_state(JOANModules.HARDWARE_MANAGER)
             if self.connected is True:
                 # if hardware_manager_status == State.RUNNING:
                 #     return True, ''
@@ -94,6 +94,16 @@ class CarlainterfaceAction(JoanModuleAction):
                 return False, 'Carla is not connected!'
         except KeyError:
             return False, 'Could not check whether carla is connected'
+
+    def _hardware_state_change_listener(self):
+        " This function is linked to the state change of the hardware manager and updates the state whenever it changes"
+
+        self.hardware_manager_state = self.status.get_module_current_state(JOANModules.HARDWARE_MANAGER)
+        print(self.vehicles)
+
+        for vehicle in self.vehicles:
+            vehicle.get_available_inputs()
+
 
     def _init_condition(self):
         try:
@@ -213,22 +223,28 @@ class CarlainterfaceAction(JoanModuleAction):
         if(self.state_machine.current_state is State.IDLE):
 
             self.connect()
-            self.state_machine.request_state_change(State.READY, "You can now add vehicles and start the module")
+            self.state_machine.request_state_change(State.READY, "You can now add vehicles and start the module IF HW_MANAGER IS RUNNING!!")
         elif (self.state_machine.current_state is State.ERROR):
             self.state_machine.request_state_change(State.IDLE)
         return super().initialize()
 
     def start(self):
         try:
-            self.state_machine.request_state_change(State.RUNNING,"Carla interface Running")
-            self.time.restart()
+            if self.hardware_manager_state == State.RUNNING:
+                self.state_machine.request_state_change(State.RUNNING,"Carla interface Running")
+                self.time.restart()
+                return super().start()
+            else:
+                self.state_machine.request_state_change(State.READY, "Could not start, hw manager not running try again")
+
+                return
         except RuntimeError:
             return False
-        return super().start()
+
 
     def stop(self):
         try:
-            self.state_machine.request_state_change(State.READY, "Carla interface Stopped")
+            self.state_machine.request_state_change(State.READY, "You can now add vehicles and start the module IF HW_MANAGER IS RUNNING!!")
         except RuntimeError:
             return False
         return super().stop()
@@ -280,6 +296,8 @@ class Carlavehicle():
         self._selected_input = self._vehicle_tab.combo_input.currentText()
 
     def get_available_inputs(self):
+        self._vehicle_tab.combo_input.clear()
+        self._vehicle_tab.combo_input.addItem('None')
         self._hardware_data = self.module_action.read_news(JOANModules.HARDWARE_MANAGER)
         for keys in self._hardware_data:
             self._vehicle_tab.combo_input.addItem(str(keys))
@@ -299,7 +317,7 @@ class Carlavehicle():
             self._vehicle_tab.btn_spawn.setEnabled(False)
             self._vehicle_tab.btn_destroy.setEnabled(True)
             self._vehicle_tab.spin_spawn_points.setEnabled(False)
-            self.get_available_inputs()
+            #self.get_available_inputs()
             self._spawned = True
         except Exception as inst:
             print('Could not spawn car:', inst)

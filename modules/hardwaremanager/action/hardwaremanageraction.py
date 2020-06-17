@@ -28,11 +28,23 @@ class HardwaremanagerAction(JoanModuleAction):
         self.carla_interface_data = self.read_news(JOANModules.CARLA_INTERFACE)
         self.settings = HardWareManagerSettings(module_enum=JOANModules.HARDWARE_MANAGER)
 
+        self.state_machine.add_state_change_listener(self._state_change_listener)
+
         default_settings_file_location = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'hardware_settings.json')
         if os.path.isfile(default_settings_file_location):
             self.settings.load_from_file(default_settings_file_location)
 
         self.share_settings(self.settings)
+
+    def _state_change_listener(self):
+        for inputs in self.input_devices_classes:
+            if self.state_machine.current_state == State.READY or self.state_machine.current_state == State.IDLE:
+                self.input_devices_classes[inputs].enable_remove_button()
+            else:
+                self.input_devices_classes[inputs].disable_remove_button()
+        self.write_news(self.data)
+
+
 
     def do(self):
         """
@@ -45,12 +57,7 @@ class HardwaremanagerAction(JoanModuleAction):
             if 'SensoDrive' in inputs:
                     self.input_devices_classes[inputs]._toggle_on_off(self.carla_interface_data['connected'])
 
-        for inputs in self.input_devices_classes:
-            self.data[inputs] = self.input_devices_classes[inputs].process()
-            if self.carla_interface_status == State.RUNNING:
-                self.input_devices_classes[inputs].disable_remove_button()
-            else:
-                self.input_devices_classes[inputs].enable_remove_button()
+
         self.write_news(self.data)
 
     def initialize(self):
@@ -62,10 +69,9 @@ class HardwaremanagerAction(JoanModuleAction):
                 if len(self.input_devices_classes) != 0:
                     for input_device in self.input_devices_classes:
                         self.input_devices_classes[input_device].initialize()
-                        self.state_machine.request_state_change(State.READY)
+                        self.state_machine.request_state_change(State.READY, '')
                         for inputs in self.input_devices_classes:
                             self.data[inputs] = self.input_devices_classes[inputs].process()
-                        self.write_news(self.data)
                 else:
                     self.state_machine.request_state_change(State.ERROR, 'No hardware to Initialize')
             elif self.state_machine.current_state == State.ERROR:
