@@ -313,6 +313,7 @@ class Carlavehicle():
             self._vehicle_tab.btn_spawn.setEnabled(False)
             self._vehicle_tab.btn_destroy.setEnabled(True)
             self._vehicle_tab.spin_spawn_points.setEnabled(False)
+            self._vehicle_tab.comboCartype.setEnabled(False)
             #self.get_available_inputs()
             self._spawned = True
         except Exception as inst:
@@ -320,6 +321,7 @@ class Carlavehicle():
             self._vehicle_tab.btn_spawn.setEnabled(True)
             self._vehicle_tab.btn_destroy.setEnabled(False)
             self._vehicle_tab.spin_spawn_points.setEnabled(True)
+            self._vehicle_tab.comboCartype.setEnabled(True)
             self._spawned = False
 
     def destroy_car(self):
@@ -329,6 +331,7 @@ class Carlavehicle():
             self._vehicle_tab.btn_spawn.setEnabled(True)
             self._vehicle_tab.btn_destroy.setEnabled(False)
             self._vehicle_tab.spin_spawn_points.setEnabled(True)
+            self._vehicle_tab.comboCartype.setEnabled(True)
             self.destroy_inputs()
         except Exception as inst:
             self._spawned = True
@@ -336,6 +339,7 @@ class Carlavehicle():
             self._vehicle_tab.btn_spawn.setEnabled(False)
             self._vehicle_tab.btn_destroy.setEnabled(True)
             self._vehicle_tab.spin_spawn_points.setEnabled(False)
+            self._vehicle_tab.comboCartype.setEnabled(False)
 
     def apply_control(self, data):
         if self._selected_input != 'None':

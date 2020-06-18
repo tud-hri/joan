@@ -40,14 +40,20 @@ class CarlainterfaceDialog(JoanModuleDialog):
             self.module_widget.btnDisconnect.setEnabled(True)
             self.module_widget.groupVehicles.setEnabled(self.connected)
             self.module_widget.spinVehicles.setEnabled(self.connected)
+        elif self.module_action.state_machine.current_state == State.RUNNING:
+            self.module_widget.btnDisconnect.setEnabled(False)
+            self.module_widget.spinVehicles.setEnabled(False)
         elif self.module_action.state_machine.current_state == State.ERROR:
             self.module_widget.btnDisconnect.setEnabled(False)
-            self.module_widget.groupVehicles.setEnabled(False)
             self.module_widget.spinVehicles.setEnabled(False)
+
+
         else:
             self.module_widget.btnDisconnect.setEnabled(False)
-            self.module_widget.groupVehicles.setEnabled(False)
+            #self.module_widget.groupVehicles.setEnabled(False)
             self.module_widget.spinVehicles.setEnabled(False)
+            for vehicle in self.vehicles:
+                vehicle.vehicle_tab.comboCartype.setEnabled(False)
 
     def disconnect(self):
         """
