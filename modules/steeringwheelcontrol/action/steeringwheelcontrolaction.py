@@ -4,8 +4,10 @@ import numpy as np
 
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
-from .states import SteeringWheelControlStates
 from .swcontrollertypes import SWContollerTypes
+from process import Status
+from process.statesenum import State
+
 from .swcontrollers.manualswcontroller import ManualSWController
 
 
@@ -14,7 +16,8 @@ class SteeringWheelControlAction(JoanModuleAction):
     def __init__(self, millis=10):
         super().__init__(module=JOANModules.STEERING_WHEEL_CONTROL, millis=millis)
 
-        self.module_state_handler.request_state_change(SteeringWheelControlStates.EXEC.READY)
+        # initialize modulewide state handler
+        self.status = Status()
 
         self._controllers = {}
         self.add_controller(controller_type=SWContollerTypes.MANUAL)
@@ -23,6 +26,11 @@ class SteeringWheelControlAction(JoanModuleAction):
 
         self._current_controller = None
         self.set_current_controller(SWContollerTypes.MANUAL)
+
+        #Setup state machine transition conditions
+        self.state_machine.set_transition_condition(State.IDLE, State.READY, self._init_condition)
+        self.state_machine.set_transition_condition(State.READY, State.RUNNING, self._starting_condition)
+        self.state_machine.set_transition_condition(State.RUNNING, State.READY, self._stopping_condition)
 
         # set up news
         self.data = {}
@@ -37,6 +45,25 @@ class SteeringWheelControlAction(JoanModuleAction):
         carla_data = self.read_news(JOANModules.CARLA_INTERFACE)
         vehicle_list = carla_data['vehicles']
         return vehicle_list
+
+    def _starting_condition(self):
+        try:
+            return True, ''
+        except KeyError:
+            return False, 'Could not check whether carla is connected'
+
+
+    def _init_condition(self):
+        try:
+            return True
+        except KeyError:
+            return False, 'Could not check whether carla is connected'
+
+    def _stopping_condition(self):
+        try:
+            return True
+        except KeyError:
+            return False, 'Could not check whether carla is connected'
 
     def do(self):
         """
@@ -62,10 +89,10 @@ class SteeringWheelControlAction(JoanModuleAction):
         This function is called before the module is started
         """
         try:
-            self.module_state_handler.request_state_change(SteeringWheelControlStates.INIT.INITIALIZING)
-            # Initialize the module here
-
-            self.module_state_handler.request_state_change(SteeringWheelControlStates.EXEC.READY)
+            if self.state_machine.current_state == State.IDLE:
+                self.state_machine.request_state_change(State.READY, 'You can now start the Module')
+            elif self.state_machine.current_state == State.ERROR:
+                self.state_machine.request_state_change(State.IDLE)
 
         except RuntimeError:
             return False
@@ -76,22 +103,24 @@ class SteeringWheelControlAction(JoanModuleAction):
 
     def set_current_controller(self, controller_type: SWContollerTypes):
         self._current_controller = self._controllers[controller_type]
-        current_state = self.module_state_handler.get_current_state()
+        current_state = self.state_machine.current_state
+        # current_state = self.module_state_handler.get_current_state()
 
-        if current_state is not SteeringWheelControlStates.EXEC.RUNNING:
-            self.module_state_handler.request_state_change(SteeringWheelControlStates.EXEC.READY)
+        # if current_state is not State.RUNNING:
+        #     self.state_machine.request_state_change(State.READY)
 
     def start(self):
         try:
-            self.module_state_handler.request_state_change(SteeringWheelControlStates.EXEC.RUNNING)
+            self.state_machine.request_state_change(State.RUNNING, 'Module Running')
+            print('start')
         except RuntimeError:
             return False
         return super().start()
 
     def stop(self):
         try:
-            self.module_state_handler.request_state_change(SteeringWheelControlStates.EXEC.STOPPED)
-            self.module_state_handler.request_state_change(SteeringWheelControlStates.EXEC.READY)
+            self.state_machine.request_state_change(State.READY, 'Module Running')
+            print('stop')
         except RuntimeError:
             return False
         return super().stop()

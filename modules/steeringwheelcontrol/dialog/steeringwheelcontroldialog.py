@@ -6,9 +6,10 @@ from process import State, translate
 from process.joanmoduledialog import JoanModuleDialog
 from process.joanmoduleaction import JoanModuleAction
 from modules.joanmodules import JOANModules
-from modules.steeringwheelcontrol.action.swcontrollertypes import SWContollerTypes
+
 from modules.steeringwheelcontrol.action.states import SteeringWheelControlStates
-from modules.steeringwheelcontrol.action.steeringwheelcontrolaction import SteeringWheelControlAction
+from process.statesenum import State
+
 
 
 class SteeringWheelControlDialog(JoanModuleDialog):
@@ -49,17 +50,17 @@ class SteeringWheelControlDialog(JoanModuleDialog):
                     if current_widget is value.get_controller_tab:
                         self.module_action.set_current_controller(key)
                         self.module_widget.lbl_current_controller.setText("Current controller: " + str(key))
-                        if self.module_action.module_state_handler.get_current_state() is not SteeringWheelControlStates.EXEC.RUNNING:
-                            self.module_action.module_state_handler.request_state_change(SteeringWheelControlStates.EXEC.READY)
+                        if self.module_action.state_machine.current_state is not State.Running:
+                            self.module_action.state_machine.request_state_change(State.READY)
             else:
-                self.module_action.module_state_handler.request_state_change(SteeringWheelControlStates.ERROR)
+                self.module_action.state_machine.request_state_change(State.ERROR)
                 answer = QtWidgets.QMessageBox.warning(self, 'Warning',
                                                        'You cannot apply a controller if car 1 is not spawned!',
                                                        buttons=QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)
                 if answer == QtWidgets.QMessageBox.Cancel:
                     return
         else:
-            self.module_action.module_state_handler.request_state_change(SteeringWheelControlStates.ERROR)
+            self.module_action.state_machine.request_state_change(State.ERROR)
             answer = QtWidgets.QMessageBox.warning(self, 'Warning',
                                                    'No vehicles available dude.',
                                                    buttons=QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)
