@@ -15,7 +15,6 @@ class JoanModuleDialog(QtWidgets.QDialog):
     closed = QtCore.pyqtSignal()
 
     def __init__(self, module: JOANModules, module_action: JoanModuleAction, parent=None):
-    #def __init__(self, module: JOANModules, module_action: JoanModuleAction, master_state_handler, parent=None):
         super().__init__(parent=parent)
 
         # reference to the action class of this module
@@ -62,8 +61,6 @@ class JoanModuleDialog(QtWidgets.QDialog):
 
     def _button_initialize_clicked(self):
         self.module_action.initialize()
-
-
 
     @QtCore.pyqtSlot(str)
     def _set_millis(self, millis):
@@ -127,56 +124,6 @@ class JoanModuleDialog(QtWidgets.QDialog):
             self.state_widget.btn_start.setText('Start')
             # self.state_widget.btn_start.setEnabled(True)
 
-    '''
-    deprecated since use of machine_state
-    def handle_module_state(self, state):
-        """
-        Handle the state transition by updating the status label and have the
-        GUI reflect the possibilities of the current state.
-        """
-
-        state_as_state = self.module_action.module_state_handler.get_state(state)  # ensure we have the State object (not the int)
-
-        # update the state label
-        self.state_widget.lbl_module_state.setText(str(state_as_state.name))
-
-        if state_as_state is self.module_action.module_states.EXEC.RUNNING:
-            self.state_widget.lbl_module_state.setStyleSheet("background: green;")
-        elif state_as_state is self.module_action.module_states.EXEC.STOPPED:
-            self.state_widget.lbl_module_state.setStyleSheet("background: orange;")
-        elif state_as_state is self.module_action.module_states.EXEC.READY:
-            self.state_widget.lbl_module_state.setStyleSheet("background: yellow;")
-        elif 400 <= state_as_state.nr < 500:  # an Error state
-            self.state_widget.lbl_module_state.setStyleSheet("background: red;")
-
-        if state_as_state == self.module_action.module_states.EXEC.READY:
-            self.state_widget.btn_start.setEnabled(True)
-            self.state_widget.btn_stop.setEnabled(False)
-            self.state_widget.btn_initialize.setEnabled(False)
-        elif state_as_state == self.module_action.module_states.EXEC.RUNNING:
-            self.state_widget.btn_start.setEnabled(False)
-            self.state_widget.btn_initialize.setEnabled(False)
-            self.state_widget.btn_stop.setEnabled(True)
-        elif state_as_state == self.module_action.module_states.EXEC.STOPPED:
-            self.state_widget.btn_start.setEnabled(False)
-            self.state_widget.btn_initialize.setEnabled(True)
-            self.state_widget.btn_stop.setEnabled(False)
-        elif 400 <= state_as_state.nr < 500:  # an Error state
-            self.state_widget.btn_start.setEnabled(False)
-            self.state_widget.btn_initialize.setEnabled(True)
-            self.state_widget.btn_stop.setEnabled(False)
-
-        # If module is running change button color
-        if state_as_state == self.module_action.module_states.EXEC.RUNNING:
-            self.state_widget.btn_start.setStyleSheet("background-color: lightgreen")
-            self.state_widget.btn_start.setText('Running')
-            # self.state_widget.btn_start.setEnabled(False)
-        else:
-            self.state_widget.btn_start.setStyleSheet("background-color: none")
-            self.state_widget.btn_start.setText('Start')
-            # self.state_widget.btn_start.setEnabled(True)
-    '''
-
     def toggle_show_close(self):
         """toggle visibility of this dialog"""
         if not self.isVisible():
@@ -186,7 +133,7 @@ class JoanModuleDialog(QtWidgets.QDialog):
         else:
             self.close()
             #self.module_action.module_state_handler.request_state_change(self.module_action.module_states.EXEC.STOPPED)
-
+        
     def closeEvent(self, event):
         """close event"""
         self.closed.emit()

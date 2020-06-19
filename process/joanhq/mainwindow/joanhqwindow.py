@@ -47,16 +47,16 @@ class JoanHQWindow(QtWidgets.QMainWindow):
         self.resize(400, 400)
 
         self._main_widget.btn_emergency.setIcon(QtGui.QIcon(QtGui.QPixmap(os.path.join(self._path_resources, "stop.png"))))
-        self._main_widget.btn_emergency.clicked.connect(self.action.emergency)
+        self._main_widget.btn_emergency.clicked.connect(self.emergency)
 
         self._main_widget.btn_quit.setStyleSheet("background-color: darkred")
         self._main_widget.btn_quit.clicked.connect(self.close)
 
         # self._main_widget.btn_initialize_all.clicked.connect(self.action.initialize_all)
-        self._main_widget.btn_initialize_all.clicked.connect(self.action.initialize_all)
+        self._main_widget.btn_initialize_all.clicked.connect(self.initialize_all)
 
         # self._main_widget.btn_stop_all.clicked.connect(self.action.stop_all)
-        self._main_widget.btn_stop_all.clicked.connect(self.action.stop_all)
+        self._main_widget.btn_stop_all.clicked.connect(self.stop_all)
 
         # # layout for the module groupbox
         # # TODO Dit kan mooi in de UI ook al gezet worden, zie Joris' hardwaremanager
@@ -73,6 +73,27 @@ class JoanHQWindow(QtWidgets.QMainWindow):
         self._view_menu = self.menuBar().addMenu('View')
         self._view_menu.addAction('Show all current settings..', self.show_settings_overview)
         self._view_menu.addAction('Show performance monitor..', self.show_performance_monitor)
+
+    def initialize_all(self):
+        """
+        repaint is essential to show the states
+        """
+        self.action.initialize_all()
+        self._main_widget.repaint()
+
+    def stop_all(self):
+        """
+        repaint is essential to show the states
+        """
+        self.action.stop_all()
+        self._main_widget.repaint()
+
+    def emergency(self):
+        """
+        repaint is essential to show the states
+        """
+        self.action.emergency()
+        self._main_widget.repaint()
 
     '''
     def emergency(self):
@@ -170,8 +191,6 @@ class JoanHQWindow(QtWidgets.QMainWindow):
         # with state_machine
         module_dialog.module_action.state_machine.add_state_change_listener(
             lambda: widget.lbl_state.setText(str(module_dialog.module_action.state_machine.current_state)))
-        #module_dialog.module_action.state_machine.add_state_change_listener(
-        #    lambda: widget.label_2.setText(str(module_dialog.module_action.state_machine.current_state)))
 
         # and to the list
         self._module_cards[name] = widget
