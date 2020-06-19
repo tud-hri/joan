@@ -108,7 +108,7 @@ class PDcontrollerSettings:
 
 class FDCAcontrollerSettings:
     def __init__(self):
-        self.kp = 1
+        self.kp_fdca = 1
 
     def as_dict(self):
         return self.__dict__
@@ -119,7 +119,7 @@ class FDCAcontrollerSettings:
 
 class ManualcontrollerSettings:
     def __init__(self):
-        self.kp = 1
+        self.kp_manual = 1
 
     def as_dict(self):
         return self.__dict__

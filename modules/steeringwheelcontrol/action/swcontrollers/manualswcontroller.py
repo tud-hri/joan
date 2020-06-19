@@ -8,9 +8,10 @@ from .baseswcontroller import BaseSWController
 
 class ManualSWController(BaseSWController):
 
-    def __init__(self, module_action, controller_list_key):
+    def __init__(self, module_action,  controller_list_key, settings):
         super().__init__(controller_type=SWControllerTypes.MANUAL, module_action=module_action)
         self.module_action = module_action
+        self.settings = settings
         # controller list key
         self.controller_list_key = controller_list_key
 

@@ -13,14 +13,14 @@ import numpy as np
 
 class FDCASWController(BaseSWController):
 
-    def __init__(self, module_action, controller_list_key):
+    def __init__(self, module_action, controller_list_key, settings):
         super().__init__(controller_type=SWControllerTypes.FDCA_SWCONTROLLER, module_action=module_action)
 
         self.module_action = module_action
 
         # controller list key
         self.controller_list_key = controller_list_key
-
+        self.settings = settings
         # Initialize local Variables
         self._hcr_list = []
         self._hcr = []
