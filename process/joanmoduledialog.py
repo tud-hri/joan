@@ -21,20 +21,7 @@ class JoanModuleDialog(QtWidgets.QDialog):
         # reference to the action class of this module
         self.module_action = module_action
 
-        # module and master state handling
-        # status, statehandlers and news
-        #self.singleton_status = Status()
-        #self.master_state_handler = self.singleton_status._master_state_handler
-        #self.master_states = self.singleton_status._master_states
-        #self.master_state_handler.state_changed.connect(self.handle_master_state)
-
-        # if module is not JOANModules.TEMPLATE:  # TODO: remove this old style
-        #     self.module_action.module_state_handler.state_changed.connect(self.handle_module_state)
-        # else:
-        #
         self.module_action.state_machine.add_state_change_listener(self.handle_state_change)
-        #self.module_action.master_state_handler.state_changed.connect(self.handle_master_state)
-        #self.master_state_handler = master_state_handler
 
         self.setLayout(QtWidgets.QVBoxLayout(self))
         self.setWindowTitle(str(module))
@@ -140,11 +127,14 @@ class JoanModuleDialog(QtWidgets.QDialog):
             self.state_widget.btn_start.setText('Start')
             # self.state_widget.btn_start.setEnabled(True)
 
+    '''
+    deprecated since use of machine_state
     def handle_module_state(self, state):
         """
         Handle the state transition by updating the status label and have the
         GUI reflect the possibilities of the current state.
         """
+
         state_as_state = self.module_action.module_state_handler.get_state(state)  # ensure we have the State object (not the int)
 
         # update the state label
@@ -185,6 +175,7 @@ class JoanModuleDialog(QtWidgets.QDialog):
             self.state_widget.btn_start.setStyleSheet("background-color: none")
             self.state_widget.btn_start.setText('Start')
             # self.state_widget.btn_start.setEnabled(True)
+    '''
 
     def toggle_show_close(self):
         """toggle visibility of this dialog"""

@@ -24,7 +24,7 @@ class TemplateAction(JoanModuleAction):
         # def __init__(self, master_state_handler, millis=100):
         #    super().__init__(module=JOANModules.TEMPLATE, master_state_handler=master_state_handler, millis=millis)
 
-        # The modules work with states.
+        # The modules work with states. Also see: TemplateDialog in templatedialog.py
         # Each JOAN module has its own state machine that can be customized by adding module specific transition conditions
         # Besides that the state machine supports entry actions and and exit actions per state. For more info on the state machine check process/statemachine.py
         # for more info on the possible states check process/statesenum.py
@@ -39,12 +39,17 @@ class TemplateAction(JoanModuleAction):
         self.state_machine.set_entry_action(State.RUNNING, lambda: print('Template is starting.'))
         self.state_machine.set_exit_action(State.RUNNING, self._clean_up_after_run)
 
-
+        # a list of methods can be added to the state_machine listener
+        # a state change listener is implemented as a callable method which is executed when state_machine.request_state_change is used
+        self.state_machine.add_state_change_listener(self._execute_on_state_change_in_module_action_1)
+        self.state_machine.add_state_change_listener(self._execute_on_state_change_in_module_action_2)
+        
         # Finally it is also possible to define automatic state changes. If state A is entered and the transition to state B is immediately legal, the state
         # machine will automatically progress to state B. It is possible to define one automatic state change per state, except for the Error state. It is
         # illegal to automatically leave the Error state for safety reasons. Not that state A wil not be skipped, but exited automatically. So the state changes
-        # are subject to all normal conditions and entry and exit actions.
-        self.state_machine.set_automatic_transition(State.IDLE, State.READY)
+        # are subject to all normal conditions and entry and exit actions. 
+        # Note: This means that a transition condition must be defined!
+        self.state_machine.set_automatic_transition(State.READY, State.RUNNING)
 
 
         # start news for the datarecorder.
@@ -103,10 +108,10 @@ class TemplateAction(JoanModuleAction):
         # reinitialised every time the settings are changed.
         self.millis = self.settings.millis
 
-        if (self.state_machine.current_state is State.IDLE):
-            self.state_machine.request_state_change(State.READY, "You can now start the module")
-        elif (self.state_machine.current_state is State.ERROR):
-            self.state_machine.request_state_change(State.IDLE)
+        #if (self.state_machine.current_state is State.IDLE):
+        self.state_machine.request_state_change(State.READY) #, "You can now start the module")
+        #elif (self.state_machine.current_state is State.ERROR):
+        #    self.state_machine.request_state_change(State.IDLE)
         return super().initialize()
 
     def start(self):
@@ -126,15 +131,10 @@ class TemplateAction(JoanModuleAction):
 
         :return: (bool) legality of state change, (str) error message
         """
-
-
         try:
-            # if self.singleton_status.get_module_state_package(JOANModules.HARDWARE_MANAGER)['module_state_handler'].state is HardwaremanagerStates.EXEC.RUNNING:
-            #     # TODO: move this example to the new enum
-            #     return True, ''
-            # else:
-            #     return False, 'The hardware manager should be running before starting the Template module'
-            print(self.singleton_status.get_module_current_state())
+            if self.singleton_status.get_module_current_state(JOANModules.HARDWARE_MANAGER) is State.RUNNING:
+                return True, ''
+            return False, 'The hardware manager should be running before starting the Template module'
         except KeyError:
             return False, 'The hardware manager state could not be read, but it should be running before starting template.'
 
@@ -146,4 +146,12 @@ class TemplateAction(JoanModuleAction):
         :return: None
         """
         # do some interesting multi line cleaning up of the mess I made during execution.
+        pass
+
+    def _execute_on_state_change_in_module_action_1(self):
+        # example of adding a method to be executed on a state change request
+        pass
+
+    def _execute_on_state_change_in_module_action_2(self):
+        # example of adding a method to be executed on a state change request
         pass

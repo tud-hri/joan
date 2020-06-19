@@ -1,13 +1,16 @@
-from process import State, translate
-from process.joanmoduledialog import JoanModuleDialog
-from process.joanmoduleaction import JoanModuleAction
-from PyQt5 import QtCore
-from modules.joanmodules import JOANModules
-from modules.datarecorder.action.states import DatarecorderStates
-from modules.datarecorder.action.datarecorderaction import DatarecorderAction
 import os
 import glob
 import numpy as np
+
+from modules.joanmodules import JOANModules
+from process.joanmoduledialog import JoanModuleDialog
+from process.joanmoduleaction import JoanModuleAction
+
+from PyQt5 import QtCore
+
+from process.statesenum import State
+
+#from modules.datarecorder.action.datarecorderaction import DatarecorderAction
 
 # for editWidgets
 from PyQt5 import QtWidgets, QtGui
@@ -25,8 +28,10 @@ class DatarecorderDialog(JoanModuleDialog):
 
         #self.data = {}
         #self.write_news(channel=self, news=self.data)
-
-        self.module_widget.btn_initialize.clicked.connect(self.initialize)
+        self.module_action.state_machine.add_state_change_listener(self._handle_module_specific_state)
+        self.module_action.state_machine.set_entry_action(State.READY, self.initialize)
+        # also the first time without state_change
+        #self.module_widget.btn_initialize.clicked.connect(self.initialize)
 
         # set current data file name
         self.module_widget.lbl_data_filename.setText("< none >")
@@ -44,6 +49,13 @@ class DatarecorderDialog(JoanModuleDialog):
         self.module_widget.btn_discard.clicked.connect(self.discard_trajectory)
         self.module_widget.check_trajectory.stateChanged.connect(self.check_trajectory_checkbox)
         self.module_widget.line_trajectory_title.textEdited.connect(self.check_trajectory_filename)
+
+    def initialize(self):
+        #self.module_action._clicked_btn_initialize()
+                # reads settings if available and expands the datarecorder widget
+        self.module_action._editWidget(layout=self.module_widget.verticalLayout_items)
+        self.module_action.initialize()
+        self._handle_module_specific_state()
 
     def check_trajectory_checkbox(self):
         self.module_action.trajectory_recorder.trajectory_record_boolean(self.module_widget.check_trajectory.isChecked())
@@ -64,12 +76,6 @@ class DatarecorderDialog(JoanModuleDialog):
             else:
                 self.module_widget.btn_save.setEnabled(True)
                 self.module_widget.label_trajectory_filename.setText('Will save file as: '+ self.trajectory_title + '.csv')
-
-
-    def initialize(self):
-        self.module_action._clicked_btn_initialize()
-                # reads settings if available and expands the datarecorder widget
-        self.module_action._editWidget(layout=self.module_widget.verticalLayout_items)
 
     def save_trajectory(self):
         self.trajectory_data = self.module_action.trajectory_recorder.generate_trajectory()
@@ -110,7 +116,72 @@ class DatarecorderDialog(JoanModuleDialog):
         self.module_widget.check_trajectory.setEnabled(False)
         self.module_widget.check_trajectory.setChecked(False)
 
+    def _handle_module_specific_state(self):
+        """
+        Handle the state transition by updating the status label and have the
+        GUI reflect the possibilities of the current state.
+        """
+        try:
+            current_state = self.module_action.state_machine.current_state
 
+            if current_state is State.READY:
+                self.state_widget.btn_start.setEnabled(True)
+                self.module_widget.check_trajectory.setEnabled(True)
+                self.module_widget.lbl_data_filename.setText(self.module_action.get_filename())
+                self.module_widget.label_trajectory_filename.setText('')
+                if self.module_widget.check_trajectory.isChecked() is False:
+                    self.module_widget.btn_save.setEnabled(False)
+                    self.module_widget.btn_discard.setEnabled(False)
+                    self.module_widget.line_trajectory_title.setEnabled(False)
+                # set message text
+                self.module_widget.lbl_message_recorder.setText("not recording")
+                self.module_widget.lbl_message_recorder.setStyleSheet('color: orange')
+
+            if current_state is State.IDLE:
+                self.state_widget.btn_start.setEnabled(False)
+                self.state_widget.btn_stop.setEnabled(False)
+                #self.module_widget.btn_initialize.setEnabled(True)
+
+                self.module_widget.check_trajectory.setEnabled(False)
+                self.module_widget.btn_save.setEnabled(False)
+                self.module_widget.btn_discard.setEnabled(False)
+                self.module_widget.line_trajectory_title.setEnabled(False)
+
+                if self.module_widget.check_trajectory.isChecked():
+                    self.module_widget.btn_save.setEnabled(True)
+                    self.module_widget.btn_discard.setEnabled(True)
+                    self.module_widget.line_trajectory_title.setEnabled(True)
+                    self.check_trajectory_filename()
+                # set message text
+                self.module_widget.lbl_message_recorder.setText("not recording")
+                self.module_widget.lbl_message_recorder.setStyleSheet('color: orange')
+
+            if current_state is State.RUNNING:
+                self.state_widget.btn_start.setEnabled(False)
+                self.state_widget.btn_stop.setEnabled(True)
+                #self.module_widget.btn_initialize.setEnabled(False)
+                self.module_widget.check_trajectory.setEnabled(False)
+                self.module_widget.btn_save.setEnabled(False)
+                self.module_widget.btn_discard.setEnabled(False)
+                self.module_widget.line_trajectory_title.setEnabled(False)
+
+                # set message text
+                self.module_widget.lbl_message_recorder.setText("Busy Recording ...")
+                self.module_widget.lbl_message_recorder.setStyleSheet('color: red')
+
+            # update the state label
+            self.state_widget.lbl_module_state.setText(current_state.__str__())
+            self.module_widget.repaint()
+
+            #if current_state is State.RUNNING:
+            #    self.state_widget.btn_start.setStyleSheet("background-color: green")
+            #else:
+            #    self.state_widget.btn_start.setStyleSheet("background-color: none")
+
+        except Exception as inst:
+            print(inst)
+
+    ''' deprecates since the use of state_machine
     def handle_module_state(self, state):
         """
         Handle the state transition by updating the status label and have the
@@ -175,3 +246,4 @@ class DatarecorderDialog(JoanModuleDialog):
 
         except Exception as inst:
             print(inst)
+        '''
