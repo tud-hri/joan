@@ -6,15 +6,20 @@ import time
 from PyQt5 import QtWidgets
 
 from modules.joanmodules import JOANModules
-from modules.steeringwheelcontrol.action.swcontrollertypes import SWContollerTypes
+from modules.steeringwheelcontrol.action.swcontrollertypes import SWControllerTypes
 from .baseswcontroller import BaseSWController
 from utils.utils import Biquad
 import numpy as np
 
 class FDCASWController(BaseSWController):
 
-    def __init__(self, module_action):
-        super().__init__(controller_type=SWContollerTypes.FDCA_SWCONTROLLER, module_action=module_action)
+    def __init__(self, module_action, controller_list_key):
+        super().__init__(controller_type=SWControllerTypes.FDCA_SWCONTROLLER, module_action=module_action)
+
+        self.module_action = module_action
+
+        # controller list key
+        self.controller_list_key = controller_list_key
 
         # Initialize local Variables
         self._hcr_list = []
@@ -33,6 +38,7 @@ class FDCASWController(BaseSWController):
 
         self.stiffness = 1
 
+
         # controller errors
         # [0]: lateral error
         # [1]: heading error
@@ -47,14 +53,18 @@ class FDCASWController(BaseSWController):
         self.update_trajectory_list()
 
         # connect widgets
-        self._controller_tab.btn_apply.clicked.connect(self.get_set_parameter_values_from_ui)
-        self._controller_tab.btn_reset.clicked.connect(self.set_default_parameter_values)
-        self._controller_tab.slider_loha.valueChanged.connect(
-            lambda: self._controller_tab.lbl_loha.setText(str(self._controller_tab.slider_loha.value()/100.0))
+        self._tuning_tab.btn_apply.clicked.connect(self.get_set_parameter_values_from_ui)
+        self._tuning_tab.btn_reset.clicked.connect(self.set_default_parameter_values)
+        self._tuning_tab.slider_loha.valueChanged.connect(
+            lambda: self._tuning_tab.lbl_loha.setText(str(self._tuning_tab.slider_loha.value()/100.0))
         )
-        self._controller_tab.btn_update_hcr_list.clicked.connect(self.update_trajectory_list)
+        self._tuning_tab.btn_update_hcr_list.clicked.connect(self.update_trajectory_list)
 
         self.set_default_parameter_values()
+
+    @property
+    def get_controller_list_key(self):
+        return self.controller_list_key
 
     def do(self, data_in, hw_data_in):
         """In manual, the controller has no additional control. We could add some self-centering torque, if we want.
@@ -246,11 +256,11 @@ class FDCASWController(BaseSWController):
     def get_set_parameter_values_from_ui(self):
         """update controller parameters from ui"""
 
-        self._k_y = float(self._controller_tab.edit_k_y.text())
-        self._k_psi = float(self._controller_tab.edit_k_psi.text())
-        self._lohs = float(self._controller_tab.edit_lohs.text())
-        self._sohf = float(self._controller_tab.edit_sohf.text())
-        self._loha = self._controller_tab.slider_loha.value() / 100
+        self._k_y = float(self._tuning_tab.edit_k_y.text())
+        self._k_psi = float(self._tuning_tab.edit_k_psi.text())
+        self._lohs = float(self._tuning_tab.edit_lohs.text())
+        self._sohf = float(self._tuning_tab.edit_sohf.text())
+        self._loha = self._tuning_tab.slider_loha.value() / 100
 
         self.load_trajectory()
 
@@ -259,15 +269,15 @@ class FDCASWController(BaseSWController):
     def update_ui(self):
         """update the labels and line edits in the controller_tab with the latest values"""
 
-        self._controller_tab.edit_k_y.setText(str(self._k_y))
-        self._controller_tab.edit_k_psi.setText(str(self._k_psi))
-        self._controller_tab.edit_lohs.setText(str(self._lohs))
-        self._controller_tab.edit_sohf.setText(str(self._sohf))
-        self._controller_tab.slider_loha.setValue(self._loha*100)
+        self._tuning_tab.edit_k_y.setText(str(self._k_y))
+        self._tuning_tab.edit_k_psi.setText(str(self._k_psi))
+        self._tuning_tab.edit_lohs.setText(str(self._lohs))
+        self._tuning_tab.edit_sohf.setText(str(self._sohf))
+        self._tuning_tab.slider_loha.setValue(self._loha*100)
 
         # update the current controller settings
-        self._controller_tab.lbl_k_y.setText(str(self._k_y))
-        self._controller_tab.lbl_k_psi.setText(str(self._k_psi))
-        self._controller_tab.lbl_lohs.setText(str(self._lohs))
-        self._controller_tab.lbl_sohf.setText(str(self._sohf))
+        self._tuning_tab.lbl_k_y.setText(str(self._k_y))
+        self._tuning_tab.lbl_k_psi.setText(str(self._k_psi))
+        self._tuning_tab.lbl_lohs.setText(str(self._lohs))
+        self._tuning_tab.lbl_sohf.setText(str(self._sohf))
 

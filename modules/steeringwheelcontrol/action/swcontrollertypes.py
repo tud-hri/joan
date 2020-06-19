@@ -2,7 +2,7 @@ import enum
 import os
 
 
-class SWContollerTypes(enum.Enum):
+class SWControllerTypes(enum.Enum):
     """
     Enum to represent all available steering wheel controllers.
     """
@@ -16,18 +16,28 @@ class SWContollerTypes(enum.Enum):
         from .swcontrollers.pdswcontroller import PDSWController
         from .swcontrollers.fdcaswcontroller import FDCASWController
 
-        return {SWContollerTypes.MANUAL: ManualSWController,
-                SWContollerTypes.PD_SWCONTROLLER: PDSWController,
-                SWContollerTypes.FDCA_SWCONTROLLER: FDCASWController}[self]
+        return {SWControllerTypes.MANUAL: ManualSWController,
+                SWControllerTypes.PD_SWCONTROLLER: PDSWController,
+                SWControllerTypes.FDCA_SWCONTROLLER: FDCASWController}[self]
 
     @property
-    def tab_ui_file(self):
+    def tuning_ui_file(self):
         path_to_uis = os.path.join(os.path.dirname(os.path.realpath(__file__)), "swcontrollers/ui/")
-        return {SWContollerTypes.MANUAL: os.path.join(path_to_uis, "manual_tab.ui"),
-                SWContollerTypes.PD_SWCONTROLLER: os.path.join(path_to_uis, "pd_tab.ui"),
-                SWContollerTypes.FDCA_SWCONTROLLER: os.path.join(path_to_uis, "fdca_tab.ui")}[self]
+        return {SWControllerTypes.MANUAL: os.path.join(path_to_uis, "manual_tab.ui"),
+                SWControllerTypes.PD_SWCONTROLLER: os.path.join(path_to_uis, "pd_tab.ui"),
+                SWControllerTypes.FDCA_SWCONTROLLER: os.path.join(path_to_uis, "fdca_tab.ui")}[self]
+
+    @property
+    def controller_tab_ui_file(self):
+        path_to_uis = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../dialog/")
+        return {SWControllerTypes.MANUAL: os.path.join(path_to_uis, "sw_controller_tab.ui"),
+                SWControllerTypes.PD_SWCONTROLLER: os.path.join(path_to_uis, "sw_controller_tab.ui"),
+                SWControllerTypes.FDCA_SWCONTROLLER: os.path.join(path_to_uis, "sw_controller_tab.ui")}[self]
+
+
+
 
     def __str__(self):
-        return {SWContollerTypes.MANUAL: 'Manual',
-                SWContollerTypes.PD_SWCONTROLLER: 'PD',
-                SWContollerTypes.FDCA_SWCONTROLLER: 'FDCA'}[self]
+        return {SWControllerTypes.MANUAL: 'Manual',
+                SWControllerTypes.PD_SWCONTROLLER: 'PD',
+                SWControllerTypes.FDCA_SWCONTROLLER: 'FDCA'}[self]
