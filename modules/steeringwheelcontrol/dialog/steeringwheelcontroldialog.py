@@ -42,7 +42,6 @@ class SteeringWheelControlDialog(JoanModuleDialog):
         self._controller_type_dialog.show()
 
     def add_selected_controller_type(self):
-
         chosen_controller = self._controller_type_dialog.combobox_sw_controller_type.itemData(self._controller_type_dialog.combobox_sw_controller_type.currentIndex())
         new_controller_widget = self.module_action.add_controller(chosen_controller)
         self.module_widget.sw_controller_list_layout.addWidget(new_controller_widget)

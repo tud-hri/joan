@@ -5,15 +5,40 @@ import time
 from utils.utils import Biquad
 from modules.steeringwheelcontrol.action.swcontrollertypes import SWControllerTypes
 from .baseswcontroller import BaseSWController
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, uic
+
+
+class PDcontrollerSettingsDialog(QtWidgets.QDialog):
+    def __init__(self, pd_controller_settings, controller, parent=None):
+        super().__init__(parent)
+        self.controller = controller
+        self.pd_controller_settings = pd_controller_settings
+        uic.loadUi(self.controller.tuning_ui_file, self)
+
+        #self.button_box_settings.button(self.button_box_settings.RestoreDefaults).clicked.connect(self._set_default_values)
+        self._display_values()
+        self.show()
+
+    def accept(self):
+        print('accepted')
+
+        super().accept()
+
+    def _display_values(self, settings_to_display=None):
+        if not settings_to_display:
+            settings_to_display = self.pd_controller_settings
+        pass
+
+    def _set_default_values(self):
+        self._display_values(self.controller.settings())
 
 
 class PDSWController(BaseSWController):
-    def __init__(self, module_action, controller_list_key):
+    def __init__(self, module_action, controller_list_key, settings):
         super().__init__(controller_type=SWControllerTypes.PD_SWCONTROLLER, module_action=module_action)
 
         self.module_action = module_action
-
+        self.settings = settings
         # controller list key
         self.controller_list_key = controller_list_key
         # default controller values
@@ -42,16 +67,19 @@ class PDSWController(BaseSWController):
 
         # connect widgets
 
-        self._tuning_tab.btn_apply.clicked.connect(self.get_set_parameter_values_from_ui)
-        self._tuning_tab.btn_reset.clicked.connect(self.set_default_parameter_values)
-        self._tuning_tab.btn_update_hcr_list.clicked.connect(self.update_trajectory_list)
+
 
         self.set_default_parameter_values()
+        self._open_settings_dialog()
+
+        self._controller_tab.btn_settings_sw_controller.clicked.connect(self._open_settings_dialog)
 
     @property
     def get_controller_list_key(self):
         return self.controller_list_key
 
+    def _open_settings_dialog(self):
+        self.settings_dialog = PDcontrollerSettingsDialog(self.settings, SWControllerTypes.PD_SWCONTROLLER)
 
     def do(self, data_in, hw_data_in):
         if 'SensoDrive 1' in hw_data_in:

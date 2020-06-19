@@ -7,6 +7,7 @@ from process.joanmoduleaction import JoanModuleAction
 from .swcontrollertypes import SWControllerTypes
 from process import Status
 from process.statesenum import State
+from .steeringwheelcontrolsettings import SteeringWheelControlSettings, PDcontrollerSettings
 
 from .swcontrollers.manualswcontroller import ManualSWController
 
@@ -18,6 +19,8 @@ class SteeringWheelControlAction(JoanModuleAction):
 
         # initialize modulewide state handler
         self.status = Status()
+
+        self.settings = SteeringWheelControlSettings(module_enum=JOANModules.STEERING_WHEEL_CONTROL)
 
         self._controllers = {}
         # self.add_controller(controller_type=SWControllerTypes.MANUAL)
@@ -40,6 +43,8 @@ class SteeringWheelControlAction(JoanModuleAction):
         self.data['lat_error_rate'] = 0
         self.data['heading_error_rate'] = 0
         self.write_news(news=self.data)
+
+        self.share_settings(self.settings)
 
     def update_vehicle_list(self):
         carla_data = self.read_news(JOANModules.CARLA_INTERFACE)
@@ -95,9 +100,18 @@ class SteeringWheelControlAction(JoanModuleAction):
         return super().initialize()
 
     def add_controller(self, controller_type):
+        #add appropriate settings
+        if controller_type == SWControllerTypes.PD_SWCONTROLLER:
+            self.settings.pd_controllers.append(controller_type.settings)
+        if controller_type == SWControllerTypes.FDCA_SWCONTROLLER:
+            self.settings.fdca_controllers.append(controller_type.settings)
+        if controller_type == SWControllerTypes.MANUAL:
+            self.settings.manual_controllers.append(controller_type.settings)
+
+
         number_of_controllers = sum([bool(controller_type.__str__() in k) for k in self._controllers.keys()]) + 1
         controller_list_key = controller_type.__str__() + ' ' + str(number_of_controllers)
-        self._controllers[controller_list_key] = controller_type.klass(self, controller_list_key)
+        self._controllers[controller_list_key] = controller_type.klass(self, controller_list_key, controller_type.settings)
         self._controllers[controller_list_key].get_controller_tab.controller_groupbox.setTitle(controller_list_key)
         return self._controllers[controller_list_key].get_controller_tab
 

@@ -1,6 +1,6 @@
 import enum
 import os
-
+from .steeringwheelcontrolsettings import PDcontrollerSettings, FDCAcontrollerSettings, ManualcontrollerSettings
 
 class SWControllerTypes(enum.Enum):
     """
@@ -24,7 +24,7 @@ class SWControllerTypes(enum.Enum):
     def tuning_ui_file(self):
         path_to_uis = os.path.join(os.path.dirname(os.path.realpath(__file__)), "swcontrollers/ui/")
         return {SWControllerTypes.MANUAL: os.path.join(path_to_uis, "manual_tab.ui"),
-                SWControllerTypes.PD_SWCONTROLLER: os.path.join(path_to_uis, "pd_tab.ui"),
+                SWControllerTypes.PD_SWCONTROLLER: os.path.join(path_to_uis, "pd_settings_ui.ui"),
                 SWControllerTypes.FDCA_SWCONTROLLER: os.path.join(path_to_uis, "fdca_tab.ui")}[self]
 
     @property
@@ -34,8 +34,11 @@ class SWControllerTypes(enum.Enum):
                 SWControllerTypes.PD_SWCONTROLLER: os.path.join(path_to_uis, "sw_controller_tab.ui"),
                 SWControllerTypes.FDCA_SWCONTROLLER: os.path.join(path_to_uis, "sw_controller_tab.ui")}[self]
 
-
-
+    @property
+    def settings(self):
+        return{SWControllerTypes.MANUAL: ManualcontrollerSettings(),
+               SWControllerTypes.PD_SWCONTROLLER: PDcontrollerSettings(),
+               SWControllerTypes.FDCA_SWCONTROLLER: FDCAcontrollerSettings()}[self]
 
     def __str__(self):
         return {SWControllerTypes.MANUAL: 'Manual',
