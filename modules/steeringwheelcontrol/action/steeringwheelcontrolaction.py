@@ -27,29 +27,30 @@ class SteeringWheelControlAction(JoanModuleAction):
         # self.add_controller(controller_type=SWControllerTypes.PD_SWCONTROLLER)
         # self.add_controller(controller_type=SWControllerTypes.FDCA_SWCONTROLLER)
 
-        self._current_controller = None
-        #self.set_current_controller(SWControllerTypes.MANUAL)
+        self.state_machine.add_state_change_listener(self._state_change_listener)
 
         #Setup state machine transition conditions
-        self.state_machine.set_transition_condition(State.IDLE, State.READY, self._init_condition)
         self.state_machine.set_transition_condition(State.READY, State.RUNNING, self._starting_condition)
         self.state_machine.set_transition_condition(State.RUNNING, State.READY, self._stopping_condition)
 
         # set up news
         self.data = {}
-        self.data['sw_torque'] = 0
-        self.data['lat_error'] = 0
-        self.data['heading_error'] = 0
-        self.data['lat_error_rate'] = 0
-        self.data['heading_error_rate'] = 0
+
         self.write_news(news=self.data)
 
+        self.temporary = {}
         self.share_settings(self.settings)
 
-    def update_vehicle_list(self):
-        carla_data = self.read_news(JOANModules.CARLA_INTERFACE)
-        vehicle_list = carla_data['vehicles']
-        return vehicle_list
+    def _state_change_listener(self):
+        sim_data_in = self.read_news(JOANModules.CARLA_INTERFACE)
+        print(sim_data_in)
+        hw_data_in = self.read_news(JOANModules.HARDWARE_MANAGER)
+        for controller in self._controllers:
+            for vehicle_object in sim_data_in['vehicles']:
+                self.data[controller] = self._controllers[controller].do(vehicle_object, hw_data_in)
+        self.write_news(self.data)
+
+
 
     def _starting_condition(self):
         try:
@@ -57,12 +58,6 @@ class SteeringWheelControlAction(JoanModuleAction):
         except KeyError:
             return False, 'Could not check whether carla is connected'
 
-
-    def _init_condition(self):
-        try:
-            return True
-        except KeyError:
-            return False, 'Could not check whether carla is connected'
 
     def _stopping_condition(self):
         try:
@@ -77,12 +72,12 @@ class SteeringWheelControlAction(JoanModuleAction):
 
         sim_data_in = self.read_news(JOANModules.CARLA_INTERFACE)
         hw_data_in = self.read_news(JOANModules.HARDWARE_MANAGER)
+        for controller in self._controllers:
+            for vehicle_object in sim_data_in['vehicles']:
+                self.data[controller] = self._controllers[controller].do(vehicle_object, hw_data_in)
 
-        if self.current_controller is not None:
-            data_out = self._current_controller.do(sim_data_in, hw_data_in)
-            self.data['sw_torque'] = data_out['sw_torque']
 
-
+        print(self.data)
         self.write_news(news=self.data)
 
     def initialize(self):
@@ -91,7 +86,12 @@ class SteeringWheelControlAction(JoanModuleAction):
         """
         try:
             if self.state_machine.current_state == State.IDLE:
-                self.state_machine.request_state_change(State.READY, 'You can now start the Module')
+                if len(self._controllers) != 0:
+                    for controllers in self._controllers:
+                        self._controllers[controllers].initialize()
+                    self.state_machine.request_state_change(State.READY, 'You can now run the module')
+                else:
+                    self.state_machine.request_state_change(State.ERROR, 'No controllers to Initialize')
             elif self.state_machine.current_state == State.ERROR:
                 self.state_machine.request_state_change(State.IDLE)
 
@@ -116,6 +116,12 @@ class SteeringWheelControlAction(JoanModuleAction):
         return self._controllers[controller_list_key].get_controller_tab
 
     def remove_controller(self, controller):
+        #remove controller from the news
+        try:
+            del self.data[controller.get_controller_list_key]
+        except KeyError:  # data is only present if the hardware manager ran since the hardware was added
+            pass
+
         self._controllers[controller.get_controller_list_key].get_controller_tab.setParent(None)
         del self._controllers[controller.get_controller_list_key]
 
@@ -126,18 +132,6 @@ class SteeringWheelControlAction(JoanModuleAction):
 
         if not self._controllers:
             self.stop()
-
-
-
-
-
-    def set_current_controller(self, controller_type: SWControllerTypes):
-        self._current_controller = self._controllers[controller_type]
-        current_state = self.state_machine.current_state
-        # current_state = self.module_state_handler.get_current_state()
-
-        # if current_state is not State.RUNNING:
-        #     self.state_machine.request_state_change(State.READY)
 
     def start(self):
         try:

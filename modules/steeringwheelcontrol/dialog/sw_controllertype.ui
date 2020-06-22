@@ -53,11 +53,6 @@
        <pointsize>11</pointsize>
       </font>
      </property>
-     <item>
-      <property name="text">
-       <string>None</string>
-      </property>
-     </item>
     </widget>
    </item>
   </layout>

@@ -155,6 +155,7 @@ class HardwaremanagerAction(JoanModuleAction):
 
         ## This is a temporary fix so that we cannot add another sensodrive which will make pcan crash because we only have one PCAN usb interface dongle
         number_of_sensodrives = sum([bool("SensoDrive" in k) for k in self.input_devices_classes.keys()])
+
         if number_of_sensodrives == 0:
             device_title = "SensoDrive %s" % (number_of_sensodrives + 1)
 

@@ -83,4 +83,7 @@ class CarlainterfaceDialog(JoanModuleDialog):
             self.module_widget.layOut.addWidget(self.vehicles[value-1].vehicle_tab)
 
         self.old_nr_cars = value
+
+        self.module_action.data['vehicles'] = self.vehicles
+        self.module_action.write_news(self.module_action.data)
         

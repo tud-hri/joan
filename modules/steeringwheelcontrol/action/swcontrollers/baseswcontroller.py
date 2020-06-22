@@ -31,6 +31,8 @@ class BaseSWController:
 
 
 
+
+
         self._data_in = {}
         self._data_out = {}
         self._data_out['sw_torque'] = 0
@@ -47,8 +49,8 @@ class BaseSWController:
 
     def load_trajectory(self):
         """Load HCR trajectory"""
-        fname = self._tuning_tab.cmbbox_hcr_selection.itemText(
-            self._tuning_tab.cmbbox_hcr_selection.currentIndex()
+        fname = self._controller_tab.cmbbox_hcr_selection.itemText(
+            self._controller_tab.cmbbox_hcr_selection.currentIndex()
         )
 
         if fname != self._current_trajectory_name:
@@ -68,12 +70,12 @@ class BaseSWController:
             os.mkdir(self._path_trajectory_directory)
         files = [filename for filename in os.listdir(self._path_trajectory_directory) if filename.endswith('csv')]
 
-        self._tuning_tab.cmbbox_hcr_selection.clear()
-        self._tuning_tab.cmbbox_hcr_selection.addItems(files)
+        self._controller_tab.cmbbox_hcr_selection.clear()
+        self._controller_tab.cmbbox_hcr_selection.addItems(files)
 
-        idx = self._tuning_tab.cmbbox_hcr_selection.findText(self._current_trajectory_name)
+        idx = self._controller_tab.cmbbox_hcr_selection.findText(self._current_trajectory_name)
         if idx != -1:
-            self._tuning_tab.cmbbox_hcr_selection.setCurrentIndex(idx)
+            self._controller_tab.cmbbox_hcr_selection.setCurrentIndex(idx)
 
     def find_closest_node(self, node, nodes):
         """find the node in the nodes list (trajectory)"""

@@ -56,9 +56,15 @@ class CarlainterfaceAction(JoanModuleAction):
         #initialize modulewide state handler
         self.status = Status()
 
+        self._available_controllers = []
+
         self.hardware_manager_state_machine = self.status.get_module_state_machine(JOANModules.HARDWARE_MANAGER)
         self.hardware_manager_state_machine.add_state_change_listener(self._hardware_state_change_listener)
         self._hardware_state_change_listener()
+
+        self.sw_controller_state_machine = self.status.get_module_state_machine(JOANModules.STEERING_WHEEL_CONTROL)
+        self.sw_controller_state_machine.add_state_change_listener(self._sw_controller_state_change_listener)
+        self._sw_controller_state_change_listener()
         #print(self.hardware_manager_state_machine.current_state)
 
         #message box for error display
@@ -88,6 +94,23 @@ class CarlainterfaceAction(JoanModuleAction):
 
         for vehicle in self.vehicles:
             vehicle.get_available_inputs()
+
+    def _sw_controller_state_change_listener(self):
+        """This function is linked to the state change of the sw_controller, if new controllers are initialized they will be
+        automatically added to a variable which contains the options in the SW controller combobox"""
+        self._available_controllers.clear()
+        self.sw_controller_state = self.status.get_module_current_state(JOANModules.STEERING_WHEEL_CONTROL)
+        # print(self.sw_controller_state)
+        self._data_from_sw_controller = self.read_news(JOANModules.STEERING_WHEEL_CONTROL)
+        for controllers in self._data_from_sw_controller:
+            self._available_controllers.append(controllers)
+
+        for vehicle in self.vehicles:
+            vehicle._vehicle_tab.combo_sw_controller.clear()
+            vehicle._vehicle_tab.combo_sw_controller.addItem('None (Manual)')
+            vehicle._vehicle_tab.combo_sw_controller.addItems(self._available_controllers)
+
+
 
     def _starting_condition(self):
         try:
@@ -253,11 +276,15 @@ class Carlavehicle():
         self._spawned = False
         self._hardware_data = {}
         self._vehicle_nr = 'Car ' + str(carnr+1)
+        self._sw_controller = self._vehicle_tab.combo_sw_controller.currentText()
+
+
 
         self._vehicle_tab.spin_spawn_points.setRange(0, nr_spawn_points)
         self._vehicle_tab.spin_spawn_points.lineEdit().setReadOnly(True)
         self._vehicle_tab.btn_destroy.setEnabled(False)
         self._vehicle_tab.combo_input.currentTextChanged.connect(self.update_input)
+        self._vehicle_tab.combo_sw_controller.currentTextChanged.connect(self.update_sw_controller)
 
         self._vehicle_tab.btn_spawn.clicked.connect(self.spawn_car)
         self._vehicle_tab.btn_destroy.clicked.connect(self.destroy_car)
@@ -279,6 +306,10 @@ class Carlavehicle():
         return self._selected_input
 
     @property
+    def selected_sw_controller(self):
+        return self._sw_controller
+
+    @property
     def vehicle_id(self):
         return self._BP.id
 
@@ -286,6 +317,8 @@ class Carlavehicle():
     def vehicle_nr(self):
         return self._vehicle_nr
 
+    def update_sw_controller(self):
+        self._sw_controller = self._vehicle_tab.combo_sw_controller.currentText()
 
     def update_input(self):
         self._selected_input = self._vehicle_tab.combo_input.currentText()

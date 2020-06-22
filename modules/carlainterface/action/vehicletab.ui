@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
-    <height>81</height>
+    <width>672</width>
+    <height>93</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -58,17 +58,14 @@
       <property name="verticalSpacing">
        <number>3</number>
       </property>
-      <item row="0" column="0" rowspan="2">
-       <widget class="Line" name="line">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
+      <item row="0" column="10">
+       <widget class="QPushButton" name="btn_spawn">
+        <property name="text">
+         <string>Spawn</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="2">
-       <widget class="QSpinBox" name="spin_spawn_points"/>
-      </item>
-      <item row="0" column="2">
+      <item row="0" column="5">
        <widget class="QLabel" name="lblSpawnpoints">
         <property name="font">
          <font>
@@ -81,42 +78,47 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="4">
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>CarType:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="4">
-       <widget class="QComboBox" name="comboCartype"/>
-      </item>
-      <item row="0" column="3" rowspan="2">
+      <item row="0" column="6" rowspan="2">
        <widget class="Line" name="line_2">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
         </property>
        </widget>
       </item>
+      <item row="1" column="7">
+       <widget class="QComboBox" name="comboCartype"/>
+      </item>
       <item row="0" column="7">
-       <widget class="QPushButton" name="btn_spawn">
+       <widget class="QLabel" name="label">
         <property name="text">
-         <string>Spawn</string>
+         <string>CarType:</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="5" rowspan="2">
+      <item row="1" column="5">
+       <widget class="QSpinBox" name="spin_spawn_points"/>
+      </item>
+      <item row="1" column="10">
+       <widget class="QPushButton" name="btn_destroy">
+        <property name="text">
+         <string>Destroy</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="8" rowspan="2">
        <widget class="Line" name="line_3">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
         </property>
        </widget>
       </item>
-      <item row="1" column="7">
-       <widget class="QPushButton" name="btn_destroy">
-        <property name="text">
-         <string>Destroy</string>
-        </property>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="combo_input">
+        <item>
+         <property name="text">
+          <string>None</string>
+         </property>
+        </item>
        </widget>
       </item>
       <item row="0" column="1">
@@ -126,11 +128,32 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
-       <widget class="QComboBox" name="combo_input">
+      <item row="0" column="2" rowspan="2">
+       <widget class="Line" name="line">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>SW Controller:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="4" rowspan="2">
+       <widget class="Line" name="line_4">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="QComboBox" name="combo_sw_controller">
         <item>
          <property name="text">
-          <string>None</string>
+          <string>None (Manual)</string>
          </property>
         </item>
        </widget>

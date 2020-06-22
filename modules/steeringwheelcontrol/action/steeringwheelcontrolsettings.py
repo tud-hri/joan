@@ -97,7 +97,13 @@ class SteeringWheelControlSettings(JoanModuleSettings):
 
 class PDcontrollerSettings:
     def __init__(self):
-        self.kp = 1
+        # default controller values
+        self.t_lookahead = 0.6
+        self.k_p = 8.0
+        self.k_d = 1.0
+        self.w_lat = 1.0
+        self.w_heading = 2.0
+
 
     def as_dict(self):
         return self.__dict__
