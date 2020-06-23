@@ -38,7 +38,7 @@ class BaseSWController:
         self._data_out['sw_torque'] = 0
 
     @abc.abstractmethod
-    def process(self, data_in):
+    def process(self, vehicle_object, hw_data_in):
         """do is called every tick in steeringwheelcontrolaction's do
         this needs to be implemented by children of BaseSWController
         """

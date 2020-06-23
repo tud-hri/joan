@@ -28,7 +28,9 @@ class FDCAcontrollerSettingsDialog(QtWidgets.QDialog):
         self.show()
 
     def _update_loha_slider_label(self):
-        self.lbl_loha.setText(str(self.slider_loha.value()/100))
+        self.lbl_loha_slider.setText(str(self.slider_loha.value()/100))
+        # Uncomment this if you want to real time change the loha value when you slide the slider:
+        self.fdca_controller_settings.loha = self.slider_loha.value() / 100
 
     def accept(self):
         self.fdca_controller_settings.k_y = float(self.edit_k_y.text())
@@ -48,6 +50,7 @@ class FDCAcontrollerSettingsDialog(QtWidgets.QDialog):
         self.lbl_k_psi.setText(str(settings_to_display.k_psi))
         self.lbl_lohs.setText(str(settings_to_display.lohs))
         self.lbl_sohf.setText(str(settings_to_display.sohf))
+        self.lbl_loha.setText(str(settings_to_display.loha))
 
         self.edit_k_y.setText(str(settings_to_display.k_y))
         self.edit_k_psi.setText(str(settings_to_display.k_psi))
@@ -71,15 +74,6 @@ class FDCASWController(BaseSWController):
         # controller list key
         self.controller_list_key = controller_list_key
         self.settings = settings
-        # # Initialize local Variables
-        # self._hcr_list = []
-        # self._hcr = []
-        # self._t_lookahead = 0.0
-        # self._k_y = 0.1
-        # self._k_psi = 0.4
-        # self._lohs = 1.0
-        # self._sohf = 1.0
-        # self._loha = 0.0
 
         self._t2 = 0
 
@@ -118,74 +112,79 @@ class FDCASWController(BaseSWController):
     def initialize(self):
         self.load_trajectory()
 
-    def process(self, data_in, hw_data_in):
+    def process(self, vehicle_object, hw_data_in):
         """In manual, the controller has no additional control. We could add some self-centering torque, if we want.
         For now, steeringwheel torque is zero"""
+        if vehicle_object.selected_sw_controller == self.controller_list_key:
+                try:
+                    stiffness = hw_data_in[vehicle_object.selected_input]['spring_stiffness']
+                    sw_angle = hw_data_in[vehicle_object.selected_input]['SteeringInput']
 
-        if 'SensoDrive 1' in hw_data_in:
-            stiffness = hw_data_in['SensoDrive 1']['spring_stiffness']
-            sw_angle = hw_data_in['SensoDrive 1']['SteeringInput']
-            
 
-            """Perform the controller-specific calculations"""
-            #get delta_t (we could also use 'millis' but this is a bit more precise)
-            t1 = time.time()
-            delta_t = t1 - self._t2
+                    """Perform the controller-specific calculations"""
+                    #get delta_t (we could also use 'millis' but this is a bit more precise)
+                    t1 = time.time()
+                    delta_t = t1 - self._t2
 
-            # extract data
-            car = data_in['vehicles'][0].spawned_vehicle
-            pos_car = np.array([car.get_location().x, car.get_location().y])
-            vel_car = np.array([car.get_velocity().x, car.get_velocity().y])
-            heading_car = car.get_transform().rotation.yaw
+                    # extract data
+                    car = vehicle_object.spawned_vehicle
+                    pos_car = np.array([car.get_location().x, car.get_location().y])
+                    vel_car = np.array([car.get_velocity().x, car.get_velocity().y])
+                    heading_car = car.get_transform().rotation.yaw
 
-            # find static error and error rate:
-            error_static = self.error(pos_car, heading_car, vel_car)
-            error_rate = self.error_rates(error_static, self.error_static_old, delta_t)
+                    # find static error and error rate:
+                    error_static = self.error(pos_car, heading_car, vel_car)
+                    error_rate = self.error_rates(error_static, self.error_static_old, delta_t)
 
-            #filter the error rate with biquad filter
-            error_lateral_rate_filtered = self._bq_filter_velocity.process(error_rate[0])
-            error_heading_rate_filtered = self._bq_filter_heading.process(error_rate[1])
+                    #filter the error rate with biquad filter
+                    error_lateral_rate_filtered = self._bq_filter_velocity.process(error_rate[0])
+                    error_heading_rate_filtered = self._bq_filter_heading.process(error_rate[1])
 
-            #put errors in 1 variable
-            self._controller_error[0:2] = error_static
-            self._controller_error[2:] = np.array([error_lateral_rate_filtered, error_heading_rate_filtered])
-            
-            ############## FDCA SPECIFIC CALCULATIONS HERE ##############
-            self._data_out['sw_torque'] = 0
-            sw_angle_fb = self._sohf_func(self._k_y, self._k_psi, self._sohf, -self._controller_error[0], self._controller_error[1])
-            sw_angle_ff_des = self._feed_forward_controller(0, car)
-            sw_angle_ff = self._lohs_func(self._lohs, sw_angle_ff_des)
-            sw_angle_fb_ff_des = sw_angle_fb + sw_angle_ff_des #in radians
-            sw_angle_current = math.radians(sw_angle)
-            delta_sw = sw_angle_fb_ff_des - sw_angle_current
-            sw_angle_ff_fb = sw_angle_ff + sw_angle_fb
-            torque_loha = self._loha_func(self._loha, delta_sw) #Torque resulting from feedback
-            k_stiffness_deg = stiffness # 40mNm/deg [DEGREES! CONVERT TO RADIANS!!]
-            k_stiffness_rad = k_stiffness_deg  * (math.pi/180)
-            torque_ff_fb = self._inverse_steering_dyn(sw_angle_ff_fb, k_stiffness_rad)
+                    #put errors in 1 variable
+                    self._controller_error[0:2] = error_static
+                    self._controller_error[2:] = np.array([error_lateral_rate_filtered, error_heading_rate_filtered])
 
-            torque_fdca = torque_loha + torque_ff_fb
-            
+                    ############## FDCA SPECIFIC CALCULATIONS HERE ##############
+                    self._data_out['sw_torque'] = 0
+                    sw_angle_fb = self._sohf_func(self.settings.k_y, self.settings.k_psi, self.settings.sohf, -self._controller_error[0], self._controller_error[1])
+                    sw_angle_ff_des = self._feed_forward_controller(0, car)
+                    sw_angle_ff = self.lohs_func(self.settings.lohs, sw_angle_ff_des)
+                    sw_angle_fb_ff_des = sw_angle_fb + sw_angle_ff_des #in radians
+                    sw_angle_current = math.radians(sw_angle)
+                    delta_sw = sw_angle_fb_ff_des - sw_angle_current
+                    sw_angle_ff_fb = sw_angle_ff + sw_angle_fb
+                    torque_loha = self._loha_func(self.settings.loha, delta_sw) #Torque resulting from feedback
+                    k_stiffness_deg = stiffness # 40mNm/deg [DEGREES! CONVERT TO RADIANS!!]
+                    k_stiffness_rad = k_stiffness_deg  * (math.pi/180)
+                    torque_ff_fb = self._inverse_steering_dyn(sw_angle_ff_fb, k_stiffness_rad)
 
-            #print(round(Torque_FDCA*1000))
-            torque_integer = int(round(torque_fdca*1000))
-            print(self._controller_error[0], math.degrees(self._controller_error[1]), torque_integer)
-            self._data_out['sw_torque'] = torque_integer
-    
+                    torque_fdca = torque_loha + torque_ff_fb
 
-            #update variables
-            self.error_static_old = error_static
-            self._t2 = t1
+
+                    #print(round(Torque_FDCA*1000))
+                    torque_integer = int(round(torque_fdca*1000))
+                    print(self._controller_error[0], math.degrees(self._controller_error[1]), torque_integer)
+                    self._data_out['sw_torque'] = torque_integer
+
+
+                    #update variables
+                    self.error_static_old = error_static
+                    self._t2 = t1
+
+                except Exception as inst:
+                    print(inst)
+                    self._data_out['sw_torque'] = 0
+
+                return self._data_out
 
         else:
             self._data_out['sw_torque'] = 0
-
-        return self._data_out
+            return self._data_out
 
 
     def error(self, pos_car, heading_car, vel_car=np.array([0.0, 0.0, 0.0])):
         """Calculate the controller error"""
-        pos_car_future = pos_car + vel_car * self._t_lookahead  # linear extrapolation, should be updated
+        pos_car_future = pos_car + vel_car * self.settings.t_lookahead  # linear extrapolation, should be updated
 
         # Find waypoint index of the point that the car would be in the future (compared to own driven trajectory)
         index_closest_waypoint = self.find_closest_node(pos_car_future, self._trajectory[:, 1:3])
@@ -262,7 +261,7 @@ class FDCASWController(BaseSWController):
         return sw_angle_ff_des
 
 
-    def _lohs_func(self, _lohs, sw_angle_ff_des):
+    def lohs_func(self, _lohs, sw_angle_ff_des):
         sw_angle_ff = sw_angle_ff_des * _lohs
 
         return sw_angle_ff
@@ -283,54 +282,54 @@ class FDCASWController(BaseSWController):
 
 
 
-
-    def set_default_parameter_values(self):
-        """set the default controller parameters
-        In the near future, this should be from the controller settings class
-        """
-
-        # default values
-        self._t_lookahead = 0.0
-        self._k_y = 0.1
-        self._k_psi = 0.4
-        self._lohs = 1.0
-        self._sohf = 1.0
-        self._loha = 0.25
-
-        self.update_ui()
-
-        self.get_set_parameter_values_from_ui()
-
-        # load the default HCR
-        self._current_trajectory_name = 'default_hcr_trajectory.csv'
-        self.update_trajectory_list()
-        self.load_trajectory()
-
-    def get_set_parameter_values_from_ui(self):
-        """update controller parameters from ui"""
-
-        self._k_y = float(self._tuning_tab.edit_k_y.text())
-        self._k_psi = float(self._tuning_tab.edit_k_psi.text())
-        self._lohs = float(self._tuning_tab.edit_lohs.text())
-        self._sohf = float(self._tuning_tab.edit_sohf.text())
-        self._loha = self._tuning_tab.slider_loha.value() / 100
-
-        self.load_trajectory()
-
-        self.update_ui()
-
-    def update_ui(self):
-        """update the labels and line edits in the controller_tab with the latest values"""
-
-        self._tuning_tab.edit_k_y.setText(str(self._k_y))
-        self._tuning_tab.edit_k_psi.setText(str(self._k_psi))
-        self._tuning_tab.edit_lohs.setText(str(self._lohs))
-        self._tuning_tab.edit_sohf.setText(str(self._sohf))
-        self._tuning_tab.slider_loha.setValue(self._loha*100)
-
-        # update the current controller settings
-        self._tuning_tab.lbl_k_y.setText(str(self._k_y))
-        self._tuning_tab.lbl_k_psi.setText(str(self._k_psi))
-        self._tuning_tab.lbl_lohs.setText(str(self._lohs))
-        self._tuning_tab.lbl_sohf.setText(str(self._sohf))
-
+    #
+    # def set_default_parameter_values(self):
+    #     """set the default controller parameters
+    #     In the near future, this should be from the controller settings class
+    #     """
+    #
+    #     # default values
+    #     self._t_lookahead = 0.0
+    #     self.k_y = 0.1
+    #     self.k_psi = 0.4
+    #     self.lohs = 1.0
+    #     self.sohf = 1.0
+    #     self.loha = 0.25
+    #
+    #     self.update_ui()
+    #
+    #     self.get_set_parameter_values_from_ui()
+    #
+    #     # load the default HCR
+    #     self._current_trajectory_name = 'default_hcr_trajectory.csv'
+    #     self.update_trajectory_list()
+    #     self.load_trajectory()
+    #
+    # def get_set_parameter_values_from_ui(self):
+    #     """update controller parameters from ui"""
+    #
+    #     self.k_y = float(self._tuning_tab.edit_k_y.text())
+    #     self.k_psi = float(self._tuning_tab.edit_k_psi.text())
+    #     self.lohs = float(self._tuning_tab.edit_lohs.text())
+    #     self.sohf = float(self._tuning_tab.edit_sohf.text())
+    #     self.loha = self._tuning_tab.slider_loha.value() / 100
+    #
+    #     self.load_trajectory()
+    #
+    #     self.update_ui()
+    #
+    # def update_ui(self):
+    #     """update the labels and line edits in the controller_tab with the latest values"""
+    #
+    #     self._tuning_tab.edit_k_y.setText(str(self.k_y))
+    #     self._tuning_tab.edit_k_psi.setText(str(self.k_psi))
+    #     self._tuning_tab.edit_lohs.setText(str(self.lohs))
+    #     self._tuning_tab.edit_sohf.setText(str(self.sohf))
+    #     self._tuning_tab.slider_loha.setValue(self.loha*100)
+    #
+    #     # update the current controller settings
+    #     self._tuning_tab.lbl_k_y.setText(str(self.k_y))
+    #     self._tuning_tab.lbl_k_psi.setText(str(self.k_psi))
+    #     self._tuning_tab.lbl_lohs.setText(str(self.lohs))
+    #     self._tuning_tab.lbl_sohf.setText(str(self.sohf))
+    #

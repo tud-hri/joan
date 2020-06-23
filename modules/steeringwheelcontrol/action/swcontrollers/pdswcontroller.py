@@ -106,7 +106,7 @@ class PDSWController(BaseSWController):
 
     def process(self, vehicle_object, hw_data_in):
         try:
-            stiffness = hw_data_in['SensoDrive 1']['spring_stiffness']
+            stiffness = hw_data_in[vehicle_object.selected_input]['spring_stiffness']
         except:
             stiffness = 1
         if vehicle_object.selected_sw_controller == self.controller_list_key:
