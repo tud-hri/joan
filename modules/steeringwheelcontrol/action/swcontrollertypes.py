@@ -1,6 +1,6 @@
 import enum
 import os
-from .steeringwheelcontrolsettings import PDcontrollerSettings, FDCAcontrollerSettings, ManualcontrollerSettings
+from .steeringwheelcontrolsettings import PDcontrollerSettings, FDCAcontrollerSettings
 
 class SWControllerTypes(enum.Enum):
     """
