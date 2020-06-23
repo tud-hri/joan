@@ -12,7 +12,6 @@ class SteeringWheelControlSettings(JoanModuleSettings):
 
         self.pd_controllers = []
         self.fdca_controllers = []
-        self.manual_controllers = []
 
 
 
@@ -45,12 +44,6 @@ class SteeringWheelControlSettings(JoanModuleSettings):
             fdcacontroller_settings = FDCAcontrollerSettings()
             fdcacontroller_settings.set_from_loaded_dict(fdcacontroller_settings_dict)
             self.fdca_controllers.append(fdcacontroller_settings)
-
-        self.manualcontrollers = []
-        for manualcontroller in module_settings_to_load['manualcontrollers']:
-            manualcontroller_settings = ManualcontrollerSettings()
-            manualcontroller_settings.set_from_loaded_dict(manualcontroller)
-            self.manualcontrollers.append(manualcontroller_settings)
 
     @staticmethod
     def _copy_dict(source, destination):
