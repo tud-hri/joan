@@ -112,16 +112,16 @@ class SteeringWheelControlAction(JoanModuleAction):
         #set the module to idle because we need to reinitialize our controllers!
         self.state_machine.request_state_change(State.IDLE,'You can now add more and reinitialize controllers')
         #add appropriate settings
+        settings_for_controller = controller_type.settings
+
         if controller_type == SWControllerTypes.PD_SWCONTROLLER:
-            self.settings.pd_controllers.append(controller_type.settings)
+            self.settings.pd_controllers.append(settings_for_controller)
         if controller_type == SWControllerTypes.FDCA_SWCONTROLLER:
-            self.settings.fdca_controllers.append(controller_type.settings)
-
-
+            self.settings.fdca_controllers.append(settings_for_controller)
 
         number_of_controllers = sum([bool(controller_type.__str__() in k) for k in self._controllers.keys()]) + 1
         controller_list_key = controller_type.__str__() + ' ' + str(number_of_controllers)
-        self._controllers[controller_list_key] = controller_type.klass(self, controller_list_key, controller_type.settings)
+        self._controllers[controller_list_key] = controller_type.klass(self, controller_list_key, settings_for_controller)
         self._controllers[controller_list_key].get_controller_tab.controller_groupbox.setTitle(controller_list_key)
 
         self._controllers[controller_list_key].update_trajectory_list()
