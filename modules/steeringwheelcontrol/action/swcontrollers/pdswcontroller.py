@@ -18,10 +18,20 @@ class PDcontrollerSettingsDialog(QtWidgets.QDialog):
 
         uic.loadUi(self.controller.tuning_ui_file, self)
         self.btnbox_pd_controller_settings.button(self.btnbox_pd_controller_settings.RestoreDefaults).clicked.connect(self._set_default_values)
+        self.btn_apply_parameters.clicked.connect(self.update_parameters)
 
         self._display_values()
 
         self.show()
+
+    def update_parameters(self):
+        self.pd_controller_settings.t_lookahead = float(self.edit_t_ahead.text())
+        self.pd_controller_settings.k_p = float(self.edit_gain_prop.text())
+        self.pd_controller_settings.k_d = float(self.edit_gain_deriv.text())
+        self.pd_controller_settings.w_lat = float(self.edit_weight_lat.text())
+        self.pd_controller_settings.w_heading = float(self.edit_weight_heading.text())
+
+        self._display_values()
 
     def accept(self):
         self.pd_controller_settings.t_lookahead = float(self.edit_t_ahead.text())
@@ -29,7 +39,6 @@ class PDcontrollerSettingsDialog(QtWidgets.QDialog):
         self.pd_controller_settings.k_d = float(self.edit_gain_deriv.text())
         self.pd_controller_settings.w_lat = float(self.edit_weight_lat.text())
         self.pd_controller_settings.w_heading = float(self.edit_weight_heading.text())
-
 
         super().accept()
 

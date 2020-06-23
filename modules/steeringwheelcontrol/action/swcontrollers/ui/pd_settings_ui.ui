@@ -7,23 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>517</width>
-    <height>260</height>
+    <height>243</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>PD Controller Settings</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
-   <item row="2" column="1">
-    <widget class="QDialogButtonBox" name="btnbox_pd_controller_settings">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::RestoreDefaults|QDialogButtonBox::Save</set>
-     </property>
-    </widget>
-   </item>
    <item row="1" column="1">
     <widget class="QGroupBox" name="groupBox">
      <property name="font">
@@ -429,6 +419,23 @@
        </layout>
       </item>
      </layout>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QDialogButtonBox" name="btnbox_pd_controller_settings">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::RestoreDefaults|QDialogButtonBox::Save</set>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QPushButton" name="btn_apply_parameters">
+     <property name="text">
+      <string>Apply parameters without closing dialog</string>
+     </property>
     </widget>
    </item>
   </layout>

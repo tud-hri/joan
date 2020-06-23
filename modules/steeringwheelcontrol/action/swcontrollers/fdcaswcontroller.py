@@ -22,15 +22,27 @@ class FDCAcontrollerSettingsDialog(QtWidgets.QDialog):
         uic.loadUi(self.controller.tuning_ui_file, self)
         self.btnbox_fdca_controller_settings.button(self.btnbox_fdca_controller_settings.RestoreDefaults).clicked.connect(self._set_default_values)
         self.slider_loha.valueChanged.connect(self._update_loha_slider_label)
+        self.btn_apply_parameters.clicked.connect(self.update_parameters)
 
         self._display_values()
 
         self.show()
 
+    def update_parameters(self):
+        self.fdca_controller_settings.k_y = float(self.edit_k_y.text())
+        self.fdca_controller_settings.k_psi = float(self.edit_k_psi.text())
+        self.fdca_controller_settings.lohs = float(self.edit_lohs.text())
+        self.fdca_controller_settings.sohf = float(self.edit_sohf.text())
+        self.fdca_controller_settings.loha = self.slider_loha.value() / 100
+
+        self._display_values()
+
     def _update_loha_slider_label(self):
         self.lbl_loha_slider.setText(str(self.slider_loha.value()/100))
         # Uncomment this if you want to real time change the loha value when you slide the slider:
-        self.fdca_controller_settings.loha = self.slider_loha.value() / 100
+        if self.checkbox_tuning_loha.isChecked():
+            self.fdca_controller_settings.loha = self.slider_loha.value() / 100
+            self.lbl_loha.setText(str(self.fdca_controller_settings.loha))
 
     def accept(self):
         self.fdca_controller_settings.k_y = float(self.edit_k_y.text())
