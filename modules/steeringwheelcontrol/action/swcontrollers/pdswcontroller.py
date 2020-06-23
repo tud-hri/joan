@@ -104,12 +104,11 @@ class PDSWController(BaseSWController):
     def initialize(self):
         self.load_trajectory()
 
-    def do(self, vehicle_object, hw_data_in):
+    def process(self, vehicle_object, hw_data_in):
         try:
             stiffness = hw_data_in['SensoDrive 1']['spring_stiffness']
         except:
             stiffness = 1
-
         if vehicle_object.selected_sw_controller == self.controller_list_key:
             try:
                 """Perform the controller-specific calculations"""
@@ -142,12 +141,16 @@ class PDSWController(BaseSWController):
                 #update variables
                 self.error_static_old = error_static
                 self._t2 = t1
-            except:
+            except Exception as inst:
                 self._data_out['sw_torque'] = 0
+                print(inst)
 
             return self._data_out
         else:
-            pass
+            self._data_out['sw_torque'] = 0
+            return self._data_out
+
+
 
     def error(self, pos_car, heading_car, vel_car=np.array([0.0, 0.0, 0.0])):
         """Calculate the controller error"""

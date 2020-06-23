@@ -24,16 +24,23 @@ class SteeringWheelControlDialog(JoanModuleDialog):
         self._controller_type_dialog = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "sw_controllertype.ui"))
         self._controller_type_dialog.btnbox_sw_controller_type.accepted.connect(self.add_selected_controller_type)
 
-        # setup controller_tab widget
+        # add state change listener (for adding controllers)
+        self.module_action.state_machine.add_state_change_listener(self._state_change_listener)
 
-
-        #self.module_widget.lbl_current_controller.setText("Current controller: " + self.module_action.current_controller.name)
-        # self.module_widget.btn_apply_controller.clicked.connect(self.apply_selected_controller)
-        # self.module_widget.btn_update_vehicle_list.setEnabled(False)
-        # self.module_widget.combobox_vehicle_list.setEnabled(False)
-        # self.module_widget.btn_update_vehicle_list.clicked.connect(self.update_vehicle_list_dialog)
-
+        # attach add controller button to code
         self.module_widget.btn_add_sw_controller.clicked.connect(self._controller_type_selection)
+
+    def _state_change_listener(self):
+        """
+        This function is called upon whenever the change of the module changes it checks whether its allowed to add
+        hardware (only possible in ready or idle states
+
+        """
+        current_state = self.module_action.state_machine.current_state
+        if current_state == State.READY or current_state == State.IDLE:
+            self.module_widget.btn_add_sw_controller.setEnabled(True)
+        else:
+            self.module_widget.btn_add_sw_controller.setEnabled(False)
 
     def _controller_type_selection(self):
         self._controller_type_dialog.combobox_sw_controller_type.clear()

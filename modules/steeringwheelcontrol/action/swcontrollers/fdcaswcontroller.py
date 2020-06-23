@@ -3,13 +3,63 @@ import os
 import math
 import time
 
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, uic
 
 from modules.joanmodules import JOANModules
 from modules.steeringwheelcontrol.action.swcontrollertypes import SWControllerTypes
+from modules.steeringwheelcontrol.action.steeringwheelcontrolsettings import FDCAcontrollerSettings
 from .baseswcontroller import BaseSWController
 from utils.utils import Biquad
 import numpy as np
+
+
+class FDCAcontrollerSettingsDialog(QtWidgets.QDialog):
+    def __init__(self, fdca_controller_settings, controller, parent=None):
+        super().__init__(parent)
+        self.controller = controller
+        self.fdca_controller_settings = fdca_controller_settings
+
+        uic.loadUi(self.controller.tuning_ui_file, self)
+        self.btnbox_fdca_controller_settings.button(self.btnbox_fdca_controller_settings.RestoreDefaults).clicked.connect(self._set_default_values)
+        self.slider_loha.valueChanged.connect(self._update_loha_slider_label)
+
+        self._display_values()
+
+        self.show()
+
+    def _update_loha_slider_label(self):
+        self.lbl_loha.setText(str(self.slider_loha.value()/100))
+
+    def accept(self):
+        self.fdca_controller_settings.k_y = float(self.edit_k_y.text())
+        self.fdca_controller_settings.k_psi = float(self.edit_k_psi.text())
+        self.fdca_controller_settings.lohs = float(self.edit_lohs.text())
+        self.fdca_controller_settings.sohf = float(self.edit_sohf.text())
+        self.fdca_controller_settings.loha = self.slider_loha.value() / 100
+
+        super().accept()
+
+    def _display_values(self, settings_to_display=None):
+        if not settings_to_display:
+            settings_to_display = self.fdca_controller_settings
+
+        # update the current controller settings
+        self.lbl_k_y.setText(str(settings_to_display.k_y))
+        self.lbl_k_psi.setText(str(settings_to_display.k_psi))
+        self.lbl_lohs.setText(str(settings_to_display.lohs))
+        self.lbl_sohf.setText(str(settings_to_display.sohf))
+
+        self.edit_k_y.setText(str(settings_to_display.k_y))
+        self.edit_k_psi.setText(str(settings_to_display.k_psi))
+        self.edit_lohs.setText(str(settings_to_display.lohs))
+        self.edit_sohf.setText(str(settings_to_display.sohf))
+        self.slider_loha.setValue(settings_to_display.loha * 100)
+
+
+
+
+    def _set_default_values(self):
+        self._display_values(FDCAcontrollerSettings())
 
 class FDCASWController(BaseSWController):
 
@@ -21,15 +71,15 @@ class FDCASWController(BaseSWController):
         # controller list key
         self.controller_list_key = controller_list_key
         self.settings = settings
-        # Initialize local Variables
-        self._hcr_list = []
-        self._hcr = []
-        self._t_lookahead = 0.0
-        self._k_y = 0.1
-        self._k_psi = 0.4
-        self._lohs = 1.0
-        self._sohf = 1.0
-        self._loha = 0.0
+        # # Initialize local Variables
+        # self._hcr_list = []
+        # self._hcr = []
+        # self._t_lookahead = 0.0
+        # self._k_y = 0.1
+        # self._k_psi = 0.4
+        # self._lohs = 1.0
+        # self._sohf = 1.0
+        # self._loha = 0.0
 
         self._t2 = 0
 
@@ -37,7 +87,6 @@ class FDCASWController(BaseSWController):
         self._bq_filter_velocity = Biquad()
 
         self.stiffness = 1
-
 
         # controller errors
         # [0]: lateral error
@@ -47,28 +96,32 @@ class FDCASWController(BaseSWController):
         self._controller_error = np.array([0.0, 0.0, 0.0, 0.0])
         self.error_static_old = np.array([0.0, 0.0])
 
-        self.update_trajectory_list()
+        # Get the target trajectory name from settings
+        self.selected_reference_trajectory = []
 
-        self._current_trajectory_name = ''
-        self.update_trajectory_list()
+        # self.set_default_parameter_values()
+        self._open_settings_dialog()
 
-        # connect widgets
-        self._tuning_tab.btn_apply.clicked.connect(self.get_set_parameter_values_from_ui)
-        self._tuning_tab.btn_reset.clicked.connect(self.set_default_parameter_values)
-        self._tuning_tab.slider_loha.valueChanged.connect(
-            lambda: self._tuning_tab.lbl_loha.setText(str(self._tuning_tab.slider_loha.value()/100.0))
-        )
-        self._tuning_tab.btn_update_hcr_list.clicked.connect(self.update_trajectory_list)
+        self._controller_tab.btn_settings_sw_controller.clicked.connect(self._open_settings_dialog)
+        self._controller_tab.btn_update_hcr_list.clicked.connect(self.update_trajectory_list)
 
-        self.set_default_parameter_values()
+        # immediately load the correct HCR after index change
+        self._controller_tab.cmbbox_hcr_selection.currentIndexChanged.connect(self.load_trajectory)
 
     @property
     def get_controller_list_key(self):
         return self.controller_list_key
 
-    def do(self, data_in, hw_data_in):
+    def _open_settings_dialog(self):
+        self.settings_dialog = FDCAcontrollerSettingsDialog(self.settings, SWControllerTypes.FDCA_SWCONTROLLER)
+
+    def initialize(self):
+        self.load_trajectory()
+
+    def process(self, data_in, hw_data_in):
         """In manual, the controller has no additional control. We could add some self-centering torque, if we want.
         For now, steeringwheel torque is zero"""
+
         if 'SensoDrive 1' in hw_data_in:
             stiffness = hw_data_in['SensoDrive 1']['spring_stiffness']
             sw_angle = hw_data_in['SensoDrive 1']['SteeringInput']

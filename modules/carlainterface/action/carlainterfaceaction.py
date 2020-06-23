@@ -91,24 +91,18 @@ class CarlainterfaceAction(JoanModuleAction):
         " This function is linked to the state change of the hardware manager and updates the state whenever it changes"
 
         self.hardware_manager_state = self.status.get_module_current_state(JOANModules.HARDWARE_MANAGER)
-
-        for vehicle in self.vehicles:
-            vehicle.get_available_inputs()
+        if self.hardware_manager_state is not State.RUNNING:
+            for vehicle in self.vehicles:
+                vehicle.get_available_inputs()
 
     def _sw_controller_state_change_listener(self):
         """This function is linked to the state change of the sw_controller, if new controllers are initialized they will be
         automatically added to a variable which contains the options in the SW controller combobox"""
-        self._available_controllers.clear()
         self.sw_controller_state = self.status.get_module_current_state(JOANModules.STEERING_WHEEL_CONTROL)
-        # print(self.sw_controller_state)
-        self._data_from_sw_controller = self.read_news(JOANModules.STEERING_WHEEL_CONTROL)
-        for controllers in self._data_from_sw_controller:
-            self._available_controllers.append(controllers)
 
-        for vehicle in self.vehicles:
-            vehicle._vehicle_tab.combo_sw_controller.clear()
-            vehicle._vehicle_tab.combo_sw_controller.addItem('None (Manual)')
-            vehicle._vehicle_tab.combo_sw_controller.addItems(self._available_controllers)
+        if self.sw_controller_state is not State.RUNNING:
+            for vehicle in self.vehicles:
+                    vehicle.get_available_controllers()
 
 
 
@@ -235,6 +229,12 @@ class CarlainterfaceAction(JoanModuleAction):
 
         for vehicle in self.vehicles:
             vehicle.get_available_inputs()
+            vehicle.get_available_controllers()
+
+        " only make controller available for first car for now"
+        for vehicle in self.vehicles[1:]:
+            vehicle.vehicle_tab.combo_sw_controller.setEnabled(False)
+
 
         return self.vehicles
 
@@ -262,6 +262,9 @@ class CarlainterfaceAction(JoanModuleAction):
 
     def stop(self):
         try:
+            for vehicle in self.vehicles:
+                vehicle.get_available_inputs()
+                vehicle.get_available_controllers()
             self.state_machine.request_state_change(State.READY, "You can now add vehicles and start the module")
         except RuntimeError:
             return False
@@ -275,6 +278,7 @@ class Carlavehicle():
         self._vehicle_tab.group_car.setTitle('Car ' + str(carnr+1))
         self._spawned = False
         self._hardware_data = {}
+        self._sw_controller_data = {}
         self._vehicle_nr = 'Car ' + str(carnr+1)
         self._sw_controller = self._vehicle_tab.combo_sw_controller.currentText()
 
@@ -327,9 +331,15 @@ class Carlavehicle():
         self._vehicle_tab.combo_input.clear()
         self._vehicle_tab.combo_input.addItem('None')
         self._hardware_data = self.module_action.read_news(JOANModules.HARDWARE_MANAGER)
-        print(self._hardware_data)
         for keys in self._hardware_data:
             self._vehicle_tab.combo_input.addItem(str(keys))
+
+    def get_available_controllers(self):
+        self._vehicle_tab.combo_sw_controller.clear()
+        self._vehicle_tab.combo_sw_controller.addItem('None')
+        self._sw_controller_data = self.module_action.read_news(JOANModules.STEERING_WHEEL_CONTROL)
+        for keys in self._sw_controller_data:
+            self._vehicle_tab.combo_sw_controller.addItem(str(keys))
         
 
     def destroy_inputs(self):
@@ -365,7 +375,6 @@ class Carlavehicle():
             self._vehicle_tab.btn_destroy.setEnabled(False)
             self._vehicle_tab.spin_spawn_points.setEnabled(True)
             self._vehicle_tab.comboCartype.setEnabled(True)
-            self.destroy_inputs()
         except Exception as inst:
             self._spawned = True
             print('Could not destroy spawn car:', inst)

@@ -56,6 +56,8 @@ class HardwaremanagerAction(JoanModuleAction):
         self.carla_interface_data = self.read_news(JOANModules.CARLA_INTERFACE)
         self.carla_interface_status = self.status.get_module_current_state(JOANModules.CARLA_INTERFACE)
 
+        self.sw_controller_data = self.read_news(JOANModules.STEERING_WHEEL_CONTROL)
+
         for inputs in self.input_devices_classes:
             self.data[inputs] = self.input_devices_classes[inputs].process()
             if 'SensoDrive' in inputs:

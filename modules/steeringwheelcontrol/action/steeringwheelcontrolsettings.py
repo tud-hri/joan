@@ -114,7 +114,12 @@ class PDcontrollerSettings:
 
 class FDCAcontrollerSettings:
     def __init__(self):
-        self.kp_fdca = 1
+        self.t_lookahead = 0.0
+        self.k_y = 0.1
+        self.k_psi = 0.4
+        self.lohs = 1.0
+        self.sohf = 1.0
+        self.loha = 0.0
 
     def as_dict(self):
         return self.__dict__

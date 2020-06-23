@@ -19,15 +19,11 @@ class CarlainterfaceDialog(JoanModuleDialog):
 
         self.module_widget.spinVehicles.valueChanged.connect(lambda value: self.update_vehicles(value))
         self.module_action.state_machine.add_state_change_listener(self._state_change_listener)
-        #self.module_action.hardware_manager_state_machine.add_state_change_listener(self._hardware_state_change_listener)
 
         self.module_widget.btnDisconnect.clicked.connect(self.disconnect)
         self.module_widget.groupVehicles.setEnabled(False)
         self.module_widget.spinVehicles.setEnabled(False)
         self.module_widget.btnDisconnect.setEnabled(False)
-
-    def _hardware_state_change_listener(self):
-        self._state_change_listener()
 
     def _state_change_listener(self):
         """"
@@ -84,6 +80,9 @@ class CarlainterfaceDialog(JoanModuleDialog):
 
         self.old_nr_cars = value
 
+        #also update spinboxes
+        self.module_action._hardware_state_change_listener()
+        self.module_action._sw_controller_state_change_listener()
         self.module_action.data['vehicles'] = self.vehicles
         self.module_action.write_news(self.module_action.data)
         

@@ -293,11 +293,6 @@ class JOAN_SensoDrive(BaseInput):
         self._sensodrive_tab.btn_on_off.setText('Off')
 
     def process(self):
-        # # If there are cars in the simulation add them to the controllable car combobox
-        if self._carla_interface_data['vehicles']:
-            self._carla_interface_data = self._action.read_news(JOANModules.CARLA_INTERFACE)
-
-
         # Reverse
         self._data['Reverse'] = 0
         # Handbrake
@@ -305,8 +300,10 @@ class JOAN_SensoDrive(BaseInput):
 
        #check whether we have a sw_controller that should be updated
         self._steering_wheel_control_data = self._action.read_news(JOANModules.STEERING_WHEEL_CONTROL)
+        self._carla_interface_data = self._action.read_news(JOANModules.CARLA_INTERFACE)
+
         try:
-            self.steering_wheel_parameters['torque'] = self._steering_wheel_control_data['sw_torque']
+            self.steering_wheel_parameters['torque'] = self._steering_wheel_control_data[self._carla_interface_data['vehicles'][0].selected_sw_controller]['sw_torque']
         except:
             self.steering_wheel_parameters['torque'] = 0
      
