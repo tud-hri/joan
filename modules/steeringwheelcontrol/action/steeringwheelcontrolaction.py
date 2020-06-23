@@ -47,7 +47,15 @@ class SteeringWheelControlAction(JoanModuleAction):
             else:
                 self.data[controller] = None
 
+        if self.state_machine.current_state is State.RUNNING:
+            for controller in self._controllers:
+                self._controllers[controller].get_controller_tab.cmbbox_hcr_selection.setEnabled(False)
+                self._controllers[controller].get_controller_tab.btn_update_hcr_list.setEnabled(False)
 
+        else:
+            for controller in self._controllers:
+                self._controllers[controller].get_controller_tab.cmbbox_hcr_selection.setEnabled(True)
+                self._controllers[controller].get_controller_tab.btn_update_hcr_list.setEnabled(True)
 
         self.write_news(self.data)
 
