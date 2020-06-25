@@ -2,7 +2,7 @@ import os
 
 from PyQt5 import QtWidgets, uic
 
-from process import State
+# from process import State
 from process.joanmoduledialog import JoanModuleDialog
 from process.joanmoduleaction import JoanModuleAction
 from modules.joanmodules import JOANModules
