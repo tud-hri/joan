@@ -46,8 +46,7 @@ class DatarecorderAction(JoanModuleAction):
                                       settings=self.get_module_settings(JOANModules.DATA_RECORDER))
 
     def initialize_file(self):
-        if self.status.get_module_current_state(JOANModules.DATA_RECORDER) is State.READY:
-            self.filename = self._create_filename(extension='csv')
+        self.filename = self._create_filename(extension='csv')
 
     def do(self):
         """
@@ -68,6 +67,7 @@ class DatarecorderAction(JoanModuleAction):
         try:
             self.initialize_file()
             self.state_machine.request_state_change(State.READY)
+
             # Try and get the current position of car if you want to record a trajectory
             self.trajectory_recorder.initialize_trajectory_recorder_variables()
 
@@ -168,11 +168,6 @@ class DatarecorderAction(JoanModuleAction):
 
     def _handle_module_settings(self, module_key, item):
         self.settings.variables_to_save[module_key][item.text()] = item.isChecked()
-
-    #def _clicked_btn_initialize(self):
-    #    """initialize the data recorder (mainly setting the data directory and data file prefix"""
-    #    self.share_settings(self.settings)
-    #    self.state_machine.request_state_change(State.READY)
 
 
 class Trajectory_recorder():
