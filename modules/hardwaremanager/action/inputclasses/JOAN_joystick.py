@@ -6,6 +6,7 @@ from PyQt5 import uic, QtWidgets, QtCore
 from modules.hardwaremanager.action.hardwaremanagersettings import JoyStickSettings
 from modules.hardwaremanager.action.inputclasses.baseinput import BaseInput
 from modules.joanmodules import JOANModules
+from process.statesenum import State
 
 
 class JoystickSettingsDialog(QtWidgets.QDialog):
@@ -190,6 +191,7 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
 class JOAN_Joystick(BaseInput):
     def __init__(self, hardware_manager_action, joystick_tab, settings: JoyStickSettings):
         super().__init__(hardware_manager_action)
+        self.module_action = hardware_manager_action
         self.currentInput = 'Joystick'
         self._joystick_tab = joystick_tab
         self.settings = settings
@@ -230,20 +232,26 @@ class JOAN_Joystick(BaseInput):
     def remove_func(self):
         self.remove_tab(self._joystick_tab)
 
+    def disable_remove_button(self):
+        if self._joystick_tab.btn_remove_hardware.isEnabled() is True:
+            self._joystick_tab.btn_remove_hardware.setEnabled(False)
+        else:
+            pass
+
+    def enable_remove_button(self):
+        if self._joystick_tab.btn_remove_hardware.isEnabled() is False:
+            self._joystick_tab.btn_remove_hardware.setEnabled(True)
+        else:
+            pass
+
     def process(self):
         joystick_data = []
         if self._carla_interface_data['vehicles'] is not None:
             self._carla_interface_data = self._action.read_news(JOANModules.CARLA_INTERFACE)
 
-            for vehicles in self._carla_interface_data['vehicles']:
-                if vehicles.selected_input == self._joystick_tab.groupBox.title():
-                    self._joystick_tab.btn_remove_hardware.setEnabled(False)
-                    break
-                else:
-                    self._joystick_tab.btn_remove_hardware.setEnabled(True)
 
         if self._joystick_open:
-            joystick_data = self._joystick.read(self.settings.degrees_of_freedom)
+            joystick_data = self._joystick.read(self.settings.degrees_of_freedom, 1)
 
         if joystick_data:
             # print(joystick_data)
@@ -253,7 +261,7 @@ class JOAN_Joystick(BaseInput):
             else:
                 input_value = 100 - round(((joystick_data[self.settings.gas_channel]) / 128) * 100)
                 if input_value > 0:
-                    self.throttle = self.throttle
+                    self.throttle = input_value
                     self.brake = 0
                 elif input_value < 0:
                     self.throttle = 0

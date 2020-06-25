@@ -5,9 +5,9 @@ from PyQt5 import QtCore
 from modules.joanmodules import JOANModules
 from process.news import News
 from process.settings import Settings
-from process.statehandler import StateHandler
-from process.states import MasterStates
-from process.status import Status
+#from process.statehandler import StateHandler
+#from process.states import MasterStates
+#from process.status import Status
 
 
 class JoanHQAction(QtCore.QObject):
@@ -57,20 +57,8 @@ class JoanHQAction(QtCore.QObject):
         if not parent:
             parent = self.window
 
-        if module is JOANModules.TRAJECTORY_RECORDER: 
-            # old style
-            module_action = None
-
-            module_widget = module.dialog()
-            module_widget.setObjectName(name)
-            module_dialog = module_widget
-        else:
-            '''
-            module_action = module.action(self.master_state_handler, millis=millis)
-            module_dialog = module.dialog(module_action, self.master_state_handler, parent=parent)
-            '''
-            module_action = module.action(millis=millis)
-            module_dialog = module.dialog(module_action, parent=parent)
+        module_action = module.action(millis=millis)
+        module_dialog = module.dialog(module_action, parent=parent)
 
         self.window.add_module(module_dialog, module)
 

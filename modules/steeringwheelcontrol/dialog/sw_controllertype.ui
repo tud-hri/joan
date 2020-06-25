@@ -6,28 +6,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>220</width>
+    <width>229</width>
     <height>98</height>
    </rect>
   </property>
+  <property name="font">
+   <font>
+    <pointsize>14</pointsize>
+   </font>
+  </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Controller Type Selection</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
-    <widget class="QLabel" name="label_select">
-     <property name="font">
-      <font>
-       <pointsize>11</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>Please select the type of input:</string>
-     </property>
-    </widget>
-   </item>
    <item row="2" column="0">
-    <widget class="QDialogButtonBox" name="btns_hardware_inputtype">
+    <widget class="QDialogButtonBox" name="btnbox_sw_controller_type">
      <property name="font">
       <font>
        <pointsize>11</pointsize>
@@ -41,33 +34,25 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="0">
-    <widget class="QComboBox" name="combo_hardware_inputtype">
+   <item row="0" column="0">
+    <widget class="QLabel" name="label">
      <property name="font">
       <font>
        <pointsize>11</pointsize>
       </font>
      </property>
-     <item>
-      <property name="text">
-       <string>Keyboard</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Mouse</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>SensoDrive</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>USB Joystick (HID)</string>
-      </property>
-     </item>
+     <property name="text">
+      <string>Please select the controller type:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QComboBox" name="combobox_sw_controller_type">
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+      </font>
+     </property>
     </widget>
    </item>
   </layout>
@@ -75,7 +60,7 @@
  <resources/>
  <connections>
   <connection>
-   <sender>btns_hardware_inputtype</sender>
+   <sender>btnbox_sw_controller_type</sender>
    <signal>accepted()</signal>
    <receiver>Dialog</receiver>
    <slot>accept()</slot>
@@ -91,7 +76,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>btns_hardware_inputtype</sender>
+   <sender>btnbox_sw_controller_type</sender>
    <signal>rejected()</signal>
    <receiver>Dialog</receiver>
    <slot>reject()</slot>

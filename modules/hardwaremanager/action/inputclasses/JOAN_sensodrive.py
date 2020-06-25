@@ -78,7 +78,7 @@ class JOAN_SensoDrive(BaseInput):
         self._sensodrive_tab.btn_on_off.clicked.connect(self.on_off)
         self._sensodrive_tab.btn_on_off.setStyleSheet("background-color: orange")
         self._sensodrive_tab.btn_on_off.setText('Off')
-        self._sensodrive_tab.btn_on_off.setEnabled(False)
+        self._sensodrive_tab.btn_on_off.setEnabled(True)
 
         # Initialize message structures
         self.steering_wheel_message = TPCANMsg()
@@ -102,6 +102,14 @@ class JOAN_SensoDrive(BaseInput):
 
         self.settings_dialog = SensoDriveSettingsDialog(self.settings)
         self.settings_dialog.accepted.connect(self.update_settings)
+
+        self.steering_wheel_parameters['torque'] = 0  # (You dont want to start to turn the wheel at startup)
+        self.steering_wheel_parameters['friction'] = self.settings.friction
+        self.steering_wheel_parameters['damping'] = self.settings.damping
+        self.steering_wheel_parameters['spring_stiffness'] = self.settings.spring_stiffness
+
+        self.PCAN_channel = PCAN_USBBUS1
+
 
     def update_settings(self):
         self.endstops_bytes = int.to_bytes(self.settings.endstops, 2, byteorder='little', signed=True)
@@ -141,7 +149,7 @@ class JOAN_SensoDrive(BaseInput):
         self.torque_limit_between_endstops_bytes = int.to_bytes(self.settings.torque_limit_between_endstops, 1, byteorder='little', signed=False)
         self.torque_limit_beyond_endstops_bytes = int.to_bytes(self.settings.torque_limit_beyond_endstops, 1, byteorder='little', signed=False)
 
-        self.PCAN_channel = PCAN_USBBUS1
+
         if self.pcan_initialization_result is None:
             self.pcan_initialization_result = self.PCAN_object.Initialize(
                 self.PCAN_channel, PCAN_BAUD_1M)
@@ -201,7 +209,13 @@ class JOAN_SensoDrive(BaseInput):
             self._pcan_error = False
 
     def _toggle_on_off(self, connected):
-        self._sensodrive_tab.btn_on_off.setEnabled(connected)
+        #self._sensodrive_tab.btn_on_off.setEnabled(connected)
+        if connected == False:
+            try:
+                self.on_to_off()
+            except:
+                pass
+
 
     def _open_settings_dialog(self):
         self.settings_dialog.show()
@@ -213,6 +227,18 @@ class JOAN_SensoDrive(BaseInput):
         except:
             pass
         self.remove_tab(self._sensodrive_tab)
+
+    def disable_remove_button(self):
+        if self._sensodrive_tab.btn_remove_hardware.isEnabled() is True:
+            self._sensodrive_tab.btn_remove_hardware.setEnabled(False)
+        else:
+            pass
+
+    def enable_remove_button(self):
+        if self._sensodrive_tab.btn_remove_hardware.isEnabled() is False:
+            self._sensodrive_tab.btn_remove_hardware.setEnabled(True)
+        else:
+            pass
 
     def on_off(self):
         if self._pcan_error:
@@ -267,17 +293,6 @@ class JOAN_SensoDrive(BaseInput):
         self._sensodrive_tab.btn_on_off.setText('Off')
 
     def process(self):
-        # # If there are cars in the simulation add them to the controllable car combobox
-        if self._carla_interface_data['vehicles']:
-            self._carla_interface_data = self._action.read_news(JOANModules.CARLA_INTERFACE)
-
-            for vehicles in self._carla_interface_data['vehicles']:
-                if vehicles.selected_input == self._sensodrive_tab.groupBox.title():
-                    self._sensodrive_tab.btn_remove_hardware.setEnabled(False)
-                    break
-                else:
-                    self._sensodrive_tab.btn_remove_hardware.setEnabled(True)
-
         # Reverse
         self._data['Reverse'] = 0
         # Handbrake
@@ -285,7 +300,12 @@ class JOAN_SensoDrive(BaseInput):
 
        #check whether we have a sw_controller that should be updated
         self._steering_wheel_control_data = self._action.read_news(JOANModules.STEERING_WHEEL_CONTROL)
-        self.steering_wheel_parameters['torque'] = self._steering_wheel_control_data['sw_torque']
+        self._carla_interface_data = self._action.read_news(JOANModules.CARLA_INTERFACE)
+
+        try:
+            self.steering_wheel_parameters['torque'] = self._steering_wheel_control_data[self._carla_interface_data['vehicles'][0].selected_sw_controller]['sw_torque']
+        except:
+            self.steering_wheel_parameters['torque'] = 0
      
         #request and set steering wheel data
         self.write_message_steering_wheel(self.PCAN_object, self.steering_wheel_message, self.steering_wheel_parameters)

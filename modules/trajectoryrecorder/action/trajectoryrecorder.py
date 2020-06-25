@@ -1,4 +1,3 @@
-from process import Control
 import numpy as np
 
 class TrajectoryrecorderAction(Control):
