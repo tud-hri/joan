@@ -9,7 +9,9 @@ from process.joanmoduleaction import JoanModuleAction
 # from process.joanhq.action.joanhqaction import JoanHQAction
 # from process.statehandler import StateHandler
 # from process.states import MasterStates
+from process.statesenum import State
 from process.status import Status
+
 from .performancemonitordialog import PerformanceMonitorDialog
 from .settingsoverviewdialog import SettingsOverviewDialog
 
@@ -26,9 +28,11 @@ class JoanHQWindow(QtWidgets.QMainWindow):
 
         # state, statehandlers
         self.singleton_status = Status()
+        '''
         self.master_state_handler = self.singleton_status._master_state_handler
         self.master_states = self.singleton_status._master_states
         self.master_state_handler.state_changed.connect(self.handle_master_state)
+        '''
 
         # path to resources folder
         self._path_resources = os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../", "resources"))
@@ -37,7 +41,7 @@ class JoanHQWindow(QtWidgets.QMainWindow):
         # setup
         self.setWindowTitle('JOAN HQ')
         self._main_widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "joanhq.ui"))
-        self._main_widget.lbl_master_state.setText(self.master_state_handler.get_current_state().name)
+        #self._main_widget.lbl_master_state.setText(self.master_state_handler.get_current_state().name)
 
         self.setCentralWidget(self._main_widget)
         self.resize(400, 400)
@@ -50,6 +54,7 @@ class JoanHQWindow(QtWidgets.QMainWindow):
 
         # self._main_widget.btn_initialize_all.clicked.connect(self.action.initialize_all)
         self._main_widget.btn_initialize_all.clicked.connect(self.initialize_all)
+
         # self._main_widget.btn_stop_all.clicked.connect(self.action.stop_all)
         self._main_widget.btn_stop_all.clicked.connect(self.stop_all)
 
@@ -69,18 +74,54 @@ class JoanHQWindow(QtWidgets.QMainWindow):
         self._view_menu.addAction('Show all current settings..', self.show_settings_overview)
         self._view_menu.addAction('Show performance monitor..', self.show_performance_monitor)
 
+    def initialize_all(self):
+        """
+        repaint is essential to show the states
+        """
+        self.action.initialize_all()
+        self._main_widget.repaint()
+
+    def stop_all(self):
+        """
+        repaint is essential to show the states
+        """
+        self.action.stop_all()
+        self._main_widget.repaint()
+
+    def emergency(self):
+        """
+        repaint is essential to show the states
+        """
+        self.action.emergency()
+        self._main_widget.repaint()
+
+    '''
     def emergency(self):
         """ Needed here to show what is is happening in the Action-part """
-        self.master_state_handler.request_state_change(self.master_states.EMERGENCY)
+        for module in JOANModules:
+            module_state_machine = self.singleton_status.get_module_state_machine(module)
+            if module_state_machine is not None:
+                module_state_machine.request_state_change(State.IDLE)
+        #self.master_state_handler.request_state_change(self.master_states.EMERGENCY)
 
     def initialize_all(self):
         """ Needed here to show what is is happening in the Action-part """
-        self.master_state_handler.request_state_change(self.master_states.INITIALIZING)
+        for module in JOANModules:
+            module_state_machine = self.singleton_status.get_module_state_machine(module)
+            if module_state_machine is not None:
+                module_state_machine.request_state_change(State.READY)
+        #self.master_state_handler.request_state_change(self.master_states.INITIALIZING)
 
     def stop_all(self):
         """ Needed here to show what is is happening in the Action-part """
-        self.master_state_handler.request_state_change(self.master_states.STOP)
+        for module in JOANModules:
+            module_state_machine = self.singleton_status.get_module_state_machine(module)
+            if module_state_machine is not None:
+                module_state_machine.request_state_change(State.IDLE)
+        #self.master_state_handler.request_state_change(self.master_states.STOP)
+    '''
 
+    '''
     def handle_master_state(self, state):
         """
         Handle the state transition by updating the status label and have the
@@ -103,6 +144,7 @@ class JoanHQWindow(QtWidgets.QMainWindow):
         except Exception as inst:
             print(inst)
         self._main_widget.lbl_master_state.setText(self.master_state_handler.get_current_state().name)
+    '''
 
     def add_module(self, module_dialog, module_enum):
         """Create a widget and add to main window"""
@@ -145,6 +187,10 @@ class JoanHQWindow(QtWidgets.QMainWindow):
         self._main_widget.module_list_layout.addWidget(widget)
         self._main_widget.adjustSize()
         self.adjustSize()
+
+        # with state_machine
+        module_dialog.module_action.state_machine.add_state_change_listener(
+            lambda: widget.lbl_state.setText(str(module_dialog.module_action.state_machine.current_state)))
 
         # and to the list
         self._module_cards[name] = widget

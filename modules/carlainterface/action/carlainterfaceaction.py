@@ -35,7 +35,6 @@ except IndexError:
 
 class CarlainterfaceAction(JoanModuleAction):
     def __init__(self, millis=5):
-    #def __init__(self, master_state_handler, millis=5):
         super().__init__(module=JOANModules.CARLA_INTERFACE, millis=millis)
 
         #Initialize Variables
@@ -242,12 +241,15 @@ class CarlainterfaceAction(JoanModuleAction):
         """
         This function is called before the module is started
         """
-        if(self.state_machine.current_state is State.IDLE):
+        if 'carla' not in sys.modules.keys():
+            self.state_machine.request_state_change(State.ERROR, "carla module is NOT imported, make sure the API is available and restart the program")
+
+        if self.state_machine.current_state is State.IDLE:
 
             self.connect()
             self.state_machine.request_state_change(State.READY, "You can now add vehicles and start module")
-        elif (self.state_machine.current_state is State.ERROR):
-            self.state_machine.request_state_change(State.IDLE)
+        #elif self.state_machine.current_state is State.ERROR and 'carla' in sys.modules.keys():
+        #    self.state_machine.request_state_change(State.IDLE)
         return super().initialize()
 
     def start(self):
