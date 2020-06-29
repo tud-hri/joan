@@ -62,7 +62,7 @@
         </font>
        </property>
        <property name="title">
-        <string>Vehicles</string>
+        <string>Agents</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -136,7 +136,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Amount of vehicles:</string>
+        <string>Amount of Agents:</string>
        </property>
       </widget>
      </item>

@@ -40,10 +40,9 @@ class SteeringWheelControlAction(JoanModuleAction):
     def _state_change_listener(self):
         sim_data_in = self.read_news(JOANModules.CARLA_INTERFACE)
         hw_data_in = self.read_news(JOANModules.HARDWARE_MANAGER)
-
         for controller in self._controllers:
-            if sim_data_in['vehicles'] is not None:
-                self.data[controller] = self._controllers[controller].process(sim_data_in['vehicles'][0], hw_data_in)
+            if sim_data_in['agents'] is True:
+                self.data[controller] = self._controllers[controller].process(sim_data_in['agents']['Car 1'], hw_data_in)
             else:
                 self.data[controller] = None
 

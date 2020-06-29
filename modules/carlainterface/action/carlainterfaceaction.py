@@ -39,7 +39,8 @@ class CarlainterfaceAction(JoanModuleAction):
 
         #Initialize Variables
         self.data = {}
-        self.data['vehicles'] = None
+        # self.data['vehicles'] = {} #CAN BE DEPRECATED LATER BUT FOR NOW STILL NEED IT
+        self.data['agents'] = {}
         self.data['connected'] = False
         self.write_news(news=self.data)
         self.time = QtCore.QTime()
@@ -141,7 +142,9 @@ class CarlainterfaceAction(JoanModuleAction):
         This function is called every controller tick of this module implement your main calculations here
         """
         if self.connected:
-            self.data['vehicles'] = self.vehicles
+            # self.data['vehicles'] = self.vehicles
+            for agent in self.vehicles:
+                self.data['agents'][agent.vehicle_nr] = agent.unpack_vehicle_data()
             self.write_news(news=self.data)
             self._data_from_hardware = self.read_news(JOANModules.HARDWARE_MANAGER)
             try:
@@ -248,8 +251,8 @@ class CarlainterfaceAction(JoanModuleAction):
 
             self.connect()
             self.state_machine.request_state_change(State.READY, "You can now add vehicles and start module")
-        #elif self.state_machine.current_state is State.ERROR and 'carla' in sys.modules.keys():
-        #    self.state_machine.request_state_change(State.IDLE)
+        elif self.state_machine.current_state is State.ERROR and 'carla' in sys.modules.keys():
+           self.state_machine.request_state_change(State.IDLE)
         return super().initialize()
 
     def start(self):
@@ -284,7 +287,7 @@ class Carlavehicle():
         self._vehicle_nr = 'Car ' + str(carnr+1)
         self._sw_controller = self._vehicle_tab.combo_sw_controller.currentText()
 
-
+        self.car_data = {}
 
         self._vehicle_tab.spin_spawn_points.setRange(0, nr_spawn_points)
         self._vehicle_tab.spin_spawn_points.lineEdit().setReadOnly(True)
@@ -342,7 +345,52 @@ class Carlavehicle():
         self._sw_controller_data = self.module_action.read_news(JOANModules.STEERING_WHEEL_CONTROL)
         for keys in self._sw_controller_data:
             self._vehicle_tab.combo_sw_controller.addItem(str(keys))
-        
+
+    def unpack_vehicle_data(self):
+        try:
+            #spatial:
+            self.car_data['x_pos'] = self.spawned_vehicle.get_transform().location.x
+            self.car_data['y_pos'] = self.spawned_vehicle.get_transform().location.y
+            self.car_data['z_pos'] = self.spawned_vehicle.get_transform().location.z
+            self.car_data['yaw'] = self.spawned_vehicle.get_transform().rotation.yaw
+            self.car_data['pitch'] = self.spawned_vehicle.get_transform().rotation.pitch
+            self.car_data['roll'] = self.spawned_vehicle.get_transform().rotation.roll
+            self.car_data['x_ang_vel'] = self.spawned_vehicle.get_angular_velocity().x
+            self.car_data['y_ang_vel'] = self.spawned_vehicle.get_angular_velocity().y
+            self.car_data['z_ang_vel'] = self.spawned_vehicle.get_angular_velocity().z
+            self.car_data['x_vel'] = self.spawned_vehicle.get_velocity().x
+            self.car_data['y_vel'] = self.spawned_vehicle.get_velocity().y
+            self.car_data['z_vel'] = self.spawned_vehicle.get_velocity().z
+            self.car_data['x_acc'] = self.spawned_vehicle.get_acceleration().x
+            self.car_data['y_acc'] = self.spawned_vehicle.get_acceleration().y
+            self.car_data['z_acc'] = self.spawned_vehicle.get_acceleration().z
+            self.car_data['forward_vector_x_component'] = self.spawned_vehicle.get_transform().rotation.get_forward_vector().x
+            self.car_data['forward_vector_y_component'] = self.spawned_vehicle.get_transform().rotation.get_forward_vector().x
+            self.car_data['forward_vector_z_component'] = self.spawned_vehicle.get_transform().rotation.get_forward_vector().x
+            # self.car_data['right_vector_x_component'] = self.spawned_vehicle.get_transform().rotation.get_right_vector().x
+            # self.car_data['right_vector_y_component'] = self.spawned_vehicle.get_transform().rotation.get_right_vector().y
+            # self.car_data['right_vector_z_component'] = self.spawned_vehicle.get_transform().rotation.get_right_vector().z
+            # self.car_data['up_vector_x_component'] = self.spawned_vehicle.get_transform().rotation.get_up_vector().x
+            # self.car_data['up_vector_y_component'] = self.spawned_vehicle.get_transform().rotation.get_up_vector().y
+            # self.car_data['up_vector_z_component'] = self.spawned_vehicle.get_transform().rotation.get_up_vector().z
+
+            #inputs
+            last_applied_vehicle_control = self.spawned_vehicle.get_control()
+            self.car_data['throttle_input'] = last_applied_vehicle_control.throttle
+            self.car_data['brake_input'] = last_applied_vehicle_control.brake
+            self.car_data['steering_input'] = last_applied_vehicle_control.steer
+            self.car_data['reverse'] = last_applied_vehicle_control.reverse
+            self.car_data['manual_gear_shift'] = last_applied_vehicle_control.manual_gear_shift
+            self.car_data['gear'] = last_applied_vehicle_control.gear
+
+        except:
+            pass
+
+
+
+
+        return self.car_data
+
 
     def destroy_inputs(self):
         self._vehicle_tab.combo_input.clear()
