@@ -169,8 +169,8 @@ class JOAN_Keyboard(BaseInput):
 
     def process(self):
         # # If there are cars in the simulation add them to the controllable car combobox
-        if self._carla_interface_data['vehicles']:
-            self._carla_interface_data = self._action.read_news(JOANModules.CARLA_INTERFACE)
+        # if self._carla_interface_data['vehicles']:
+        #     self._carla_interface_data = self._action.read_news(JOANModules.CARLA_INTERFACE)
 
 
         # Throttle:

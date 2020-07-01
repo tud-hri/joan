@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
-    <height>111</height>
+    <width>606</width>
+    <height>122</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,19 +15,16 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <property name="leftMargin">
-    <number>0</number>
+    <number>3</number>
    </property>
    <property name="topMargin">
-    <number>0</number>
+    <number>3</number>
    </property>
    <property name="rightMargin">
-    <number>0</number>
-   </property>
-   <property name="bottomMargin">
-    <number>0</number>
+    <number>3</number>
    </property>
    <item row="0" column="0">
-    <widget class="QGroupBox" name="group_car">
+    <widget class="QGroupBox" name="group_traffic_agent">
      <property name="minimumSize">
       <size>
        <width>600</width>
@@ -40,7 +37,7 @@
       </font>
      </property>
      <property name="title">
-      <string>Carname</string>
+      <string>Traffic Agent Name</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
       <property name="leftMargin">
@@ -61,20 +58,8 @@
       <property name="verticalSpacing">
        <number>2</number>
       </property>
-      <item row="0" column="8">
-       <widget class="QPushButton" name="btn_spawn">
-        <property name="font">
-         <font>
-          <pointsize>8</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Spawn</string>
-        </property>
-       </widget>
-      </item>
       <item row="0" column="5">
-       <widget class="QLabel" name="label">
+       <widget class="QLabel" name="label_2">
         <property name="font">
          <font>
           <pointsize>8</pointsize>
@@ -85,68 +70,7 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="5">
-       <widget class="QComboBox" name="comboCartype">
-        <property name="font">
-         <font>
-          <pointsize>8</pointsize>
-         </font>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="8">
-       <widget class="QPushButton" name="btn_destroy">
-        <property name="font">
-         <font>
-          <pointsize>8</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Destroy</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QComboBox" name="combo_input">
-        <property name="font">
-         <font>
-          <pointsize>8</pointsize>
-         </font>
-        </property>
-        <item>
-         <property name="text">
-          <string>None</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QLabel" name="lblInput">
-        <property name="font">
-         <font>
-          <pointsize>8</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Input:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="6" rowspan="4">
-       <widget class="Line" name="line_3">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="4" rowspan="4">
-       <widget class="Line" name="line_2">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="5">
+      <item row="3" column="5">
        <widget class="QLabel" name="lblSpawnpoints">
         <property name="font">
          <font>
@@ -160,19 +84,82 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="1">
-       <widget class="QLabel" name="label_2">
+      <item row="2" column="2" colspan="2">
+       <widget class="QComboBox" name="combo_box_traffic_trajectory">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>250</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
+        <item>
+         <property name="text">
+          <string>None</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="4" column="7">
+       <widget class="QPushButton" name="btn_remove_traffic_agent">
         <property name="font">
          <font>
           <pointsize>8</pointsize>
          </font>
         </property>
         <property name="text">
-         <string>SW Controller:</string>
+         <string>Remove Agent</string>
         </property>
        </widget>
       </item>
-      <item row="3" column="5">
+      <item row="0" column="2">
+       <widget class="QLabel" name="lblHcrtitle">
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Reference trajectory:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="7">
+       <widget class="QPushButton" name="btn_spawn">
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Spawn</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="5">
+       <widget class="QComboBox" name="combo_car_type">
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+         </font>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="5">
        <widget class="QSpinBox" name="spin_spawn_points">
         <property name="font">
          <font>
@@ -181,29 +168,73 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="1">
-       <widget class="QComboBox" name="combo_sw_controller">
-        <property name="font">
-         <font>
-          <pointsize>8</pointsize>
-         </font>
-        </property>
-        <item>
-         <property name="text">
-          <string>None (Manual)</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="3" column="8">
-       <widget class="QPushButton" name="btn_remove_ego_agent">
+      <item row="2" column="7">
+       <widget class="QPushButton" name="btn_destroy">
         <property name="font">
          <font>
           <pointsize>8</pointsize>
          </font>
         </property>
         <property name="text">
-         <string>Remove Agent</string>
+         <string>Destroy</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="6" rowspan="5">
+       <widget class="Line" name="line">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="4" rowspan="5">
+       <widget class="Line" name="line_3">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QPushButton" name="btn_update_hcr_list">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Update list</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="2" colspan="2">
+       <widget class="QPushButton" name="btn_traffic_car_settings">
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Settings</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="2">
+       <widget class="QLabel" name="label">
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Open settings dialog:</string>
         </property>
        </widget>
       </item>

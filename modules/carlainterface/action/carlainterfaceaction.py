@@ -39,7 +39,6 @@ class CarlainterfaceAction(JoanModuleAction):
 
         #Initialize Variables
         self.data = {}
-        # self.data['vehicles'] = {} #CAN BE DEPRECATED LATER BUT FOR NOW STILL NEED IT
         self.data['agents'] = {}
         self.data['connected'] = False
         self.write_news(news=self.data)
@@ -52,6 +51,7 @@ class CarlainterfaceAction(JoanModuleAction):
         self.connected = False
         self.vehicle_tags = []
         self.vehicles = []
+        self.traffic_vehicles = []
 
         #initialize modulewide state handler
         self.status = Status()
@@ -219,16 +219,8 @@ class CarlainterfaceAction(JoanModuleAction):
 
         return self.connected
 
-    def update_cars(self, value):
-
-        #Delete excess vehicles if any
-        while value < len(self.vehicles):
-            self.vehicles.pop(-1)
-
-        # Create new vehicles:
-        for carnr in range(len(self.vehicles), value):
-            self.vehicles.append(Carlavehicle(self, carnr, self.nr_spawn_points, self.vehicle_tags))
-
+    def add_ego_agent(self):
+        self.vehicles.append(Carlavehicle(self, len(self.vehicles), self.nr_spawn_points, self.vehicle_tags))
         for vehicle in self.vehicles:
             vehicle.get_available_inputs()
             vehicle.get_available_controllers()
@@ -237,8 +229,13 @@ class CarlainterfaceAction(JoanModuleAction):
         for vehicle in self.vehicles[1:]:
             vehicle.vehicle_tab.combo_sw_controller.setEnabled(False)
 
-
         return self.vehicles
+
+    def add_traffic_agent(self):
+        self.traffic_vehicles.append(Trafficvehicle(self, len(self.traffic_vehicles), self.nr_spawn_points, self.vehicle_tags))
+
+
+        return self.traffic_vehicles
 
     def initialize(self):
         """
@@ -278,6 +275,7 @@ class CarlainterfaceAction(JoanModuleAction):
 
 class Carlavehicle():
     def __init__(self, CarlainterfaceAction, carnr, nr_spawn_points, tags):
+        self.carnr = carnr
         self.module_action = CarlainterfaceAction
         self._vehicle_tab = uic.loadUi(uifile=os.path.join(os.path.dirname(os.path.realpath(__file__)), "vehicletab.ui"))
         self._vehicle_tab.group_car.setTitle('Car ' + str(carnr+1))
@@ -297,6 +295,8 @@ class Carlavehicle():
 
         self._vehicle_tab.btn_spawn.clicked.connect(self.spawn_car)
         self._vehicle_tab.btn_destroy.clicked.connect(self.destroy_car)
+        self._vehicle_tab.btn_remove_ego_agent.clicked.connect(self.remove_ego_agent)
+
         for item in tags:
             self._vehicle_tab.comboCartype.addItem(item)
 
@@ -365,14 +365,9 @@ class Carlavehicle():
             self.car_data['y_acc'] = self.spawned_vehicle.get_acceleration().y
             self.car_data['z_acc'] = self.spawned_vehicle.get_acceleration().z
             self.car_data['forward_vector_x_component'] = self.spawned_vehicle.get_transform().rotation.get_forward_vector().x
-            self.car_data['forward_vector_y_component'] = self.spawned_vehicle.get_transform().rotation.get_forward_vector().x
-            self.car_data['forward_vector_z_component'] = self.spawned_vehicle.get_transform().rotation.get_forward_vector().x
-            # self.car_data['right_vector_x_component'] = self.spawned_vehicle.get_transform().rotation.get_right_vector().x
-            # self.car_data['right_vector_y_component'] = self.spawned_vehicle.get_transform().rotation.get_right_vector().y
-            # self.car_data['right_vector_z_component'] = self.spawned_vehicle.get_transform().rotation.get_right_vector().z
-            # self.car_data['up_vector_x_component'] = self.spawned_vehicle.get_transform().rotation.get_up_vector().x
-            # self.car_data['up_vector_y_component'] = self.spawned_vehicle.get_transform().rotation.get_up_vector().y
-            # self.car_data['up_vector_z_component'] = self.spawned_vehicle.get_transform().rotation.get_up_vector().z
+            self.car_data['forward_vector_y_component'] = self.spawned_vehicle.get_transform().rotation.get_forward_vector().y
+            self.car_data['forward_vector_z_component'] = self.spawned_vehicle.get_transform().rotation.get_forward_vector().z
+
 
             #inputs
             last_applied_vehicle_control = self.spawned_vehicle.get_control()
@@ -441,3 +436,89 @@ class Carlavehicle():
             self._control.reverse = data[self._selected_input]['Reverse']
             self._control.hand_brake = data[self._selected_input]['Handbrake']
             self.spawned_vehicle.apply_control(self._control)
+
+    def remove_ego_agent(self):
+        self._vehicle_tab.setParent(None)
+        self.destroy_car()
+
+        self.module_action.vehicles.remove(self)
+
+class Trafficvehicle():
+    def __init__(self, CarlainterfaceAction, traffic_vehicle_nr, nr_spawn_points, tags):
+        "Init traffic vehicle here"
+        self.traffic_vehicle_nr = traffic_vehicle_nr
+        self.module_action = CarlainterfaceAction
+        self._traffic_vehicle_tab = uic.loadUi(uifile=os.path.join(os.path.dirname(os.path.realpath(__file__)), "trafficvehicletab.ui"))
+        self._traffic_vehicle_tab.group_traffic_agent.setTitle('Traffic Vehicle ' + str(traffic_vehicle_nr + 1))
+
+        self._traffic_vehicle_tab.btn_spawn.clicked.connect(self.spawn_car)
+        self._traffic_vehicle_tab.btn_destroy.clicked.connect(self.destroy_car)
+        self._traffic_vehicle_tab.btn_remove_traffic_agent.clicked.connect(self.remove_traffic_agent)
+
+        self._traffic_vehicle_tab.spin_spawn_points.setRange(0, nr_spawn_points)
+        self._traffic_vehicle_tab.spin_spawn_points.lineEdit().setReadOnly(True)
+
+        for item in tags:
+            self._traffic_vehicle_tab.combo_car_type.addItem(item)
+
+
+    @property
+    def traffic_vehicle_tab(self):
+        return self._traffic_vehicle_tab
+
+    @property
+    def spawned(self):
+        return self._spawned
+
+    @property
+    def vehicle_id(self):
+        return self._BP.id
+
+
+    def spawn_car(self):
+        self._BP = random.choice(self.module_action.vehicle_bp_library.filter("vehicle." + str(self.traffic_vehicle_tab.combo_car_type.currentText())))
+        self._control = carla.VehicleControl()
+        try:
+            spawnpointnr = self._traffic_vehicle_tab.spin_spawn_points.value()-1
+            self.spawned_traffic_vehicle = self.module_action.world.spawn_actor(self._BP, self.module_action.spawnpoints[spawnpointnr])
+            self._traffic_vehicle_tab.btn_spawn.setEnabled(False)
+            self._traffic_vehicle_tab.btn_destroy.setEnabled(True)
+            self._traffic_vehicle_tab.spin_spawn_points.setEnabled(False)
+            self._traffic_vehicle_tab.combo_car_type.setEnabled(False)
+            #self.get_available_inputs()
+            self._spawned = True
+        except Exception as inst:
+            print('Could not spawn car:', inst)
+            self._traffic_vehicle_tab.btn_spawn.setEnabled(True)
+            self._traffic_vehicle_tab.btn_destroy.setEnabled(False)
+            self._traffic_vehicle_tab.spin_spawn_points.setEnabled(True)
+            self._traffic_vehicle_tab.combo_car_type.setEnabled(True)
+            self._spawned = False
+
+    def destroy_car(self):
+        try:
+            self._spawned = False
+            self.spawned_traffic_vehicle.destroy()
+            self._traffic_vehicle_tab.btn_spawn.setEnabled(True)
+            self._traffic_vehicle_tab.btn_destroy.setEnabled(False)
+            self._traffic_vehicle_tab.spin_spawn_points.setEnabled(True)
+            self._traffic_vehicle_tab.combo_car_type.setEnabled(True)
+        except Exception as inst:
+            self._spawned = True
+            print('Could not destroy spawn car:', inst)
+            self._traffic_vehicle_tab.btn_spawn.setEnabled(False)
+            self._traffic_vehicle_tab.btn_destroy.setEnabled(True)
+            self._traffic_vehicle_tab.spin_spawn_points.setEnabled(False)
+            self._traffic_vehicle_tab.combo_car_type.setEnabled(False)
+
+    def remove_traffic_agent(self):
+        self._traffic_vehicle_tab.setParent(None)
+        self.destroy_car()
+
+        self.module_action.traffic_vehicles.remove(self)
+
+class TrafficPDController():
+    def __init__(self):
+        print('constructed')
+
+

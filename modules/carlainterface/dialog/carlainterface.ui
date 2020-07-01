@@ -34,20 +34,25 @@
    </property>
    <item row="0" column="0">
     <layout class="QGridLayout" name="gridLayout_4">
-     <item row="0" column="4">
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+     <item row="1" column="1">
+      <widget class="QPushButton" name="btnDisconnect">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
        </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
+       <property name="font">
+        <font>
+         <pointsize>11</pointsize>
+        </font>
        </property>
-      </spacer>
+       <property name="text">
+        <string>Disconnect</string>
+       </property>
+      </widget>
      </item>
-     <item row="1" column="0" colspan="5">
+     <item row="2" column="0" colspan="5">
       <widget class="QGroupBox" name="groupVehicles">
        <property name="minimumSize">
         <size>
@@ -106,55 +111,40 @@
        </layout>
       </widget>
      </item>
-     <item row="0" column="3">
-      <widget class="QSpinBox" name="spinVehicles">
-       <property name="enabled">
-        <bool>true</bool>
+     <item row="1" column="4">
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
        </property>
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
        </property>
-       <property name="keyboardTracking">
-        <bool>false</bool>
-       </property>
-      </widget>
+      </spacer>
      </item>
-     <item row="0" column="2">
-      <widget class="QLabel" name="lblVehicleamounttitle">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
+     <item row="1" column="2">
+      <widget class="QPushButton" name="btn_add_ego_agent">
        <property name="font">
         <font>
          <pointsize>11</pointsize>
         </font>
        </property>
        <property name="text">
-        <string>Amount of Agents:</string>
+        <string>Add EgoAgent</string>
        </property>
       </widget>
      </item>
-     <item row="0" column="1">
-      <widget class="QPushButton" name="btnDisconnect">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
+     <item row="1" column="3">
+      <widget class="QPushButton" name="btn_add_traffic_agent">
        <property name="font">
         <font>
          <pointsize>11</pointsize>
         </font>
        </property>
        <property name="text">
-        <string>Disconnect</string>
+        <string>Add Traffic Agent</string>
        </property>
       </widget>
      </item>
