@@ -245,11 +245,6 @@ class JOAN_Joystick(BaseInput):
             pass
 
     def process(self):
-        joystick_data = []
-        if self._carla_interface_data['vehicles'] is not None:
-            self._carla_interface_data = self._action.read_news(JOANModules.CARLA_INTERFACE)
-
-
         if self._joystick_open:
             joystick_data = self._joystick.read(self.settings.degrees_of_freedom, 1)
 

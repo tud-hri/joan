@@ -15,7 +15,6 @@ class JOAN_Mouse(BaseInput):  # DEPRECATED FOR NOW  TODO: remove from interface 
         self.remove_tab(self._mouse_tab)
 
     def process(self):
-        if (self._carla_interface_data['vehicles'] is not None):
             # self._carla_interface_data = self._action.read_news(JoanModules.CARLA_INTERFACE)
 
             # for vehicles in self._carla_interface_data['vehicles']:
