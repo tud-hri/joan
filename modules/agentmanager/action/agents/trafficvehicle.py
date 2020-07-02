@@ -8,6 +8,7 @@ import pandas as pd
 import math
 
 class Trafficvehicle(Basevehicle):
+    "This class contains everything you need to make a vehicle follow a predefined route by PD control"
     def __init__(self, agent_manager_action, vehicle_nr, nr_spawn_points, tags):
         "Init traffic vehicle here"
 
@@ -127,7 +128,6 @@ class Trafficvehicle(Basevehicle):
 
             # put error through controller to get sw torque out
             self._sw_angle = self.pd_controller(self._controller_error)
-            print(self._sw_angle)
             self._control.steer = self._sw_angle
             self.spawned_vehicle.apply_control(self._control)
             self.spawned_vehicle.set_velocity(vel_traffic)
@@ -204,7 +204,7 @@ class Trafficvehicle(Basevehicle):
             car = self.spawned_vehicle
             forward_vector = car.get_transform().rotation.get_forward_vector()
             # vel_traffic = car.get_velocity()
-            vel_traffic = forward_vector *0
+            vel_traffic = forward_vector * 0
             self.spawned_vehicle.set_velocity(vel_traffic)
         except:
             pass
