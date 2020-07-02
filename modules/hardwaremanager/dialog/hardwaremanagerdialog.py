@@ -91,7 +91,7 @@ class HardwaremanagerDialog(JoanModuleDialog):
             new_widget.groupBox.setTitle(device_title)
             self.module_widget.hardware_list_layout.addWidget(new_widget)
         else:
-            self.module_action.state_machine.request_state_change(State.ERROR, 'Currently only 1 sensodrive is supported')
+            self.module_action.state_machine.request_state_change(State.ERROR, 'Currently only 2 sensodrives are supported')
 
         self.module_action._state_change_listener()
 
