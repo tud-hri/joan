@@ -134,7 +134,7 @@ class TemplateAction(JoanModuleAction):
         try:
             if self.singleton_status.get_module_current_state(JOANModules.HARDWARE_MANAGER) is State.RUNNING:
                 return True, ''
-            return False, 'The hardware manager should be running before starting the Template module'
+            return False, 'The hardware manager should be running before starting the Template module.'
         except KeyError:
             return False, 'The hardware manager state could not be read, but it should be running before starting template.'
 

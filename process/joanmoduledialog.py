@@ -55,7 +55,6 @@ class JoanModuleDialog(QtWidgets.QDialog):
     def _button_start_clicked(self):
         self.module_action.start()
 
-
     def _button_stop_clicked(self):
         self.module_action.stop()
 
@@ -71,7 +70,8 @@ class JoanModuleDialog(QtWidgets.QDialog):
         message = self.module_action.state_machine.state_message
 
         # update the state label
-        self.state_widget.lbl_module_state.setText(str(current_state) + (' | ' + message if message else ''))
+        self.state_widget.lbl_module_state.setText(str(current_state))
+        self.state_widget.lbl_state_message.setText(message)
 
         if current_state is State.RUNNING:
             self.state_widget.lbl_module_state.setStyleSheet("background: green;")
