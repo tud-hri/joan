@@ -74,5 +74,5 @@ class CarlainterfaceDialog(JoanModuleDialog):
 
     def add_traffic_agent(self):
         self.traffic_vehicles = self.module_action.add_traffic_agent()
-        self.module_widget.layOut.insertWidget(-1,self.traffic_vehicles[-1].traffic_vehicle_tab)
+        self.module_widget.layOut.insertWidget(-1,self.traffic_vehicles[-1].vehicle_tab)
 

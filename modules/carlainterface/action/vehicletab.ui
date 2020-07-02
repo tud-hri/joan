@@ -86,7 +86,7 @@
        </widget>
       </item>
       <item row="1" column="5">
-       <widget class="QComboBox" name="comboCartype">
+       <widget class="QComboBox" name="combo_car_type">
         <property name="font">
          <font>
           <pointsize>8</pointsize>
