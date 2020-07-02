@@ -4,9 +4,9 @@ from process.joanmoduleaction import JoanModuleAction
 from modules.joanmodules import JOANModules
 from process.statesenum import State
 
-class CarlainterfaceDialog(JoanModuleDialog):
+class AgentmanagerDialog(JoanModuleDialog):
     def __init__(self, module_action: JoanModuleAction,  parent=None):
-        super().__init__(module=JOANModules.CARLA_INTERFACE, module_action=module_action, parent=parent)
+        super().__init__(module=JOANModules.AGENT_MANAGER, module_action=module_action, parent=parent)
 
         #initialize variables
         self.connected = False

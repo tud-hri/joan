@@ -44,10 +44,6 @@ class Egovehicle(Basevehicle):
         return self._sw_controller
 
     @property
-    def vehicle_id(self):
-        return self._BP.id
-
-    @property
     def vehicle_nr(self):
         return self._vehicle_nr
 

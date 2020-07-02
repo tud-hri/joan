@@ -56,11 +56,6 @@ class Trafficvehicle(Basevehicle):
     def vehicle_tab(self):
         return self._vehicle_tab
 
-    @property
-    def vehicle_id(self):
-        return self._BP.id
-
-
     def remove_traffic_agent(self):
         self._vehicle_tab.setParent(None)
         self.destroy_car()

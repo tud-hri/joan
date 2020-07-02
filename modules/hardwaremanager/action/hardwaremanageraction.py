@@ -25,7 +25,7 @@ class HardwaremanagerAction(JoanModuleAction):
         self.write_news(news=self.data)
         self.status = Status()
 
-        self.carla_interface_data = self.read_news(JOANModules.CARLA_INTERFACE)
+        self.carla_interface_data = self.read_news(JOANModules.AGENT_MANAGER)
         self.settings = HardWareManagerSettings(module_enum=JOANModules.HARDWARE_MANAGER)
 
         self.state_machine.add_state_change_listener(self._state_change_listener)
@@ -53,8 +53,8 @@ class HardwaremanagerAction(JoanModuleAction):
         """
         This function is called every controller tick of this module implement your main calculations here
         """
-        self.carla_interface_data = self.read_news(JOANModules.CARLA_INTERFACE)
-        self.carla_interface_status = self.status.get_module_current_state(JOANModules.CARLA_INTERFACE)
+        self.carla_interface_data = self.read_news(JOANModules.AGENT_MANAGER)
+        self.carla_interface_status = self.status.get_module_current_state(JOANModules.AGENT_MANAGER)
 
         self.sw_controller_data = self.read_news(JOANModules.STEERING_WHEEL_CONTROL)
 
@@ -89,7 +89,7 @@ class HardwaremanagerAction(JoanModuleAction):
         return super().initialize()
 
     def start(self):
-        self.carla_interface_data = self.read_news(JOANModules.CARLA_INTERFACE)
+        self.carla_interface_data = self.read_news(JOANModules.AGENT_MANAGER)
         #make sure you can only turn on the motor of the wheel if carla is connected
         for inputs in self.input_devices_classes:
             if 'SensoDrive' in inputs:
@@ -103,7 +103,7 @@ class HardwaremanagerAction(JoanModuleAction):
         return super().start()
 
     def stop(self):
-        self.carla_interface_data = self.read_news(JOANModules.CARLA_INTERFACE)
+        self.carla_interface_data = self.read_news(JOANModules.AGENT_MANAGER)
         for inputs in self.input_devices_classes:
             if 'SensoDrive' in inputs:
                 self.input_devices_classes[inputs]._sensodrive_tab.btn_on_off.setStyleSheet("background-color: orange")

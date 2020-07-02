@@ -107,6 +107,10 @@ class Basevehicle:
             self._vehicle_tab.combo_car_type.setEnabled(False)
 
     @property
+    def vehicle_id(self):
+        return self._BP.id
+
+    @property
     def spawned(self):
         return self._spawned
 

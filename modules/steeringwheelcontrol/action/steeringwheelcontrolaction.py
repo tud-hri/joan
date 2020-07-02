@@ -38,7 +38,7 @@ class SteeringWheelControlAction(JoanModuleAction):
         self.share_settings(self.settings)
 
     def _state_change_listener(self):
-        sim_data_in = self.read_news(JOANModules.CARLA_INTERFACE)
+        sim_data_in = self.read_news(JOANModules.AGENT_MANAGER)
         hw_data_in = self.read_news(JOANModules.HARDWARE_MANAGER)
         for controller in self._controllers:
             if sim_data_in['agents'] is True:
@@ -78,7 +78,7 @@ class SteeringWheelControlAction(JoanModuleAction):
         This function is called every controller tick of this module implement your main calculations here
         """
 
-        sim_data_in = self.read_news(JOANModules.CARLA_INTERFACE)
+        sim_data_in = self.read_news(JOANModules.AGENT_MANAGER)
         hw_data_in = self.read_news(JOANModules.HARDWARE_MANAGER)
 
         "FOR NOW WE ONLY TRY TO APPLY CONTROLLER ON 1 CAR CAUSE MULTIPLE IS TOTAL MAYHEM"

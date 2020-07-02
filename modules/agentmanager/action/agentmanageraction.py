@@ -40,9 +40,9 @@ except IndexError:
     msg_box.exec()
     pass
 
-class CarlainterfaceAction(JoanModuleAction):
+class AgentmanagerAction(JoanModuleAction):
     def __init__(self, millis=5):
-        super().__init__(module=JOANModules.CARLA_INTERFACE, millis=millis)
+        super().__init__(module=JOANModules.AGENT_MANAGER, millis=millis)
 
         #Initialize Variables
         self.data = {}
