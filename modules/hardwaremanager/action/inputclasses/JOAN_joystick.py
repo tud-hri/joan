@@ -247,6 +247,8 @@ class JOAN_Joystick(BaseInput):
     def process(self):
         if self._joystick_open:
             joystick_data = self._joystick.read(self.settings.degrees_of_freedom, 1)
+        else:
+            joystick_data = False
 
         if joystick_data:
             # print(joystick_data)
