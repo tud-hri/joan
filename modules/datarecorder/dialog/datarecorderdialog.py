@@ -17,6 +17,7 @@ from PyQt5 import QtWidgets, QtGui
 from PyQt5.Qt import Qt
 from PyQt5.QtWidgets import QTreeWidgetItemIterator
 from functools import partial
+import copy
 
 from process import News
 
@@ -26,10 +27,7 @@ class NewsOverviewDialog(QtWidgets.QDialog):
         super().__init__(parent)
 
         for module_key, news_object in all_news.items():
-            try:
-                self._create_tree_item(tree_widget, module_key, news_object.as_dict())
-            except AttributeError:
-                # This means the settings object is a dict, which is old style  TODO remove this try/except when fully converted to new style
+            if news_object:            # show only modules with news
                 self._create_tree_item(tree_widget, module_key, news_object)
 
         self.show()
@@ -95,6 +93,23 @@ class DatarecorderDialog(JoanModuleDialog):
         self.module_widget.check_trajectory.stateChanged.connect(self.check_trajectory_checkbox)
         self.module_widget.line_trajectory_title.textEdited.connect(self.check_trajectory_filename)
 
+
+    def handle_click(self, nodes):
+        # one click handles ALL deepest nodes
+        # find parents of node and put them in an array
+        # reverse the array and add the checkbox-state
+        # take action on the result in self.module_action._handle_dialog_checkboxes
+        for node in nodes:
+            state = (node.checkState(0) > 0)
+            node_path = []
+            while node:
+                node_path.append(node.text(0))
+                node = node.parent()
+            node_from_top = node_path[::-1]
+            node_from_top.append(state)
+        self.module_action._handle_dialog_checkboxes(node_from_top)
+
+
     def get_subtree_nodes(self, tree_widget_item):
         """Returns all QTreeWidgetItems in the subtree rooted at the given node."""
         nodes = []
@@ -104,6 +119,7 @@ class DatarecorderDialog(JoanModuleDialog):
             for i in range(tree_widget_item.childCount()):
                 nodes.extend(self.get_subtree_nodes(tree_widget_item.child(i)))
         else:
+            self.handle_click(nodes)
             write = 'No'
             if tree_widget_item.checkState(0) > 0:
                 write = 'Yes'
@@ -116,31 +132,24 @@ class DatarecorderDialog(JoanModuleDialog):
         all_items = []
         for i in range(tree_widget.topLevelItemCount()):
             top_item = tree_widget.topLevelItem(i)
-            top_item_check_state = top_item.checkState(0) > 0
-            self.module_action._handle_dialog_checkboxes(top_item.text(0), 'item_name', top_item_check_state)
+            #top_item_check_state = top_item.checkState(0) > 0
+            #self.module_action._handle_dialog_checkboxes(top_item.text(0), top_item, top_item_check_state)
 
             all_items.extend(self.get_subtree_nodes(top_item))
-
         return all_items
 
     @QtCore.pyqtSlot(QtWidgets.QTreeWidgetItem, int)
-    def on_item_clicked(self, it, col):
-        print(it, col, it.text(col))
+    #def on_item_clicked(self, it, col):
+    def on_item_clicked(self):
+        #print(it, col, it.text(col))
         self.get_all_items(self.module_widget.treeWidget)
 
     def initialize(self):
         # reads settings if available and expands the datarecorder widget
         self.module_widget.treeWidget.clear()
         NewsOverviewDialog(self.news.all_news, self.module_widget.treeWidget)
-
-        #self.module_widget.treeWidget.itemClicked.connect(lambda: self._handle_item(self))
-
-
         self.module_widget.treeWidget.itemClicked.connect(self.on_item_clicked)
-        
-        #self.module_action._show_news_items(self.module_widget.treeWidget)
-        #self.module_action._editWidget(layout=self.module_widget.verticalLayout_items)
-        #self.module_widget.treeWidget.adjustSize()
+        self.on_item_clicked()
 
     def check_trajectory_checkbox(self):
         self.module_action.trajectory_recorder.trajectory_record_boolean(self.module_widget.check_trajectory.isChecked())

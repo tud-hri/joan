@@ -17,7 +17,6 @@ from PyQt5 import QtWidgets, QtGui
 from functools import partial
 import numpy as np
 
-
 class DatarecorderAction(JoanModuleAction):
     def __init__(self, millis=200):
         super().__init__(module=JOANModules.DATA_RECORDER, millis=millis)
@@ -35,10 +34,12 @@ class DatarecorderAction(JoanModuleAction):
         # start settings for this module
         self.settings = DataRecorderSettings(JOANModules.DATA_RECORDER)
         self.default_settings_file_location = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'datarecordersettings.json')
+
         if os.path.isfile(self.default_settings_file_location):
             self.settings.load_from_file(self.default_settings_file_location)
         else:
-            pass
+            self.settings.save_to_file(self.default_settings_file_location)
+
             # TODO: make an initial settings file using self.news and set every item default to True
             # see: datarecorderdialog.py
         self.share_settings(self.settings)
@@ -47,6 +48,7 @@ class DatarecorderAction(JoanModuleAction):
         self.filename = ''
         self.data_writer = DataWriter(news=self.get_all_news(), channels=self.get_available_news_channels(),
                                       settings=self.get_module_settings(JOANModules.DATA_RECORDER))
+
 
     def initialize_file(self):
         self.filename = self._create_filename(extension='csv')
@@ -75,6 +77,9 @@ class DatarecorderAction(JoanModuleAction):
         This function is called before the module is started
         """
         try:
+            self.settings.save_to_file(self.default_settings_file_location)
+            self.share_settings(self.settings)
+
             self.initialize_file()
             self.state_machine.request_state_change(State.READY)
 
@@ -114,78 +119,26 @@ class DatarecorderAction(JoanModuleAction):
     def get_filename(self):
         return self.filename
 
-    def _editWidget(self, layout=None):
-        content = QtWidgets.QWidget()
-        vlay = QtWidgets.QVBoxLayout(content)
-
-        # cleanup previous widgets from scroll area
-        for i in reversed(range(vlay.count())):
-            marked_widget = vlay.takeAt(i).widget()
-            vlay.removeWidget(marked_widget)
-            marked_widget.setParent(None)
-        # cleanup previous widgets from verticalLayout_items
-        for i in reversed(range(layout.count())):
-            marked_widget = layout.takeAt(i).widget()
-            layout.removeWidget(marked_widget)
-            marked_widget.setParent(None)
-        scroll = QtWidgets.QScrollArea()
-        layout.addWidget(scroll)
-        scroll.setWidget(content)
-        scroll.setWidgetResizable(True)
-
-        label_font = QtGui.QFont()
-        label_font.setPointSize(12)
-        item_font = QtGui.QFont()
-        item_font.setPointSize(10)
-        news_checkbox = {}
-        # module_key = '%s.%s' % (self.__class__.__module__, self.__class__.__name__)
-        module_key = JOANModules.DATA_RECORDER
-        item_widget = {}
-
-        for channel in self.get_available_news_channels():
-            if channel != module_key:
-                if channel.name not in self.settings.variables_to_save.keys():
-                    self.settings.variables_to_save.update({channel.name: {}})
-                # news_checkbox[channel] = QtWidgets.QLabel(channel.split('.')[1])
-                news_checkbox[channel.name] = QtWidgets.QLabel(channel.name)
-                news_checkbox[channel.name].setFont(label_font)
-                news = self.read_news(channel)
-                if news:
-                    vlay.addWidget(news_checkbox[channel.name])
-
-                    for item in news:
-                        item_widget[item] = QtWidgets.QCheckBox(item)
-                        item_widget[item].setFont(item_font)
-                        # lambda will not deliver what you expect:
-                        # item_widget[item].clicked.connect(lambda:
-                        #                                  self.handlemodulesettings(item_widget[item].text(),
-                        #                                  item_widget[item].isChecked()))
-                        item_widget[item].stateChanged.connect(lambda: self._handle_module_settings(channel.name, item_widget[item]))
-                        vlay.addWidget(item_widget[item])
-
-                        # start set checkboxes from current_settings
-                        if item not in self.settings.variables_to_save[channel.name].keys():
-                            item_widget[item].setChecked(True)
-                            item_widget[item].stateChanged.emit(True)
-                        else:
-                            item_widget[item].setChecked(self.settings.variables_to_save[channel.name][item])
-                            item_widget[item].stateChanged.emit(self.settings.variables_to_save[channel.name][item])
-                        # end set checkboxes from current_settings
-
-        vlay.addStretch()
-
-        content.adjustSize()
-
-    def _handle_dialog_checkboxes(self, module_key, item, is_checked):
-        print('to save in settings: %s -> %s -> %s' % (module_key, item, is_checked))
-        # TODO: make this realy work
-        #self.settings.variables_to_save[module_key][item] = is_checked
-        #self.save_settings_to_file(self.default_settings_file_location)
-
-    def _handle_module_settings(self, module_key, item):
-        self.settings.variables_to_save[module_key][item.text()] = item.isChecked()
+    def _handle_dialog_checkboxes(self, checkbox_path):
+        """
+        Takes keys from a defined array, first one is the module-key
+        last one is the new value
+        This is done for every key, which is a bit brute
+        This works because dict elements are actually pointers
+        If no key exists, it will be added
+        """
+        if self.settings.variables_to_save.get(checkbox_path[0]) is None:
+            self.settings.variables_to_save[checkbox_path[0]] = {}
+        temp_dict = self.settings.variables_to_save.get(checkbox_path[0])
+        for key in checkbox_path[1:-2]:
+            if temp_dict.get(key) is None:
+                temp_dict[key] = {}
+            temp_dict = temp_dict.get(key)
+        temp_dict[checkbox_path[-2]] = checkbox_path[-1]
+        # save the settings
         self.save_settings_to_file(self.default_settings_file_location)
-
+        # share the settings
+        self.share_settings(self.settings)
 
 class Trajectory_recorder():
     def __init__(self, data_recorder_action, waypoint_distance):
