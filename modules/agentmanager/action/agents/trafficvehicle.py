@@ -27,7 +27,7 @@ class Trafficvehicle(Basevehicle):
         self._path_trajectory_directory = os.path.join(path, '../steeringwheelcontrol/action/swcontrollers/trajectories/')
 
         self.vehicle_nr = vehicle_nr
-        self._vehicle_tab = uic.loadUi(uifile=os.path.join(os.path.dirname(os.path.realpath(__file__)), "../trafficvehicletab.ui"))
+        self._vehicle_tab = uic.loadUi(uifile=os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/trafficvehicletab.ui"))
         self._vehicle_tab.group_traffic_agent.setTitle('Traffic Vehicle ' + str(vehicle_nr + 1))
 
         self._vehicle_tab.btn_spawn.clicked.connect(self.spawn_car)

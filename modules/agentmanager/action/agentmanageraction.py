@@ -104,18 +104,18 @@ class AgentmanagerAction(JoanModuleAction):
         " This function is linked to the state change of the hardware manager and updates the state whenever it changes"
 
         self.hardware_manager_state = self.status.get_module_current_state(JOANModules.HARDWARE_MANAGER)
-        if self.hardware_manager_state is not State.RUNNING:
-            for vehicle in self.vehicles:
-                vehicle.get_available_inputs()
+        # if self.hardware_manager_state is not State.RUNNING:
+        #     for vehicle in self.vehicles:
+        #         vehicle.get_available_inputs()
 
     def _sw_controller_state_change_listener(self):
         """This function is linked to the state change of the sw_controller, if new controllers are initialized they will be
         automatically added to a variable which contains the options in the SW controller combobox"""
         self.sw_controller_state = self.status.get_module_current_state(JOANModules.STEERING_WHEEL_CONTROL)
 
-        if self.sw_controller_state is not State.RUNNING:
-            for vehicle in self.vehicles:
-                    vehicle.get_available_controllers()
+        # if self.sw_controller_state is not State.RUNNING:
+        #     for vehicle in self.vehicles:
+        #             vehicle.get_available_controllers()
 
 
 
@@ -243,9 +243,9 @@ class AgentmanagerAction(JoanModuleAction):
             self.settings.ego_vehicles.append(ego_vehicle_settings)
             self.vehicles.append(Egovehicle(self, len(self.vehicles), self.nr_spawn_points, self.vehicle_tags, ego_vehicle_settings))
 
-        for vehicle in self.vehicles:
-            vehicle.get_available_inputs()
-            vehicle.get_available_controllers()
+        # for vehicle in self.vehicles:
+        #     vehicle.get_available_inputs()
+        #     vehicle.get_available_controllers()
 
         " only make controller available for first car for now"
         for vehicle in self.vehicles[1:]:
@@ -285,9 +285,9 @@ class AgentmanagerAction(JoanModuleAction):
 
     def stop(self):
         try:
-            for vehicle in self.vehicles:
-                vehicle.get_available_inputs()
-                vehicle.get_available_controllers()
+            # for vehicle in self.vehicles:
+                # vehicle.get_available_inputs()
+                # vehicle.get_available_controllers()
             self.state_machine.request_state_change(State.READY, "You can now add vehicles and start the module")
 
             for traffic in self.traffic_vehicles:

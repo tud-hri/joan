@@ -73,7 +73,7 @@
         </property>
         <item>
          <property name="text">
-          <string>None (Manual)</string>
+          <string>None</string>
          </property>
         </item>
        </widget>

@@ -90,7 +90,10 @@ class AgentManagerSettings(JoanModuleSettings):
 
 class EgoVehicleSettings():
     def __init__(self):
-        self.spawn_point_nr = 0
+        self._selected_input = 'None'
+        self._selected_controller = 'None'
+        self._spawn_point_nr = 0
+        self._selected_car = 'audi.rs6'
 
     def as_dict(self):
         return self.__dict__

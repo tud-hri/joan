@@ -13,15 +13,28 @@ class EgovehicleSettingsDialog(QtWidgets.QDialog):
 
         self.button_box_egovehicle_settings.button(self.button_box_egovehicle_settings.RestoreDefaults).clicked.connect(self._set_default_values)
         self._display_values()
-        self.show()
+
+
 
     def accept(self):
-        print('accepted')
+        self.egovehicle_settings._selected_input = self.combo_input.currentText()
+        self.egovehicle_settings._selected_controller = self.combo_sw_controller.currentText()
+        self.egovehicle_settings._selected_car = self.combo_car_type.currentText()
+
         super().accept()
 
-    def _display_values(self, settings_to_display=None):
+    def _display_values(self, settings_to_display = None):
         if not settings_to_display:
             settings_to_display = self.egovehicle_settings
+
+        idx_controller = self.combo_sw_controller.findText(settings_to_display._selected_controller)
+        self.combo_sw_controller.setCurrentIndex(idx_controller)
+
+        idx_input = self.combo_input.findText(settings_to_display._selected_input)
+        self.combo_input.setCurrentIndex(idx_input)
+
+        idx_car = self.combo_car_type.findText(settings_to_display._selected_car)
+        self.combo_car_type.setCurrentIndex(idx_car)
 
 
     def _set_default_values(self):
@@ -39,26 +52,32 @@ class Egovehicle(Basevehicle):
         self._hardware_data = {}
         self._sw_controller_data = {}
         self._vehicle_nr = 'Car ' + str(car_nr+1)
-        self._sw_controller = self._vehicle_tab.combo_sw_controller.currentText()
+        # self._sw_controller = self._vehicle_tab.combo_sw_controller.currentText()
 
-        self._vehicle_tab.spin_spawn_points.setRange(0, nr_spawn_points)
-        self._vehicle_tab.spin_spawn_points.lineEdit().setReadOnly(True)
+        # self._vehicle_tab.spin_spawn_points.setRange(0, nr_spawn_points-1)
+        # self._vehicle_tab.spin_spawn_points.lineEdit().setReadOnly(True)
         self._vehicle_tab.btn_destroy.setEnabled(False)
-        self._vehicle_tab.combo_input.currentTextChanged.connect(self.update_input)
-        self._vehicle_tab.combo_sw_controller.currentTextChanged.connect(self.update_sw_controller)
+        # self._vehicle_tab.combo_input.currentTextChanged.connect(self.update_input)
+        # self._vehicle_tab.combo_sw_controller.currentTextChanged.connect(self.update_sw_controller)
 
         self._vehicle_tab.btn_spawn.clicked.connect(self.spawn_car)
         self._vehicle_tab.btn_destroy.clicked.connect(self.destroy_car)
         self._vehicle_tab.btn_remove_ego_agent.clicked.connect(self.remove_ego_agent)
         self._vehicle_tab.btn_settings.clicked.connect(self._open_settings_dialog)
 
-        self.settings_dialog = EgovehicleSettingsDialog(self.settings)
         # self.settings_dialog.accepted.connect(self.update_settings)
+        self.settings_dialog = EgovehicleSettingsDialog(self.settings)
 
         for item in tags:
-            self._vehicle_tab.combo_car_type.addItem(item)
+            self.settings_dialog.combo_car_type.addItem(item)
+            # self._vehicle_tab.combo_car_type.addItem(item)
 
-        self._selected_input = str('None')
+        self.settings_dialog.spin_spawn_points.setRange(0, nr_spawn_points - 1)
+
+
+        self._open_settings_dialog()
+
+
 
     @property
     def vehicle_tab(self):
@@ -77,6 +96,9 @@ class Egovehicle(Basevehicle):
         return self._vehicle_nr
 
     def _open_settings_dialog(self):
+        self.get_available_controllers()
+        self.get_available_inputs()
+        self.settings_dialog._display_values()
         self.settings_dialog.show()
         pass
 
@@ -87,18 +109,18 @@ class Egovehicle(Basevehicle):
         self._selected_input = self._vehicle_tab.combo_input.currentText()
 
     def get_available_inputs(self):
-        self._vehicle_tab.combo_input.clear()
-        self._vehicle_tab.combo_input.addItem('None')
+        self.settings_dialog.combo_input.clear()
+        self.settings_dialog.combo_input.addItem('None')
         self._hardware_data = self.module_action.read_news(JOANModules.HARDWARE_MANAGER)
         for keys in self._hardware_data:
-            self._vehicle_tab.combo_input.addItem(str(keys))
+            self.settings_dialog.combo_input.addItem(str(keys))
 
     def get_available_controllers(self):
-        self._vehicle_tab.combo_sw_controller.clear()
-        self._vehicle_tab.combo_sw_controller.addItem('None')
+        self.settings_dialog.combo_sw_controller.clear()
+        self.settings_dialog.combo_sw_controller.addItem('None')
         self._sw_controller_data = self.module_action.read_news(JOANModules.STEERING_WHEEL_CONTROL)
         for keys in self._sw_controller_data:
-            self._vehicle_tab.combo_sw_controller.addItem(str(keys))
+            self.settings_dialog.combo_sw_controller.addItem(str(keys))
 
 
     def destroy_inputs(self):

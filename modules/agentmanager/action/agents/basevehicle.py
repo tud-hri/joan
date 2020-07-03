@@ -71,23 +71,23 @@ class Basevehicle:
         return self.car_data
 
     def spawn_car(self):
-        self._BP = random.choice(self.module_action.vehicle_bp_library.filter("vehicle." + str(self._vehicle_tab.combo_car_type.currentText())))
+        self._BP = random.choice(self.module_action.vehicle_bp_library.filter("vehicle." + self.settings._selected_car))
         self._control = carla.VehicleControl()
         try:
-            spawnpointnr = self._vehicle_tab.spin_spawn_points.value()-1
+            spawnpointnr = self.settings._spawn_point_nr
             self.spawned_vehicle = self.module_action.world.spawn_actor(self._BP, self.module_action.spawnpoints[spawnpointnr])
             self._vehicle_tab.btn_spawn.setEnabled(False)
             self._vehicle_tab.btn_destroy.setEnabled(True)
-            self._vehicle_tab.spin_spawn_points.setEnabled(False)
-            self._vehicle_tab.combo_car_type.setEnabled(False)
+            # self._vehicle_tab.spin_spawn_points.setEnabled(False)
+            # self._vehicle_tab.combo_car_type.setEnabled(False)
             #self.get_available_inputs()
             self._spawned = True
         except Exception as inst:
             print('Could not spawn car:', inst)
             self._vehicle_tab.btn_spawn.setEnabled(True)
             self._vehicle_tab.btn_destroy.setEnabled(False)
-            self._vehicle_tab.spin_spawn_points.setEnabled(True)
-            self._vehicle_tab.combo_car_type.setEnabled(True)
+            # self._vehicle_tab.spin_spawn_points.setEnabled(True)
+            # self._vehicle_tab.combo_car_type.setEnabled(True)
             self._spawned = False
 
     def destroy_car(self):
@@ -96,15 +96,15 @@ class Basevehicle:
             self.spawned_vehicle.destroy()
             self._vehicle_tab.btn_spawn.setEnabled(True)
             self._vehicle_tab.btn_destroy.setEnabled(False)
-            self._vehicle_tab.spin_spawn_points.setEnabled(True)
-            self._vehicle_tab.combo_car_type.setEnabled(True)
+            # self._vehicle_tab.spin_spawn_points.setEnabled(True)
+            # self._vehicle_tab.combo_car_type.setEnabled(True)
         except Exception as inst:
             self._spawned = True
             print('Could not destroy spawn car:', inst)
             self._vehicle_tab.btn_spawn.setEnabled(False)
             self._vehicle_tab.btn_destroy.setEnabled(True)
-            self._vehicle_tab.spin_spawn_points.setEnabled(False)
-            self._vehicle_tab.combo_car_type.setEnabled(False)
+            # self._vehicle_tab.spin_spawn_points.setEnabled(False)
+            # self._vehicle_tab.combo_car_type.setEnabled(False)
 
     @property
     def vehicle_id(self):
