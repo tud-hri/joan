@@ -253,8 +253,13 @@ class AgentmanagerAction(JoanModuleAction):
 
         return self.vehicles
 
-    def add_traffic_agent(self):
-        self.traffic_vehicles.append(Trafficvehicle(self, len(self.traffic_vehicles), self.nr_spawn_points, self.vehicle_tags))
+    def add_traffic_agent(self, traffic_vehicle_settings = None):
+        is_a_new_traffic_agent = not traffic_vehicle_settings
+
+        if is_a_new_traffic_agent:
+            traffic_vehicle_settings = TrafficVehicleSettings()
+            self.settings.traffic_vehicles.append(traffic_vehicle_settings)
+            self.traffic_vehicles.append(Trafficvehicle(self, len(self.traffic_vehicles), self.nr_spawn_points, self.vehicle_tags, traffic_vehicle_settings))
 
         return self.traffic_vehicles
 

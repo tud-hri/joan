@@ -58,29 +58,29 @@
       <property name="verticalSpacing">
        <number>2</number>
       </property>
-      <item row="0" column="5">
-       <widget class="QLabel" name="label_2">
-        <property name="font">
-         <font>
-          <pointsize>8</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>CarType:</string>
+      <item row="0" column="4" rowspan="5">
+       <widget class="Line" name="line_3">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
         </property>
        </widget>
       </item>
-      <item row="3" column="5">
-       <widget class="QLabel" name="lblSpawnpoints">
+      <item row="0" column="5" rowspan="5">
+       <widget class="Line" name="line">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="6">
+       <widget class="QPushButton" name="btn_destroy">
         <property name="font">
          <font>
           <pointsize>8</pointsize>
-          <weight>50</weight>
-          <bold>false</bold>
          </font>
         </property>
         <property name="text">
-         <string>Spawnpoint:</string>
+         <string>Destroy</string>
         </property>
        </widget>
       </item>
@@ -112,7 +112,7 @@
         </item>
        </widget>
       </item>
-      <item row="4" column="7">
+      <item row="4" column="6">
        <widget class="QPushButton" name="btn_remove_traffic_agent">
         <property name="font">
          <font>
@@ -121,76 +121,6 @@
         </property>
         <property name="text">
          <string>Remove Agent</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="2">
-       <widget class="QLabel" name="lblHcrtitle">
-        <property name="font">
-         <font>
-          <pointsize>8</pointsize>
-          <weight>50</weight>
-          <bold>false</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>Reference trajectory:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="7">
-       <widget class="QPushButton" name="btn_spawn">
-        <property name="font">
-         <font>
-          <pointsize>8</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Spawn</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="5">
-       <widget class="QComboBox" name="combo_car_type">
-        <property name="font">
-         <font>
-          <pointsize>8</pointsize>
-         </font>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="5">
-       <widget class="QSpinBox" name="spin_spawn_points">
-        <property name="font">
-         <font>
-          <pointsize>8</pointsize>
-         </font>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="7">
-       <widget class="QPushButton" name="btn_destroy">
-        <property name="font">
-         <font>
-          <pointsize>8</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Destroy</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="6" rowspan="5">
-       <widget class="Line" name="line">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="4" rowspan="5">
-       <widget class="Line" name="line_3">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
         </property>
        </widget>
       </item>
@@ -214,8 +144,34 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="2" colspan="2">
-       <widget class="QPushButton" name="btn_traffic_car_settings">
+      <item row="0" column="2">
+       <widget class="QLabel" name="lblHcrtitle">
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Reference trajectory:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="6">
+       <widget class="QPushButton" name="btn_spawn">
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Spawn</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="6">
+       <widget class="QPushButton" name="btn_settings">
         <property name="font">
          <font>
           <pointsize>8</pointsize>
@@ -223,18 +179,6 @@
         </property>
         <property name="text">
          <string>Settings</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="2">
-       <widget class="QLabel" name="label">
-        <property name="font">
-         <font>
-          <pointsize>8</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Open settings dialog:</string>
         </property>
        </widget>
       </item>

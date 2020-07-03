@@ -1,5 +1,7 @@
 from .basevehicle import Basevehicle
-from PyQt5 import uic
+from modules.agentmanager.action.agentmanagersettings import TrafficVehicleSettings
+
+from PyQt5 import uic, QtWidgets
 from utils.utils import Biquad
 import os
 import numpy as np
@@ -7,11 +9,59 @@ import time
 import pandas as pd
 import math
 
+class TrafficvehicleSettingsDialog(QtWidgets.QDialog):
+    def __init__(self, trafficvehicle_settings, parent=None):
+        super().__init__(parent)
+        self.trafficvehicle_settings = trafficvehicle_settings
+        uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/traffic_vehicle_settings_ui.ui"), self)
+
+        self.button_box_trafficvehicle_settings.button(self.button_box_trafficvehicle_settings.RestoreDefaults).clicked.connect(self._set_default_values)
+        self._display_values()
+
+
+
+    def accept(self):
+        self.trafficvehicle_settings._selected_car = self.combo_car_type.currentText()
+        self.trafficvehicle_settings._selected_spawnpoint = self.spin_spawn_points.value()
+        self.trafficvehicle_settings._t_lookahead = float(self.edit_t_ahead.text())
+        self.trafficvehicle_settings._k_p = float(self.edit_gain_prop.text())
+        self.trafficvehicle_settings._k_d = float(self.edit_gain_deriv.text())
+        self.trafficvehicle_settings._w_lat = float(self.edit_weight_lat.text())
+        self.trafficvehicle_settings._w_heading = float(self.edit_weight_heading.text())
+
+        super().accept()
+
+    def _display_values(self, settings_to_display = None):
+        if not settings_to_display:
+            settings_to_display = self.trafficvehicle_settings
+
+        self.lbl_current_t_lookahead.setText(str(settings_to_display._t_lookahead))
+        self.lbl_current_gain_prop.setText(str(settings_to_display._k_p))
+        self.lbl_current_gain_deriv.setText(str(settings_to_display._k_d))
+        self.lbl_current_weight_lat.setText(str(settings_to_display._w_lat))
+        self.lbl_current_weight_heading.setText(str(settings_to_display._w_heading))
+
+        self.edit_t_ahead.setText(str(settings_to_display._t_lookahead))
+        self.edit_gain_prop.setText(str(settings_to_display._k_p))
+        self.edit_gain_deriv.setText(str(settings_to_display._k_d))
+        self.edit_weight_lat.setText(str(settings_to_display._w_lat))
+        self.edit_weight_heading.setText(str(settings_to_display._w_heading))
+
+        idx_car = self.combo_car_type.findText(settings_to_display._selected_car)
+        self.combo_car_type.setCurrentIndex(idx_car)
+
+        self.spin_spawn_points.setValue(settings_to_display._selected_spawnpoint)
+
+
+    def _set_default_values(self):
+        self._display_values(TrafficVehicleSettings())
+
 class Trafficvehicle(Basevehicle):
     "This class contains everything you need to make a vehicle follow a predefined route by PD control"
-    def __init__(self, agent_manager_action, vehicle_nr, nr_spawn_points, tags):
+    def __init__(self, agent_manager_action, vehicle_nr, nr_spawn_points, tags, settings: TrafficVehicleSettings):
         "Init traffic vehicle here"
 
+        self.settings = settings
         self._bq_filter_heading = Biquad()
         self._bq_filter_velocity = Biquad()
         self.module_action = agent_manager_action
@@ -30,32 +80,36 @@ class Trafficvehicle(Basevehicle):
         self._vehicle_tab = uic.loadUi(uifile=os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/trafficvehicletab.ui"))
         self._vehicle_tab.group_traffic_agent.setTitle('Traffic Vehicle ' + str(vehicle_nr + 1))
 
-        self._vehicle_tab.btn_spawn.clicked.connect(self.spawn_car)
-        self._vehicle_tab.btn_destroy.clicked.connect(self.destroy_car)
-        self._vehicle_tab.btn_remove_traffic_agent.clicked.connect(self.remove_traffic_agent)
-
         self._vehicle_tab.btn_update_hcr_list.clicked.connect(self.update_trajectory_list)
         self._vehicle_tab.combo_box_traffic_trajectory.currentIndexChanged.connect(self.load_trajectory)
 
-        self._vehicle_tab.spin_spawn_points.setRange(0, nr_spawn_points)
-        self._vehicle_tab.spin_spawn_points.lineEdit().setReadOnly(True)
-
         self.update_trajectory_list()
 
-        # DIT MOET NOG IN DE SETTINGS
-        self.w_lat = 1
-        self.w_heading = 2
-        self.k_p = 6
-        self.k_d = 2.5
+        self._vehicle_tab.btn_destroy.setEnabled(False)
 
+        self._vehicle_tab.btn_spawn.clicked.connect(self.spawn_car)
+        self._vehicle_tab.btn_destroy.clicked.connect(self.destroy_car)
+        self._vehicle_tab.btn_remove_traffic_agent.clicked.connect(self.remove_traffic_agent)
+        self._vehicle_tab.btn_settings.clicked.connect(self._open_settings_dialog)
+
+        self.settings_dialog = TrafficvehicleSettingsDialog(self.settings)
 
         for item in tags:
-            self._vehicle_tab.combo_car_type.addItem(item)
+            self.settings_dialog.combo_car_type.addItem(item)
+
+        self.settings_dialog.spin_spawn_points.setRange(0, nr_spawn_points - 1)
+
+        self._open_settings_dialog()
 
 
     @property
     def vehicle_tab(self):
         return self._vehicle_tab
+
+    def _open_settings_dialog(self):
+        self.settings_dialog._display_values()
+        self.settings_dialog.show()
+        pass
 
     def remove_traffic_agent(self):
         self._vehicle_tab.setParent(None)
@@ -127,7 +181,7 @@ class Trafficvehicle(Basevehicle):
             self._controller_error[2:] = np.array([error_lateral_rate_filtered, error_heading_rate_filtered])
 
             # put error through controller to get sw torque out
-            self._sw_angle = self.pd_controller(self._controller_error)
+            self._sw_angle = self.trafficvehicle(self._controller_error)
             self._control.steer = self._sw_angle
             self.spawned_vehicle.apply_control(self._control)
             self.spawned_vehicle.set_velocity(vel_traffic)
@@ -188,9 +242,9 @@ class Trafficvehicle(Basevehicle):
 
         return np.array([velocity_error_rate, heading_error_rate])
 
-    def pd_controller(self, error):
-        lateral_gain = self.w_lat * (self.k_p * error[0] + self.k_d * error[2])
-        heading_gain = self.w_heading * (self.k_p * error[1] + self.k_d* error[3])
+    def trafficvehicle(self, error):
+        lateral_gain = self.settings._w_lat * (self.settings._k_p * error[0] + self.settings._k_d * error[2])
+        heading_gain = self.settings._w_heading * (self.settings._k_p * error[1] + self.settings._k_d* error[3])
         #
         total_gain = lateral_gain+ heading_gain
         sw_angle = total_gain/450

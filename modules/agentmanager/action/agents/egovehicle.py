@@ -20,6 +20,7 @@ class EgovehicleSettingsDialog(QtWidgets.QDialog):
         self.egovehicle_settings._selected_input = self.combo_input.currentText()
         self.egovehicle_settings._selected_controller = self.combo_sw_controller.currentText()
         self.egovehicle_settings._selected_car = self.combo_car_type.currentText()
+        self.egovehicle_settings._selected_spawnpoint = self.spin_spawn_points.value()
 
         super().accept()
 
@@ -35,6 +36,8 @@ class EgovehicleSettingsDialog(QtWidgets.QDialog):
 
         idx_car = self.combo_car_type.findText(settings_to_display._selected_car)
         self.combo_car_type.setCurrentIndex(idx_car)
+
+        self.spin_spawn_points.setValue(settings_to_display._selected_spawnpoint)
 
 
     def _set_default_values(self):
@@ -52,25 +55,19 @@ class Egovehicle(Basevehicle):
         self._hardware_data = {}
         self._sw_controller_data = {}
         self._vehicle_nr = 'Car ' + str(car_nr+1)
-        # self._sw_controller = self._vehicle_tab.combo_sw_controller.currentText()
 
-        # self._vehicle_tab.spin_spawn_points.setRange(0, nr_spawn_points-1)
-        # self._vehicle_tab.spin_spawn_points.lineEdit().setReadOnly(True)
         self._vehicle_tab.btn_destroy.setEnabled(False)
-        # self._vehicle_tab.combo_input.currentTextChanged.connect(self.update_input)
-        # self._vehicle_tab.combo_sw_controller.currentTextChanged.connect(self.update_sw_controller)
 
         self._vehicle_tab.btn_spawn.clicked.connect(self.spawn_car)
         self._vehicle_tab.btn_destroy.clicked.connect(self.destroy_car)
         self._vehicle_tab.btn_remove_ego_agent.clicked.connect(self.remove_ego_agent)
         self._vehicle_tab.btn_settings.clicked.connect(self._open_settings_dialog)
 
-        # self.settings_dialog.accepted.connect(self.update_settings)
         self.settings_dialog = EgovehicleSettingsDialog(self.settings)
 
         for item in tags:
             self.settings_dialog.combo_car_type.addItem(item)
-            # self._vehicle_tab.combo_car_type.addItem(item)
+
 
         self.settings_dialog.spin_spawn_points.setRange(0, nr_spawn_points - 1)
 
