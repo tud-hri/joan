@@ -1,14 +1,39 @@
 from .basevehicle import Basevehicle
+from modules.agentmanager.action.agentmanagersettings import EgoVehicleSettings
 from modules.joanmodules import JOANModules
-from PyQt5 import uic
+
+from PyQt5 import uic, QtWidgets
 import os
 
+class EgovehicleSettingsDialog(QtWidgets.QDialog):
+    def __init__(self, egovehicle_settings, parent=None):
+        super().__init__(parent)
+        self.egovehicle_settings = egovehicle_settings
+        uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/vehicle_settings_ui.ui"), self)
+
+        self.button_box_egovehicle_settings.button(self.button_box_egovehicle_settings.RestoreDefaults).clicked.connect(self._set_default_values)
+        self._display_values()
+        self.show()
+
+    def accept(self):
+        print('accepted')
+        super().accept()
+
+    def _display_values(self, settings_to_display=None):
+        if not settings_to_display:
+            settings_to_display = self.egovehicle_settings
+
+
+    def _set_default_values(self):
+        self._display_values(EgoVehicleSettings())
 
 class Egovehicle(Basevehicle):
-    def __init__(self, agent_manager_action, car_nr, nr_spawn_points, tags):
+    def __init__(self, agent_manager_action, car_nr, nr_spawn_points, tags, settings: EgoVehicleSettings):
         super().__init__(agent_manager_action)
 
-        self._vehicle_tab = uic.loadUi(uifile=os.path.join(os.path.dirname(os.path.realpath(__file__)), "../vehicletab.ui"))
+        self.settings = settings
+
+        self._vehicle_tab = uic.loadUi(uifile=os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/vehicletab.ui"))
         self._vehicle_tab.group_car.setTitle('Car ' + str(car_nr+1))
         self._spawned = False
         self._hardware_data = {}
@@ -25,6 +50,10 @@ class Egovehicle(Basevehicle):
         self._vehicle_tab.btn_spawn.clicked.connect(self.spawn_car)
         self._vehicle_tab.btn_destroy.clicked.connect(self.destroy_car)
         self._vehicle_tab.btn_remove_ego_agent.clicked.connect(self.remove_ego_agent)
+        self._vehicle_tab.btn_settings.clicked.connect(self._open_settings_dialog)
+
+        self.settings_dialog = EgovehicleSettingsDialog(self.settings)
+        # self.settings_dialog.accepted.connect(self.update_settings)
 
         for item in tags:
             self._vehicle_tab.combo_car_type.addItem(item)
@@ -46,6 +75,10 @@ class Egovehicle(Basevehicle):
     @property
     def vehicle_nr(self):
         return self._vehicle_nr
+
+    def _open_settings_dialog(self):
+        self.settings_dialog.show()
+        pass
 
     def update_sw_controller(self):
         self._sw_controller = self._vehicle_tab.combo_sw_controller.currentText()

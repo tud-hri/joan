@@ -4,6 +4,8 @@ from PyQt5.QtWidgets import QMessageBox, QApplication
 
 from .agents.egovehicle import Egovehicle
 from .agents.trafficvehicle import Trafficvehicle
+from .agentmanagersettings import  AgentManagerSettings, EgoVehicleSettings, TrafficVehicleSettings
+
 
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
@@ -52,6 +54,8 @@ class AgentmanagerAction(JoanModuleAction):
         self.time = QtCore.QTime()
         self._data_from_hardware = {}
 
+        self.settings = AgentManagerSettings(module_enum=JOANModules.AGENT_MANAGER)
+
         #Carla connection variables:
         self.host = 'localhost'
         self.port = 2000
@@ -81,6 +85,8 @@ class AgentmanagerAction(JoanModuleAction):
         self.state_machine.set_transition_condition(State.IDLE, State.READY, self._init_condition)
         self.state_machine.set_transition_condition(State.READY, State.RUNNING, self._starting_condition)
         self.state_machine.set_transition_condition(State.RUNNING, State.READY, self._stopping_condition)
+
+        self.share_settings(self.settings)
 
     @property 
     def vehicle_bp_library(self):
@@ -229,8 +235,14 @@ class AgentmanagerAction(JoanModuleAction):
 
         return self.connected
 
-    def add_ego_agent(self):
-        self.vehicles.append(Egovehicle(self, len(self.vehicles), self.nr_spawn_points, self.vehicle_tags))
+    def add_ego_agent(self, ego_vehicle_settings =None):
+        is_a_new_ego_agent = not ego_vehicle_settings
+
+        if is_a_new_ego_agent:
+            ego_vehicle_settings = EgoVehicleSettings()
+            self.settings.ego_vehicles.append(ego_vehicle_settings)
+            self.vehicles.append(Egovehicle(self, len(self.vehicles), self.nr_spawn_points, self.vehicle_tags, ego_vehicle_settings))
+
         for vehicle in self.vehicles:
             vehicle.get_available_inputs()
             vehicle.get_available_controllers()
