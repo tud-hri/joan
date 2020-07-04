@@ -27,19 +27,28 @@ class BaseSWController:
         self._path_trajectory_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'trajectories')
 
         self._data_in = {}
-        self._data_out = {}
-        self._data_out['sw_torque'] = 0
+        self._data_out = {'sw_torque': 0}
 
     @abc.abstractmethod
-    def process(self, vehicle_object, hw_data_in):
-
+    def calculate(self, vehicle_object, hw_data_in):
+        """
+        Calculate SW control torque
+        :param vehicle_object: data from the vehicle
+        :param hw_data_in: data from the hardware
+        :return: dict, including sw_torque
+        """
         return self._data_out
 
     def remove_sw_controller(self):
+        """
+        Remove the sw controller
+        """
         self.module_action.remove_controller(self)
 
     def load_trajectory(self):
-        """Load HCR trajectory"""
+        """
+        Load HCR trajectory
+        """
         fname = self._controller_tab.cmbbox_hcr_selection.itemText(
             self._controller_tab.cmbbox_hcr_selection.currentIndex()
         )
@@ -55,7 +64,9 @@ class BaseSWController:
                 print('Error loading HCR trajectory file: ', err)
 
     def update_trajectory_list(self):
-        """Check what trajectory files are present and update the selection list"""
+        """
+        Check what trajectory files are present and update the selection list
+        """
         # get list of csv files in directory
         if not os.path.isdir(self._path_trajectory_directory):
             os.mkdir(self._path_trajectory_directory)
@@ -69,7 +80,9 @@ class BaseSWController:
             self._controller_tab.cmbbox_hcr_selection.setCurrentIndex(idx)
 
     def find_closest_node(self, node, nodes):
-        """find the node in the nodes list (trajectory)"""
+        """
+        Find the node in the nodes list (trajectory)
+        """
         nodes = np.asarray(nodes)
         deltas = nodes - node
         dist_squared = np.einsum('ij,ij->i', deltas, deltas)

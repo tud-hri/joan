@@ -111,7 +111,7 @@ class PDSWController(BaseSWController):
     def initialize(self):
         self.load_trajectory()
 
-    def process(self, vehicle_object, hw_data_in):
+    def calculate(self, vehicle_object, hw_data_in):
         try:
             stiffness = hw_data_in[vehicle_object.selected_input]['spring_stiffness']
         except:
