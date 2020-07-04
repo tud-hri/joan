@@ -1,10 +1,10 @@
 import inspect
-
-from PyQt5 import QtGui
 from enum import Enum
 
-from process.joanmodulesettings import JoanModuleSettings
+from PyQt5 import QtGui
+
 from modules.joanmodules import JOANModules
+from process.joanmodulesettings import JoanModuleSettings
 
 
 class HardWareManagerSettings(JoanModuleSettings):
@@ -28,8 +28,10 @@ class HardWareManagerSettings(JoanModuleSettings):
             module_settings_to_load = loaded_dict[str(self._module_enum)]
         except KeyError:
             warning_message = "WARNING: loading settings for the " + str(self._module_enum) + \
-                              " module from a dictionary failed. The loaded dictionary did not contain " + str(self._module_enum) + " settings." + \
-                              (" It did contain settings for: " + ", ".join(loaded_dict.keys()) if loaded_dict.keys() else "")
+                              " module from a dictionary failed. The loaded dictionary did not contain " + str(
+                self._module_enum) + " settings." + \
+                              (" It did contain settings for: " + ", ".join(
+                                  loaded_dict.keys()) if loaded_dict.keys() else "")
             print(warning_message)
             return
 

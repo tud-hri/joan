@@ -2,14 +2,12 @@ import os
 
 from PyQt5 import QtWidgets, uic
 
-# from process import State
-from process.joanmoduledialog import JoanModuleDialog
-from process.joanmoduleaction import JoanModuleAction
 from modules.joanmodules import JOANModules
 from modules.steeringwheelcontrol.action.swcontrollertypes import SWControllerTypes
-
+from process.joanmoduleaction import JoanModuleAction
+# from process import State
+from process.joanmoduledialog import JoanModuleDialog
 from process.statesenum import State
-
 
 
 class SteeringWheelControlDialog(JoanModuleDialog):
@@ -21,7 +19,8 @@ class SteeringWheelControlDialog(JoanModuleDialog):
         #     self.add_controller_tab(klass)
 
         # setup dialogs
-        self._controller_type_dialog = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "sw_controllertype.ui"))
+        self._controller_type_dialog = uic.loadUi(
+            os.path.join(os.path.dirname(os.path.realpath(__file__)), "sw_controllertype.ui"))
         self._controller_type_dialog.btnbox_sw_controller_type.accepted.connect(self.add_selected_controller_type)
 
         # add state change listener (for adding controllers)
@@ -45,16 +44,15 @@ class SteeringWheelControlDialog(JoanModuleDialog):
     def _controller_type_selection(self):
         self._controller_type_dialog.combobox_sw_controller_type.clear()
         for controllers in SWControllerTypes:
-            self._controller_type_dialog.combobox_sw_controller_type.addItem(controllers.__str__(), userData = controllers)
+            self._controller_type_dialog.combobox_sw_controller_type.addItem(controllers.__str__(),
+                                                                             userData=controllers)
         self._controller_type_dialog.show()
 
     def add_selected_controller_type(self):
-        chosen_controller = self._controller_type_dialog.combobox_sw_controller_type.itemData(self._controller_type_dialog.combobox_sw_controller_type.currentIndex())
+        chosen_controller = self._controller_type_dialog.combobox_sw_controller_type.itemData(
+            self._controller_type_dialog.combobox_sw_controller_type.currentIndex())
         new_controller_widget = self.module_action.add_controller(chosen_controller)
         self.module_widget.sw_controller_list_layout.addWidget(new_controller_widget)
-
-
-
 
         pass
 

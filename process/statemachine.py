@@ -56,7 +56,8 @@ class StateMachine:
         :return:
         """
         if departing_state is target_state:
-            raise ValueError('State machine cannot only transition conditions for transitioning between two different states.')
+            raise ValueError(
+                'State machine cannot only transition conditions for transitioning between two different states.')
 
         self._transition_conditions[departing_state][target_state] = condition_function
 
@@ -103,8 +104,10 @@ class StateMachine:
             elif isinstance(condition_evaluation, tuple) and len(condition_evaluation) == 2:
                 state_change_is_legal, error_message = condition_evaluation
             else:
-                raise RuntimeError("A transition condition function should return a boolean indicating if a transition is legal. Or a tuple conataining a "
-                                   "boolean and a (error) message to display. Received object was of type: " + str(type(condition_evaluation)))
+                raise RuntimeError(
+                    "A transition condition function should return a boolean indicating if a transition is legal. Or a tuple conataining a "
+                    "boolean and a (error) message to display. Received object was of type: " + str(
+                        type(condition_evaluation)))
 
             if state_change_is_legal:
                 if self._exit_actions[self.current_state]:
@@ -116,7 +119,8 @@ class StateMachine:
                 if self._entry_actions[target_state]:
                     self._entry_actions[target_state]()
             else:
-                self.state_message = 'State change from ' + str(self.current_state) + ' to ' + str(target_state) + ' is illegal for ' + str(
+                self.state_message = 'State change from ' + str(self.current_state) + ' to ' + str(
+                    target_state) + ' is illegal for ' + str(
                     self._module_enum) + ' module. '
                 if error_message:
                     self.state_message += 'Error: ' + error_message

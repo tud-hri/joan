@@ -3,11 +3,8 @@ import os
 from PyQt5 import QtCore
 
 from modules.joanmodules import JOANModules
-from process.news import News
-from process.settings import Settings
-#from process.statehandler import StateHandler
-#from process.states import MasterStates
-#from process.status import Status
+from process import News
+from process import Settings
 
 
 class JoanHQAction(QtCore.QObject):
@@ -22,7 +19,8 @@ class JoanHQAction(QtCore.QObject):
         self.singleton_settings = Settings()
 
         # path to modules directory
-        self.path_modules = os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../", "modules"))
+        self.path_modules = os.path.normpath(
+            os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../", "modules"))
 
         # dictionary to keep track of the instantiated modules
         self._instantiated_modules = {}
@@ -42,7 +40,7 @@ class JoanHQAction(QtCore.QObject):
                 module.action.start()
             except AttributeError:  # module has new style TODO: remove statement above when moving to new style
                 module.start()
- 
+
     def stop_all(self):
         """Stop all modules"""
         for _, module in self._instantiated_modules.items():
@@ -50,7 +48,7 @@ class JoanHQAction(QtCore.QObject):
                 module.action.stop()
             except AttributeError:  # module has new style TODO: remove statement above when moving to new style
                 module.stop()
- 
+
     def add_module(self, module: JOANModules, name='', parent=None, millis=100):
         """Add module, instantiated module, find unique name"""
 
@@ -64,7 +62,7 @@ class JoanHQAction(QtCore.QObject):
 
         # add instantiated module to dictionary
         self._instantiated_modules[module] = module_action
-        
+
         return module_dialog, module_action
 
     def remove_module(self, module: JOANModules):
@@ -83,4 +81,3 @@ class JoanHQAction(QtCore.QObject):
     def instantiated_modules(self):
         """getter for self._instantiated_modules, only allow get, not set"""
         return self._instantiated_modules
-

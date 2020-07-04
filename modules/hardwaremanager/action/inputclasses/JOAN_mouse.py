@@ -1,4 +1,3 @@
-from modules.joanmodules import JOANModules
 from modules.hardwaremanager.action.inputclasses.baseinput import BaseInput
 
 

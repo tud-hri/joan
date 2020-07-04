@@ -1,6 +1,8 @@
 import enum
 import os
+
 from .steeringwheelcontrolsettings import PDcontrollerSettings, FDCAcontrollerSettings
+
 
 class SWControllerTypes(enum.Enum):
     """
@@ -31,8 +33,8 @@ class SWControllerTypes(enum.Enum):
 
     @property
     def settings(self):
-        return{SWControllerTypes.PD_SWCONTROLLER: PDcontrollerSettings(),
-               SWControllerTypes.FDCA_SWCONTROLLER: FDCAcontrollerSettings()}[self]
+        return {SWControllerTypes.PD_SWCONTROLLER: PDcontrollerSettings(),
+                SWControllerTypes.FDCA_SWCONTROLLER: FDCAcontrollerSettings()}[self]
 
     def __str__(self):
         return {SWControllerTypes.PD_SWCONTROLLER: 'PD',

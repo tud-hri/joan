@@ -5,22 +5,19 @@ from modules.joanmodules import JOANModules
 
 
 class Settings:
-    '''
+    """
     The Settings class is a singleton that holds settings of module, 
     so they can be used from Experiment classes, using the module_key
-    '''
+    """
     instance = None
 
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls):
         if not cls.instance:
             cls.instance = object.__new__(Settings)
             cls._factory_settings = {}
             cls._settings = {}
 
         return cls.instance
-
-    # def __init__(self, settings_dict):
-    #    self._settings.update(settings_dict)
 
     def update_factory_settings(self, module: JOANModules, module_settings):
         self._factory_settings.update({module: module_settings})
@@ -47,6 +44,9 @@ class Settings:
     @property
     def all_settings_keys(self):
         return self._settings.keys()
+
+
+"""DEPRECATED?"""
 
 
 class ModuleSettings:

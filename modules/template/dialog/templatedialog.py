@@ -21,7 +21,6 @@ class TemplateDialog(JoanModuleDialog):
         # a state change listener is implemented as a callable method which is executed when state_machine.request_state_change is used
         self.module_action.state_machine.add_state_change_listener(self._execute_on_state_change_in_module_dialog_1)
         self.module_action.state_machine.add_state_change_listener(self._execute_on_state_change_in_module_dialog_2)
-        
 
         self.settings_menu = QtWidgets.QMenu('Settings')
         self.load_settings = QtWidgets.QAction('Load Settings')
@@ -41,7 +40,6 @@ class TemplateDialog(JoanModuleDialog):
         file_to_save_in, _ = QtWidgets.QFileDialog.getSaveFileName(self, 'save settings', filter='*.json')
         if file_to_save_in:
             self.module_action.save_settings_to_file(file_to_save_in)
-
 
     def _execute_on_state_change_in_module_dialog_1(self):
         # example of adding a method to be executed on a state change request

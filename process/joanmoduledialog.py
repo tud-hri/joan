@@ -4,13 +4,11 @@ from PyQt5 import QtWidgets, uic, QtGui, QtCore
 
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
-from process.statehandler import StateHandler
-from process.states import MasterStates
 from process.statesenum import State
 from process.status import Status
 
-class JoanModuleDialog(QtWidgets.QDialog):
 
+class JoanModuleDialog(QtWidgets.QDialog):
     # signal when dialog is closed
     closed = QtCore.pyqtSignal()
 
@@ -32,7 +30,8 @@ class JoanModuleDialog(QtWidgets.QDialog):
         self.file_menu.addSeparator()
 
         # setup state widget
-        self.state_widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../resources/statewidget.ui"))
+        self.state_widget = uic.loadUi(
+            os.path.join(os.path.dirname(os.path.realpath(__file__)), "../resources/statewidget.ui"))
         self.layout().addWidget(self.state_widget)
         self.state_widget.btn_start.clicked.connect(self._button_start_clicked)
         self.state_widget.btn_stop.clicked.connect(self._button_stop_clicked)
@@ -42,6 +41,7 @@ class JoanModuleDialog(QtWidgets.QDialog):
         self.state_widget.input_tick_millis.setValidator(QtGui.QIntValidator(0, 10000, parent=self))
         self.state_widget.input_tick_millis.setPlaceholderText(str(self.module_action.millis))
         self.state_widget.input_tick_millis.textChanged.connect(self._set_millis)
+
         # reflect current state
         self.handle_state_change()
 
@@ -128,12 +128,9 @@ class JoanModuleDialog(QtWidgets.QDialog):
         """toggle visibility of this dialog"""
         if not self.isVisible():
             self.show()
-
-            #self.module_action.module_state_handler.request_state_change(self.module_action.module_states.IDLE)
         else:
             self.close()
-            #self.module_action.module_state_handler.request_state_change(self.module_action.module_states.EXEC.STOPPED)
-        
+
     def closeEvent(self, event):
         """close event"""
         self.closed.emit()

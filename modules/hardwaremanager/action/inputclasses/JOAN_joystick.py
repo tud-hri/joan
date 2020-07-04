@@ -6,7 +6,6 @@ from PyQt5 import uic, QtWidgets, QtCore
 from modules.hardwaremanager.action.hardwaremanagersettings import JoyStickSettings
 from modules.hardwaremanager.action.inputclasses.baseinput import BaseInput
 from modules.joanmodules import JOANModules
-from process.statesenum import State
 
 
 class JoystickSettingsDialog(QtWidgets.QDialog):
@@ -15,7 +14,8 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
         self.joystick_settings = joystick_settings
         uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/joystick_settings_ui.ui"), self)
 
-        self.button_box_settings.button(self.button_box_settings.RestoreDefaults).clicked.connect(self._set_default_settings)
+        self.button_box_settings.button(self.button_box_settings.RestoreDefaults).clicked.connect(
+            self._set_default_settings)
 
         for available_device in hid.enumerate():
             self.combo_available_devices.addItem(available_device['product_string'], userData=available_device)
@@ -249,7 +249,6 @@ class JOAN_Joystick(BaseInput):
         if self._carla_interface_data['vehicles'] is not None:
             self._carla_interface_data = self._action.read_news(JOANModules.CARLA_INTERFACE)
 
-
         if self._joystick_open:
             joystick_data = self._joystick.read(self.settings.degrees_of_freedom, 1)
 
@@ -277,11 +276,13 @@ class JOAN_Joystick(BaseInput):
 
             if self.settings.use_double_steering_resolution:
                 self.steer = round(
-                    (((joystick_data[self.settings.first_steer_channel]) + (joystick_data[self.settings.second_steer_channel]) * 256) / (256 * 256)) * (
+                    (((joystick_data[self.settings.first_steer_channel]) + (
+                    joystick_data[self.settings.second_steer_channel]) * 256) / (256 * 256)) * (
                             self.settings.max_steer - self.settings.min_steer) - self.settings.max_steer)
             else:
                 self.steer = round(
-                    ((joystick_data[self.settings.first_steer_channel]) / 255) * (self.settings.max_steer - self.settings.min_steer) - self.settings.max_steer)
+                    ((joystick_data[self.settings.first_steer_channel]) / 255) * (
+                                self.settings.max_steer - self.settings.min_steer) - self.settings.max_steer)
 
         self._data['BrakeInput'] = self.brake
         self._data['ThrottleInput'] = self.throttle

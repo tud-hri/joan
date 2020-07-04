@@ -1,14 +1,9 @@
-from PyQt5 import QtCore
-
-import numpy as np
-
 from modules.joanmodules import JOANModules
-from process.joanmoduleaction import JoanModuleAction
-from .swcontrollertypes import SWControllerTypes
 from process import Status
+from process.joanmoduleaction import JoanModuleAction
 from process.statesenum import State
-from .steeringwheelcontrolsettings import SteeringWheelControlSettings, PDcontrollerSettings
-
+from .steeringwheelcontrolsettings import SteeringWheelControlSettings
+from .swcontrollertypes import SWControllerTypes
 
 
 class SteeringWheelControlAction(JoanModuleAction):
@@ -25,7 +20,7 @@ class SteeringWheelControlAction(JoanModuleAction):
 
         self.state_machine.add_state_change_listener(self._state_change_listener)
 
-        #Setup state machine transition conditions
+        # Setup state machine transition conditions
         self.state_machine.set_transition_condition(State.READY, State.RUNNING, self._starting_condition)
         self.state_machine.set_transition_condition(State.RUNNING, State.READY, self._stopping_condition)
 
@@ -59,14 +54,11 @@ class SteeringWheelControlAction(JoanModuleAction):
 
         self.write_news(self.data)
 
-
-
     def _starting_condition(self):
         try:
             return True, ''
         except KeyError:
             return False, 'Could not check whether carla is connected'
-
 
     def _stopping_condition(self):
         try:
@@ -117,9 +109,9 @@ class SteeringWheelControlAction(JoanModuleAction):
         return super().initialize()
 
     def add_controller(self, controller_type):
-        #set the module to idle because we need to reinitialize our controllers!
-        self.state_machine.request_state_change(State.IDLE,'You can now add more and reinitialize controllers')
-        #add appropriate settings
+        # set the module to idle because we need to reinitialize our controllers!
+        self.state_machine.request_state_change(State.IDLE, 'You can now add more and reinitialize controllers')
+        # add appropriate settings
         settings_for_controller = controller_type.settings
 
         if controller_type == SWControllerTypes.PD_SWCONTROLLER:
@@ -129,7 +121,8 @@ class SteeringWheelControlAction(JoanModuleAction):
 
         number_of_controllers = sum([bool(controller_type.__str__() in k) for k in self._controllers.keys()]) + 1
         controller_list_key = controller_type.__str__() + ' ' + str(number_of_controllers)
-        self._controllers[controller_list_key] = controller_type.klass(self, controller_list_key, settings_for_controller)
+        self._controllers[controller_list_key] = controller_type.klass(self, controller_list_key,
+                                                                       settings_for_controller)
         self._controllers[controller_list_key].get_controller_tab.controller_groupbox.setTitle(controller_list_key)
 
         self._controllers[controller_list_key].update_trajectory_list()
@@ -138,7 +131,7 @@ class SteeringWheelControlAction(JoanModuleAction):
         return self._controllers[controller_list_key].get_controller_tab
 
     def remove_controller(self, controller):
-        #remove controller from the news
+        # remove controller from the news
         try:
             del self.data[controller.get_controller_list_key]
         except KeyError:  # data is only present if the hardware manager ran since the hardware was added

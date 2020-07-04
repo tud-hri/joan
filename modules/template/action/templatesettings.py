@@ -1,7 +1,7 @@
 import enum
 
-from process.joanmodulesettings import JoanModuleSettings
 from modules.joanmodules import JOANModules
+from process.joanmodulesettings import JoanModuleSettings
 
 
 class TemplateSettings(JoanModuleSettings):

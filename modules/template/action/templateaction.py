@@ -21,8 +21,6 @@ class TemplateAction(JoanModuleAction):
 
     def __init__(self, millis=100):
         super().__init__(module=JOANModules.TEMPLATE, millis=millis)
-        # def __init__(self, master_state_handler, millis=100):
-        #    super().__init__(module=JOANModules.TEMPLATE, master_state_handler=master_state_handler, millis=millis)
 
         # The modules work with states. Also see: TemplateDialog in templatedialog.py
         # Each JOAN module has its own state machine that can be customized by adding module specific transition conditions
@@ -43,14 +41,13 @@ class TemplateAction(JoanModuleAction):
         # a state change listener is implemented as a callable method which is executed when state_machine.request_state_change is used
         self.state_machine.add_state_change_listener(self._execute_on_state_change_in_module_action_1)
         self.state_machine.add_state_change_listener(self._execute_on_state_change_in_module_action_2)
-        
+
         # Finally it is also possible to define automatic state changes. If state A is entered and the transition to state B is immediately legal, the state
         # machine will automatically progress to state B. It is possible to define one automatic state change per state, except for the Error state. It is
         # illegal to automatically leave the Error state for safety reasons. Not that state A wil not be skipped, but exited automatically. So the state changes
         # are subject to all normal conditions and entry and exit actions. 
         # Note: This means that a transition condition must be defined!
         self.state_machine.set_automatic_transition(State.READY, State.RUNNING)
-
 
         # start news for the datarecorder.
         # here, we are added a variable called 'datawriter output' to this modules News. 
@@ -70,7 +67,8 @@ class TemplateAction(JoanModuleAction):
         self.settings = TemplateSettings(module_enum=JOANModules.TEMPLATE)
 
         # then load the saved value from a file, this can be done here, or implement a button with which the user can specify the file to load from.
-        default_settings_file_location = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'template_settings.json')
+        default_settings_file_location = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                                      'template_settings.json')
         if os.path.isfile(default_settings_file_location):
             self.settings.load_from_file(default_settings_file_location)
 
@@ -108,9 +106,9 @@ class TemplateAction(JoanModuleAction):
         # reinitialised every time the settings are changed.
         self.millis = self.settings.millis
 
-        #if (self.state_machine.current_state is State.IDLE):
-        self.state_machine.request_state_change(State.READY) #, "You can now start the module")
-        #elif (self.state_machine.current_state is State.ERROR):
+        # if (self.state_machine.current_state is State.IDLE):
+        self.state_machine.request_state_change(State.READY)  # , "You can now start the module")
+        # elif (self.state_machine.current_state is State.ERROR):
         #    self.state_machine.request_state_change(State.IDLE)
         return super().initialize()
 
@@ -121,7 +119,8 @@ class TemplateAction(JoanModuleAction):
 
     def stop(self):
         """stop the module"""
-        self.state_machine.request_state_change(State.IDLE)  # Will automatically go to READY as defined above in self.state_machine.set_automatic_transition
+        self.state_machine.request_state_change(
+            State.IDLE)  # Will automatically go to READY as defined above in self.state_machine.set_automatic_transition
         return super().stop()
 
     def _starting_condition(self):

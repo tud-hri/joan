@@ -1,10 +1,8 @@
 import abc
 import os
 
-import pandas as pd
 import numpy as np
-import math
-
+import pandas as pd
 from PyQt5 import uic
 
 from modules.joanmodules import JOANModules
@@ -16,12 +14,11 @@ class BaseSWController:
         self._action = module_action
         self._controller_type = controller_type
 
-
         # widget
         self._tuning_tab = uic.loadUi(self._controller_type.tuning_ui_file)
         self._controller_tab = uic.loadUi(self._controller_type.controller_tab_ui_file)
 
-        #widget actions
+        # widget actions
         self._controller_tab.btn_remove_sw_controller.clicked.connect(self.remove_sw_controller)
 
         # trajectory
@@ -29,19 +26,13 @@ class BaseSWController:
         self._current_trajectory_name = ''
         self._path_trajectory_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'trajectories')
 
-
-
-
-
         self._data_in = {}
         self._data_out = {}
         self._data_out['sw_torque'] = 0
 
     @abc.abstractmethod
     def process(self, vehicle_object, hw_data_in):
-        """do is called every tick in steeringwheelcontrolaction's do
-        this needs to be implemented by children of BaseSWController
-        """
+
         return self._data_out
 
     def remove_sw_controller(self):
@@ -98,4 +89,3 @@ class BaseSWController:
     @property
     def controller_type(self):
         return self._controller_type
-

@@ -1,10 +1,9 @@
 import inspect
-
-from PyQt5 import QtGui
 from enum import Enum
 
-from process.joanmodulesettings import JoanModuleSettings
 from modules.joanmodules import JOANModules
+from process.joanmodulesettings import JoanModuleSettings
+
 
 class SteeringWheelControlSettings(JoanModuleSettings):
     def __init__(self, module_enum: JOANModules):
@@ -12,8 +11,6 @@ class SteeringWheelControlSettings(JoanModuleSettings):
 
         self.pd_controllers = []
         self.fdca_controllers = []
-
-
 
     def set_from_loaded_dict(self, loaded_dict):
         """
@@ -28,8 +25,10 @@ class SteeringWheelControlSettings(JoanModuleSettings):
             module_settings_to_load = loaded_dict[str(self._module_enum)]
         except KeyError:
             warning_message = "WARNING: loading settings for the " + str(self._module_enum) + \
-                              " module from a dictionary failed. The loaded dictionary did not contain " + str(self._module_enum) + " settings." + \
-                              (" It did contain settings for: " + ", ".join(loaded_dict.keys()) if loaded_dict.keys() else "")
+                              " module from a dictionary failed. The loaded dictionary did not contain " + str(
+                self._module_enum) + " settings." + \
+                              (" It did contain settings for: " + ", ".join(
+                                  loaded_dict.keys()) if loaded_dict.keys() else "")
             print(warning_message)
             return
 
@@ -97,13 +96,13 @@ class PDcontrollerSettings:
         self.w_lat = 1.0
         self.w_heading = 2.0
 
-
     def as_dict(self):
         return self.__dict__
 
     def set_from_loaded_dict(self, loaded_dict):
         for key, value in loaded_dict.items():
             self.__setattr__(key, value)
+
 
 class FDCAcontrollerSettings:
     def __init__(self):

@@ -2,24 +2,22 @@ import os
 
 import keyboard
 
+from modules.hardwaremanager.action.hardwaremanagersettings import KeyBoardSettings, JoyStickSettings, \
+    SensoDriveSettings, HardWareManagerSettings
 from modules.hardwaremanager.action.inputclasses.JOAN_joystick import JOAN_Joystick
 from modules.hardwaremanager.action.inputclasses.JOAN_keyboard import JOAN_Keyboard
 from modules.hardwaremanager.action.inputclasses.JOAN_sensodrive import JOAN_SensoDrive
-
-from modules.hardwaremanager.action.hardwaremanagersettings import KeyBoardSettings, JoyStickSettings, SensoDriveSettings, HardWareManagerSettings
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
-
 from process.statesenum import State
 from process.status import Status
-from process.settings import ModuleSettings
 
 
 class HardwaremanagerAction(JoanModuleAction):
     def __init__(self, millis=5):
         super().__init__(module=JOANModules.HARDWARE_MANAGER, millis=millis)
 
-        #Initialize dicts and variables
+        # Initialize dicts and variables
         self.input_devices_classes = {}
         self.data = {}
         self.write_news(news=self.data)
@@ -30,7 +28,8 @@ class HardwaremanagerAction(JoanModuleAction):
 
         self.state_machine.add_state_change_listener(self._state_change_listener)
 
-        default_settings_file_location = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'hardware_settings.json')
+        default_settings_file_location = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                                      'hardware_settings.json')
         if os.path.isfile(default_settings_file_location):
             self.settings.load_from_file(default_settings_file_location)
 
@@ -47,8 +46,6 @@ class HardwaremanagerAction(JoanModuleAction):
                 self.input_devices_classes[inputs].disable_remove_button()
         self.write_news(self.data)
 
-
-
     def do(self):
         """
         This function is called every controller tick of this module implement your main calculations here
@@ -61,11 +58,9 @@ class HardwaremanagerAction(JoanModuleAction):
         for inputs in self.input_devices_classes:
             self.data[inputs] = self.input_devices_classes[inputs].process()
             if 'SensoDrive' in inputs:
-                    self.input_devices_classes[inputs]._toggle_on_off(self.carla_interface_data['connected'])
-
+                self.input_devices_classes[inputs]._toggle_on_off(self.carla_interface_data['connected'])
 
         self.write_news(self.data)
-
 
     def initialize(self):
         """
@@ -90,7 +85,7 @@ class HardwaremanagerAction(JoanModuleAction):
 
     def start(self):
         self.carla_interface_data = self.read_news(JOANModules.CARLA_INTERFACE)
-        #make sure you can only turn on the motor of the wheel if carla is connected
+        # make sure you can only turn on the motor of the wheel if carla is connected
         for inputs in self.input_devices_classes:
             if 'SensoDrive' in inputs:
                 self.input_devices_classes[inputs]._toggle_on_off(self.carla_interface_data['connected'])
@@ -181,4 +176,3 @@ class HardwaremanagerAction(JoanModuleAction):
 
         if not self.input_devices_classes:
             self.stop()
-

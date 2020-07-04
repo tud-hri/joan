@@ -34,8 +34,10 @@ class JoanModuleSettings(abc.ABC):
             self._copy_dict_to_class_dict(loaded_dict[str(self._module_enum)], self.__dict__)
         except KeyError:
             warning_message = "WARNING: loading settings for the " + str(self._module_enum) + \
-                              " module from a dictionary failed. The loaded dictionary did not contain " + str(self._module_enum) + " settings." + \
-                              (" It did contain settings for: " + ", ".join(loaded_dict.keys()) if loaded_dict.keys() else "")
+                              " module from a dictionary failed. The loaded dictionary did not contain " + str(
+                self._module_enum) + " settings." + \
+                              (" It did contain settings for: " + ", ".join(
+                                  loaded_dict.keys()) if loaded_dict.keys() else "")
 
             print(warning_message)
 
@@ -43,7 +45,8 @@ class JoanModuleSettings(abc.ABC):
         output_dict = {str(self._module_enum): {}}
 
         # omit attributes of the ABC from the source dict since they are not of interest when displaying the settings as a dict
-        source_dict = {key: item for key, item in self.__dict__.items() if key not in JoanModuleSettings(None).__dict__.keys()}
+        source_dict = {key: item for key, item in self.__dict__.items() if
+                       key not in JoanModuleSettings(None).__dict__.keys()}
 
         self._copy_dict_to_dict(source_dict, output_dict[str(self._module_enum)])
         return output_dict
@@ -112,7 +115,8 @@ class JoanModuleSettings(abc.ABC):
             if isinstance(item, list):
                 output_list.append(JoanModuleSettings._copy_list_to_list(item))
             elif isinstance(item, Enum):
-                print('WARNING: JOAN settings cannot reconstruct enums embedded in lists from saved files, only the value of the enum will be saved')
+                print(
+                    'WARNING: JOAN settings cannot reconstruct enums embedded in lists from saved files, only the value of the enum will be saved')
                 output_list.append(item.value)
             elif hasattr(item, '__dict__') and not inspect.isclass(item):
                 # recognize custom class object by checking if these have a __dict__, Enums and static classes should be copied as a whole

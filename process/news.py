@@ -9,7 +9,7 @@ class News:
     """
     instance = None
 
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls):
         if not cls.instance:
             cls.instance = object.__new__(News)
             cls._news = {}

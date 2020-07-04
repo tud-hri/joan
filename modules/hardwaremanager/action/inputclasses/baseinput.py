@@ -1,5 +1,6 @@
 from modules.joanmodules import JOANModules
 
+
 class BaseInput:
     def __init__(self, hardware_manager_action):
         self._carla_interface_data = hardware_manager_action.read_news(JOANModules.CARLA_INTERFACE)

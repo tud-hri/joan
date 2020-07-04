@@ -3,8 +3,8 @@ import os
 import keyboard
 from PyQt5 import QtWidgets, QtGui, uic
 
-from modules.hardwaremanager.action.inputclasses.baseinput import BaseInput
 from modules.hardwaremanager.action.hardwaremanagersettings import KeyBoardSettings
+from modules.hardwaremanager.action.inputclasses.baseinput import BaseInput
 from modules.joanmodules import JOANModules
 
 
@@ -14,28 +14,34 @@ class KeyBoardSettingsDialog(QtWidgets.QDialog):
         self.keyboard_settings = keyboard_settings
         uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/keyboard_settings_ui.ui"), self)
 
-        self.slider_steer_sensitivity.valueChanged.connect(lambda new_value: self.label_steer_sensitivity.setText(str(new_value)))
-        self.slider_throttle_sensitivity.valueChanged.connect(lambda new_value: self.label_throttle_sensitivity.setText(str(new_value)))
-        self.slider_brake_sensitivity.valueChanged.connect(lambda new_value: self.label_brake_sensitivity.setText(str(new_value)))
+        self.slider_steer_sensitivity.valueChanged.connect(
+            lambda new_value: self.label_steer_sensitivity.setText(str(new_value)))
+        self.slider_throttle_sensitivity.valueChanged.connect(
+            lambda new_value: self.label_throttle_sensitivity.setText(str(new_value)))
+        self.slider_brake_sensitivity.valueChanged.connect(
+            lambda new_value: self.label_brake_sensitivity.setText(str(new_value)))
 
         self._set_key_counter = 0
 
         self.btn_set_keys.clicked.connect(self._start_key_setting_sequence)
-        self.button_box_settings.button(self.button_box_settings.RestoreDefaults).clicked.connect(self._set_default_values)
+        self.button_box_settings.button(self.button_box_settings.RestoreDefaults).clicked.connect(
+            self._set_default_values)
 
-        self.set_key_sequence_labels = [self.label_steer_left, self.label_steer_right, self.label_throttle, self.label_brake, self.label_reverse,
+        self.set_key_sequence_labels = [self.label_steer_left, self.label_steer_right, self.label_throttle,
+                                        self.label_brake, self.label_reverse,
                                         self.label_handbrake]
 
         self._display_values()
         self.show()
 
     def accept(self):
-        all_desired_keys = [self.label_steer_left.text(), self.label_steer_right.text(), self.label_throttle.text(), self.label_brake.text(),
+        all_desired_keys = [self.label_steer_left.text(), self.label_steer_right.text(), self.label_throttle.text(),
+                            self.label_brake.text(),
                             self.label_reverse.text(), self.label_handbrake.text()]
         if len(all_desired_keys) != len(set(all_desired_keys)):
             answer = QtWidgets.QMessageBox.warning(self, 'Warning',
-                                                    'So are trying to set the same key for two command, this may lead to undesired behavior. Are you sure?',
-                                                    buttons=QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)
+                                                   'So are trying to set the same key for two command, this may lead to undesired behavior. Are you sure?',
+                                                   buttons=QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)
             if answer == QtWidgets.QMessageBox.Cancel:
                 return
 
@@ -102,6 +108,7 @@ class KeyBoardSettingsDialog(QtWidgets.QDialog):
 
 class JOAN_Keyboard(BaseInput):
     """Input class for JOAN_keyboard"""
+
     def __init__(self, hardware_manager_action, keyboard_tab, settings: KeyBoardSettings):
         super().__init__(hardware_manager_action)
         self._keyboard_tab = keyboard_tab
@@ -171,7 +178,6 @@ class JOAN_Keyboard(BaseInput):
         # # If there are cars in the simulation add them to the controllable car combobox
         if self._carla_interface_data['vehicles']:
             self._carla_interface_data = self._action.read_news(JOANModules.CARLA_INTERFACE)
-
 
         # Throttle:
         if self._throttle and self._data['ThrottleInput'] < 100:

@@ -10,10 +10,9 @@ from PyQt5 import QtWidgets
 from modules.joanmodules import JOANModules
 from process import JoanHQAction, JoanHQWindow
 
-
 if __name__ == '__main__':
     APP = QtWidgets.QApplication(sys.argv)
-   
+
     JOANHQACTION = JoanHQAction()
     JOANHQWINDOW = JoanHQWindow(JOANHQACTION)
     JOANHQACTION.window = JOANHQWINDOW
@@ -27,7 +26,6 @@ if __name__ == '__main__':
     JOANHQACTION.add_module(JOANModules.DATA_RECORDER)
 
     # add the EXPERIMENT_MANAGER last because this one collects settings from JOAN modules that are already loaded
-    #JOANHQACTION.add_module(JOANModules.EXPERIMENT_MANAGER)
+    # JOANHQACTION.add_module(JOANModules.EXPERIMENT_MANAGER)
 
     APP.exec_()
- 
