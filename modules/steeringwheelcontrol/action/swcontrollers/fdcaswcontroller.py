@@ -6,7 +6,7 @@ from PyQt5 import QtWidgets, uic
 
 from modules.steeringwheelcontrol.action.steeringwheelcontrolsettings import FDCAcontrollerSettings
 from modules.steeringwheelcontrol.action.swcontrollertypes import SWControllerTypes
-from utils.utils import Biquad
+from tools import LowPassFilterBiquad
 from .baseswcontroller import BaseSWController
 
 
@@ -85,8 +85,8 @@ class FDCASWController(BaseSWController):
 
         self._t2 = 0
 
-        self._bq_filter_heading = Biquad()
-        self._bq_filter_velocity = Biquad()
+        self._bq_filter_heading = LowPassFilterBiquad(fc=30, fs=500)
+        self._bq_filter_velocity = LowPassFilterBiquad(fc=30, fs=500)
 
         self.stiffness = 1
 
@@ -144,8 +144,8 @@ class FDCASWController(BaseSWController):
                 error_rate = self.error_rates(error_static, self.error_static_old, delta_t)
 
                 # filter the error rate with biquad filter
-                error_lateral_rate_filtered = self._bq_filter_velocity.process(error_rate[0])
-                error_heading_rate_filtered = self._bq_filter_heading.process(error_rate[1])
+                error_lateral_rate_filtered = self._bq_filter_velocity.step(error_rate[0])
+                error_heading_rate_filtered = self._bq_filter_heading.step(error_rate[1])
 
                 # put errors in 1 variable
                 self._controller_error[0:2] = error_static

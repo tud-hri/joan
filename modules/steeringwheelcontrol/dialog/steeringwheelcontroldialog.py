@@ -5,7 +5,6 @@ from PyQt5 import QtWidgets, uic
 from modules.joanmodules import JOANModules
 from modules.steeringwheelcontrol.action.swcontrollertypes import SWControllerTypes
 from process.joanmoduleaction import JoanModuleAction
-# from process import State
 from process.joanmoduledialog import JoanModuleDialog
 from process.statesenum import State
 
