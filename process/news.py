@@ -17,9 +17,19 @@ class News:
         return cls.instance
 
     def write_news(self, module: JOANModules, news_dict):
+        """
+        Write data to News for a module
+        :param module: used as an identifier
+        :param news_dict: dictionary (keys, values) with the new data
+        """
         self._news.update({module: news_dict})
 
     def read_news(self, module: JOANModules):
+        """
+        Read new data from a module
+        :param module:
+        :return: requested data
+        """
         try:
             return self._news[module]
         except KeyError:

@@ -20,9 +20,21 @@ class Settings:
         return cls.instance
 
     def update_factory_settings(self, module: JOANModules, module_settings):
+        """
+        Update the default (factory) settings
+        :param module: module to update factory settings for
+        :param module_settings: new default settings for the module
+        :return:
+        """
         self._factory_settings.update({module: module_settings})
 
     def update_settings(self, module: JOANModules, module_settings):
+        """
+        Update the settings for a specified module
+        :param module: module to update settings for
+        :param module_settings: new settings
+        :return:
+        """
         self._settings.update({module: module_settings})
 
     def get_settings(self, module: JOANModules):
@@ -46,7 +58,7 @@ class Settings:
         return self._settings.keys()
 
 
-"""DEPRECATED?"""
+"""DEPRECATED - NOW ONLY USED IN EXPERIMENT MANAGER"""
 
 
 class ModuleSettings:

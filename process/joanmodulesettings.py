@@ -9,9 +9,19 @@ from modules.joanmodules import JOANModules
 
 class JoanModuleSettings(abc.ABC):
     def __init__(self, module_enum: JOANModules):
+        """
+        Initialize
+        :param module_enum: module type
+        """
         self._module_enum = module_enum
 
     def save_to_file(self, file_path, keys_to_omit=()):
+        """
+        Save settings to file
+        :param file_path:
+        :param keys_to_omit: list with keys / settings to omit in saving to file
+        :return:
+        """
         dict_to_save = self.as_dict()
 
         for key in keys_to_omit:
@@ -24,12 +34,21 @@ class JoanModuleSettings(abc.ABC):
             json.dump(dict_to_save, settings_file, sort_keys=True, indent=4)
 
     def load_from_file(self, file_path):
+        """
+        Load settings dict from file
+        :param file_path:
+        """
         with open(file_path, 'r') as settings_file:
             loaded_dict = json.load(settings_file)
 
         self.set_from_loaded_dict(loaded_dict)
 
     def set_from_loaded_dict(self, loaded_dict):
+        """
+        Set the settings in dict to the settings object
+        :param loaded_dict: dictionary with loaded settings (keys, values)
+        :return:
+        """
         try:
             self._copy_dict_to_class_dict(loaded_dict[str(self._module_enum)], self.__dict__)
         except KeyError:

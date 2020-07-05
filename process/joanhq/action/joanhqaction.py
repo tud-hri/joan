@@ -8,9 +8,14 @@ from process import Settings
 
 
 class JoanHQAction(QtCore.QObject):
-    """Action class for JoanHQ"""
+    """
+    Action class for JoanHQ
+    """
 
     def __init__(self):
+        """
+        Initialize
+        """
         super(QtCore.QObject, self).__init__()
 
         self.window = None
@@ -26,7 +31,9 @@ class JoanHQAction(QtCore.QObject):
         self._instantiated_modules = {}
 
     def initialize_all(self):
-        """Initialize modules"""
+        """
+        Initialize modules
+        """
         for _, module in self._instantiated_modules.items():
             try:
                 module.action.initialize()
@@ -34,7 +41,9 @@ class JoanHQAction(QtCore.QObject):
                 module.initialize()
 
     def start_all(self):
-        """Initialize modules"""
+        """
+        Initialize modules
+        """
         for _, module in self._instantiated_modules.items():
             try:
                 module.action.start()
@@ -42,7 +51,9 @@ class JoanHQAction(QtCore.QObject):
                 module.start()
 
     def stop_all(self):
-        """Stop all modules"""
+        """
+        Stop all modules
+        """
         for _, module in self._instantiated_modules.items():
             try:
                 module.action.stop()
@@ -50,7 +61,14 @@ class JoanHQAction(QtCore.QObject):
                 module.stop()
 
     def add_module(self, module: JOANModules, name='', parent=None, millis=100):
-        """Add module, instantiated module, find unique name"""
+        """
+        Add a new module
+        :param module: type of module (from enum)
+        :param name: name to assign to the instantiated module
+        :param parent: parent of the module (mainly for the Qt-related functionality
+        :param millis: module step time
+        :return: module action and dialog
+        """
 
         if not parent:
             parent = self.window
@@ -66,18 +84,24 @@ class JoanHQAction(QtCore.QObject):
         return module_dialog, module_action
 
     def remove_module(self, module: JOANModules):
-        """ Remove module by name"""
-
+        """
+        Remove module by name
+        :param module: module to be removed
+        """
         del self._instantiated_modules[module]
 
     def emergency(self):
-        """Emergency button processing"""
+        """
+        Emergency button processing
+        """
         self.stop_all()
 
     def quit(self):
+        """
+        Quit JOAN
+        """
         self.stop_all()
 
     @property
     def instantiated_modules(self):
-        """getter for self._instantiated_modules, only allow get, not set"""
         return self._instantiated_modules

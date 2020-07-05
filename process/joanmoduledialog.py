@@ -5,7 +5,6 @@ from PyQt5 import QtWidgets, uic, QtGui, QtCore
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
 from process.statesenum import State
-from process.status import Status
 
 
 class JoanModuleDialog(QtWidgets.QDialog):
@@ -13,6 +12,12 @@ class JoanModuleDialog(QtWidgets.QDialog):
     closed = QtCore.pyqtSignal()
 
     def __init__(self, module: JOANModules, module_action: JoanModuleAction, parent=None):
+        """
+        Initialize
+        :param module: module type
+        :param module_action: module action object
+        :param parent: QMainWindow parent (JOANHQWindow)
+        """
         super().__init__(parent=parent)
 
         # reference to the action class of this module
@@ -66,6 +71,10 @@ class JoanModuleDialog(QtWidgets.QDialog):
         self.module_action.set_millis(millis)
 
     def handle_state_change(self):
+        """
+        handle state change
+        This function is connected to the module's state machine
+        """
         current_state = self.module_action.state_machine.current_state
         message = self.module_action.state_machine.state_message
 
@@ -125,13 +134,17 @@ class JoanModuleDialog(QtWidgets.QDialog):
             # self.state_widget.btn_start.setEnabled(True)
 
     def toggle_show_close(self):
-        """toggle visibility of this dialog"""
+        """
+        toggle visibility of this dialog
+        """
         if not self.isVisible():
             self.show()
         else:
             self.close()
 
     def closeEvent(self, event):
-        """close event"""
+        """
+        close event
+        """
         self.closed.emit()
         super().closeEvent(event)

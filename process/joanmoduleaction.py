@@ -1,17 +1,23 @@
-from PyQt5 import QtCore
 import time
 
-from tools import AveragedFloat
+from PyQt5 import QtCore
+
 from modules.joanmodules import JOANModules
 from process.news import News
 from process.settings import Settings
-from process.status import Status
 from process.statemachine import StateMachine
+from process.status import Status
+from tools import AveragedFloat
 
 
 class JoanModuleAction(QtCore.QObject):
     def __init__(self, module: JOANModules, millis=100, enable_performance_monitor=True):
-        # def __init__(self, module: JOANModules, master_state_handler, millis=100):
+        """
+        Initialize
+        :param module: module type
+        :param millis: module time step
+        :param enable_performance_monitor: self-explanatory
+        """
         super(QtCore.QObject, self).__init__()
 
         self.module_dialog = None
@@ -71,16 +77,15 @@ class JoanModuleAction(QtCore.QObject):
             pass
 
     def write_news(self, news: dict):
-        """write new data to channel"""
-        # assert isinstance(news, dict), 'argument "news" should be of type dict and will contain news(=data) of this channel'
-
+        """
+        Write new data to channel
+        """
         self.singleton_news.write_news(self.module, news)
 
     def share_settings(self, module_settings):
         """
         Shares the settings of this module with all other modules through the settings singleton.
         :param module_settings: a JoanModuleSettings child object containing this modules settings
-        :return:
         """
         self.singleton_settings.update_settings(self.module, module_settings)
 
