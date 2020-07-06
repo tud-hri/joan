@@ -16,6 +16,7 @@ from .datarecordersettings import DataRecorderSettings
 from PyQt5 import QtWidgets, QtGui
 from functools import partial
 import numpy as np
+import math
 
 class DatarecorderAction(JoanModuleAction):
     def __init__(self, millis=200):
@@ -186,8 +187,9 @@ class Trajectory_recorder():
         throttle_input = control.throttle
         brake_input = control.brake
         heading = car.get_transform().rotation.yaw
+        vel = math.sqrt(car.get_velocity().x**2 + car.get_velocity().y**2 + car.get_velocity().z**2)
 
-        self._trajectory_data = np.append(self._trajectory_data, [[x_pos, y_pos, steering_wheel_angle, throttle_input, brake_input, heading]], axis=0)
+        self._trajectory_data = np.append(self._trajectory_data, [[x_pos, y_pos, steering_wheel_angle, throttle_input, brake_input, heading, vel]], axis=0)
 
         self.make_trajectory_array(self.waypoint_distance)
 
@@ -203,9 +205,10 @@ class Trajectory_recorder():
             throttle_input = control.throttle
             brake_input = control.brake
             heading = car.get_transform().rotation.yaw
+            vel = math.sqrt(car.get_velocity().x ** 2 + car.get_velocity().y ** 2 + car.get_velocity().z ** 2)
 
             # initialize variables here because we want the current position as first entry!
-            self._trajectory_data = [[x_pos, y_pos, steering_wheel_angle, throttle_input, brake_input, heading]]
-            self._trajectory_data_spaced = [[x_pos, y_pos, steering_wheel_angle, throttle_input, brake_input, heading]]
+            self._trajectory_data = [[x_pos, y_pos, steering_wheel_angle, throttle_input, brake_input, heading, vel]]
+            self._trajectory_data_spaced = [[x_pos, y_pos, steering_wheel_angle, throttle_input, brake_input, heading, vel]]
         except Exception as inst:
             print(inst)
