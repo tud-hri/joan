@@ -12,9 +12,15 @@ class EgovehicleSettingsDialog(QtWidgets.QDialog):
         uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/vehicle_settings_ui.ui"), self)
 
         self.button_box_egovehicle_settings.button(self.button_box_egovehicle_settings.RestoreDefaults).clicked.connect(self._set_default_values)
+        self.btn_apply_parameters.clicked.connect(self.update_parameters)
         self._display_values()
 
-
+    def update_parameters(self):
+        self.egovehicle_settings._selected_input = self.combo_input.currentText()
+        self.egovehicle_settings._selected_controller = self.combo_sw_controller.currentText()
+        self.egovehicle_settings._selected_car = self.combo_car_type.currentText()
+        self.egovehicle_settings._selected_spawnpoint = self.spin_spawn_points.value()
+        self._display_values()
 
     def accept(self):
         self.egovehicle_settings._selected_input = self.combo_input.currentText()
