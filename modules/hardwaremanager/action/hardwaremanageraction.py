@@ -23,7 +23,7 @@ class HardwaremanagerAction(JoanModuleAction):
         self.write_news(news=self.data)
         self.status = Status()
 
-        self.carla_interface_data = self.read_news(JOANModules.CARLA_INTERFACE)
+        self.carla_interface_data = self.read_news(JOANModules.AGENT_MANAGER)
         self.settings = HardWareManagerSettings(module_enum=JOANModules.HARDWARE_MANAGER)
 
         self.state_machine.add_state_change_listener(self._state_change_listener)
@@ -50,8 +50,8 @@ class HardwaremanagerAction(JoanModuleAction):
         """
         This function is called every controller tick of this module implement your main calculations here
         """
-        self.carla_interface_data = self.read_news(JOANModules.CARLA_INTERFACE)
-        self.carla_interface_status = self.status.get_module_current_state(JOANModules.CARLA_INTERFACE)
+        self.carla_interface_data = self.read_news(JOANModules.AGENT_MANAGER)
+        self.carla_interface_status = self.status.get_module_current_state(JOANModules.AGENT_MANAGER)
 
         self.sw_controller_data = self.read_news(JOANModules.STEERING_WHEEL_CONTROL)
 
@@ -84,8 +84,8 @@ class HardwaremanagerAction(JoanModuleAction):
         return super().initialize()
 
     def start(self):
-        self.carla_interface_data = self.read_news(JOANModules.CARLA_INTERFACE)
-        # make sure you can only turn on the motor of the wheel if carla is connected
+        self.carla_interface_data = self.read_news(JOANModules.AGENT_MANAGER)
+        #make sure you can only turn on the motor of the wheel if carla is connected
         for inputs in self.input_devices_classes:
             if 'SensoDrive' in inputs:
                 self.input_devices_classes[inputs]._toggle_on_off(self.carla_interface_data['connected'])
@@ -98,7 +98,7 @@ class HardwaremanagerAction(JoanModuleAction):
         return super().start()
 
     def stop(self):
-        self.carla_interface_data = self.read_news(JOANModules.CARLA_INTERFACE)
+        self.carla_interface_data = self.read_news(JOANModules.AGENT_MANAGER)
         for inputs in self.input_devices_classes:
             if 'SensoDrive' in inputs:
                 self.input_devices_classes[inputs]._sensodrive_tab.btn_on_off.setStyleSheet("background-color: orange")
@@ -153,10 +153,10 @@ class HardwaremanagerAction(JoanModuleAction):
         ## This is a temporary fix so that we cannot add another sensodrive which will make pcan crash because we only have one PCAN usb interface dongle
         number_of_sensodrives = sum([bool("SensoDrive" in k) for k in self.input_devices_classes.keys()])
 
-        if number_of_sensodrives == 0:
+        if number_of_sensodrives < 2:
             device_title = "SensoDrive %s" % (number_of_sensodrives + 1)
 
-            self.input_devices_classes.update([(device_title, JOAN_SensoDrive(self, widget, sensodrive_settings))])
+            self.input_devices_classes.update([(device_title, JOAN_SensoDrive(self, widget, number_of_sensodrives, sensodrive_settings))])
             if is_a_new_sensodrive:
                 self.settings.sensodrives.append(sensodrive_settings)
             return device_title

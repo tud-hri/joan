@@ -2,16 +2,25 @@ from PyQt5 import QtCore, uic
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMessageBox, QApplication
 
+from .agents.egovehicle import Egovehicle
+from .agents.trafficvehicle import Trafficvehicle
+from .agentmanagersettings import  AgentManagerSettings, EgoVehicleSettings, TrafficVehicleSettings
+
+
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
 from process.statesenum import State
 from process.status import Status
+from utils.utils import Biquad
 
 import time
 import random
 import os
 import sys
 import glob
+import pandas as pd
+import numpy as np
+import math
 
 msg_box = QMessageBox()
 msg_box.setTextFormat(QtCore.Qt.RichText)
@@ -33,17 +42,19 @@ except IndexError:
     msg_box.exec()
     pass
 
-class CarlainterfaceAction(JoanModuleAction):
+class AgentmanagerAction(JoanModuleAction):
     def __init__(self, millis=5):
-        super().__init__(module=JOANModules.CARLA_INTERFACE, millis=millis)
+        super().__init__(module=JOANModules.AGENT_MANAGER, millis=millis)
 
         #Initialize Variables
         self.data = {}
-        self.data['vehicles'] = None
+        self.data['agents'] = {}
         self.data['connected'] = False
         self.write_news(news=self.data)
         self.time = QtCore.QTime()
         self._data_from_hardware = {}
+
+        self.settings = AgentManagerSettings(module_enum=JOANModules.AGENT_MANAGER)
 
         #Carla connection variables:
         self.host = 'localhost'
@@ -51,6 +62,7 @@ class CarlainterfaceAction(JoanModuleAction):
         self.connected = False
         self.vehicle_tags = []
         self.vehicles = []
+        self.traffic_vehicles = []
 
         #initialize modulewide state handler
         self.status = Status()
@@ -74,6 +86,8 @@ class CarlainterfaceAction(JoanModuleAction):
         self.state_machine.set_transition_condition(State.READY, State.RUNNING, self._starting_condition)
         self.state_machine.set_transition_condition(State.RUNNING, State.READY, self._stopping_condition)
 
+        self.share_settings(self.settings)
+
     @property 
     def vehicle_bp_library(self):
         return self._vehicle_bp_library
@@ -90,18 +104,18 @@ class CarlainterfaceAction(JoanModuleAction):
         " This function is linked to the state change of the hardware manager and updates the state whenever it changes"
 
         self.hardware_manager_state = self.status.get_module_current_state(JOANModules.HARDWARE_MANAGER)
-        if self.hardware_manager_state is not State.RUNNING:
-            for vehicle in self.vehicles:
-                vehicle.get_available_inputs()
+        # if self.hardware_manager_state is not State.RUNNING:
+        #     for vehicle in self.vehicles:
+        #         vehicle.get_available_inputs()
 
     def _sw_controller_state_change_listener(self):
         """This function is linked to the state change of the sw_controller, if new controllers are initialized they will be
         automatically added to a variable which contains the options in the SW controller combobox"""
         self.sw_controller_state = self.status.get_module_current_state(JOANModules.STEERING_WHEEL_CONTROL)
 
-        if self.sw_controller_state is not State.RUNNING:
-            for vehicle in self.vehicles:
-                    vehicle.get_available_controllers()
+        # if self.sw_controller_state is not State.RUNNING:
+        #     for vehicle in self.vehicles:
+        #             vehicle.get_available_controllers()
 
 
 
@@ -141,13 +155,18 @@ class CarlainterfaceAction(JoanModuleAction):
         This function is called every controller tick of this module implement your main calculations here
         """
         if self.connected:
-            self.data['vehicles'] = self.vehicles
+            # self.data['vehicles'] = self.vehicles
+            for agent in self.vehicles:
+                self.data['agents'][agent.vehicle_nr] = agent.unpack_vehicle_data()
             self.write_news(news=self.data)
             self._data_from_hardware = self.read_news(JOANModules.HARDWARE_MANAGER)
             try:
                 for items in self.vehicles:
                     if items.spawned:
                         items.apply_control(self._data_from_hardware)
+                for items in self.traffic_vehicles:
+                    if items.spawned:
+                        items.process()
             except Exception as inst:
                 print('Could not apply control', inst)
         else:
@@ -216,26 +235,33 @@ class CarlainterfaceAction(JoanModuleAction):
 
         return self.connected
 
-    def update_cars(self, value):
+    def add_ego_agent(self, ego_vehicle_settings =None):
+        is_a_new_ego_agent = not ego_vehicle_settings
 
-        #Delete excess vehicles if any
-        while value < len(self.vehicles):
-            self.vehicles.pop(-1)
+        if is_a_new_ego_agent:
+            ego_vehicle_settings = EgoVehicleSettings()
+            self.settings.ego_vehicles.append(ego_vehicle_settings)
+            self.vehicles.append(Egovehicle(self, len(self.vehicles), self.nr_spawn_points, self.vehicle_tags, ego_vehicle_settings))
 
-        # Create new vehicles:
-        for carnr in range(len(self.vehicles), value):
-            self.vehicles.append(Carlavehicle(self, carnr, self.nr_spawn_points, self.vehicle_tags))
-
-        for vehicle in self.vehicles:
-            vehicle.get_available_inputs()
-            vehicle.get_available_controllers()
+        # for vehicle in self.vehicles:
+        #     vehicle.get_available_inputs()
+        #     vehicle.get_available_controllers()
 
         " only make controller available for first car for now"
         for vehicle in self.vehicles[1:]:
-            vehicle.vehicle_tab.combo_sw_controller.setEnabled(False)
-
+            vehicle.settings_dialog.combo_sw_controller.setEnabled(False)
 
         return self.vehicles
+
+    def add_traffic_agent(self, traffic_vehicle_settings = None):
+        is_a_new_traffic_agent = not traffic_vehicle_settings
+
+        if is_a_new_traffic_agent:
+            traffic_vehicle_settings = TrafficVehicleSettings()
+            self.settings.traffic_vehicles.append(traffic_vehicle_settings)
+            self.traffic_vehicles.append(Trafficvehicle(self, len(self.traffic_vehicles), self.nr_spawn_points, self.vehicle_tags, traffic_vehicle_settings))
+
+        return self.traffic_vehicles
 
     def initialize(self):
         """
@@ -248,8 +274,8 @@ class CarlainterfaceAction(JoanModuleAction):
 
             self.connect()
             self.state_machine.request_state_change(State.READY, "You can now add vehicles and start module")
-        #elif self.state_machine.current_state is State.ERROR and 'carla' in sys.modules.keys():
-        #    self.state_machine.request_state_change(State.IDLE)
+        elif self.state_machine.current_state is State.ERROR and 'carla' in sys.modules.keys():
+           self.state_machine.request_state_change(State.IDLE)
         return super().initialize()
 
     def start(self):
@@ -264,132 +290,13 @@ class CarlainterfaceAction(JoanModuleAction):
 
     def stop(self):
         try:
-            for vehicle in self.vehicles:
-                vehicle.get_available_inputs()
-                vehicle.get_available_controllers()
+            # for vehicle in self.vehicles:
+                # vehicle.get_available_inputs()
+                # vehicle.get_available_controllers()
             self.state_machine.request_state_change(State.READY, "You can now add vehicles and start the module")
+
+            for traffic in self.traffic_vehicles:
+                traffic.stop_traffic()
         except RuntimeError:
             return False
         return super().stop()
-        
-
-class Carlavehicle():
-    def __init__(self, CarlainterfaceAction, carnr, nr_spawn_points, tags):
-        self.module_action = CarlainterfaceAction
-        self._vehicle_tab = uic.loadUi(uifile=os.path.join(os.path.dirname(os.path.realpath(__file__)), "vehicletab.ui"))
-        self._vehicle_tab.group_car.setTitle('Car ' + str(carnr+1))
-        self._spawned = False
-        self._hardware_data = {}
-        self._sw_controller_data = {}
-        self._vehicle_nr = 'Car ' + str(carnr+1)
-        self._sw_controller = self._vehicle_tab.combo_sw_controller.currentText()
-
-
-
-        self._vehicle_tab.spin_spawn_points.setRange(0, nr_spawn_points)
-        self._vehicle_tab.spin_spawn_points.lineEdit().setReadOnly(True)
-        self._vehicle_tab.btn_destroy.setEnabled(False)
-        self._vehicle_tab.combo_input.currentTextChanged.connect(self.update_input)
-        self._vehicle_tab.combo_sw_controller.currentTextChanged.connect(self.update_sw_controller)
-
-        self._vehicle_tab.btn_spawn.clicked.connect(self.spawn_car)
-        self._vehicle_tab.btn_destroy.clicked.connect(self.destroy_car)
-        for item in tags:
-            self._vehicle_tab.comboCartype.addItem(item)
-
-        self._selected_input = str('None')
-
-    @property
-    def vehicle_tab(self):
-        return self._vehicle_tab
-
-    @property
-    def spawned(self):
-        return self._spawned
-
-    @property
-    def selected_input(self):
-        return self._selected_input
-
-    @property
-    def selected_sw_controller(self):
-        return self._sw_controller
-
-    @property
-    def vehicle_id(self):
-        return self._BP.id
-
-    @property
-    def vehicle_nr(self):
-        return self._vehicle_nr
-
-    def update_sw_controller(self):
-        self._sw_controller = self._vehicle_tab.combo_sw_controller.currentText()
-
-    def update_input(self):
-        self._selected_input = self._vehicle_tab.combo_input.currentText()
-
-    def get_available_inputs(self):
-        self._vehicle_tab.combo_input.clear()
-        self._vehicle_tab.combo_input.addItem('None')
-        self._hardware_data = self.module_action.read_news(JOANModules.HARDWARE_MANAGER)
-        for keys in self._hardware_data:
-            self._vehicle_tab.combo_input.addItem(str(keys))
-
-    def get_available_controllers(self):
-        self._vehicle_tab.combo_sw_controller.clear()
-        self._vehicle_tab.combo_sw_controller.addItem('None')
-        self._sw_controller_data = self.module_action.read_news(JOANModules.STEERING_WHEEL_CONTROL)
-        for keys in self._sw_controller_data:
-            self._vehicle_tab.combo_sw_controller.addItem(str(keys))
-        
-
-    def destroy_inputs(self):
-        self._vehicle_tab.combo_input.clear()
-        self._vehicle_tab.combo_input.addItem('None')
-
-
-    def spawn_car(self):
-        self._BP = random.choice(self.module_action.vehicle_bp_library.filter("vehicle." + str(self._vehicle_tab.comboCartype.currentText())))
-        self._control = carla.VehicleControl()
-        try:
-            spawnpointnr = self._vehicle_tab.spin_spawn_points.value()-1
-            self.spawned_vehicle = self.module_action.world.spawn_actor(self._BP, self.module_action.spawnpoints[spawnpointnr])
-            self._vehicle_tab.btn_spawn.setEnabled(False)
-            self._vehicle_tab.btn_destroy.setEnabled(True)
-            self._vehicle_tab.spin_spawn_points.setEnabled(False)
-            self._vehicle_tab.comboCartype.setEnabled(False)
-            #self.get_available_inputs()
-            self._spawned = True
-        except Exception as inst:
-            print('Could not spawn car:', inst)
-            self._vehicle_tab.btn_spawn.setEnabled(True)
-            self._vehicle_tab.btn_destroy.setEnabled(False)
-            self._vehicle_tab.spin_spawn_points.setEnabled(True)
-            self._vehicle_tab.comboCartype.setEnabled(True)
-            self._spawned = False
-
-    def destroy_car(self):
-        try:
-            self._spawned = False
-            self.spawned_vehicle.destroy()
-            self._vehicle_tab.btn_spawn.setEnabled(True)
-            self._vehicle_tab.btn_destroy.setEnabled(False)
-            self._vehicle_tab.spin_spawn_points.setEnabled(True)
-            self._vehicle_tab.comboCartype.setEnabled(True)
-        except Exception as inst:
-            self._spawned = True
-            print('Could not destroy spawn car:', inst)
-            self._vehicle_tab.btn_spawn.setEnabled(False)
-            self._vehicle_tab.btn_destroy.setEnabled(True)
-            self._vehicle_tab.spin_spawn_points.setEnabled(False)
-            self._vehicle_tab.comboCartype.setEnabled(False)
-
-    def apply_control(self, data):
-        if self._selected_input != 'None':
-            self._control.steer = data[self._selected_input]['SteeringInput'] / 450
-            self._control.throttle = data[self._selected_input]['ThrottleInput'] / 100
-            self._control.brake = data[self._selected_input]['BrakeInput'] / 100
-            self._control.reverse = data[self._selected_input]['Reverse']
-            self._control.hand_brake = data[self._selected_input]['Handbrake']
-            self.spawned_vehicle.apply_control(self._control)

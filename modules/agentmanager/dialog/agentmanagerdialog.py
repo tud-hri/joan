@@ -4,25 +4,25 @@ from process.joanmoduleaction import JoanModuleAction
 from modules.joanmodules import JOANModules
 from process.statesenum import State
 
-class CarlainterfaceDialog(JoanModuleDialog):
+class AgentmanagerDialog(JoanModuleDialog):
     def __init__(self, module_action: JoanModuleAction,  parent=None):
-        super().__init__(module=JOANModules.CARLA_INTERFACE, module_action=module_action, parent=parent)
+        super().__init__(module=JOANModules.AGENT_MANAGER, module_action=module_action, parent=parent)
 
         #initialize variables
         self.connected = False
         self.old_nr_cars = 0
         self.vehicles = []
+        self.traffic_vehicles = []
         self.i = 1
 
-        self.module_widget.spinVehicles.setRange(0, 5)
-        self.module_widget.spinVehicles.lineEdit().setReadOnly(True)
-
-        self.module_widget.spinVehicles.valueChanged.connect(lambda value: self.update_vehicles(value))
+        self.module_widget.btn_add_ego_agent.clicked.connect(self.add_ego_agent)
+        self.module_widget.btn_add_traffic_agent.clicked.connect(self.add_traffic_agent)
         self.module_action.state_machine.add_state_change_listener(self._state_change_listener)
 
         self.module_widget.btnDisconnect.clicked.connect(self.disconnect)
         self.module_widget.groupVehicles.setEnabled(False)
-        self.module_widget.spinVehicles.setEnabled(False)
+        self.module_widget.btn_add_ego_agent.setEnabled(False)
+        self.module_widget.btn_add_traffic_agent.setEnabled(False)
         self.module_widget.btnDisconnect.setEnabled(False)
 
     def _state_change_listener(self):
@@ -35,19 +35,23 @@ class CarlainterfaceDialog(JoanModuleDialog):
         if self.module_action.state_machine.current_state == State.READY:
             self.module_widget.btnDisconnect.setEnabled(True)
             self.module_widget.groupVehicles.setEnabled(self.connected)
-            self.module_widget.spinVehicles.setEnabled(self.connected)
+            self.module_widget.btn_add_ego_agent.setEnabled(self.connected)
+            self.module_widget.btn_add_traffic_agent.setEnabled(self.connected)
         elif self.module_action.state_machine.current_state == State.RUNNING:
             self.module_widget.btnDisconnect.setEnabled(False)
-            self.module_widget.spinVehicles.setEnabled(False)
+            self.module_widget.btn_add_ego_agent.setEnabled(False)
+            self.module_widget.btn_add_traffic_agent.setEnabled(False)
         elif self.module_action.state_machine.current_state == State.ERROR:
             self.module_widget.btnDisconnect.setEnabled(False)
-            self.module_widget.spinVehicles.setEnabled(False)
+            self.module_widget.btn_add_ego_agent.setEnabled(False)
+            self.module_widget.btn_add_traffic_agent.setEnabled(False)
 
 
         else:
             self.module_widget.btnDisconnect.setEnabled(False)
             #self.module_widget.groupVehicles.setEnabled(False)
-            self.module_widget.spinVehicles.setEnabled(False)
+            self.module_widget.btn_add_ego_agent.setEnabled(False)
+            self.module_widget.btn_add_traffic_agent.setEnabled(False)
             for vehicle in self.vehicles:
                 vehicle.vehicle_tab.comboCartype.setEnabled(False)
 
@@ -58,31 +62,17 @@ class CarlainterfaceDialog(JoanModuleDialog):
         """
         self.connected = self.module_action.disconnect()
         self.module_widget.groupVehicles.setEnabled(self.connected)
-        self.module_widget.spinVehicles.setEnabled(self.connected)
+        self.module_widget.btn_add_ego_agent.setEnabled(self.connected)
+        self.module_widget.btn_add_traffic_agent.setEnabled(self.connected)
         self.module_widget.btnDisconnect.setEnabled(self.connected)
         for cars in self.vehicles:
-            self.module_widget.layOut.removeWidget(cars.vehicle_tab)
-            cars.vehicle_tab.setParent(None)
-        self.module_widget.spinVehicles.setValue(0)
+            cars.remove_ego_agent()
 
-    def update_vehicles(self, value):
-        """
-        Adds new cars if you up the spinbox
-        """
-        if value < self.old_nr_cars and self.vehicles:
-            self.module_widget.layOut.removeWidget(self.vehicles[-1].vehicle_tab)
-            self.vehicles[-1].vehicle_tab.setParent(None)
+    def add_ego_agent(self):
+        self.vehicles = self.module_action.add_ego_agent()
+        self.module_widget.layOut.insertWidget(len(self.vehicles)-1, self.vehicles[-1].vehicle_tab)
 
-        self.vehicles = self.module_action.update_cars(value)
+    def add_traffic_agent(self):
+        self.traffic_vehicles = self.module_action.add_traffic_agent()
+        self.module_widget.layOut.insertWidget(-1,self.traffic_vehicles[-1].vehicle_tab)
 
-        if value > self.old_nr_cars:
-            self.module_widget.layOut.addWidget(self.vehicles[value-1].vehicle_tab)
-
-        self.old_nr_cars = value
-
-        #also update spinboxes
-        self.module_action._hardware_state_change_listener()
-        self.module_action._sw_controller_state_change_listener()
-        self.module_action.data['vehicles'] = self.vehicles
-        self.module_action.write_news(self.module_action.data)
-        

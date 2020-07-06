@@ -34,10 +34,13 @@ class DatarecorderAction(JoanModuleAction):
 
         # start settings for this module
         self.settings = DataRecorderSettings(JOANModules.DATA_RECORDER)
-        default_settings_file_location = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'datarecordersettings.json')
-        if os.path.isfile(default_settings_file_location):
-            self.settings.load_from_file(default_settings_file_location)
-
+        self.default_settings_file_location = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'datarecordersettings.json')
+        if os.path.isfile(self.default_settings_file_location):
+            self.settings.load_from_file(self.default_settings_file_location)
+        else:
+            pass
+            # TODO: make an initial settings file using self.news and set every item default to True
+            # see: datarecorderdialog.py
         self.share_settings(self.settings)
         # end settings for this module
 
@@ -47,6 +50,13 @@ class DatarecorderAction(JoanModuleAction):
 
     def initialize_file(self):
         self.filename = self._create_filename(extension='csv')
+
+    def load_settings_from_file(self, settings_file_to_load):
+        self.settings.load_from_file(settings_file_to_load)
+        self.share_settings(self.settings)
+
+    def save_settings_to_file(self, file_to_save_in):
+        self.settings.save_to_file(file_to_save_in)
 
     def do(self):
         """
@@ -166,8 +176,15 @@ class DatarecorderAction(JoanModuleAction):
 
         content.adjustSize()
 
+    def _handle_dialog_checkboxes(self, module_key, item, is_checked):
+        print('to save in settings: %s -> %s -> %s' % (module_key, item, is_checked))
+        # TODO: make this realy work
+        #self.settings.variables_to_save[module_key][item] = is_checked
+        #self.save_settings_to_file(self.default_settings_file_location)
+
     def _handle_module_settings(self, module_key, item):
         self.settings.variables_to_save[module_key][item.text()] = item.isChecked()
+        self.save_settings_to_file(self.default_settings_file_location)
 
 
 class Trajectory_recorder():
