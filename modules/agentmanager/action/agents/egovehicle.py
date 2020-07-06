@@ -88,7 +88,7 @@ class Egovehicle(Basevehicle):
 
     @property
     def selected_input(self):
-        return self._selected_input
+        return self.settings._selected_input
 
     @property
     def selected_sw_controller(self):
@@ -109,7 +109,7 @@ class Egovehicle(Basevehicle):
         self._sw_controller = self._vehicle_tab.combo_sw_controller.currentText()
 
     def update_input(self):
-        self._selected_input = self._vehicle_tab.combo_input.currentText()
+        self.settings._selected_input = self._vehicle_tab.combo_input.currentText()
 
     def get_available_inputs(self):
         self.settings_dialog.combo_input.clear()
@@ -132,12 +132,12 @@ class Egovehicle(Basevehicle):
 
 
     def apply_control(self, data):
-        if self._selected_input != 'None':
-            self._control.steer = data[self._selected_input]['SteeringInput'] / 450
-            self._control.throttle = data[self._selected_input]['ThrottleInput'] / 100
-            self._control.brake = data[self._selected_input]['BrakeInput'] / 100
-            self._control.reverse = data[self._selected_input]['Reverse']
-            self._control.hand_brake = data[self._selected_input]['Handbrake']
+        if self.settings._selected_input != 'None':
+            self._control.steer = data[self.settings._selected_input]['SteeringInput'] / 450
+            self._control.throttle = data[self.settings._selected_input]['ThrottleInput'] / 100
+            self._control.brake = data[self.settings._selected_input]['BrakeInput'] / 100
+            self._control.reverse = data[self.settings._selected_input]['Reverse']
+            self._control.hand_brake = data[self.settings._selected_input]['Handbrake']
             self.spawned_vehicle.apply_control(self._control)
 
     def remove_ego_agent(self):

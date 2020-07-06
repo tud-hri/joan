@@ -2,7 +2,7 @@ from .basevehicle import Basevehicle
 from modules.agentmanager.action.agentmanagersettings import TrafficVehicleSettings
 
 from PyQt5 import uic, QtWidgets
-from utils.utils import Biquad
+from tools.lowpassfilterbiquad import LowPassFilterBiquad
 import os
 import numpy as np
 import time
@@ -15,7 +15,7 @@ class TrafficvehicleSettingsDialog(QtWidgets.QDialog):
         self.trafficvehicle_settings = trafficvehicle_settings
         uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/traffic_vehicle_settings_ui.ui"), self)
 
-        self.button_box_trafficvehicle_settings.button(self.button_box_trafficvehicle_settings.RestoreDefaults).clicked.connect(self._set_default_values)
+        self.button_box_trafficvehicle_settings .button(self.button_box_trafficvehicle_settings.RestoreDefaults).clicked.connect(self._set_default_values)
         self.btn_apply_parameters.clicked.connect(self._update_variables)
         self._display_values()
 
@@ -80,9 +80,11 @@ class Trafficvehicle(Basevehicle):
     def __init__(self, agent_manager_action, vehicle_nr, nr_spawn_points, tags, settings: TrafficVehicleSettings):
         "Init traffic vehicle here"
 
+        self.agent_manager_action = agent_manager_action
+
         self.settings = settings
-        self._bq_filter_heading = Biquad()
-        self._bq_filter_velocity = Biquad()
+        self._bq_filter_heading = LowPassFilterBiquad(1000/self.agent_manager_action.millis,30)
+        self._bq_filter_velocity = LowPassFilterBiquad(1000/self.agent_manager_action.millis,30)
         self.module_action = agent_manager_action
 
         self._t2 = 0
@@ -197,8 +199,8 @@ class Trafficvehicle(Basevehicle):
             error_rate = self.error_rates(error_static, self.error_static_old, delta_t)
 
             # filter the error rate with biquad filter
-            error_lateral_rate_filtered = self._bq_filter_velocity.process(error_rate[0])
-            error_heading_rate_filtered = self._bq_filter_heading.process(error_rate[1])
+            error_lateral_rate_filtered = self._bq_filter_velocity.step(error_rate[0])
+            error_heading_rate_filtered = self._bq_filter_heading.step(error_rate[1])
 
             # put errors in 1 variable
             self._controller_error[0:2] = error_static
