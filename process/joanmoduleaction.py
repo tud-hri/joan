@@ -98,12 +98,15 @@ class JoanModuleAction(QtCore.QObject):
     def read_news(self, channel):
         return self.singleton_news.read_news(channel)
 
+    # deprecated
     def get_all_module_state_packages(self):
         return self.singleton_status.all_module_state_packages
 
+    # deprecated
     def get_available_module_state_packages(self):
         return self.singleton_status.all_module_state_package_keys
 
+    #deprecated
     def get_module_state_package(self, module):
         return self.singleton_status.get_module_state_package(module)
 
