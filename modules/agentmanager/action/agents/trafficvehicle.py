@@ -181,7 +181,7 @@ class Trafficvehicle(Basevehicle):
             self._controller_error[2:] = np.array([error_lateral_rate_filtered, error_heading_rate_filtered])
 
             # put error through controller to get sw torque out
-            self._sw_angle = self.trafficvehicle(self._controller_error)
+            self._sw_angle = self.trafficvehicle_steeringPD(self._controller_error)
             self._control.steer = self._sw_angle
             self.spawned_vehicle.apply_control(self._control)
             self.spawned_vehicle.set_velocity(vel_traffic)
@@ -195,7 +195,13 @@ class Trafficvehicle(Basevehicle):
             print(inst)
 
     def error(self, pos_car, heading_car, vel_car=np.array([0.0, 0.0, 0.0])):
-        """Calculate the controller error"""
+        """
+
+        :param pos_car:
+        :param heading_car:
+        :param vel_car:
+        :return:
+        """
         pos_car_future = pos_car + vel_car * 0.6  # linear extrapolation, should be updated
 
 
@@ -235,14 +241,19 @@ class Trafficvehicle(Basevehicle):
         return np.array([error_pos_lat, error_heading])
 
     def error_rates(self, error, error_old, delta_t):
-        """Calculate the controller error rates"""
+        """
 
+        :param error:
+        :param error_old:
+        :param delta_t:
+        :return:
+        """
         heading_error_rate = (error[0] - error_old[0]) / delta_t
         velocity_error_rate = (error[1] - error_old[1]) / delta_t
 
         return np.array([velocity_error_rate, heading_error_rate])
 
-    def trafficvehicle(self, error):
+    def trafficvehicle_steeringPD(self, error):
         lateral_gain = self.settings._w_lat * (self.settings._k_p * error[0] + self.settings._k_d * error[2])
         heading_gain = self.settings._w_heading * (self.settings._k_p * error[1] + self.settings._k_d* error[3])
         #
