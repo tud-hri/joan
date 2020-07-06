@@ -249,7 +249,7 @@ class AgentmanagerAction(JoanModuleAction):
 
         " only make controller available for first car for now"
         for vehicle in self.vehicles[1:]:
-            vehicle.vehicle_tab.combo_sw_controller.setEnabled(False)
+            vehicle.settings_dialog.combo_sw_controller.setEnabled(False)
 
         return self.vehicles
 

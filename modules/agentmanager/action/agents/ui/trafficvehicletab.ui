@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>606</width>
-    <height>122</height>
+    <height>56</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -23,7 +23,7 @@
    <property name="rightMargin">
     <number>3</number>
    </property>
-   <item row="0" column="0">
+   <item row="0" column="1">
     <widget class="QGroupBox" name="group_traffic_agent">
      <property name="minimumSize">
       <size>
@@ -58,21 +58,7 @@
       <property name="verticalSpacing">
        <number>2</number>
       </property>
-      <item row="0" column="4" rowspan="5">
-       <widget class="Line" name="line_3">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="5" rowspan="5">
-       <widget class="Line" name="line">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="6">
+      <item row="0" column="7">
        <widget class="QPushButton" name="btn_destroy">
         <property name="font">
          <font>
@@ -84,35 +70,14 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="2" colspan="2">
-       <widget class="QComboBox" name="combo_box_traffic_trajectory">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
+      <item row="0" column="3" rowspan="5">
+       <widget class="Line" name="line_3">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
         </property>
-        <property name="minimumSize">
-         <size>
-          <width>250</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>8</pointsize>
-          <weight>50</weight>
-          <bold>false</bold>
-         </font>
-        </property>
-        <item>
-         <property name="text">
-          <string>None</string>
-         </property>
-        </item>
        </widget>
       </item>
-      <item row="4" column="6">
+      <item row="0" column="2">
        <widget class="QPushButton" name="btn_remove_traffic_agent">
         <property name="font">
          <font>
@@ -124,41 +89,19 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="3">
-       <widget class="QPushButton" name="btn_update_hcr_list">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
+      <item row="0" column="0">
+       <widget class="QPushButton" name="btn_settings">
         <property name="font">
          <font>
           <pointsize>8</pointsize>
-          <weight>50</weight>
-          <bold>false</bold>
          </font>
         </property>
         <property name="text">
-         <string>Update list</string>
+         <string>Settings</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="2">
-       <widget class="QLabel" name="lblHcrtitle">
-        <property name="font">
-         <font>
-          <pointsize>8</pointsize>
-          <weight>50</weight>
-          <bold>false</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>Reference trajectory:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="6">
+      <item row="0" column="5">
        <widget class="QPushButton" name="btn_spawn">
         <property name="font">
          <font>
@@ -170,15 +113,17 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="6">
-       <widget class="QPushButton" name="btn_settings">
-        <property name="font">
-         <font>
-          <pointsize>8</pointsize>
-         </font>
+      <item row="0" column="6">
+       <widget class="Line" name="line">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
         </property>
-        <property name="text">
-         <string>Settings</string>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="Line" name="line_2">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
         </property>
        </widget>
       </item>

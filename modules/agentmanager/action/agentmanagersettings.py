@@ -93,7 +93,7 @@ class EgoVehicleSettings():
         self._selected_input = 'None'
         self._selected_controller = 'None'
         self._selected_spawnpoint = 0
-        self._selected_car = 'audi.rs6'
+        self._selected_car = 'hapticslab.nissangtr'
 
     def as_dict(self):
         return self.__dict__
@@ -104,8 +104,10 @@ class EgoVehicleSettings():
 
 class TrafficVehicleSettings():
     def __init__(self):
+        self._velocity = 50
+        self._trajectory_name = 'TestTrajectory2.csv'
         self._selected_spawnpoint = 0
-        self._selected_car = 'audi.rs6'
+        self._selected_car = 'hapticslab.audi'
         self._t_lookahead = 0.6
         self._w_lat = 1
         self._w_heading = 2

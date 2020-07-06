@@ -16,11 +16,13 @@ class TrafficvehicleSettingsDialog(QtWidgets.QDialog):
         uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/traffic_vehicle_settings_ui.ui"), self)
 
         self.button_box_trafficvehicle_settings.button(self.button_box_trafficvehicle_settings.RestoreDefaults).clicked.connect(self._set_default_values)
+        self.btn_apply_parameters.clicked.connect(self._update_variables)
         self._display_values()
 
 
 
     def accept(self):
+        self.trafficvehicle_settings._velocity = self.spin_velocity.value()
         self.trafficvehicle_settings._selected_car = self.combo_car_type.currentText()
         self.trafficvehicle_settings._selected_spawnpoint = self.spin_spawn_points.value()
         self.trafficvehicle_settings._t_lookahead = float(self.edit_t_ahead.text())
@@ -28,6 +30,7 @@ class TrafficvehicleSettingsDialog(QtWidgets.QDialog):
         self.trafficvehicle_settings._k_d = float(self.edit_gain_deriv.text())
         self.trafficvehicle_settings._w_lat = float(self.edit_weight_lat.text())
         self.trafficvehicle_settings._w_heading = float(self.edit_weight_heading.text())
+        self.trafficvehicle_settings._trajectory_name = self.combo_box_traffic_trajectory.itemText(self.combo_box_traffic_trajectory.currentIndex())
 
         super().accept()
 
@@ -41,6 +44,7 @@ class TrafficvehicleSettingsDialog(QtWidgets.QDialog):
         self.lbl_current_weight_lat.setText(str(settings_to_display._w_lat))
         self.lbl_current_weight_heading.setText(str(settings_to_display._w_heading))
 
+        self.spin_velocity.setValue(settings_to_display._velocity)
         self.edit_t_ahead.setText(str(settings_to_display._t_lookahead))
         self.edit_gain_prop.setText(str(settings_to_display._k_p))
         self.edit_gain_deriv.setText(str(settings_to_display._k_d))
@@ -50,8 +54,23 @@ class TrafficvehicleSettingsDialog(QtWidgets.QDialog):
         idx_car = self.combo_car_type.findText(settings_to_display._selected_car)
         self.combo_car_type.setCurrentIndex(idx_car)
 
+        idx_traj = self.combo_box_traffic_trajectory.findText(settings_to_display._trajectory_name)
+        self.combo_box_traffic_trajectory.setCurrentIndex(idx_traj)
+
         self.spin_spawn_points.setValue(settings_to_display._selected_spawnpoint)
 
+    def _update_variables(self):
+        self.trafficvehicle_settings._velocity = self.spin_velocity.value()
+        self.trafficvehicle_settings._selected_car = self.combo_car_type.currentText()
+        self.trafficvehicle_settings._selected_spawnpoint = self.spin_spawn_points.value()
+        self.trafficvehicle_settings._t_lookahead = float(self.edit_t_ahead.text())
+        self.trafficvehicle_settings._k_p = float(self.edit_gain_prop.text())
+        self.trafficvehicle_settings._k_d = float(self.edit_gain_deriv.text())
+        self.trafficvehicle_settings._w_lat = float(self.edit_weight_lat.text())
+        self.trafficvehicle_settings._w_heading = float(self.edit_weight_heading.text())
+        self.trafficvehicle_settings._trajectory_name = self.combo_box_traffic_trajectory.itemText(self.combo_box_traffic_trajectory.currentIndex())
+
+        self._display_values()
 
     def _set_default_values(self):
         self._display_values(TrafficVehicleSettings())
@@ -80,11 +99,6 @@ class Trafficvehicle(Basevehicle):
         self._vehicle_tab = uic.loadUi(uifile=os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/trafficvehicletab.ui"))
         self._vehicle_tab.group_traffic_agent.setTitle('Traffic Vehicle ' + str(vehicle_nr + 1))
 
-        self._vehicle_tab.btn_update_hcr_list.clicked.connect(self.update_trajectory_list)
-        self._vehicle_tab.combo_box_traffic_trajectory.currentIndexChanged.connect(self.load_trajectory)
-
-        self.update_trajectory_list()
-
         self._vehicle_tab.btn_destroy.setEnabled(False)
 
         self._vehicle_tab.btn_spawn.clicked.connect(self.spawn_car)
@@ -94,10 +108,20 @@ class Trafficvehicle(Basevehicle):
 
         self.settings_dialog = TrafficvehicleSettingsDialog(self.settings)
 
+
+        self.update_trajectory_list()
+
         for item in tags:
             self.settings_dialog.combo_car_type.addItem(item)
 
         self.settings_dialog.spin_spawn_points.setRange(0, nr_spawn_points - 1)
+
+        # self.settings_dialog.combo_box_traffic_trajectory.currentIndexChanged.connect(self.set_trajectory_name)
+        self.settings_dialog.btn_apply_parameters.clicked.connect(self.load_trajectory)
+        self.settings_dialog.accepted.connect(self.load_trajectory)
+
+
+
 
         self._open_settings_dialog()
 
@@ -117,18 +141,18 @@ class Trafficvehicle(Basevehicle):
 
         self.module_action.traffic_vehicles.remove(self)
 
+    def set_trajectory_name(self):
+        self.settings._trajectory_name = self.settings_dialog.combo_box_traffic_trajectory.itemText(self.settings_dialog.combo_box_traffic_trajectory.currentIndex())
+
     def load_trajectory(self):
         """Load HCR trajectory"""
-        fname = self._vehicle_tab.combo_box_traffic_trajectory.itemText(self._vehicle_tab.combo_box_traffic_trajectory.currentIndex())
-
-        if fname != self._current_trajectory_name:
-            # fname is different from _current_hcr_name, load it!
-            try:
-                tmp = pd.read_csv(os.path.join(self._path_trajectory_directory, fname))
-                self._trajectory = tmp.values
-                # TODO We might want to do some checks on the trajectory here.
-                self._current_trajectory_name = fname
-            except OSError as err:
+        try:
+            tmp = pd.read_csv(os.path.join(self._path_trajectory_directory, self.settings._trajectory_name))
+            self._trajectory = tmp.values
+            print('loaded')
+            # TODO We might want to do some checks on the trajectory here.
+            # self._trajectory_name = fname
+        except OSError as err:
                 print('Error loading HCR trajectory file: ', err)
 
     def update_trajectory_list(self):
@@ -138,12 +162,12 @@ class Trafficvehicle(Basevehicle):
             os.mkdir(self._path_trajectory_directory)
         files = [filename for filename in os.listdir(self._path_trajectory_directory) if filename.endswith('csv')]
 
-        self._vehicle_tab.combo_box_traffic_trajectory.clear()
-        self._vehicle_tab.combo_box_traffic_trajectory.addItems(files)
+        self.settings_dialog.combo_box_traffic_trajectory.clear()
+        self.settings_dialog.combo_box_traffic_trajectory.addItems(files)
 
-        idx = self._vehicle_tab.combo_box_traffic_trajectory.findText(self._current_trajectory_name)
+        idx = self.settings_dialog.combo_box_traffic_trajectory.findText(self.settings._trajectory_name)
         if idx != -1:
-            self._vehicle_tab.combo_box_traffic_trajectory.setCurrentIndex(idx)
+            self.settings_dialog.combo_box_traffic_trajectory.setCurrentIndex(idx)
 
     def find_closest_node(self, node, nodes):
         """find the node in the nodes list (trajectory)"""
@@ -166,7 +190,7 @@ class Trafficvehicle(Basevehicle):
             heading_car = car.get_transform().rotation.yaw
             forward_vector = car.get_transform().rotation.get_forward_vector()
             # vel_traffic = car.get_velocity()
-            vel_traffic = forward_vector * 60/3.6
+            vel_traffic = forward_vector * self.settings._velocity / 3.6
 
             # find static error and error rate:
             error_static = self.error(pos_car, heading_car, vel_car)
