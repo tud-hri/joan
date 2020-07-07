@@ -52,7 +52,7 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
         self.value_preview_check_boxes = []
 
         self._display_settings()
-        self.show()
+        # self.show()
 
     def preview_joystick_values(self):
         try:
@@ -209,6 +209,7 @@ class JOAN_Joystick(BaseInput):
 
         #  hook up buttons
         self._joystick_tab.btn_settings.clicked.connect(self._open_settings_dialog)
+        self._joystick_tab.btn_settings.clicked.connect(self._open_settings_from_button)
         self._joystick_tab.btn_visualization.setEnabled(False)
         self._joystick_tab.btn_remove_hardware.clicked.connect(self.remove_func)
 
@@ -216,6 +217,11 @@ class JOAN_Joystick(BaseInput):
 
     def initialize(self):
         print('initializing Joystick')
+
+    def _open_settings_from_button(self):
+        if self.settings_dialog:
+            self.settings_dialog.show()
+
 
     def _open_settings_dialog(self):
         self.settings_dialog = JoystickSettingsDialog(self.settings)

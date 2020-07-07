@@ -32,7 +32,7 @@ class KeyBoardSettingsDialog(QtWidgets.QDialog):
                                         self.label_handbrake]
 
         self._display_values()
-        self.show()
+        # self.show()
 
     def accept(self):
         all_desired_keys = [self.label_steer_left.text(), self.label_steer_right.text(), self.label_throttle.text(),
@@ -126,6 +126,7 @@ class JOAN_Keyboard(BaseInput):
 
         # Connect the settings button to the settings window
         self._keyboard_tab.btn_settings.clicked.connect(self._open_settings_dialog)
+        self._keyboard_tab.btn_settings.clicked.connect(self._open_settings_from_button)
         self._keyboard_tab.btn_remove_hardware.clicked.connect(self.remove_func)
         self._keyboard_tab.btn_visualization.setEnabled(False)
 
@@ -150,8 +151,13 @@ class JOAN_Keyboard(BaseInput):
     def remove_func(self):
         self.remove_tab(self._keyboard_tab)
 
+    def _open_settings_from_button(self):
+        if self.settings_dialog:
+            self.settings_dialog.show()
+
     def _open_settings_dialog(self):
         self.settings_dialog = KeyBoardSettingsDialog(self.settings)
+
 
     def key_event(self, key):
         boolean_key_press_value = key.event_type == keyboard.KEY_DOWN

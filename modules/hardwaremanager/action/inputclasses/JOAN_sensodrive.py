@@ -27,7 +27,7 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
         self.button_box_settings.button(self.button_box_settings.RestoreDefaults).clicked.connect(
             self._set_default_values)
         self._display_values()
-        self.show()
+        # self.show()
 
     def accept(self):
         self.sensodrive_settings.endstops = self.spin_endstop_position.value()
@@ -78,6 +78,7 @@ class JOAN_SensoDrive(BaseInput):
 
         #  hook up buttons
         self._sensodrive_tab.btn_settings.clicked.connect(self._open_settings_dialog)
+        self._sensodrive_tab.btn_settings.clicked.connect(self._open_settings_from_button)
         self._sensodrive_tab.btn_visualization.setEnabled(False)
         self._sensodrive_tab.btn_remove_hardware.clicked.connect(self.remove_func)
         self._sensodrive_tab.btn_on_off.clicked.connect(self.on_off)
@@ -224,8 +225,11 @@ class JOAN_SensoDrive(BaseInput):
             except:
                 pass
 
+    def _open_settings_from_button(self):
+        if self.settings_dialog:
+            self.settings_dialog.show()
+
     def _open_settings_dialog(self):
-        self.settings_dialog.show()
         pass
 
     def remove_func(self):
