@@ -68,6 +68,7 @@ class Egovehicle(Basevehicle):
         self._vehicle_tab.btn_destroy.clicked.connect(self.destroy_car)
         self._vehicle_tab.btn_remove_ego_agent.clicked.connect(self.remove_ego_agent)
         self._vehicle_tab.btn_settings.clicked.connect(self._open_settings_dialog)
+        self._vehicle_tab.btn_settings.clicked.connect(self._open_settings_dialog_from_button)
 
         self.settings_dialog = EgovehicleSettingsDialog(self.settings)
 
@@ -102,8 +103,12 @@ class Egovehicle(Basevehicle):
         self.get_available_controllers()
         self.get_available_inputs()
         self.settings_dialog._display_values()
+
+    def _open_settings_dialog_from_button(self):
+        self.get_available_controllers()
+        self.get_available_inputs()
+        self.settings_dialog._display_values()
         self.settings_dialog.show()
-        pass
 
 
     def get_available_inputs(self):
@@ -139,4 +144,5 @@ class Egovehicle(Basevehicle):
         self._vehicle_tab.setParent(None)
         self.destroy_car()
 
+        self.module_action.settings.ego_vehicles.remove(self.settings)
         self.module_action.vehicles.remove(self)

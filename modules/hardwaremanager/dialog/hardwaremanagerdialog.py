@@ -64,6 +64,7 @@ class HardwaremanagerDialog(JoanModuleDialog):
 
             self.module_action.load_settings_from_file(settings_file_to_load)
             self.initialize_widgets_from_settings()
+            self.module_action.initialize()
 
     def _save_settings(self):
         file_to_save_in, _ = QtWidgets.QFileDialog.getSaveFileName(self, 'save settings', filter='*.json')

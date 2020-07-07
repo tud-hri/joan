@@ -107,6 +107,7 @@ class Trafficvehicle(Basevehicle):
         self._vehicle_tab.btn_destroy.clicked.connect(self.destroy_car)
         self._vehicle_tab.btn_remove_traffic_agent.clicked.connect(self.remove_traffic_agent)
         self._vehicle_tab.btn_settings.clicked.connect(self._open_settings_dialog)
+        self._vehicle_tab.btn_settings.clicked.connect(self._open_settings_dialog_from_button)
 
         self.settings_dialog = TrafficvehicleSettingsDialog(self.settings)
 
@@ -134,14 +135,17 @@ class Trafficvehicle(Basevehicle):
 
     def _open_settings_dialog(self):
         self.settings_dialog._display_values()
+
+    def _open_settings_dialog_from_button(self):
+        self.settings_dialog._display_values()
         self.settings_dialog.show()
-        pass
 
     def remove_traffic_agent(self):
         self._vehicle_tab.setParent(None)
         self.destroy_car()
 
         self.module_action.traffic_vehicles.remove(self)
+        self.module_action.settings.traffic_vehicles.remove(self.settings)
 
     def set_trajectory_name(self):
         self.settings._trajectory_name = self.settings_dialog.combo_box_traffic_trajectory.itemText(self.settings_dialog.combo_box_traffic_trajectory.currentIndex())
@@ -294,7 +298,7 @@ class Trafficvehicle(Basevehicle):
         try:
             car = self.spawned_vehicle
             forward_vector = car.get_transform().rotation.get_forward_vector()
-            # vel_traffic = car.get_velocity()
+            vel_traffic = car.get_velocity()
             vel_traffic = forward_vector * 0
             self.spawned_vehicle.set_velocity(vel_traffic)
         except:
