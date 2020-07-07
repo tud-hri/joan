@@ -52,8 +52,6 @@ class AgentmanagerDialog(JoanModuleDialog):
             #self.module_widget.groupVehicles.setEnabled(False)
             self.module_widget.btn_add_ego_agent.setEnabled(False)
             self.module_widget.btn_add_traffic_agent.setEnabled(False)
-            for vehicle in self.vehicles:
-                vehicle.vehicle_tab.comboCartype.setEnabled(False)
 
     def disconnect(self):
         """

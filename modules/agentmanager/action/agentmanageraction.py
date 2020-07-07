@@ -48,7 +48,6 @@ class AgentmanagerAction(JoanModuleAction):
 
         #Initialize Variables
         self.data = {}
-        self.data['agents'] = {}
         self.data['connected'] = False
         self.write_news(news=self.data)
         self.time = QtCore.QTime()
@@ -157,9 +156,10 @@ class AgentmanagerAction(JoanModuleAction):
         if self.connected:
             # self.data['vehicles'] = self.vehicles
             for agent in self.vehicles:
-                self.data['agents'][agent.vehicle_nr] = agent.unpack_vehicle_data()
+                self.data[agent.vehicle_nr] = agent.unpack_vehicle_data()
             self.write_news(news=self.data)
             self._data_from_hardware = self.read_news(JOANModules.HARDWARE_MANAGER)
+            print(self.data)
             try:
                 for items in self.vehicles:
                     if items.spawned:
@@ -171,6 +171,8 @@ class AgentmanagerAction(JoanModuleAction):
                 print('Could not apply control', inst)
         else:
             self.stop()
+
+
 
     def check_connection(self):
         return self.connected

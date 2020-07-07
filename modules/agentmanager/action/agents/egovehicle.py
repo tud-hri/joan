@@ -92,7 +92,7 @@ class Egovehicle(Basevehicle):
 
     @property
     def selected_sw_controller(self):
-        return self._sw_controller
+        return self.settings._selected_controller
 
     @property
     def vehicle_nr(self):
@@ -105,11 +105,6 @@ class Egovehicle(Basevehicle):
         self.settings_dialog.show()
         pass
 
-    def update_sw_controller(self):
-        self._sw_controller = self._vehicle_tab.combo_sw_controller.currentText()
-
-    def update_input(self):
-        self.settings._selected_input = self._vehicle_tab.combo_input.currentText()
 
     def get_available_inputs(self):
         self.settings_dialog.combo_input.clear()

@@ -35,6 +35,9 @@ class Basevehicle:
 
     def unpack_vehicle_data(self):
         try:
+            #vehicle object
+            self.car_data['vehicle_object'] = self
+
             #spatial:
             self.car_data['x_pos'] = self.spawned_vehicle.get_transform().location.x
             self.car_data['y_pos'] = self.spawned_vehicle.get_transform().location.y
@@ -66,6 +69,8 @@ class Basevehicle:
             self.car_data['gear'] = last_applied_vehicle_control.gear
 
         except:
+            # vehicle object
+            self.car_data['vehicle_object'] = self
             pass
 
         return self.car_data

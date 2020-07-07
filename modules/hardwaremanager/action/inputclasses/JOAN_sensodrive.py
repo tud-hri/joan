@@ -70,7 +70,7 @@ class JOAN_SensoDrive(BaseInput):
         self._current_state_hex = 0x00
         self._error_state = [0x00, 0x00]
         self._pcan_error = False
-        print(nr_of_sensodrives)
+
         if nr_of_sensodrives == 0:
             self._pcan_channel = PCAN_USBBUS1
         elif nr_of_sensodrives == 1:
@@ -282,10 +282,10 @@ class JOAN_SensoDrive(BaseInput):
     def on_to_off(self, message):
         print('on to off')
         message.DATA[0] = 0x12
-        self.PCAN_object.Write(self.PCAN_channel, message)
+        self.PCAN_object.Write(self._pcan_channel, message)
         time.sleep(0.02)
         message.DATA[0] = 0x10
-        self.PCAN_object.Write(self.PCAN_channel, message)
+        self.PCAN_object.Write(self._pcan_channel, message)
         time.sleep(0.02)
         self._sensodrive_tab.btn_on_off.setStyleSheet("background-color: orange")
         self._sensodrive_tab.btn_on_off.setText('Off')
@@ -293,7 +293,7 @@ class JOAN_SensoDrive(BaseInput):
     def clear_error(self, message):
         print('clear error')
         message.DATA[0] = 0x1F
-        self.PCAN_object.Write(self.PCAN_channel, message)
+        self.PCAN_object.Write(self._pcan_channel, message)
         time.sleep(0.02)
         self._sensodrive_tab.btn_on_off.setStyleSheet("background-color: orange")
         self._sensodrive_tab.btn_on_off.setText('Off')
@@ -320,8 +320,8 @@ class JOAN_SensoDrive(BaseInput):
         received = self.PCAN_object.Read(self._pcan_channel)
 
         # request state data
-        self.PCAN_object.Write(self.PCAN_channel, self.state_message)
-        received2 = self.PCAN_object.Read(self.PCAN_channel)
+        self.PCAN_object.Write(self._pcan_channel, self.state_message)
+        received2 = self.PCAN_object.Read(self._pcan_channel)
 
         # request pedal data
         self.write_message_pedals(self.PCAN_object, self.pedal_message)
@@ -409,4 +409,4 @@ class JOAN_SensoDrive(BaseInput):
         pcanmessage.DATA[7] = spring_stiffness_bytes[1]
 
         if not self._pcan_error:
-            pcan_object.Write(self.PCAN_channel, pcanmessage)
+            pcan_object.Write(self._pcan_channel, pcanmessage)
