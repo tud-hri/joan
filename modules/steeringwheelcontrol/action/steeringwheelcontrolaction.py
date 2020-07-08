@@ -37,9 +37,11 @@ class SteeringWheelControlAction(JoanModuleAction):
         hw_data_in = self.read_news(JOANModules.HARDWARE_MANAGER)
         for controller in self._controllers:
             if 'agents' in sim_data_in:
-                self.data[controller] = self._controllers[controller].process(sim_data_in['agents']['Car 1'], hw_data_in)
-            else:
-                self.data[controller] = None
+                if 'Car 1' in sim_data_in['agents']:
+                    self.data[controller] = self._controllers[controller].calculate(
+                        sim_data_in['agents']['Car 1']['vehicle_object'], hw_data_in)
+                else:
+                    self.data[controller] = None
 
         if self.state_machine.current_state is State.RUNNING:
             for controller in self._controllers:
@@ -84,7 +86,7 @@ class SteeringWheelControlAction(JoanModuleAction):
         #             self.data[controller] = self._controllers[controller].do(vehicle_object, hw_data_in)
         #     else:
         #         self.data[controller] = self._controllers[controller].do(None, hw_data_in)
-        print(self.data)
+        # print(self.data)
 
         self.write_news(news=self.data)
 

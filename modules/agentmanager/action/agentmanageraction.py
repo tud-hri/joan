@@ -48,6 +48,7 @@ class AgentmanagerAction(JoanModuleAction):
 
         #Initialize Variables
         self.data = {}
+        self.data['agents']= {}
         self.data['connected'] = False
         self.write_news(news=self.data)
         self.time = QtCore.QTime()
@@ -161,7 +162,7 @@ class AgentmanagerAction(JoanModuleAction):
         if self.connected:
             # self.data['vehicles'] = self.vehicles
             for agent in self.vehicles:
-                self.data[agent.vehicle_nr] = agent.unpack_vehicle_data()
+                self.data['agents'][agent.vehicle_nr] = agent.unpack_vehicle_data()
             self.write_news(news=self.data)
             self._data_from_hardware = self.read_news(JOANModules.HARDWARE_MANAGER)
             try:
