@@ -146,9 +146,20 @@ class SteeringWheelControlAction(JoanModuleAction):
             del self.data[controller.get_controller_list_key]
         except KeyError:  # data is only present if the hardware manager ran since the hardware was added
             pass
+        # remove controller settings
+        try:
+            self.settings.pd_controllers.remove(self._controllers[controller.get_controller_list_key].settings)
+        except ValueError: #depends if right controller list is present
+            pass
+
+        try:
+            self.settings.fdca_controllers.remove(self._controllers[controller.get_controller_list_key].settings)
+        except ValueError: #depends if right controller list is present
+            pass
 
         self._controllers[controller.get_controller_list_key].get_controller_tab.setParent(None)
         del self._controllers[controller.get_controller_list_key]
+
 
         try:
             del self.data[controller]

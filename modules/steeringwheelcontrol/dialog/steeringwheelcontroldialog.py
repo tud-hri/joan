@@ -58,8 +58,11 @@ class SteeringWheelControlDialog(JoanModuleDialog):
             for controllers in self.module_action._controllers.copy():
                 self.module_action.remove_controller(self.module_action._controllers[controllers])
 
+
+
         self.module_action.load_settings_from_file(settings_file_to_load)
         self.initialize_widgets_from_settings()
+        self.module_action.initialize()
 
 
     def _save_settings(self):
