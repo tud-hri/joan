@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>517</width>
-    <height>243</height>
+    <height>322</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -422,6 +422,13 @@
     </widget>
    </item>
    <item row="3" column="1">
+    <widget class="QPushButton" name="btn_apply_parameters">
+     <property name="text">
+      <string>Apply parameters without closing dialog</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1">
     <widget class="QDialogButtonBox" name="btnbox_pd_controller_settings">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -432,10 +439,54 @@
     </widget>
    </item>
    <item row="2" column="1">
-    <widget class="QPushButton" name="btn_apply_parameters">
-     <property name="text">
-      <string>Apply parameters without closing dialog</string>
+    <widget class="QGroupBox" name="groupBox_3">
+     <property name="title">
+      <string>Reference Trajectory</string>
      </property>
+     <layout class="QGridLayout" name="gridLayout_4">
+      <property name="leftMargin">
+       <number>9</number>
+      </property>
+      <property name="topMargin">
+       <number>9</number>
+      </property>
+      <property name="rightMargin">
+       <number>9</number>
+      </property>
+      <property name="bottomMargin">
+       <number>9</number>
+      </property>
+      <property name="spacing">
+       <number>3</number>
+      </property>
+      <item row="0" column="0">
+       <widget class="QComboBox" name="cmbbox_hcr_selection">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>250</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
+        <item>
+         <property name="text">
+          <string>None</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
   </layout>

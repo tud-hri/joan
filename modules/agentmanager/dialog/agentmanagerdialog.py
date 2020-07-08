@@ -42,7 +42,7 @@ class AgentmanagerDialog(JoanModuleDialog):
         self.save_settings.triggered.connect(self._save_settings)
         self.settings_menu.addAction(self.save_settings)
         self.menu_bar.addMenu(self.settings_menu)
-        # self.initialize_widgets_from_settings()
+        #self.initialize_widgets_from_settings()
 
     def _state_change_listener(self):
         """"

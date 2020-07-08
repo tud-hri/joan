@@ -46,22 +46,22 @@ class BaseSWController:
         self.module_action.remove_controller(self)
 
     def load_trajectory(self):
-        """
-        Load HCR trajectory
-        """
-        fname = self._controller_tab.cmbbox_hcr_selection.itemText(
-            self._controller_tab.cmbbox_hcr_selection.currentIndex()
-        )
+        """Load HCR trajectory"""
+        try:
 
-        if fname != self._current_trajectory_name:
-            # fname is different from _current_hcr_name, load it!
-            try:
-                tmp = pd.read_csv(os.path.join(self._path_trajectory_directory, fname))
+            tmp = pd.read_csv(os.path.join(self._path_trajectory_directory, self.settings._trajectory_name))
+            if np.array_equal(tmp.values, self._trajectory):
+                print('trajectory already loaded')
+            else:
                 self._trajectory = tmp.values
-                # TODO We might want to do some checks on the trajectory here.
-                self._current_trajectory_name = fname
-            except OSError as err:
+                print('loaded')
+            # TODO We might want to do some checks on the trajectory here.
+            # self._trajectory_name = fname
+        except OSError as err:
                 print('Error loading HCR trajectory file: ', err)
+
+    def checkEqual(lst):
+        return lst[1:] == lst[:-1]
 
     def update_trajectory_list(self):
         """
@@ -72,12 +72,12 @@ class BaseSWController:
             os.mkdir(self._path_trajectory_directory)
         files = [filename for filename in os.listdir(self._path_trajectory_directory) if filename.endswith('csv')]
 
-        self._controller_tab.cmbbox_hcr_selection.clear()
-        self._controller_tab.cmbbox_hcr_selection.addItems(files)
+        self.settings_dialog.cmbbox_hcr_selection.clear()
+        self.settings_dialog.cmbbox_hcr_selection.addItems(files)
 
-        idx = self._controller_tab.cmbbox_hcr_selection.findText(self._current_trajectory_name)
+        idx = self.settings_dialog.cmbbox_hcr_selection.findText(self._current_trajectory_name)
         if idx != -1:
-            self._controller_tab.cmbbox_hcr_selection.setCurrentIndex(idx)
+            self.settings_dialog.cmbbox_hcr_selection.setCurrentIndex(idx)
 
     def find_closest_node(self, node, nodes):
         """

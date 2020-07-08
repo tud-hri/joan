@@ -10,6 +10,74 @@ from tools import LowPassFilterBiquad
 from .baseswcontroller import BaseSWController
 
 
+class FDCAControllerSettingsDialog(QtWidgets.QDialog):
+    def __init__(self, fdca_controller_settings, controller, parent=None):
+        super().__init__(parent)
+        self.controller = controller
+        self.fdca_controller_settings = fdca_controller_settings
+
+        uic.loadUi(self.controller.tuning_ui_file, self)
+        self.btnbox_fdca_controller_settings.button(
+            self.btnbox_fdca_controller_settings.RestoreDefaults).clicked.connect(self._set_default_values)
+        self.slider_loha.valueChanged.connect(self._update_loha_slider_label)
+        self.btn_apply_parameters.clicked.connect(self.update_parameters)
+
+        self._display_values()
+
+    def update_parameters(self):
+        self.fdca_controller_settings.k_y = float(self.edit_k_y.text())
+        self.fdca_controller_settings.k_psi = float(self.edit_k_psi.text())
+        self.fdca_controller_settings.lohs = float(self.edit_lohs.text())
+        self.fdca_controller_settings.sohf = float(self.edit_sohf.text())
+        self.fdca_controller_settings.loha = self.slider_loha.value() / 100
+        self.fdca_controller_settings._trajectory_name = self.cmbbox_hcr_selection.itemText(
+            self.cmbbox_hcr_selection.currentIndex())
+
+        self._display_values()
+
+    def _update_loha_slider_label(self):
+        self.lbl_loha_slider.setText(str(self.slider_loha.value() / 100))
+        # Uncomment this if you want to real time change the loha value when you slide the slider:
+        if self.checkbox_tuning_loha.isChecked():
+            self.fdca_controller_settings.loha = self.slider_loha.value() / 100
+            self.lbl_loha.setText(str(self.fdca_controller_settings.loha))
+
+    def accept(self):
+        self.fdca_controller_settings.k_y = float(self.edit_k_y.text())
+        self.fdca_controller_settings.k_psi = float(self.edit_k_psi.text())
+        self.fdca_controller_settings.lohs = float(self.edit_lohs.text())
+        self.fdca_controller_settings.sohf = float(self.edit_sohf.text())
+        self.fdca_controller_settings.loha = self.slider_loha.value() / 100
+        self.fdca_controller_settings._trajectory_name = self.cmbbox_hcr_selection.itemText(
+            self.cmbbox_hcr_selection.currentIndex())
+
+        super().accept()
+
+    def _display_values(self, settings_to_display=None):
+        if not settings_to_display:
+            settings_to_display = self.fdca_controller_settings
+
+        # update the current controller settings
+        self.lbl_k_y.setText(str(settings_to_display.k_y))
+        self.lbl_k_psi.setText(str(settings_to_display.k_psi))
+        self.lbl_lohs.setText(str(settings_to_display.lohs))
+        self.lbl_sohf.setText(str(settings_to_display.sohf))
+        self.lbl_loha.setText(str(settings_to_display.loha))
+
+        self.edit_k_y.setText(str(settings_to_display.k_y))
+        self.edit_k_psi.setText(str(settings_to_display.k_psi))
+        self.edit_lohs.setText(str(settings_to_display.lohs))
+        self.edit_sohf.setText(str(settings_to_display.sohf))
+        self.slider_loha.setValue(settings_to_display.loha * 100)
+
+        idx_traj = self.cmbbox_hcr_selection.findText(settings_to_display._trajectory_name)
+        self.cmbbox_hcr_selection.setCurrentIndex(idx_traj)
+
+    def _set_default_values(self):
+        self._display_values(FDCAcontrollerSettings())
+        self.update_parameters()
+
+
 class FDCASWController(BaseSWController):
 
     def __init__(self, module_action, controller_list_key, settings):
@@ -39,21 +107,32 @@ class FDCASWController(BaseSWController):
         # Get the target trajectory name from settings
         self.selected_reference_trajectory = []
 
-        # self.set_default_parameter_values()
-        self._open_settings_dialog()
-
-        self._controller_tab.btn_settings_sw_controller.clicked.connect(self._open_settings_dialog)
-        self._controller_tab.btn_update_hcr_list.clicked.connect(self.update_trajectory_list)
-
         # immediately load the correct HCR after index change
-        self._controller_tab.cmbbox_hcr_selection.currentIndexChanged.connect(self.load_trajectory)
+
+        self.settings_dialog = FDCAControllerSettingsDialog(self.settings, SWControllerTypes.FDCA_SWCONTROLLER)
+
+        self._controller_tab.btn_settings_sw_controller.clicked.connect(self._open_settings_dialog_from_button)
+
+        self.settings_dialog.btn_apply_parameters.clicked.connect(self.load_trajectory)
+        self.settings_dialog.accepted.connect(self.load_trajectory)
+
+        self.settings_dialog.btnbox_fdca_controller_settings.button(
+            self.settings_dialog.btnbox_fdca_controller_settings.RestoreDefaults).clicked.connect(
+            self.load_trajectory)
+
+        self._open_settings_dialog()
 
     @property
     def get_controller_list_key(self):
         return self.controller_list_key
 
     def _open_settings_dialog(self):
-        self.settings_dialog = FDCAControllerSettingsDialog(self.settings, SWControllerTypes.FDCA_SWCONTROLLER)
+        self.load_trajectory()
+        self.settings_dialog._display_values()
+
+    def _open_settings_dialog_from_button(self):
+        self.settings_dialog._display_values()
+        self.settings_dialog.show()
 
     def initialize(self):
         self.load_trajectory()
@@ -217,117 +296,3 @@ class FDCASWController(BaseSWController):
         torque = sw_angle * 1 / (1.0 / k_stiffness)
 
         return torque
-
-    #
-    # def set_default_parameter_values(self):
-    #     """set the default controller parameters
-    #     In the near future, this should be from the controller settings class
-    #     """
-    #
-    #     # default values
-    #     self._t_lookahead = 0.0
-    #     self.k_y = 0.1
-    #     self.k_psi = 0.4
-    #     self.lohs = 1.0
-    #     self.sohf = 1.0
-    #     self.loha = 0.25
-    #
-    #     self.update_ui()
-    #
-    #     self.get_set_parameter_values_from_ui()
-    #
-    #     # load the default HCR
-    #     self._current_trajectory_name = 'default_hcr_trajectory.csv'
-    #     self.update_trajectory_list()
-    #     self.load_trajectory()
-    #
-    # def get_set_parameter_values_from_ui(self):
-    #     """update controller parameters from ui"""
-    #
-    #     self.k_y = float(self._tuning_tab.edit_k_y.text())
-    #     self.k_psi = float(self._tuning_tab.edit_k_psi.text())
-    #     self.lohs = float(self._tuning_tab.edit_lohs.text())
-    #     self.sohf = float(self._tuning_tab.edit_sohf.text())
-    #     self.loha = self._tuning_tab.slider_loha.value() / 100
-    #
-    #     self.load_trajectory()
-    #
-    #     self.update_ui()
-    #
-    # def update_ui(self):
-    #     """update the labels and line edits in the controller_tab with the latest values"""
-    #
-    #     self._tuning_tab.edit_k_y.setText(str(self.k_y))
-    #     self._tuning_tab.edit_k_psi.setText(str(self.k_psi))
-    #     self._tuning_tab.edit_lohs.setText(str(self.lohs))
-    #     self._tuning_tab.edit_sohf.setText(str(self.sohf))
-    #     self._tuning_tab.slider_loha.setValue(self.loha*100)
-    #
-    #     # update the current controller settings
-    #     self._tuning_tab.lbl_k_y.setText(str(self.k_y))
-    #     self._tuning_tab.lbl_k_psi.setText(str(self.k_psi))
-    #     self._tuning_tab.lbl_lohs.setText(str(self.lohs))
-    #     self._tuning_tab.lbl_sohf.setText(str(self.sohf))
-    #
-
-
-class FDCAControllerSettingsDialog(QtWidgets.QDialog):
-    def __init__(self, fdca_controller_settings, controller, parent=None):
-        super().__init__(parent)
-        self.controller = controller
-        self.fdca_controller_settings = fdca_controller_settings
-
-        uic.loadUi(self.controller.tuning_ui_file, self)
-        self.btnbox_fdca_controller_settings.button(
-            self.btnbox_fdca_controller_settings.RestoreDefaults).clicked.connect(self._set_default_values)
-        self.slider_loha.valueChanged.connect(self._update_loha_slider_label)
-        self.btn_apply_parameters.clicked.connect(self.update_parameters)
-
-        self._display_values()
-
-        self.show()
-
-    def update_parameters(self):
-        self.fdca_controller_settings.k_y = float(self.edit_k_y.text())
-        self.fdca_controller_settings.k_psi = float(self.edit_k_psi.text())
-        self.fdca_controller_settings.lohs = float(self.edit_lohs.text())
-        self.fdca_controller_settings.sohf = float(self.edit_sohf.text())
-        self.fdca_controller_settings.loha = self.slider_loha.value() / 100
-
-        self._display_values()
-
-    def _update_loha_slider_label(self):
-        self.lbl_loha_slider.setText(str(self.slider_loha.value() / 100))
-        # Uncomment this if you want to real time change the loha value when you slide the slider:
-        if self.checkbox_tuning_loha.isChecked():
-            self.fdca_controller_settings.loha = self.slider_loha.value() / 100
-            self.lbl_loha.setText(str(self.fdca_controller_settings.loha))
-
-    def accept(self):
-        self.fdca_controller_settings.k_y = float(self.edit_k_y.text())
-        self.fdca_controller_settings.k_psi = float(self.edit_k_psi.text())
-        self.fdca_controller_settings.lohs = float(self.edit_lohs.text())
-        self.fdca_controller_settings.sohf = float(self.edit_sohf.text())
-        self.fdca_controller_settings.loha = self.slider_loha.value() / 100
-
-        super().accept()
-
-    def _display_values(self, settings_to_display=None):
-        if not settings_to_display:
-            settings_to_display = self.fdca_controller_settings
-
-        # update the current controller settings
-        self.lbl_k_y.setText(str(settings_to_display.k_y))
-        self.lbl_k_psi.setText(str(settings_to_display.k_psi))
-        self.lbl_lohs.setText(str(settings_to_display.lohs))
-        self.lbl_sohf.setText(str(settings_to_display.sohf))
-        self.lbl_loha.setText(str(settings_to_display.loha))
-
-        self.edit_k_y.setText(str(settings_to_display.k_y))
-        self.edit_k_psi.setText(str(settings_to_display.k_psi))
-        self.edit_lohs.setText(str(settings_to_display.lohs))
-        self.edit_sohf.setText(str(settings_to_display.sohf))
-        self.slider_loha.setValue(settings_to_display.loha * 100)
-
-    def _set_default_values(self):
-        self._display_values(FDCAcontrollerSettings())

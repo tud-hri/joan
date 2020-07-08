@@ -28,6 +28,17 @@ class SteeringWheelControlDialog(JoanModuleDialog):
         # attach add controller button to code
         self.module_widget.btn_add_sw_controller.clicked.connect(self._controller_type_selection)
 
+        # Settings
+        self.settings_menu = QtWidgets.QMenu('Settings')
+        self.load_settings = QtWidgets.QAction('Load Settings')
+        self.load_settings.triggered.connect(self._load_settings)
+        self.settings_menu.addAction(self.load_settings)
+        self.save_settings = QtWidgets.QAction('Save Settings')
+        self.save_settings.triggered.connect(self._save_settings)
+        self.settings_menu.addAction(self.save_settings)
+        self.menu_bar.addMenu(self.settings_menu)
+
+
     def _state_change_listener(self):
         """
         This function is called upon whenever the change of the module changes it checks whether its allowed to add
@@ -39,6 +50,22 @@ class SteeringWheelControlDialog(JoanModuleDialog):
             self.module_widget.btn_add_sw_controller.setEnabled(True)
         else:
             self.module_widget.btn_add_sw_controller.setEnabled(False)
+
+    def _load_settings(self):
+        settings_file_to_load, _ = QtWidgets.QFileDialog.getOpenFileName(self, 'load settings', filter='*.json')
+        if settings_file_to_load:
+            # remove all current controllers first:
+            for controllers in self.module_action._controllers.copy():
+                self.module_action.remove_controller(self.module_action._controllers[controllers])
+
+        self.module_action.load_settings_from_file(settings_file_to_load)
+        self.initialize_widgets_from_settings()
+
+
+    def _save_settings(self):
+        file_to_save_in, _ = QtWidgets.QFileDialog.getSaveFileName(self, 'save settings', filter='*.json')
+        if file_to_save_in:
+            self.module_action.save_settings_to_file(file_to_save_in)
 
     def _controller_type_selection(self):
         self._controller_type_dialog.combobox_sw_controller_type.clear()
@@ -53,18 +80,17 @@ class SteeringWheelControlDialog(JoanModuleDialog):
         new_controller_widget = self.module_action.add_controller(chosen_controller)
         self.module_widget.sw_controller_list_layout.addWidget(new_controller_widget)
 
-        pass
 
-    def update_vehicle_list_dialog(self):
-        # only add the availability to control the steering wheel if the car is spawned (Is for later implemenation of multi-agent simulator)
-        # self.module_widget.combobox_vehicle_list.clear()
-        # self.module_widget.combobox_vehicle_list.addItem('None')
-        # vehicle_list = self.module_action.update_vehicle_list()
-        # if vehicle_list is not None:
-        #     for vehicle in vehicle_list:
-        #         if vehicle.spawned is True:
-        #             self.module_widget.combobox_vehicle_list.addItem(vehicle.vehicle_nr)
-        pass
+    def initialize_widgets_from_settings(self):
+        for pd_controller_settings in self.module_action.settings.pd_controllers:
+            new_controller_widget = self.module_action.add_controller(SWControllerTypes.PD_SWCONTROLLER, pd_controller_settings)
+            self.module_widget.sw_controller_list_layout.addWidget(new_controller_widget)
+        for fdca_controller_settings in self.module_action.settings.fdca_controllers:
+            new_controller_widget = self.module_action.add_controller(SWControllerTypes.FDCA_SWCONTROLLER, fdca_controller_settings)
+            self.module_widget.sw_controller_list_layout.addWidget(new_controller_widget)
+
+
+
 
     def apply_selected_controller(self):
         vehicle_list = self.module_action.update_vehicle_list()

@@ -95,6 +95,7 @@ class PDcontrollerSettings:
         self.k_d = 1.0
         self.w_lat = 1.0
         self.w_heading = 2.0
+        self._trajectory_name = "TestTrajectory2.csv"
 
     def as_dict(self):
         return self.__dict__
@@ -112,6 +113,7 @@ class FDCAcontrollerSettings:
         self.lohs = 1.0
         self.sohf = 1.0
         self.loha = 0.0
+        self._trajectory_name = "TestTrajectory2.csv"
 
     def as_dict(self):
         return self.__dict__
