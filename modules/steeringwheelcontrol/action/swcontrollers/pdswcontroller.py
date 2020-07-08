@@ -83,8 +83,8 @@ class PDSWController(BaseSWController):
         self._t2 = 0
 
         # Setting up filters
-        self._bq_filter_heading = LowPassFilterBiquad(fc=30, fs=500)
-        self._bq_filter_velocity = LowPassFilterBiquad(fc=30, fs=500)
+        self._bq_filter_heading = LowPassFilterBiquad(fc=30, fs=1000/self.module_action.millis)
+        self._bq_filter_velocity = LowPassFilterBiquad(fc=30, fs=1000/self.module_action.millis)
 
         # controller errors
         # [0]: lateral error
@@ -141,7 +141,7 @@ class PDSWController(BaseSWController):
         except:
             stiffness = 1
         if vehicle_object.selected_sw_controller == self.controller_list_key:
-            # try:
+            try:
                 """Perform the controller-specific calculations"""
                 # get delta_t (we could also use 'millis' but this is a bit more precise)
                 t1 = time.time()
@@ -175,11 +175,12 @@ class PDSWController(BaseSWController):
                 # update variables
                 self.error_static_old = error_static
                 self._t2 = t1
-            # except Exception as inst:
-            #     self._data_out['sw_torque'] = 0
-            #     print(inst)
+            except Exception as inst:
+                self._data_out['sw_torque'] = 0
+                print(inst)
 
-                return self._data_out
+
+            return self._data_out
 
         else:
             self._data_out['sw_torque'] = 0
