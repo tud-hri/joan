@@ -141,11 +141,15 @@ class PDSWController(BaseSWController):
         except:
             stiffness = 1
         if vehicle_object.selected_sw_controller == self.controller_list_key:
-            try:
+            # try:
                 """Perform the controller-specific calculations"""
                 # get delta_t (we could also use 'millis' but this is a bit more precise)
                 t1 = time.time()
                 delta_t = t1 - self._t2
+
+                delta_t = t1 - self._t2
+                if delta_t < (self.module_action.millis - 0.5) / 1000:
+                    delta_t = self.module_action.millis / 1000
 
                 # extract data
                 car = vehicle_object.spawned_vehicle
@@ -171,11 +175,12 @@ class PDSWController(BaseSWController):
                 # update variables
                 self.error_static_old = error_static
                 self._t2 = t1
-            except Exception as inst:
-                self._data_out['sw_torque'] = 0
-                print(inst)
+            # except Exception as inst:
+            #     self._data_out['sw_torque'] = 0
+            #     print(inst)
 
-            return self._data_out
+                return self._data_out
+
         else:
             self._data_out['sw_torque'] = 0
             return self._data_out
@@ -235,5 +240,6 @@ class PDSWController(BaseSWController):
         torque_gain = torque_gain_lateral + torque_gain_heading
 
         torque = -stiffness * torque_gain
+
 
         return int(torque)
