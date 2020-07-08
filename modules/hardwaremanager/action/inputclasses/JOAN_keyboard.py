@@ -116,6 +116,8 @@ class JOAN_Keyboard(BaseInput):
         self.settings = settings
         self.settings_dialog = None
 
+        self.module_action = hardware_manager_action
+
         # Initialize needed variables:
         self._throttle = False
         self._brake = False
@@ -150,6 +152,7 @@ class JOAN_Keyboard(BaseInput):
 
     def remove_func(self):
         self.remove_tab(self._keyboard_tab)
+        self.module_action.settings.key_boards.remove(self.settings)
 
     def _open_settings_from_button(self):
         if self.settings_dialog:

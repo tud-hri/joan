@@ -237,6 +237,7 @@ class JOAN_Joystick(BaseInput):
 
     def remove_func(self):
         self.remove_tab(self._joystick_tab)
+        self.module_action.settings.joy_sticks.remove(self.settings)
 
     def disable_remove_button(self):
         if self._joystick_tab.btn_remove_hardware.isEnabled() is True:
