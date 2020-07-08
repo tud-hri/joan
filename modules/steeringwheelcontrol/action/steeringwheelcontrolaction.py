@@ -4,7 +4,7 @@ from process.joanmoduleaction import JoanModuleAction
 from process.statesenum import State
 from .steeringwheelcontrolsettings import SteeringWheelControlSettings
 from .swcontrollertypes import SWControllerTypes
-
+import os
 
 class SteeringWheelControlAction(JoanModuleAction):
 
@@ -26,6 +26,13 @@ class SteeringWheelControlAction(JoanModuleAction):
 
         # set up news
         self.data = {}
+
+        default_settings_file_location = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                                      'steeringwheel_control_settings.json')
+        if os.path.isfile(default_settings_file_location):
+            self.settings.load_from_file(default_settings_file_location)
+
+        self.share_settings(self.settings)
 
         self.write_news(news=self.data)
 
