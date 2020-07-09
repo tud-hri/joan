@@ -19,6 +19,22 @@ class DataWriter(threading.Thread):
     def run(self):
         print(self.is_alive())
 
+    def recursive_filter_row(self, current_allow, current_data, row_name):
+        if isinstance(current_allow, dict):
+            for _key, _value in current_allow.items():
+                if isinstance(_value, dict):
+                    row_name = '%s.%s' % (row_name, _key)
+                    return self.recursive_filter_row(current_allow.get(_key), current_data.get(_key), row_name)
+                else:
+                    row_names = []
+                    for deepest_key in current_allow.keys():
+                        if current_allow.get(deepest_key) is True:
+                            deepest_row_name = '%s.%s' % (row_name, deepest_key)
+                            row_names.append({deepest_row_name: current_data.get(deepest_key)})
+                    return row_names
+            return ''
+
+
     def filter_first_row(self):
         # define first row, the headers for the columns
         # channel is a JOANModule object
@@ -29,46 +45,32 @@ class DataWriter(threading.Thread):
             latest_news = self.news[channel]
             readable_key = str(JOANModules(channel))
 
-            #element = copy.deepcopy(self.settings.variables_to_save)
-            #element = element.get(readable_key)
+            result = self.recursive_filter_row(self.settings.variables_to_save.get(readable_key), 
+                                               latest_news,
+                                               readable_key)
 
-            for key in latest_news.keys():
-                if self.settings.variables_to_save[readable_key][key] is True:
-                    #row.append('%s.%s' % (channel.split('.')[1], key))
-                    row.append('%s.%s' % (readable_key, key))
-                else:
-                    for subkey in latest_news[key].keys():
-                        if self.settings.variables_to_save[readable_key][key][subkey] is True:
-                            #row.append('%s.%s' % (channel.split('.')[1], key))
-                            row.append('%s.%s.%s' % (readable_key, key, subkey))
+            for news_items in result:
+                for key in news_items.keys():
+                    row.append(key)
 
         self.columnnames(row)
 
     def filter_row(self, news=None, channels=[]):
         # define data rows, the content of the columns
         # channel is a JOANModule object
-        # news uses JOANModule object as key
-        # self.settings.variables_to_save used str(JOANModules(channel)) as key
+        # news is using JOANModule object as key
+        # self.settings.variables_to_save is using str(JOANModules(channel)) as key
         row = {}
         for channel in channels:
             latest_news = self.news[channel]
             readable_key = str(JOANModules(channel))
 
-            for key in latest_news.keys():
-                if self.settings.variables_to_save[readable_key][key] is True:
-                    #row.append('%s.%s' % (channel.split('.')[1], key))
-                    row.update({'%s.%s' % (readable_key, key): latest_news[key]})
-                    #row.append('%s.%s' % (readable_key, key))
-                else:
-                    for subkey in latest_news[key].keys():
-                        if self.settings.variables_to_save[readable_key][key][subkey] is True:
-                            #row.append('%s.%s' % (channel.split('.')[1], key))
-                            row.update({'%s.%s.%s' % (readable_key, key, subkey): latest_news[key][subkey]})
+            result = self.recursive_filter_row(self.settings.variables_to_save.get(readable_key), 
+                                               latest_news,
+                                               readable_key)
 
-            #for key in latest_news:
-            #    if self.settings.variables_to_save[readable_key][key] is True:
-            #        #row.update({'%s.%s' % (channel.split('.')[1], key): latest_news[key]})
-            #        row.update({'%s.%s' % (readable_key, key): latest_news[key]})
+            for news_item in result:
+                row.update(news_item)
         return row
 
     def columnnames(self, keys=[]):
