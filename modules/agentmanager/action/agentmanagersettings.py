@@ -34,13 +34,13 @@ class AgentManagerSettings(JoanModuleSettings):
             return
 
         self.ego_vehicles = []
-        for egovehicle_settings_dict in module_settings_to_load['key_boards']:
+        for egovehicle_settings_dict in module_settings_to_load['ego_vehicles']:
             egovehicle_settings = EgoVehicleSettings()
             egovehicle_settings.set_from_loaded_dict(egovehicle_settings_dict)
             self.ego_vehicles.append(egovehicle_settings)
 
         self.traffic_vehicles = []
-        for trafficvehicle_settings_dict in module_settings_to_load['joy_sticks']:
+        for trafficvehicle_settings_dict in module_settings_to_load['traffic_vehicles']:
             trafficvehicle_settings = TrafficVehicleSettings()
             trafficvehicle_settings.set_from_loaded_dict(trafficvehicle_settings_dict)
             self.traffic_vehicles.append(trafficvehicle_settings)

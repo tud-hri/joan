@@ -130,6 +130,7 @@ class HardwaremanagerAction(JoanModuleAction):
         self.input_devices_classes.update([(device_title, JOAN_Keyboard(self, widget, keyboard_settings))])
         if is_a_new_keyboard:
             self.settings.key_boards.append(keyboard_settings)
+
         return device_title
 
     def add_a_joystick(self, widget, joystick_settings=None):

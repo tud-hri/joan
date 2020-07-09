@@ -27,7 +27,7 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
         self.button_box_settings.button(self.button_box_settings.RestoreDefaults).clicked.connect(
             self._set_default_values)
         self._display_values()
-        self.show()
+        # self.show()
 
     def accept(self):
         self.sensodrive_settings.endstops = self.spin_endstop_position.value()
@@ -63,6 +63,8 @@ class JOAN_SensoDrive(BaseInput):
         self.settings = settings
         self.sensodrive_running = False
 
+        self.module_action = hardware_manager_action
+
         # Create PCAN object
         self.PCAN_object = PCANBasic()
         self.pcan_initialization_result = None
@@ -70,7 +72,7 @@ class JOAN_SensoDrive(BaseInput):
         self._current_state_hex = 0x00
         self._error_state = [0x00, 0x00]
         self._pcan_error = False
-        print(nr_of_sensodrives)
+
         if nr_of_sensodrives == 0:
             self._pcan_channel = PCAN_USBBUS1
         elif nr_of_sensodrives == 1:
@@ -78,6 +80,7 @@ class JOAN_SensoDrive(BaseInput):
 
         #  hook up buttons
         self._sensodrive_tab.btn_settings.clicked.connect(self._open_settings_dialog)
+        self._sensodrive_tab.btn_settings.clicked.connect(self._open_settings_from_button)
         self._sensodrive_tab.btn_visualization.setEnabled(False)
         self._sensodrive_tab.btn_remove_hardware.clicked.connect(self.remove_func)
         self._sensodrive_tab.btn_on_off.clicked.connect(self.on_off)
@@ -224,8 +227,11 @@ class JOAN_SensoDrive(BaseInput):
             except:
                 pass
 
+    def _open_settings_from_button(self):
+        if self.settings_dialog:
+            self.settings_dialog.show()
+
     def _open_settings_dialog(self):
-        self.settings_dialog.show()
         pass
 
     def remove_func(self):
@@ -233,6 +239,7 @@ class JOAN_SensoDrive(BaseInput):
             self.PCAN_object.Uninitialize(self._pcan_channel)
         except:
             pass
+        self.module_action.settings.remove(self.settings)
         self.remove_tab(self._sensodrive_tab)
 
     def disable_remove_button(self):
@@ -282,10 +289,10 @@ class JOAN_SensoDrive(BaseInput):
     def on_to_off(self, message):
         print('on to off')
         message.DATA[0] = 0x12
-        self.PCAN_object.Write(self.PCAN_channel, message)
+        self.PCAN_object.Write(self._pcan_channel, message)
         time.sleep(0.02)
         message.DATA[0] = 0x10
-        self.PCAN_object.Write(self.PCAN_channel, message)
+        self.PCAN_object.Write(self._pcan_channel, message)
         time.sleep(0.02)
         self._sensodrive_tab.btn_on_off.setStyleSheet("background-color: orange")
         self._sensodrive_tab.btn_on_off.setText('Off')
@@ -293,7 +300,7 @@ class JOAN_SensoDrive(BaseInput):
     def clear_error(self, message):
         print('clear error')
         message.DATA[0] = 0x1F
-        self.PCAN_object.Write(self.PCAN_channel, message)
+        self.PCAN_object.Write(self._pcan_channel, message)
         time.sleep(0.02)
         self._sensodrive_tab.btn_on_off.setStyleSheet("background-color: orange")
         self._sensodrive_tab.btn_on_off.setText('Off')
@@ -307,11 +314,11 @@ class JOAN_SensoDrive(BaseInput):
         # check whether we have a sw_controller that should be updated
         self._steering_wheel_control_data = self._action.read_news(JOANModules.STEERING_WHEEL_CONTROL)
         self._carla_interface_data = self._action.read_news(JOANModules.AGENT_MANAGER)
-
         try:
-            self.steering_wheel_parameters['torque'] = \
-            self._steering_wheel_control_data[self._carla_interface_data['vehicles'][0].selected_sw_controller][
-                'sw_torque']
+            self.steering_wheel_parameters['torque'] = self._steering_wheel_control_data[
+                self._carla_interface_data['agents']['Car 1']['vehicle_object'].selected_sw_controller]['sw_torque']
+
+
         except:
             self.steering_wheel_parameters['torque'] = 0
 
@@ -320,8 +327,8 @@ class JOAN_SensoDrive(BaseInput):
         received = self.PCAN_object.Read(self._pcan_channel)
 
         # request state data
-        self.PCAN_object.Write(self.PCAN_channel, self.state_message)
-        received2 = self.PCAN_object.Read(self.PCAN_channel)
+        self.PCAN_object.Write(self._pcan_channel, self.state_message)
+        received2 = self.PCAN_object.Read(self._pcan_channel)
 
         # request pedal data
         self.write_message_pedals(self.PCAN_object, self.pedal_message)
@@ -409,4 +416,4 @@ class JOAN_SensoDrive(BaseInput):
         pcanmessage.DATA[7] = spring_stiffness_bytes[1]
 
         if not self._pcan_error:
-            pcan_object.Write(self.PCAN_channel, pcanmessage)
+            pcan_object.Write(self._pcan_channel, pcanmessage)

@@ -64,6 +64,7 @@ class HardwaremanagerDialog(JoanModuleDialog):
 
             self.module_action.load_settings_from_file(settings_file_to_load)
             self.initialize_widgets_from_settings()
+            self.module_action.initialize()
 
     def _save_settings(self):
         file_to_save_in, _ = QtWidgets.QFileDialog.getSaveFileName(self, 'save settings', filter='*.json')
@@ -87,6 +88,8 @@ class HardwaremanagerDialog(JoanModuleDialog):
             new_widget = uic.loadUi(
                 os.path.join(os.path.dirname(os.path.realpath(__file__)), "../action/ui/hardware_tab_sensodrive.ui"))
             device_title = self.module_action.add_a_sensodrive(new_widget)
+
+        self.module_action.input_devices_classes[device_title].settings_dialog.show()
 
         ## This is a temporary fix so that we cannot add another sensodrive which will make pcan crash because we only have one PCAN usb interface dongle
         ## TODO find a more elegant solution that just goes into error state when trying to add more sensodrives than dongles

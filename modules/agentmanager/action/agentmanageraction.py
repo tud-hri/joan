@@ -48,7 +48,7 @@ class AgentmanagerAction(JoanModuleAction):
 
         #Initialize Variables
         self.data = {}
-        self.data['agents'] = {}
+        self.data['agents']= {}
         self.data['connected'] = False
         self.write_news(news=self.data)
         self.time = QtCore.QTime()
@@ -85,6 +85,11 @@ class AgentmanagerAction(JoanModuleAction):
         self.state_machine.set_transition_condition(State.IDLE, State.READY, self._init_condition)
         self.state_machine.set_transition_condition(State.READY, State.RUNNING, self._starting_condition)
         self.state_machine.set_transition_condition(State.RUNNING, State.READY, self._stopping_condition)
+
+        default_settings_file_location = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                                      'agent_manager_settings.json')
+        if os.path.isfile(default_settings_file_location):
+            self.settings.load_from_file(default_settings_file_location)
 
         self.share_settings(self.settings)
 
@@ -172,6 +177,8 @@ class AgentmanagerAction(JoanModuleAction):
         else:
             self.stop()
 
+
+
     def check_connection(self):
         return self.connected
 
@@ -241,7 +248,8 @@ class AgentmanagerAction(JoanModuleAction):
         if is_a_new_ego_agent:
             ego_vehicle_settings = EgoVehicleSettings()
             self.settings.ego_vehicles.append(ego_vehicle_settings)
-            self.vehicles.append(Egovehicle(self, len(self.vehicles), self.nr_spawn_points, self.vehicle_tags, ego_vehicle_settings))
+
+        self.vehicles.append(Egovehicle(self, len(self.vehicles), self.nr_spawn_points, self.vehicle_tags, ego_vehicle_settings))
 
         # for vehicle in self.vehicles:
         #     vehicle.get_available_inputs()
@@ -259,7 +267,8 @@ class AgentmanagerAction(JoanModuleAction):
         if is_a_new_traffic_agent:
             traffic_vehicle_settings = TrafficVehicleSettings()
             self.settings.traffic_vehicles.append(traffic_vehicle_settings)
-            self.traffic_vehicles.append(Trafficvehicle(self, len(self.traffic_vehicles), self.nr_spawn_points, self.vehicle_tags, traffic_vehicle_settings))
+
+        self.traffic_vehicles.append(Trafficvehicle(self, len(self.traffic_vehicles), self.nr_spawn_points, self.vehicle_tags, traffic_vehicle_settings))
 
         return self.traffic_vehicles
 
@@ -300,3 +309,10 @@ class AgentmanagerAction(JoanModuleAction):
         except RuntimeError:
             return False
         return super().stop()
+
+    def load_settings_from_file(self, settings_file_to_load):
+        self.settings.load_from_file(settings_file_to_load)
+        self.share_settings(self.settings)
+
+    def save_settings_to_file(self, file_to_save_in):
+        self.settings.save_to_file(file_to_save_in)
