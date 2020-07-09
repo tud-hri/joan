@@ -48,7 +48,7 @@ class AgentmanagerAction(JoanModuleAction):
 
         #Initialize Variables
         self.data = {}
-        self.data['agents']= {}
+        self.data['agents'] = {}
         self.data['connected'] = False
         self.write_news(news=self.data)
         self.time = QtCore.QTime()
