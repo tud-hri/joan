@@ -177,8 +177,8 @@ class Trajectory_recorder():
         return self._trajectory_data_spaced
 
     def write_trajectory(self):
-        _data = self.data_recorder_action.read_news(JOANModules.CARLA_INTERFACE)
-        car = _data['vehicles'][0].spawned_vehicle
+        _data = self.data_recorder_action.read_news(JOANModules.AGENT_MANAGER)
+        car = _data['agents']['Car 1']['vehicle_object'].spawned_vehicle
         control = car.get_control()
 
         x_pos = car.get_transform().location.x
@@ -195,8 +195,8 @@ class Trajectory_recorder():
 
     def initialize_trajectory_recorder_variables(self):
         try:
-            _data = self.data_recorder_action.read_news(JOANModules.CARLA_INTERFACE)
-            car = _data['vehicles'][0].spawned_vehicle
+            _data = self.data_recorder_action.read_news(JOANModules.AGENT_MANAGER)
+            car = _data['agents']['Car 1']['vehicle_object'].spawned_vehicle
             control = car.get_control()
 
             x_pos = car.get_transform().location.x
