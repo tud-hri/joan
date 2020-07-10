@@ -12,14 +12,8 @@ class DataRecorderSettings(JoanModuleSettings):
         """
         super().__init__(module_enum)
 
-        news = News()
         self.variables_to_save = {}
-
-        for module in JOANModules:
-            module_news = copy.deepcopy(news.read_news(module))
-            self.variables_to_save[str(module)] = module_news
-
-        self._set_checked(self.variables_to_save)
+        #self.write_interval = 100
 
     def _set_checked(self, element):
         if isinstance(element, dict):
@@ -28,5 +22,14 @@ class DataRecorderSettings(JoanModuleSettings):
                     self._set_checked(element.get(key))
                 else:
                     element[key] = True
+
+    def set_all_true(self):
+        news = News()
+        for module in JOANModules:
+            module_news = copy.deepcopy(news.read_news(module))
+            self.variables_to_save[str(module)] = module_news
+
+        self._set_checked(self.variables_to_save)
+
 
 

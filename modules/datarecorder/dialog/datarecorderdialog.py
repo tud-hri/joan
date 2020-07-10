@@ -35,6 +35,10 @@ class NewsOverviewDialog(QtWidgets.QDialog):
     @staticmethod
     def _create_tree_item(parent, key, value):
         if isinstance(value, dict):
+            if value == {}:
+                # to prevent an entry without a checkbox
+                value = ''
+        if isinstance(value, dict):
             item = QtWidgets.QTreeWidgetItem(parent)
             item.setData(0, Qt.DisplayRole, str(key))
             item.setFlags(item.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
@@ -52,18 +56,14 @@ class NewsOverviewDialog(QtWidgets.QDialog):
             item = QtWidgets.QTreeWidgetItem(parent)
             item.setData(0, Qt.DisplayRole, str(key))
 
-            # TODO read fom datarecorder_settings_file, first time set all checked
-            item.setCheckState(0, Qt.Checked)
-
-
-            write = 'No'
             if item.checkState(0) > 0:
-                write = 'Yes'
-            item.setData(1, Qt.DisplayRole, write)
-            #item.setData(1, Qt.DisplayRole, str(value))
+                item.setData(1, Qt.DisplayRole, 'Yes')
+            else:
+                item.setCheckState(0, Qt.Unchecked)
+                item.setData(1, Qt.DisplayRole, 'No')
+
             item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
             
-
             return item
 
 class DatarecorderDialog(JoanModuleDialog):
@@ -147,6 +147,7 @@ class DatarecorderDialog(JoanModuleDialog):
     def initialize(self):
         # reads settings if available and expands the datarecorder widget
         self.module_widget.treeWidget.clear()
+        # TODO: lees file datarecordersettings.json
         NewsOverviewDialog(self.news.all_news, self.module_widget.treeWidget)
         self.module_widget.treeWidget.itemClicked.connect(self.on_item_clicked)
         self.on_item_clicked()

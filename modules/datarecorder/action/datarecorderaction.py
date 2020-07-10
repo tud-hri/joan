@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from datetime import datetime
 
 from modules.joanmodules import JOANModules
@@ -28,7 +29,7 @@ class DatarecorderAction(JoanModuleAction):
         # 1. self.data['t'] = 0
         # 2. self.write_news(news=self.data)
         # 3. self.time = QtCore.QTime()
-
+    
         # trajectory recorder:
         self.trajectory_recorder = Trajectory_recorder(self, 0.1)
 
@@ -36,20 +37,21 @@ class DatarecorderAction(JoanModuleAction):
         self.settings = DataRecorderSettings(JOANModules.DATA_RECORDER)
         self.default_settings_file_location = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'datarecordersettings.json')
 
-        if os.path.isfile(self.default_settings_file_location):
-            self.settings.load_from_file(self.default_settings_file_location)
+        if Path(self.default_settings_file_location).is_file():
+            self.load_settings_from_file(self.default_settings_file_location)
         else:
-            self.settings.save_to_file(self.default_settings_file_location)
+            self.settings.set_all_true()
+            #self.settings.write_interval = 500
+            self.save_settings_to_file(self.default_settings_file_location)
 
-            # TODO: make an initial settings file using self.news and set every item default to True
-            # see: datarecorderdialog.py
         self.share_settings(self.settings)
         # end settings for this module
 
         self.filename = ''
         self.data_writer = DataWriter(news=self.get_all_news(), channels=self.get_available_news_channels(),
                                       settings=self.get_module_settings(JOANModules.DATA_RECORDER))
-
+        # TODO: run data_writer in separate thread
+        #self.data_writer.start()
 
     def initialize_file(self):
         self.filename = self._create_filename(extension='csv')

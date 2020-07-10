@@ -1,3 +1,8 @@
+"""
+Data, coming from the class News, is gathered regularly
+The output is a comma-delimited csv file
+A settingsfile is used to filter which data will be written
+"""
 import threading
 import io
 import csv
@@ -5,8 +10,18 @@ import copy
 from modules.joanmodules import JOANModules
 
 class DataWriter(threading.Thread):
+    """
+    Class DataWriter inherits the Thread class
+    Writes data from modules to a file in a comma separated values format
+    """
     def __init__(self, news=None, channels=[], settings=None):
+        """
+        :param news: contains news from modules (=channels)
+        :param channels: are actually the keys to identify a module
+        :param settings: contains all news-keys with a boolean to write or not to write, that's the question
+        """
         threading.Thread.__init__(self)
+
         self.file_handle = None
         self.dict_writer = None
         self.news = news
@@ -14,12 +29,23 @@ class DataWriter(threading.Thread):
 
         self.fieldnames = []
         self.settings = settings
-        self.settings_dict = {}
 
     def run(self):
-        print(self.is_alive())
+        """
+        Overridden from the thread class
+        """
+        pass
+        #print('DataWriter runs in a thread:', self.is_alive())
 
     def recursive_filter_row(self, current_allow, current_data, row_name):
+        """
+        Go through the settings and through the news as they use the same keys
+        Returns only news that is not 'censored'
+        :param current_allow: is a dictionary from the settings variables to save within a module
+        :param current_data: is a dictionary from the news within a module
+        :param row_name: recursively concatenated key-name
+        :return: a list of dictionaries with recursively concatenated keys and the corresponding values
+        """
         if isinstance(current_allow, dict):
             for _key, _value in current_allow.items():
                 if isinstance(_value, dict):
@@ -36,10 +62,11 @@ class DataWriter(threading.Thread):
 
 
     def filter_first_row(self):
-        # define first row, the headers for the columns
-        # channel is a JOANModule object
-        # news uses JOANModule object as key
-        # self.settings.variables_to_save used str(JOANModules(channel)) as key
+        """
+        Creates the first column of the header row with the name 'time'
+        Adds a recursively concatenated key to a list if it passes the filter
+        :return: a list of recursively concatenated keys which passes a filter
+        """
         row = ['time']
         for channel in self.channels:
             latest_news = self.news[channel]
@@ -53,13 +80,16 @@ class DataWriter(threading.Thread):
                 for key in news_items.keys():
                     row.append(key)
 
-        self.columnnames(row)
+        return row
 
     def filter_row(self, news=None, channels=[]):
-        # define data rows, the content of the columns
-        # channel is a JOANModule object
-        # news is using JOANModule object as key
-        # self.settings.variables_to_save is using str(JOANModules(channel)) as key
+        """
+        Creates the first column of a data-row with the current time
+        Data which passes the filter will be added to the row where the column is defined by the recursively concatenated key
+        :param news: contains news from modules (=channels)
+        :param channels: are actually the keys to identify a module
+        :return: a dictionaries of all news items from all channels (=modules) with recursively concatenated keys and the corresponding values
+        """
         row = {}
         for channel in channels:
             latest_news = self.news[channel]
@@ -73,36 +103,37 @@ class DataWriter(threading.Thread):
                 row.update(news_item)
         return row
 
-    def columnnames(self, keys=[]):
-        # filters keys you want from the data and put them as header in the csv file
-        self.fieldnames = keys
-
-    def get_first_row(self):
-        return self.fieldnames
-
     def open(self, filename, buffersize=io.DEFAULT_BUFFER_SIZE):
-        # renew settings
-        self.settings_dict = self.settings
-
+        """
+        Opens a buffered file and with a headerline
+        :param filename: is the name of the file
+        :param buffersize: is the size of the buffer for writing
+        """
         self.filter_first_row()
 
         # open file and write the first row
         self.file_handle = open(filename, 'w', buffering=buffersize, newline='')
-        self.dict_writer = csv.DictWriter(self.file_handle, fieldnames=self.get_first_row())
+        self.dict_writer = csv.DictWriter(self.file_handle, fieldnames=self.filter_first_row())
         self.dict_writer.writeheader()
 
     def close(self):
+        """
+        Closes the filehandle
+        """
         try:
             self.file_handle.close()
         except AttributeError:
             pass
 
     def write(self, timestamp=None, news=None, channels=[]):
-        # get ALL news here, filter in self.filter and write
-        # this class is a thread, so the main thread should continue while filtering and writing
-        time = timestamp.strftime('%H%M%S%f')
+        """
+        Writes a row (=csv line) of news to the bottom of the outputfile
+        :param timestamp: is the time when the news from a module is send to be published in the outputfile
+        :param news: contains news from modules (=channels)
+        :param channels: are actually the keys to identify a module
+        """
         row = {}
-        row['time'] = time  # datetime.now()
+        row['time'] = timestamp.strftime('%H%M%S%f')
 
         row.update(self.filter_row(news=news, channels=channels))
         self.dict_writer.writerow(row)
