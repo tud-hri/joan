@@ -13,7 +13,7 @@ class DataRecorderSettings(JoanModuleSettings):
         super().__init__(module_enum)
 
         self.variables_to_save = {}
-        #self.write_interval = 100
+        self.write_interval = 100
 
     def _set_checked(self, element):
         if isinstance(element, dict):
@@ -30,6 +30,9 @@ class DataRecorderSettings(JoanModuleSettings):
             self.variables_to_save[str(module)] = module_news
 
         self._set_checked(self.variables_to_save)
+
+    def get_variables_to_save(self):
+        return self.variables_to_save
 
 
 

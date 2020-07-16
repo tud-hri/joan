@@ -48,7 +48,8 @@ class DatarecorderAction(JoanModuleAction):
         # end settings for this module
 
         self.filename = ''
-        self.data_writer = DataWriter(news=self.get_all_news(), channels=self.get_available_news_channels(),
+        self.data_writer = DataWriter(news=self.get_all_news(), 
+                                      channels=self.get_available_news_channels(),
                                       settings=self.get_module_settings(JOANModules.DATA_RECORDER))
         # TODO: run data_writer in separate thread
         #self.data_writer.start()
@@ -58,7 +59,9 @@ class DatarecorderAction(JoanModuleAction):
 
     def load_settings_from_file(self, settings_file_to_load):
         self.settings.load_from_file(settings_file_to_load)
+
         self.share_settings(self.settings)
+        self.settings.save_to_file(self.default_settings_file_location)
 
     def save_settings_to_file(self, file_to_save_in):
         self.settings.save_to_file(file_to_save_in)

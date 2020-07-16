@@ -21,15 +21,14 @@ import copy
 
 from process import News
 
-class NewsOverviewDialog(QtWidgets.QDialog):
+class CreateTreeWidgetDialog(QtWidgets.QDialog):
 
-    def __init__(self, all_news, tree_widget=None, parent=None):
+    def __init__(self, variable_to_save, tree_widget=None, parent=None):
         super().__init__(parent)
 
-        for module_key, news_object in all_news.items():
-            if news_object:            # show only modules with news
-                self._create_tree_item(tree_widget, module_key, news_object)
-
+        for module_key, module_news in variable_to_save.items():
+            if module_news:            # show only modules with news
+                self._create_tree_item(tree_widget, module_key, module_news)
         self.show()
 
     @staticmethod
@@ -37,33 +36,32 @@ class NewsOverviewDialog(QtWidgets.QDialog):
         if isinstance(value, dict):
             if value == {}:
                 # to prevent an entry without a checkbox
-                value = ''
+                return
         if isinstance(value, dict):
             item = QtWidgets.QTreeWidgetItem(parent)
             item.setData(0, Qt.DisplayRole, str(key))
             item.setFlags(item.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
 
             for inner_key, inner_value in value.items():
-                NewsOverviewDialog._create_tree_item(item, inner_key, inner_value)
+                CreateTreeWidgetDialog._create_tree_item(item, inner_key, inner_value)
             return item
         if isinstance(value, list):
             item = QtWidgets.QTreeWidgetItem(parent)
             item.setData(0, Qt.DisplayRole, str(key))
             for index, inner_value in enumerate(value):
-                NewsOverviewDialog._create_tree_item(item, str(index), inner_value)
+                CreateTreeWidgetDialog._create_tree_item(item, str(index), inner_value)
             return item
         else:
             item = QtWidgets.QTreeWidgetItem(parent)
             item.setData(0, Qt.DisplayRole, str(key))
-
-            if item.checkState(0) > 0:
+            if value:
+                item.setCheckState(0, Qt.Checked)
                 item.setData(1, Qt.DisplayRole, 'Yes')
             else:
                 item.setCheckState(0, Qt.Unchecked)
                 item.setData(1, Qt.DisplayRole, 'No')
 
             item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
-            
             return item
 
 class DatarecorderDialog(JoanModuleDialog):
@@ -71,7 +69,7 @@ class DatarecorderDialog(JoanModuleDialog):
         super().__init__(module=JOANModules.DATA_RECORDER, module_action=module_action, parent=parent)
 
         self.module_action.state_machine.add_state_change_listener(self._handle_module_specific_state)
-        self.module_action.state_machine.set_entry_action(State.READY, self.initialize)
+        self.module_action.state_machine.set_entry_action(State.READY, self.create_tree_widget)
 
         # set current data file name
         self.module_widget.lbl_data_filename.setText("< none >")
@@ -83,6 +81,17 @@ class DatarecorderDialog(JoanModuleDialog):
         # get news items
         self.news = News()
 
+        # Settings
+        self.settings_menu = QtWidgets.QMenu('Settings')
+        self.load_settings = QtWidgets.QAction('Load Datarecorder Settings')
+        self.load_settings.triggered.connect(self._load_settings)
+        self.settings_menu.addAction(self.load_settings)
+        self.save_settings = QtWidgets.QAction('Save Datarecorder Settings')
+        self.save_settings.triggered.connect(self._save_settings)
+        self.settings_menu.addAction(self.save_settings)
+        self.menu_bar.addMenu(self.settings_menu)
+
+
         # set trajectory buttons functionality
         self.module_widget.btn_save.setEnabled(False)
         self.module_widget.btn_discard.setEnabled(False)
@@ -92,6 +101,17 @@ class DatarecorderDialog(JoanModuleDialog):
         self.module_widget.btn_discard.clicked.connect(self.discard_trajectory)
         self.module_widget.check_trajectory.stateChanged.connect(self.check_trajectory_checkbox)
         self.module_widget.line_trajectory_title.textEdited.connect(self.check_trajectory_filename)
+
+    def _load_settings(self):
+        settings_file_to_load, _ = QtWidgets.QFileDialog.getOpenFileName(self, 'load settings', filter='*.json')
+        if settings_file_to_load:
+            self.module_action.load_settings_from_file(settings_file_to_load)
+            self.create_tree_widget()
+
+    def _save_settings(self):
+        file_to_save_in, _ = QtWidgets.QFileDialog.getSaveFileName(self, 'save settings', filter='*.json')
+        if file_to_save_in:
+            self.module_action.save_settings_to_file(file_to_save_in)
 
 
     def handle_click(self, nodes):
@@ -144,11 +164,13 @@ class DatarecorderDialog(JoanModuleDialog):
         #print(it, col, it.text(col))
         self.get_all_items(self.module_widget.treeWidget)
 
-    def initialize(self):
-        # reads settings if available and expands the datarecorder widget
+    def create_tree_widget(self):
+        """
+        reads, or creates default settings when starting the module
+        """
         self.module_widget.treeWidget.clear()
-        # TODO: lees file datarecordersettings.json
-        NewsOverviewDialog(self.news.all_news, self.module_widget.treeWidget)
+        variables_to_save = self.module_action.settings.get_variables_to_save()
+        CreateTreeWidgetDialog(variables_to_save, self.module_widget.treeWidget)
         self.module_widget.treeWidget.itemClicked.connect(self.on_item_clicked)
         self.on_item_clicked()
 
