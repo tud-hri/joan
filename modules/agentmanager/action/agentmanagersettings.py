@@ -93,7 +93,7 @@ class EgoVehicleSettings():
         self._selected_input = 'None'
         self._selected_controller = 'None'
         self._selected_spawnpoint = 0
-        self._selected_car = 'hapticslab.nissangtr'
+        self._selected_car = 'hapticslab.nissan'
 
     def as_dict(self):
         return self.__dict__

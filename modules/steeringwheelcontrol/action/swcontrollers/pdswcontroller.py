@@ -83,8 +83,8 @@ class PDSWController(BaseSWController):
         self._t2 = 0
 
         # Setting up filters
-        self._bq_filter_heading = LowPassFilterBiquad(fc=30, fs=1000/self.module_action.millis)
-        self._bq_filter_velocity = LowPassFilterBiquad(fc=30, fs=1000/self.module_action.millis)
+        self._bq_filter_heading = LowPassFilterBiquad(fc=10, fs=1000/self.module_action.millis)
+        self._bq_filter_velocity = LowPassFilterBiquad(fc=10, fs=1000/self.module_action.millis)
 
         # controller errors
         # [0]: lateral error
@@ -171,6 +171,13 @@ class PDSWController(BaseSWController):
 
                 # put error through controller to get sw torque out
                 self._data_out['sw_torque'] = self.pd_controller(self._controller_error, stiffness)
+                self._data_out['lat_error'] = error_static[0]
+                self._data_out['heading_error'] = error_static[1]
+                self._data_out['lat_error_rate_unfiltered'] = error_rate[0]
+                self._data_out['heading_error_rate_unfiltered'] = error_rate[1]
+                self._data_out['lat_error_rate_filtered'] = error_lateral_rate_filtered
+                self._data_out['heading_error_rate_filtered'] = error_heading_rate_filtered
+
 
                 # update variables
                 self.error_static_old = error_static

@@ -83,8 +83,8 @@ class Trafficvehicle(Basevehicle):
         self.agent_manager_action = agent_manager_action
 
         self.settings = settings
-        self._bq_filter_heading = LowPassFilterBiquad(1000/self.agent_manager_action.millis,30)
-        self._bq_filter_velocity = LowPassFilterBiquad(1000/self.agent_manager_action.millis,30)
+        self._bq_filter_heading = LowPassFilterBiquad(fs =1000/self.agent_manager_action.millis, fc = 3)
+        self._bq_filter_velocity = LowPassFilterBiquad(fs = 1000/self.agent_manager_action.millis,fc = 3)
         self.module_action = agent_manager_action
 
         self._t2 = 0
