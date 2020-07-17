@@ -70,9 +70,9 @@ class JoanModuleAction(QtCore.QObject):
         self.timer.stop()
         return True
 
-    def set_millis(self, millis):
+    def set_tick_interval_ms(self, interval_ms):
         try:
-            self.millis = int(millis)
+            self.tick_interval_ms = int(interval_ms)
         except ValueError:
             pass
 
@@ -122,11 +122,11 @@ class JoanModuleAction(QtCore.QObject):
         return self.singleton_settings.get_factory_settings(module)
 
     @property
-    def millis(self):
+    def tick_interval_ms(self):
         return self._millis
 
-    @millis.setter
-    def millis(self, val):
+    @tick_interval_ms.setter
+    def tick_interval_ms(self, val):
         if not type(val) is int:
             raise ValueError("Pulsar interval should be an integer, not " + str(type(val)))
 

@@ -151,7 +151,7 @@ class FDCASWController(BaseSWController):
                 sw_angle = hw_data_in[vehicle_object.selected_input]['SteeringInput']
 
                 """Perform the controller-specific calculations"""
-                # get delta_t (we could also use 'millis' but this is a bit more precise)
+                # get delta_t (we could also use 'tick_interval_ms' but this is a bit more precise)
                 t1 = time.time()
                 delta_t = t1 - self._t2
                 if delta_t < (self.module_action.millis - 0.5)/1000:

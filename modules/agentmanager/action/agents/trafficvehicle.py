@@ -86,8 +86,8 @@ class Trafficvehicle(Basevehicle):
         self.agent_manager_action = agent_manager_action
 
         self.settings = settings
-        self._bq_filter_heading = LowPassFilterBiquad(fs =1000/self.agent_manager_action.millis, fc = 3)
-        self._bq_filter_velocity = LowPassFilterBiquad(fs = 1000/self.agent_manager_action.millis,fc = 3)
+        self._bq_filter_heading = LowPassFilterBiquad(fs =1000/self.agent_manager_action.tick_interval_ms, fc = 3)
+        self._bq_filter_velocity = LowPassFilterBiquad(fs = 1000/self.agent_manager_action.tick_interval_ms, fc = 3)
         self.module_action = agent_manager_action
 
         self._t2 = 0
@@ -189,7 +189,7 @@ class Trafficvehicle(Basevehicle):
         try:
             ## STEERING ANGLE ##
             """Perform the controller-specific calculations"""
-            # get delta_t (we could also use 'millis' but this is a bit more precise)
+            # get delta_t (we could also use 'tick_interval_ms' but this is a bit more precise)
             t1 = time.time()
             delta_t = t1 - self._t2
 

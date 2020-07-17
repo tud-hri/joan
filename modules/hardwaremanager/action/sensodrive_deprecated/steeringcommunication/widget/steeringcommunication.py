@@ -5,8 +5,8 @@ from modules.steeringcommunication.action.steeringcommunication import Steeringc
 
 class SteeringcommunicationWidget(Control):
     def __init__(self, *args, **kwargs):
-        kwargs['millis'] = 'millis' in kwargs.keys() and kwargs['millis'] or 1
-        kwargs['callback'] = [self.do]  # method will run each given millis
+        kwargs['tick_interval_ms'] = 'tick_interval_ms' in kwargs.keys() and kwargs['tick_interval_ms'] or 1
+        kwargs['callback'] = [self.do]  # method will run each given tick_interval_ms
 
         Control.__init__(self, *args, **kwargs)
         self.create_widget(ui=os.path.join(os.path.dirname(os.path.realpath(__file__)),"steeringcommunication.ui"))

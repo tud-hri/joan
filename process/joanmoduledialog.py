@@ -44,8 +44,8 @@ class JoanModuleDialog(QtWidgets.QDialog):
         self.state_widget.btn_start.setEnabled(False)
         self.state_widget.btn_stop.setEnabled(False)
         self.state_widget.input_tick_millis.setValidator(QtGui.QIntValidator(0, 10000, parent=self))
-        self.state_widget.input_tick_millis.setPlaceholderText(str(self.module_action.millis))
-        self.state_widget.input_tick_millis.textChanged.connect(self._set_millis)
+        self.state_widget.input_tick_millis.setPlaceholderText(str(self.module_action.tick_interval_ms))
+        self.state_widget.input_tick_millis.textChanged.connect(self._set_tick_interval_ms)
 
         # reflect current state
         self.handle_state_change()
@@ -67,8 +67,8 @@ class JoanModuleDialog(QtWidgets.QDialog):
         self.module_action.initialize()
 
     @QtCore.pyqtSlot(str)
-    def _set_millis(self, millis):
-        self.module_action.set_millis(millis)
+    def _set_tick_interval_ms(self, interval_ms):
+        self.module_action.set_tick_interval_ms(interval_ms)
 
     def handle_state_change(self):
         """
@@ -95,7 +95,7 @@ class JoanModuleDialog(QtWidgets.QDialog):
             self.state_widget.btn_start.setEnabled(True)
             self.state_widget.input_tick_millis.setEnabled(True)
             self.state_widget.input_tick_millis.clear()
-            self.state_widget.input_tick_millis.setPlaceholderText(str(self.module_action.millis))
+            self.state_widget.input_tick_millis.setPlaceholderText(str(self.module_action.tick_interval_ms))
         else:
             self.state_widget.btn_start.setEnabled(False)
 
@@ -109,14 +109,14 @@ class JoanModuleDialog(QtWidgets.QDialog):
             self.state_widget.input_tick_millis.setEnabled(False)
             self.state_widget.input_tick_millis.clear()
             self.state_widget.input_tick_millis.clearFocus()
-            self.state_widget.input_tick_millis.setPlaceholderText(str(self.module_action.millis))
+            self.state_widget.input_tick_millis.setPlaceholderText(str(self.module_action.tick_interval_ms))
         else:
             self.state_widget.btn_stop.setEnabled(False)
 
         if current_state == State.IDLE:
             self.state_widget.input_tick_millis.setEnabled(True)
             self.state_widget.input_tick_millis.clear()
-            self.state_widget.input_tick_millis.setPlaceholderText(str(self.module_action.millis))
+            self.state_widget.input_tick_millis.setPlaceholderText(str(self.module_action.tick_interval_ms))
 
         # If module is running change button color
         if current_state == State.RUNNING:

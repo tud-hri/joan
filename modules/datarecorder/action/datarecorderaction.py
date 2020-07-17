@@ -12,30 +12,28 @@ from process.joanmoduleaction import JoanModuleAction
 from process.statesenum import State
 from process.status import Status
 
+
 class DatarecorderAction(JoanModuleAction):
     """
     Does all kinds of action concerning the Datarecorder module
     Inherits actions from the JoanModuleActions
     """
-    def __init__(self, millis=200):
+
+    def __init__(self, millis=20):
         """
         :param millis: contains the value of the writing interval
         """
         super().__init__(module=JOANModules.DATA_RECORDER, millis=millis)
-        
+
         self.status = Status()
 
-        # next three Template lines are not used for datarecorder' 
-        # 1. self.data['t'] = 0
-        # 2. self.write_news(news=self.data)
-        # 3. self.time = QtCore.QTime()
-    
         # trajectory recorder:
-        self.trajectory_recorder = Trajectory_recorder(self, 0.1)
+        self.trajectory_recorder = TrajectoryRecorder(self, 0.1)
 
         # start settings for this module
         self.settings = DataRecorderSettings(JOANModules.DATA_RECORDER)
-        self.default_settings_file_location = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'datarecordersettings.json')
+        self.default_settings_file_location = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                                           'datarecordersettings.json')
 
         if Path(self.default_settings_file_location).is_file():
             self.load_settings_from_file(self.default_settings_file_location)
@@ -49,15 +47,15 @@ class DatarecorderAction(JoanModuleAction):
         # end settings for this module
 
         self.filename = ''
-        self.data_writer = DataWriter(news=self.get_all_news(), 
+        self.data_writer = DataWriter(news=self.get_all_news(),
                                       channels=self.get_available_news_channels(),
                                       settings=self.get_module_settings(JOANModules.DATA_RECORDER))
         # TODO: run data_writer in separate thread
-        #self.data_writer.start()
+        # self.data_writer.start()
 
     def initialize_file(self):
         """
-        Createsd a filename with extension 
+        Creates a filename with extension
         """
         self.filename = self._create_filename(extension='csv')
 
@@ -72,7 +70,6 @@ class DatarecorderAction(JoanModuleAction):
         self.share_settings(self.settings)
         self.initialize_file()
         self.settings.save_to_file(self.default_settings_file_location)
-
 
     def save_settings_to_file(self, file_to_save_in):
         """
@@ -124,7 +121,7 @@ class DatarecorderAction(JoanModuleAction):
         Opens the datawriter
         """
         self.state_machine.request_state_change(State.RUNNING)
-        self.data_writer.open(filename=self.get_filename())
+        self.data_writer.open(filename=self.get_filename(), filepath='datalogs')
         super().start()
 
     def _write(self):
@@ -174,7 +171,8 @@ class DatarecorderAction(JoanModuleAction):
         # share the settings
         self.share_settings(self.settings)
 
-class Trajectory_recorder():
+
+class TrajectoryRecorder:
     def __init__(self, data_recorder_action, waypoint_distance):
         self._traveled_distance = 0
         self._overall_distance = 0
@@ -220,9 +218,10 @@ class Trajectory_recorder():
         throttle_input = control.throttle
         brake_input = control.brake
         heading = car.get_transform().rotation.yaw
-        vel = math.sqrt(car.get_velocity().x**2 + car.get_velocity().y**2 + car.get_velocity().z**2)
+        vel = math.sqrt(car.get_velocity().x ** 2 + car.get_velocity().y ** 2 + car.get_velocity().z ** 2)
 
-        self._trajectory_data = np.append(self._trajectory_data, [[x_pos, y_pos, steering_wheel_angle, throttle_input, brake_input, heading, vel]], axis=0)
+        self._trajectory_data = np.append(self._trajectory_data, [
+            [x_pos, y_pos, steering_wheel_angle, throttle_input, brake_input, heading, vel]], axis=0)
 
         self.make_trajectory_array(self.waypoint_distance)
 
@@ -242,6 +241,7 @@ class Trajectory_recorder():
 
             # initialize variables here because we want the current position as first entry!
             self._trajectory_data = [[x_pos, y_pos, steering_wheel_angle, throttle_input, brake_input, heading, vel]]
-            self._trajectory_data_spaced = [[x_pos, y_pos, steering_wheel_angle, throttle_input, brake_input, heading, vel]]
+            self._trajectory_data_spaced = [
+                [x_pos, y_pos, steering_wheel_angle, throttle_input, brake_input, heading, vel]]
         except Exception as inst:
             print(inst)

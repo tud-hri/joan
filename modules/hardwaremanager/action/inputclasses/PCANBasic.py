@@ -322,15 +322,15 @@ class TPCANMsg (Structure):
                  ("DATA",    c_ubyte * 8) ]     # Data of the message (DATA[0]..DATA[7])
 
 # Represents a timestamp of a received PCAN message
-# Total Microseconds = micros + 1000 * millis + 0x100000000 * 1000 * millis_overflow
+# Total Microseconds = micros + 1000 * tick_interval_ms + 0x100000000 * 1000 * millis_overflow
 #
 class TPCANTimestamp (Structure):
     """
     Represents a timestamp of a received PCAN message
-    Total Microseconds = micros + 1000 * millis + 0x100000000 * 1000 * millis_overflow
+    Total Microseconds = micros + 1000 * tick_interval_ms + 0x100000000 * 1000 * millis_overflow
     """
-    _fields_ = [ ("millis",          c_uint),    # Base-value: milliseconds: 0.. 2^32-1
-                 ("millis_overflow", c_ushort),  # Roll-arounds of millis
+    _fields_ = [ ("tick_interval_ms",          c_uint),    # Base-value: milliseconds: 0.. 2^32-1
+                 ("millis_overflow", c_ushort),  # Roll-arounds of tick_interval_ms
                  ("micros",          c_ushort) ] # Microseconds: 0..999
 
 # Represents a PCAN message from a FD capable hardware

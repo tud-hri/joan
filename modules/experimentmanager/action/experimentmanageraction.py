@@ -16,8 +16,8 @@ from json import JSONDecodeError
 class ExperimentManagerAction(JoanModuleAction):
     def __init__(self, millis=100):
         super().__init__(module=JOANModules.EXPERIMENT_MANAGER, millis=millis)
-    #def __init__(self, master_state_handler, millis=100):
-    #    super().__init__(module=JOANModules.EXPERIMENT_MANAGER, master_state_handler=master_state_handler, millis=millis)
+    #def __init__(self, master_state_handler, tick_interval_ms=100):
+    #    super().__init__(module=JOANModules.EXPERIMENT_MANAGER, master_state_handler=master_state_handler, tick_interval_ms=tick_interval_ms)
 
         self.module_state_handler.request_state_change(ExperimentManagerStates.EXEC.READY)
 

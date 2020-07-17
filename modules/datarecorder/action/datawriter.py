@@ -6,7 +6,8 @@ A settingsfile is used to filter which data will be written
 import threading
 import io
 import csv
-import copy
+import os
+
 from modules.joanmodules import JOANModules
 
 class DataWriter(threading.Thread):
@@ -26,7 +27,6 @@ class DataWriter(threading.Thread):
         self.dict_writer = None
         self.news = news
         self.channels = channels
-
         self.fieldnames = []
         self.settings = settings
 
@@ -103,16 +103,22 @@ class DataWriter(threading.Thread):
                 row.update(news_item)
         return row
 
-    def open(self, filename, buffersize=io.DEFAULT_BUFFER_SIZE):
+    def open(self, filename, filepath='.', buffersize=io.DEFAULT_BUFFER_SIZE):
         """
         Opens a buffered file and with a headerline
+        :param filepath: if specified, log files are saved in a directory
         :param filename: is the name of the file
         :param buffersize: is the size of the buffer for writing
         """
+        # check if folder exists
+        if not filepath == '.':
+            if not os.path.exists(filepath):
+                os.mkdir(filepath)
+
         self.filter_first_row()
 
         # open file and write the first row
-        self.file_handle = open(filename, 'w', buffering=buffersize, newline='')
+        self.file_handle = open(os.path.join(filepath, filename), 'w', buffering=buffersize, newline='')
         self.dict_writer = csv.DictWriter(self.file_handle, fieldnames=self.filter_first_row())
         self.dict_writer.writeheader()
 
