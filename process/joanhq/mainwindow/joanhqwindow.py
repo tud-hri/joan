@@ -32,7 +32,6 @@ class JoanHQWindow(QtWidgets.QMainWindow):
         # setup
         self.setWindowTitle('JOAN HQ')
         self._main_widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "joanhq.ui"))
-        # self._main_widget.lbl_master_state.setText(self.master_state_handler.get_current_state().name)
 
         self.setCentralWidget(self._main_widget)
         self.resize(400, 400)
