@@ -1,26 +1,26 @@
 import os
 from pathlib import Path
 from datetime import datetime
+import math
+import numpy as np
 
-from modules.joanmodules import JOANModules
-from process.joanmoduleaction import JoanModuleAction
-#from modules.datarecorder.action.states import DatarecorderStates
 from modules.datarecorder.action.datawriter import DataWriter
+from modules.datarecorder.action.datarecordersettings import DataRecorderSettings
+from modules.joanmodules import JOANModules
 
+from process.joanmoduleaction import JoanModuleAction
 from process.statesenum import State
 from process.status import Status
-from process.settings import ModuleSettings
-
-from .datarecordersettings import DataRecorderSettings
-
-# for editWidgets
-from PyQt5 import QtWidgets, QtGui
-from functools import partial
-import numpy as np
-import math
 
 class DatarecorderAction(JoanModuleAction):
+    """
+    Does all kinds of action concerning the Datarecorder module
+    Inherits actions from the JoanModuleActions
+    """
     def __init__(self, millis=200):
+        """
+        :param millis: contains the value of the writing interval
+        """
         super().__init__(module=JOANModules.DATA_RECORDER, millis=millis)
         
         self.status = Status()
@@ -39,9 +39,10 @@ class DatarecorderAction(JoanModuleAction):
 
         if Path(self.default_settings_file_location).is_file():
             self.load_settings_from_file(self.default_settings_file_location)
+            self.millis = self.settings.write_interval
         else:
             self.settings.set_all_true()
-            #self.settings.write_interval = 500
+            self.settings.write_interval = 100
             self.save_settings_to_file(self.default_settings_file_location)
 
         self.share_settings(self.settings)
@@ -55,34 +56,48 @@ class DatarecorderAction(JoanModuleAction):
         #self.data_writer.start()
 
     def initialize_file(self):
+        """
+        Createsd a filename with extension 
+        """
         self.filename = self._create_filename(extension='csv')
 
     def load_settings_from_file(self, settings_file_to_load):
+        """
+        Loads the settings file for the Datarecorder and saves these settings in the default settings file location
+        Sets the write interval from the settings file and initializes the Datarecorder output file
+        """
         self.settings.load_from_file(settings_file_to_load)
+        self.millis = self.settings.write_interval
 
         self.share_settings(self.settings)
+        self.initialize_file()
         self.settings.save_to_file(self.default_settings_file_location)
 
+
     def save_settings_to_file(self, file_to_save_in):
+        """
+        Save current settings to a file, including the current write-interval time
+        """
+        self.settings.write_interval = self.timer.interval()
         self.settings.save_to_file(file_to_save_in)
 
     def do(self):
         """
-        This function is called every controller tick of this module implement your main calculations here
+        This function is called every controller tick of this module
         """
         self._write()
         if self.trajectory_recorder.should_record_trajectory:
             self.trajectory_recorder.write_trajectory()
 
-        # next two Template lines are not used for datarecorder
-        # 1. self.data['t'] = self.time.elapsed()
-        # 2. self.write_news(news=self.data)
-
     def initialize(self):
         """
         This function is called before the module is started
+        And every time the Initialize button is clicked in the JoanModuleDialog,
+        - which calls the JoanModuleAction, which is inherited by DataRecorderAction -
         """
         try:
+            self.settings.write_interval = self.timer.interval()
+
             self.settings.save_to_file(self.default_settings_file_location)
             self.share_settings(self.settings)
 
@@ -98,22 +113,33 @@ class DatarecorderAction(JoanModuleAction):
 
     def stop(self):
         """
-        Close the threaded filehandle(s)
+        Stops writing and closes the datawriter filehandle
         """
         super().stop()
         self.data_writer.close()
         self.state_machine.request_state_change(State.IDLE)
 
     def start(self):
+        """
+        Opens the datawriter
+        """
         self.state_machine.request_state_change(State.RUNNING)
         self.data_writer.open(filename=self.get_filename())
         super().start()
 
     def _write(self):
+        """
+        Create a time-field with the current time and writes available news from all channels(=modules)
+        """
         now = datetime.now()
         self.data_writer.write(timestamp=now, news=self.get_all_news(), channels=self.get_available_news_channels())
 
     def _create_filename(self, extension=''):
+        """
+        Create a filename where the name is a combination of the current date and time and the extension
+        :param extension: extension that is added to the filename
+        :return: the name of the file
+        """
         now = datetime.now()
         now_string = now.strftime('%Y%m%d_%H%M%S')
         filename = '%s_%s' % ('data', now_string)
@@ -125,13 +151,15 @@ class DatarecorderAction(JoanModuleAction):
     def get_filename(self):
         return self.filename
 
-    def _handle_dialog_checkboxes(self, checkbox_path):
+    def handle_dialog_checkboxes(self, checkbox_path):
         """
         Takes keys from a defined array, first one is the module-key
         last one is the new value
-        This is done for every key, which is a bit brute
+        This is done for every key, per key, which is a bit brute
+        Settings in Datarecorder settings->variables_to_save are replaced with the new value
         This works because dict elements are actually pointers
         If no key exists, it will be added
+        :param checkbox_path: a list, containing the selected item an its pedigree in reverse order
         """
         if self.settings.variables_to_save.get(checkbox_path[0]) is None:
             self.settings.variables_to_save[checkbox_path[0]] = {}
