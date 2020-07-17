@@ -47,9 +47,9 @@
        </widget>
       </item>
       <item row="9" column="0">
-       <widget class="QCheckBox" name="check_recorded_velocity">
+       <widget class="QCheckBox" name="check_box_pd_vel">
         <property name="text">
-         <string>Use Recorded Velocity Values</string>
+         <string>Use Throttle/Brake PD for velocity</string>
         </property>
        </widget>
       </item>

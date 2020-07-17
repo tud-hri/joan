@@ -31,6 +31,7 @@ class TrafficvehicleSettingsDialog(QtWidgets.QDialog):
         self.trafficvehicle_settings._w_lat = float(self.edit_weight_lat.text())
         self.trafficvehicle_settings._w_heading = float(self.edit_weight_heading.text())
         self.trafficvehicle_settings._trajectory_name = self.combo_box_traffic_trajectory.itemText(self.combo_box_traffic_trajectory.currentIndex())
+        self.trafficvehicle_settings._set_velocity_with_pd = self.check_box_pd_vel.isChecked()
 
         super().accept()
 
@@ -58,6 +59,7 @@ class TrafficvehicleSettingsDialog(QtWidgets.QDialog):
         self.combo_box_traffic_trajectory.setCurrentIndex(idx_traj)
 
         self.spin_spawn_points.setValue(settings_to_display._selected_spawnpoint)
+        self.check_box_pd_vel.setChecked(settings_to_display._set_velocity_with_pd)
 
     def _update_variables(self):
         self.trafficvehicle_settings._velocity = self.spin_velocity.value()
@@ -69,6 +71,7 @@ class TrafficvehicleSettingsDialog(QtWidgets.QDialog):
         self.trafficvehicle_settings._w_lat = float(self.edit_weight_lat.text())
         self.trafficvehicle_settings._w_heading = float(self.edit_weight_heading.text())
         self.trafficvehicle_settings._trajectory_name = self.combo_box_traffic_trajectory.itemText(self.combo_box_traffic_trajectory.currentIndex())
+        self.trafficvehicle_settings._set_velocity_with_pd = self.check_box_pd_vel.isChecked()
 
         self._display_values()
 
@@ -195,9 +198,7 @@ class Trafficvehicle(Basevehicle):
             pos_car = np.array([car.get_location().x, car.get_location().y])
             vel_car = np.array([car.get_velocity().x, car.get_velocity().y])
             heading_car = car.get_transform().rotation.yaw
-            forward_vector = car.get_transform().rotation.get_forward_vector()
-            # vel_traffic = car.get_velocity()
-            #vel_traffic = forward_vector * self.settings._velocity / 3.6
+
 
             # find static error and error rate:
             error_static = self.error(pos_car, heading_car, vel_car)
@@ -220,29 +221,36 @@ class Trafficvehicle(Basevehicle):
 
 
             # VELOCITY
-            vel_error = self.settings._velocity - (math.sqrt(car.get_velocity().x**2 + car.get_velocity().y**2 + car.get_velocity().z**2)*3.6)
-            vel_error_rate = (math.sqrt(car.get_acceleration().x**2 + car.get_acceleration().y**2 + car.get_acceleration().z**2)*3.6)
-            error_velocity = [vel_error, vel_error_rate]
+            if self.settings._set_velocity_with_pd:
+                #Throttle method:
+                vel_error = self.settings._velocity - (math.sqrt(car.get_velocity().x**2 + car.get_velocity().y**2 + car.get_velocity().z**2)*3.6)
+                vel_error_rate = (math.sqrt(car.get_acceleration().x**2 + car.get_acceleration().y**2 + car.get_acceleration().z**2)*3.6)
+                error_velocity = [vel_error, vel_error_rate]
 
-            pd_vel_output = self.trafficvehicle_velocityPD(error_velocity)
-            if pd_vel_output < 0:
-                self._control.brake = -pd_vel_output
-                self._control.throttle = 0
-                if pd_vel_output < -1:
-                    self._control.brake = 1
-            elif pd_vel_output > 0:
-                self._control.throttle = pd_vel_output
+                pd_vel_output = self.trafficvehicle_velocityPD(error_velocity)
+                if pd_vel_output < 0:
+                    self._control.brake = -pd_vel_output
+                    self._control.throttle = 0
+                    if pd_vel_output < -1:
+                        self._control.brake = 1
+                elif pd_vel_output > 0:
+                    self._control.throttle = pd_vel_output
+                    self._control.brake = 0
+                    if pd_vel_output > 1:
+                        self._control._throttle = 1
+            else:
+                # Setting velocity method
+                forward_vector = car.get_transform().rotation.get_forward_vector()
+                vel_traffic = car.get_velocity()
+                vel_traffic = forward_vector * self.settings._velocity / 3.6
+                self.spawned_vehicle.set_velocity(vel_traffic)
                 self._control.brake = 0
-                if pd_vel_output > 1:
-                    self._control._throttle= 1
-
+                self._control.throttle = 0
 
 
 
 
             self.spawned_vehicle.apply_control(self._control)
-            print(self._control, vel_error)
-
 
             # update variables
             self.error_static_old = error_static
@@ -337,5 +345,9 @@ class Trafficvehicle(Basevehicle):
             vel_traffic = car.get_velocity()
             vel_traffic = forward_vector * 0
             self.spawned_vehicle.set_velocity(vel_traffic)
+
+            self._control.brake = 1
+            self._control.throttle = 0
+            self.spawned_vehicle.apply_control(self._control)
         except:
             pass

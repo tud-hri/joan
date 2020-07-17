@@ -113,6 +113,7 @@ class TrafficVehicleSettings():
         self._w_heading = 2
         self._k_p = 6
         self._k_d = 2.5
+        self._set_velocity_with_pd = False
 
     def as_dict(self):
         return self.__dict__
