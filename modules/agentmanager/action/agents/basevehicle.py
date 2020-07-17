@@ -33,6 +33,7 @@ class Basevehicle:
         self._vehicle_tab = None
         self.car_data = {}
 
+
     def unpack_vehicle_data(self):
         try:
             #vehicle object
@@ -78,8 +79,29 @@ class Basevehicle:
     def spawn_car(self):
         self._BP = random.choice(self.module_action.vehicle_bp_library.filter("vehicle." + self.settings._selected_car))
         self._control = carla.VehicleControl()
+        torque_curve = []
+        gears = []
+
+        torque_curve.append(carla.Vector2D(x=0, y=600))
+        torque_curve.append(carla.Vector2D(x=14000, y=600))
+        gears.append(carla.GearPhysicsControl(ratio=7.73, down_ratio=0.5, up_ratio=1))
+
         try:
             self.spawned_vehicle = self.module_action.world.spawn_actor(self._BP, self.module_action.spawnpoints[self.settings._selected_spawnpoint])
+            self._physics = self.spawned_vehicle.get_physics_control()
+            self._physics.torque_curve = torque_curve
+            self._physics.max_rpm = 14000
+            self._physics.moi = 1.5
+            self._physics.final_ratio = 1
+            self._physics.clutch_strength = 1000  # very big no clutch
+            self._physics.final_ratio = 1  # ratio from transmission to wheels
+            self._physics.forward_gears = gears
+            self._physics.mass = 2316
+            self._physics.drag_coefficient = 0.24
+            self._physics.gear_switch_time = 0
+            self.spawned_vehicle.apply_physics_control(self._physics)
+
+
             self._vehicle_tab.btn_spawn.setEnabled(False)
             self._vehicle_tab.btn_destroy.setEnabled(True)
             self._spawned = True

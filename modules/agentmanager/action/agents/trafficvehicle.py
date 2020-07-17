@@ -184,6 +184,7 @@ class Trafficvehicle(Basevehicle):
 
     def process(self):
         try:
+            ## STEERING ANGLE ##
             """Perform the controller-specific calculations"""
             # get delta_t (we could also use 'millis' but this is a bit more precise)
             t1 = time.time()
@@ -196,7 +197,7 @@ class Trafficvehicle(Basevehicle):
             heading_car = car.get_transform().rotation.yaw
             forward_vector = car.get_transform().rotation.get_forward_vector()
             # vel_traffic = car.get_velocity()
-            vel_traffic = forward_vector * self.settings._velocity / 3.6
+            #vel_traffic = forward_vector * self.settings._velocity / 3.6
 
             # find static error and error rate:
             error_static = self.error(pos_car, heading_car, vel_car)
@@ -213,8 +214,34 @@ class Trafficvehicle(Basevehicle):
             # put error through controller to get sw torque out
             self._sw_angle = self.trafficvehicle_steeringPD(self._controller_error)
             self._control.steer = self._sw_angle
+
+
+
+
+
+            # VELOCITY
+            vel_error = self.settings._velocity - (math.sqrt(car.get_velocity().x**2 + car.get_velocity().y**2 + car.get_velocity().z**2)*3.6)
+            vel_error_rate = (math.sqrt(car.get_acceleration().x**2 + car.get_acceleration().y**2 + car.get_acceleration().z**2)*3.6)
+            error_velocity = [vel_error, vel_error_rate]
+
+            pd_vel_output = self.trafficvehicle_velocityPD(error_velocity)
+            if pd_vel_output < 0:
+                self._control.brake = -pd_vel_output
+                self._control.throttle = 0
+                if pd_vel_output < -1:
+                    self._control.brake = 1
+            elif pd_vel_output > 0:
+                self._control.throttle = pd_vel_output
+                self._control.brake = 0
+                if pd_vel_output > 1:
+                    self._control._throttle= 1
+
+
+
+
+
             self.spawned_vehicle.apply_control(self._control)
-            self.spawned_vehicle.set_velocity(vel_traffic)
+            print(self._control, vel_error)
 
 
             # update variables
@@ -293,6 +320,15 @@ class Trafficvehicle(Basevehicle):
         return -sw_angle
         #
         # return int(torque_gain)
+
+    def trafficvehicle_velocityPD(self, error):
+        _kp_vel = 50
+        _kd_vel = 1
+        temp = _kp_vel * error[0] + _kd_vel * error[1]
+
+        output = temp/100
+
+        return output
 
     def stop_traffic(self):
         try:
