@@ -1,4 +1,4 @@
-# Setting up the simulator for Windows Documentation
+# Setting up CARLA in Linux
 
-## Introduction
-In order to properly setup the simulation software on Linux several packages and steps are required, which will be elaborated upon in this section.
+!!!Note
+    We currently only tested installing CARLA on Windows. You can find the CARLA instructions [here](https://carla.readthedocs.io/en/latest/build_linux/)
