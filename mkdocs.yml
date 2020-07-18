@@ -10,9 +10,13 @@ nav:
       - Setup JOAN: setup-joan.md
 
     - How to use:
+      - JOAN (under construction): how-to-joan.md
       - Unreal editor (under construction): how-to-unreal.md
       - Source Control (Git): how-to-git.md
-      - JOAN (under construction): how-to-joan.md
+
+    - JOAN:
+      - JOAN structure: joan-structure.md
+      - Create custom modules: joan-create-module.md
 
     - Contributing:
       - Guidelines: contributing-guidelines.md

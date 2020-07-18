@@ -7,12 +7,9 @@ You can find the public repository [here][repolink]. Note that JOAN is still und
 
 [repolink]: https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan
 
-On the left you see the overall layout of the documentation. Starting with setting up but also including thorough documentation on the different modules and if you wish to add modules how to do so.
+<iframe width="560" height="315" src="https://www.youtube.com/embed/TLLw48isYJU" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-!!! Note
-    If you cannot read the text in the GIFS or images please zoom in in your webbrowser, the resolution should then be high enough to distinguish the text.
-
-JOAN is developed by members of the Human-Robot Interaction group at Cognitive Robotics of Delft University of Technology. This home-page serves as the table of contents of this document, a little bit below an overview is given with a short description of the sections and what they contain. 
+JOAN is developed by members of the [Human-Robot Interaction group](https://delfthapticslab.nl) at Cognitive Robotics of Delft University of Technology. This home-page serves as the table of contents of this document, a little bit below an overview is given with a short description of the sections and what they contain. 
 
 ## Setup
 * __[Setup on Windows](setup-carla-windows.md)__ - Guide on how to setup CARLA and JOAN on Windows OS
