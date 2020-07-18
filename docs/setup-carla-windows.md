@@ -30,7 +30,7 @@ Please make sure you have the following programs installed before continuing. If
 * __[Make](http://gnuwin32.sourceforge.net/packages/make.htm)__ *Generates the executables.* Please follow the link and download the "Complete package, except sources" setup. Install it and after installing add the binary folder (C:\Program Files (x86)\GnuWin32\bin by default) the the system `PATH` variable. follow the link in the info box below if you're not sure how to do this.
 
 !!! Important
-    When you already have installed versions of the above mentioned software please make sure that the binary folders are added to the system's `PATH` variable! If you don't know how to do so, check 'Adding to System Variables'. If you have followed the instructions above, only make has to be added to the `PATH` manually.
+    When you already have installed versions of the above mentioned software please make sure that the binary folders are added to the system's `PATH` variable! If you don't know how to do so, check ['Adding to System Variables'](https://www.architectryan.com/2018/03/17/add-to-the-path-on-windows-10/){target=_blank}. If you have followed the instructions above, only make has to be added to the `PATH` manually.
 
 ### Visual Studio 2017
 
@@ -69,7 +69,12 @@ Download Unreal Engine 4.24.x and use the default install settings. Make sure to
 
  Install python 3 and __make sure you get the x64 version__ else it will not work, there is even some speculation that if you have a x32 version installed it can cause conflicts so its best to only have x64. At the time of writing this guide the working version of python is __[Python 3.8.2](https://www.python.org/downloads/release/python-382/)__
 
-To check if we can run Python from the command line. And if the python command links to the correct version of Python, it might not if you have multiple versions of Python installed. Open a command line window and type:
+Having multiple versions of python installed (even if they're all x64) can cause issues. If you don't really need multiple versions, the best option is to get
+rid of the version(s) you don't really need. If you do need multiple versions, please make sure that the version you will be using for joan (3.8 if you've
+followed above instructions) is the only version in your system and user `PATH` variable.
+
+To check if we can run Python from the command line. And if the python command links to the correct version of Python, it might not if you have multiple
+versions of Python installed. Open a command line window and type:
 
     python
 
@@ -90,7 +95,7 @@ Please not the >>> symbols indicating that you are now within a python environme
 
 ### Python editors
 
-We recommend installing __[Visual Studio Code](https://code.visualstudio.com/)__ as your python editor. __[PyCharm](https://www.jetbrains.com/pycharm/)__ is a good alternative.
+We recommend installing __[PyCharm](https://www.jetbrains.com/pycharm/)__ as your python editor. __[Visual Studio Code](https://code.visualstudio.com/)__ is a good alternative.
 
 
 ---
@@ -111,13 +116,15 @@ The steps will be explained 1 step at the time with screenshots and command line
 
 ### Step 1: Cloning the CARLA repository
 
-To clone the repository either go to this [link](https://github.com/carla-simulator/carla) and download the zip file (click on 'Clone or download'), use a git client (SourceTree, GitHub desktop), or type in the following command in the command line of a Windows command prompt (make sure you are in the right directory!):
+JOAN was tested with Carla version 0.9.9, other versions might work but no guarantees are given. To clone version 0.9.9 of the repository open a command window
+and navigate to the folder where you want to clone carla (if you don't know how to use the `cd` command to navigate in a terminal, check out
+[this page](https://www.computerhope.com/issues/chusedos.htm) first). Please remember that the git clone command will also create a project folder named carla
+at the current location. Now type the following command:
 
-    # Clone the CARLA repository (will clone in the folder you are currently in in your terminal)
-    git clone https://github.com/carla-simulator/carla
+    git clone https://github.com/carla-simulator/carla --branch 0.9.9
 
 !!! Important 
-    The CARLA build will fail if the `PATH` to CARLA contains spaces, so please clone CARLA to a folder without spaces in the path. If in doubt; use `C:\carla`. To do this navigate to `C:\` in a command prompt and call git clone from there, the `carla` folder will be created automatically. 
+    The CARLA build will fail if the path to CARLA contains spaces, so please clone CARLA to a folder without spaces in the path. If in doubt; use `C:\carla`. To do this navigate to `C:\` in a command prompt and call git clone from there, the `carla` folder will be created automatically. 
 
 After cloning, verify that you have actually cloned the repository, it should look like this:
 ![alt text](imgs/gitClone.png "cloned repository")
@@ -127,13 +134,14 @@ After cloning, verify that you have actually cloned the repository, it should lo
 To get the latest CARLA assets, open the folder `Utils` in the `carla` folder that you have just created in step 1 and open the file `contentversions.txt`, see below:
 ![alt text](imgs/utilScreenshot.png "cloned repository")
 
-This text file contains the instructions of what to do to download the latest assets, for now get the 0.9.8 version. You can also click this [link](http://carla-assets.s3.amazonaws.com/20200306_06b6cb1.tar.gz). Note: this file is almost 10GB. To extract the compressed file, you can use [7-zip](https://www.7-zip.org/), for example.
+This text file contains the instructions of what to do to download the latest assets, for now get the 0.9.9 version. You can also click this
+[link](http://carla-assets.s3.amazonaws.com/20200422_ea5179a.tar.gz). Note: this file is almost 10GB. To extract the compressed file, you can use
+[7-zip](https://www.7-zip.org/), for example.
 
 Unpack these assets in `\carla\Unreal\CarlaUE4\Content\Carla`. If the directory does not exist, create it.
 
 ### Step 3: Get specific JOAN Assets
-
-To have a nice car interior which also turns the steering wheel when you turn your physical steering wheel, some extra assets are required. You can download them [here](https://www.dropbox.com/s/7cboucrb81sdlxq/JOAN_Assets.zip?dl=0). The file contains:
+To have a nice car interior which also turns the steering wheel when you turn your physical steering wheel, some extra assets are required. You can download them [here](https://www.dropbox.com/s/yf7mu3v7jwcewmr/JOAN_Assets.zip?dl=0). The file contains:
 
 * `JOAN_Blueprints`
 * `JOAN_Static`
@@ -167,7 +175,7 @@ Furthermore, a `carla.egg` file should be in `..\carla\PythonAPI\carla\dist`:
 
 ![alt text](imgs/eggfile.png "eggfile")
 
-The exact filename depends on the CARLA version and python version (in our case python 3.8).
+The exact filename depends on the CARLA version and python version (in our case python 3.8). Now copy this egg file to the folder `carla_pythonapi` (replace the already existing `egg` file if it's there) in your JOAN project folder.
 
 ### Step 5: Building and launching CARLA
 
@@ -178,6 +186,7 @@ Essentially the steps here are exactly the same as the PythonAPI build, however 
 !!! Note
     If you do not see this option of 'Generate Visual Studio Project Files', you probably have not selected the right engine version. Try and run the 'UnrealSelectEngine' version in: `C:\Program Files\Epic Games\UE_4.24\Engine\Binaries\Win64`
     If this program is not present it is possible it is located in: `C:\Program Files (x86)\Epic Games\Launcher\Engine\Binaries\Win64`. Just copy the 'UnrealSelectEngine' program to the first mentioned folder. It should now associate the engine with Visual Studio.
+     It is possible with newer versions of the unreal engine (unreal 4.24 has versions itself), the UnrealSelectEngine program does not exist, then please look for 'UnrealVersionSelector' it is possible that this one does exist.
 
 Now open a "x64 Native Tools Command Prompt for VS 2017" the same way as in step 4, go to the CARLA folder and run the following command:
 
@@ -208,7 +217,7 @@ Open up this 'Blueprint' and then click on the array variable 'vehicles'. Now ad
 
 ![alt text](imgs/addvehicles.png "Adding Audi")
 
-If all of the steps succeeded than congrats! You have successfully built CARLA, the basis of the JOAN simulator! Please proceed to the [setting up JOAN](./setup-joan.md).
+If all of the steps succeeded than congrats! You have successfully built CARLA, the basis of the JOAN simulator! Please proceed to [setting up JOAN](./setup-run-joan.md).
 
 ---
 ## Adding to system variables

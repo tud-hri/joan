@@ -9,9 +9,10 @@ nav:
       - Setup on Linux: setup-carla-linux.md
       - Setup JOAN: setup-joan.md
 
-    - How to use JOAN:
-      - Workflow: joan-workflow.md
-      - Adding modules: joan-adding-modules.md
+    - How to use:
+      - Unreal editor (under construction): how-to-unreal.md
+      - Source Control (Git): how-to-git.md
+      - JOAN (under construction): how-to-joan.md
 
     - Contributing:
       - Guidelines: contributing-guidelines.md
@@ -19,3 +20,4 @@ nav:
 
 markdown_extensions:
   - admonition
+  - attr_list
