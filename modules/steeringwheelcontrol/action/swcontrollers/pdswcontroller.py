@@ -83,8 +83,8 @@ class PDSWController(BaseSWController):
         self._t2 = 0
 
         # Setting up filters
-        self._bq_filter_heading = LowPassFilterBiquad(fc=10, fs=1000/self.module_action.millis)
-        self._bq_filter_velocity = LowPassFilterBiquad(fc=10, fs=1000/self.module_action.millis)
+        self._bq_filter_heading = LowPassFilterBiquad(fc=10, fs=1000/self.module_action._millis)
+        self._bq_filter_velocity = LowPassFilterBiquad(fc=10, fs=1000/self.module_action._millis)
 
         # controller errors
         # [0]: lateral error
