@@ -239,7 +239,7 @@ class JOAN_SensoDrive(BaseInput):
             self.PCAN_object.Uninitialize(self._pcan_channel)
         except:
             pass
-        self.module_action.settings.remove(self.settings)
+        self.module_action.settings.sensodrives.remove(self.settings)
         self.remove_tab(self._sensodrive_tab)
 
     def disable_remove_button(self):
