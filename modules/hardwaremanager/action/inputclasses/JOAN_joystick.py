@@ -9,7 +9,16 @@ from modules.joanmodules import JOANModules
 
 
 class JoystickSettingsDialog(QtWidgets.QDialog):
+    """
+    Class for the settings Dialog of a joystick, this class should pop up whenever it is asked by the user or when
+    creating the joystick class for the first time. NOTE: it should not show whenever settings are loaded by .json file.
+    """
     def __init__(self, joystick_settings, parent=None):
+        """
+        Initializes the joystick class with the proper settings.
+        :param joystick_settings:
+        :param parent:
+        """
         super().__init__(parent)
         self.joystick_settings = joystick_settings
         uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/joystick_settings_ui.ui"), self)
@@ -55,6 +64,11 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
         # self.show()
 
     def preview_joystick_values(self):
+        """
+        This function shows the current values of a selected joystick before actually saving the settings. This is
+        useful because now we can see which button would be which parameter.
+        :return:
+        """
         try:
             joystick_data = self._joystick.read(self.dofSpinBox.value())
 
@@ -68,6 +82,10 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
             pass  # joystick connection is not open
 
     def accept(self):
+        """
+        Accepts the selected settings and saves them internally.
+        :return:
+        """
         self.joystick_settings.min_steer = self.spin_box_min_steer.value()
         self.joystick_settings.max_steer = self.spin_box_max_steer.value()
 
@@ -94,14 +112,28 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
         super().accept()
 
     def _set_preset_combo_box_to_custom(self):
+        """
+        Sets the button mapping preset combobox to 'custom'
+        :return:
+        """
         self.presetsComboBox.setCurrentIndex(0)
 
     def _set_presets(self):
+        """
+        Sets the presets
+        :return:
+        """
         if self.presetsComboBox.currentText().lower() != 'custom':
             preset_settings = JoyStickSettings.get_preset_settings(self.presetsComboBox.currentText().lower())
             self._display_settings(settings_to_display=preset_settings, only_keymap=True)
 
     def _display_settings(self, settings_to_display=None, only_keymap=False):
+        """
+        Displays the settings that are currently being used (internally)
+        :param settings_to_display:
+        :param only_keymap:
+        :return:
+        """
         if not settings_to_display:
             settings_to_display = self.joystick_settings
 
@@ -131,15 +163,34 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
         self.reverseValueSpinBox.setValue(settings_to_display.reverse_value)
 
     def _set_default_settings(self):
+        """
+        Sets the settings as they are described in 'HardwaremanagerSettings => JoystickSettings)
+        :return:
+        """
         self._display_settings(JoyStickSettings())
 
     def _update_brake_channel_enabled(self, value):
+        """
+        Updates the controller channel that will be used for braking
+        :param value:
+        :return:
+        """
         self.brakeChannelSpinBox.setEnabled(value)
 
     def _update_second_steer_channel_enabled(self, value):
+        """
+        If the resolution of the joystick is high it might use 2 channels for steering, this function enables that
+        functionality
+        :param value:
+        :return:
+        """
         self.steerSecondChannelSpinBox.setEnabled(value)
 
     def _enable_preview_checkbox(self):
+        """
+        Toggles the preview checkbox availability depending on whether there is a device
+        :return:
+        """
         if self.combo_available_devices.currentData():
             self.displayCurrentInputCheckBox.setEnabled(True)
         else:
@@ -147,6 +198,11 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
             self.displayCurrentInputCheckBox.setEnabled(False)
 
     def _enable_previewing_values(self, value):
+        """
+        Toggles the preview checkbox availability depending on whether there is a value
+        :param value:
+        :return:
+        """
         if value:
             selected_device = self.combo_available_devices.currentData()
             self._joystick.open(selected_device['vendor_id'], selected_device['product_id'])
@@ -162,6 +218,11 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
             widget.setEnabled(value)
 
     def _update_degrees_of_freedom(self, value):
+        """
+        Updates the degrees of freedom according to how many inputs the joystick has available.
+        :param value:
+        :return:
+        """
         self.displayCurrentInputCheckBox.setChecked(False)
 
         for index in reversed(range(self.currentInputGroupBox.layout().count())):
@@ -189,7 +250,16 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
 
 
 class JOAN_Joystick(BaseInput):
+    """
+    Main class for the Joystick input, inherits from BaseInput (as it should!)
+    """
     def __init__(self, hardware_manager_action, joystick_tab, settings: JoyStickSettings):
+        """
+        Initializes the class
+        :param hardware_manager_action:
+        :param joystick_tab:
+        :param settings:
+        """
         super().__init__(hardware_manager_action)
         self.module_action = hardware_manager_action
         self.currentInput = 'Joystick'
@@ -216,18 +286,34 @@ class JOAN_Joystick(BaseInput):
         self._open_settings_dialog()
 
     def initialize(self):
+        """
+        Function is called when initialize is pressed, can be altered for more functionality
+        :return:
+        """
         print('initializing Joystick')
 
     def _open_settings_from_button(self):
+        """
+        Opens the settings dialog from the button on the tab
+        :return:
+        """
         if self.settings_dialog:
             self.settings_dialog.show()
 
 
     def _open_settings_dialog(self):
+        """
+        Sets the appropriate values for settings but does not actually show the dialog
+        :return:
+        """
         self.settings_dialog = JoystickSettingsDialog(self.settings)
         self.settings_dialog.accepted.connect(self._open_connection_to_device)
 
     def _open_connection_to_device(self):
+        """
+        Starts the connection to a joystick device, sets the boolean 'self._joystick_open' to true if it succeds
+        and to false if it fails
+        """
         try:
             self._joystick.open(self.settings.device_vendor_id, self.settings.device_product_id)
             self._joystick_open = True
@@ -236,22 +322,46 @@ class JOAN_Joystick(BaseInput):
             self._joystick_open = False
 
     def remove_func(self):
+        """
+        Removes the joystick from the widget and settings
+        NOTE: calls 'self.remove_tab' which is a function of the BaseInput class, if you do not do this the tab will not
+        actually disappear from the module.
+        :return:
+        """
         self.remove_tab(self._joystick_tab)
         self.module_action.settings.joy_sticks.remove(self.settings)
 
     def disable_remove_button(self):
+        """
+        Disables the remove joystick button (useful for example when you dont want to be able to remove an input when the
+        simulator is running)
+        :return:
+        """
         if self._joystick_tab.btn_remove_hardware.isEnabled() is True:
             self._joystick_tab.btn_remove_hardware.setEnabled(False)
         else:
             pass
 
     def enable_remove_button(self):
+        """
+        Enables the remove joystick button
+        :return:
+        """
         if self._joystick_tab.btn_remove_hardware.isEnabled() is False:
             self._joystick_tab.btn_remove_hardware.setEnabled(True)
         else:
             pass
 
     def process(self):
+        """
+        Processes all the inputs of the joystick and writes them to self._data which is then written to the news in the
+        action class
+        :return: self._data a dictionary containing :self._data['BrakeInput'] = self.brake
+            self._data['ThrottleInput'] = self.throttle
+            self._data['SteeringInput'] = self.steer
+            self._data['Handbrake'] = self.handbrake
+            self._data['Reverse'] = self.reverse
+        """
         if self._joystick_open:
             joystick_data = self._joystick.read(self.settings.degrees_of_freedom, 1)
         else:

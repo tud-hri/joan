@@ -14,7 +14,15 @@ from process.status import Status
 
 
 class HardwaremanagerAction(JoanModuleAction):
+    """
+    Is the 'brains' of the module and does most of the calculations and data handling regarding the hardware. Inherits
+    from JoanModuleAction.
+    """
     def __init__(self, millis=5):
+        """
+        Initializes the class
+        :param millis: the interval in milliseconds that the module will tick at
+        """
         super().__init__(module=JOANModules.HARDWARE_MANAGER, millis=millis)
 
         # Initialize dicts and variables
@@ -36,6 +44,10 @@ class HardwaremanagerAction(JoanModuleAction):
         self.share_settings(self.settings)
 
     def _state_change_listener(self):
+        """
+        Listens to any statechange of the module, whenever the state changes this will be executed.
+        :return:
+        """
         for inputs in self.input_devices_classes:
             self.data[inputs] = self.input_devices_classes[inputs].process()
 
@@ -84,6 +96,10 @@ class HardwaremanagerAction(JoanModuleAction):
         return super().initialize()
 
     def start(self):
+        """
+        Starts the module, which will start running in the 'millis' interval, will go from state ready to running
+        :return:
+        """
         self.carla_interface_data = self.read_news(JOANModules.AGENT_MANAGER)
         #make sure you can only turn on the motor of the wheel if carla is connected
         for inputs in self.input_devices_classes:
@@ -98,6 +114,10 @@ class HardwaremanagerAction(JoanModuleAction):
         return super().start()
 
     def stop(self):
+        """
+        Stops the module, and will go from state running to ready
+        :return:
+        """
         self.carla_interface_data = self.read_news(JOANModules.AGENT_MANAGER)
         for inputs in self.input_devices_classes:
             if 'SensoDrive' in inputs:
@@ -114,13 +134,29 @@ class HardwaremanagerAction(JoanModuleAction):
         return super().stop()
 
     def load_settings_from_file(self, settings_file_to_load):
+        """
+        Loads module settings from json file.
+        :param settings_file_to_load:
+        :return:
+        """
         self.settings.load_from_file(settings_file_to_load)
         self.share_settings(self.settings)
 
     def save_settings_to_file(self, file_to_save_in):
+        """
+        Saves current internally saved settings to json file.
+        :param file_to_save_in:
+        :return:
+        """
         self.settings.save_to_file(file_to_save_in)
 
     def add_a_keyboard(self, widget, keyboard_settings=None):
+        """
+        Adds a keyboard input
+        :param widget:
+        :param keyboard_settings:
+        :return:
+        """
         is_a_new_keyboard = not keyboard_settings
         if is_a_new_keyboard:
             keyboard_settings = KeyBoardSettings()
@@ -134,6 +170,12 @@ class HardwaremanagerAction(JoanModuleAction):
         return device_title
 
     def add_a_joystick(self, widget, joystick_settings=None):
+        """
+        Adds a joystick input
+        :param widget:
+        :param joystick_settings:
+        :return:
+        """
         is_a_new_joystick = not joystick_settings
         if is_a_new_joystick:
             joystick_settings = JoyStickSettings()
@@ -147,6 +189,12 @@ class HardwaremanagerAction(JoanModuleAction):
         return device_title
 
     def add_a_sensodrive(self, widget, sensodrive_settings=None):
+        """
+        Adds a sensodrive input
+        :param widget:
+        :param sensodrive_settings:
+        :return:
+        """
         is_a_new_sensodrive = not sensodrive_settings
         if is_a_new_sensodrive:
             sensodrive_settings = SensoDriveSettings()
@@ -165,6 +213,11 @@ class HardwaremanagerAction(JoanModuleAction):
             return 'DO_NOT_ADD'
 
     def remove(self, tabtitle):
+        """
+        Removes an input
+        :param tabtitle: name of the input
+        :return:
+        """
         if "Keyboard" in tabtitle:
             keyboard.unhook(self.input_devices_classes[tabtitle].key_event)
 

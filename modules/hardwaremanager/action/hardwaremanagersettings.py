@@ -97,6 +97,9 @@ class HardWareManagerSettings(JoanModuleSettings):
 
 
 class KeyBoardSettings:
+    """
+    Default keyboard settings that will load whenever a keyboard class is created.
+    """
     def __init__(self):
         self.steer_left_key = QtGui.QKeySequence('a')[0]
         self.steer_right_key = QtGui.QKeySequence('d')[0]
@@ -126,6 +129,9 @@ class KeyBoardSettings:
 
 
 class JoyStickSettings:
+    """
+    Default joystick settings that will load whenever a keyboard class is created.
+    """
     def __init__(self):
         self.min_steer = -90
         self.max_steer = 90
@@ -184,6 +190,9 @@ class JoyStickSettings:
 
 
 class SensoDriveSettings:
+    """
+    Default sensodrive settings that will load whenever a keyboard class is created.
+    """
     def __init__(self):
         self.endstops = 360  # degrees
         self.torque_limit_between_endstops = 100  # percent
