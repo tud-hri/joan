@@ -27,7 +27,14 @@ except IndexError:
     pass
 
 class Basevehicle:
+    """
+    The base class of any vehicle or 'agent', any agent of which you want to collect data should inherit from this class
+    """
     def __init__(self, agentmanager_action):
+        """
+        Initializes class
+        :param agentmanager_action:
+        """
         self.module_action = agentmanager_action
         self._spawned = False
         self._vehicle_tab = None
@@ -77,6 +84,10 @@ class Basevehicle:
         return self.car_data
 
     def spawn_car(self):
+        """
+        Tries to spawn the agent/vehicle
+        :return:
+        """
         self._BP = random.choice(self.module_action.vehicle_bp_library.filter("vehicle." + self.settings._selected_car))
         self._control = carla.VehicleControl()
         torque_curve = []
@@ -112,6 +123,10 @@ class Basevehicle:
             self._spawned = False
 
     def destroy_car(self):
+        """
+        Tries to destroy the agent/car
+        :return:
+        """
         try:
             self._spawned = False
             self.spawned_vehicle.destroy()

@@ -10,7 +10,16 @@ import pandas as pd
 import math
 
 class TrafficvehicleSettingsDialog(QtWidgets.QDialog):
+    """
+    Settings Dialog class for the trafficvehicle settings class. This dialog should pop up whenever it is asked by the user or when
+    creating the traffic vehicle class for the first time. NOTE: it should not show whenever settings are loaded by .json file.
+    """
     def __init__(self, trafficvehicle_settings, parent=None):
+        """
+        Initializes the class
+        :param trafficvehicle_settings:
+        :param parent:
+        """
         super().__init__(parent)
         self.trafficvehicle_settings = trafficvehicle_settings
         uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/traffic_vehicle_settings_ui.ui"), self)
@@ -22,6 +31,10 @@ class TrafficvehicleSettingsDialog(QtWidgets.QDialog):
 
 
     def accept(self):
+        """
+        Accepts and saves the current settings internally (Closes the dialog)
+        :return:
+        """
         self.trafficvehicle_settings._velocity = self.spin_velocity.value()
         self.trafficvehicle_settings._selected_car = self.combo_car_type.currentText()
         self.trafficvehicle_settings._selected_spawnpoint = self.spin_spawn_points.value()
@@ -36,6 +49,11 @@ class TrafficvehicleSettingsDialog(QtWidgets.QDialog):
         super().accept()
 
     def _display_values(self, settings_to_display = None):
+        """
+        Shows the current settings
+        :param settings_to_display:
+        :return:
+        """
         if not settings_to_display:
             settings_to_display = self.trafficvehicle_settings
 
@@ -62,6 +80,10 @@ class TrafficvehicleSettingsDialog(QtWidgets.QDialog):
         self.check_box_pd_vel.setChecked(settings_to_display._set_velocity_with_pd)
 
     def _update_variables(self):
+        """
+        Saves the current settings internally without closing the settings dialog
+        :return:
+        """
         self.trafficvehicle_settings._velocity = self.spin_velocity.value()
         self.trafficvehicle_settings._selected_car = self.combo_car_type.currentText()
         self.trafficvehicle_settings._selected_spawnpoint = self.spin_spawn_points.value()
@@ -76,12 +98,26 @@ class TrafficvehicleSettingsDialog(QtWidgets.QDialog):
         self._display_values()
 
     def _set_default_values(self):
+        """
+        the default values found in 'Agentmanagersettings -> TrafficVehicleSettings()
+        :return:
+        """
         self._display_values(TrafficVehicleSettings())
 
 class Trafficvehicle(Basevehicle):
-    "This class contains everything you need to make a vehicle follow a predefined route by PD control"
+    """
+    This class contains everything you need to make a vehicle follow a predefined route by PD control
+    """
+
     def __init__(self, agent_manager_action, vehicle_nr, nr_spawn_points, tags, settings: TrafficVehicleSettings):
-        "Init traffic vehicle here"
+        """
+        Initializes the class
+        :param agent_manager_action:
+        :param vehicle_nr:
+        :param nr_spawn_points:
+        :param tags:
+        :param settings:
+        """
 
         self.agent_manager_action = agent_manager_action
 
@@ -137,13 +173,25 @@ class Trafficvehicle(Basevehicle):
         return self._vehicle_tab
 
     def _open_settings_dialog(self):
+        """
+        Updates the settings dialog without actually showing it
+        :return:
+        """
         self.settings_dialog._display_values()
 
     def _open_settings_dialog_from_button(self):
+        """
+        Updates the settings dialog and also shows it.
+        :return:
+        """
         self.settings_dialog._display_values()
         self.settings_dialog.show()
 
     def remove_traffic_agent(self):
+        """
+        Removes the traffic agent
+        :return:
+        """
         self._vehicle_tab.setParent(None)
         self.destroy_car()
 
@@ -151,10 +199,20 @@ class Trafficvehicle(Basevehicle):
         self.module_action.settings.traffic_vehicles.remove(self.settings)
 
     def set_trajectory_name(self):
+        """
+        Sets the current to follow trajectory name
+        :return:
+        """
         self.settings._trajectory_name = self.settings_dialog.combo_box_traffic_trajectory.itemText(self.settings_dialog.combo_box_traffic_trajectory.currentIndex())
 
     def load_trajectory(self):
-        """Load HCR trajectory"""
+        """
+        Loads the trajectory which is in the 'trajectories' folder of the steeringwheelcontrol module. The trajectory
+        should at least contain [x position, y position and steeringwheel angle]. The way they are structured now is
+        as follows:
+        [index,PosX,PosY,SteeringAngle,Throttle,Brake,Psi, Vel]
+        :return:
+        """
         try:
             tmp = pd.read_csv(os.path.join(self._path_trajectory_directory, self.settings._trajectory_name))
             self._trajectory = tmp.values
@@ -165,7 +223,11 @@ class Trafficvehicle(Basevehicle):
                 print('Error loading HCR trajectory file: ', err)
 
     def update_trajectory_list(self):
-        """Check what trajectory files are present and update the selection list"""
+        """
+        Check what trajectory files are present and update the selection list
+        :return:
+        """
+
         # get list of csv files in directory
         if not os.path.isdir(self._path_trajectory_directory):
             os.mkdir(self._path_trajectory_directory)
@@ -179,13 +241,22 @@ class Trafficvehicle(Basevehicle):
             self.settings_dialog.combo_box_traffic_trajectory.setCurrentIndex(idx)
 
     def find_closest_node(self, node, nodes):
-        """find the node in the nodes list (trajectory)"""
+        """
+        find the node in the nodes list (trajectory), basically finds which node is closest to a list of nodes
+        :param node:
+        :param nodes:
+        :return:
+        """
         nodes = np.asarray(nodes)
         deltas = nodes - node
         dist_squared = np.einsum('ij,ij->i', deltas, deltas)
         return np.argmin(dist_squared)
 
     def process(self):
+        """
+        This ticks at the interval of the module and will update the traffic vehicles control input appropriately.
+        :return:
+        """
         try:
             ## STEERING ANGLE ##
             """Perform the controller-specific calculations"""
@@ -261,7 +332,7 @@ class Trafficvehicle(Basevehicle):
 
     def error(self, pos_car, heading_car, vel_car=np.array([0.0, 0.0, 0.0])):
         """
-
+        Calculates the errors of the car with regards to the trajectory.
         :param pos_car:
         :param heading_car:
         :param vel_car:
@@ -307,7 +378,7 @@ class Trafficvehicle(Basevehicle):
 
     def error_rates(self, error, error_old, delta_t):
         """
-
+        Calculates the rate of error.
         :param error:
         :param error_old:
         :param delta_t:
@@ -319,6 +390,11 @@ class Trafficvehicle(Basevehicle):
         return np.array([velocity_error_rate, heading_error_rate])
 
     def trafficvehicle_steeringPD(self, error):
+        """
+        Minimizes the steering error by pd control.
+        :param error:
+        :return: steering angle
+        """
         lateral_gain = self.settings._w_lat * (self.settings._k_p * error[0] + self.settings._k_d * error[2])
         heading_gain = self.settings._w_heading * (self.settings._k_p * error[1] + self.settings._k_d* error[3])
         #
@@ -330,6 +406,11 @@ class Trafficvehicle(Basevehicle):
         # return int(torque_gain)
 
     def trafficvehicle_velocityPD(self, error):
+        """
+        Tries to minimize velocity error by pd control.
+        :param error:
+        :return: throttle
+        """
         _kp_vel = 50
         _kd_vel = 1
         temp = _kp_vel * error[0] + _kd_vel * error[1]
@@ -339,6 +420,10 @@ class Trafficvehicle(Basevehicle):
         return output
 
     def stop_traffic(self):
+        """
+        Sets all traffic to a halt
+        :return:
+        """
         try:
             car = self.spawned_vehicle
             forward_vector = car.get_transform().rotation.get_forward_vector()

@@ -15,7 +15,7 @@ from process.status import Status
 
 class HardwaremanagerAction(JoanModuleAction):
     """
-    Is the 'brains' of the module and does most of the calculations and data handling regarding the hardware. Inherits
+    HardwaremanagerAction is the 'brains' of the module and does most of the calculations and data handling regarding the hardware. Inherits
     from JoanModuleAction.
     """
     def __init__(self, millis=5):

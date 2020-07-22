@@ -43,7 +43,16 @@ except IndexError:
     pass
 
 class AgentmanagerAction(JoanModuleAction):
+    """
+    AgentAction is the 'brains' of the module and does most of the calculations and data handling regarding the agents. Inherits
+    Agents being the cars/actors you want to control and spawn in the CARLA environment.
+    from JoanModuleAction.
+    """
     def __init__(self, millis=5):
+        """
+        Initializes the class
+        :param millis: the interval in milliseconds that the module will tick at
+        """
         super().__init__(module=JOANModules.AGENT_MANAGER, millis=millis)
 
         #Initialize Variables
@@ -109,22 +118,17 @@ class AgentmanagerAction(JoanModuleAction):
         " This function is linked to the state change of the hardware manager and updates the state whenever it changes"
 
         self.hardware_manager_state = self.status.get_module_current_state(JOANModules.HARDWARE_MANAGER)
-        # if self.hardware_manager_state is not State.RUNNING:
-        #     for vehicle in self.vehicles:
-        #         vehicle.get_available_inputs()
 
     def _sw_controller_state_change_listener(self):
         """This function is linked to the state change of the sw_controller, if new controllers are initialized they will be
         automatically added to a variable which contains the options in the SW controller combobox"""
         self.sw_controller_state = self.status.get_module_current_state(JOANModules.STEERING_WHEEL_CONTROL)
 
-        # if self.sw_controller_state is not State.RUNNING:
-        #     for vehicle in self.vehicles:
-        #             vehicle.get_available_controllers()
-
-
-
     def _starting_condition(self):
+        """
+        Conditions is that JOAN should be connected to CARLA else it wont start
+        :return:
+        """
         try:
             if self.connected is True:
 
@@ -180,6 +184,10 @@ class AgentmanagerAction(JoanModuleAction):
 
 
     def check_connection(self):
+        """
+        Checks whether JOAN is connected by returning the connected parameter
+        :return:
+        """
         return self.connected
 
     def connect(self):
@@ -243,6 +251,11 @@ class AgentmanagerAction(JoanModuleAction):
         return self.connected
 
     def add_ego_agent(self, ego_vehicle_settings =None):
+        """
+        Adds an 'Ego Agent', or a vehicle that a user can control by selecting an input.
+        :param ego_vehicle_settings:
+        :return:
+        """
         is_a_new_ego_agent = not ego_vehicle_settings
 
         if is_a_new_ego_agent:
@@ -251,10 +264,6 @@ class AgentmanagerAction(JoanModuleAction):
 
         self.vehicles.append(Egovehicle(self, len(self.vehicles), self.nr_spawn_points, self.vehicle_tags, ego_vehicle_settings))
 
-        # for vehicle in self.vehicles:
-        #     vehicle.get_available_inputs()
-        #     vehicle.get_available_controllers()
-
         " only make controller available for first car for now"
         for vehicle in self.vehicles[1:]:
             vehicle.settings_dialog.combo_sw_controller.setEnabled(False)
@@ -262,6 +271,11 @@ class AgentmanagerAction(JoanModuleAction):
         return self.vehicles
 
     def add_traffic_agent(self, traffic_vehicle_settings = None):
+        """
+        Adds a traffic agent which can be controlled by PD control (throttle and steering)
+        :param traffic_vehicle_settings:
+        :return:
+        """
         is_a_new_traffic_agent = not traffic_vehicle_settings
 
         if is_a_new_traffic_agent:
@@ -288,6 +302,10 @@ class AgentmanagerAction(JoanModuleAction):
         return super().initialize()
 
     def start(self):
+        """
+        Starts the module at the millis interval, goes from state ready to running
+        :return:
+        """
         try:
             self.state_machine.request_state_change(State.RUNNING,"Carla interface Running")
             self.time.restart()
@@ -298,6 +316,10 @@ class AgentmanagerAction(JoanModuleAction):
 
 
     def stop(self):
+        """
+        Stops the module from running and will go from state running to ready
+        :return:
+        """
         try:
             # for vehicle in self.vehicles:
                 # vehicle.get_available_inputs()
@@ -311,8 +333,18 @@ class AgentmanagerAction(JoanModuleAction):
         return super().stop()
 
     def load_settings_from_file(self, settings_file_to_load):
+        """
+        Loads appropriate settings from .json file
+        :param settings_file_to_load:
+        :return:
+        """
         self.settings.load_from_file(settings_file_to_load)
         self.share_settings(self.settings)
 
     def save_settings_to_file(self, file_to_save_in):
+        """
+        Saves current settings to json file
+        :param file_to_save_in:
+        :return:
+        """
         self.settings.save_to_file(file_to_save_in)
