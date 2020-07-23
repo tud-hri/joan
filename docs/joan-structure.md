@@ -18,12 +18,12 @@ Using the JOANModuleDialog gives your module a base dialog window with three but
 start, stop and initialize as well as an input field for setting a timer interval, for writing news (=data).
 
 ```mermaid
-graph TD;
-   M((Main))-->|starts|J(JOANModules);
-   J(JOANModules)-->|define|u(your module);
-   u(your module)-->c{consist of};
-   c{consist of}-->|action|A(Action class);
-   c{consist of}-->|dialog|D(Dialog class);
-   JA(JOANModuleAction<br>- Status<br>- News<br> -Settings)-->|inherited by|A(Action class);
-   JD(JOANModuleDialog<br>- Dialog base)-->|inherited by|D(Dialog class);
+graph TD
+   A((Main))-->|starts|B(JOANModules)
+   B-->|define|C(your module)
+   C-->D{consist of}
+   D-->|action|G(Action class)
+   D-->|dialog|H(Dialog class)
+   G-->|inherits from|E(JOANModuleAction<br>- Status<br>- News<br> -Settings)
+   H-->|inherits from|F(JOANModuleDialog<br>- Dialog base)
 ```
