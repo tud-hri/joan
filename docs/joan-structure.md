@@ -24,6 +24,6 @@ graph TD;
    u(your module)-->c{consist of};
    c{consist of}-->|action|A(Action class);
    c{consist of}-->|dialog|D(Dialog class);
-   JA(JOANModuleAction<br><ul><li>Status</li><li>News</li><li>Settings</li></ul>)-->|inherited by|A(Action class);
-   JD(JOANModuleDialog<br>- )-->|inherited by|D(Dialog class);
+   JA(JOANModuleAction<br>- Status<br>- News<br> -Settings)-->|inherited by|A(Action class);
+   JD(JOANModuleDialog<br>- Dialog base)-->|inherited by|D(Dialog class);
 ```
