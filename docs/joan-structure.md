@@ -16,11 +16,9 @@ Using the JOANModuleAction let your module work with:
 
 Using the JOANModuleDialog gives your module a base dialog window with buttons:
 <ul>
-<li>Emerengy STOP, handles all modules</li>
 <li>Start</li>
 <li>Stop</li>
 <li>Initialize</li>
-<li>Quit</li>
 </ul>
 It also has an input field for setting a timer interval used when writing news (=latest data).
 
