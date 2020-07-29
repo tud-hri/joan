@@ -58,6 +58,8 @@ class JoanModuleDialog(QtWidgets.QDialog):
         self.module_widget = uic.loadUi(module.ui_file)
         self.layout().addWidget(self.module_widget)
 
+        self.module_action.register_module_dialog(module_dialog=self)
+
     def _button_start_clicked(self):
         self.module_action.start()
 

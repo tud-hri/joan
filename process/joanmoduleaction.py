@@ -53,6 +53,9 @@ class JoanModuleAction(QtCore.QObject):
         self.data = {}
         self.write_news(news=self.data)
 
+    def register_module_dialog(self, module_dialog):
+        self.module_dialog = module_dialog
+
     def _do_with_performance_monitor(self):
         self._average_tick_time.value = (time.time_ns() - self.time_of_last_tick) / 10 ** 6
         self.time_of_last_tick = time.time_ns()
