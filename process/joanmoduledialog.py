@@ -11,7 +11,7 @@ class JoanModuleDialog(QtWidgets.QDialog):
     # signal when dialog is closed
     closed = QtCore.pyqtSignal()
 
-    def __init__(self, module: JOANModules, module_action: JoanModuleAction, parent=None):
+    def __init__(self, module: JOANModules, module_action: JoanModuleAction, use_state_machine_and_timer=True, parent=None):
         """
         Initialize
         :param module: module type
@@ -23,8 +23,6 @@ class JoanModuleDialog(QtWidgets.QDialog):
         # reference to the action class of this module
         self.module_action = module_action
 
-        self.module_action.state_machine.add_state_change_listener(self.handle_state_change)
-
         self.setLayout(QtWidgets.QVBoxLayout(self))
         self.setWindowTitle(str(module))
 
@@ -34,28 +32,31 @@ class JoanModuleDialog(QtWidgets.QDialog):
         self.file_menu.addAction('Close', self.close)
         self.file_menu.addSeparator()
 
-        # setup state widget
-        self.state_widget = uic.loadUi(
-            os.path.join(os.path.dirname(os.path.realpath(__file__)), "../resources/statewidget.ui"))
-        self.layout().addWidget(self.state_widget)
-        self.state_widget.btn_start.clicked.connect(self._button_start_clicked)
-        self.state_widget.btn_stop.clicked.connect(self._button_stop_clicked)
-        self.state_widget.btn_initialize.clicked.connect(self._button_initialize_clicked)
-        self.state_widget.btn_start.setEnabled(False)
-        self.state_widget.btn_stop.setEnabled(False)
-        self.state_widget.input_tick_millis.setValidator(QtGui.QIntValidator(0, 10000, parent=self))
-        self.state_widget.input_tick_millis.setPlaceholderText(str(self.module_action.tick_interval_ms))
-        self.state_widget.input_tick_millis.textChanged.connect(self._set_tick_interval_ms)
+        if use_state_machine_and_timer:
+            self.module_action.state_machine.add_state_change_listener(self.handle_state_change)
 
-        # reflect current state
-        self.handle_state_change()
+            # setup state widget
+            self.state_widget = uic.loadUi(
+                os.path.join(os.path.dirname(os.path.realpath(__file__)), "../resources/statewidget.ui"))
+            self.layout().addWidget(self.state_widget)
+            self.state_widget.btn_start.clicked.connect(self._button_start_clicked)
+            self.state_widget.btn_stop.clicked.connect(self._button_stop_clicked)
+            self.state_widget.btn_initialize.clicked.connect(self._button_initialize_clicked)
+            self.state_widget.btn_start.setEnabled(False)
+            self.state_widget.btn_stop.setEnabled(False)
+            self.state_widget.input_tick_millis.setValidator(QtGui.QIntValidator(0, 10000, parent=self))
+            self.state_widget.input_tick_millis.setPlaceholderText(str(self.module_action.tick_interval_ms))
+            self.state_widget.input_tick_millis.textChanged.connect(self._set_tick_interval_ms)
+
+            # reflect current state
+            self.handle_state_change()
+
+            # setup button enables
+            self.state_widget.btn_start.setEnabled(False)
 
         # setup module-specific widget
         self.module_widget = uic.loadUi(module.ui_file)
         self.layout().addWidget(self.module_widget)
-
-        # setup button enables
-        self.state_widget.btn_start.setEnabled(False)
 
     def _button_start_clicked(self):
         self.module_action.start()

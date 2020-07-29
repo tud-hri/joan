@@ -11,7 +11,7 @@ from tools import AveragedFloat
 
 
 class JoanModuleAction(QtCore.QObject):
-    def __init__(self, module: JOANModules, millis=100, enable_performance_monitor=True):
+    def __init__(self, module: JOANModules, millis=100, enable_performance_monitor=True, use_state_machine_and_timer=True):
         """
         Initialize
         :param module: module type
@@ -24,27 +24,30 @@ class JoanModuleAction(QtCore.QObject):
 
         self._millis = millis
         self._performance_monitor_enabled = enable_performance_monitor
+        self._use_state_machine_and_timer = use_state_machine_and_timer
         self.time_of_last_tick = time.time_ns() / 10 ** 6
         self._average_tick_time = AveragedFloat(samples=int(1000 / millis))
         self._average_run_time = AveragedFloat(samples=int(1000 / millis))
 
         self.module = module
-        self.timer = QtCore.QTimer()
-        self.timer.setTimerType(QtCore.Qt.PreciseTimer)
-        self.timer.setInterval(millis)
-
-        if enable_performance_monitor:
-            self.timer.timeout.connect(self._do_with_performance_monitor)
-        else:
-            self.timer.timeout.connect(self.do)
 
         self.singleton_status = Status()
         self.singleton_news = News()
         self.singleton_settings = Settings()
 
-        # initialize state machine
-        self.state_machine = StateMachine(module)
-        self.singleton_status.update_state_machine(module, self.state_machine)
+        if use_state_machine_and_timer:
+            self.timer = QtCore.QTimer()
+            self.timer.setTimerType(QtCore.Qt.PreciseTimer)
+            self.timer.setInterval(millis)
+
+            if enable_performance_monitor:
+                self.timer.timeout.connect(self._do_with_performance_monitor)
+            else:
+                self.timer.timeout.connect(self.do)
+
+            # initialize state machine
+            self.state_machine = StateMachine(module)
+            self.singleton_status.update_state_machine(module, self.state_machine)
 
         # initialize own data and create channel in news
         self.data = {}
@@ -63,12 +66,18 @@ class JoanModuleAction(QtCore.QObject):
         pass
 
     def start(self):
-        self.timer.start()
-        return True
+        if self._use_state_machine_and_timer:
+            self.timer.start()
+            return True
+        else:
+            return False
 
     def stop(self):
-        self.timer.stop()
-        return True
+        if self._use_state_machine_and_timer:
+            self.timer.stop()
+            return True
+        else:
+            return False
 
     def set_tick_interval_ms(self, interval_ms):
         try:

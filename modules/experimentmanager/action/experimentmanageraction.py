@@ -7,7 +7,7 @@ from process.settings import ModuleSettings
 
 class ExperimentManagerAction(JoanModuleAction):
     def __init__(self, millis=100):
-        super().__init__(module=JOANModules.EXPERIMENT_MANAGER, millis=millis)
+        super().__init__(module=JOANModules.EXPERIMENT_MANAGER, use_state_machine_and_timer=False)
 
         self.data = {}
         self.write_news(news=self.data)
