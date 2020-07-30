@@ -14,6 +14,7 @@ class JOANModules(enum.Enum):
     HARDWARE_MANAGER = 1
     AGENT_MANAGER = 2
     STEERING_WHEEL_CONTROL = 3
+    DATA_PLOTTER = 5
 
     # EXPERIMENT_MANAGER = 4
 
@@ -24,13 +25,15 @@ class JOANModules(enum.Enum):
         from modules.steeringwheelcontrol.action.steeringwheelcontrolaction import SteeringWheelControlAction
         from modules.hardwaremanager.action.hardwaremanageraction import HardwaremanagerAction
         from modules.agentmanager.action.agentmanageraction import AgentmanagerAction
+        from modules.dataplotter.action.dataplotteraction import DataplotterAction
         #from modules.experimentmanager.action.experimentmanageraction import ExperimentManagerAction
     
         return {JOANModules.TEMPLATE: TemplateAction,
                 JOANModules.DATA_RECORDER: DatarecorderAction,
                 JOANModules.STEERING_WHEEL_CONTROL: SteeringWheelControlAction,
                 JOANModules.HARDWARE_MANAGER: HardwaremanagerAction,
-                JOANModules.AGENT_MANAGER: AgentmanagerAction
+                JOANModules.AGENT_MANAGER: AgentmanagerAction,
+                JOANModules.DATA_PLOTTER: DataplotterAction
                 #JOANModules.EXPERIMENT_MANAGER: ExperimentManagerAction
                 }[self]
 
@@ -41,13 +44,15 @@ class JOANModules(enum.Enum):
         from modules.steeringwheelcontrol.dialog.steeringwheelcontroldialog import SteeringWheelControlDialog
         from modules.hardwaremanager.dialog.hardwaremanagerdialog import HardwaremanagerDialog
         from modules.agentmanager.dialog.agentmanagerdialog import AgentmanagerDialog
+        from modules.dataplotter.dialog.dataplotterdialog import DataplotterDialog
         #from modules.experimentmanager.dialog.experimentmanagerdialog import ExperimentManagerDialog
         
         return {JOANModules.TEMPLATE: TemplateDialog,
                 JOANModules.DATA_RECORDER: DatarecorderDialog,
                 JOANModules.STEERING_WHEEL_CONTROL: SteeringWheelControlDialog,
                 JOANModules.HARDWARE_MANAGER: HardwaremanagerDialog,
-                JOANModules.AGENT_MANAGER: AgentmanagerDialog
+                JOANModules.AGENT_MANAGER: AgentmanagerDialog,
+                JOANModules.DATA_PLOTTER: DataplotterDialog
                 #JOANModules.EXPERIMENT_MANAGER: ExperimentManagerDialog
                 }[self]
 
@@ -58,7 +63,8 @@ class JOANModules(enum.Enum):
                 JOANModules.DATA_RECORDER: os.path.join(path_to_modules, "datarecorder/dialog/datarecorder.ui"),
                 JOANModules.AGENT_MANAGER: os.path.join(path_to_modules, "agentmanager/dialog/agentmanager.ui"),
                 JOANModules.STEERING_WHEEL_CONTROL: os.path.join(path_to_modules, "steeringwheelcontrol/dialog/steeringwheelcontrol.ui"),
-                JOANModules.HARDWARE_MANAGER: os.path.join(path_to_modules, "hardwaremanager/dialog/hardwaremanager.ui")
+                JOANModules.HARDWARE_MANAGER: os.path.join(path_to_modules, "hardwaremanager/dialog/hardwaremanager.ui"),
+                JOANModules.DATA_PLOTTER: os.path.join(path_to_modules, "dataplotter/dialog/dataplotter.ui")
                 # JOANModules.EXPERIMENT_MANAGER: os.path.join(path_to_modules, "experimentmanager/dialog/experimentmanager.ui")
                 }[self]
 
@@ -67,6 +73,7 @@ class JOANModules(enum.Enum):
                 JOANModules.DATA_RECORDER: 'Data Recorder',
                 JOANModules.STEERING_WHEEL_CONTROL: 'Steering Wheel Controller Manager',
                 JOANModules.HARDWARE_MANAGER: 'Hardware Manager',
-                JOANModules.AGENT_MANAGER: 'Agent Manager'
+                JOANModules.AGENT_MANAGER: 'Agent Manager',
+                JOANModules.DATA_PLOTTER: 'Data Plotter'
                 #JOANModules.EXPERIMENT_MANAGER: 'Experiment Manager'
                 }[self]
