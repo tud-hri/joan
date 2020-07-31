@@ -20,7 +20,6 @@ class DataPlotterSettings(JoanModuleSettings):
         self.picklist_line_colors = ["blue", "#000000"]
 
     def _set_properties_empty(self, element):
-        # TODO: set default item-properties like dashed-line, color
         """
         Set the news-item in the variables_to_save to empty/default values
         """
@@ -36,7 +35,6 @@ class DataPlotterSettings(JoanModuleSettings):
                     element[key] = element_property
 
     def set_all_empty(self):
-        # TODO: set default item-properties like dashed-line, color
         """
         Every news item of every module(=channel) is taken to make a treelist of variables to save
         """
@@ -50,6 +48,9 @@ class DataPlotterSettings(JoanModuleSettings):
         return self.variables_to_save
 
     def get_picklists(self):
+        """
+        return: a dictionary of picklists
+        """
         return {'plot_windows': self.picklist_plot_windows,
                 'line_types': self.picklist_line_types,
                 'line_colors': self.picklist_line_colors}
