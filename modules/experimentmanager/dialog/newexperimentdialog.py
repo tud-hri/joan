@@ -35,4 +35,8 @@ class NewExperimentDialog(QtWidgets.QDialog):
         for module, checkbox in self.checkboxes.items():
             if checkbox.isChecked():
                 self.modules_to_include.append(module)
-        super().accept()
+
+        if self.file_path and self.modules_to_include:
+            super().accept()
+        else:
+            QtWidgets.QMessageBox.warning(self, "Warning", "Please select at least one module and supply a save path for your experiment.")

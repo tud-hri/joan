@@ -30,7 +30,6 @@ class ExperimentManagerAction(JoanModuleAction):
     def save_experiment(self):
         if self.current_experiment:
             self.current_experiment.save_to_file(self.experiment_save_path)
-            self.module_dialog.update_gui()
 
     def load_experiment(self, file_path):
         self.current_experiment = Experiment.load_from_file(file_path)
