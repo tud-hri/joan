@@ -1,14 +1,19 @@
 class Condition:
 
-    def __init__(self, modules_included: list):
+    def __init__(self, modules_included: list, name):
+        self.name = name
         self.diff = {}
 
         for modules in modules_included:
             self.diff[modules] = {}
 
-    def set_from_current_settings(self, parent_experiment, settings_singleton):
+    @staticmethod
+    def set_from_current_settings(condition_name, parent_experiment, settings_singleton):
+        condition = Condition(parent_experiment.modules_included, condition_name)
         for module in parent_experiment.modules_included:
-            self.diff[module] = self._get_dict_diff(parent_experiment.base_settings[module], settings_singleton.get_settings(module).as_dict())
+            condition.diff[module] = Condition._get_dict_diff(parent_experiment.base_settings[module].as_dict(), settings_singleton.get_settings(module).as_dict())
+
+        return condition
 
     @staticmethod
     def _get_dict_diff(base_dict, specific_dict):
@@ -26,6 +31,6 @@ class Condition:
 
         diff_dict = {}
 
-        for key, value in base_dict:
+        for key, value in base_dict.items():
             if specific_dict[key] != value:
                 diff_dict[key] = specific_dict[key]

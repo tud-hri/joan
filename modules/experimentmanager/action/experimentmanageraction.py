@@ -2,7 +2,7 @@ import os
 
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
-from process.settings import ModuleSettings
+from .condition import Condition
 from .experiment import Experiment
 
 
@@ -26,6 +26,32 @@ class ExperimentManagerAction(JoanModuleAction):
         self.save_experiment()
 
         self.module_dialog.update_gui()
+
+    def create_new_condition(self, condition_name):
+        if self.current_experiment:
+            if condition_name in [condition.name for condition in self.current_experiment.all_conditions]:
+                raise ValueError('You cannot create two condition with the same name in one experiment')
+
+            new_condition = Condition.set_from_current_settings(condition_name, self.current_experiment, self.singleton_settings)
+            self.current_experiment.all_conditions.append(new_condition)
+
+            self.module_dialog.update_condition_lists()
+
+    def add_condition(self, condition_name):
+        if self.current_experiment:
+            self.current_experiment.active_condition_sequence.append(condition_name)
+            self.module_dialog.update_condition_lists()
+
+    def remove_condition(self, index):
+        if self.current_experiment:
+            self.current_experiment.active_condition_sequence.pop(index)
+            self.module_dialog.update_condition_lists()
+
+    def update_condition_sequence(self, new_sequence):
+        if self.current_experiment:
+            self.current_experiment.active_condition_sequence = []
+            for list_item in new_sequence:
+                self.current_experiment.active_condition_sequence.append(list_item)
 
     def save_experiment(self):
         if self.current_experiment:

@@ -120,6 +120,84 @@
       <string>Conditions</string>
      </property>
      <layout class="QGridLayout" name="gridLayout">
+      <item row="3" column="0">
+       <widget class="QListWidget" name="availableConditionsListWidget"/>
+      </item>
+      <item row="1" column="2">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Current Condition Sequence</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="5">
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <spacer name="verticalSpacer_4">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="conditionUpPushButton">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>10</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>🡑</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="conditionDownPushButton">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>10</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>🡓</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
       <item row="3" column="1">
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
@@ -136,28 +214,40 @@
          </spacer>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton_2">
+         <widget class="QPushButton" name="addConditionPushButton">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="minimumSize">
+           <size>
+            <width>10</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="text">
-           <string>&gt;</string>
+           <string>🡒</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton">
+         <widget class="QPushButton" name="removeConditionPushButton">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="minimumSize">
+           <size>
+            <width>10</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="text">
-           <string>&lt;</string>
+           <string>🡐</string>
           </property>
          </widget>
         </item>
@@ -176,13 +266,10 @@
         </item>
        </layout>
       </item>
-      <item row="3" column="2">
-       <widget class="QListWidget" name="currentConditionsListWidget"/>
-      </item>
-      <item row="1" column="2">
-       <widget class="QLabel" name="label_3">
+      <item row="4" column="0">
+       <widget class="QPushButton" name="createConditionPushButton">
         <property name="text">
-         <string>Current Condition Sequence</string>
+         <string>Create new condition from current settings</string>
         </property>
        </widget>
       </item>
@@ -200,15 +287,8 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="0">
-       <widget class="QListWidget" name="availableConditionsListWidget"/>
-      </item>
-      <item row="4" column="0">
-       <widget class="QPushButton" name="createConditionPushButton">
-        <property name="text">
-         <string>Create new condition</string>
-        </property>
-       </widget>
+      <item row="3" column="2">
+       <widget class="QListWidget" name="currentConditionsListWidget"/>
       </item>
      </layout>
     </widget>
