@@ -26,6 +26,7 @@ class ExperimentManagerAction(JoanModuleAction):
         self.save_experiment()
 
         self.module_dialog.update_gui()
+        self.module_dialog.update_condition_lists()
 
     def create_new_condition(self, condition_name):
         if self.current_experiment:

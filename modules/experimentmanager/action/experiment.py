@@ -7,6 +7,7 @@ class Experiment:
     def __init__(self, modules_included: list):
         self.modules_included = modules_included
         self.base_settings = {}
+        # TODO: this (base settings) is currently a dict with settings object. Maybe it's more convenient to make this a complete nested dict representation
 
         self.all_conditions = []
         self.active_condition_sequence = []

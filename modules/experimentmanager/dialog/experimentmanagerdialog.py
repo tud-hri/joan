@@ -6,6 +6,7 @@ from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
 from process.joanmoduledialog import JoanModuleDialog
 from .newexperimentdialog import NewExperimentDialog
+from .previewconditiondialog import PreviewConditionDialog
 
 
 class ExperimentManagerDialog(JoanModuleDialog):
@@ -26,6 +27,8 @@ class ExperimentManagerDialog(JoanModuleDialog):
 
         self.module_widget.availableConditionsListWidget.itemSelectionChanged.connect(self._update_enabled_condition_buttons)
         self.module_widget.currentConditionsListWidget.itemSelectionChanged.connect(self._update_enabled_condition_buttons)
+
+        self.module_widget.availableConditionsListWidget.itemDoubleClicked.connect(self._preview_condition)
 
         self.update_gui()
         self._update_enabled_condition_buttons()
@@ -77,6 +80,10 @@ class ExperimentManagerDialog(JoanModuleDialog):
     def save_experiment(self):
         self.module_action.save_experiment()
 
+    def _preview_condition(self, list_item):
+        condition = list_item.data(QtCore.Qt.UserRole)
+        PreviewConditionDialog(condition, self)
+
     def _update_enabled_condition_buttons(self):
         self.module_widget.addConditionPushButton.setEnabled(bool(self.module_widget.availableConditionsListWidget.currentRow() != -1))
         self.module_widget.removeConditionPushButton.setEnabled(bool(self.module_widget.currentConditionsListWidget.currentRow() != -1))
@@ -113,6 +120,7 @@ class ExperimentManagerDialog(JoanModuleDialog):
 
             for condition in self.module_action.current_experiment.all_conditions:
                 item = QtWidgets.QListWidgetItem(condition.name)
+                item.setData(QtCore.Qt.UserRole, condition)
                 self.module_widget.availableConditionsListWidget.addItem(item)
 
             for condition_name in self.module_action.current_experiment.active_condition_sequence:
