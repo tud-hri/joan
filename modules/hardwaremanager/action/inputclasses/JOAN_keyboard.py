@@ -9,7 +9,16 @@ from modules.joanmodules import JOANModules
 
 
 class KeyBoardSettingsDialog(QtWidgets.QDialog):
+    """
+      Class for the settings Dialog of a keyboard, this class should pop up whenever it is asked by the user or when
+      creating the joystick class for the first time. NOTE: it should not show whenever settings are loaded by .json file.
+      """
     def __init__(self, keyboard_settings, parent=None):
+        """
+        Initializes the settings dialog with the appropriate keyboard settings
+        :param keyboard_settings:
+        :param parent:
+        """
         super().__init__(parent)
         self.keyboard_settings = keyboard_settings
         uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/keyboard_settings_ui.ui"), self)
@@ -35,6 +44,11 @@ class KeyBoardSettingsDialog(QtWidgets.QDialog):
         # self.show()
 
     def accept(self):
+        """
+        Accepts the selected settings and saves them internally.
+        NOTE: will return an error if trying to set 2 buttons for the same functionality
+        :return:
+        """
         all_desired_keys = [self.label_steer_left.text(), self.label_steer_right.text(), self.label_throttle.text(),
                             self.label_brake.text(),
                             self.label_reverse.text(), self.label_handbrake.text()]
@@ -61,6 +75,11 @@ class KeyBoardSettingsDialog(QtWidgets.QDialog):
         super().accept()
 
     def _display_values(self, settings_to_display=None):
+        """
+        Displays the settings that are currently being used (internally)
+        :param settings_to_display:
+        :return:
+        """
         if not settings_to_display:
             settings_to_display = self.keyboard_settings
 
@@ -81,9 +100,17 @@ class KeyBoardSettingsDialog(QtWidgets.QDialog):
         self.slider_brake_sensitivity.setValue(settings_to_display.brake_sensitivity)
 
     def _set_default_values(self):
+        """
+        Sets the settings as they are described in 'HardwaremanagerSettings => KeyboardSettings)
+        :return:
+        """
         self._display_values(KeyBoardSettings())
 
     def _start_key_setting_sequence(self):
+        """
+        Starts the sequence that will run through the different available inputs.
+        :return:
+        """
         self.btn_set_keys.setStyleSheet("background-color: lightgreen")
         self.btn_set_keys.clearFocus()
         self.button_box_settings.setEnabled(False)
@@ -92,6 +119,12 @@ class KeyBoardSettingsDialog(QtWidgets.QDialog):
         self.set_key_sequence_labels[self._set_key_counter].setStyleSheet("background-color: lightgreen")
 
     def keyPressEvent(self, event):
+        """
+        Overwrites the built in 'keyPressEvent' function of PyQt with this function. Checks which key is pressed and handles
+        it accordingly.
+        :param event:
+        :return:
+        """
         if self.btn_set_keys.isChecked():
             try:
                 self.set_key_sequence_labels[self._set_key_counter].setText(QtGui.QKeySequence(event.key()).toString())
@@ -107,9 +140,17 @@ class KeyBoardSettingsDialog(QtWidgets.QDialog):
 
 
 class JOAN_Keyboard(BaseInput):
-    """Input class for JOAN_keyboard"""
+    """
+    Main class for the Keyboard input, inherits from BaseInput (as it should!)
+    """
 
     def __init__(self, hardware_manager_action, keyboard_tab, settings: KeyBoardSettings):
+        """
+        Initializes the class
+        :param hardware_manager_action:
+        :param keyboard_tab:
+        :param settings:
+        """
         super().__init__(hardware_manager_action)
         self._keyboard_tab = keyboard_tab
         self.hardware_manager_action = hardware_manager_action
@@ -136,33 +177,65 @@ class JOAN_Keyboard(BaseInput):
         self._open_settings_dialog()
 
     def initialize(self):
+        """
+        Function is called when initialize is pressed, can be altered for more functionality
+        :return:
+        """
         print('initializing keyboard')
 
     def disable_remove_button(self):
+        """
+        Disables the remove keybaord button (useful for example when you dont want to be able to remove an input when the
+        simulator is running)
+                :return:
+        """
         if self._keyboard_tab.btn_remove_hardware.isEnabled() is True:
             self._keyboard_tab.btn_remove_hardware.setEnabled(False)
         else:
             pass
 
     def enable_remove_button(self):
+        """
+        Enables the remove keyboard button
+        :return:
+        """
         if self._keyboard_tab.btn_remove_hardware.isEnabled() is False:
             self._keyboard_tab.btn_remove_hardware.setEnabled(True)
         else:
             pass
 
     def remove_func(self):
+        """
+        Removes the keyboard from the widget and settings
+        NOTE: calls 'self.remove_tab' which is a function of the BaseInput class, if you do not do this the tab will not
+        actually disappear from the module.
+        :return:
+        """
         self.remove_tab(self._keyboard_tab)
         self.module_action.settings.key_boards.remove(self.settings)
 
     def _open_settings_from_button(self):
+        """
+        Opens and shows the settings dialog from the button on the tab
+        :return:
+        """
         if self.settings_dialog:
             self.settings_dialog.show()
 
     def _open_settings_dialog(self):
+        """
+        Sets the appropriate values for settings but does not actually show the dialog
+        :return:
+        """
         self.settings_dialog = KeyBoardSettingsDialog(self.settings)
 
 
     def key_event(self, key):
+        """
+        Distinguishes which key (that has been set before) is pressed and sets a boolean for the appropriate action.
+        :param key:
+        :return:
+        """
         boolean_key_press_value = key.event_type == keyboard.KEY_DOWN
         int_key_identifier = QtGui.QKeySequence(key.name)[0]
 
@@ -184,7 +257,16 @@ class JOAN_Keyboard(BaseInput):
             self._reverse = not self._reverse
 
     def process(self):
-
+        """
+        Processes all the inputs of the keyboard and writes them to self._data which is then written to the news in the
+        action class
+        :return: self._data a dictionary containing :
+            self._data['BrakeInput'] = self.brake
+            self._data['ThrottleInput'] = self.throttle
+            self._data['SteeringInput'] = self.steer
+            self._data['Handbrake'] = self.handbrake
+            self._data['Reverse'] = self.reverse
+        """
         # Throttle:
         if self._throttle and self._data['ThrottleInput'] < 100:
             self._data['ThrottleInput'] = self._data['ThrottleInput'] + (5 * self.settings.throttle_sensitivity / 100)

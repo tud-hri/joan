@@ -8,7 +8,16 @@ from PyQt5 import QtWidgets, uic
 import os
 
 class AgentmanagerDialog(JoanModuleDialog):
+    """
+    This class is the actual dialog you see when you open up the module. Mostly this class serves as a
+    connection between the user and the 'brains', which is the action module.
+    """
     def __init__(self, module_action: JoanModuleAction,  parent=None):
+        """
+        Initializes the class
+        :param module_action:
+        :param parent:
+        """
         super().__init__(module=JOANModules.AGENT_MANAGER, module_action=module_action, parent=parent)
 
         #initialize variables
@@ -89,6 +98,10 @@ class AgentmanagerDialog(JoanModuleDialog):
             self.module_widget.btn_remove_all.setEnabled(False)
 
     def _load_settings(self):
+        """
+        Loads settings from json file
+        :return:
+        """
         settings_file_to_load, _ = QtWidgets.QFileDialog.getOpenFileName(self, 'load settings', filter='*.json')
         if settings_file_to_load:
 
@@ -103,6 +116,10 @@ class AgentmanagerDialog(JoanModuleDialog):
             self.initialize_widgets_from_settings()
 
     def _save_settings(self):
+        """
+        Saves settings to json file
+        :return:
+        """
         file_to_save_in, _ = QtWidgets.QFileDialog.getSaveFileName(self, 'save settings', filter='*.json')
         if file_to_save_in:
             self.module_action.save_settings_to_file(file_to_save_in)
@@ -121,16 +138,28 @@ class AgentmanagerDialog(JoanModuleDialog):
             cars.remove_ego_agent()
 
     def add_ego_agent(self):
+        """
+        Adds an ego agent (in this case a vehicle a user can control)
+        :return:
+        """
         self.module_action.vehicles = self.module_action.add_ego_agent()
         self.module_action.vehicles[-1].settings_dialog.show()
         self.module_widget.layOut.insertWidget(len(self.module_action.vehicles)-1, self.module_action.vehicles[-1].vehicle_tab)
 
     def add_traffic_agent(self):
+        """
+        Adds a traffic agent
+        :return:
+        """
         self.module_action.traffic_vehicles = self.module_action.add_traffic_agent()
         self.module_action.traffic_vehicles[-1].settings_dialog.show()
         self.module_widget.layOut.insertWidget(-1,self.module_action.traffic_vehicles[-1].vehicle_tab)
 
     def initialize_widgets_from_settings(self):
+        """
+        If settings are loaded from a json file this function will add the appropariate widgets.
+        :return:
+        """
         for ego_agent_settings in self.module_action.settings.ego_vehicles:
             self.module_action.vehicles = self.module_action.add_ego_agent(ego_agent_settings)
             self.module_widget.layOut.insertWidget(len(self.module_action.vehicles) - 1, self.module_action.vehicles[-1].vehicle_tab)
@@ -141,6 +170,10 @@ class AgentmanagerDialog(JoanModuleDialog):
             self.module_widget.layOut.insertWidget(-1, self.module_action.traffic_vehicles[-1].vehicle_tab)
 
     def _remove_all(self):
+        """
+        Removes all agents from the module
+        :return:
+        """
         while self.module_action.vehicles:
             self.module_action.vehicles[-1].remove_ego_agent()
 
@@ -148,12 +181,20 @@ class AgentmanagerDialog(JoanModuleDialog):
             self.module_action.traffic_vehicles[-1].remove_traffic_agent()
 
     def _spawn_all(self):
+        """
+        Spawns all loaded agents in the simulation
+        :return:
+        """
         for agents in self.module_action.vehicles:
             agents.spawn_car()
         for traffic_agents in self.module_action.traffic_vehicles:
             traffic_agents.spawn_car()
 
     def _destroy_all(self):
+        """
+        Destroys all agents currently in simulation
+        :return:
+        """
         for agents in self.module_action.vehicles:
             agents.destroy_car()
         for traffic_agents in self.module_action.traffic_vehicles:

@@ -8,6 +8,9 @@ from modules.joanmodules import JOANModules
 
 
 class AgentManagerSettings(JoanModuleSettings):
+    """
+    Class containing the different settings for multiple agents, inherits from JoanModuleSettings
+    """
     def __init__(self, module_enum: JOANModules):
         super().__init__(module_enum)
 
@@ -89,7 +92,13 @@ class AgentManagerSettings(JoanModuleSettings):
         return output_list
 
 class EgoVehicleSettings():
+    """
+    Class containing the default settings for an egovehicle
+    """
     def __init__(self):
+        """
+        Initializes the class with default variables
+        """
         self._selected_input = 'None'
         self._selected_controller = 'None'
         self._selected_spawnpoint = 0
@@ -103,7 +112,13 @@ class EgoVehicleSettings():
             self.__setattr__(key, value)
 
 class TrafficVehicleSettings():
+    """
+    Class containing the default settings for a traffic vehicle.
+    """
     def __init__(self):
+        """
+        initializes the class with default variables
+        """
         self._velocity = 50
         self._trajectory_name = 'TestTrajectory2.csv'
         self._selected_spawnpoint = 0

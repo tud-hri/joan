@@ -9,7 +9,16 @@ from process.statesenum import State
 
 
 class HardwaremanagerDialog(JoanModuleDialog):
+    """
+    This class is the actual dialog you see when you open up the module. Mostly this class serves as a
+    connection between the user and the 'brains', which is the action module.
+    """
     def __init__(self, module_action: JoanModuleAction, parent=None):
+        """
+        Initializes the class
+        :param module_action:
+        :param parent:
+        """
         super().__init__(module=JOANModules.HARDWARE_MANAGER, module_action=module_action, parent=parent)
 
         # initialize dicts
@@ -52,6 +61,10 @@ class HardwaremanagerDialog(JoanModuleDialog):
             self.module_widget.btn_add_hardware.setEnabled(False)
 
     def _load_settings(self):
+        """
+        Loads settings from json file.
+        :return:
+        """
         settings_file_to_load, _ = QtWidgets.QFileDialog.getOpenFileName(self, 'load settings', filter='*.json')
         if settings_file_to_load:
 
@@ -67,11 +80,19 @@ class HardwaremanagerDialog(JoanModuleDialog):
             self.module_action.initialize()
 
     def _save_settings(self):
+        """
+        Saves settings to json file.
+        :return:
+        """
         file_to_save_in, _ = QtWidgets.QFileDialog.getSaveFileName(self, 'save settings', filter='*.json')
         if file_to_save_in:
             self.module_action.save_settings_to_file(file_to_save_in)
 
     def _add_selected_input(self):
+        """
+        Adds the selected input
+        :return:
+        """
         # whenever we add an input go back to the IDLE state because we need to reinitialize this new hardware
         self.module_action.state_machine.request_state_change(State.IDLE, 'You can now add more hardware')
         # add the selected input to the list
@@ -102,6 +123,10 @@ class HardwaremanagerDialog(JoanModuleDialog):
         self.module_action._state_change_listener()
 
     def initialize_widgets_from_settings(self):
+        """
+        Initializes the widgets from loaded settings.
+        :return:
+        """
         for keyboard_settings in self.module_action.settings.key_boards:
             new_widget = uic.loadUi(
                 os.path.join(os.path.dirname(os.path.realpath(__file__)), "../action/ui/hardware_tab.ui"))

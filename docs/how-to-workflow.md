@@ -1,9 +1,5 @@
-# How to use JOAN
-Here we will guide you through how the developers have thought up to use JOAN, this guide will consist of several different not completely related sections therefore it might be easier to just scroll to the part your interested in and read up on it instead of going through from beginning to the end.
-
-
 ## Workflow
-In this section an overview of the workflow of JOAN is presented. 
+In this section an overview of the workflow of JOAN is presented.
 
 !!! Note
     This document will only contain a workflow of the essential bare-bone modules (Carlainterface, Hardwaremanager) to drive a car around. This flow might change depending on your own implemented modules.
@@ -34,7 +30,7 @@ Make sure you also have 'vehicle spawnpoints' in your level. You can check this 
 This is the exact same step as described in __[Setup and run your JOAN project](setup-run-joan.md)__ at 'Running JOAN'.
 
 ### Step 4. Setup and run Hardwaremanager
-To do this in the JOAN main menu show the 'Hardwaremanager' module. Now click the 'add new hardware button', this will open a selection menu in which you can choose what sort of input you'd like to add. For now only Keyboard and Joystick work. In this guide we will add a keyboard input. 
+To do this in the JOAN main menu show the 'Hardwaremanager' module. Now click the 'add new hardware button', this will open a selection menu in which you can choose what sort of input you'd like to add. For now only Keyboard and Joystick work. In this guide we will add a keyboard input.
 So select keyboard, which will open a settings section of the keyboard. Default keys are:
 
 * W = Throttle
@@ -55,7 +51,7 @@ Next step is to setup the Carla Interface module. This module has some built in 
 
 CARLA in unreal should be running! It is also shown what kind of error you will receive if you have not got it running in unreal.
 
-!!! Note 
+!!! Note
     In this particular version in the GIF it has been tuned in such a way that when a car is spawned the player is directly attached to it and correctly seated in the Audi R6. If this does not happen in your case you can press X on the keyboard and the player will attach to the spawned vehicle. If you are not seated in the correct position you can move around with the arrow keys and up and down with W and A. The speedometer can be moved around iwth the numpad keys 1,5,2,3 and + and -.
 
 ### Step 6. Drive!

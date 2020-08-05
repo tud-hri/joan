@@ -8,6 +8,9 @@ from modules.hardwaremanager.action.inputclasses.PCANBasic import *
 from modules.hardwaremanager.action.inputclasses.baseinput import BaseInput
 from modules.joanmodules import JOANModules
 
+"""
+These global parameters are used to make the message ID's more identifiable than just the hex nr.
+"""
 INITIALIZATION_MESSAGE_ID = 0x200
 INITIALIZATION_MESSAGE_LENGTH = 8
 
@@ -19,6 +22,10 @@ PEDAL_MESSAGE_LENGTH = 2
 
 
 class SensoDriveSettingsDialog(QtWidgets.QDialog):
+    """
+    Class for the settings Dialog of a SensoDrive, this class should pop up whenever it is asked by the user or when
+    creating the joystick class for the first time. NOTE: it should not show whenever settings are loaded by .json file.
+    """
     def __init__(self, sensodrive_settings, parent=None):
         super().__init__(parent)
         self.sensodrive_settings = sensodrive_settings
@@ -30,6 +37,10 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
         # self.show()
 
     def accept(self):
+        """
+        Accepts the settings of the sensodrive and saves them internally.
+        :return:
+        """
         self.sensodrive_settings.endstops = self.spin_endstop_position.value()
         self.sensodrive_settings.torque_limit_between_endstops = self.spin_torque_limit_between_endstops.value()
         self.sensodrive_settings.torque_limit_beyond_endstops = self.spin_torque_limit_beyond_endstops.value()
@@ -40,6 +51,11 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
         super().accept()
 
     def _display_values(self, settings_to_display=None):
+        """
+        Displays the currently used settings in the settings dialog.
+        :param settings_to_display:
+        :return:
+        """
         if not settings_to_display:
             settings_to_display = self.sensodrive_settings
 
@@ -51,11 +67,25 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
         self.spin_spring_stiffness.setValue(settings_to_display.spring_stiffness)
 
     def _set_default_values(self):
+        """
+        Sets the settings as they are described in Hardwaremanagersettings ->SensodriveSettings().
+        :return:
+        """
         self._display_values(SensoDriveSettings())
 
 
 class JOAN_SensoDrive(BaseInput):
+    """
+    Main class for the SensoDrive input, inherits from BaseInput (as it should!)
+    """
     def __init__(self, hardware_manager_action, sensodrive_tab, nr_of_sensodrives, settings: SensoDriveSettings):
+        """
+        Initializes the class, also uses some more parameters to keep track of how many sensodrives are connected
+        :param hardware_manager_action:
+        :param sensodrive_tab:
+        :param nr_of_sensodrives:
+        :param settings:
+        """
         super().__init__(hardware_manager_action)
 
         self.currentInput = 'SensoDrive'
@@ -120,6 +150,11 @@ class JOAN_SensoDrive(BaseInput):
 
 
     def update_settings(self):
+        """
+        Updates the settings that are saved internally. NOTE: this is different than with other input modules because
+        we want to be ablte to set friction, damping and spring stiffnes parameters without closing the dialog window.
+        :return:
+        """
         self.endstops_bytes = int.to_bytes(self.settings.endstops, 2, byteorder='little', signed=True)
         self.torque_limit_between_endstops_bytes = int.to_bytes(self.settings.torque_limit_between_endstops, 1,
                                                                 byteorder='little', signed=False)
@@ -154,6 +189,11 @@ class JOAN_SensoDrive(BaseInput):
             print(inst, 'probably not initialized yet')
 
     def initialize(self):
+        """
+        Initializes the sensodrive by sending several PCAN messages which will get the sensodrive in the appropriate
+        state.
+        :return:
+        """
         # Convert integers to bytes:
         self.endstops_bytes = int.to_bytes(self.settings.endstops, 2, byteorder='little', signed=True)
         self.torque_limit_between_endstops_bytes = int.to_bytes(self.settings.torque_limit_between_endstops, 1,
@@ -220,7 +260,11 @@ class JOAN_SensoDrive(BaseInput):
             self._pcan_error = False
 
     def _toggle_on_off(self, connected):
-        # self._sensodrive_tab.btn_on_off.setEnabled(connected)
+        """
+        Toggles the sensodrive actuator on and off by cycling through different PCANmessages
+        :param connected:
+        :return:
+        """
         if connected == False:
             try:
                 self.on_to_off()
@@ -228,33 +272,60 @@ class JOAN_SensoDrive(BaseInput):
                 pass
 
     def _open_settings_from_button(self):
+        """
+        Opens and shows the settings dialog from the button on the tab
+        :return:
+        """
         if self.settings_dialog:
             self.settings_dialog.show()
 
     def _open_settings_dialog(self):
+        """
+        Not used for this input
+        """
         pass
 
     def remove_func(self):
+        """
+        Removes the keyboard from the widget and settings
+        NOTE: calls 'self.remove_tab' which is a function of the BaseInput class, if you do not do this the tab will not
+        actually disappear from the module.
+        :return:
+        """
         try:
             self.PCAN_object.Uninitialize(self._pcan_channel)
         except:
             pass
-        self.module_action.settings.remove(self.settings)
+        self.module_action.settings.sensodrives.remove(self.settings)
         self.remove_tab(self._sensodrive_tab)
 
     def disable_remove_button(self):
+        """
+        Disables the sensodrive Remove button, (useful for example when you dont want to be able to remove an input when the
+        simulator is running)
+        :return:
+        """
         if self._sensodrive_tab.btn_remove_hardware.isEnabled() is True:
             self._sensodrive_tab.btn_remove_hardware.setEnabled(False)
         else:
             pass
 
     def enable_remove_button(self):
+        """
+        Enables the sensodrive remove button.
+        :return:
+        """
         if self._sensodrive_tab.btn_remove_hardware.isEnabled() is False:
             self._sensodrive_tab.btn_remove_hardware.setEnabled(True)
         else:
             pass
 
     def on_off(self):
+        """
+        If a PCAN dongle is connected and working will check what state the sensodrive is in and take the appropriate action
+        (0x10 is ready, 0x14 is on and 0x18 is error)
+        :return:
+        """
         if self._pcan_error:
             answer = QtWidgets.QMessageBox.warning(self._sensodrive_tab, 'Warning',
                                                    "The PCAN connection was not initialized properly, please reopen settings menu to try and reinitialize.",
@@ -272,6 +343,10 @@ class JOAN_SensoDrive(BaseInput):
                 self.clear_error(self.sensodrive_initialization_message)
 
     def off_to_on(self, message):
+        """
+        If a PCAN dongle is connected and working will try to move the state of the sensodrive from off to on.
+        :return:
+        """
         print('off to on')
         message.DATA[0] = 0x10
         self.PCAN_object.Write(self._pcan_channel, message)
@@ -287,6 +362,10 @@ class JOAN_SensoDrive(BaseInput):
         self._sensodrive_tab.btn_on_off.setText('On')
 
     def on_to_off(self, message):
+        """
+        If a PCAN dongle is connected and working will try to move the state of the sensodrive from on to off.
+        :return:
+        """
         print('on to off')
         message.DATA[0] = 0x12
         self.PCAN_object.Write(self._pcan_channel, message)
@@ -298,6 +377,10 @@ class JOAN_SensoDrive(BaseInput):
         self._sensodrive_tab.btn_on_off.setText('Off')
 
     def clear_error(self, message):
+        """
+        If a PCAN dongle is connected and working will try to move the state of the sensodrive from error to off.
+        :return:
+        """
         print('clear error')
         message.DATA[0] = 0x1F
         self.PCAN_object.Write(self._pcan_channel, message)
@@ -306,6 +389,16 @@ class JOAN_SensoDrive(BaseInput):
         self._sensodrive_tab.btn_on_off.setText('Off')
 
     def process(self):
+        """
+        Processes all the inputs of the sensodrive and writes them to self._data which is then written to the news in the
+        action class
+        :return: self._data a dictionary containing :
+            self._data['BrakeInput'] = self.brake
+            self._data['ThrottleInput'] = self.throttle
+            self._data['SteeringInput'] = self.steer
+            self._data['Handbrake'] = self.handbrake
+            self._data['Reverse'] = self.reverse
+        """
         # Reverse
         self._data['Reverse'] = 0
         # Handbrake
@@ -388,6 +481,13 @@ class JOAN_SensoDrive(BaseInput):
         return self._data
 
     def write_message_pedals(self, pcan_object, pcanmessage):
+        """
+        Writes a correctly structured CAN message to the sensodrive which will return a message containing the
+        inputs of the pedals.
+        :param pcan_object:
+        :param pcanmessage:
+        :return:
+        """
         pcanmessage.ID = 0x20C
         pcanmessage.LEN = 1
         pcanmessage.MSGTYPE = PCAN_MESSAGE_STANDARD
@@ -398,6 +498,14 @@ class JOAN_SensoDrive(BaseInput):
             self.PCAN_object.Write(self._pcan_channel, pcanmessage)
 
     def write_message_steering_wheel(self, pcan_object, pcanmessage, data):
+        """
+        Writes a CAN message to the sensodrive containing information regarding torque, friction and damping. Also
+        returns the current state of the wheel (angle, force etc).
+        :param pcan_object:
+        :param pcanmessage:
+        :param data:
+        :return:
+        """
         torque_bytes = int.to_bytes(data['torque'], 2, byteorder='little', signed=True)
         friction_bytes = int.to_bytes(data['friction'], 2, byteorder='little', signed=True)
         damping_bytes = int.to_bytes(data['damping'], 2, byteorder='little', signed=True)

@@ -13,6 +13,11 @@ nav:
       - JOAN (under construction): how-to-joan.md
       - Unreal editor (under construction): how-to-unreal.md
       - Source Control (Git): how-to-git.md
+      - 'JOAN (under construction)':
+        - Add your own module: how-to-add-module.md
+        - Starting JOAN (workflow): how-to-workflow.md
+        - Settings: how-to-settings.md
+        - State Machine: how-to-state-machine.md
 
     - JOAN:
       - JOAN structure: joan-structure.md
@@ -25,3 +30,4 @@ nav:
 markdown_extensions:
   - admonition
   - attr_list
+  - inline_graphviz
