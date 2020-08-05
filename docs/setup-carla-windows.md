@@ -120,10 +120,7 @@ The steps will be explained 1 step at the time with screenshots and command line
 
 ### Step 1: Cloning the CARLA repository
 
-JOAN was tested with Carla version 0.9.9, other versions might work but no guarantees are given. To clone version 0.9.9 of the repository open a command window
-and navigate to the folder where you want to clone carla (if you don't know how to use the `cd` command to navigate in a terminal, check out
-[this page](https://www.computerhope.com/issues/chusedos.htm) first). Please remember that the git clone command will also create a project folder named carla
-at the current location. Now type the following command:
+JOAN was tested with Carla version 0.9.9, other versions might work but no guarantees are given. To clone version 0.9.9 of the repository open a command window and navigate to the folder where you want to clone carla (if you don't know how to use the `cd` command to navigate in a terminal, check out [this page](https://www.computerhope.com/issues/chusedos.htm) first). Please remember that the git clone command will also create a project folder named carla at the current location. Now type the following command:
 
     git clone https://github.com/carla-simulator/carla --branch 0.9.9
 
@@ -223,7 +220,7 @@ Open up this 'Blueprint' and then click on the array variable 'vehicles'. Now ad
 
 ![alt text](imgs/addvehicles.png "Adding Audi")
 
-If all of the steps succeeded than congrats! You have successfully built CARLA, the basis of the JOAN simulator! Please proceed to [setting up JOAN](./setup-run-joan.md).
+If all of the steps succeeded than congrats! You have successfully built CARLA, the basis of the JOAN simulator! Please proceed to [setting up JOAN](./setup-joan.md).
 
 ---
 ## Adding to system variables
