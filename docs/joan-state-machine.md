@@ -1,3 +1,5 @@
+# JOAN state machine
+
 All JOAN modules have there own state machine. There are four possible states: Idle, Ready, Running and Error. All modules are initialized in the Idle state,
 they can transfer to the Ready state when the module is initialized. And to the Running state when the module is started. If an error occurs the module should
 transfer to the Error state.

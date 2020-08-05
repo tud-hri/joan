@@ -1,3 +1,5 @@
+# JOAN settings
+
 All JOAN modules have their own settings object. This is the place where settings are saved. The contents of this settings object can be saved in, and loaded
 from, JSON files. The conversion between these files and the object is handled in the top level JoanModuleSettings object. All setting objects should enherit
 this top level object.
