@@ -7,3 +7,4 @@ PyQt5-sip>=12.7.1
 hidapi
 flake8
 keyboard
+markdown_inline_graphviz_extension --user
