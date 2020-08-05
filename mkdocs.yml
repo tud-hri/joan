@@ -12,7 +12,11 @@ nav:
     - How to use:
       - Unreal editor (under construction): how-to-unreal.md
       - Source Control (Git): how-to-git.md
-      - JOAN (under construction): how-to-joan.md
+      - 'JOAN (under construction)':
+        - Add your own module: how-to-add-module.md
+        - Starting JOAN (workflow): how-to-workflow.md
+        - Settings: how-to-settings.md
+        - State Machine: how-to-state-machine.md
 
     - Contributing:
       - Guidelines: contributing-guidelines.md
