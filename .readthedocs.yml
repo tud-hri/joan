@@ -11,5 +11,4 @@ formats: all
 python:
   version: 3.7
   install:
-    - method: pip3
     - requirements: docs/requirements.txt
