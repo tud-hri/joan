@@ -1,2 +1,2 @@
 mkdocs >= 1.0
-markdown-inline-graphviz
+markdown-inline-graphviz-extension
