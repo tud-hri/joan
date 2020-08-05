@@ -49,8 +49,8 @@ PyCharm will allow you to use the git functionality directly, see the GIF's belo
 
 In PyCharm, you could pull new changes in the online repo to your local copy as follows:
 
-![pull-pycharm](gifs/pull-own-repo.gif)
+![pull-pycharm](gifs/other-pull-own-repo.gif)
 
 Here is an example on how to use PyCharm to commit and push the changes to the online repository (note, pushing and pulling can take some time, as you can see in the GIFs too):
 
-![commit-push-pycharm](gifs/commit-push.gif)
+![commit-push-pycharm](gifs/other-commit-push.gif)

@@ -9,8 +9,8 @@ The workflow will be explained in several steps:
 1. __Add modules in main.py__
 2. __Start CARLA in unreal__
 3. __Run Main__
-4. __Setup and run Hardwaremanager__
-5. __Setup and run CarlaInterface__
+4. __Setup and run HardwareManager__
+5. __Setup and run AgentManager__
 6. __Drive!__
 
 ### Step 1. Adding the modules in main.py
@@ -22,12 +22,12 @@ This step is easy, just add the following piece of code to the main.py file (or 
 ### Step 2. Start CARLA in unreal.
 To do this select the map you'd like to drive in, the CARLA default map is town03. However (for now) the JOAN default map is 'Debugmap'. Starting the level is easy just press the play button on the top bar see the figure below:
 
-![Carla Start](imgs/Carla_Default.png)
+![Carla Start](imgs/joan-workflow-CARLA-default.png)
 
 Make sure you also have 'vehicle spawnpoints' in your level. You can check this by checking out the world content manager in the topright corner. Another note about these spawnpoints is that you should place them above the ground a bit (in this example it is 75cm, cm is the default unit in unreal) so you wont have a collision at spawning.
 
 ### Step 3. Run Main
-This is the exact same step as described in __[Setup and run your JOAN project](setup-joan.md)__ at 'Running JOAN'.
+This is the exact same step as described in __[Run JOAN](run-joan.md)__.
 
 ### Step 4. Setup and run Hardwaremanager
 To do this in the JOAN main menu show the 'Hardwaremanager' module. Now click the 'add new hardware button', this will open a selection menu in which you can choose what sort of input you'd like to add. For now only Keyboard and Joystick work. In this guide we will add a keyboard input.
@@ -41,13 +41,13 @@ So select keyboard, which will open a settings section of the keyboard. Default 
 * K = Handbrake
 
 The other settings pertain to whether the steering wheel will autocenter and how fast it does this. The sensitivities of braking and throttle can also be adjusted but we'll leave them as it is for now. These steps will look like this:
-![Hardware Setup](gifs/HardwareSetup.gif)
+![Hardware Setup](gifs/joan-workflow-hardware-setup.gif)
 
 A flow-diagram is also available at the end of this page.
 
-### Step 5. Setup and run CarlaInterface
+### Step 5. Setup and run AgentManager
 Next step is to setup the Carla Interface module. This module has some built in fail safes so that you will always use the correct order. There is however an important step you should not miss to actually drive around a car which is __select your input device!!__. A short gif of setting it up is shown below:
-![Carla Interface Setup](gifs/CarlaInterfaceSetup.gif)
+![Carla Interface Setup](gifs/joan-workflow-CarlaInterfaceSetup.gif)
 
 CARLA in unreal should be running! It is also shown what kind of error you will receive if you have not got it running in unreal.
 
@@ -61,4 +61,4 @@ If everything was done correctly you should now be able to drive the car with th
 ## Workflow flow diagram
 The steps described above are also shown in the flowchart below:
 
-![workflow](imgs/JOAN_Workflow.png)
+![workflow](imgs/joan-workflow-JOAN-workflow.png)

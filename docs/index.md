@@ -14,12 +14,19 @@ JOAN is developed by members of the [Human-Robot Interaction group](https://delf
 ## Setup
 * __[Setup on Windows](setup-carla-windows.md)__ - Guide on how to setup CARLA and JOAN on Windows OS
 * __[Setup on Linux](setup-carla-linux.md)__ - Guide on how to setup CARLA and JOAN on Linux OS (Not documented yet)
-* __[Setup and run your JOAN project](setup-joan.md)__ - Guide on how to run your JOAN project
+* __[Setup JOAN](setup-joan.md)__ - Guide on how to setup your own JOAN project
 
-## How to use
-* __[Unreal editor](how-to-unreal.md)__ - Quickstart guide with Unreal Editor for CARLA and JOAN (under construction)
-* __[Source control (Git)](how-to-git.md)__ - Quickstart guide for source control with GIT
-* __[JOAN](how-to-joan.md)__ - Quickstart guide of JOAN (under construction)
+## How to work with JOAN
+* __[JOAN structure](joan-structure.md)__ - Overview of JOAN's structure (main components, etc.)
+* __[Run JOAN](joan-run.md)__ - Quick start on how to execute JOAN
+* __[How to work with JOAN](joan-workflow.md)__ - Guide on how to setup and run JOAN (connect to CARLA, setup the modules, ...)
+* __[How to create a custom JOAN module](joan-add-module.md)__ - Guide on how to create your own JOAN modules
+* __[Info on JOAN's settings structure](joan-settings.md)__ - JOAN uses `Settings` to save you to set up every module after you run JOAN; read more about them here.
+* __[Info on JOAN's state machine](joan-state-machine.md)__ - Info on JOAN's state machine
+
+## Other documentation
+* __[Quick start CARLA Unreal Engine](other-carle-ue4.md)__ - Quick start guide with Unreal Editor for CARLA and JOAN (under construction)
+* __[Quick start source Control (git)](other-git.md)__ - Quick start guide for source control with GIT
 
 ## Contributing
 * __[Guidelines](contributing-guidelines.md)__ - Short explanation of guidelines if you want to add to JOAN

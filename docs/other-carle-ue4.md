@@ -11,4 +11,4 @@ First of all a short overview of the different components and windows you are mo
 5. __Details Panel of selected Object__
 6. __Level View__
 
-![Unreal Menus](imgs/UnrealWindows.png)
+![Unreal Menus](imgs/other-carla-unreal-editor-windows.png)
