@@ -30,4 +30,4 @@ nav:
 markdown_extensions:
   - admonition
   - attr_list
-  - markdown_inline_graphviz
+  - inline_graphviz
