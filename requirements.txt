@@ -8,3 +8,4 @@ hidapi
 flake8
 keyboard
 markdown_inline_graphviz_extension
+pymdown-extensions
