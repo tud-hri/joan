@@ -142,7 +142,7 @@ This text file contains the instructions of what to do to download the latest as
 Unpack these assets in `\carla\Unreal\CarlaUE4\Content\Carla`. If the directory does not exist, create it.
 
 ### Step 3: Get specific JOAN Assets
-To have a nice car interior which also turns the steering wheel when you turn your physical steering wheel, some extra assets are required. You can download them [here](https://www.dropbox.com/s/yf7mu3v7jwcewmr/JOAN_Assets.zip?dl=0). The file contains:
+To have a nice car interior which also turns the steering wheel when you turn your physical steering wheel, some extra assets are required. You can download them [here](https://www.dropbox.com/s/yhbf59t7i5iu6rw/JOAN_Assets.zip?dl=0). The file contains:
 
 * `JOAN_Blueprints`
 * `JOAN_Static`
