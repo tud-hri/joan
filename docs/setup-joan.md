@@ -17,16 +17,20 @@ Clone the repository with the following code:
 ## Setting up a Python Virtual Environment
 We will now create a Python virtual environment, this will help keeping your JOAN project separated from your other projects. If you are interested and would like more information on virtual environments, please read [this](https://docs.python.org/3/tutorial/venv.html). But for now you can also just follow these steps.
 
-To create the virtual environment, navigate to the JOAN project folder you've just cloned. Now type:
+Using PyCharm, open the terminal again (in PyCharm), check if the directory is still correct (of your repository) and type:
 
     python -m venv venv
 
+!!! Note
+    If you don't use PyCharm, just use any other terminal to do these steps.
+
 This will create a folder called `venv` containing a new and clean virtual environment. To start working in this environment, we have to activate it first. To do this type:
 
-    venv\Scripts\activate.bat 
+    venv\Scripts\activate
 
-If this succeeded, (`venv`) should have appeared in your command line trailing your current location. This indicates that the python command points to the virtual environment.
-How to select this newly created virtual environment as the project interpreter in your IDE, depend on which IDE you are using. PyCharm should automatically detect the virtual environment and use it, for VS Code please check [this link](https://stackoverflow.com/questions/54106071/how-to-setup-virtual-environment-for-python-in-vs-code). For other IDE's please use the internet.  
+If this succeeded, (`venv`) should have appeared in your command line trailing your current location. This indicates that the python command points to the virtual environment. 
+
+If you are using PyCharm, you might need to add your freshly created virtual environment as a Python interpreter. Click on the interpreter widget (it should say something with interpreter) and click `Add interpreter`. It should automatically select the `venv` Python interpreter. Confirm everything and wait for a bit. PyCharm needs some time to set everything up.
 
 ---
 ## Getting necessary python3 libraries
@@ -35,20 +39,32 @@ To install all requirements from the command prompt, make sure you are in the pr
 
     pip install -r requirements.txt 
 
-The only dependency not in the requirements.txt is the CARLA PythonAPI which we build earlier. To install this dependency navigate to your CARLA folder, to `carla\PythonAPI\carla\dist`. Make sure you still have the virtual environment activated. Now type:
-
-    pip install  carla.whl
+The only dependency not in the requirements.txt is the CARLA PythonAPI which we build earlier. To use this dependency copy the `*.egg` file to the empty folder `carla_pythonapi` in your JOAN project folder. If you have not done this step you will get an error message whenever you start JOAN.
     
 !!! Note
-    Please note that the file name of the `*.egg` file might be slightly different in your case, it depends on the Python version.
+    Please note that the file name of the `*.egg` file might be slightly different in your case, it depends on the Python version. Make sure that the filename in `carlainterfaceaction.py` matches the name of your own `*.egg` file. 
 
 ---
 ## Running JOAN
-Either open up the folder you cloned the repository in your preferred IDE and run via that or type in the following in the terminal from your cloned directory.
-In both cases make sure you use the virtual environment as the python interpreter.
+
+### Using PyCharm
+Once you've selected the correct Python interpreter (in our case `venv`), you can run JOAN by either clicking `Run` and `Run 'main'` or right-click on `main.py` and select `Run 'main'`.
+
+![pycharm-run-main](gifs/pycharm-run-main.gif)
+
+### Using VS Code
+Visual Studio Code will ask you which Python interpreter you want to use. Make sure to use the `venv` virtual environment you just created. Open the `main.py` file and run it (green triangle in the top-right corner).
+
+![vscode-run-main](gifs/vscode-run-joan.gif)
+
+### Using any other terminal
+Navigate to your repository folder. Make sure the `venv` environment is activated as your Python interpreter.
 
     python main.py
 
 What should be happening is the following:
 
 ![alt text](gifs/JOAN.gif "Starting JOAN")
+
+!!! Warning
+    Doesn't work? Hmm, are you sure you followed all the steps? Please double-check. Else, check with a fellow student who got it up and running, or talk to your supervisor.

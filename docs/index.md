@@ -15,7 +15,7 @@ JOAN is developed by members of the [Human-Robot Interaction group](https://delf
 * __[Setup on Windows](setup-carla-windows.md)__ - Guide on how to setup CARLA and JOAN on Windows OS
 * __[Setup on Linux](setup-carla-linux.md)__ - Guide on how to setup CARLA and JOAN on Linux OS (Not documented yet)
 * __[Create your own JOAN project](setup-create-joan-project.md)__ - Guide to setting up your own JOAN project
-* __[Setup and run your JOAN project](setup-run-joan.md)__ - Guide on how to run your JOAN project
+* __[Setup and run your JOAN project](setup-joan.md)__ - Guide on how to run your JOAN project
 
 ## How to use
 * __[Unreal editor](how-to-unreal)__ - Quickstart guide with Unreal Editor for CARLA and JOAN (under construction)
