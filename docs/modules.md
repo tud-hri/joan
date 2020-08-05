@@ -2,10 +2,10 @@
 # datarecorder class diagram
 Datarecorder consist of a moduleWidget called DatarecorderWidget and a moduleAction called Datarecorderaction
 
-DataRecorderWidget(Control) <br>
-moduleWidget(Control) <br>
-moduleAction(Control) <br>
-module_states(MasterStates)<br><br>
+DataRecorderWidget(Control) 
+moduleWidget(Control) 
+moduleAction(Control) 
+module_states(MasterStates)
 
 ```mermaid
     classDiagram
@@ -33,11 +33,11 @@ module_states(MasterStates)<br><br>
 
 
 # feedbackcontroller class diagram
-CarlainterfaceWidget(Control) <br>
-FeedbackcontrollerWidget(Control) <br>
-SteeringcommunicationWidget(Control)<br>
-Basecontroller<br>
-Arbitrarycontroller(Basecontroller)<br><br>
+CarlainterfaceWidget(Control) 
+FeedbackcontrollerWidget(Control) 
+SteeringcommunicationWidget(Control)
+Basecontroller
+Arbitrarycontroller(Basecontroller)
 
 
 ```mermaid

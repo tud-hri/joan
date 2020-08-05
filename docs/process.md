@@ -1,13 +1,13 @@
 
 ## Classes
-Status is a singleton class <br>
-News is a singleton class <br>
-Control(Pulsar) <br>
-StateHandler(QtCore.QObject) <br>
-State <br>
-MasterStates <br>
-Pulsar(QtCore.QThread) <br>
-MainModuleWidget(Control) <br>
+Status is a singleton class 
+News is a singleton class 
+Control(Pulsar) 
+StateHandler(QtCore.QObject) 
+State 
+MasterStates 
+Pulsar(QtCore.QThread) 
+MainModuleWidget(Control) 
 
 # Main process class diagram
 
