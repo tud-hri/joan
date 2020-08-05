@@ -9,19 +9,17 @@ nav:
       - Setup on Linux: setup-carla-linux.md
       - Setup JOAN: setup-joan.md
 
-    - How to use:
-      # - JOAN (under construction): how-to-joan.md
-      - Unreal editor (under construction): how-to-unreal.md
-      - Source Control (Git): how-to-git.md
-      - 'JOAN (under construction)':
-        - Add your own module: how-to-add-module.md
-        - Starting JOAN (workflow): how-to-workflow.md
-        - Settings: how-to-settings.md
-        - State Machine: how-to-state-machine.md
-
-    - JOAN:
+    - How to work with JOAN:
       - JOAN structure: joan-structure.md
-      - Create custom modules: joan-create-module.md
+      - Run JOAN: joan-run.md
+      - Starting JOAN (workflow): joan-workflow.md
+      - Create custom JOAN modules: joan-add-module.md
+      - Settings: joan-settings.md
+      - State Machine: joan-state-machine.md
+
+    - Other documentation:
+      - Quick start CARLA Unreal Engine (under construction): other-carle-ue4.md
+      - Quick start source Control (git): other-git.md
 
     - Contributing:
       - Guidelines: contributing-guidelines.md

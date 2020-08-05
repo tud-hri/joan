@@ -123,28 +123,3 @@ The only dependency not in the requirements.txt is the CARLA PythonAPI which we 
     
 !!! Note
     Please note that the file name of the `*.egg` file might be slightly different in your case, it depends on the Python version. Make sure that the filename in `carlainterfaceaction.py` matches the name of your own `*.egg` file. 
-
----
-## Running JOAN
-
-### Using PyCharm
-Once you've selected the correct Python interpreter (in our case `venv`), you can run JOAN by either clicking `Run` and `Run 'main'` or right-click on `main.py` and select `Run 'main'`.
-
-![pycharm-run-main](gifs/pycharm-run-main.gif)
-
-### Using VS Code
-Visual Studio Code will ask you which Python interpreter you want to use. Make sure to use the `venv` virtual environment you just created. Open the `main.py` file and run it (green triangle in the top-right corner).
-
-![vscode-run-main](gifs/vscode-run-joan.gif)
-
-### Using any other terminal
-Navigate to your repository folder. Make sure the `venv` environment is activated as your Python interpreter.
-
-    python main.py
-
-What should be happening is the following:
-
-![alt text](gifs/JOAN.gif "Starting JOAN")
-
-!!! Warning
-    Doesn't work? Hmm, are you sure you followed all the steps? Please double-check. Else, check with a fellow student who got it up and running, or talk to your supervisor.
