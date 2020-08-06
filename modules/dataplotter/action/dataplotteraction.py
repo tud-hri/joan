@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 from datetime import datetime
 
-# TODO: from modules.dataplotter.action.dataplotter import DataPlotter
+from modules.dataplotter.action.dataplotter import DataPlotter
 from modules.dataplotter.action.dataplottersettings import DataPlotterSettings
 from modules.joanmodules import JOANModules
 
@@ -42,11 +42,10 @@ class DataplotterAction(JoanModuleAction):
         # end settings for this module
 
         self.filename = ''
-        '''TODO: make class that plots the data 
         self.data_plotter = DataPlotter(news=self.get_all_news(),
                                         channels=self.get_available_news_channels(),
                                         settings=self.get_module_settings(JOANModules.DATA_PLOTTER))
-        '''
+
         # TODO: run data_plotter in separate thread
         # self.data_plotter.start()
 
@@ -105,7 +104,7 @@ class DataplotterAction(JoanModuleAction):
         Opens the dataplotter
         """
         self.state_machine.request_state_change(State.RUNNING)
-        # TODO: make plot class: self.data_plotter.open(filename=self.get_filename(), filepath='datalogs')
+        self.data_plotter.set_window()
         super().start()
 
     def _plot(self):
@@ -114,7 +113,7 @@ class DataplotterAction(JoanModuleAction):
         according to the plottersettings
         """
         now = datetime.now()
-        print("Not yet implemented")
+        self.data_plotter.write(timestamp=now, news=self.get_all_news(), channels=self.get_available_news_channels())
         # TODO: create the plotter class
 
     def handle_tree_widget_click(self):

@@ -7,6 +7,9 @@ from process.joanmoduledialog import JoanModuleDialog
 from process.joanmoduleaction import JoanModuleAction
 from process.statesenum import State
 from process import News
+from modules.dataplotter.action.dataplottersettings import PlotWindows
+from modules.dataplotter.action.dataplottersettings import LineTypes
+from modules.dataplotter.action.dataplottersettings import LineColors
 
 class CreateTreeWidgetDialog(QtWidgets.QDialog):
     """
@@ -14,42 +17,27 @@ class CreateTreeWidgetDialog(QtWidgets.QDialog):
     except for the Data Recorder and Data Plotter
     The dialog is shown and editable in the Data Plotter Settings part
     """
-    def __init__(self, parent=None, module_action=None, variables_to_save=None, tree_widget=None):
+    def __init__(self, parent=None, module_action=None, tree_widget=None):
         """
-        :param variabele_to_save: contains all Data Plotter settings from the default_settings_file_location
+        :param module_action: contains all action performaed on this dialog and settings
         :param tree_widget: the tree which is built up
         :param parent:
         """
         super().__init__(parent)
 
-        self.picklist_plot_window = []
-        self.picklist_line_type = []
-        self.picklist_line_color = []
-
         self.module_action = module_action
-        self.variables_to_save = variables_to_save
         self.tree_widget = tree_widget
 
     def make_tree(self):
         """
-        The tree is created here recursively with use of the available variables 
-        in the dataplotter settings 
+        The tree is created here recursively with use of the available variables
+        in the dataplotter settings
         """
-        for module_key, module_news in self.variables_to_save.items():
+        for module_key, module_news in self.module_action.settings.variables_to_save.items():
             if module_news:   # show only modules with news
 
                 self._create_tree_item(self, self.tree_widget, module_key, module_news)
         self.tree_widget.expandAll()
-
-    def set_picklists(self, picklists):
-        """
-        :param picklist: contains a dictionary with picklists as an array
-        Fills the picklist from the settings file
-        If the settings file doesn't have a picklist setting than default values are used
-        """
-        self.picklist_plot_window = picklists.get('plot_windows') or ['No']
-        self.picklist_line_type = picklists.get('line_types') or []
-        self.picklist_line_color = picklists.get('line_colors') or []
 
     @staticmethod
     def _create_tree_item(self, parent, key, value):
@@ -59,7 +47,7 @@ class CreateTreeWidgetDialog(QtWidgets.QDialog):
         :param key: current used key
         :param value: current used value
         """
-        if isinstance(value, dict) and 'plot_window' not in value.keys():
+        if isinstance(value, dict) and str(PlotWindows.KEY) not in value.keys():
             item = QtWidgets.QTreeWidgetItem(parent)
             item.setData(0, Qt.DisplayRole, str(key))
 
@@ -70,25 +58,25 @@ class CreateTreeWidgetDialog(QtWidgets.QDialog):
             item.setData(0, Qt.DisplayRole, str(key))
 
             combo_box_plot_window = QtWidgets.QComboBox()
-            for plot_window in self.picklist_plot_window:
+            for plot_window in self.module_action.settings.picklist_plot_windows:
                 combo_box_plot_window.addItem(plot_window)
-            combo_box_plot_window.setCurrentIndex(combo_box_plot_window.findText(value.get('plot_window')))
-            slot_lambda_plot_window = lambda: self.handler(item, str(combo_box_plot_window.currentText()), 'plot_window')
+            combo_box_plot_window.setCurrentIndex(combo_box_plot_window.findText(value.get(str(PlotWindows.KEY))))
+            slot_lambda_plot_window = lambda: self.handler(item, str(combo_box_plot_window.currentText()), str(PlotWindows.KEY))
             combo_box_plot_window.currentIndexChanged.connect(slot_lambda_plot_window)
             
-            if value.get('plot_window') != 'No':
+            if value.get(str(PlotWindows.KEY)) != str(PlotWindows.NOPLOT):
                 combo_box_line_type = QtWidgets.QComboBox()
-                for line_type in self.picklist_line_type:
+                for line_type in self.module_action.settings.picklist_line_types:
                     combo_box_line_type.addItem(line_type)
-                combo_box_line_type.setCurrentIndex(combo_box_line_type.findText(value.get('line_type')))
-                slot_lambda_line_type = lambda: self.handler(item, str(combo_box_line_type.currentText()), 'line_type')
+                combo_box_line_type.setCurrentIndex(combo_box_line_type.findText(value.get(str(LineTypes.KEY))))
+                slot_lambda_line_type = lambda: self.handler(item, str(combo_box_line_type.currentText()), str(LineTypes.KEY))
                 combo_box_line_type.currentIndexChanged.connect(slot_lambda_line_type)
                 
                 combo_box_line_color = QtWidgets.QComboBox()
-                for line_color in self.picklist_line_color:
+                for line_color in self.module_action.settings.picklist_line_colors:
                     combo_box_line_color.addItem(line_color)
-                combo_box_line_color.setCurrentIndex(combo_box_line_color.findText(value.get('line_color')))
-                slot_lambda_line_color = lambda: self.handler(item, str(combo_box_line_color.currentText()), 'line_color')
+                combo_box_line_color.setCurrentIndex(combo_box_line_color.findText(value.get(str(LineColors.KEY))))
+                slot_lambda_line_color = lambda: self.handler(item, str(combo_box_line_color.currentText()), str(LineColors.KEY))
                 combo_box_line_color.currentIndexChanged.connect(slot_lambda_line_color)
 
                 self.tree_widget.setItemWidget(item, 1, combo_box_plot_window)
@@ -113,9 +101,9 @@ class CreateTreeWidgetDialog(QtWidgets.QDialog):
             item = item.parent()
 
         texts.reverse()  # easier to handle
-        if self.variables_to_save.get(texts[0]) is None:
-            self.variables_to_save[texts[0]] = {}
-        temp_dict = self.variables_to_save.get(texts[0])
+        if self.module_action.settings.variables_to_save.get(texts[0]) is None:
+            self.module_action.settings.variables_to_save[texts[0]] = {}
+        temp_dict = self.module_action.settings.variables_to_save.get(texts[0])
         for key in texts[1:-2]:
             if temp_dict.get(key) is None:
                 temp_dict[key] = {}
@@ -186,9 +174,7 @@ class DataplotterDialog(JoanModuleDialog):
         """
         self.module_widget.treeWidget.clear()
         create_treewidget_dialog = CreateTreeWidgetDialog(module_action=self.module_action,
-                                                          variables_to_save=self.module_action.settings.get_variables_to_save(),
                                                           tree_widget=self.module_widget.treeWidget)
-        create_treewidget_dialog.set_picklists(self.module_action.settings.get_picklists())
         create_treewidget_dialog.make_tree()
 
     def _handle_module_specific_state(self):
