@@ -99,7 +99,7 @@ class TrafficvehicleSettingsDialog(QtWidgets.QDialog):
 
     def _set_default_values(self):
         """
-        the default values found in 'Agentmanagersettings -> TrafficVehicleSettings()
+        the default values found in 'Carlainterfacesettings -> TrafficVehicleSettings()
         :return:
         """
         self._display_values(TrafficVehicleSettings())
