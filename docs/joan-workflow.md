@@ -2,7 +2,7 @@
 In this section an overview of the workflow of JOAN is presented.
 
 !!! Note
-    This document will only contain a workflow of the essential bare-bone modules (Carlainterface, Hardwaremanager) to drive a car around. This flow might change depending on your own implemented modules.
+    This document will only contain a workflow of the essential bare-bone modules (CarlaInterface, HardwareManager) to drive a car around. This flow might change depending on your own implemented modules.
 
 The workflow will be explained in several steps:
 
@@ -24,13 +24,13 @@ To do this select the map you'd like to drive in, the CARLA default map is town0
 
 ![Carla Start](imgs/joan-workflow-CARLA-default.png)
 
-Make sure you also have 'vehicle spawnpoints' in your level. You can check this by checking out the world content manager in the topright corner. Another note about these spawnpoints is that you should place them above the ground a bit (in this example it is 75cm, cm is the default unit in unreal) so you wont have a collision at spawning.
+Make sure you also have 'vehicle spawn points' in your level. You can check this by checking out the world content manager in the top-right corner. Another note about these spawn points is that you should place them above the ground a bit (in this example it is 75cm, cm is the default unit in unreal) so you wont have a collision at spawning.
 
 ### Step 3. Run Main
-This is the exact same step as described in __[Run JOAN](run-joan.md)__.
+This is the exact same step as described in __[Run JOAN](joan-run.md)__.
 
-### Step 4. Setup and run Hardwaremanager
-To do this in the JOAN main menu show the 'Hardwaremanager' module. Now click the 'add new hardware button', this will open a selection menu in which you can choose what sort of input you'd like to add. For now only Keyboard and Joystick work. In this guide we will add a keyboard input.
+### Step 4. Setup and run HardwareManager
+To do this in the JOAN main menu show the 'HardwareManager' module. Now click the 'add new hardware button', this will open a selection menu in which you can choose what sort of input you'd like to add. For now only Keyboard and Joystick work. In this guide we will add a keyboard input.
 So select keyboard, which will open a settings section of the keyboard. Default keys are:
 
 * W = Throttle
@@ -40,7 +40,7 @@ So select keyboard, which will open a settings section of the keyboard. Default 
 * R = Toggle Reverse
 * K = Handbrake
 
-The other settings pertain to whether the steering wheel will autocenter and how fast it does this. The sensitivities of braking and throttle can also be adjusted but we'll leave them as it is for now. These steps will look like this:
+The other settings pertain to whether the steering wheel will auto-center and how fast it does this. The sensitivities of braking and throttle can also be adjusted but we'll leave them as it is for now. These steps will look like this:
 ![Hardware Setup](gifs/joan-workflow-hardware-setup.gif)
 
 A flow-diagram is also available at the end of this page.
