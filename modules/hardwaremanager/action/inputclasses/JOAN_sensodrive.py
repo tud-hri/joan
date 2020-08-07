@@ -406,7 +406,7 @@ class JOAN_SensoDrive(BaseInput):
 
         # check whether we have a sw_controller that should be updated
         self._steering_wheel_control_data = self._action.read_news(JOANModules.STEERING_WHEEL_CONTROL)
-        self._carla_interface_data = self._action.read_news(JOANModules.AGENT_MANAGER)
+        self._carla_interface_data = self._action.read_news(JOANModules.CARLA_INTERFACE)
         try:
             self.steering_wheel_parameters['torque'] = self._steering_wheel_control_data[
                 self._carla_interface_data['agents']['Car 1']['vehicle_object'].selected_sw_controller]['sw_torque']

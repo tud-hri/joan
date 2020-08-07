@@ -1,5 +1,5 @@
 from .basevehicle import Basevehicle
-from modules.agentmanager.action.agentmanagersettings import EgoVehicleSettings
+from modules.carlainterface.action.carlainterfacesettings import EgoVehicleSettings
 from modules.joanmodules import JOANModules
 
 from PyQt5 import uic, QtWidgets
@@ -80,16 +80,16 @@ class Egovehicle(Basevehicle):
     """
     Egovehicle class which inherits from basevehicle.
     """
-    def __init__(self, agent_manager_action, car_nr, nr_spawn_points, tags, settings: EgoVehicleSettings):
+    def __init__(self, carlainterface_action, car_nr, nr_spawn_points, tags, settings: EgoVehicleSettings):
         """
         Initializes the class with identifiers which are needed to spawn the agent
-        :param agent_manager_action:
+        :param carlainterface_action:
         :param car_nr:
         :param nr_spawn_points:
         :param tags:
         :param settings:
         """
-        super().__init__(agent_manager_action)
+        super().__init__(carlainterface_action)
 
         self.settings = settings
 

@@ -157,11 +157,11 @@ reads the corresponding .ui file and does all the action needed for this widget
 ### modules.menu.widget.menu.ui
 definition of the gui
 
-### modules.agentmanager.widget.interface.py (not used yet)
+### modules.carlainterface.widget.interface.py (not used yet)
 Carla interface handles all communication between carla and unreal by making use of the 
 carla PYTHONAPI. Here we have to extract all the info we want to use and can send it 
 over the news channel
-### modules.agentmanager.widget.interface.ui
+### modules.carlainterface.widget.interface.ui
 definition of the gui
 
 ### modules.template.widget.template.py

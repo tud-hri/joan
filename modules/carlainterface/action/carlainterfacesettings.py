@@ -7,7 +7,7 @@ from process.joanmodulesettings import JoanModuleSettings
 from modules.joanmodules import JOANModules
 
 
-class AgentManagerSettings(JoanModuleSettings):
+class CarlainterfaceSettings(JoanModuleSettings):
     """
     Class containing the different settings for multiple agents, inherits from JoanModuleSettings
     """
@@ -53,13 +53,13 @@ class AgentManagerSettings(JoanModuleSettings):
     def _copy_dict(source, destination):
         for key, value in source.items():
             if isinstance(value, list):
-                destination[key] = AgentManagerSettings._copy_list(value)
+                destination[key] = CarlainterfaceSettings._copy_list(value)
             elif isinstance(value, dict):
                 try:
                     destination[key]  # make sure that the destination dict has an entry at key
                 except KeyError:
                     destination[key] = dict()
-                AgentManagerSettings._copy_dict(value, destination[key])
+                CarlainterfaceSettings._copy_dict(value, destination[key])
             elif hasattr(value, '__dict__') and not isinstance(value, Enum) and not inspect.isclass(value):
                 # recognize custom class object by checking if these have a __dict__, Enums and static classes should be copied as a whole
                 # convert custom classes to dictionaries
@@ -68,7 +68,7 @@ class AgentManagerSettings(JoanModuleSettings):
                     destination[key] = value.as_dict()
                 except NotImplementedError:
                     destination[key] = dict()
-                    AgentManagerSettings._copy_dict(value.__dict__, destination[key])
+                    CarlainterfaceSettings._copy_dict(value.__dict__, destination[key])
             else:
                 destination[key] = source[key]
 
@@ -77,7 +77,7 @@ class AgentManagerSettings(JoanModuleSettings):
         output_list = []
         for index, item in enumerate(source):
             if isinstance(item, list):
-                output_list.append(AgentManagerSettings._copy_list(item))
+                output_list.append(CarlainterfaceSettings._copy_list(item))
             elif hasattr(item, '__dict__') and not isinstance(item, Enum) and not inspect.isclass(item):
                 # recognize custom class object by checking if these have a __dict__, Enums and static classes should be copied as a whole
                 # convert custom classes to dictionaries
@@ -86,7 +86,7 @@ class AgentManagerSettings(JoanModuleSettings):
                     output_list.append(item.as_dict())
                 except NotImplementedError:
                     output_list.append(dict())
-                    AgentManagerSettings._copy_dict(item.__dict__, output_list[index])
+                    CarlainterfaceSettings._copy_dict(item.__dict__, output_list[index])
             else:
                 output_list.append(item)
         return output_list

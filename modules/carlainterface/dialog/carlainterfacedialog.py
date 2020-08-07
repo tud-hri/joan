@@ -7,7 +7,7 @@ from process.statesenum import State
 from PyQt5 import QtWidgets, uic
 import os
 
-class AgentmanagerDialog(JoanModuleDialog):
+class CarlainterfaceDialog(JoanModuleDialog):
     """
     This class is the actual dialog you see when you open up the module. Mostly this class serves as a
     connection between the user and the 'brains', which is the action module.
@@ -18,7 +18,7 @@ class AgentmanagerDialog(JoanModuleDialog):
         :param module_action:
         :param parent:
         """
-        super().__init__(module=JOANModules.AGENT_MANAGER, module_action=module_action, parent=parent)
+        super().__init__(module=JOANModules.CARLA_INTERFACE, module_action=module_action, parent=parent)
 
         #initialize variables
         self.connected = False
