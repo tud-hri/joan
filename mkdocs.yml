@@ -26,14 +26,16 @@ nav:
       - Coding Standard: contributing-coding-standard.md
 
 markdown_extensions:
-  - admonition
-  - attr_list
-  - markdown_inline_graphviz
-  - pymdownx.superfences:
+   - admonition
+   - attr_list
+   - markdown_inline_graphviz
+   - pymdownx.superfences:
         custom_fences:
           - name: mermaid
             class: mermaid
+            format: !!python/name:pymdownx.superfences.fence_div_format
 
-
+extra_css:
+  - https://unpkg.com/mermaid@8.6.0/dist/mermaid.css
 extra_javascript:
   - https://unpkg.com/mermaid@8.6.0/dist/mermaid.min.js
