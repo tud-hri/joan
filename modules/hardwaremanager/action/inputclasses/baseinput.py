@@ -11,7 +11,7 @@ class BaseInput:
         Initializes the class
         :param hardware_manager_action: Uses the action class of the module so we can read the news.
         """
-        self._carla_interface_data = hardware_manager_action.read_news(JOANModules.AGENT_MANAGER)
+        self._carla_interface_data = hardware_manager_action.read_news(JOANModules.CARLA_INTERFACE)
         self._action = hardware_manager_action
         self._data = {'SteeringInput': 0, 'ThrottleInput': 0, 'BrakeInput': 0, 'Reverse': False, 'Handbrake': False}
         self.currentInput = 'None'

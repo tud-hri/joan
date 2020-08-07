@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QMessageBox, QApplication
 
 from .agents.egovehicle import Egovehicle
 from .agents.trafficvehicle import Trafficvehicle
-from .agentmanagersettings import  AgentManagerSettings, EgoVehicleSettings, TrafficVehicleSettings
+from .carlainterfacesettings import  CarlainterfaceSettings, EgoVehicleSettings, TrafficVehicleSettings
 
 
 from modules.joanmodules import JOANModules
@@ -42,7 +42,7 @@ except IndexError:
     msg_box.exec()
     pass
 
-class AgentmanagerAction(JoanModuleAction):
+class CarlainterfaceAction(JoanModuleAction):
     """
     AgentAction is the 'brains' of the module and does most of the calculations and data handling regarding the agents. Inherits
     Agents being the cars/actors you want to control and spawn in the CARLA environment.
@@ -53,7 +53,7 @@ class AgentmanagerAction(JoanModuleAction):
         Initializes the class
         :param millis: the interval in milliseconds that the module will tick at
         """
-        super().__init__(module=JOANModules.AGENT_MANAGER, millis=millis)
+        super().__init__(module=JOANModules.CARLA_INTERFACE, millis=millis)
 
         #Initialize Variables
         self.data = {}
@@ -63,7 +63,7 @@ class AgentmanagerAction(JoanModuleAction):
         self.time = QtCore.QTime()
         self._data_from_hardware = {}
 
-        self.settings = AgentManagerSettings(module_enum=JOANModules.AGENT_MANAGER)
+        self.settings = CarlainterfaceSettings(module_enum=JOANModules.CARLA_INTERFACE)
 
         #Carla connection variables:
         self.host = 'localhost'

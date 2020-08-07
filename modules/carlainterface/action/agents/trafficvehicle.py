@@ -1,5 +1,5 @@
 from .basevehicle import Basevehicle
-from modules.agentmanager.action.agentmanagersettings import TrafficVehicleSettings
+from modules.carlainterface.action.carlainterfacesettings import TrafficVehicleSettings
 
 from PyQt5 import uic, QtWidgets
 from tools.lowpassfilterbiquad import LowPassFilterBiquad
@@ -109,22 +109,22 @@ class Trafficvehicle(Basevehicle):
     This class contains everything you need to make a vehicle follow a predefined route by PD control
     """
 
-    def __init__(self, agent_manager_action, vehicle_nr, nr_spawn_points, tags, settings: TrafficVehicleSettings):
+    def __init__(self, carlainterface_action, vehicle_nr, nr_spawn_points, tags, settings: TrafficVehicleSettings):
         """
         Initializes the class
-        :param agent_manager_action:
+        :param carlainterface_action:
         :param vehicle_nr:
         :param nr_spawn_points:
         :param tags:
         :param settings:
         """
 
-        self.agent_manager_action = agent_manager_action
+        self.carlainterface_action = carlainterface_action
 
         self.settings = settings
-        self._bq_filter_heading = LowPassFilterBiquad(fs =1000/self.agent_manager_action.tick_interval_ms, fc = 3)
-        self._bq_filter_velocity = LowPassFilterBiquad(fs = 1000/self.agent_manager_action.tick_interval_ms, fc = 3)
-        self.module_action = agent_manager_action
+        self._bq_filter_heading = LowPassFilterBiquad(fs =1000/self.carlainterface_action.tick_interval_ms, fc = 3)
+        self._bq_filter_velocity = LowPassFilterBiquad(fs = 1000/self.carlainterface_action.tick_interval_ms, fc = 3)
+        self.module_action = carlainterface_action
 
         self._t2 = 0
 
