@@ -70,3 +70,10 @@ class JOANModules(enum.Enum):
                 JOANModules.AGENT_MANAGER: 'Agent Manager',
                 JOANModules.EXPERIMENT_MANAGER: 'Experiment Manager',
                 }[self]
+
+    @staticmethod
+    def from_string_representation(string):
+        for module in JOANModules:
+            if str(module) == string:
+                return module
+        return None

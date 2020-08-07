@@ -58,7 +58,7 @@ class Settings:
         return self._settings.keys()
 
 
-"""DEPRECATED - NOW ONLY USED IN EXPERIMENT MANAGER"""
+"""DEPRECATED - NOW ONLY USED IN EXPERIMENT MANAGER"""  # TODO: now it is not used anywhere, so clean up
 
 
 class ModuleSettings:

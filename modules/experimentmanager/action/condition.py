@@ -1,3 +1,6 @@
+from modules.joanmodules import JOANModules
+
+
 class Condition:
 
     def __init__(self, modules_included: list, name):
@@ -14,6 +17,16 @@ class Condition:
             condition.diff[module] = Condition._get_dict_diff(parent_experiment.base_settings[module].as_dict()[str(module)], settings_singleton.get_settings(module).as_dict()[str(module)], {})
 
         return condition
+
+    def get_savable_dict(self):
+        dict_to_save = {}
+        for key, item in self.diff.items():
+            dict_to_save[str(key)] = item
+        return dict_to_save
+
+    def set_form_loaded_dict(self, loaded_dict):
+        for key, item in loaded_dict.items():
+            self.diff[JOANModules.from_string_representation(key)] = item
 
     @staticmethod
     def _get_dict_diff(base_dict, specific_dict, diff_dict):
