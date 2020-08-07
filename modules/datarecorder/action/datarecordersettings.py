@@ -50,7 +50,7 @@ class DataRecorderSettings(JoanModuleSettings):
                 else:
                     try:
                         element[key] = variables_element[key]
-                    except KeyError:
+                    except (KeyError, TypeError):
                         element[key] = True
 
     def refresh(self, existing_variables_to_save):

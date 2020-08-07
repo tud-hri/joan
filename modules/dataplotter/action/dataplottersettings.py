@@ -150,7 +150,7 @@ class DataPlotterSettings(JoanModuleSettings):
                 else:
                     try:
                         element[key] = variables_element[key]
-                    except KeyError:
+                    except (KeyError, TypeError):
                         element_property = {}
                         element_property[str(PlotWindows.KEY)] = str(PlotWindows.NOPLOT)
                         element_property[str(LineTypes.KEY)] = str(LineTypes.SOLID)
