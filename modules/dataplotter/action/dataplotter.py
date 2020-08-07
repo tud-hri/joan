@@ -6,7 +6,6 @@ A settingsfile is used to filter which data will be plotted
 import math
 import json
 import threading
-import sys  # TODO remove this when testing is done
 from PyQt5 import QtWidgets, QtCore
 import pyqtgraph as pg
 from modules.dataplotter.action.plotwindow import PlotWindow
@@ -128,6 +127,8 @@ class DataPlotter(threading.Thread):
         Updates the plot data
         """
         '''
+        INFO: Voorbeeld van data dat wordt doorgegeven:
+
         plot_data: {'time': '150619055458', 
         <PlotWindows.PLOT2: 2>: {'line_color': 'zwart', 
                                 'line_type': 'solid', 
@@ -144,11 +145,11 @@ class DataPlotter(threading.Thread):
                 self.x[plot] = self.x[plot][1:]  # Remove the first y element.
                 self.x[plot].append(self.x[plot][-1] + 1)  # Add a new value 1 higher than the last.
 
-                lc =  plot_data.get(plot).get(str(LineColors.KEY))
-                lc_enum_value = LineColors.reverse(lc).value
+                _lc = plot_data.get(plot).get(str(LineColors.KEY))
+                lc_enum_value = LineColors.reverse(_lc).value
 
-                lt = plot_data.get(plot).get(str(LineTypes.KEY))
-                lt_enum_value = LineTypes.reverse(lt).value
+                _lt = plot_data.get(plot).get(str(LineTypes.KEY))
+                lt_enum_value = LineTypes.reverse(_lt).value
 
                 self.plot_item_data_properties[plot][LineColors.KEY] = LineColors.color(LineColors(lc_enum_value))
                 self.plot_item_data_properties[plot][LineTypes.KEY] = LineTypes.view(LineTypes(lt_enum_value))
@@ -156,7 +157,8 @@ class DataPlotter(threading.Thread):
                                 "style":  self.plot_item_data_properties[plot][LineTypes.KEY]
                                 })
 
-                self.y[plot] = self.y[plot][1:]  # Remove the first TODO, make this per item as defined in 'legenda'
+                # TODO, make self.y and self.x per plot and per item as defined in 'legenda'
+                self.y[plot] = self.y[plot][1:]  # Remove the first
                 self.y[plot].append(plot_data.get(plot).get('value'))
 
                 if plot_data.get(plot).get('value') < self.range_min[plot]:
@@ -197,8 +199,6 @@ class DataPlotter(threading.Thread):
                         else:
                             row_names = []
                             for deepest_key in current_allow.keys():
-                                print("%s - %s - %s" % ("hier kan ik wat mee!", deepest_key, current_allow.get(deepest_key)))
-                                print ('b b b', self.plot_item, type(current_allow.get(deepest_key)) )
 
                                 if current_allow.get(deepest_key) != {}:
                                     for plot in self.plot_item:
@@ -246,55 +246,3 @@ class DataPlotter(threading.Thread):
 
         row.update(self.filter_row(news=news, channels=channels))
         self.update_plot_data(row)
-
-test_settings = '''{
-    "Data Plotter": {
-        "picklist_line_colors": [
-            "blue",
-            "#000000"
-        ],
-        "picklist_line_types": [
-            "solid",
-            "dashed",
-            "dotted"
-        ],
-        "picklist_plot_windows": [
-            "No",
-            "plot 1",
-            "plot 2",
-            "plot 3",
-            "plot 4"
-        ],
-        "variables_to_save": {
-            "Agent Manager": {
-                "agents": {},
-                "connected": {
-                    "line_color": "blue",
-                    "line_type": "solid",
-                    "plot_window": "plot 2"
-                }
-            },
-            "Data Plotter": {},
-            "Data Recorder": {},
-            "Hardware Manager": {},
-            "Steering Wheel Controller Manager": {},
-            "Template": {
-                "datawriter output": {
-                    "line_color": "blue",
-                    "line_type": "dashed",
-                    "plot_window": "plot 1"
-                }
-            }
-        },
-        "write_interval": 5
-    }
-}
-'''
-
-if __name__ == '__main__':
-
-    app = QtWidgets.QApplication(sys.argv)
-    window = QtWidgets.QMainWindow()
-    data_plotter = DataPlotter()
-
-    sys.exit(app.exec_())
