@@ -24,12 +24,10 @@ It also has an input field for setting a timer interval used when writing news (
 ## Schematic overview
 
 ```mermaid
-   graph TD;
-      A((Main)) --> |starts| B(JOANModules);
-      B-->|define|C(your module);
-      C-->D{consist of};
-      D-->|action|G(Action class);
-      D-->|dialog|H(Dialog class);
-      G-->|inherits from|E(JOANModuleAction- Status- News -Settings);
-      H-->|inherits from|F(JOANModuleDialog- Dialog base);
+graph TD
+  A[Christmas] -->|Get money| B(Go shopping)
+  B --> C{Let me think}
+  C -->|One| D[Laptop]
+  C -->|Two| E[iPhone]
+  C -->|Three| F[fa:fa-car Car]
 ```
