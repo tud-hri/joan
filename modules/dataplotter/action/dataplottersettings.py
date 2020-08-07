@@ -100,6 +100,7 @@ class DataPlotterSettings(JoanModuleSettings):
         super().__init__(module_enum)
 
         self.variables_to_save = {}
+        self.existing_variables_to_save = {}
         self.write_interval = 100
 
         self.picklist_plot_windows = [str(e) for e in PlotWindows]
@@ -135,6 +136,39 @@ class DataPlotterSettings(JoanModuleSettings):
             module_news = copy.deepcopy(news.read_news(module))
             self.variables_to_save[str(module)] = module_news
         self._set_properties_empty(self.variables_to_save)
+
+
+    def _set_new_entries_empty(self, element, variables_element):
+        """
+        Set only the new news-item in the variables_to_save to True 
+        Existing news-items will get the existing value
+        """
+        if isinstance(element, dict):
+            for key, value in element.items():
+                if isinstance(value, dict):
+                    self._set_new_entries_empty(element.get(key), variables_element.get(key))
+                else:
+                    try:
+                        element[key] = variables_element[key]
+                    except KeyError:
+                        element_property = {}
+                        element_property[str(PlotWindows.KEY)] = str(PlotWindows.NOPLOT)
+                        element_property[str(LineTypes.KEY)] = str(LineTypes.SOLID)
+                        element_property[str(LineColors.KEY)] = str(LineColors.BLACK)
+                        element[key] = element_property
+
+    def refresh(self, existing_variables_to_save):
+        """
+        Every news item of every module(=channel) is taken to make a treelist of variables to save
+        """
+        news = News()
+        for module in JOANModules:
+            self.existing_variables_to_save = copy.deepcopy(existing_variables_to_save)
+            module_news = copy.deepcopy(news.read_news(module))
+            self.variables_to_save[str(module)] = module_news
+        self._set_new_entries_empty(self.variables_to_save, self.existing_variables_to_save)
+
+
 
     def get_variables_to_save(self):
         return self.variables_to_save
