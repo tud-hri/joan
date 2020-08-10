@@ -409,7 +409,7 @@ class JOAN_SensoDrive(BaseInput):
         self._carla_interface_data = self._action.read_news(JOANModules.CARLA_INTERFACE)
         try:
             self.steering_wheel_parameters['torque'] = self._steering_wheel_control_data[
-                self._carla_interface_data['agents']['Car 1']['vehicle_object'].selected_sw_controller]['sw_torque']
+                self._carla_interface_data['ego_agents']['Car 1']['vehicle_object'].selected_sw_controller]['sw_torque']
 
 
         except:

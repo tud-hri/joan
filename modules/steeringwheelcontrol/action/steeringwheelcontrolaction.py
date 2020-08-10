@@ -43,10 +43,10 @@ class SteeringWheelControlAction(JoanModuleAction):
         sim_data_in = self.read_news(JOANModules.CARLA_INTERFACE)
         hw_data_in = self.read_news(JOANModules.HARDWARE_MANAGER)
         for controller in self._controllers:
-            if 'agents' in sim_data_in:
-                if 'Car 1' in sim_data_in['agents']:
+            if 'ego_agents' in sim_data_in:
+                if 'Car 1' in sim_data_in['ego_agents']:
                     self.data[controller] = self._controllers[controller].calculate(
-                        sim_data_in['agents']['Car 1']['vehicle_object'], hw_data_in)
+                        sim_data_in['ego_agents']['Car 1']['vehicle_object'], hw_data_in)
                 else:
                     self.data[controller] = None
 
@@ -83,9 +83,9 @@ class SteeringWheelControlAction(JoanModuleAction):
 
         "FOR NOW WE ONLY TRY TO APPLY CONTROLLER ON 1 CAR CAUSE MULTIPLE IS TOTAL MAYHEM"
         for controller in self._controllers:
-            if 'agents' in sim_data_in:
-                if 'Car 1' in sim_data_in['agents']:
-                    self.data[controller] = self._controllers[controller].calculate(sim_data_in['agents']['Car 1']['vehicle_object'], hw_data_in)
+            if 'ego_agents' in sim_data_in:
+                if 'Car 1' in sim_data_in['ego_agents']:
+                    self.data[controller] = self._controllers[controller].calculate(sim_data_in['ego_agents']['Car 1']['vehicle_object'], hw_data_in)
 
         # for controller in self._controllers:
         #     if sim_data_in['vehicles'] is not None:

@@ -44,7 +44,7 @@ except IndexError:
 
 class CarlainterfaceAction(JoanModuleAction):
     """
-    AgentAction is the 'brains' of the module and does most of the calculations and data handling regarding the agents. Inherits
+    CarlainterfaceAction is the 'brains' of the module and does most of the calculations and data handling regarding the agents. Inherits
     Agents being the cars/actors you want to control and spawn in the CARLA environment.
     from JoanModuleAction.
     """
@@ -57,7 +57,8 @@ class CarlainterfaceAction(JoanModuleAction):
 
         #Initialize Variables
         self.data = {}
-        self.data['agents'] = {}
+        self.data['ego_agents'] = {}
+        self.data['traffic_agents'] = {}
         self.data['connected'] = False
         self.write_news(news=self.data)
         self.time = QtCore.QTime()
@@ -85,7 +86,6 @@ class CarlainterfaceAction(JoanModuleAction):
         self.sw_controller_state_machine = self.status.get_module_state_machine(JOANModules.STEERING_WHEEL_CONTROL)
         self.sw_controller_state_machine.add_state_change_listener(self._sw_controller_state_change_listener)
         self._sw_controller_state_change_listener()
-        #print(self.hardware_manager_state_machine.current_state)
 
         #message box for error display
         self.msg = QMessageBox()
@@ -164,9 +164,8 @@ class CarlainterfaceAction(JoanModuleAction):
         This function is called every controller tick of this module implement your main calculations here
         """
         if self.connected:
-            # self.data['vehicles'] = self.vehicles
             for agent in self.vehicles:
-                self.data['agents'][agent.vehicle_nr] = agent.unpack_vehicle_data()
+                self.data['ego_agents'][agent.vehicle_nr] = agent.unpack_vehicle_data()
             self.write_news(news=self.data)
             self._data_from_hardware = self.read_news(JOANModules.HARDWARE_MANAGER)
             try:
