@@ -16,3 +16,5 @@ First of all a short overview of the different components and windows you are mo
 ## Tutorials on how to work in the CARLA unreal editor
 
 For now, please have a look at the CARLA documentation [here](https://carla.readthedocs.io/en/latest/#tutorials-developers) for tutorials.
+
+[This website](https://www.raywenderlich.com/771-unreal-engine-4-tutorial-for-beginners-getting-started) also provides an excellent resources for working with the Unreal Editor.
