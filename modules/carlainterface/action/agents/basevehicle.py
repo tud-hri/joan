@@ -30,12 +30,12 @@ class Basevehicle:
     """
     The base class of any vehicle or 'agent', any agent of which you want to collect data should inherit from this class
     """
-    def __init__(self, agentmanager_action):
+    def __init__(self, carlainterface_action):
         """
         Initializes class
-        :param agentmanager_action:
+        :param carlainterface_action:
         """
-        self.module_action = agentmanager_action
+        self.module_action = carlainterface_action
         self._spawned = False
         self._vehicle_tab = None
         self.car_data = {}

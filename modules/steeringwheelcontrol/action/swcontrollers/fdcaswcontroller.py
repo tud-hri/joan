@@ -91,8 +91,8 @@ class FDCASWController(BaseSWController):
 
         self._t2 = 0
 
-        self._bq_filter_heading = LowPassFilterBiquad(fc=30, fs=1000/self.module_action.millis)
-        self._bq_filter_velocity = LowPassFilterBiquad(fc=30, fs=1000/self.module_action.millis)
+        self._bq_filter_heading = LowPassFilterBiquad(fc=30, fs=1000/self.module_action._millis)
+        self._bq_filter_velocity = LowPassFilterBiquad(fc=30, fs=1000/self.module_action._millis)
 
         self.stiffness = 1
 

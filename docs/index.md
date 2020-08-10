@@ -7,23 +7,26 @@ You can find the public repository [here][repolink]. Note that JOAN is still und
 
 [repolink]: https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan
 
-On the left you see the overall layout of the documentation. Starting with setting up but also including thorough documentation on the different modules and if you wish to add modules how to do so.
+<iframe width="560" height="315" src="https://www.youtube.com/embed/TLLw48isYJU" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-!!! Note
-    If you cannot read the text in the GIFS or images please zoom in in your webbrowser, the resolution should then be high enough to distinguish the text.
-
-JOAN is developed by members of the Human-Robot Interaction group at Cognitive Robotics of Delft University of Technology. This home-page serves as the table of contents of this document, a little bit below an overview is given with a short description of the sections and what they contain. 
+JOAN is developed by members of the [Human-Robot Interaction group](https://delfthapticslab.nl) at Cognitive Robotics of Delft University of Technology. This home-page serves as the table of contents of this document, a little bit below an overview is given with a short description of the sections and what they contain. 
 
 ## Setup
 * __[Setup on Windows](setup-carla-windows.md)__ - Guide on how to setup CARLA and JOAN on Windows OS
 * __[Setup on Linux](setup-carla-linux.md)__ - Guide on how to setup CARLA and JOAN on Linux OS (Not documented yet)
-* __[Create your own JOAN project](setup-create-joan-project.md)__ - Guide to setting up your own JOAN project
-* __[Setup and run your JOAN project](setup-run-joan.md)__ - Guide on how to run your JOAN project
+* __[Setup JOAN](setup-joan.md)__ - Guide on how to setup your own JOAN project
 
-## How to use
-* __[Unreal editor](how-to-unreal)__ - Quickstart guide with Unreal Editor for CARLA and JOAN (under construction)
-* __[Source control (Git)](how-to-git)__ - Quickstart guide for source control with GIT
-* __[JOAN](how-to-joan)__ - Quickstart guide of JOAN (under construction)
+## How to work with JOAN
+* __[JOAN structure](joan-structure.md)__ - Overview of JOAN's structure (main components, etc.)
+* __[Run JOAN](joan-run.md)__ - Quick start on how to execute JOAN
+* __[How to work with JOAN](joan-workflow.md)__ - Guide on how to setup and run JOAN (connect to CARLA, setup the modules, ...)
+* __[How to create a custom JOAN module](joan-add-module.md)__ - Guide on how to create your own JOAN modules
+* __[Info on JOAN's settings structure](joan-settings.md)__ - JOAN uses `Settings` to save you to set up every module after you run JOAN; read more about them here.
+* __[Info on JOAN's state machine](joan-state-machine.md)__ - Info on JOAN's state machine
+
+## Other documentation
+* __[Quick start CARLA Unreal Engine](other-carle-ue4.md)__ - Quick start guide with Unreal Editor for CARLA and JOAN (under construction)
+* __[Quick start source Control (git)](other-git.md)__ - Quick start guide for source control with GIT
 
 ## Contributing
 * __[Guidelines](contributing-guidelines.md)__ - Short explanation of guidelines if you want to add to JOAN

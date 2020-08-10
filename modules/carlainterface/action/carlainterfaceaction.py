@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QMessageBox, QApplication
 
 from .agents.egovehicle import Egovehicle
 from .agents.trafficvehicle import Trafficvehicle
-from .agentmanagersettings import  AgentManagerSettings, EgoVehicleSettings, TrafficVehicleSettings
+from .carlainterfacesettings import  CarlainterfaceSettings, EgoVehicleSettings, TrafficVehicleSettings
 
 
 from modules.joanmodules import JOANModules
@@ -42,9 +42,9 @@ except IndexError:
     msg_box.exec()
     pass
 
-class AgentmanagerAction(JoanModuleAction):
+class CarlainterfaceAction(JoanModuleAction):
     """
-    AgentAction is the 'brains' of the module and does most of the calculations and data handling regarding the agents. Inherits
+    CarlainterfaceAction is the 'brains' of the module and does most of the calculations and data handling regarding the agents. Inherits
     Agents being the cars/actors you want to control and spawn in the CARLA environment.
     from JoanModuleAction.
     """
@@ -53,17 +53,18 @@ class AgentmanagerAction(JoanModuleAction):
         Initializes the class
         :param millis: the interval in milliseconds that the module will tick at
         """
-        super().__init__(module=JOANModules.AGENT_MANAGER, millis=millis)
+        super().__init__(module=JOANModules.CARLA_INTERFACE, millis=millis)
 
         #Initialize Variables
         self.data = {}
-        self.data['agents'] = {}
+        self.data['ego_agents'] = {}
+        self.data['traffic_agents'] = {}
         self.data['connected'] = False
         self.write_news(news=self.data)
         self.time = QtCore.QTime()
         self._data_from_hardware = {}
 
-        self.settings = AgentManagerSettings(module_enum=JOANModules.AGENT_MANAGER)
+        self.settings = CarlainterfaceSettings(module_enum=JOANModules.CARLA_INTERFACE)
 
         #Carla connection variables:
         self.host = 'localhost'
@@ -85,7 +86,6 @@ class AgentmanagerAction(JoanModuleAction):
         self.sw_controller_state_machine = self.status.get_module_state_machine(JOANModules.STEERING_WHEEL_CONTROL)
         self.sw_controller_state_machine.add_state_change_listener(self._sw_controller_state_change_listener)
         self._sw_controller_state_change_listener()
-        #print(self.hardware_manager_state_machine.current_state)
 
         #message box for error display
         self.msg = QMessageBox()
@@ -164,9 +164,8 @@ class AgentmanagerAction(JoanModuleAction):
         This function is called every controller tick of this module implement your main calculations here
         """
         if self.connected:
-            # self.data['vehicles'] = self.vehicles
             for agent in self.vehicles:
-                self.data['agents'][agent.vehicle_nr] = agent.unpack_vehicle_data()
+                self.data['ego_agents'][agent.vehicle_nr] = agent.unpack_vehicle_data()
             self.write_news(news=self.data)
             self._data_from_hardware = self.read_news(JOANModules.HARDWARE_MANAGER)
             try:
@@ -210,6 +209,13 @@ class AgentmanagerAction(JoanModuleAction):
                 world_map = self._world.get_map()
                 self._spawn_points = world_map.get_spawn_points()
                 self.nr_spawn_points = len(self._spawn_points)
+
+                ## Uncomment this if you want to save the opendrive trajectory to a csv file,
+                ## PLEASE CHECK THE FILE SAVING LOCATION!!
+
+                # print('saving current opendrive trajectory to csv file')
+                # self.save_opendrive_trajectory(world_map)
+
                 print('JOAN connected to CARLA Server!')
                 QApplication.restoreOverrideCursor()
 
@@ -249,6 +255,52 @@ class AgentmanagerAction(JoanModuleAction):
             self.state_machine.request_state_change(State.IDLE, 'Carla Disconnected')
 
         return self.connected
+
+    def save_opendrive_trajectory(self, world_map):
+        """
+        Short function to save the currently loaded opendrive file waypoints as a csv file our PD controller can use
+        please note that the PSI (heading) for the human compatible reference for FDCA controller is far from ideal
+        better to just drive it yourself. PLEASE CHECK THE FILE LOCATION (bottom of this function)
+        """
+        #TODO: Add dynamic saving of the file in correct path instead of hardcoding the path
+        self._waypoints = []
+        i = 0
+        xvec = np.array([-1, 0])
+
+        waypoints = world_map.generate_waypoints(0.2)
+        waypoint = waypoints[0]
+        while len(self._waypoints) != len(waypoints):
+            angle = waypoint.transform.rotation.yaw
+            angle = angle % 360
+            angle = (angle + 360) % 360
+            if (angle > 180):
+                angle -= 360
+
+            self._waypoints.append([i, waypoint.transform.location.x, waypoint.transform.location.y, 0 , 0 , 0 , angle, 0])
+
+            temp = waypoint.next(0.2)
+            waypoint = temp[0]
+            i = i + 1
+
+        for k in range(0, len(self._waypoints)):
+            FirstPoint = np.array([self._waypoints[k][1], self._waypoints[k][2]])
+            if k < len(self._waypoints)-1:
+                SecondPoint = np.array([self._waypoints[k+1][1], self._waypoints[k+1][2]])
+            else:
+                SecondPoint =  np.array([self._waypoints[0][1], self._waypoints[0][2]])
+
+            dirvec = SecondPoint - FirstPoint
+            dirvec_unit = dirvec/np.linalg.norm(dirvec)
+
+            self._waypoints[k][6] = np.math.atan2(dirvec_unit[1], dirvec_unit[0]) - np.math.atan2(xvec[1], xvec[0])
+
+
+        self._waypoints_visual = self._waypoints[0:len(self._waypoints):5]
+
+        df = pd.DataFrame(self._waypoints, columns=['Row Name','PosX', 'PosY','SteeringAngle', 'Throttle', 'Brake', 'Psi', 'Vel'])
+        df2 = pd.DataFrame(self._waypoints_visual, columns=['Row Name','PosX','PosY','SteeringAngle','Throttle','Brake','Psi','Vel'])
+        df.to_csv(r'C:\Repositories\joan\modules\steeringwheelcontrol\action\swcontrollers\trajectories\opendrive_trajectory.csv', index=False, header=False)
+        df2.to_csv(r'C:\Repositories\joan\modules\steeringwheelcontrol\action\swcontrollers\trajectories\opendrive_trajectory_VISUAL.csv', index=False, header=True)
 
     def add_ego_agent(self, ego_vehicle_settings =None):
         """

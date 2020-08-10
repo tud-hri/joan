@@ -45,7 +45,7 @@ Please make sure you have the following programs installed before continuing. If
 For building CARLA, only the VS 2017 and .NET build tools are required, which requires significantly less disk space then a full version of Visual Studio. The build tools can be downloaded and installed by following the [link](https://visualstudio.microsoft.com/vs/older-downloads/) above. You need to log in with your Microsoft account (Hotmail, Live, etc). Please make sure to download the "Build Tools for Visual Studio 2017 (version 15.9)" executable (Check Visual Studio 2017 (version 15.9) under "Filter by product family"). Download and run the installer. 
 
 In the installer, select the "Visual C++ build tools" and ".NET build tools" checkboxes in the left pane of the visual studio installer and select all the default options plus "Windows 8.1 SDK" in the column on the right. See the GIF below"
-![install options](gifs/MSVC-installer-selectpackages.gif)
+![install options](gifs/setup-carla-windows-msvc-installer-selectpackages.gif)
 
 #### Approach 2: Visual Studio 2017 community edition
 
@@ -57,12 +57,12 @@ When installing please make sure you install it with the following properties in
 
 * __Windows 8.1 SDK.__ You can select this from the installation details tab
 * __x64 Visual C++ Toolset__ Choose the __Desktop development with C++__, enabling a `x64` command prompt that will be needed. To access this prompt type in `x64` in the search bar of Windows 10. If properly installed it should show up like this:
-![alt text](imgs/commandPrompt.png "x64 Command prompt")
+![alt text](imgs/setup-carla-windows-command-prompt.png "x64 Command prompt")
 
 ### Unreal Engine 4.24
 
 Go to __[Unreal Engine](https://www.unrealengine.com/download)__ and download the Epic Games Launcher. You will have to create an Epic Games account. In the Epic Games launcher go to 'unreal engine' in the left menu bar and then to 'library' and you should see something like this:
-![alt text](imgs/epicGamesMenu.png "Epic Games Menu")
+![alt text](imgs/setup-carla-windows-epic-games-menu.png "Epic Games Menu")
 Download Unreal Engine 4.24.x and use the default install settings. Make sure to run it in order to check that everything was properly installed. Also, when right-clicking on `CarlaUE3.uproject` in `carla\Unreal\CarlaUE4`, you should see an option to Generate Visual Studio project files (but don't click it).
 
 !!! Note
@@ -120,10 +120,7 @@ The steps will be explained 1 step at the time with screenshots and command line
 
 ### Step 1: Cloning the CARLA repository
 
-JOAN was tested with Carla version 0.9.9, other versions might work but no guarantees are given. To clone version 0.9.9 of the repository open a command window
-and navigate to the folder where you want to clone carla (if you don't know how to use the `cd` command to navigate in a terminal, check out
-[this page](https://www.computerhope.com/issues/chusedos.htm) first). Please remember that the git clone command will also create a project folder named carla
-at the current location. Now type the following command:
+JOAN was tested with Carla version 0.9.9, other versions might work but no guarantees are given. To clone version 0.9.9 of the repository open a command window and navigate to the folder where you want to clone carla (if you don't know how to use the `cd` command to navigate in a terminal, check out [this page](https://www.computerhope.com/issues/chusedos.htm) first). Please remember that the git clone command will also create a project folder named carla at the current location. Now type the following command:
 
     git clone https://github.com/carla-simulator/carla --branch 0.9.9
 
@@ -131,12 +128,12 @@ at the current location. Now type the following command:
     The CARLA build will fail if the path to CARLA contains spaces, so please clone CARLA to a folder without spaces in the path. If in doubt; use `C:\carla`. To do this navigate to `C:\` in a command prompt and call git clone from there, the `carla` folder will be created automatically. 
 
 After cloning, verify that you have actually cloned the repository, it should look like this:
-![alt text](imgs/gitClone.png "cloned repository")
+![alt text](imgs/setup-carla-windows-git-carla-clone.png "cloned repository")
 
 ### Step 2: Getting latest CARLA assets
 
 To get the latest CARLA assets open up the folder `Util` in the `carla` folder that you have just created in step 1, and open the file `contentversions.txt`, see below:
-![alt text](imgs/utilScreenshot.png "cloned repository")
+![alt text](imgs/setup-carla-windows-util-screenshot.png "cloned repository")
 
 This text file contains the instructions of what to do to download the latest assets, for now get the 0.9.9 version. You can also click this
 [link](http://carla-assets.s3.amazonaws.com/20200422_ea5179a.tar.gz). Note: this file is almost 10GB. To extract the compressed file, you can use
@@ -145,7 +142,7 @@ This text file contains the instructions of what to do to download the latest as
 Unpack these assets in `\carla\Unreal\CarlaUE4\Content\Carla`. If the directory does not exist, create it.
 
 ### Step 3: Get specific JOAN Assets
-To have a nice car interior which also turns the steering wheel when you turn your physical steering wheel, some extra assets are required. You can download them [here](https://www.dropbox.com/s/yf7mu3v7jwcewmr/JOAN_Assets.zip?dl=0). The file contains:
+To have a nice car interior which also turns the steering wheel when you turn your physical steering wheel, some extra assets are required. You can download them [here](https://www.dropbox.com/s/yhbf59t7i5iu6rw/JOAN_Assets.zip?dl=0). The file contains:
 
 * `JOAN_Blueprints`
 * `JOAN_Static`
@@ -169,7 +166,7 @@ Navigate to the directory where you cloned CARLA and run the following command (
     make PythonAPI
 
 You can see what should happen below:
-![alt text](gifs/makePythonAPI.gif "Making PythonAPI")
+![alt text](gifs/setup-carla-windows-make-python-API.gif "Making PythonAPI")
 
 If everything was successful you should be able to read 
 
@@ -177,7 +174,7 @@ If everything was successful you should be able to read
     
 Furthermore, a `carla.egg` file should be in `..\carla\PythonAPI\carla\dist`:
 
-![alt text](imgs/eggfile.png "eggfile")
+![alt text](imgs/setup-carla-windows-egg-file.png "eggfile")
 
 The exact filename depends on the CARLA version and python version (in our case python 3.8). Now copy this egg file to the folder `carla_pythonapi` (replace the already existing `egg` file if it's there) in your JOAN project folder.
 
@@ -185,7 +182,7 @@ The exact filename depends on the CARLA version and python version (in our case 
 
 Essentially the steps here are exactly the same as the PythonAPI build, however as a precaution it is a good idea to do the following:
 
-![alt text](imgs/genVis.png "genVisfiles")
+![alt text](imgs/setup-carla-windows-gen-vis.png "genVisfiles")
 
 !!! Note
     If you do not see this option of 'Generate Visual Studio Project Files', you probably have not selected the right engine version. Try and run the 'UnrealSelectEngine' version in: `C:\Program Files\Epic Games\UE_4.24\Engine\Binaries\Win64`
@@ -200,13 +197,13 @@ Now open a "x64 Native Tools Command Prompt for VS 2017" the same way as in step
     It is possible that during the make process you get the error that the Unreal editor cannot be found. To fix this, you need to add a new environment variable that points to UE4 called `UE4_ROOT` (most likely `C:\Users\<user>\Program Files\Epic Games\UE4.24`). Restart the `x64` terminal and try again.
 
 If everything goes according to plan, this will build CARLA and eventually will launch the CarlaUE4 editor. This is automatically step 6!
-![CarlaUE4 editor](imgs/carlaue4-initializing.png)
+![CarlaUE4 editor](imgs/setup-carla-windows-carlaue4-initializing.png)
 
 
 ### Step 6: CarlaUE4 editor compiling
 
 The editor will be initializing for a while - no worries! It is compiling all the shaders and more. Check out Task Manager if you want
-![CarlaUE4 task manager](imgs/compiling-shaders-ue4.png)
+![CarlaUE4 task manager](imgs/setup-carla-windows-compiling-shaders-ue4.png)
 
 !!! Note
     The only important step here (if everything went well) is to remain patient, Unreal will have to compile _all_ shaders which is CPU heavy and can take up to 2 hours.
@@ -217,21 +214,21 @@ After the Unreal editor has been launched and compiled the shaders from step 6 g
 
 After the Unreal editor has been launched and compiled the shaders from step 6 go to the content browser and search for 'vehicle factory':
 
-![alt text](imgs/vehfac.png "Vehicle Factory")
+![alt text](imgs/setup-carla-windows-vehicle-factory.png "Vehicle Factory")
 
 Open up this 'Blueprint' and then click on the array variable 'vehicles'. Now add to the array and select the vehicle blueprints you have selected. Give it a name you want to call it as from the PythonAPI, as a default use the ones shown here:
 
-![alt text](imgs/addvehicles.png "Adding Audi")
+![alt text](imgs/setup-carla-windows-add-vehicles.png "Adding Audi")
 
-If all of the steps succeeded than congrats! You have successfully built CARLA, the basis of the JOAN simulator! Please proceed to [setting up JOAN](./setup-run-joan.md).
+If all of the steps succeeded than congrats! You have successfully built CARLA, the basis of the JOAN simulator! Please proceed to [setting up JOAN](./setup-joan.md).
 
 ---
 ## Adding to system variables
 
 Usually when you install a software package the option to add to the `PATH` is already there you just have to check it. For example for the installation of python it is shown here:
 
-![alt text](imgs/pythonPath.png "Python add to `PATH` example")
+![alt text](imgs/setup-carla-windows-python-path.png "Python add to `PATH` example")
 
 However when this is not an available option, for example with make (gnuwin32), you can do the following:
 
-![alt text](gifs/syspath.gif "Adding to path")
+![alt text](gifs/setup-carla-windows-system-path.gif "Adding to path")

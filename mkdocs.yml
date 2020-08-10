@@ -9,15 +9,33 @@ nav:
       - Setup on Linux: setup-carla-linux.md
       - Setup JOAN: setup-joan.md
 
-    - How to use:
-      - Unreal editor (under construction): how-to-unreal.md
-      - Source Control (Git): how-to-git.md
-      - JOAN (under construction): how-to-joan.md
+    - How to work with JOAN:
+      - JOAN structure: joan-structure.md
+      - Run JOAN: joan-run.md
+      - Starting JOAN (workflow): joan-workflow.md
+      - Create custom JOAN modules: joan-add-module.md
+      - Settings: joan-settings.md
+      - State Machine: joan-state-machine.md
+
+    - Other documentation:
+      - Quick start CARLA Unreal Engine (under construction): other-carle-ue4.md
+      - Quick start source Control (git): other-git.md
 
     - Contributing:
       - Guidelines: contributing-guidelines.md
       - Coding Standard: contributing-coding-standard.md
 
 markdown_extensions:
-  - admonition
-  - attr_list
+   - admonition
+   - attr_list
+   - markdown_inline_graphviz
+   - pymdownx.superfences:
+        custom_fences:
+          - name: mermaid
+            class: mermaid
+            format: !!python/name:pymdownx.superfences.fence_div_format
+
+extra_css:
+  - https://unpkg.com/mermaid@8.6.0/dist/mermaid.css
+extra_javascript:
+  - https://unpkg.com/mermaid@8.6.0/dist/mermaid.min.js
