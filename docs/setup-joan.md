@@ -2,12 +2,17 @@
 Please follow the following steps:
 
 1. __Creating your own JOAN project__
-1. __Setting up a Python Virtual Environment__
-2. __Getting the python libraries__
-3. __Run main.py__
+2. __Cloning your project repository__
+3. __Setting up a Python Virtual Environment__
+4. __Getting the Python libraries__
+5. __Including the CARLA .*egg file__
+
+Step 1 you need to do only once (probably). Step 2, cloning your project, is something you need to do on every computer that you use for working with JOAN. Suppose you move from one PC to another and you have not cloned your project on that computer, you need to do step 2. Similarly, you need to do steps 3 and 4 when setting up your project for the first time. 
+
+Finally, you need to update your project with the latest version of JOAN. We try to update JOAN regularly, based on the issues we all find and features we want to include. It is good practice to regularly update your project. See the final step below for more info.
 
 ---
-## Creating your own JOAN project
+## Step 1. Creating your own JOAN project
 
 JOAN is maintained in a GitLab repository by a team of contributors. There are a couple of ways though which you can download JOAN:
 
@@ -27,14 +32,16 @@ We will explain how to setup your own project repository and how to connect it t
 - Do not close this webpage, we will need it in a moment.
 
 ---
-### Clone your repository and connect it to the JOAN repository
-- Launch PyCharm.
+## Step 2. Clone your repository and connect it to the JOAN repository
+
+
+- Launch PyCharm. If PyCharm automatically opens an existing project that is not yours, close the project (`File` &rarr; `Close project`). A welcome screen should appear.
 - In the 'Welcome to PyCharm' window, click on `Get from Version Control`. A new window appears:
   ![new repo pycharm](imgs/setup-joan-pycharm-repo-directory.png)
-- Go to your own repositories webpage, click `clone` and copy the URL under 'Clone with HTTPS':
+- Go to your own repositories webpage (on GitLab), click `clone` and copy the URL under 'Clone with HTTPS':
   ![clone-https](imgs/setup-joan-pycharm-repo-clone-button.png)
-- Paste the URL in the fiels that says URL in our PyCharm window. Change the directory to anything you like.
-- Hit the button `Clone`
+- Paste the repository URL in the field that says URL in the PyCharm window. Change the directory to anything you like, but preferably in a folder that has your netid's name (e.g. `C:\\Users\localadmin\<YOUR NETID>\<MYPROJECT>).
+- Click `Clone`
 - PyCharm will start to clone your repository. This may fail, and trying this again could help. Furthermore, you might be asked to enter your credentials. If so, use your `netid`. Still credential/authority-related issues? Ask your supervisor.
 - If everything goes to plan, you should see something like this (a new project, with the name you gave it online):
   ![pycharm-empty](imgs/setup-joan-pycharm-repo-firsttime.png)
@@ -57,6 +64,8 @@ You also need to set your user name and email address for your repository (repla
     git config --local user.name "NETID"
     git config --local user.email "TUDELFT EMAIL ADDRESS"
 
+!!! Important
+    This step is very important! Make sure to include the `--local`` argument.
 
 Furthermore, we will set your user name such that GitLab knows who is pushing stuff to your repository. First, check the URL of the remote that is already setup for your repository. 
 
@@ -74,6 +83,9 @@ You should see something like this:
 The first two labeled `origin` are the URLs to your own project. The ones labeled `upstream-joan` are for the JOAN repository. We need the `origin` one for the next step. We are going to add your NetID to the `origin` URL as follows (replace NETID with your own NetID, note the '@' and make sure to copy your own origin URL):
 
     git remote set-url origin https://NETID@gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan-students/joan-niek-myfirstjoanproject.git
+
+!!! Important
+    Include your `netid` here!
 
 Check if the URL is changed properly:
 
@@ -94,8 +106,8 @@ We now need to make sure that you `push` your first version of your own JOAN pro
     If you cannot seem to push to your own project, something might be wrong with your permissions. Check if you are a maintainer on your repository. If not, contact the group Owner.
 
 ---
-## Setting up a Python Virtual Environment
-We will now create a Python virtual environment, this will help keeping your JOAN project separated from your other projects. If you are interested and would like more information on virtual environments, please read [this](https://docs.python.org/3/tutorial/venv.html). But for now you can also just follow these steps.
+## Step 3. Setting up a Python Virtual Environment
+If this is the first time setting up the project on your pc, you need to create a Python virtual environment. This will help keeping your JOAN project separated from your other projects. If you are interested and would like more information on virtual environments, please read [this](https://docs.python.org/3/tutorial/venv.html). But for now you can also just follow these steps.
 
 Using PyCharm, open the terminal again (in PyCharm), check if the directory is still correct (of your repository) and type:
 
@@ -104,22 +116,45 @@ Using PyCharm, open the terminal again (in PyCharm), check if the directory is s
 !!! Note
     If you don't use PyCharm, just use any other terminal to do these steps.
 
-This will create a folder called `venv` containing a new and clean virtual environment. To start working in this environment, we have to activate it first. To do this type:
+This will create a folder called `venv` containing a new and clean virtual environment. To start working in this environment, we have to activate it first. 
+
+
+If you are using PyCharm, you might need to add your freshly created virtual environment as a Python interpreter. Often, PyCharm automatically recognizes the virtual environment and will ask you if you want to use it for the project. If not, we need to do this manually. Click on the interpreter widget (it should say something with interpreter) and click `Add interpreter`. It should automatically select the `venv` Python interpreter. Confirm everything and wait for a bit. PyCharm needs some time to set everything up. PyCharm also shows the `venv` in the bottom-left corner. 
+
+
+If this still does not work, or you are not using PyCharm, open a terminal, navigate to your project path in the terminal and type:
 
     venv\Scripts\activate
 
-If this succeeded, (`venv`) should have appeared in your command line trailing your current location. This indicates that the python command points to the virtual environment. 
-
-If you are using PyCharm, you might need to add your freshly created virtual environment as a Python interpreter. Click on the interpreter widget (it should say something with interpreter) and click `Add interpreter`. It should automatically select the `venv` Python interpreter. Confirm everything and wait for a bit. PyCharm needs some time to set everything up.
-
+If this succeeds, (`venv`) should have appeared in your command line trailing your current location. This indicates that the Python command points to the virtual environment. 
 ---
-## Getting necessary python3 libraries
+## Step 4. Getting necessary Python libraries
 To get JOAN to work together with CARLA you will need several python packages (and if you want to use a SensoDrive steering wheel with CAN interface also a specific DLL). The list of required pip installs is saved in the requirements.txt file.
 To install all requirements from the command prompt, make sure you are in the project folder and have the virtual environment activated. Now type: 
 
     pip install -r requirements.txt 
 
+!!! Note
+    Every time you clone your project on a new computer, you need to do this step
+
+
+---
+## Step 5. Including the CARLA .egg file
 The only dependency not in the requirements.txt is the CARLA PythonAPI which we build earlier. To use this dependency copy the `*.egg` file to the empty folder `carla_pythonapi` in your JOAN project folder. If you have not done this step you will get an error message whenever you start JOAN.
     
 !!! Note
     Please note that the file name of the `*.egg` file might be slightly different in your case, it depends on the Python version. Make sure that the filename in `carlainterfaceaction.py` matches the name of your own `*.egg` file. 
+
+
+--- 
+## Updating your project with the latest JOAN version
+
+Finally, you need to update your project with the latest version of JOAN. We try to update JOAN regularly, based on the issues we all find and features we want to include. It is good practice to regularly update your project. To do this: 
+
+    git fetch upstream-joan
+    git pull upstream-joan master
+
+These commands will pull any changes from the main JOAN repository into your project.
+
+!!! Important
+    It is possible that conflicts occur when pulling the latest JOAN version. These conflicts are between changes you made, and changes in the main JOAN code. Often, these conflicts can be resolved through PyCharm, but sometimes it is more difficult than this. If you're used to git, resolve all conflicts by yourself. Else, perhaps good to ask your supervisor.
