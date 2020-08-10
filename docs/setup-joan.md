@@ -126,7 +126,9 @@ If this still does not work, or you are not using PyCharm, open a terminal, navi
 
     venv\Scripts\activate
 
+
 If this succeeds, (`venv`) should have appeared in your command line trailing your current location. This indicates that the Python command points to the virtual environment. 
+
 ---
 ## Step 4. Getting necessary Python libraries
 To get JOAN to work together with CARLA you will need several python packages (and if you want to use a SensoDrive steering wheel with CAN interface also a specific DLL). The list of required pip installs is saved in the requirements.txt file.
