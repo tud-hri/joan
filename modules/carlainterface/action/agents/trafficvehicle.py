@@ -110,6 +110,7 @@ class Trafficvehicle(Basevehicle):
     """
 
     def __init__(self, carlainterface_action, vehicle_nr, nr_spawn_points, tags, settings: TrafficVehicleSettings):
+        super().__init__(carlainterface_action)
         """
         Initializes the class
         :param carlainterface_action:
@@ -138,7 +139,8 @@ class Trafficvehicle(Basevehicle):
 
         self.vehicle_nr = vehicle_nr
         self._vehicle_tab = uic.loadUi(uifile=os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/trafficvehicletab.ui"))
-        self._vehicle_tab.group_traffic_agent.setTitle('Traffic Vehicle ' + str(vehicle_nr + 1))
+        self._vehicle_title = 'Traffic Vehicle ' + str(vehicle_nr + 1)
+        self._vehicle_tab.group_traffic_agent.setTitle(self._vehicle_title)
 
         self._vehicle_tab.btn_destroy.setEnabled(False)
 
@@ -171,6 +173,10 @@ class Trafficvehicle(Basevehicle):
     @property
     def vehicle_tab(self):
         return self._vehicle_tab
+
+    @property
+    def vehicle_title(self):
+        return self._vehicle_title
 
     def _open_settings_dialog(self):
         """
@@ -343,10 +349,10 @@ class Trafficvehicle(Basevehicle):
 
         index_closest_waypoint = self.find_closest_node(pos_car_future, self._trajectory[:, 1:3])
 
-        if index_closest_waypoint >= len(self._trajectory) - 3:
+        if index_closest_waypoint >= len(self._trajectory) - 10:
             index_closest_waypoint_next = 0
         else:
-            index_closest_waypoint_next = index_closest_waypoint + 3
+            index_closest_waypoint_next = index_closest_waypoint + 10
 
         # calculate lateral error
         pos_ref_future = self._trajectory[index_closest_waypoint, 1:3]
@@ -398,7 +404,7 @@ class Trafficvehicle(Basevehicle):
         lateral_gain = self.settings._w_lat * (self.settings._k_p * error[0] + self.settings._k_d * error[2])
         heading_gain = self.settings._w_heading * (self.settings._k_p * error[1] + self.settings._k_d* error[3])
         #
-        total_gain = lateral_gain+ heading_gain
+        total_gain = lateral_gain + heading_gain
         sw_angle = total_gain/450
 
         return -sw_angle
