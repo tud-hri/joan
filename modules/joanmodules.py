@@ -30,7 +30,7 @@ class JOANModules(enum.Enum):
                 JOANModules.DATA_RECORDER: DatarecorderAction,
                 JOANModules.STEERING_WHEEL_CONTROL: SteeringWheelControlAction,
                 JOANModules.HARDWARE_MANAGER: HardwaremanagerAction,
-                JOANModules.CARLA_INTERFACE: CarlainterfaceAction
+                JOANModules.CARLA_INTERFACE: CarlainterfaceAction,
                 JOANModules.DATA_PLOTTER: DataplotterAction
                 #JOANModules.EXPERIMENT_MANAGER: ExperimentManagerAction
                 }[self]
@@ -49,7 +49,7 @@ class JOANModules(enum.Enum):
                 JOANModules.DATA_RECORDER: DatarecorderDialog,
                 JOANModules.STEERING_WHEEL_CONTROL: SteeringWheelControlDialog,
                 JOANModules.HARDWARE_MANAGER: HardwaremanagerDialog,
-                JOANModules.CARLA_INTERFACE: CarlainterfaceDialog
+                JOANModules.CARLA_INTERFACE: CarlainterfaceDialog,
                 JOANModules.DATA_PLOTTER: DataplotterDialog
                 #JOANModules.EXPERIMENT_MANAGER: ExperimentManagerDialog
                 }[self]
@@ -62,7 +62,7 @@ class JOANModules(enum.Enum):
                 JOANModules.CARLA_INTERFACE: os.path.join(path_to_modules, "carlainterface/dialog/carlainterface.ui"),
                 JOANModules.STEERING_WHEEL_CONTROL: os.path.join(path_to_modules, "steeringwheelcontrol/dialog/steeringwheelcontrol.ui"),
                 JOANModules.HARDWARE_MANAGER: os.path.join(path_to_modules, "hardwaremanager/dialog/hardwaremanager.ui"),
-                JOANModules.DATA_PLOTTER: os.path.join(path_to_modules, "dataplotter/dialog/dataplotter.ui")
+                JOANModules.DATA_PLOTTER: os.path.join(path_to_modules, "dataplotter/dialog/dataplotter.ui"),
                 # JOANModules.EXPERIMENT_MANAGER: os.path.join(path_to_modules, "experimentmanager/dialog/experimentmanager.ui")
                 }[self]
 
@@ -71,7 +71,7 @@ class JOANModules(enum.Enum):
                 JOANModules.DATA_RECORDER: 'Data Recorder',
                 JOANModules.STEERING_WHEEL_CONTROL: 'Steering Wheel Controller Manager',
                 JOANModules.HARDWARE_MANAGER: 'Hardware Manager',
-                JOANModules.CARLA_INTERFACE: 'Carla Interface'
+                JOANModules.CARLA_INTERFACE: 'Carla Interface',
                 JOANModules.DATA_PLOTTER: 'Data Plotter'
-                #JOANModules.EXPERIMENT_MANAGER: 'Experiment Manager'
+                # JOANModules.EXPERIMENT_MANAGER: 'Experiment Manager'
                 }[self]
