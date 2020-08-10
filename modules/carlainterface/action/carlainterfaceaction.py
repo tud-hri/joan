@@ -430,11 +430,11 @@ class CarlainterfaceAction(JoanModuleAction):
 
     def spawn_demo_traffic(self):
         self.demo_traffic_settings = TrafficVehicleSettings()
-        self.demo_traffic_settings._velocity = 60
+        self.demo_traffic_settings._velocity = 40
         self.demo_traffic_settings._trajectory_name = 'Traffic_first_try.csv'
         self.demo_traffic_settings._selected_spawnpoint = 0
         self.demo_traffic_settings._selected_car = 'hapticslab.audi'
-        self.demo_traffic_settings._set_velocity_with_pd = False
+        self.demo_traffic_settings._set_velocity_with_pd = True
 
         self.add_traffic_agent(self.demo_traffic_settings)
 
