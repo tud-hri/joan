@@ -373,9 +373,6 @@ class CarlainterfaceAction(JoanModuleAction):
         :return:
         """
         try:
-            # for vehicle in self.vehicles:
-                # vehicle.get_available_inputs()
-                # vehicle.get_available_controllers()
             self.state_machine.request_state_change(State.READY, "You can now add vehicles and start the module")
 
             for traffic in self.traffic_vehicles:
@@ -400,3 +397,17 @@ class CarlainterfaceAction(JoanModuleAction):
         :return:
         """
         self.settings.save_to_file(file_to_save_in)
+
+
+## HARDCODED DEMO FUNCTIONS BELOW
+
+    def spawn_demo_traffic(self):
+        self.demo_traffic_settings = TrafficVehicleSettings
+        self.demo_traffic_settings._velocity = 50
+        self.demo_traffic_settings._trajectory_name = 'Traffic_first_try.csv'
+        self.demo_traffic_settings._selected_spawnpoint = 0
+        self.demo_traffic_settings._selected_car = 'hapticslab.audi'
+        self._set_velocity_with_pd = False
+
+        self.action.add_traffic_agent(self.demo_traffic_settings)
+
