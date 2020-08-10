@@ -96,6 +96,9 @@ class DatarecorderAction(JoanModuleAction):
         try:
             self.settings.write_interval = self.timer.interval()
 
+            # renew settings
+            self.settings.refresh(self.settings.as_dict().get(str(JOANModules.DATA_RECORDER)).get('variables_to_save'))
+
             self.settings.save_to_file(self.default_settings_file_location)
             self.share_settings(self.settings)
 

@@ -53,6 +53,9 @@ class TemplateAction(JoanModuleAction):
         # here, we are added a variable called 'datawriter output' to this modules News. 
         # You can choose your own variable names and you can add as many vairables to self.data as you want.
         self.data['datawriter output'] = 2020
+        self.data['nesting'] = {'example 1': 44, 'example 2': 35}
+        self.counter = 0  # see def do(self):
+        self.sign = 1     # see def do(self):
         self.write_news(news=self.data)
         self.time = QtCore.QTime()
         # end news for the datarecorder
@@ -95,6 +98,11 @@ class TemplateAction(JoanModuleAction):
         self.data['datawriter output'] = self.time.elapsed()
 
         # and we write the news (actually update the news), such that all the other modules get the latest value of 'datawriter output'
+        if self.counter < 1:
+            self.sign = -1
+        if self.counter > 99:
+            self.sign = 1
+        self.data['counter'] = self.counter * self.sign
         self.write_news(news=self.data)
 
     def initialize(self):
@@ -104,6 +112,9 @@ class TemplateAction(JoanModuleAction):
         # This is de place to do all initialization needed. In the example here, the necessary settings are copied from the settings object.
         # This is done during the initialization to prevent settings from changing while the module is running. This does mean that the module needs to be
         # reinitialised every time the settings are changed.
+        self.data['counter'] = self.counter
+        self.write_news(news=self.data)
+        
         self.millis = self.settings.millis
 
         # if (self.state_machine.current_state is State.IDLE):

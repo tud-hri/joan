@@ -14,6 +14,7 @@ class JOANModules(enum.Enum):
     HARDWARE_MANAGER = 1
     CARLA_INTERFACE = 2
     STEERING_WHEEL_CONTROL = 3
+    DATA_PLOTTER = 5
 
     @property
     def action(self):
@@ -21,6 +22,7 @@ class JOANModules(enum.Enum):
         from modules.datarecorder.action.datarecorderaction import DatarecorderAction
         from modules.steeringwheelcontrol.action.steeringwheelcontrolaction import SteeringWheelControlAction
         from modules.hardwaremanager.action.hardwaremanageraction import HardwaremanagerAction
+        from modules.dataplotter.action.dataplotteraction import DataplotterAction
         from modules.carlainterface.action.carlainterfaceaction import CarlainterfaceAction
         #from modules.experimentmanager.action.experimentmanageraction import ExperimentManagerAction
     
@@ -29,6 +31,7 @@ class JOANModules(enum.Enum):
                 JOANModules.STEERING_WHEEL_CONTROL: SteeringWheelControlAction,
                 JOANModules.HARDWARE_MANAGER: HardwaremanagerAction,
                 JOANModules.CARLA_INTERFACE: CarlainterfaceAction
+                JOANModules.DATA_PLOTTER: DataplotterAction
                 #JOANModules.EXPERIMENT_MANAGER: ExperimentManagerAction
                 }[self]
 
@@ -38,6 +41,7 @@ class JOANModules(enum.Enum):
         from modules.datarecorder.dialog.datarecorderdialog import DatarecorderDialog
         from modules.steeringwheelcontrol.dialog.steeringwheelcontroldialog import SteeringWheelControlDialog
         from modules.hardwaremanager.dialog.hardwaremanagerdialog import HardwaremanagerDialog
+        from modules.dataplotter.dialog.dataplotterdialog import DataplotterDialog
         from modules.carlainterface.dialog.carlainterfacedialog import CarlainterfaceDialog
         #from modules.experimentmanager.dialog.experimentmanagerdialog import ExperimentManagerDialog
         
@@ -46,6 +50,7 @@ class JOANModules(enum.Enum):
                 JOANModules.STEERING_WHEEL_CONTROL: SteeringWheelControlDialog,
                 JOANModules.HARDWARE_MANAGER: HardwaremanagerDialog,
                 JOANModules.CARLA_INTERFACE: CarlainterfaceDialog
+                JOANModules.DATA_PLOTTER: DataplotterDialog
                 #JOANModules.EXPERIMENT_MANAGER: ExperimentManagerDialog
                 }[self]
 
@@ -56,7 +61,8 @@ class JOANModules(enum.Enum):
                 JOANModules.DATA_RECORDER: os.path.join(path_to_modules, "datarecorder/dialog/datarecorder.ui"),
                 JOANModules.CARLA_INTERFACE: os.path.join(path_to_modules, "carlainterface/dialog/carlainterface.ui"),
                 JOANModules.STEERING_WHEEL_CONTROL: os.path.join(path_to_modules, "steeringwheelcontrol/dialog/steeringwheelcontrol.ui"),
-                JOANModules.HARDWARE_MANAGER: os.path.join(path_to_modules, "hardwaremanager/dialog/hardwaremanager.ui")
+                JOANModules.HARDWARE_MANAGER: os.path.join(path_to_modules, "hardwaremanager/dialog/hardwaremanager.ui"),
+                JOANModules.DATA_PLOTTER: os.path.join(path_to_modules, "dataplotter/dialog/dataplotter.ui")
                 # JOANModules.EXPERIMENT_MANAGER: os.path.join(path_to_modules, "experimentmanager/dialog/experimentmanager.ui")
                 }[self]
 
@@ -66,5 +72,6 @@ class JOANModules(enum.Enum):
                 JOANModules.STEERING_WHEEL_CONTROL: 'Steering Wheel Controller Manager',
                 JOANModules.HARDWARE_MANAGER: 'Hardware Manager',
                 JOANModules.CARLA_INTERFACE: 'Carla Interface'
+                JOANModules.DATA_PLOTTER: 'Data Plotter'
                 #JOANModules.EXPERIMENT_MANAGER: 'Experiment Manager'
                 }[self]
