@@ -210,6 +210,13 @@ class CarlainterfaceAction(JoanModuleAction):
                 world_map = self._world.get_map()
                 self._spawn_points = world_map.get_spawn_points()
                 self.nr_spawn_points = len(self._spawn_points)
+
+                ## Uncomment this if you want to save the opendrive trajectory to a csv file,
+                ## PLEASE CHECK THE FILE SAVING LOCATION!!
+
+                # print('saving current opendrive trajectory to csv file')
+                # self.save_opendrive_trajectory(world_map)
+
                 print('JOAN connected to CARLA Server!')
                 QApplication.restoreOverrideCursor()
 
@@ -249,6 +256,52 @@ class CarlainterfaceAction(JoanModuleAction):
             self.state_machine.request_state_change(State.IDLE, 'Carla Disconnected')
 
         return self.connected
+
+    def save_opendrive_trajectory(self, world_map):
+        """
+        Short function to save the currently loaded opendrive file waypoints as a csv file our PD controller can use
+        please note that the PSI (heading) for the human compatible reference for FDCA controller is far from ideal
+        better to just drive it yourself. PLEASE CHECK THE FILE LOCATION (bottom of this function)
+        """
+        #TODO: Add dynamic saving of the file in correct path instead of hardcoding the path
+        self._waypoints = []
+        i = 0
+        xvec = np.array([-1, 0])
+
+        waypoints = world_map.generate_waypoints(0.2)
+        waypoint = waypoints[0]
+        while len(self._waypoints) != len(waypoints):
+            angle = waypoint.transform.rotation.yaw
+            angle = angle % 360
+            angle = (angle + 360) % 360
+            if (angle > 180):
+                angle -= 360
+
+            self._waypoints.append([i, waypoint.transform.location.x, waypoint.transform.location.y, 0 , 0 , 0 , angle, 0])
+
+            temp = waypoint.next(0.2)
+            waypoint = temp[0]
+            i = i + 1
+
+        for k in range(0, len(self._waypoints)):
+            FirstPoint = np.array([self._waypoints[k][1], self._waypoints[k][2]])
+            if k < len(self._waypoints)-1:
+                SecondPoint = np.array([self._waypoints[k+1][1], self._waypoints[k+1][2]])
+            else:
+                SecondPoint =  np.array([self._waypoints[0][1], self._waypoints[0][2]])
+
+            dirvec = SecondPoint - FirstPoint
+            dirvec_unit = dirvec/np.linalg.norm(dirvec)
+
+            self._waypoints[k][6] = np.math.atan2(dirvec_unit[1], dirvec_unit[0]) - np.math.atan2(xvec[1], xvec[0])
+
+
+        self._waypoints_visual = self._waypoints[0:len(self._waypoints):5]
+
+        df = pd.DataFrame(self._waypoints, columns=['Row Name','PosX', 'PosY','SteeringAngle', 'Throttle', 'Brake', 'Psi', 'Vel'])
+        df2 = pd.DataFrame(self._waypoints_visual, columns=['Row Name','PosX','PosY','SteeringAngle','Throttle','Brake','Psi','Vel'])
+        df.to_csv(r'C:\Repositories\joan\modules\steeringwheelcontrol\action\swcontrollers\trajectories\opendrive_trajectory.csv', index=False, header=False)
+        df2.to_csv(r'C:\Repositories\joan\modules\steeringwheelcontrol\action\swcontrollers\trajectories\opendrive_trajectory_VISUAL.csv', index=False, header=True)
 
     def add_ego_agent(self, ego_vehicle_settings =None):
         """
