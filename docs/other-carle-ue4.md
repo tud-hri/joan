@@ -12,3 +12,7 @@ First of all a short overview of the different components and windows you are mo
 6. __Level View__
 
 ![Unreal Menus](imgs/other-carla-unreal-editor-windows.png)
+
+## Tutorials on how to work in the CARLA unreal editor
+
+For now, please have a look at the CARLA documentation [here](https://carla.readthedocs.io/en/latest/#tutorials-developers) for tutorials.
