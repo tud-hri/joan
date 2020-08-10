@@ -1,6 +1,7 @@
 import time
 
 from PyQt5 import QtCore
+from PyQt5.QtCore import pyqtSignal
 
 from modules.joanmodules import JOANModules
 from process.news import News
@@ -11,7 +12,14 @@ from tools import AveragedFloat
 
 
 class JoanModuleAction(QtCore.QObject):
-    def __init__(self, module: JOANModules, millis=100, enable_performance_monitor=True, use_state_machine_and_timer=True):
+    # ModuleSignals
+    # These signals are used for other modules to trigger or call functions of this specific module
+    signal_start = pyqtSignal()  # starts module main QTimer
+    signal_stop = pyqtSignal()  # stops module main QTimer
+    signal_initialize = pyqtSignal()  # initialize the module
+
+    def __init__(self, module: JOANModules, millis=100, enable_performance_monitor=True,
+                 use_state_machine_and_timer=True):
         """
         Initialize
         :param module: module type
@@ -52,6 +60,11 @@ class JoanModuleAction(QtCore.QObject):
         # initialize own data and create channel in news
         self.data = {}
         self.write_news(news=self.data)
+
+        # connect the signals
+        self.signal_start.connect(self.start)
+        self.signal_stop.connect(self.stop)
+        self.signal_initialize.connect(self.initialize)
 
     def register_module_dialog(self, module_dialog):
         self.module_dialog = module_dialog
