@@ -71,4 +71,6 @@ This module is quite self explanatory, it deals with any sort of input you wish 
 The hardware manager is build up in such a way that you will be able to add your own inputs if they inherit from the 'baseinput' class
 
 3. __Data Recorder__
-This 
+This module is also self explanatory, when initializing the module the current items that are in the news channel will be shown in the
+window. You can check and uncheck the variables you'd wish to save, it will then save these variables in a csv file.
+
