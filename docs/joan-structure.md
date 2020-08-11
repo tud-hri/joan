@@ -37,4 +37,14 @@ This schematic shows the overall structure of JOAN as it is at the moment of wri
     a car around and recording some data. 
     
 
-![alt text](imgs/joan-structure-schematic.png "Template Dialog")
+![alt text](imgs/joan-structure-schematic.png "Modules Schematic")
+
+As shown in the figure the main modules you'll probably always use are 'carlainterface', 'hardwaremanager' and the 'datarecorder'. 
+These module titles sort of giveaway what they do however I will also attempt to give a short explanation of each of these modules, why they are there
+and what they accomplish. 
+
+!!! Note
+    This explanation will only scratch the surface of how exactly these modules work, we have tried to document the code itself really well
+    so if you want to know the knitty gritty of what exactly happens in the modules please have a look at the individual code and especially
+    the docstrings/comments! :)
+    
