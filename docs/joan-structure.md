@@ -13,7 +13,7 @@ Using the `JOANModuleAction` let your module work with:
 - `Settings`, containing settings in json format
 - performance monitor (optional) on the current module
 
-Using the `JOANModuleDialog` gives your module a base dialog window with buttons:
+Using the `JOANModuleDialog` gives your module a base dialog window with buttons (see picture below):
 
 - `Start`
 - `Stop`
@@ -21,15 +21,7 @@ Using the `JOANModuleDialog` gives your module a base dialog window with buttons
 
 It also has an input field for setting a timer interval used when writing news (= latest data).
 
-## Schematic overview
+![alt text](imgs/joan-structure-template-dialog.png "Template Dialog")
 
-```mermaid
-   graph TD;
-      A((Main)) --> |starts| B(JOANModules);
-      B-->|define|C(your module);
-      C-->D{consist of};
-      D-->|action|G(Action class);
-      D-->|dialog|H(Dialog class);
-      G-->|inherits from|E(JOANModuleAction- Status- News -Settings);
-      H-->|inherits from|F(JOANModuleDialog- Dialog base);
-```
+
+## Schematic overview
