@@ -81,3 +81,6 @@ window. You can check and uncheck the variables you'd wish to save, it will then
 
 
 ![alt text](imgs/joan-structure-datarecorder.PNG "Data Recorder")
+
+In the example above we will record the data of 'Car 1', but we have decided we are not interested in the angular velocities or accelerations of the vehicle, so we have
+unchecked these. The result will be that these variables are not saved in the file 'data_20200811_142027.csv'
