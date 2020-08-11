@@ -11,7 +11,7 @@ Using the `JOANModuleAction` let your module work with:
 - `Status`, containing the State and the StateMachine
 - `News`, your module may write to it's own news-channel using a time interval
 - `Settings`, containing settings in json format
-- performance monitor (optional) on the current module
+- `performance monitor` (optional) on the current module
 
 Using the `JOANModuleDialog` gives your module a base dialog window with buttons (see picture below):
 
@@ -19,9 +19,23 @@ Using the `JOANModuleDialog` gives your module a base dialog window with buttons
 - `Stop`
 - `Initialize`
 
+And a menu bar with the options:
+
+- `File`
+- `Settings`
+
 It also has an input field for setting a timer interval used when writing news (= latest data).
 
 ![alt text](imgs/joan-structure-template-dialog.png "Template Dialog")
 
 
-## Schematic overview
+## Main Components of JOAN
+This schematic shows the overall structure of JOAN as it is at the moment of writing (11/08/2020):
+
+!!! Note
+    JOAN will work with only 1 module as well or as many as you like. The structure shown here is a 'barebones' version of driving
+    a car around and recording some data. 
+    
+
+    
+
