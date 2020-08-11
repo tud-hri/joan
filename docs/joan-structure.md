@@ -37,5 +37,4 @@ This schematic shows the overall structure of JOAN as it is at the moment of wri
     a car around and recording some data. 
     
 
-    
-
+![alt text](imgs/joan-structure-schematic.png "Template Dialog")
