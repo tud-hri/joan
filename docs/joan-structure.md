@@ -62,6 +62,10 @@ Examples of what can be done in this module are:
     A good understanding of python is needed to grasp the functionality that can be implemented. It is therefore strongly recommended to take a good look
     at the documentation before you try and play with the module.
     
+!!! Note
+    Please note that it is only possible to initialize this module if CARLA is running in Unreal.
+
+![alt text](imgs/joan-structure-carlainterface.PNG "Carla Interface")
 ### Hardware Manager
 This module is quite self explanatory, it deals with any sort of input you wish to use with JOAN. The standard inputs that it can handle are
 - `Keyboard`
@@ -70,7 +74,10 @@ This module is quite self explanatory, it deals with any sort of input you wish 
 
 The hardware manager is build up in such a way that you will be able to add your own inputs if they inherit from the 'baseinput' class
 
+![alt text](imgs/joan-structure-hardwaremanager.PNG "Hardware Manager")
 ### Datarecorder
 This module is also self explanatory, when initializing the module the current items that are in the news channel will be shown in the
-window. You can check and uncheck the variables you'd wish to save, it will then save these variables in a csv file.
+window. You can check and uncheck the variables you'd wish to save, it will then save these variables in a csv file. 
 
+
+![alt text](imgs/joan-structure-datarecorder.PNG "Data Recorder")
