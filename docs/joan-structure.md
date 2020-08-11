@@ -48,7 +48,7 @@ and what they accomplish.
     so if you want to know the knitty gritty of what exactly happens in the modules please have a look at the individual code and especially
     the docstrings/comments! :)
    
-1. __Carla Interface__
+### Carla Interface
 This module basically acts as the bridge between python and the CARLA environment in unreal. Almost all of the communication between carla and JOAN
 is done here. In this module the documentation of the pythonAPI of carla is crucial to understand and get a grasp of, you can find it [here](https://carla.readthedocs.io/en/latest/python_api/).
 Examples of what can be done in this module are:
@@ -62,7 +62,7 @@ Examples of what can be done in this module are:
     A good understanding of python is needed to grasp the functionality that can be implemented. It is therefore strongly recommended to take a good look
     at the documentation before you try and play with the module.
     
-2. __Hardware Manager__ 
+### Hardware Manager
 This module is quite self explanatory, it deals with any sort of input you wish to use with JOAN. The standard inputs that it can handle are
 - `Keyboard`
 - `Any sort of HID (human interface device) joystick`
@@ -70,7 +70,7 @@ This module is quite self explanatory, it deals with any sort of input you wish 
 
 The hardware manager is build up in such a way that you will be able to add your own inputs if they inherit from the 'baseinput' class
 
-3. __Data Recorder__
+### Datarecorder
 This module is also self explanatory, when initializing the module the current items that are in the news channel will be shown in the
 window. You can check and uncheck the variables you'd wish to save, it will then save these variables in a csv file.
 
