@@ -142,7 +142,7 @@ To install all requirements from the command prompt, make sure you are in the pr
 
 ---
 ## Step 5. Including the CARLA .egg file
-The only dependency not in the requirements.txt is the CARLA PythonAPI which we build earlier. To use this dependency copy the `*.egg` file to the empty folder `carla_pythonapi` in your JOAN project folder. If you have not done this step you will get an error message whenever you start JOAN.
+The only dependency not in the requirements.txt is the CARLA PythonAPI which we built earlier. To use this dependency copy the `*.egg` file to the empty folder `carla_pythonapi` in your JOAN project folder. If you have not done this step you will get an error message whenever you start JOAN.
     
 !!! Note
     Please note that the file name of the `*.egg` file might be slightly different in your case, it depends on the Python version. Make sure that the filename in `carlainterfaceaction.py` matches the name of your own `*.egg` file. 
