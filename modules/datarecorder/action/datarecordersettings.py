@@ -65,7 +65,6 @@ class DataRecorderSettings(JoanModuleSettings):
 
             original_news = news.read_news(module)
             if 'ego_agents' in original_news:
-                print('joe')
                 for cars in original_news['ego_agents']:
                     try:
                         original_news['ego_agents'][cars].pop('vehicle_object')
