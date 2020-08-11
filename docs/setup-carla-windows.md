@@ -1,6 +1,6 @@
 # Setting up CARLA for Windows
 
-These instructions are complete and are heavily based on the awesome documentation provided by the CARLA team. If you get stuck somewhere, you could have a look at [their documentation](https://carla.readthedocs.io/en/latest/) as well.
+These instructions are are heavily based on the awesome documentation provided by the CARLA team. If you get stuck somewhere, you could have a look at [their documentation](https://carla.readthedocs.io/en/latest/) as well.
 
 ---
 ## Introduction
@@ -49,9 +49,6 @@ In the installer, select the "Visual C++ build tools" and ".NET build tools" che
 
 #### Approach 2: Visual Studio 2017 community edition
 
-Alternatively, you can install the full Visual Studio community edition, this is a complete code editor but it will require some disk space. Download the Visual 2017 Studio Community edition installer by following the link above, again this will require creating an account and navigation the extensive downloads list. 
-When installing please make sure you install it with the following properties:
-
 Alternatively, you can install the full Visual Studio community edition, this is a complete code editor but it will require some disk space. Download the Visual 2017 Studio Community edition installer [here](https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=Community&rel=15). 
 When installing please make sure you install it with the following properties in Visual Studio Installer:
 
@@ -93,6 +90,10 @@ If Python does not start or if a different version is shown, you should make sur
 Please not the >>> symbols indicating that you are now within a python environment. To close Python again type:
 
     >>> exit() 
+    
+or
+
+    >>> quit()
 
 !!! Important
     Only use python 3, preferably python 3.8. Installing python 2.7 will be a waste of your time ;-)
@@ -143,17 +144,12 @@ Unpack these assets in `\carla\Unreal\CarlaUE4\Content\Carla`. If the directory 
 
 ### Step 3: Get specific JOAN Assets
 To have a nice car interior which also turns the steering wheel when you turn your physical steering wheel, some extra assets are required. You can download them [here](https://www.dropbox.com/s/yhbf59t7i5iu6rw/JOAN_Assets.zip?dl=0). The file contains:
+This folder contains the assets which are needed to accomplish this. The file structure is exactly the same as it should be in the carla content folder. Before you do that please unzip the folder and go into 'assets voor thuis', copy the contents of this folder to
+have carla installed for example:
 
-* `JOAN_Blueprints`
-* `JOAN_Static`
-* `JOAN_Map`
-
-Please copy the contents of `JOAN_Blueprints` to `\carla\Unreal\CarlaUE4\Content\Carla\Blueprints`. To be neat copy the vehicles in the vehicles blueprint folder.
-
-Copy the contents of `JOAN_Static` (only cars) to `\carla\Unreal\CarlaUE4\Content\Carla\Static\Vehicles\4Wheeled`.
-
-Then, copy all `.xodr` files in `JOAN_Map` to `\carla\Unreal\CarlaUE4\Content\Carla\Maps\OpenDrive`. Copy the remaining files in `JOAN_Map` to `\carla\Unreal\CarlaUE4\Content\Carla\Maps`. 
-
+    C:\carla\Unreal\CarlaUE4\Content
+    
+Now all relevant assets should be in the right place :)
 ### Step 4: Build the PythonAPI
 
 In order to build the python API open the 'x64 Native Tools Command Prompt for VS 2017' terminal. 
@@ -176,7 +172,7 @@ Furthermore, a `carla.egg` file should be in `..\carla\PythonAPI\carla\dist`:
 
 ![alt text](imgs/setup-carla-windows-egg-file.png "eggfile")
 
-The exact filename depends on the CARLA version and python version (in our case python 3.8). Now copy this egg file to the folder `carla_pythonapi` (replace the already existing `egg` file if it's there) in your JOAN project folder.
+The exact filename depends on the CARLA version and python version (in our case python 3.8). Please check if the build was succesful by checking if the egg file is there, you will need this file later on when we setup the JOAN environment.
 
 ### Step 5: Building and launching CARLA
 
