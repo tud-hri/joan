@@ -26,6 +26,6 @@ if __name__ == '__main__':
     JOANHQACTION.add_module(JOANModules.DATA_RECORDER, millis = 5)
 
     # add the EXPERIMENT_MANAGER last because this one collects settings from JOAN modules that are already loaded
-    # JOANHQACTION.add_module(JOANModules.EXPERIMENT_MANAGER)
+    JOANHQACTION.add_module(JOANModules.EXPERIMENT_MANAGER)
 
     APP.exec_()

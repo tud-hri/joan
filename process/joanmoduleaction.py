@@ -8,15 +8,12 @@ from process.news import News
 from process.settings import Settings
 from process.statemachine import StateMachine
 from process.status import Status
+from process.signals import Signals
+from process.joanmodulesignals import JoanModuleSignal
 from tools import AveragedFloat
 
 
 class JoanModuleAction(QtCore.QObject):
-    # ModuleSignals
-    # These signals are used for other modules to trigger or call functions of this specific module
-    signal_start = pyqtSignal()  # starts module main QTimer
-    signal_stop = pyqtSignal()  # stops module main QTimer
-    signal_initialize = pyqtSignal()  # initialize the module
 
     def __init__(self, module: JOANModules, millis=100, enable_performance_monitor=True,
                  use_state_machine_and_timer=True):
@@ -61,10 +58,22 @@ class JoanModuleAction(QtCore.QObject):
         self.data = {}
         self.write_news(news=self.data)
 
-        # connect the signals
-        self.signal_start.connect(self.start)
-        self.signal_stop.connect(self.stop)
-        self.signal_initialize.connect(self.initialize)
+        # (py)Qt signals for triggering specific module actions/functions
+        # these signals are all stored in a JoanModuleSignal class; add them there if you need more signals.
+        self._module_signals = JoanModuleSignal(module)
+
+        # add to signals singleton
+        self.singleton_signals = Signals()
+        self.singleton_signals.add_signals(self.module, self._module_signals)
+
+        # connect the module signals to the module functions
+        # at the moment, this is done here, in the __init__, but is could also be done in JoanModuleSignal
+        # (we could pass a reference of action to JoanModuleSignal), but then you need to go back and forth to
+        # connect the correct function etc).
+        self._module_signals.module_start.connect(self.start)
+        self._module_signals.module_stop.connect(self.stop)
+        self._module_signals.module_initialize.connect(self.initialize)
+
 
     def register_module_dialog(self, module_dialog):
         self.module_dialog = module_dialog
