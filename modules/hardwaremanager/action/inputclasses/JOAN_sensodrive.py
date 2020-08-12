@@ -87,6 +87,12 @@ class JOAN_SensoDrive(BaseInput):
         :param settings:
         """
         super().__init__(hardware_manager_action)
+        # torque safety variables
+        self.counter = 0
+        self.old_requested_torque = 0
+        self.safety_checked_torque = 0
+        self.t1 = 0
+        self.torque_rate = 0
 
         self.currentInput = 'SensoDrive'
         self._sensodrive_tab = sensodrive_tab
@@ -259,6 +265,8 @@ class JOAN_SensoDrive(BaseInput):
         else:
             self._pcan_error = False
 
+        self.counter = 0
+
     def _toggle_on_off(self, connected):
         """
         Toggles the sensodrive actuator on and off by cycling through different PCANmessages
@@ -407,13 +415,24 @@ class JOAN_SensoDrive(BaseInput):
         # check whether we have a sw_controller that should be updated
         self._steering_wheel_control_data = self._action.read_news(JOANModules.STEERING_WHEEL_CONTROL)
         self._carla_interface_data = self._action.read_news(JOANModules.CARLA_INTERFACE)
+
         try:
-            self.steering_wheel_parameters['torque'] = self._steering_wheel_control_data[
+            requested_torque_by_controller =  self._steering_wheel_control_data[
                 self._carla_interface_data['ego_agents']['Car 1']['vehicle_object'].selected_sw_controller]['sw_torque']
-
-
         except:
-            self.steering_wheel_parameters['torque'] = 0
+            requested_torque_by_controller = 0
+
+        self.counter = self.counter + 1
+
+        if self.counter == 5:
+            [self.safety_checked_torque, self.torque_rate] = self.torque_check(requested_torque= requested_torque_by_controller, t1 = self.t1)
+            self.t1 = int(round(time.time() * 1000))
+            self.counter = 0
+        self._data['requested_torque'] = requested_torque_by_controller
+        self._data['checked_torque'] = self.safety_checked_torque
+        self._data['torque_rate'] = self.torque_rate
+
+        self.steering_wheel_parameters['torque'] = self.safety_checked_torque
 
         # request and set steering wheel data
         self.write_message_steering_wheel(self.PCAN_object, self.steering_wheel_message, self.steering_wheel_parameters)
@@ -433,6 +452,9 @@ class JOAN_SensoDrive(BaseInput):
                 Angle = round(Increments * 0.009, 4)
                 # Steering:
                 self._data['SteeringInput'] = Angle
+                #Torque
+                Torque = int.from_bytes(received[1].DATA[6:], byteorder='little', signed=True)
+                self._data['Torque'] = Torque
             elif (received[1].ID == 0x210):
                 self._current_state_hex = received[1].DATA[0]
                 self._error_state[0] = received[1].DATA[2]
@@ -447,6 +469,9 @@ class JOAN_SensoDrive(BaseInput):
                 Angle = round(Increments * 0.009, 4)
                 # Steering:
                 self._data['SteeringInput'] = Angle
+                #Torque
+                Torque = int.from_bytes(received2[1].DATA[6:], byteorder='little', signed=True)
+                self._data['Torque'] = Torque
             elif (received2[1].ID == 0x210):
                 self._current_state_hex = received2[1].DATA[0]
                 self._error_state[0] = received2[1].DATA[2]
@@ -462,6 +487,9 @@ class JOAN_SensoDrive(BaseInput):
                 Angle = round(Increments * 0.009, 4)
                 # Steering:
                 self._data['SteeringInput'] = Angle
+                #Torque
+                Torque = int.from_bytes(received3[1].DATA[6:], byteorder='little', signed=True)
+                self._data['Torque'] = Torque
             elif (received3[1].ID == 0x210):
                 self._current_state_hex = received3[1].DATA[0]
                 self._error_state[0] = received3[1].DATA[2]
@@ -477,6 +505,8 @@ class JOAN_SensoDrive(BaseInput):
 
         # writing the spring stiffness in news because we need this parameter in the 'steeringwheelcontrol' module :)
         self._data['spring_stiffness'] = self.steering_wheel_parameters['spring_stiffness']
+
+
 
         return self._data
 
@@ -525,3 +555,26 @@ class JOAN_SensoDrive(BaseInput):
 
         if not self._pcan_error:
             pcan_object.Write(self._pcan_channel, pcanmessage)
+
+
+    def torque_check(self, requested_torque, t1):
+        t2 = int(round(time.time() * 1000))
+
+
+        torque_rate = (self.old_requested_torque - requested_torque) / ((t2 - t1) * 1000) * 1000 #Nm/s
+
+        if(abs(torque_rate) > 20):
+            print('TORQUE RATE TOO HIGH! TURNING OFF SENSODRIVE')
+            self.on_to_off(self.sensodrive_initialization_message)
+
+        if requested_torque > 5000:
+            checked_torque = 5000
+        elif requested_torque < -5000:
+            checked_torque = -5000
+        else:
+            checked_torque = requested_torque
+
+
+        #update torque for torque rate calc
+        self.old_requested_torque = requested_torque
+        return [checked_torque, torque_rate]
