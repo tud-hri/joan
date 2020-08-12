@@ -148,8 +148,8 @@ class PDSWController(BaseSWController):
                 delta_t = t1 - self._t2
 
                 delta_t = t1 - self._t2
-                if delta_t < (self.module_action.millis - 0.5) / 1000:
-                    delta_t = self.module_action.millis / 1000
+                if delta_t < (self.module_action._millis - 0.5) / 1000:
+                    delta_t = self.module_action._millis / 1000
 
                 # extract data
                 car = vehicle_object.spawned_vehicle
