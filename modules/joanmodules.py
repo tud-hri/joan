@@ -1,21 +1,21 @@
-import enum
+from enum import Enum, auto
 import os
 
 
-class JOANModules(enum.Enum):
+class JOANModules(Enum):
     """
     Enum to represent all available modules in JOAN. If you want to add a new module, 
     just increment the ID number and make sure to add links to the action and dialog/widget
     classes.
     """
 
-    TEMPLATE = -1
-    DATA_RECORDER = 0
-    HARDWARE_MANAGER = 1
-    CARLA_INTERFACE = 2
-    STEERING_WHEEL_CONTROL = 3    
-    EXPERIMENT_MANAGER = 4
-    DATA_PLOTTER = 5
+    TEMPLATE = auto()
+    DATA_RECORDER = auto()
+    HARDWARE_MANAGER = auto()
+    CARLA_INTERFACE = auto()
+    STEERING_WHEEL_CONTROL = auto()
+    EXPERIMENT_MANAGER = auto()
+    DATA_PLOTTER = auto()
     
     @property
     def action(self):
