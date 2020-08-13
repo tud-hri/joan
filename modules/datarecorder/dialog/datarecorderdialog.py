@@ -1,16 +1,17 @@
-import os
 import glob
-import numpy as np
+import os
 
+import numpy as np
 from PyQt5 import QtCore
 from PyQt5 import QtWidgets
 from PyQt5.Qt import Qt
 
 from modules.joanmodules import JOANModules
-from process.joanmoduledialog import JoanModuleDialog
-from process.joanmoduleaction import JoanModuleAction
-from process.statesenum import State
 from process import News
+from process.joanmoduleaction import JoanModuleAction
+from process.joanmoduledialog import JoanModuleDialog
+from process.statesenum import State
+
 
 class CreateTreeWidgetDialog(QtWidgets.QDialog):
     """
@@ -18,6 +19,7 @@ class CreateTreeWidgetDialog(QtWidgets.QDialog):
     except for the Data Recorder
     The dialog is shown and editable in the Data Recorder Settings part
     """
+
     def __init__(self, variable_to_save, tree_widget=None, parent=None):
         """
         :param variabele_to_save: contains all Data Recorder settings from the default_settings_file_location
@@ -67,11 +69,13 @@ class CreateTreeWidgetDialog(QtWidgets.QDialog):
             item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
             return item
 
+
 class DatarecorderDialog(JoanModuleDialog):
     """
     Builts the dialog used for the Data Recorder and shows it on the inherited dialog
     Inherits the dialog from the JoanModuleDialog
     """
+
     def __init__(self, module_action: JoanModuleAction, parent=None):
         """
         :param module_action: contains the Datarecorder Action class
@@ -94,10 +98,10 @@ class DatarecorderDialog(JoanModuleDialog):
 
         # Settings
         self.settings_menu = QtWidgets.QMenu('Settings')
-        self.load_settings = QtWidgets.QAction('Load Datarecorder Settings')
+        self.load_settings = QtWidgets.QAction('Load DataRecorder Settings')
         self.load_settings.triggered.connect(self._load_settings)
         self.settings_menu.addAction(self.load_settings)
-        self.save_settings = QtWidgets.QAction('Save Datarecorder Settings')
+        self.save_settings = QtWidgets.QAction('Save DataRecorder Settings')
         self.save_settings.triggered.connect(self._save_settings)
         self.settings_menu.addAction(self.save_settings)
         self.menu_bar.addMenu(self.settings_menu)
@@ -134,7 +138,6 @@ class DatarecorderDialog(JoanModuleDialog):
         file_to_save_in, _ = QtWidgets.QFileDialog.getSaveFileName(self, 'save settings', filter='*.json')
         if file_to_save_in:
             self.module_action.save_settings_to_file(file_to_save_in)
-
 
     def handle_click(self, nodes):
         """
@@ -205,12 +208,14 @@ class DatarecorderDialog(JoanModuleDialog):
         self.on_item_clicked()
 
     def check_trajectory_checkbox(self):
-        self.module_action.trajectory_recorder.trajectory_record_boolean(self.module_widget.check_trajectory.isChecked())
+        self.module_action.trajectory_recorder.trajectory_record_boolean(
+            self.module_widget.check_trajectory.isChecked())
 
     def check_trajectory_filename(self):
         curpath = os.path.dirname(os.path.realpath(__file__))
         path = os.path.dirname(os.path.dirname(curpath))
-        hcr_path = os.path.join(path,'steeringwheelcontrol/action/swcontrollers/trajectories/*.csv')  #Dit moet handiger kunnen
+        hcr_path = os.path.join(path,
+                                'steeringwheelcontrol/action/swcontrollers/trajectories/*.csv')  # Dit moet handiger kunnen
 
         self.trajectory_title = self.module_widget.line_trajectory_title.text()
 
@@ -221,20 +226,25 @@ class DatarecorderDialog(JoanModuleDialog):
                 break
             else:
                 self.module_widget.btn_save.setEnabled(True)
-                self.module_widget.label_trajectory_filename.setText('Will save file as: '+ self.trajectory_title + '.csv')
+                self.module_widget.label_trajectory_filename.setText(
+                    'Will save file as: ' + self.trajectory_title + '.csv')
 
     def save_trajectory(self):
         self.trajectory_data = self.module_action.trajectory_recorder.generate_trajectory()
         self.trajectory_data_visual = self.trajectory_data[0:len(self.trajectory_data):5]
         curpath = os.path.dirname(os.path.realpath(__file__))
         path = os.path.dirname(os.path.dirname(curpath))
-        hcr_path = os.path.join(path,'steeringwheelcontrol/action/swcontrollers/trajectories/')  #Dit moet handiger kunnen
+        hcr_path = os.path.join(path,
+                                'steeringwheelcontrol/action/swcontrollers/trajectories/')  # Dit moet handiger kunnen
 
         # Save 2D numpy array to csv file
         try:
-            np.savetxt(hcr_path + self.trajectory_title + '.csv', self.trajectory_data, delimiter=',', fmt='%i, %1.8f, %1.8f, %1.8f, %1.8f, %1.8f, %1.8f , %1.8f')
-            np.savetxt(hcr_path + self.trajectory_title + '_VISUAL.csv', self.trajectory_data_visual, delimiter=',', fmt='%i, %1.8f, %1.8f, %1.8f, %1.8f, %1.8f, %1.8f, %1.8f', header="Row Name,PosX,PosY,SteeringAngle,Throttle,Brake,Psi, Vel", comments='')
-            self.module_widget.label_trajectory_filename.setText('Saved file as: '+ self.trajectory_title + '.csv')
+            np.savetxt(hcr_path + self.trajectory_title + '.csv', self.trajectory_data, delimiter=',',
+                       fmt='%i, %1.8f, %1.8f, %1.8f, %1.8f, %1.8f, %1.8f , %1.8f')
+            np.savetxt(hcr_path + self.trajectory_title + '_VISUAL.csv', self.trajectory_data_visual, delimiter=',',
+                       fmt='%i, %1.8f, %1.8f, %1.8f, %1.8f, %1.8f, %1.8f, %1.8f',
+                       header="Row Name,PosX,PosY,SteeringAngle,Throttle,Brake,Psi, Vel", comments='')
+            self.module_widget.label_trajectory_filename.setText('Saved file as: ' + self.trajectory_title + '.csv')
             self.module_widget.line_trajectory_title.clear()
             self.module_widget.btn_save.setEnabled(False)
             self.module_widget.btn_discard.setEnabled(False)
