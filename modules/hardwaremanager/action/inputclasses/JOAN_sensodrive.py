@@ -7,7 +7,7 @@ from modules.hardwaremanager.action.hardwaremanagersettings import SensoDriveSet
 from modules.hardwaremanager.action.inputclasses.PCANBasic import *
 from modules.hardwaremanager.action.inputclasses.baseinput import BaseInput
 from modules.joanmodules import JOANModules
-
+from process.statesenum import State
 
 import multiprocessing as mp
 
@@ -226,17 +226,17 @@ class JOAN_SensoDrive(BaseInput):
 
         self.counter = 0
 
-    # def _toggle_on_off(self, connected):
-    #     """
-    #     Toggles the sensodrive actuator on and off by cycling through different PCANmessages
-    #     :param connected:
-    #     :return:
-    #     """
-    #     if connected == False:
-    #         try:
-    #             self.on_to_off()
-    #         except:
-    #             pass
+    def _toggle_on_off(self, connected):
+        """
+        Toggles the sensodrive actuator on and off by cycling through different PCANmessages
+        :param connected:
+        :return:
+        """
+        if connected == False:
+            try:
+                self.on_to_off()
+            except:
+                pass
 
     def _open_settings_from_button(self):
         """
@@ -295,7 +295,10 @@ class JOAN_SensoDrive(BaseInput):
         :return:
         """
         self.toggle_sensodrive_motor_event.set()
-        print(self.sensodrive_shared_values.sensodrive_motorstate.value)
+        #give the seperate process time to handle the signal
+        if self.module_action.state_machine.current_state != State.RUNNING:
+            time.sleep(0.02)
+
         if self.sensodrive_shared_values.sensodrive_motorstate == 0x10:
             self._sensodrive_tab.btn_on_off.setStyleSheet("background-color: orange")
             self._sensodrive_tab.btn_on_off.setText('Off')
@@ -305,6 +308,7 @@ class JOAN_SensoDrive(BaseInput):
         elif self.sensodrive_shared_values.sensodrive_motorstate == 0x18:
             self._sensodrive_tab.btn_on_off.setStyleSheet("background-color: red")
             self._sensodrive_tab.btn_on_off.setText('Clear Error')
+
 
 
 
@@ -366,6 +370,16 @@ class JOAN_SensoDrive(BaseInput):
             self._data['Handbrake'] = self.handbrake
             self._data['Reverse'] = self.reverse
         """
+        #check on the motordrive status
+        if self.sensodrive_shared_values.sensodrive_motorstate == 0x10:
+            self._sensodrive_tab.btn_on_off.setStyleSheet("background-color: orange")
+            self._sensodrive_tab.btn_on_off.setText('Off')
+        elif self.sensodrive_shared_values.sensodrive_motorstate == 0x14:
+            self._sensodrive_tab.btn_on_off.setStyleSheet("background-color: lightgreen")
+            self._sensodrive_tab.btn_on_off.setText('On')
+        elif self.sensodrive_shared_values.sensodrive_motorstate == 0x18:
+            self._sensodrive_tab.btn_on_off.setStyleSheet("background-color: red")
+            self._sensodrive_tab.btn_on_off.setText('Clear Error')
         # print(self.sensodrive_shared_values.steering_angle.value)
         # # Reverse
         # self._data['Reverse'] = 0
@@ -566,87 +580,87 @@ class SensoDriveSharedValues:
 
     @property
     def steering_angle(self):
-        return self._steering_angle
+        return self._steering_angle.value
     @steering_angle.setter
     def steering_angle(self, var):
-        self._steering_angle = var
+        self._steering_angle.value = var
 
     @property
     def throttle(self):
-        return self._throttle
+        return self._throttle.value
     @throttle.setter
     def throttle(self, var):
-        self._throttle = var
+        self._throttle.value = var
 
     @property
     def brake(self):
-        return self._brake
+        return self._brake.value
     @brake.setter
     def brake(self, var):
-        self._brake = var
+        self._brake.value = var
 
     @property
     def friction(self):
-        return self._friction
+        return self._friction.value
     @friction.setter
     def friction(self, var):
-        self._friction = var
+        self._friction.value = var
 
     @property
     def damping(self):
-        return self._damping
+        return self._damping.value
     @damping.setter
     def damping(self, var):
-        self._damping = var
+        self._damping.value = var
 
     @property
     def spring_stiffness(self):
-        return self._spring_stiffness
+        return self._spring_stiffness.value
     @spring_stiffness.setter
     def spring_stiffness(self, var):
-        self._spring_stiffness = var
+        self._spring_stiffness.value = var
 
     @property
     def torque(self):
-        return self._torque
+        return self._torque.value
     @torque.setter
     def torque(self, var):
-        self._torque = var
+        self._torque.value = var
 
     @property
     def measured_torque(self):
-        return self._measured_torque
+        return self._measured_torque.value
     @measured_torque.setter
     def measured_torque(self, var):
-        self._measured_torque = var
+        self._measured_torque.value = var
 
     @property
     def endstops(self):
-        return self._endstops
+        return self._endstops.value
     @endstops.setter
     def endstops(self, var):
-        self._endstops = var
+        self._endstops.value = var
 
     @property
     def torque_limit_between_endstops(self):
-        return self._torque_limit_between_endstops
+        return self._torque_limit_between_endstops.value
     @torque_limit_between_endstops.setter
     def torque_limit_between_endstops(self, var):
-        self._torque_limit_between_endstops = var
+        self._torque_limit_between_endstops.value = var
 
     @property
     def torque_limit_beyond_endstops(self):
-        return self._torque_limit_beyond_endstops
+        return self._torque_limit_beyond_endstops.value
     @torque_limit_beyond_endstops.setter
     def torque_limit_beyond_endstops(self, var):
-        self._torque_limit_beyond_endstops = var
+        self._torque_limit_beyond_endstops.value = var
 
     @property
     def sensodrive_motorstate(self):
-        return self._sensodrive_motorstate
+        return self._sensodrive_motorstate.value
     @sensodrive_motorstate.setter
     def sensodrive_motorstate(self, var):
-        self._sensodrive_motorstate = var
+        self._sensodrive_motorstate.value = var
 
 
 
@@ -822,13 +836,11 @@ class SensoDriveComm(mp.Process):
                                                                   byteorder='little') - 1100) / 2460 * 100
                     self.sensodrive_shared_values._brake = (int.from_bytes(received3[1].DATA[4:6], byteorder='little') - 1) / 500 * 100
 
-
+            self.sensodrive_shared_values.sensodrive_motorstate = self._current_state_hex
 
             if self.toggle_sensodrive_motor_event.is_set():
                 self.on_off()
-                self.sensodrive_shared_values.sensodrive_motorstate = 10
                 self.toggle_sensodrive_motor_event.clear()
-
 
 
 
@@ -903,11 +915,11 @@ class SensoDriveComm(mp.Process):
         print('off to on')
         message.DATA[0] = 0x10
         self.PCAN_object.Write(self._pcan_channel, message)
-        time.sleep(0.02)
+        time.sleep(0.001)
 
         message.DATA[0] = 0x12
         self.PCAN_object.Write(self._pcan_channel, message)
-        time.sleep(0.02)
+        time.sleep(0.001)
 
         message.DATA[0] = 0x14
         self.PCAN_object.Write(self._pcan_channel, message)
@@ -920,10 +932,10 @@ class SensoDriveComm(mp.Process):
         print('on to off')
         message.DATA[0] = 0x12
         self.PCAN_object.Write(self._pcan_channel, message)
-        time.sleep(0.02)
+        time.sleep(0.001)
         message.DATA[0] = 0x10
         self.PCAN_object.Write(self._pcan_channel, message)
-        time.sleep(0.02)
+        time.sleep(0.001)
 
 
     def clear_error(self, message):
@@ -934,4 +946,4 @@ class SensoDriveComm(mp.Process):
         print('clear error')
         message.DATA[0] = 0x1F
         self.PCAN_object.Write(self._pcan_channel, message)
-        time.sleep(0.02)
+        time.sleep(0.001)
