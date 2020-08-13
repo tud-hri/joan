@@ -7,11 +7,11 @@ import numpy as np
 from modules.datarecorder.action.datawriter import DataWriter
 from modules.datarecorder.action.datarecordersettings import DataRecorderSettings
 from modules.datarecorder.action.trajectoryrecorder import TrajectoryRecorder
+from modules.datarecorder.action.datarecordersignals import DataRecorderSignals
 from modules.joanmodules import JOANModules
 
 from process.joanmoduleaction import JoanModuleAction
 from process.statesenum import State
-from process.status import Status
 
 
 class DataRecorderAction(JoanModuleAction):
@@ -51,6 +51,15 @@ class DataRecorderAction(JoanModuleAction):
                                       settings=self.get_module_settings(JOANModules.DATA_RECORDER))
         # TODO: run data_writer in separate thread
         # self.data_writer.start()
+
+        # signals and slots
+        self._module_signals = DataRecorderSignals(self.module)
+        self.singleton_signals.add_signals(self.module, self._module_signals)
+
+        self._module_signals.prepare_recording.connect(self.initialize)
+        self._module_signals.start_recording.connect(self.start)
+        self._module_signals.stop_recording.connect(self.stop)
+
 
     def initialize_file(self):
         """
