@@ -165,7 +165,12 @@ class JOAN_SensoDrive(BaseInput):
         self.sensodrive_shared_values.damping = self.steering_wheel_parameters['damping']
         self.sensodrive_shared_values.spring_stiffness = self.steering_wheel_parameters['spring_stiffness']
 
+        self.sensodrive_shared_values.endstops = self.settings.endstops
+        self.sensodrive_shared_values.torque_limit_between_endstops = self.settings.torque_limit_between_endstops
+        self.sensodrive_shared_values.torque_limit_beyond_endstops = self.settings.torque_limit_beyond_endstops
 
+        self.init_event = mp.Event()
+        self.sensodrive_communication_process = SensoDriveComm(self.sensodrive_shared_values, self.init_event)
 
 
     def update_settings(self):
@@ -213,13 +218,11 @@ class JOAN_SensoDrive(BaseInput):
         state.
         :return:
         """
-        self.sensodrive_shared_values.endstops = self.settings.endstops
-        self.sensodrive_shared_values.torque_limit_between_endstops = self.settings.torque_limit_between_endstops
-        self.sensodrive_shared_values.torque_limit_beyond_endstops = self.settings.torque_limit_beyond_endstops
-        self.sensodrive_communication_process = SensoDriveComm(self.sensodrive_shared_values)
-        # self.sensodrive_communication_process.initialize()
 
+        # self.sensodrive_communication_process.initialize()
+        self.init_event.set()
         self.sensodrive_communication_process.start()
+
         self.counter = 0
 
     def _toggle_on_off(self, connected):
@@ -638,8 +641,9 @@ class SensoDriveSharedValues:
 
 
 class SensoDriveComm(mp.Process):
-    def __init__(self, shared_values):
+    def __init__(self, shared_values, init_event):
         super().__init__()
+        self.init_event = init_event
 
         # Create PCAN object
         self.pcan_initialization_result = None
@@ -724,23 +728,28 @@ class SensoDriveComm(mp.Process):
 
 
 
+
+
     def run(self):
+        self.init_event.wait()
         self.initialize()
-        self.off_to_on(self.sensodrive_initialization_message)
+
+
         while True:
-            # print(self._sensodrive_shared_values.friction)
-            self.write_message_steering_wheel(self.PCAN_object, self.steering_wheel_message, self.steering_wheel_parameters)
-
-
-            received = self.PCAN_object.Read(self._pcan_channel)
-            if (received[0] == PCAN_ERROR_OK):
-                if (received[1].ID == 0x211):
-                    Increments = int.from_bytes(received[1].DATA[0:4], byteorder='little', signed=True)
-                    Angle = round(Increments * 0.009, 4)
-                    # Steering:
-                    print(Angle)
-                    # Torque
-                    Torque = int.from_bytes(received[1].DATA[6:], byteorder='little', signed=True)
+            pass
+            # # print(self._sensodrive_shared_values.friction)
+            # self.write_message_steering_wheel(self.PCAN_object, self.steering_wheel_message, self.steering_wheel_parameters)
+            #
+            #
+            # received = self.PCAN_object.Read(self._pcan_channel)
+            # if (received[0] == PCAN_ERROR_OK):
+            #     if (received[1].ID == 0x211):
+            #         Increments = int.from_bytes(received[1].DATA[0:4], byteorder='little', signed=True)
+            #         Angle = round(Increments * 0.009, 4)
+            #         # Steering:
+            #         print(Angle)
+            #         # Torque
+            #         Torque = int.from_bytes(received[1].DATA[6:], byteorder='little', signed=True)
 
 
 
