@@ -82,7 +82,7 @@ class SteeringWheelControlAction(JoanModuleAction):
         sim_data_in = self.read_news(JOANModules.CARLA_INTERFACE)
         hw_data_in = self.read_news(JOANModules.HARDWARE_MANAGER)
 
-        "FOR NOW WE ONLY TRY TO APPLY CONTROLLER ON 1 CAR CAUSE MULTIPLE IS TOTAL MAYHEM"
+        # FOR NOW WE ONLY TRY TO APPLY CONTROLLER ON 1 CAR CAUSE MULTIPLE IS TOTAL MAYHEM
         for controller in self._controllers:
             if 'ego_agents' in sim_data_in:
                 if 'Car 1' in sim_data_in['ego_agents']:

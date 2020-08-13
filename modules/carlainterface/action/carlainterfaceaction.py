@@ -16,6 +16,7 @@ from process.status import Status
 from .agents.egovehicle import Egovehicle
 from .agents.trafficvehicle import Trafficvehicle
 from .carlainterfacesettings import CarlaInterfaceSettings, EgoVehicleSettings, TrafficVehicleSettings
+from .carlainterfacesignals import CarlaInterfaceSignals
 
 msg_box = QMessageBox()
 msg_box.setTextFormat(QtCore.Qt.RichText)
@@ -98,6 +99,10 @@ class CarlaInterfaceAction(JoanModuleAction):
             self.settings.load_from_file(default_settings_file_location)
 
         self.share_settings(self.settings)
+
+        # signals
+        self._module_signals = CarlaInterfaceSignals(self.module)
+        self.singleton_signals.add_signals(self.module, self._module_signals)
 
     @property
     def vehicle_bp_library(self):
