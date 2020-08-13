@@ -26,8 +26,6 @@ class DataRecorderAction(JoanModuleAction):
         """
         super().__init__(module=JOANModules.DATA_RECORDER, millis=millis)
 
-        self.status = Status()
-
         # trajectory recorder:
         self.trajectory_recorder = TrajectoryRecorder(self, 0.1)
 

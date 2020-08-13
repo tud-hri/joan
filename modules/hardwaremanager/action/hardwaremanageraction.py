@@ -29,7 +29,6 @@ class HardwareManagerAction(JoanModuleAction):
         self.input_devices_classes = {}
         self.data = {}
         self.write_news(news=self.data)
-        self.status = Status()
 
         self.carla_interface_data = self.read_news(JOANModules.CARLA_INTERFACE)
         self.settings = HardwareManagerSettings(module_enum=JOANModules.HARDWARE_MANAGER)
