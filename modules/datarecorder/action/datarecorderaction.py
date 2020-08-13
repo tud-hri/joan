@@ -170,8 +170,9 @@ class DataRecorderAction(JoanModuleAction):
                 temp_dict[key] = {}
             temp_dict = temp_dict.get(key)
         temp_dict[checkbox_path[-2]] = checkbox_path[-1]
-        # save the settings
-        self.save_settings_to_file(self.default_settings_file_location)
+
+        # save the settings - DEPRECATED; settings are only saved when the user explicitly wants to.
+        # self.save_settings_to_file(self.default_settings_file_location)
         # share the settings
-        self.share_settings(self.settings)
+        # self.share_settings(self.settings)
 

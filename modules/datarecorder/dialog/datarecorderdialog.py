@@ -98,10 +98,10 @@ class DataRecorderDialog(JoanModuleDialog):
 
         # Settings
         self.settings_menu = QtWidgets.QMenu('Settings')
-        self.load_settings = QtWidgets.QAction('Load Datarecorder Settings')
+        self.load_settings = QtWidgets.QAction('Load DataRecorder Settings')
         self.load_settings.triggered.connect(self._load_settings)
         self.settings_menu.addAction(self.load_settings)
-        self.save_settings = QtWidgets.QAction('Save Datarecorder Settings')
+        self.save_settings = QtWidgets.QAction('Save DataRecorder Settings')
         self.save_settings.triggered.connect(self._save_settings)
         self.settings_menu.addAction(self.save_settings)
         self.menu_bar.addMenu(self.settings_menu)
