@@ -49,7 +49,7 @@ class HardwaremanagerAction(JoanModuleAction):
         :return:
         """
         for inputs in self.input_devices_classes:
-            self.data[inputs] = self.input_devices_classes[inputs].process()
+            self.data[inputs] = self.input_devices_classes[inputs].do()
 
         for inputs in self.input_devices_classes:
             if self.state_machine.current_state == State.READY or self.state_machine.current_state == State.IDLE:
@@ -68,7 +68,7 @@ class HardwaremanagerAction(JoanModuleAction):
         self.sw_controller_data = self.read_news(JOANModules.STEERING_WHEEL_CONTROL)
 
         for inputs in self.input_devices_classes:
-            self.data[inputs] = self.input_devices_classes[inputs].process()
+            self.data[inputs] = self.input_devices_classes[inputs].do()
             if 'SensoDrive' in inputs:
                 self.input_devices_classes[inputs]._toggle_on_off(self.carla_interface_data['connected'])
 
@@ -85,7 +85,7 @@ class HardwaremanagerAction(JoanModuleAction):
                         self.input_devices_classes[input_device].initialize()
                         self.state_machine.request_state_change(State.READY, '')
                         for inputs in self.input_devices_classes:
-                            self.data[inputs] = self.input_devices_classes[inputs].process()
+                            self.data[inputs] = self.input_devices_classes[inputs].do()
                 else:
                     self.state_machine.request_state_change(State.ERROR, 'No hardware to Initialize')
             elif self.state_machine.current_state == State.ERROR:

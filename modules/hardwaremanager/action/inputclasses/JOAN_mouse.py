@@ -28,5 +28,5 @@ class JOAN_Mouse(BaseInput):  # DEPRECATED FOR NOW  TODO: remove from interface 
         """
         self.remove_tab(self._mouse_tab)
 
-    def process(self):
+    def do(self):
             return self._data
