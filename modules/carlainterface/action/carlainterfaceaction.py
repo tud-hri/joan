@@ -1,26 +1,21 @@
-from PyQt5 import QtCore, uic
+import glob
+import os
+import sys
+import time
+
+import numpy as np
+import pandas as pd
+from PyQt5 import QtCore
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMessageBox, QApplication
-
-from .agents.egovehicle import Egovehicle
-from .agents.trafficvehicle import Trafficvehicle
-from .carlainterfacesettings import  CarlainterfaceSettings, EgoVehicleSettings, TrafficVehicleSettings
-
 
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
 from process.statesenum import State
 from process.status import Status
-
-
-import time
-import random
-import os
-import sys
-import glob
-import pandas as pd
-import numpy as np
-import math
+from .agents.egovehicle import Egovehicle
+from .agents.trafficvehicle import Trafficvehicle
+from .carlainterfacesettings import CarlaInterfaceSettings, EgoVehicleSettings, TrafficVehicleSettings
 
 msg_box = QMessageBox()
 msg_box.setTextFormat(QtCore.Qt.RichText)
@@ -30,7 +25,7 @@ try:
         sys.version_info.major,
         sys.version_info.minor,
         'win-amd64' if os.name == 'nt' else 'linux-x86_64'))[0])
-    import carla  
+    import carla
 
 except IndexError:
     msg_box.setText("""
@@ -42,12 +37,14 @@ except IndexError:
     msg_box.exec()
     pass
 
-class CarlainterfaceAction(JoanModuleAction):
+
+class CarlaInterfaceAction(JoanModuleAction):
     """
-    CarlainterfaceAction is the 'brains' of the module and does most of the calculations and data handling regarding the agents. Inherits
+    CarlaInterfaceAction is the 'brains' of the module and does most of the calculations and data handling regarding the agents. Inherits
     Agents being the cars/actors you want to control and spawn in the CARLA environment.
     from JoanModuleAction.
     """
+
     def __init__(self, millis=5):
         """
         Initializes the class
@@ -55,7 +52,7 @@ class CarlainterfaceAction(JoanModuleAction):
         """
         super().__init__(module=JOANModules.CARLA_INTERFACE, millis=millis)
 
-        #Initialize Variables
+        # Initialize Variables
         self.data = {}
         self.data['ego_agents'] = {}
         self.data['traffic_agents'] = {}
@@ -64,9 +61,9 @@ class CarlainterfaceAction(JoanModuleAction):
         self.time = QtCore.QTime()
         self._data_from_hardware = {}
 
-        self.settings = CarlainterfaceSettings(module_enum=JOANModules.CARLA_INTERFACE)
+        self.settings = CarlaInterfaceSettings(module_enum=JOANModules.CARLA_INTERFACE)
 
-        #Carla connection variables:
+        # Carla connection variables:
         self.host = 'localhost'
         self.port = 2000
         self.connected = False
@@ -74,7 +71,7 @@ class CarlainterfaceAction(JoanModuleAction):
         self.vehicles = []
         self.traffic_vehicles = []
 
-        #initialize modulewide state handler
+        # initialize modulewide state handler
         self.status = Status()
 
         self._available_controllers = []
@@ -87,7 +84,7 @@ class CarlainterfaceAction(JoanModuleAction):
         self.sw_controller_state_machine.add_state_change_listener(self._sw_controller_state_change_listener)
         self._sw_controller_state_change_listener()
 
-        #message box for error display
+        # message box for error display
         self.msg = QMessageBox()
 
         ## State handling (these are for now all the same however maybe in the future you want to add other functionality)
@@ -102,15 +99,15 @@ class CarlainterfaceAction(JoanModuleAction):
 
         self.share_settings(self.settings)
 
-    @property 
+    @property
     def vehicle_bp_library(self):
         return self._vehicle_bp_library
 
-    @property 
+    @property
     def world(self):
         return self._world
-    
-    @property 
+
+    @property
     def spawnpoints(self):
         return self._spawn_points
 
@@ -137,7 +134,6 @@ class CarlainterfaceAction(JoanModuleAction):
                 return False, 'Carla is not connected!'
         except KeyError:
             return False, 'Could not check whether carla is connected'
-
 
     def _init_condition(self):
         try:
@@ -179,8 +175,6 @@ class CarlainterfaceAction(JoanModuleAction):
                 print('Could not apply control', inst)
         else:
             self.stop()
-
-
 
     def check_connection(self):
         """
@@ -262,7 +256,7 @@ class CarlainterfaceAction(JoanModuleAction):
         please note that the PSI (heading) for the human compatible reference for FDCA controller is far from ideal
         better to just drive it yourself. PLEASE CHECK THE FILE LOCATION (bottom of this function)
         """
-        #TODO: Add dynamic saving of the file in correct path instead of hardcoding the path
+        # TODO: Add dynamic saving of the file in correct path instead of hardcoding the path
         self._waypoints = []
         i = 0
         xvec = np.array([-1, 0])
@@ -276,7 +270,7 @@ class CarlainterfaceAction(JoanModuleAction):
             if (angle > 180):
                 angle -= 360
 
-            self._waypoints.append([i, waypoint.transform.location.x, waypoint.transform.location.y, 0 , 0 , 0 , angle, 0])
+            self._waypoints.append([i, waypoint.transform.location.x, waypoint.transform.location.y, 0, 0, 0, angle, 0])
 
             temp = waypoint.next(0.2)
             waypoint = temp[0]
@@ -284,25 +278,30 @@ class CarlainterfaceAction(JoanModuleAction):
 
         for k in range(0, len(self._waypoints)):
             FirstPoint = np.array([self._waypoints[k][1], self._waypoints[k][2]])
-            if k < len(self._waypoints)-1:
-                SecondPoint = np.array([self._waypoints[k+1][1], self._waypoints[k+1][2]])
+            if k < len(self._waypoints) - 1:
+                SecondPoint = np.array([self._waypoints[k + 1][1], self._waypoints[k + 1][2]])
             else:
-                SecondPoint =  np.array([self._waypoints[0][1], self._waypoints[0][2]])
+                SecondPoint = np.array([self._waypoints[0][1], self._waypoints[0][2]])
 
             dirvec = SecondPoint - FirstPoint
-            dirvec_unit = dirvec/np.linalg.norm(dirvec)
+            dirvec_unit = dirvec / np.linalg.norm(dirvec)
 
             self._waypoints[k][6] = np.math.atan2(dirvec_unit[1], dirvec_unit[0]) - np.math.atan2(xvec[1], xvec[0])
 
-
         self._waypoints_visual = self._waypoints[0:len(self._waypoints):5]
 
-        df = pd.DataFrame(self._waypoints, columns=['Row Name','PosX', 'PosY','SteeringAngle', 'Throttle', 'Brake', 'Psi', 'Vel'])
-        df2 = pd.DataFrame(self._waypoints_visual, columns=['Row Name','PosX','PosY','SteeringAngle','Throttle','Brake','Psi','Vel'])
-        df.to_csv(r'C:\Repositories\joan\modules\steeringwheelcontrol\action\swcontrollers\trajectories\opendrive_trajectory.csv', index=False, header=False)
-        df2.to_csv(r'C:\Repositories\joan\modules\steeringwheelcontrol\action\swcontrollers\trajectories\opendrive_trajectory_VISUAL.csv', index=False, header=True)
+        df = pd.DataFrame(self._waypoints,
+                          columns=['Row Name', 'PosX', 'PosY', 'SteeringAngle', 'Throttle', 'Brake', 'Psi', 'Vel'])
+        df2 = pd.DataFrame(self._waypoints_visual,
+                           columns=['Row Name', 'PosX', 'PosY', 'SteeringAngle', 'Throttle', 'Brake', 'Psi', 'Vel'])
+        df.to_csv(
+            r'C:\Repositories\joan\modules\steeringwheelcontrol\action\swcontrollers\trajectories\opendrive_trajectory.csv',
+            index=False, header=False)
+        df2.to_csv(
+            r'C:\Repositories\joan\modules\steeringwheelcontrol\action\swcontrollers\trajectories\opendrive_trajectory_VISUAL.csv',
+            index=False, header=True)
 
-    def add_ego_agent(self, ego_vehicle_settings =None):
+    def add_ego_agent(self, ego_vehicle_settings=None):
         """
         Adds an 'Ego Agent', or a vehicle that a user can control by selecting an input.
         :param ego_vehicle_settings:
@@ -314,7 +313,8 @@ class CarlainterfaceAction(JoanModuleAction):
             ego_vehicle_settings = EgoVehicleSettings()
             self.settings.ego_vehicles.append(ego_vehicle_settings)
 
-        self.vehicles.append(Egovehicle(self, len(self.vehicles), self.nr_spawn_points, self.vehicle_tags, ego_vehicle_settings))
+        self.vehicles.append(
+            Egovehicle(self, len(self.vehicles), self.nr_spawn_points, self.vehicle_tags, ego_vehicle_settings))
 
         " only make controller available for first car for now"
         for vehicle in self.vehicles[1:]:
@@ -322,7 +322,7 @@ class CarlainterfaceAction(JoanModuleAction):
 
         return self.vehicles
 
-    def add_traffic_agent(self, traffic_vehicle_settings = None):
+    def add_traffic_agent(self, traffic_vehicle_settings=None):
         """
         Adds a traffic agent which can be controlled by PD control (throttle and steering)
         :param traffic_vehicle_settings:
@@ -334,7 +334,9 @@ class CarlainterfaceAction(JoanModuleAction):
             traffic_vehicle_settings = TrafficVehicleSettings()
             self.settings.traffic_vehicles.append(traffic_vehicle_settings)
 
-        self.traffic_vehicles.append(Trafficvehicle(self, len(self.traffic_vehicles), self.nr_spawn_points, self.vehicle_tags, traffic_vehicle_settings))
+        self.traffic_vehicles.append(
+            Trafficvehicle(self, len(self.traffic_vehicles), self.nr_spawn_points, self.vehicle_tags,
+                           traffic_vehicle_settings))
 
         return self.traffic_vehicles
 
@@ -343,14 +345,15 @@ class CarlainterfaceAction(JoanModuleAction):
         This function is called before the module is started
         """
         if 'carla' not in sys.modules.keys():
-            self.state_machine.request_state_change(State.ERROR, "carla module is NOT imported, make sure the API is available and restart the program")
+            self.state_machine.request_state_change(State.ERROR,
+                                                    "carla module is NOT imported, make sure the API is available and restart the program")
 
         if self.state_machine.current_state is State.IDLE:
 
             self.connect()
             self.state_machine.request_state_change(State.READY, "You can now add vehicles and start module")
         elif self.state_machine.current_state is State.ERROR and 'carla' in sys.modules.keys():
-           self.state_machine.request_state_change(State.IDLE)
+            self.state_machine.request_state_change(State.IDLE)
         return super().initialize()
 
     def start(self):
@@ -359,13 +362,12 @@ class CarlainterfaceAction(JoanModuleAction):
         :return:
         """
         try:
-            self.state_machine.request_state_change(State.RUNNING,"Carla interface Running")
+            self.state_machine.request_state_change(State.RUNNING, "Carla interface Running")
             self.time.restart()
             return super().start()
 
         except RuntimeError:
             return False
-
 
     def stop(self):
         """
@@ -374,8 +376,8 @@ class CarlainterfaceAction(JoanModuleAction):
         """
         try:
             # for vehicle in self.vehicles:
-                # vehicle.get_available_inputs()
-                # vehicle.get_available_controllers()
+            # vehicle.get_available_inputs()
+            # vehicle.get_available_controllers()
             self.state_machine.request_state_change(State.READY, "You can now add vehicles and start the module")
 
             for traffic in self.traffic_vehicles:

@@ -1,18 +1,18 @@
-from process.joanmoduledialog import JoanModuleDialog
-from process.joanmoduleaction import JoanModuleAction
+from PyQt5 import QtWidgets
 
 from modules.joanmodules import JOANModules
+from process.joanmoduleaction import JoanModuleAction
+from process.joanmoduledialog import JoanModuleDialog
 from process.statesenum import State
 
-from PyQt5 import QtWidgets, uic
-import os
 
-class CarlainterfaceDialog(JoanModuleDialog):
+class CarlaInterfaceDialog(JoanModuleDialog):
     """
     This class is the actual dialog you see when you open up the module. Mostly this class serves as a
     connection between the user and the 'brains', which is the action module.
     """
-    def __init__(self, module_action: JoanModuleAction,  parent=None):
+
+    def __init__(self, module_action: JoanModuleAction, parent=None):
         """
         Initializes the class
         :param module_action:
@@ -20,7 +20,7 @@ class CarlainterfaceDialog(JoanModuleDialog):
         """
         super().__init__(module=JOANModules.CARLA_INTERFACE, module_action=module_action, parent=parent)
 
-        #initialize variables
+        # initialize variables
         self.connected = False
         self.old_nr_cars = 0
         self.i = 1
@@ -51,15 +51,15 @@ class CarlainterfaceDialog(JoanModuleDialog):
         self.save_settings.triggered.connect(self._save_settings)
         self.settings_menu.addAction(self.save_settings)
         self.menu_bar.addMenu(self.settings_menu)
-        #self.initialize_widgets_from_settings()
+        # self.initialize_widgets_from_settings()
 
     def _state_change_listener(self):
         """"
         This function handles the enabling and disabling of the carla interface change
         """
         self.connected = self.module_action.check_connection()
-        #link the spawning of vehicles to connected state
-        #make sure you can only disconnect in the ready state
+        # link the spawning of vehicles to connected state
+        # make sure you can only disconnect in the ready state
         if self.module_action.state_machine.current_state == State.READY:
             self.load_settings.setEnabled(self.connected)
             self.module_widget.btnDisconnect.setEnabled(True)
@@ -90,7 +90,7 @@ class CarlainterfaceDialog(JoanModuleDialog):
         else:
             self.load_settings.setEnabled(False)
             self.module_widget.btnDisconnect.setEnabled(False)
-            #self.module_widget.groupVehicles.setEnabled(False)
+            # self.module_widget.groupVehicles.setEnabled(False)
             self.module_widget.btn_add_ego_agent.setEnabled(False)
             self.module_widget.btn_add_traffic_agent.setEnabled(False)
             self.module_widget.btn_spawn_all.setEnabled(False)
@@ -144,7 +144,8 @@ class CarlainterfaceDialog(JoanModuleDialog):
         """
         self.module_action.vehicles = self.module_action.add_ego_agent()
         self.module_action.vehicles[-1].settings_dialog.show()
-        self.module_widget.layOut.insertWidget(len(self.module_action.vehicles)-1, self.module_action.vehicles[-1].vehicle_tab)
+        self.module_widget.layOut.insertWidget(len(self.module_action.vehicles) - 1,
+                                               self.module_action.vehicles[-1].vehicle_tab)
 
     def add_traffic_agent(self):
         """
@@ -153,7 +154,7 @@ class CarlainterfaceDialog(JoanModuleDialog):
         """
         self.module_action.traffic_vehicles = self.module_action.add_traffic_agent()
         self.module_action.traffic_vehicles[-1].settings_dialog.show()
-        self.module_widget.layOut.insertWidget(-1,self.module_action.traffic_vehicles[-1].vehicle_tab)
+        self.module_widget.layOut.insertWidget(-1, self.module_action.traffic_vehicles[-1].vehicle_tab)
 
     def initialize_widgets_from_settings(self):
         """
@@ -162,7 +163,8 @@ class CarlainterfaceDialog(JoanModuleDialog):
         """
         for ego_agent_settings in self.module_action.settings.ego_vehicles:
             self.module_action.vehicles = self.module_action.add_ego_agent(ego_agent_settings)
-            self.module_widget.layOut.insertWidget(len(self.module_action.vehicles) - 1, self.module_action.vehicles[-1].vehicle_tab)
+            self.module_widget.layOut.insertWidget(len(self.module_action.vehicles) - 1,
+                                                   self.module_action.vehicles[-1].vehicle_tab)
 
         for traffic_agent_settings in self.module_action.settings.traffic_vehicles:
             self.module_action.traffic_vehicles = self.module_action.add_traffic_agent(traffic_agent_settings)

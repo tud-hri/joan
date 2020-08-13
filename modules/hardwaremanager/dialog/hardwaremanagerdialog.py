@@ -8,7 +8,7 @@ from process.joanmoduledialog import JoanModuleDialog
 from process.statesenum import State
 
 
-class HardwaremanagerDialog(JoanModuleDialog):
+class HardwareManagerDialog(JoanModuleDialog):
     """
     This class is the actual dialog you see when you open up the module. Mostly this class serves as a
     connection between the user and the 'brains', which is the action module.

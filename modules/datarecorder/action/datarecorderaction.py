@@ -14,7 +14,7 @@ from process.statesenum import State
 from process.status import Status
 
 
-class DatarecorderAction(JoanModuleAction):
+class DataRecorderAction(JoanModuleAction):
     """
     Does all kinds of action concerning the Datarecorder module
     Inherits actions from the JoanModuleActions

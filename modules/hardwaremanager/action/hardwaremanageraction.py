@@ -3,7 +3,7 @@ import os
 import keyboard
 
 from modules.hardwaremanager.action.hardwaremanagersettings import KeyBoardSettings, JoyStickSettings, \
-    SensoDriveSettings, HardWareManagerSettings
+    SensoDriveSettings, HardwareManagerSettings
 from modules.hardwaremanager.action.inputclasses.JOAN_joystick import JOAN_Joystick
 from modules.hardwaremanager.action.inputclasses.JOAN_keyboard import JOAN_Keyboard
 from modules.hardwaremanager.action.inputclasses.JOAN_sensodrive import JOAN_SensoDrive
@@ -13,9 +13,9 @@ from process.statesenum import State
 from process.status import Status
 
 
-class HardwaremanagerAction(JoanModuleAction):
+class HardwareManagerAction(JoanModuleAction):
     """
-    HardwaremanagerAction is the 'brains' of the module and does most of the calculations and data handling regarding the hardware. Inherits
+    HardwareManagerAction is the 'brains' of the module and does most of the calculations and data handling regarding the hardware. Inherits
     from JoanModuleAction.
     """
     def __init__(self, millis=5):
@@ -32,7 +32,7 @@ class HardwaremanagerAction(JoanModuleAction):
         self.status = Status()
 
         self.carla_interface_data = self.read_news(JOANModules.CARLA_INTERFACE)
-        self.settings = HardWareManagerSettings(module_enum=JOANModules.HARDWARE_MANAGER)
+        self.settings = HardwareManagerSettings(module_enum=JOANModules.HARDWARE_MANAGER)
 
         self.state_machine.add_state_change_listener(self._state_change_listener)
 

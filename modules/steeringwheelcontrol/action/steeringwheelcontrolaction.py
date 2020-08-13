@@ -1,10 +1,12 @@
+import os
+
 from modules.joanmodules import JOANModules
 from process import Status
 from process.joanmoduleaction import JoanModuleAction
 from process.statesenum import State
 from .steeringwheelcontrolsettings import SteeringWheelControlSettings
 from .swcontrollertypes import SWControllerTypes
-import os
+
 
 class SteeringWheelControlAction(JoanModuleAction):
 
@@ -58,7 +60,6 @@ class SteeringWheelControlAction(JoanModuleAction):
             for controller in self._controllers:
                 self._controllers[controller].settings_dialog.cmbbox_hcr_selection.setEnabled(True)
 
-
         self.write_news(self.data)
 
     def _starting_condition(self):
@@ -85,7 +86,8 @@ class SteeringWheelControlAction(JoanModuleAction):
         for controller in self._controllers:
             if 'ego_agents' in sim_data_in:
                 if 'Car 1' in sim_data_in['ego_agents']:
-                    self.data[controller] = self._controllers[controller].calculate(sim_data_in['ego_agents']['Car 1']['vehicle_object'], hw_data_in)
+                    self.data[controller] = self._controllers[controller].calculate(
+                        sim_data_in['ego_agents']['Car 1']['vehicle_object'], hw_data_in)
 
         # for controller in self._controllers:
         #     if sim_data_in['vehicles'] is not None:
@@ -116,7 +118,7 @@ class SteeringWheelControlAction(JoanModuleAction):
             return False
         return super().initialize()
 
-    def add_controller(self, controller_type, controller_settings = None):
+    def add_controller(self, controller_type, controller_settings=None):
         # set the module to idle because we need to reinitialize our controllers!
         self.state_machine.request_state_change(State.IDLE, 'You can now add more and reinitialize controllers')
         # add appropriate settings
@@ -128,8 +130,6 @@ class SteeringWheelControlAction(JoanModuleAction):
                 self.settings.fdca_controllers.append(settings_for_controller)
         else:
             settings_for_controller = controller_settings
-
-
 
         number_of_controllers = sum([bool(controller_type.__str__() in k) for k in self._controllers.keys()]) + 1
         controller_list_key = controller_type.__str__() + ' ' + str(number_of_controllers)
@@ -146,7 +146,6 @@ class SteeringWheelControlAction(JoanModuleAction):
         else:
             self._controllers[controller_list_key]._open_settings_dialog()
 
-
         return self._controllers[controller_list_key].get_controller_tab
 
     def remove_controller(self, controller):
@@ -158,17 +157,16 @@ class SteeringWheelControlAction(JoanModuleAction):
         # remove controller settings
         try:
             self.settings.pd_controllers.remove(self._controllers[controller.get_controller_list_key].settings)
-        except ValueError: #depends if right controller list is present
+        except ValueError:  # depends if right controller list is present
             pass
 
         try:
             self.settings.fdca_controllers.remove(self._controllers[controller.get_controller_list_key].settings)
-        except ValueError: #depends if right controller list is present
+        except ValueError:  # depends if right controller list is present
             pass
 
         self._controllers[controller.get_controller_list_key].get_controller_tab.setParent(None)
         del self._controllers[controller.get_controller_list_key]
-
 
         try:
             del self.data[controller]

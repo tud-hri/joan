@@ -112,12 +112,12 @@ Datarecorder consist of a moduleWidget called DatarecorderWidget and a moduleAct
     classDiagram
         class QThread
         class DatarecorderWidget
-        class DatarecorderAction
+        class DataRecorderAction
         class DataWriter
 
         QThread --|> DataWriter : Inheritance
-        DatarecorderWidget ..|> DatarecorderAction : Realization
-        DatarecorderAction ..|> DataWriter : Realization
+        DatarecorderWidget ..|> DataRecorderAction : Realization
+        DataRecorderAction ..|> DataWriter : Realization
 ```
 ## Directories
 

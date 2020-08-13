@@ -7,7 +7,7 @@ from modules.joanmodules import JOANModules
 from process.joanmodulesettings import JoanModuleSettings
 
 
-class HardWareManagerSettings(JoanModuleSettings):
+class HardwareManagerSettings(JoanModuleSettings):
     def __init__(self, module_enum: JOANModules):
         super().__init__(module_enum)
 
@@ -57,13 +57,13 @@ class HardWareManagerSettings(JoanModuleSettings):
     def _copy_dict(source, destination):
         for key, value in source.items():
             if isinstance(value, list):
-                destination[key] = HardWareManagerSettings._copy_list(value)
+                destination[key] = HardwareManagerSettings._copy_list(value)
             elif isinstance(value, dict):
                 try:
                     destination[key]  # make sure that the destination dict has an entry at key
                 except KeyError:
                     destination[key] = dict()
-                HardWareManagerSettings._copy_dict(value, destination[key])
+                HardwareManagerSettings._copy_dict(value, destination[key])
             elif hasattr(value, '__dict__') and not isinstance(value, Enum) and not inspect.isclass(value):
                 # recognize custom class object by checking if these have a __dict__, Enums and static classes should be copied as a whole
                 # convert custom classes to dictionaries
@@ -72,7 +72,7 @@ class HardWareManagerSettings(JoanModuleSettings):
                     destination[key] = value.as_dict()
                 except NotImplementedError:
                     destination[key] = dict()
-                    HardWareManagerSettings._copy_dict(value.__dict__, destination[key])
+                    HardwareManagerSettings._copy_dict(value.__dict__, destination[key])
             else:
                 destination[key] = source[key]
 
@@ -81,7 +81,7 @@ class HardWareManagerSettings(JoanModuleSettings):
         output_list = []
         for index, item in enumerate(source):
             if isinstance(item, list):
-                output_list.append(HardWareManagerSettings._copy_list(item))
+                output_list.append(HardwareManagerSettings._copy_list(item))
             elif hasattr(item, '__dict__') and not isinstance(item, Enum) and not inspect.isclass(item):
                 # recognize custom class object by checking if these have a __dict__, Enums and static classes should be copied as a whole
                 # convert custom classes to dictionaries
@@ -90,7 +90,7 @@ class HardWareManagerSettings(JoanModuleSettings):
                     output_list.append(item.as_dict())
                 except NotImplementedError:
                     output_list.append(dict())
-                    HardWareManagerSettings._copy_dict(item.__dict__, output_list[index])
+                    HardwareManagerSettings._copy_dict(item.__dict__, output_list[index])
             else:
                 output_list.append(item)
         return output_list

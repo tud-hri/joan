@@ -38,7 +38,6 @@ class SteeringWheelControlDialog(JoanModuleDialog):
         self.settings_menu.addAction(self.save_settings)
         self.menu_bar.addMenu(self.settings_menu)
 
-
     def _state_change_listener(self):
         """
         This function is called upon whenever the change of the module changes it checks whether its allowed to add
@@ -62,7 +61,6 @@ class SteeringWheelControlDialog(JoanModuleDialog):
             self.initialize_widgets_from_settings()
             self.module_action.initialize()
 
-
     def _save_settings(self):
         file_to_save_in, _ = QtWidgets.QFileDialog.getSaveFileName(self, 'save settings', filter='*.json')
         if file_to_save_in:
@@ -81,17 +79,15 @@ class SteeringWheelControlDialog(JoanModuleDialog):
         new_controller_widget = self.module_action.add_controller(chosen_controller)
         self.module_widget.sw_controller_list_layout.addWidget(new_controller_widget)
 
-
     def initialize_widgets_from_settings(self):
         for pd_controller_settings in self.module_action.settings.pd_controllers:
-            new_controller_widget = self.module_action.add_controller(SWControllerTypes.PD_SWCONTROLLER, pd_controller_settings)
+            new_controller_widget = self.module_action.add_controller(SWControllerTypes.PD_SWCONTROLLER,
+                                                                      pd_controller_settings)
             self.module_widget.sw_controller_list_layout.addWidget(new_controller_widget)
         for fdca_controller_settings in self.module_action.settings.fdca_controllers:
-            new_controller_widget = self.module_action.add_controller(SWControllerTypes.FDCA_SWCONTROLLER, fdca_controller_settings)
+            new_controller_widget = self.module_action.add_controller(SWControllerTypes.FDCA_SWCONTROLLER,
+                                                                      fdca_controller_settings)
             self.module_widget.sw_controller_list_layout.addWidget(new_controller_widget)
-
-
-
 
     def apply_selected_controller(self):
         vehicle_list = self.module_action.update_vehicle_list()
