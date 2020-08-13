@@ -39,6 +39,7 @@ class JoanModuleAction(QtCore.QObject):
         self.singleton_status = Status()
         self.singleton_news = News()
         self.singleton_settings = Settings()
+        self.singleton_signals = Signals()
 
         if use_state_machine_and_timer:
             self.timer = QtCore.QTimer()
@@ -61,18 +62,12 @@ class JoanModuleAction(QtCore.QObject):
         # (py)Qt signals for triggering specific module actions/functions
         # these signals are all stored in a JoanModuleSignal class; add them there if you need more signals.
         self._module_signals = JoanModuleSignal(module)
-
-        # add to signals singleton
-        self.singleton_signals = Signals()
         self.singleton_signals.add_signals(self.module, self._module_signals)
 
         # connect the module signals to the module functions
-        # at the moment, this is done here, in the __init__, but is could also be done in JoanModuleSignal
-        # (we could pass a reference of action to JoanModuleSignal), but then you need to go back and forth to
-        # connect the correct function etc).
-        self._module_signals.module_start.connect(self.start)
-        self._module_signals.module_stop.connect(self.stop)
-        self._module_signals.module_initialize.connect(self.initialize)
+        self._module_signals.start_module.connect(self.start)
+        self._module_signals.stop_module.connect(self.stop)
+        self._module_signals.initialize_module.connect(self.initialize)
 
 
     def register_module_dialog(self, module_dialog):

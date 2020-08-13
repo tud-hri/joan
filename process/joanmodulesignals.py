@@ -7,9 +7,9 @@ from modules.joanmodules import JOANModules
 class JoanModuleSignal(QtCore.QObject):
 
     # pyqtSignals need to be class attributes...
-    module_start = pyqtSignal()
-    module_stop = pyqtSignal()
-    module_initialize = pyqtSignal()
+    start_module = pyqtSignal()
+    stop_module = pyqtSignal()
+    initialize_module = pyqtSignal()
 
     def __init__(self, module_enum: JOANModules):
         """
