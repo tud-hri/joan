@@ -38,6 +38,8 @@ class Experiment:
 
     @staticmethod
     def load_from_file(file_path):
+
+
         with open(file_path, 'r') as settings_file:
             loaded_dict = json.load(settings_file)
 
@@ -47,10 +49,13 @@ class Experiment:
         for module in modules_included:
             new_experiment.base_settings[module] = loaded_dict['base_settings'][str(module)]
 
+        # TODO all_conditions and active_conditions does not seem to work
         for condition_name, diff_dict in loaded_dict['conditions'].items():
+            print(diff_dict)
             new_condition = Condition(modules_included, condition_name)
-            new_condition.set_form_loaded_dict(diff_dict)
+            new_condition.set_from_loaded_dict(diff_dict)
             new_experiment.all_conditions.append(new_condition)
+
 
         for condition_name in loaded_dict['active_condition_sequence']:
             condition_found = False

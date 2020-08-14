@@ -25,7 +25,7 @@ class Condition:
             dict_to_save[str(key)] = item
         return dict_to_save
 
-    def set_form_loaded_dict(self, loaded_dict):
+    def set_from_loaded_dict(self, loaded_dict):
         for key, item in loaded_dict.items():
             self.diff[JOANModules.from_string_representation(key)] = item
 

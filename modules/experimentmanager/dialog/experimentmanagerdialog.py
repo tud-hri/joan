@@ -11,7 +11,8 @@ from .previewconditiondialog import PreviewConditionDialog
 
 class ExperimentManagerDialog(JoanModuleDialog):
     def __init__(self, module_action: JoanModuleAction, parent=None):
-        super().__init__(module=JOANModules.EXPERIMENT_MANAGER, module_action=module_action, use_state_machine_and_timer=False, parent=parent)
+        super().__init__(module=JOANModules.EXPERIMENT_MANAGER, module_action=module_action,
+                         use_state_machine_and_timer=False, parent=parent)
 
         self.module_widget.initializeExperimentPushButton.clicked.connect(self.initialize_new_experiment)
         self.module_widget.saveExperimentPushButton.clicked.connect(self.save_experiment)
@@ -25,8 +26,10 @@ class ExperimentManagerDialog(JoanModuleDialog):
         self.module_widget.conditionUpPushButton.clicked.connect(self.condition_up)
         self.module_widget.conditionDownPushButton.clicked.connect(self.condition_down)
 
-        self.module_widget.availableConditionsListWidget.itemSelectionChanged.connect(self._update_enabled_condition_buttons)
-        self.module_widget.currentConditionsListWidget.itemSelectionChanged.connect(self._update_enabled_condition_buttons)
+        self.module_widget.availableConditionsListWidget.itemSelectionChanged.connect(
+            self._update_enabled_condition_buttons)
+        self.module_widget.currentConditionsListWidget.itemSelectionChanged.connect(
+            self._update_enabled_condition_buttons)
 
         self.module_widget.availableConditionsListWidget.itemDoubleClicked.connect(self._preview_condition)
 
@@ -37,15 +40,19 @@ class ExperimentManagerDialog(JoanModuleDialog):
         self.update_condition_lists()
 
     def initialize_new_experiment(self):
-        new_experiment_dialog = NewExperimentDialog(self.module_action.singleton_settings.all_settings_keys, parent=self)
+        new_experiment_dialog = NewExperimentDialog(self.module_action.singleton_settings.all_settings_keys,
+                                                    parent=self)
         new_experiment_dialog.accepted.connect(
-            lambda: self.module_action.initialize_new_experiment(new_experiment_dialog.modules_to_include, new_experiment_dialog.file_path))
+            lambda: self.module_action.initialize_new_experiment(new_experiment_dialog.modules_to_include,
+                                                                 new_experiment_dialog.file_path))
 
     def create_new_condition(self):
-        condition_name, accepted = QtWidgets.QInputDialog.getText(self, 'New condition', 'What is the name of this condition?')
+        condition_name, accepted = QtWidgets.QInputDialog.getText(self, 'New condition',
+                                                                  'What is the name of this condition?')
         if accepted:
             if not condition_name:
-                QtWidgets.QMessageBox.warning(self, 'Warning', 'New condition could not be created because no name was provided.')
+                QtWidgets.QMessageBox.warning(self, 'Warning',
+                                              'New condition could not be created because no name was provided.')
             else:
                 try:
                     self.module_action.create_new_condition(condition_name)
@@ -62,16 +69,22 @@ class ExperimentManagerDialog(JoanModuleDialog):
 
     def condition_up(self):
         old_index = self.module_widget.currentConditionsListWidget.currentRow()
-        self.module_widget.currentConditionsListWidget.insertItem(old_index - 1, self.module_widget.currentConditionsListWidget.takeItem(old_index))
+        self.module_widget.currentConditionsListWidget.insertItem(old_index - 1,
+                                                                  self.module_widget.currentConditionsListWidget.takeItem(
+                                                                      old_index))
         self.module_widget.currentConditionsListWidget.setCurrentRow(old_index - 1)
-        new_sequence = [self.module_widget.currentConditionsListWidget.item(index).data(QtCore.Qt.UserRole) for index in range(self.module_widget.currentConditionsListWidget.count())]
+        new_sequence = [self.module_widget.currentConditionsListWidget.item(index).data(QtCore.Qt.UserRole) for index in
+                        range(self.module_widget.currentConditionsListWidget.count())]
         self.module_action.update_condition_sequence(new_sequence)
 
     def condition_down(self):
         old_index = self.module_widget.currentConditionsListWidget.currentRow()
-        self.module_widget.currentConditionsListWidget.insertItem(old_index + 1, self.module_widget.currentConditionsListWidget.takeItem(old_index))
+        self.module_widget.currentConditionsListWidget.insertItem(old_index + 1,
+                                                                  self.module_widget.currentConditionsListWidget.takeItem(
+                                                                      old_index))
         self.module_widget.currentConditionsListWidget.setCurrentRow(old_index + 1)
-        new_sequence = [self.module_widget.currentConditionsListWidget.item(index).data(QtCore.Qt.UserRole) for index in range(self.module_widget.currentConditionsListWidget.count())]
+        new_sequence = [self.module_widget.currentConditionsListWidget.item(index).data(QtCore.Qt.UserRole) for index in
+                        range(self.module_widget.currentConditionsListWidget.count())]
         self.module_action.update_condition_sequence(new_sequence)
 
     def load_experiment(self):
@@ -87,11 +100,16 @@ class ExperimentManagerDialog(JoanModuleDialog):
         PreviewConditionDialog(condition, self)
 
     def _update_enabled_condition_buttons(self):
-        self.module_widget.addConditionPushButton.setEnabled(bool(self.module_widget.availableConditionsListWidget.currentRow() != -1))
-        self.module_widget.removeConditionPushButton.setEnabled(bool(self.module_widget.currentConditionsListWidget.currentRow() != -1))
-        self.module_widget.conditionUpPushButton.setEnabled(bool(self.module_widget.currentConditionsListWidget.currentRow() != -1))
-        self.module_widget.conditionDownPushButton.setEnabled(bool(self.module_widget.currentConditionsListWidget.currentRow() != -1))
-        self.module_widget.activateConditionPushButton.setEnabled(bool(self.module_widget.currentConditionsListWidget.currentRow() != -1))
+        self.module_widget.addConditionPushButton.setEnabled(
+            bool(self.module_widget.availableConditionsListWidget.currentRow() != -1))
+        self.module_widget.removeConditionPushButton.setEnabled(
+            bool(self.module_widget.currentConditionsListWidget.currentRow() != -1))
+        self.module_widget.conditionUpPushButton.setEnabled(
+            bool(self.module_widget.currentConditionsListWidget.currentRow() != -1))
+        self.module_widget.conditionDownPushButton.setEnabled(
+            bool(self.module_widget.currentConditionsListWidget.currentRow() != -1))
+        self.module_widget.activateConditionPushButton.setEnabled(
+            bool(self.module_widget.currentConditionsListWidget.currentRow() != -1))
 
     def update_gui(self):
         self.module_widget.modulesIncludedListWidget.clear()
@@ -103,7 +121,8 @@ class ExperimentManagerDialog(JoanModuleDialog):
         self.module_widget.createConditionPushButton.setEnabled(bool(self.module_action.current_experiment))
 
         if self.module_action.current_experiment:
-            self.module_widget.experimentNameLineEdit.setText(os.path.abspath(self.module_action.experiment_save_path).split('\\')[-1])
+            self.module_widget.experimentNameLineEdit.setText(
+                os.path.abspath(self.module_action.experiment_save_path).split('\\')[-1])
 
             for module in self.module_action.current_experiment.modules_included:
                 item = QtWidgets.QListWidgetItem(str(module))
