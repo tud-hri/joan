@@ -29,7 +29,6 @@ class Experiment:
 
         for module in self.modules_included:
             dict_to_save['base_settings'].update(self.base_settings[module])
-            print(dict_to_save['base_settings'])
 
         for condition in self.all_conditions:
             dict_to_save['conditions'][condition.name] = condition.get_savable_dict()

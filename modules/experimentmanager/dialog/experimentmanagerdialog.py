@@ -164,7 +164,7 @@ class ExperimentManagerDialog(JoanModuleDialog):
             self.module_widget.baseSettingsTreeWidget.setEnabled(True)
 
             selected_module = self.module_widget.modulesIncludedListWidget.currentItem().data(QtCore.Qt.UserRole)
-            settings_to_display = self.module_action.current_experiment.base_settings[selected_module].as_dict()
+            settings_to_display = self.module_action.current_experiment.base_settings[selected_module]
             for key, value in settings_to_display[str(selected_module)].items():
                 self._create_tree_item(self.module_widget.baseSettingsTreeWidget, key, value)
         else:
