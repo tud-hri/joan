@@ -64,6 +64,8 @@ class ExperimentManagerAction(JoanModuleAction):
         self.module_dialog.update_gui()
         self.module_dialog.update_condition_lists()
 
-    def activate_condition(self, current_condition):
+    def activate_condition(self, condition):
         """Send condition settings to all modules"""
+
+        print(condition)
         pass
