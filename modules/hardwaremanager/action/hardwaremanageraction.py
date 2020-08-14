@@ -42,6 +42,13 @@ class HardwareManagerAction(JoanModuleAction):
 
         self.share_settings(self.settings)
 
+    def __del__(self):
+        print("Destructor HardwareManager")
+
+        # remove all hardware
+
+        super(JoanModuleAction, self).__del__()
+
     def _state_change_listener(self):
         """
         Listens to any statechange of the module, whenever the state changes this will be executed.
