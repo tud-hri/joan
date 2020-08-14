@@ -323,9 +323,9 @@ class JOAN_SensoDrive(BaseInput):
         self._data['SteeringInput'] = self.sensodrive_shared_values.steering_angle
         self._data['BrakeInput'] = self.sensodrive_shared_values.brake
         self._data['ThrottleInput'] = self.sensodrive_shared_values.throttle
+        print(self._data['ThrottleInput'], self._data['BrakeInput'])
         self._data['Handbrake'] = 0
         self._data['Reverse'] = 0
-
 
         # Set parameters
         self.sensodrive_shared_values.torque = self.safety_checked_torque
@@ -375,9 +375,9 @@ class SensoDriveSharedValues:
     """
     def __init__(self):
         #Encoder Values
-        self._steering_angle = mp.Value(c_int, 0)
-        self._throttle = mp.Value(c_int, 0)
-        self._brake = mp.Value(c_int, 0)
+        self._steering_angle = mp.Value(c_float, 0)
+        self._throttle = mp.Value(c_float, 0)
+        self._brake = mp.Value(c_float, 0)
 
         #Steering Parameter Values
         self._friction = mp.Value(c_int, 0)
@@ -573,7 +573,6 @@ class SensoDriveComm(mp.Process):
 
 
     def update_settings(self):
-        print(self.sensodrive_shared_values.endstops)
         self.endstops_bytes = int.to_bytes(self.sensodrive_shared_values.endstops, 2, byteorder='little', signed=True)
         self.torque_limit_between_endstops_bytes = int.to_bytes(
             self.sensodrive_shared_values.torque_limit_between_endstops, 1, byteorder='little', signed=False)
@@ -642,48 +641,49 @@ class SensoDriveComm(mp.Process):
                         Increments = int.from_bytes(received[1].DATA[0:4], byteorder='little', signed=True)
                         Angle = round(Increments * 0.009, 4)
                         # Steering:
-                        self.sensodrive_shared_values._steering_angle = Angle
+                        self.sensodrive_shared_values.steering_angle = Angle
                         #Torque
                         Torque = int.from_bytes(received[1].DATA[6:], byteorder='little', signed=True)
                         self.sensodrive_shared_values.torque_measured = Torque
                 elif (received[1].ID == 0x210):
                      self._current_state_hex = received[1].DATA[0]
                 elif (received[1].ID == 0x21C):
-                    self.sensodrive_shared_values._throttle = (int.from_bytes(received3[1].DATA[2:4],
+                    self.sensodrive_shared_values.throttle = (int.from_bytes(received[1].DATA[2:4],
                                                                   byteorder='little') - 1100) / 2460 * 100
-                    self.sensodrive_shared_values._brake = (int.from_bytes(received3[1].DATA[4:6], byteorder='little') - 1) / 500 * 100
+                    self.sensodrive_shared_values.brake = (int.from_bytes(received[1].DATA[4:6], byteorder='little') - 1) / 500 * 100
 
                 if (received2[1].ID == 0x211):
                     Increments = int.from_bytes(received2[1].DATA[0:4], byteorder='little', signed=True)
                     Angle = round(Increments * 0.009, 4)
                     # Steering:
-                    self.sensodrive_shared_values._steering_angle = Angle
+                    self.sensodrive_shared_values.steering_angle = Angle
                     #Torque
                     Torque = int.from_bytes(received2[1].DATA[6:], byteorder='little', signed=True)
                     self.sensodrive_shared_values.torque_measured = Torque
                 elif (received2[1].ID == 0x210):
                     self._current_state_hex = received2[1].DATA[0]
                 elif (received2[1].ID == 0x21C):
-                    self.sensodrive_shared_values._throttle = (int.from_bytes(received3[1].DATA[2:4],
+                    self.sensodrive_shared_values.throttle = (int.from_bytes(received2[1].DATA[2:4],
                                                                   byteorder='little') - 1100) / 2460 * 100
-                    self.sensodrive_shared_values._brake = (int.from_bytes(received3[1].DATA[4:6], byteorder='little') - 1) / 500 * 100
+                    self.sensodrive_shared_values.brake = (int.from_bytes(received2[1].DATA[4:6], byteorder='little') - 1) / 500 * 100
 
                 if (received3[1].ID == 0x211):
                     Increments = int.from_bytes(received3[1].DATA[0:4], byteorder='little', signed=True)
                     Angle = round(Increments * 0.009, 4)
                     # Steering:
-                    self.sensodrive_shared_values._steering_angle = Angle
+                    self.sensodrive_shared_values.steering_angle = Angle
                     #Torque
                     Torque = int.from_bytes(received3[1].DATA[6:], byteorder='little', signed=True)
                     self.sensodrive_shared_values.torque_measured = Torque
                 elif (received3[1].ID == 0x210):
                     self._current_state_hex = received3[1].DATA[0]
                 elif (received3[1].ID == 0x21C):
-                    self.sensodrive_shared_values._throttle = (int.from_bytes(received3[1].DATA[2:4],
+                    self.sensodrive_shared_values.throttle = (int.from_bytes(received3[1].DATA[2:4],
                                                                   byteorder='little') - 1100) / 2460 * 100
-                    self.sensodrive_shared_values._brake = (int.from_bytes(received3[1].DATA[4:6], byteorder='little') - 1) / 500 * 100
+                    self.sensodrive_shared_values.brake = (int.from_bytes(received3[1].DATA[4:6], byteorder='little') - 1) / 500 * 100
 
             self.sensodrive_shared_values.sensodrive_motorstate = self._current_state_hex
+
 
             if self.toggle_sensodrive_motor_event.is_set():
                 self.on_off()
@@ -749,6 +749,8 @@ class SensoDriveComm(mp.Process):
         pcanmessage.MSGTYPE = PCAN_MESSAGE_STANDARD
 
         pcanmessage.DATA[0] = 0x1
+
+        pcan_object.Write(self._pcan_channel, pcanmessage)
 
 
     def on_off(self):
