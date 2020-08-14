@@ -1,3 +1,4 @@
+import copy
 from modules.joanmodules import JOANModules
 
 
@@ -16,7 +17,7 @@ class Condition:
         for module in parent_experiment.modules_included:
             condition.diff[module] = Condition._get_dict_diff(parent_experiment.base_settings[module].as_dict()[str(module)], settings_singleton.get_settings(module).as_dict()[str(module)], {})
 
-        return condition
+        return copy.deepcopy(condition)  # return deepcopy of the condition dictionary; else changing a module setting will change the setting across all conditions.
 
     def get_savable_dict(self):
         dict_to_save = {}
@@ -43,7 +44,7 @@ class Condition:
                 raise ValueError('It is not possible to remove settings that are present in the base of in experiment in a certain condition. '
                                  'Conditions can only add or change settings.')
 
-        # todo: list handling here is pretty inefficient have a look later
+        # TODO: list handling here is pretty inefficient have a look later
         for key, value in base_dict.items():
             if type(value) is dict:
                 return Condition._get_dict_diff(value, specific_dict[key], diff_dict)

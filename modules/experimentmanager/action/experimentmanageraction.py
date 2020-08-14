@@ -61,3 +61,7 @@ class ExperimentManagerAction(JoanModuleAction):
     def load_experiment(self, file_path):
         self.current_experiment = Experiment.load_from_file(file_path)
         self.module_dialog.update_gui()
+
+    def activate_condition(self, current_condition):
+        """Send condition settings to all modules"""
+        pass

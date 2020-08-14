@@ -30,6 +30,8 @@ class ExperimentManagerDialog(JoanModuleDialog):
 
         self.module_widget.availableConditionsListWidget.itemDoubleClicked.connect(self._preview_condition)
 
+        self.module_widget.activateConditionPushButton.clicked.connect(self.activate_condition)
+
         self.update_gui()
         self._update_enabled_condition_buttons()
         self.update_condition_lists()
@@ -130,6 +132,10 @@ class ExperimentManagerDialog(JoanModuleDialog):
             self.module_widget.currentConditionsListWidget.setEnabled(False)
             self.module_widget.availableConditionsListWidget.setEnabled(False)
         self._update_enabled_condition_buttons()
+
+    def activate_condition(self):
+        current_condition = self.module_widget.currentConditionsListWidget.item(0)
+        self.module_action.activate_condition(current_condition)
 
     def _update_base_settings_tree(self):
         self.module_widget.baseSettingsTreeWidget.clear()

@@ -93,7 +93,7 @@ class TemplateAction(JoanModuleAction):
         self._module_signals.my_custom_signal_str.connect(self.test_slot)
 
         # here's a way how to emit one of the module_signals. This can be done in any module
-        self.singleton_signals.get_signals(self.module).my_custom_signal_str.emit("test")
+        self.singleton_signals.get_signals(self.module).my_custom_signal_str.emit("TEMPLATE: signal test")
 
     def test_slot(self, message):
         """
