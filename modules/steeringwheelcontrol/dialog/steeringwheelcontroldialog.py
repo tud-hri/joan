@@ -28,16 +28,6 @@ class SteeringWheelControlDialog(JoanModuleDialog):
         # attach add controller button to code
         self.module_widget.btn_add_sw_controller.clicked.connect(self._controller_type_selection)
 
-        # Settings
-        self.settings_menu = QtWidgets.QMenu('Settings')
-        self.load_settings = QtWidgets.QAction('Load Settings')
-        self.load_settings.triggered.connect(self._load_settings)
-        self.settings_menu.addAction(self.load_settings)
-        self.save_settings = QtWidgets.QAction('Save Settings')
-        self.save_settings.triggered.connect(self._save_settings)
-        self.settings_menu.addAction(self.save_settings)
-        self.menu_bar.addMenu(self.settings_menu)
-
     def _state_change_listener(self):
         """
         This function is called upon whenever the change of the module changes it checks whether its allowed to add
@@ -51,7 +41,10 @@ class SteeringWheelControlDialog(JoanModuleDialog):
             self.module_widget.btn_add_sw_controller.setEnabled(False)
 
     def _load_settings(self):
-        settings_file_to_load, _ = QtWidgets.QFileDialog.getOpenFileName(self, 'load settings', filter='*.json')
+        settings_file_to_load, _ = QtWidgets.QFileDialog.getOpenFileName(self, 'load settings',
+                                                                         os.path.join(self.module_action.module_path,
+                                                                                      'action'),
+                                                                         filter='*.json')
         if settings_file_to_load:
             # remove all current controllers first:
             for controllers in self.module_action._controllers.copy():
@@ -60,11 +53,6 @@ class SteeringWheelControlDialog(JoanModuleDialog):
             self.module_action.load_settings_from_file(settings_file_to_load)
             self.initialize_widgets_from_settings()
             self.module_action.initialize()
-
-    def _save_settings(self):
-        file_to_save_in, _ = QtWidgets.QFileDialog.getSaveFileName(self, 'save settings', filter='*.json')
-        if file_to_save_in:
-            self.module_action.save_settings_to_file(file_to_save_in)
 
     def _controller_type_selection(self):
         self._controller_type_dialog.combobox_sw_controller_type.clear()

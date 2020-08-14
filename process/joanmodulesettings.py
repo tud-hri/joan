@@ -1,7 +1,6 @@
-import inspect
 import abc
+import inspect
 import json
-
 from enum import Enum
 
 from modules.joanmodules import JOANModules

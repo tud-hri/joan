@@ -32,6 +32,17 @@ class JoanModuleDialog(QtWidgets.QDialog):
         self.file_menu.addAction('Close', self.close)
         self.file_menu.addSeparator()
 
+        # Settings
+        self.settings_menu = QtWidgets.QMenu('Settings')
+        self.load_settings = QtWidgets.QAction('Load Settings')
+        self.load_settings.triggered.connect(self._load_settings)
+        self.load_settings.setEnabled(False)
+        self.settings_menu.addAction(self.load_settings)
+        self.save_settings = QtWidgets.QAction('Save Settings')
+        self.save_settings.triggered.connect(self._save_settings)
+        self.settings_menu.addAction(self.save_settings)
+        self.menu_bar.addMenu(self.settings_menu)
+
         if use_state_machine_and_timer:
             self.module_action.state_machine.add_state_change_listener(self.handle_state_change)
 
@@ -68,6 +79,26 @@ class JoanModuleDialog(QtWidgets.QDialog):
 
     def _button_initialize_clicked(self):
         self.module_action.initialize()
+
+    def _load_settings(self):
+        settings_file_to_load, _ = QtWidgets.QFileDialog.getOpenFileName(self, 'load settings',
+                                                                         os.path.join(self.module_action.module_path,
+                                                                                      'action'),
+                                                                         filter='*.json')
+        if settings_file_to_load:
+            pass
+
+    def _save_settings(self):
+        """
+        Saves settings to json file
+        :return:
+        """
+        file_to_save_in, _ = QtWidgets.QFileDialog.getSaveFileName(self, 'save settings',
+                                                                   os.path.join(self.module_action.module_path,
+                                                                                'action'),
+                                                                   filter='*.json')
+        if file_to_save_in:
+            self.module_action.save_settings_to_file(file_to_save_in)
 
     @QtCore.pyqtSlot(str)
     def _set_tick_interval_ms(self, interval_ms):

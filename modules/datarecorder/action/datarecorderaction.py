@@ -75,13 +75,6 @@ class DataRecorderAction(JoanModuleAction):
         self.initialize_file()
         self.settings.save_to_file(self.default_settings_file_location)
 
-    def save_settings_to_file(self, file_to_save_in):
-        """
-        Save current settings to a file, including the current write-interval time
-        """
-        self.settings.write_interval = self.timer.interval()
-        self.settings.save_to_file(file_to_save_in)
-
     def do(self):
         """
         This function is called every controller tick of this module

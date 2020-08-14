@@ -390,20 +390,3 @@ class CarlaInterfaceAction(JoanModuleAction):
         except RuntimeError:
             return False
         return super().stop()
-
-    def load_settings_from_file(self, settings_file_to_load):
-        """
-        Loads appropriate settings from .json file
-        :param settings_file_to_load:
-        :return:
-        """
-        self.settings.load_from_file(settings_file_to_load)
-        self.share_settings(self.settings)
-
-    def save_settings_to_file(self, file_to_save_in):
-        """
-        Saves current settings to json file
-        :param file_to_save_in:
-        :return:
-        """
-        self.settings.save_to_file(file_to_save_in)

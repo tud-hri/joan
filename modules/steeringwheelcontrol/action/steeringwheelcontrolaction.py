@@ -202,10 +202,3 @@ class SteeringWheelControlAction(JoanModuleAction):
     @property
     def current_controller(self):
         return self._current_controller
-
-    def load_settings_from_file(self, settings_file_to_load):
-        self.settings.load_from_file(settings_file_to_load)
-        self.share_settings(self.settings)
-
-    def save_settings_to_file(self, file_to_save_in):
-        self.settings.save_to_file(file_to_save_in)

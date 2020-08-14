@@ -125,19 +125,16 @@ class DataRecorderDialog(JoanModuleDialog):
         When loading is cancelled, the default settings are used, otherwise the loaded fiule is used
         State is set to READY
         """
-        settings_file_to_load, _ = QtWidgets.QFileDialog.getOpenFileName(self, 'load settings', filter='*.json')
+        settings_file_to_load, _ = QtWidgets.QFileDialog.getOpenFileName(self, 'load settings',
+                                                                         os.path.join(self.module_action.module_path,
+                                                                                      'action'),
+                                                                         filter='*.json')
+
         if settings_file_to_load:
             self.module_action.load_settings_from_file(settings_file_to_load)
             self.create_tree_widget()
-        self.module_action.state_machine.request_state_change(State.READY)
 
-    def _save_settings(self):
-        """
-        Opens a dialog to save the current settings in a json formatted file with the json extension
-        """
-        file_to_save_in, _ = QtWidgets.QFileDialog.getSaveFileName(self, 'save settings', filter='*.json')
-        if file_to_save_in:
-            self.module_action.save_settings_to_file(file_to_save_in)
+        self.module_action.state_machine.request_state_change(State.READY)
 
     def handle_click(self, nodes):
         """

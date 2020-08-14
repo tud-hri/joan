@@ -1,15 +1,16 @@
+import os
+import sys
 import time
 
 from PyQt5 import QtCore
-from PyQt5.QtCore import pyqtSignal
 
 from modules.joanmodules import JOANModules
+from process.joanmodulesignals import JoanModuleSignal
 from process.news import News
 from process.settings import Settings
+from process.signals import Signals
 from process.statemachine import StateMachine
 from process.status import Status
-from process.signals import Signals
-from process.joanmodulesignals import JoanModuleSignal
 from tools import AveragedFloat
 
 
@@ -35,6 +36,9 @@ class JoanModuleAction(QtCore.QObject):
         self._average_run_time = AveragedFloat(samples=int(1000 / millis))
 
         self.module = module
+
+        self.module_path = os.path.dirname(os.path.abspath(sys.modules[self.__class__.__module__].__file__)).strip(
+            'action')
 
         self.singleton_status = Status()
         self.singleton_news = News()
@@ -68,7 +72,6 @@ class JoanModuleAction(QtCore.QObject):
         self._module_signals.start_module.connect(self.start)
         self._module_signals.stop_module.connect(self.stop)
         self._module_signals.initialize_module.connect(self.initialize)
-
 
     def register_module_dialog(self, module_dialog):
         self.module_dialog = module_dialog
@@ -118,6 +121,23 @@ class JoanModuleAction(QtCore.QObject):
         """
         self.singleton_settings.update_settings(self.module, module_settings)
 
+    def load_settings_from_file(self, settings_file_to_load):
+        """
+        Loads appropriate settings from .json file
+        :param settings_file_to_load:
+        :return:
+        """
+        self.settings.load_from_file(settings_file_to_load)
+        self.share_settings(self.settings)
+
+    def save_settings_to_file(self, file_to_save_in):
+        """
+        Saves current settings to json file
+        :param file_to_save_in:
+        :return:
+        """
+        self.settings.save_to_file(file_to_save_in)
+
     def get_all_news(self):
         return self.singleton_news.all_news
 
@@ -126,20 +146,6 @@ class JoanModuleAction(QtCore.QObject):
 
     def read_news(self, channel):
         return self.singleton_news.read_news(channel)
-
-    # deprecated
-    """
-    def get_all_module_state_packages(self):
-        return self.singleton_status.all_module_state_packages
-
-    # deprecated
-    def get_available_module_state_packages(self):
-        return self.singleton_status.all_module_state_package_keys
-
-    #deprecated
-    def get_module_state_package(self, module):
-        return self.singleton_status.get_module_state_package(module)
-    """
 
     def get_available_module_settings(self):
         return self.singleton_settings.all_settings_keys

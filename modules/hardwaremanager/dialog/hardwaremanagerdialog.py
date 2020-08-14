@@ -65,7 +65,10 @@ class HardwareManagerDialog(JoanModuleDialog):
         Loads settings from json file.
         :return:
         """
-        settings_file_to_load, _ = QtWidgets.QFileDialog.getOpenFileName(self, 'load settings', filter='*.json')
+        settings_file_to_load, _ = QtWidgets.QFileDialog.getOpenFileName(self, 'load settings',
+                                                                         os.path.join(self.module_action.module_path,
+                                                                                      'action'),
+                                                                         filter='*.json')
         if settings_file_to_load:
 
             # remove all current hardware elements first
@@ -78,15 +81,6 @@ class HardwareManagerDialog(JoanModuleDialog):
             self.module_action.load_settings_from_file(settings_file_to_load)
             self.initialize_widgets_from_settings()
             self.module_action.initialize()
-
-    def _save_settings(self):
-        """
-        Saves settings to json file.
-        :return:
-        """
-        file_to_save_in, _ = QtWidgets.QFileDialog.getSaveFileName(self, 'save settings', filter='*.json')
-        if file_to_save_in:
-            self.module_action.save_settings_to_file(file_to_save_in)
 
     def _add_selected_input(self):
         """

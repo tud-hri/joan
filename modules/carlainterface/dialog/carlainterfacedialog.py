@@ -1,3 +1,5 @@
+import os
+
 from PyQt5 import QtWidgets
 
 from modules.joanmodules import JOANModules
@@ -41,18 +43,6 @@ class CarlaInterfaceDialog(JoanModuleDialog):
         self.module_widget.btn_destroy_all.setEnabled(False)
         self.module_widget.btn_remove_all.setEnabled(False)
 
-        # Settings
-        self.settings_menu = QtWidgets.QMenu('Settings')
-        self.load_settings = QtWidgets.QAction('Load Settings')
-        self.load_settings.triggered.connect(self._load_settings)
-        self.load_settings.setEnabled(False)
-        self.settings_menu.addAction(self.load_settings)
-        self.save_settings = QtWidgets.QAction('Save Settings')
-        self.save_settings.triggered.connect(self._save_settings)
-        self.settings_menu.addAction(self.save_settings)
-        self.menu_bar.addMenu(self.settings_menu)
-        # self.initialize_widgets_from_settings()
-
     def _state_change_listener(self):
         """"
         This function handles the enabling and disabling of the carla interface change
@@ -85,8 +75,6 @@ class CarlaInterfaceDialog(JoanModuleDialog):
             self.module_widget.btn_spawn_all.setEnabled(False)
             self.module_widget.btn_destroy_all.setEnabled(False)
             self.module_widget.btn_remove_all.setEnabled(False)
-
-
         else:
             self.load_settings.setEnabled(False)
             self.module_widget.btnDisconnect.setEnabled(False)
@@ -102,9 +90,11 @@ class CarlaInterfaceDialog(JoanModuleDialog):
         Loads settings from json file
         :return:
         """
-        settings_file_to_load, _ = QtWidgets.QFileDialog.getOpenFileName(self, 'load settings', filter='*.json')
+        settings_file_to_load, _ = QtWidgets.QFileDialog.getOpenFileName(self, 'load settings',
+                                                                         os.path.join(self.module_action.module_path,
+                                                                                      'action'),
+                                                                         filter='*.json')
         if settings_file_to_load:
-
             # remove all current agents  first
             while self.module_action.vehicles:
                 self.module_action.vehicles[-1].remove_ego_agent()
@@ -114,15 +104,6 @@ class CarlaInterfaceDialog(JoanModuleDialog):
 
             self.module_action.load_settings_from_file(settings_file_to_load)
             self.initialize_widgets_from_settings()
-
-    def _save_settings(self):
-        """
-        Saves settings to json file
-        :return:
-        """
-        file_to_save_in, _ = QtWidgets.QFileDialog.getSaveFileName(self, 'save settings', filter='*.json')
-        if file_to_save_in:
-            self.module_action.save_settings_to_file(file_to_save_in)
 
     def disconnect(self):
         """
