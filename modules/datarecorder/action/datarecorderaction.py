@@ -1,15 +1,12 @@
 import os
-from pathlib import Path
 from datetime import datetime
-import math
-import numpy as np
+from pathlib import Path
 
-from modules.datarecorder.action.datawriter import DataWriter
 from modules.datarecorder.action.datarecordersettings import DataRecorderSettings
-from modules.datarecorder.action.trajectoryrecorder import TrajectoryRecorder
 from modules.datarecorder.action.datarecordersignals import DataRecorderSignals
+from modules.datarecorder.action.datawriter import DataWriter
+from modules.datarecorder.action.trajectoryrecorder import TrajectoryRecorder
 from modules.joanmodules import JOANModules
-
 from process.joanmoduleaction import JoanModuleAction
 from process.statesenum import State
 
@@ -59,7 +56,6 @@ class DataRecorderAction(JoanModuleAction):
         self._module_signals.prepare_recording.connect(self.initialize)
         self._module_signals.start_recording.connect(self.start)
         self._module_signals.stop_recording.connect(self.stop)
-
 
     def initialize_file(self):
         """
@@ -182,4 +178,3 @@ class DataRecorderAction(JoanModuleAction):
         # self.save_settings_to_file(self.default_settings_file_location)
         # share the settings
         # self.share_settings(self.settings)
-
