@@ -109,6 +109,10 @@ class JOAN_SensoDrive(BaseInput):
         # Create the shared variables class
         self.sensodrive_shared_values = SensoDriveSharedValues()
 
+        self.sensodrive_shared_values.sensodrive_ID = nr_of_sensodrives
+
+
+
         # Torque safety variables
         self.counter = 0
         self.old_requested_torque = 0
@@ -149,9 +153,10 @@ class JOAN_SensoDrive(BaseInput):
         self.close_event = mp.Event()
         self.toggle_sensodrive_motor_event = mp.Event()
         self.update_settings_event = mp.Event()
+        self.shutoff_event = mp.Event()
         self.sensodrive_communication_process = SensoDriveComm(self.sensodrive_shared_values, self.init_event,
                                                                self.toggle_sensodrive_motor_event, self.close_event,
-                                                               self.update_settings_event)
+                                                               self.update_settings_event, self.shutoff_event)
 
     def update_settings(self):
         """
@@ -214,9 +219,12 @@ class JOAN_SensoDrive(BaseInput):
         actually disappear from the module.
         :return:
         """
-        self.close_event.set()
-        time.sleep(0.05)
-        self.sensodrive_communication_process.terminate()
+        if self.module_action.state_machine.current_state != State.IDLE:
+            self.close_event.set()
+            while self.close_event.is_set():
+                pass
+            self.sensodrive_communication_process.terminate()
+
         self.module_action.settings.sensodrives.remove(self.settings)
         self.remove_tab(self._sensodrive_tab)
 
@@ -262,6 +270,9 @@ class JOAN_SensoDrive(BaseInput):
             self._sensodrive_tab.btn_on_off.setStyleSheet("background-color: red")
             self._sensodrive_tab.btn_on_off.setText('Clear Error')
 
+    def shut_off_sensodrive(self):
+        self.shutoff_event.set()
+
     def do(self):
         """
         Basically acts as a portal of variables to the seperate sensodrive communication process. You can send info to this
@@ -296,7 +307,7 @@ class JOAN_SensoDrive(BaseInput):
         try:
             requested_torque_by_controller = self._steering_wheel_control_data[
                 self._carla_interface_data['ego_agents']['Car 1']['vehicle_object'].selected_sw_controller]['sw_torque']
-        except:
+        except KeyError:
             requested_torque_by_controller = 0
 
         self.counter = self.counter + 1
@@ -304,7 +315,7 @@ class JOAN_SensoDrive(BaseInput):
         if self.counter == 5:
             [self.safety_checked_torque, self.torque_rate] = self.torque_check(
                 requested_torque=requested_torque_by_controller, t1=self.t1, torque_limit_mNm=5000,
-                torque_rate_limit_Nms=20)
+                torque_rate_limit_Nms=50)
             self.t1 = int(round(time.time() * 1000))
             self.counter = 0
 
@@ -314,12 +325,12 @@ class JOAN_SensoDrive(BaseInput):
         self._data['torque_rate'] = self.torque_rate
         self._data['measured_torque'] = self.sensodrive_shared_values.measured_torque
 
+
         # Handle all shared parameters with the seperate sensodrive communication process
         # Get parameters
         self._data['SteeringInput'] = self.sensodrive_shared_values.steering_angle
         self._data['BrakeInput'] = self.sensodrive_shared_values.brake
         self._data['ThrottleInput'] = self.sensodrive_shared_values.throttle
-        print(self._data['ThrottleInput'], self._data['BrakeInput'])
         self._data['Handbrake'] = 0
         self._data['Reverse'] = 0
 
@@ -349,7 +360,7 @@ class JOAN_SensoDrive(BaseInput):
 
         if (abs(torque_rate) > torque_rate_limit_Nms):
             print('TORQUE RATE TOO HIGH! TURNING OFF SENSODRIVE')
-            self.toggle_on_off()
+            self.shut_off_sensodrive()
 
         if requested_torque > torque_limit_mNm:
             checked_torque = torque_limit_mNm
@@ -390,6 +401,9 @@ class SensoDriveSharedValues:
         self._endstops = mp.Value(c_int, 0)
         self._torque_limit_between_endstops = mp.Value(c_int, 0)
         self._torque_limit_beyond_endstops = mp.Value(c_int, 0)
+
+        #SensoDrive (ID) or number of sensodrives
+        self._sensodrive_ID = mp.Value(c_int,0)
 
     @property
     def steering_angle(self):
@@ -487,19 +501,30 @@ class SensoDriveSharedValues:
     def sensodrive_motorstate(self, var):
         self._sensodrive_motorstate.value = var
 
+    @property
+    def sensodrive_ID(self):
+        return self._sensodrive_ID.value
+    @sensodrive_ID.setter
+    def sensodrive_ID(self, var):
+        self._sensodrive_ID.value = var
 
 class SensoDriveComm(mp.Process):
-    def __init__(self, shared_values, init_event, toggle_event, close_event, update_event):
+    def __init__(self, shared_values, init_event, toggle_event, close_event, update_event, shutoff_event):
         super().__init__()
         self.init_event = init_event
         self.toggle_sensodrive_motor_event = toggle_event
         self.close_event = close_event
         self.update_settings_event = update_event
+        self.shutoff_event = shutoff_event
 
         # Create PCAN object
         self.pcan_initialization_result = None
         self.sensodrive_shared_values = shared_values
-        self._pcan_channel = PCAN_USBBUS1
+        print(self.sensodrive_shared_values.sensodrive_ID)
+        if self.sensodrive_shared_values.sensodrive_ID == 0:
+            self._pcan_channel = PCAN_USBBUS1
+        elif self.sensodrive_shared_values.sensodrive_ID == 1:
+            self._pcan_channel = PCAN_USBBUS2
 
         # Create steeringwheel parameters data structure
         self.steering_wheel_parameters = {}
@@ -617,6 +642,10 @@ class SensoDriveComm(mp.Process):
         self.initialize()
 
         while True:
+            #Turn off sensodrive immediately (only when torque limits are breached)
+            if self.shutoff_event.is_set():
+                self.on_to_off(self.state_message)
+                self.shutoff_event.clear()
             # Get latest parameters
             time.sleep(0.001)
             self.steering_wheel_parameters['torque'] = self.sensodrive_shared_values.torque
@@ -691,6 +720,7 @@ class SensoDriveComm(mp.Process):
             if self.toggle_sensodrive_motor_event.is_set():
                 self.on_off()
                 self.toggle_sensodrive_motor_event.clear()
+
 
             if self.update_settings_event.is_set():
                 self.update_settings()

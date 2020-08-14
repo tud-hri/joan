@@ -110,11 +110,12 @@ class HardwaremanagerDialog(JoanModuleDialog):
                 os.path.join(os.path.dirname(os.path.realpath(__file__)), "../action/ui/hardware_tab_sensodrive.ui"))
             device_title = self.module_action.add_a_sensodrive(new_widget)
 
-        self.module_action.input_devices_classes[device_title].settings_dialog.show()
+
 
         ## This is a temporary fix so that we cannot add another sensodrive which will make pcan crash because we only have one PCAN usb interface dongle
         ## TODO find a more elegant solution that just goes into error state when trying to add more sensodrives than dongles
         if device_title != 'DO_NOT_ADD':
+            self.module_action.input_devices_classes[device_title].settings_dialog.show()
             new_widget.groupBox.setTitle(device_title)
             self.module_widget.hardware_list_layout.addWidget(new_widget)
         else:
