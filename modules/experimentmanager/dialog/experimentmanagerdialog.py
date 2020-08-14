@@ -53,7 +53,7 @@ class ExperimentManagerDialog(JoanModuleDialog):
                     QtWidgets.QMessageBox.warning(self, 'Warning', str(e))
 
     def add_condition(self):
-        selected_condition = self.module_widget.availableConditionsListWidget.currentItem().data(0)
+        selected_condition = self.module_widget.availableConditionsListWidget.currentItem().data(QtCore.Qt.UserRole)
         self.module_action.add_condition(selected_condition)
 
     def remove_condition(self):
@@ -64,14 +64,14 @@ class ExperimentManagerDialog(JoanModuleDialog):
         old_index = self.module_widget.currentConditionsListWidget.currentRow()
         self.module_widget.currentConditionsListWidget.insertItem(old_index - 1, self.module_widget.currentConditionsListWidget.takeItem(old_index))
         self.module_widget.currentConditionsListWidget.setCurrentRow(old_index - 1)
-        new_sequence = [self.module_widget.currentConditionsListWidget.item(index).data(0) for index in range(self.module_widget.currentConditionsListWidget.count())]
+        new_sequence = [self.module_widget.currentConditionsListWidget.item(index).data(QtCore.Qt.UserRole) for index in range(self.module_widget.currentConditionsListWidget.count())]
         self.module_action.update_condition_sequence(new_sequence)
 
     def condition_down(self):
         old_index = self.module_widget.currentConditionsListWidget.currentRow()
         self.module_widget.currentConditionsListWidget.insertItem(old_index + 1, self.module_widget.currentConditionsListWidget.takeItem(old_index))
         self.module_widget.currentConditionsListWidget.setCurrentRow(old_index + 1)
-        new_sequence = [self.module_widget.currentConditionsListWidget.item(index).data(0) for index in range(self.module_widget.currentConditionsListWidget.count())]
+        new_sequence = [self.module_widget.currentConditionsListWidget.item(index).data(QtCore.Qt.UserRole) for index in range(self.module_widget.currentConditionsListWidget.count())]
         self.module_action.update_condition_sequence(new_sequence)
 
     def load_experiment(self):
@@ -125,8 +125,9 @@ class ExperimentManagerDialog(JoanModuleDialog):
                 item.setData(QtCore.Qt.UserRole, condition)
                 self.module_widget.availableConditionsListWidget.addItem(item)
 
-            for condition_name in self.module_action.current_experiment.active_condition_sequence:
-                item = QtWidgets.QListWidgetItem(condition_name)
+            for condition in self.module_action.current_experiment.active_condition_sequence:
+                item = QtWidgets.QListWidgetItem(condition.name)
+                item.setData(QtCore.Qt.UserRole, condition)
                 self.module_widget.currentConditionsListWidget.addItem(item)
         else:
             self.module_widget.currentConditionsListWidget.setEnabled(False)
@@ -134,7 +135,7 @@ class ExperimentManagerDialog(JoanModuleDialog):
         self._update_enabled_condition_buttons()
 
     def activate_condition(self):
-        current_condition = self.module_widget.currentConditionsListWidget.item(0)
+        current_condition = self.module_widget.currentConditionsListWidget.item(0).data(QtCore.Qt.UserRole)
         self.module_action.activate_condition(current_condition)
 
     def _update_base_settings_tree(self):

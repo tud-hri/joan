@@ -38,9 +38,9 @@ class ExperimentManagerAction(JoanModuleAction):
 
             self.module_dialog.update_condition_lists()
 
-    def add_condition(self, condition_name):
+    def add_condition(self, condition):
         if self.current_experiment:
-            self.current_experiment.active_condition_sequence.append(condition_name)
+            self.current_experiment.active_condition_sequence.append(condition)
             self.module_dialog.update_condition_lists()
 
     def remove_condition(self, index):
