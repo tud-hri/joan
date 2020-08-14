@@ -95,7 +95,7 @@ class PDcontrollerSettings:
         self.k_d = 1.0
         self.w_lat = 1.0
         self.w_heading = 2.0
-        self._trajectory_name = "TestTrajectory2.csv"
+        self._trajectory_name = "default_hcr_trajectory.csv"
 
     def as_dict(self):
         return self.__dict__
