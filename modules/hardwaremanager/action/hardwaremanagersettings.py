@@ -200,6 +200,7 @@ class SensoDriveSettings:
         self.friction = 300  # mNm
         self.damping = 30  # mNm/rev/min
         self.spring_stiffness = 20  # mNm/deg
+        self.torque = 0 #mNm
 
     def as_dict(self):
         return self.__dict__
