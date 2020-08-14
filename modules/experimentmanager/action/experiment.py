@@ -19,7 +19,7 @@ class Experiment:
             raise RuntimeError("The base settings of an experiment can only be modified when no conditions exist.")
 
         for module in self.modules_included:
-            self.base_settings[module] = copy.deepcopy(settings_singleton.get_settings(module))
+            self.base_settings[module] = copy.deepcopy(settings_singleton.get_settings(module).as_dict())
 
     def save_to_file(self, file_path):
         dict_to_save = {'modules_included': [str(module) for module in self.modules_included],
@@ -28,7 +28,7 @@ class Experiment:
                         'active_condition_sequence': [condition.name for condition in self.active_condition_sequence], }
 
         for module in self.modules_included:
-            dict_to_save['base_settings'].update(self.base_settings[module].as_dict())
+            dict_to_save['base_settings'].update(self.base_settings[module])
 
         for condition in self.all_conditions:
             dict_to_save['conditions'][condition.name] = condition.get_savable_dict()
@@ -38,7 +38,6 @@ class Experiment:
 
     @staticmethod
     def load_from_file(file_path):
-
 
         with open(file_path, 'r') as settings_file:
             loaded_dict = json.load(settings_file)

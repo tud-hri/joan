@@ -59,6 +59,7 @@ class ExperimentManagerAction(JoanModuleAction):
             self.current_experiment.save_to_file(self.experiment_save_path)
 
     def load_experiment(self, file_path):
+        self.experiment_save_path = file_path
         self.current_experiment = Experiment.load_from_file(file_path)
         self.module_dialog.update_gui()
         self.module_dialog.update_condition_lists()

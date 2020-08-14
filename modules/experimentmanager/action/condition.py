@@ -1,4 +1,5 @@
 import copy
+
 from modules.joanmodules import JOANModules
 
 
@@ -15,9 +16,12 @@ class Condition:
     def set_from_current_settings(condition_name, parent_experiment, settings_singleton):
         condition = Condition(parent_experiment.modules_included, condition_name)
         for module in parent_experiment.modules_included:
-            condition.diff[module] = Condition._get_dict_diff(parent_experiment.base_settings[module].as_dict()[str(module)], settings_singleton.get_settings(module).as_dict()[str(module)], {})
+            condition.diff[module] = Condition._get_dict_diff(parent_experiment.base_settings[module][str(module)],
+                                                              copy.deepcopy(settings_singleton.get_settings(module).as_dict())[
+                                                                  str(module)], {})
 
-        return copy.deepcopy(condition)  # return deepcopy of the condition dictionary; else changing a module setting will change the setting across all conditions.
+        # return deepcopy of the condition dictionary; else changing a module setting will change the setting across all conditions.
+        return condition
 
     def get_savable_dict(self):
         dict_to_save = {}
@@ -42,8 +46,9 @@ class Condition:
 
         for key in base_dict.keys():
             if key not in specific_dict.keys():
-                raise ValueError('It is not possible to remove settings that are present in the base of in experiment in a certain condition. '
-                                 'Conditions can only add or change settings.')
+                raise ValueError(
+                    'It is not possible to remove settings that are present in the base of in experiment in a certain condition. '
+                    'Conditions can only add or change settings.')
 
         # TODO: list handling here is pretty inefficient have a look later
         # TODO: This doesn't seem to work; this function returns the full 'child' dict if only one key is different
