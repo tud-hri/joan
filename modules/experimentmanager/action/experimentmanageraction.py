@@ -75,10 +75,10 @@ class ExperimentManagerAction(JoanModuleAction):
         # apply base settings first, then condition settings
         for module, settings_dict in self.current_experiment.base_settings:
             # self.singleton_settings.get_settings(module).update_settings_from_dict(settings_dict)
+            pass
 
         for module, settings_dict in condition.diff:
             # self.singleton_settings.get_settings(module).update_settings_from_dict(settings_dict)
+            pass
 
         # TODO signals to nodules (transitions)
-
-        pass
