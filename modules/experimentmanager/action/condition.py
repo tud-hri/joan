@@ -16,7 +16,7 @@ class Condition:
     def set_from_current_settings(condition_name, parent_experiment, settings_singleton):
         condition = Condition(parent_experiment.modules_included, condition_name)
         for module in parent_experiment.modules_included:
-            condition.diff[module] = Condition._get_dict_diff(parent_experiment.base_settings[module][str(module)],
+            condition.diff[module] = Condition._get_dict_diff(parent_experiment.base_settings[module],
                                                               copy.deepcopy(settings_singleton.get_settings(module).as_dict())[
                                                                   str(module)], {})
 

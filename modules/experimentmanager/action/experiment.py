@@ -19,7 +19,7 @@ class Experiment:
             raise RuntimeError("The base settings of an experiment can only be modified when no conditions exist.")
 
         for module in self.modules_included:
-            self.base_settings[module] = copy.deepcopy(settings_singleton.get_settings(module).as_dict()) # not sure if .as_dict() is a good idea
+            self.base_settings[module] = copy.deepcopy(settings_singleton.get_settings(module).as_dict()[str(module)]) # not sure if .as_dict() is a good idea
 
     def save_to_file(self, file_path):
         dict_to_save = {'modules_included': [str(module) for module in self.modules_included],
@@ -28,7 +28,7 @@ class Experiment:
                         'active_condition_sequence': [condition.name for condition in self.active_condition_sequence], }
 
         for module in self.modules_included:
-            dict_to_save['base_settings'].update(self.base_settings[module])
+            dict_to_save['base_settings'].update({str(module): self.base_settings[module]})
 
         for condition in self.all_conditions:
             dict_to_save['conditions'][condition.name] = condition.get_savable_dict()
@@ -46,7 +46,7 @@ class Experiment:
         new_experiment = Experiment(modules_included)
 
         for module in modules_included:
-            new_experiment.base_settings[module] = {str(module): loaded_dict['base_settings'][str(module)]}
+            new_experiment.base_settings[module] = loaded_dict['base_settings'][str(module)]
 
         for condition_name, diff_dict in loaded_dict['conditions'].items():
             new_condition = Condition(modules_included, condition_name)

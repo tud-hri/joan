@@ -67,5 +67,5 @@ class ExperimentManagerAction(JoanModuleAction):
     def activate_condition(self, condition):
         """Send condition settings to all modules"""
 
-        print(condition)
+        print(condition.diff)
         pass
