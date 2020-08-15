@@ -51,16 +51,15 @@ class Condition:
                     'Conditions can only add or change settings.')
 
         # TODO: list handling here is pretty inefficient have a look later
-        # TODO: This doesn't seem to work; this function returns the full 'child' dict if only one key is different
+        # TODO: if a value is a list (e.g. SW controller), then the complete dict is copied (which is fine, I guess)
         for key, value in base_dict.items():
             if isinstance(value, dict):
                 return Condition._get_dict_diff(value, specific_dict[key], diff_dict)
             elif specific_dict[key] != value:
                 diff_dict[key] = specific_dict[key]
 
-        # TODO: voor nu even uitgecomment
-        # for key in specific_dict.keys():
-        #     if key not in base_dict.keys():
-        #         diff_dict[key] = specific_dict[key]
+        for key in specific_dict.keys():
+            if key not in base_dict.keys():
+                diff_dict[key] = specific_dict[key]
 
         return diff_dict
