@@ -26,10 +26,10 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
 
         self.button_box_settings.button(self.button_box_settings.RestoreDefaults).clicked.connect(
             self._set_default_values)
-        self._display_values()
 
         self.btn_apply.clicked.connect(self.update_parameters)
-        # self.show()
+
+        self._display_values()
 
     def update_parameters(self):
         """
@@ -124,9 +124,7 @@ class JOAN_SensoDrive(BaseInput):
         self._sensodrive_tab.btn_on_off.setText('Off')
         self._sensodrive_tab.btn_on_off.setEnabled(True)
 
-        self.settings_dialog = SensoDriveSettingsDialog(self.settings)
-        self.settings_dialog.accepted.connect(self.update_settings)
-        self.settings_dialog.btn_apply.clicked.connect(self.update_settings)
+        self.settings_dialog = None
 
         self.sensodrive_shared_values.torque = self.settings.torque
         self.sensodrive_shared_values.friction = self.settings.friction
@@ -145,6 +143,8 @@ class JOAN_SensoDrive(BaseInput):
         self.sensodrive_communication_process = SensoDriveComm(self.sensodrive_shared_values, self.init_event,
                                                                self.toggle_sensodrive_motor_event, self.close_event,
                                                                self.update_settings_event, self.shutoff_event)
+
+        self._open_settings_dialog()
 
 
 
@@ -201,7 +201,7 @@ class JOAN_SensoDrive(BaseInput):
         """
         Not used for this input
         """
-        pass
+        self.settings_dialog = SensoDriveSettingsDialog(self.settings)
 
     def remove_func(self):
         """
