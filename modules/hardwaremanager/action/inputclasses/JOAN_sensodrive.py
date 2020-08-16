@@ -94,12 +94,11 @@ class JOAN_SensoDrive(BaseInput):
         :param settings:
         """
         super().__init__(hardware_manager_action)
-
+        self.module_action = hardware_manager_action
         # Create the shared variables class
         self.sensodrive_shared_values = SensoDriveSharedValues()
 
         self.sensodrive_shared_values.sensodrive_ID = nr_of_sensodrives
-
 
 
         # Torque safety variables
@@ -147,6 +146,8 @@ class JOAN_SensoDrive(BaseInput):
                                                                self.toggle_sensodrive_motor_event, self.close_event,
                                                                self.update_settings_event, self.shutoff_event)
 
+
+
     def update_settings(self):
         """
         Updates the settings that are saved internally. NOTE: this is different than with other input modules because
@@ -170,10 +171,11 @@ class JOAN_SensoDrive(BaseInput):
         """
 
         # self.sensodrive_communication_process.initialize()
-        self.init_event.set()
-        self.sensodrive_communication_process.start()
 
-        self.counter = 0
+        if not self.sensodrive_communication_process.is_alive():
+            self.init_event.set()
+            self.sensodrive_communication_process.start()
+            self.counter = 0
 
     def _toggle_on_off(self, connected):
         """
