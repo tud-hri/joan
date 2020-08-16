@@ -13,19 +13,6 @@ from process.statesenum import State
 
 import multiprocessing as mp
 
-"""
-These global parameters are used to make the message ID's more identifiable than just the hex nr.
-"""
-INITIALIZATION_MESSAGE_ID = 0x200
-INITIALIZATION_MESSAGE_LENGTH = 8
-
-STEERINGWHEEL_MESSAGE_ID = 0x201
-STEERINGWHEEL_MESSAGE_LENGTH = 8
-
-PEDAL_MESSAGE_ID = 0x20C
-PEDAL_MESSAGE_LENGTH = 2
-
-
 class SensoDriveSettingsDialog(QtWidgets.QDialog):
     """
     Class for the settings Dialog of a SensoDrive, this class should pop up whenever it is asked by the user or when
