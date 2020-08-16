@@ -14,18 +14,24 @@ STEERINGWHEEL_MESSAGE_LENGTH = 8
 PEDAL_MESSAGE_ID = 0x20C
 PEDAL_MESSAGE_LENGTH = 2
 
+
 class SensoDriveComm(mp.Process):
-    def __init__(self, shared_values, init_event, toggle_event, close_event, update_event):
+    def __init__(self, shared_values, init_event, toggle_event, close_event, update_event, shutoff_event):
         super().__init__()
         self.init_event = init_event
         self.toggle_sensodrive_motor_event = toggle_event
         self.close_event = close_event
         self.update_settings_event = update_event
+        self.shutoff_event = shutoff_event
 
         # Create PCAN object
         self.pcan_initialization_result = None
         self.sensodrive_shared_values = shared_values
-        self._pcan_channel = PCAN_USBBUS1
+        print(self.sensodrive_shared_values.sensodrive_ID)
+        if self.sensodrive_shared_values.sensodrive_ID == 0:
+            self._pcan_channel = PCAN_USBBUS1
+        elif self.sensodrive_shared_values.sensodrive_ID == 1:
+            self._pcan_channel = PCAN_USBBUS2
 
         # Create steeringwheel parameters data structure
         self.steering_wheel_parameters = {}
@@ -143,6 +149,10 @@ class SensoDriveComm(mp.Process):
         self.initialize()
 
         while True:
+            #Turn off sensodrive immediately (only when torque limits are breached)
+            if self.shutoff_event.is_set():
+                self.on_to_off(self.state_message)
+                self.shutoff_event.clear()
             # Get latest parameters
             time.sleep(0.001)
             self.steering_wheel_parameters['torque'] = self.sensodrive_shared_values.torque
@@ -217,6 +227,7 @@ class SensoDriveComm(mp.Process):
             if self.toggle_sensodrive_motor_event.is_set():
                 self.on_off()
                 self.toggle_sensodrive_motor_event.clear()
+
 
             if self.update_settings_event.is_set():
                 self.update_settings()
