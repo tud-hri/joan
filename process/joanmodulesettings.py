@@ -5,6 +5,17 @@ from enum import Enum
 
 from modules.joanmodules import JOANModules
 
+"""
+Proposal for restructuring
+
+Need: At the moment, loading of settings occurs through several functions in settings, action and dialog. This needs to be simplified/structurized
+
+Proposal: Settings are set in JOANModuleSettings. JOANModuleSettings sends out signal apply_settings. Action or dialog can connect to this signal to, you guessed it, apply the settings
+In JOANModuleSettings, we need to clearly distinguish between settings loaded from file and settings loaded through, for example, the experimentmanaer )dict)
+
+
+"""
+
 
 class JoanModuleSettings(abc.ABC):
     def __init__(self, module_enum: JOANModules):
