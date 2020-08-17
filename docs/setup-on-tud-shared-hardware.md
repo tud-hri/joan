@@ -9,7 +9,10 @@ You will most likely create your own project (a map) on a shared computer. To ma
 !!! Important
     When you log in to a computer for the first time, the computer needs to be connected with a LAN cable to the TU Delft network.
 
-- If correct, CARLA (see `c:\carla`) and PyCharm are already installed. If not, follow the CARLA build steps ([here](setup-carla-windows.md)) and install the community version of PyCharm.
+- If correct, CARLA (see `c:\carla`) and PyCharm are already installed. If not, follow the CARLA build steps ([here](setup-carla-windows.md)) and install the community version of PyCharm. If CARLA is already present, then you obviously do not need to rebuild.
+
+!!! Note
+    If CARLA needs rebuilding (for example because we upgraded Python version), this needs to be done using the administrator's account. Ask your supervisor.
 
 ### Steps to setup JOAN
 
