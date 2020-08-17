@@ -36,7 +36,7 @@ class JoanModuleDialog(QtWidgets.QDialog):
         self.settings_menu = QtWidgets.QMenu('Settings')
         self.load_settings = QtWidgets.QAction('Load Settings')
         self.load_settings.triggered.connect(self._load_settings)
-        self.load_settings.setEnabled(False)
+        self.load_settings.setEnabled(True)
         self.settings_menu.addAction(self.load_settings)
         self.save_settings = QtWidgets.QAction('Save Settings')
         self.save_settings.triggered.connect(self._save_settings)

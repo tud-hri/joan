@@ -24,11 +24,7 @@ class SteeringWheelControlSettings(JoanModuleSettings):
         try:
             module_settings_to_load = loaded_dict[str(self._module_enum)]
         except KeyError:
-            warning_message = "WARNING: loading settings for the " + str(self._module_enum) + \
-                              " module from a dictionary failed. The loaded dictionary did not contain " + str(
-                self._module_enum) + " settings." + \
-                              (" It did contain settings for: " + ", ".join(
-                                  loaded_dict.keys()) if loaded_dict.keys() else "")
+            warning_message = "WARNING: loading settings for the " + str(self._module_enum) + " module from a dictionary failed. The loaded dictionary did not contain " + str(self._module_enum) + " settings." # + (" It did contain settings for: " + ", ".join(loaded_dict.keys()) if loaded_dict.keys() else "")
             print(warning_message)
             return
 

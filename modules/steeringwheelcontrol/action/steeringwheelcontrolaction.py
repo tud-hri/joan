@@ -118,6 +118,20 @@ class SteeringWheelControlAction(JoanModuleAction):
             return False
         return super().initialize()
 
+    def load_settings(self, settings_file_to_load):
+        """
+        Load settings. Called from Dialog. Handles module-specific actions that need to occur before the generic "load_settings_from_file" is called
+        :param settings_file_to_load:
+        :return:
+        """
+        # remove all current controllers first:
+        for controller in self._controllers.copy():
+            self.remove_controller(self._controllers[controller])
+
+        self.load_settings_from_file(settings_file_to_load)
+
+        self.initialize()
+
     def add_controller(self, controller_type, controller_settings=None):
         # set the module to idle because we need to reinitialize our controllers!
         self.state_machine.request_state_change(State.IDLE, 'You can now add more and reinitialize controllers')
