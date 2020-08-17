@@ -73,10 +73,9 @@ class ExperimentManagerAction(JoanModuleAction):
 
         # TODO: implement update_settings_from_dict function in each module settings class
         # apply base settings first, then condition settings
-        print(type(self.current_experiment.base_settings))
 
         for module, settings_dict in self.current_experiment.base_settings.items():
-            self.singleton_settings.get_settings(module).set_from_loaded_dict({module: settings_dict})
+            self.singleton_settings.get_settings(module).set_from_loaded_dict({str(module): settings_dict})
 
         #for module, settings_dict in condition.diff:
          #   self.singleton_settings.get_settings(module).set_from_loaded_dict(settings_dict)

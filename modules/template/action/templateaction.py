@@ -144,8 +144,9 @@ class TemplateAction(JoanModuleAction):
 
     def stop(self):
         """stop the module"""
-        self.state_machine.request_state_change(
-            State.IDLE)  # Will automatically go to READY as defined above in self.state_machine.set_automatic_transition
+        # Will automatically go to READY as defined above in self.state_machine.set_automatic_transition
+        self.state_machine.request_state_change(State.IDLE)
+
         return super().stop()
 
     def _starting_condition(self):
