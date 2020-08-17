@@ -1,5 +1,9 @@
 # Setting up CARLA for Windows
 
+!!! Note
+    If you are a TU Delft student working on one of the TUD computers with CARLA installed, you can skip these instructions. Go to the [setup guide for installing on TUD shared hardware](setup-on-tud-shared-hardware.md) instead.
+
+---
 These instructions are are heavily based on the awesome documentation provided by the CARLA team. If you get stuck somewhere, you could have a look at [their documentation](https://carla.readthedocs.io/en/latest/) as well.
 
 ---
@@ -100,8 +104,7 @@ or
 
 ### Python editors
 
-We recommend installing __[PyCharm](https://www.jetbrains.com/pycharm/)__ as your python editor. __[Visual Studio Code](https://code.visualstudio.com/)__ is a good alternative.
-
+We recommend installing __[PyCharm](https://www.jetbrains.com/pycharm/)__ as your python editor. 
 
 ---
 ## Building and installing CARLA & the CARLA PythonAPI

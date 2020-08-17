@@ -9,3 +9,5 @@ flake8
 keyboard
 markdown_inline_graphviz_extension>=1.1
 pymdown-extensions
+pyqtgraph
+mkdocs

@@ -5,6 +5,7 @@ theme: readthedocs
 nav:
     - Home: 'index.md'
     - Setup:
+      - Setup your JOAN and CARLA project on TUD shared hardware: setup-on-tud-shared-hardware.md
       - Setup on Windows: setup-carla-windows.md
       - Setup on Linux: setup-carla-linux.md
       - Setup JOAN: setup-joan.md

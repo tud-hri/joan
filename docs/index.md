@@ -12,6 +12,7 @@ You can find the public repository [here][repolink]. Note that JOAN is still und
 JOAN is developed by members of the [Human-Robot Interaction group](https://delfthapticslab.nl) at Cognitive Robotics of Delft University of Technology. This home-page serves as the table of contents of this document, a little bit below an overview is given with a short description of the sections and what they contain. 
 
 ## Setup
+* __[Setup your JOAN and CARLA project on TUD hardware](setup-on-tud-shared-hardware.md)__ - guide on how to install your project on TUD shared hardware (probably your first step)
 * __[Setup on Windows](setup-carla-windows.md)__ - Guide on how to setup CARLA and JOAN on Windows OS
 * __[Setup on Linux](setup-carla-linux.md)__ - Guide on how to setup CARLA and JOAN on Linux OS (Not documented yet)
 * __[Setup JOAN](setup-joan.md)__ - Guide on how to setup your own JOAN project
