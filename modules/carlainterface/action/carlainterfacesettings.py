@@ -122,7 +122,7 @@ class TrafficVehicleSettings():
         initializes the class with default variables
         """
         self._velocity = 50
-        self._trajectory_name = 'Traffic_first_try.csv'
+        self._trajectory_name = 'TestTrajectory2.csv'
         self._selected_spawnpoint = 0
         self._selected_car = 'hapticslab.audi'
         self._t_lookahead = 0.6
@@ -130,7 +130,7 @@ class TrafficVehicleSettings():
         self._w_heading = 2
         self._k_p = 6
         self._k_d = 2.5
-        self._set_velocity_with_pd = True
+        self._set_velocity_with_pd = False
 
     def as_dict(self):
         return self.__dict__

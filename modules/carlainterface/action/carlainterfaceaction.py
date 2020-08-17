@@ -63,7 +63,6 @@ class CarlainterfaceAction(JoanModuleAction):
         self.write_news(news=self.data)
         self.time = QtCore.QTime()
         self._data_from_hardware = {}
-        self.spawned_traffic = False
 
         self.settings = CarlainterfaceSettings(module_enum=JOANModules.CARLA_INTERFACE)
 
@@ -165,18 +164,10 @@ class CarlainterfaceAction(JoanModuleAction):
         This function is called every controller tick of this module implement your main calculations here
         """
         if self.connected:
-
-            ## Writing data in news
             for agent in self.vehicles:
                 self.data['ego_agents'][agent.vehicle_nr] = agent.unpack_vehicle_data()
-            for agent in self.traffic_vehicles:
-                self.data['traffic_agents'][agent.vehicle_title] = agent.unpack_vehicle_data()
-
-
             self.write_news(news=self.data)
             self._data_from_hardware = self.read_news(JOANModules.HARDWARE_MANAGER)
-
-            ## applying control
             try:
                 for items in self.vehicles:
                     if items.spawned:
@@ -186,24 +177,6 @@ class CarlainterfaceAction(JoanModuleAction):
                         items.process()
             except Exception as inst:
                 print('Could not apply control', inst)
-
-            #conditional statements for demo
-
-            if self.data['ego_agents']['Car 1']['y_pos'] < 1162 and self.data['ego_agents']['Car 1']['y_pos'] > 1155:
-                    if self.data['ego_agents']['Car 1']['x_pos'] < 860 and self.data['ego_agents']['Car 1']['x_pos'] > 855:
-                        if self.spawned_traffic is False:
-                            self.spawn_demo_traffic()
-                            self.spawned_traffic = True
-
-            if self.spawned_traffic is True:
-                if self.demotraffic_vehicle.spawned_vehicle.get_location().y < 1162 and \
-                        self.demotraffic_vehicle.spawned_vehicle.get_location().y > 1155:
-                    if self.demotraffic_vehicle.spawned_vehicle.get_location().x < 860 and \
-                            self.demotraffic_vehicle.spawned_vehicle.get_location().x > 855:
-                        self.destroy_demo_traffic()
-                        self.spawned_traffic = False
-
-
         else:
             self.stop()
 
@@ -400,6 +373,9 @@ class CarlainterfaceAction(JoanModuleAction):
         :return:
         """
         try:
+            # for vehicle in self.vehicles:
+                # vehicle.get_available_inputs()
+                # vehicle.get_available_controllers()
             self.state_machine.request_state_change(State.READY, "You can now add vehicles and start the module")
 
             for traffic in self.traffic_vehicles:
@@ -424,28 +400,3 @@ class CarlainterfaceAction(JoanModuleAction):
         :return:
         """
         self.settings.save_to_file(file_to_save_in)
-
-
-## HARDCODED DEMO FUNCTIONS BELOW
-
-    def spawn_demo_traffic(self):
-        self.demo_traffic_settings = TrafficVehicleSettings()
-        self.demo_traffic_settings._velocity = 40
-        self.demo_traffic_settings._trajectory_name = 'Traffic_first_try.csv'
-        self.demo_traffic_settings._selected_spawnpoint = 0
-        self.demo_traffic_settings._selected_car = 'hapticslab.audi'
-        self.demo_traffic_settings._set_velocity_with_pd = True
-
-        self.add_traffic_agent(self.demo_traffic_settings)
-
-        self.demotraffic_vehicle = self.traffic_vehicles[-1]
-        self.demotraffic_vehicle.load_trajectory()
-
-        self.demotraffic_vehicle.spawn_car()
-
-    def destroy_demo_traffic(self):
-        self.demotraffic_vehicle.destroy_car()
-        self.traffic_vehicles.remove(self.demotraffic_vehicle)
-
-
-
