@@ -42,7 +42,7 @@ We will explain how to setup your own project repository and how to connect it t
   ![new repo pycharm](imgs/setup-joan-pycharm-repo-directory.png)
 - Go to your own repositories webpage (on GitLab), click `clone` and copy the URL under 'Clone with HTTPS':
   ![clone-https](imgs/setup-joan-pycharm-repo-clone-button.png)
-- Paste the repository URL in the field that says URL in the PyCharm window. Change the directory to `C:\\Users\<YOUR NETID>\joan-projects\<YOUR PROJECT NAME>`. Replace `<NETID>` with your NETID and `<YOUR PROJECT NAME>` with the __EXACT__ name of your gitlab repository project. 
+- Paste the repository URL in the field that says URL in the PyCharm window. Change the directory to `C:\\Users\<YOUR NETID>\joan-projects\<YOUR PROJECT NAME>`. Replace `<NETID>` with your NETID if you are on a TUD computer or your Windows username and `<YOUR PROJECT NAME>` with the __EXACT__ name of your gitlab repository project. 
 - Click `Clone`
 - Fill in your NETID credentials.
 - PyCharm will start to clone your repository. This may fail, and trying this again could help. Furthermore, you might be asked to enter your credentials. If so, use your `netid`. Still credential/authority-related issues? Ask your supervisor.
