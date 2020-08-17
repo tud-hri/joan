@@ -107,11 +107,11 @@ class PDcontrollerSettings:
 
 class FDCAcontrollerSettings:
     def __init__(self):
-        self.t_lookahead = 0.0
+        self.t_lookahead = 0.3
         self.k_y = 0.1
-        self.k_psi = 0.4
-        self.lohs = 1.0
-        self.sohf = 1.0
+        self.k_psi = 1.72
+        self.lohs = 3.5
+        self.sohf = 2.2
         self.loha = 0.0
         self._trajectory_name = "TestTrajectory2.csv"
 

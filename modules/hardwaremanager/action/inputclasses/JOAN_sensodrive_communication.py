@@ -160,10 +160,17 @@ class SensoDriveComm(mp.Process):
             self.steering_wheel_parameters['damping'] = self.sensodrive_shared_values.damping
             self.steering_wheel_parameters['spring_stiffness'] = self.sensodrive_shared_values.spring_stiffness
 
+            self.endstops_bytes = int.to_bytes(self.sensodrive_shared_values.endstops, 2, byteorder='little',
+                                               signed=True)
+            self.state_message.DATA[2] = self.endstops_bytes[0]
+            self.state_message.DATA[3] = self.endstops_bytes[1]
+
             # request and set steering wheel data
             self.write_message_steering_wheel(self.PCAN_object, self.steering_wheel_message,
                                               self.steering_wheel_parameters)
             received = self.PCAN_object.Read(self._pcan_channel)
+
+
 
             # request state data
             self.PCAN_object.Write(self._pcan_channel, self.state_message)
@@ -181,7 +188,7 @@ class SensoDriveComm(mp.Process):
                     self.sensodrive_shared_values.steering_angle = Angle
                     # Torque
                     Torque = int.from_bytes(received[1].DATA[6:], byteorder='little', signed=True)
-                    self.sensodrive_shared_values.torque_measured = Torque
+                    self.sensodrive_shared_values.measured_torque = Torque
                 elif (received[1].ID == 0x210):
                     self._current_state_hex = received[1].DATA[0]
                 elif (received[1].ID == 0x21C):
@@ -197,7 +204,7 @@ class SensoDriveComm(mp.Process):
                     self.sensodrive_shared_values.steering_angle = Angle
                     # Torque
                     Torque = int.from_bytes(received2[1].DATA[6:], byteorder='little', signed=True)
-                    self.sensodrive_shared_values.torque_measured = Torque
+                    self.sensodrive_shared_values.measured_torque = Torque
                 elif (received2[1].ID == 0x210):
                     self._current_state_hex = received2[1].DATA[0]
                 elif (received2[1].ID == 0x21C):
@@ -213,7 +220,7 @@ class SensoDriveComm(mp.Process):
                     self.sensodrive_shared_values.steering_angle = Angle
                     # Torque
                     Torque = int.from_bytes(received3[1].DATA[6:], byteorder='little', signed=True)
-                    self.sensodrive_shared_values.torque_measured = Torque
+                    self.sensodrive_shared_values.measured_torque = Torque
                 elif (received3[1].ID == 0x210):
                     self._current_state_hex = received3[1].DATA[0]
                 elif (received3[1].ID == 0x21C):

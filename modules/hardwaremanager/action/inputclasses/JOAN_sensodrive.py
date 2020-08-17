@@ -12,6 +12,7 @@ from modules.joanmodules import JOANModules
 from process.statesenum import State
 
 import multiprocessing as mp
+import math
 
 class SensoDriveSettingsDialog(QtWidgets.QDialog):
     """
@@ -296,17 +297,23 @@ class JOAN_SensoDrive(BaseInput):
         try:
             requested_torque_by_controller = self._steering_wheel_control_data[
                 self._carla_interface_data['ego_agents']['Car 1']['vehicle_object'].selected_sw_controller]['sw_torque']
+            desired_steering_angle = self._steering_wheel_control_data[
+                self._carla_interface_data['ego_agents']['Car 1']['vehicle_object'].selected_sw_controller]['sw_angle_desired_degrees']
         except KeyError:
             requested_torque_by_controller = 0
+            desired_steering_angle = 360
+
 
         self.counter = self.counter + 1
 
         if self.counter == 5:
             [self.safety_checked_torque, self.torque_rate] = self.torque_check(
-                requested_torque=requested_torque_by_controller, t1=self.t1, torque_limit_mNm=5000,
-                torque_rate_limit_Nms=50)
+                requested_torque=requested_torque_by_controller, t1=self.t1, torque_limit_mNm=20000,
+                torque_rate_limit_Nms=150)
             self.t1 = int(round(time.time() * 1000))
             self.counter = 0
+
+
 
         # Write away torque parameters and torque checks
         self._data['requested_torque'] = requested_torque_by_controller
@@ -324,16 +331,29 @@ class JOAN_SensoDrive(BaseInput):
         self._data['Reverse'] = 0
 
         # Set parameters
+        if desired_steering_angle <= 0:
+            temp = desired_steering_angle - 12
+        elif desired_steering_angle > 0:
+            temp = desired_steering_angle + 12
+
+        extra_endstop = math.ceil(abs(temp))
+
+        # print(extra_endstop)
         self.sensodrive_shared_values.torque = self.safety_checked_torque
         self.sensodrive_shared_values.friction = self.settings.friction
         self.sensodrive_shared_values.damping = self.settings.damping
+        #UNCOMMENT THIS IF YOU WANT VARIABLE ENDSTOPS
+        # if abs(self.sensodrive_shared_values.steering_angle) < extra_endstop - 2:
+        #     self.sensodrive_shared_values.endstops = extra_endstop
         self.sensodrive_shared_values.endstops = self.settings.endstops
         self.sensodrive_shared_values.torque_limit_between_endstops = self.settings.torque_limit_between_endstops
         self.sensodrive_shared_values.torque_limit_beyond_endstops = self.settings.torque_limit_beyond_endstops
         self.sensodrive_shared_values.spring_stiffness = self.settings.spring_stiffness
 
+
         # Lastly we also need to write the spring stiffness in data for controller purposes
         self._data['spring_stiffness'] = self.sensodrive_shared_values.spring_stiffness
+
 
         return self._data
 
