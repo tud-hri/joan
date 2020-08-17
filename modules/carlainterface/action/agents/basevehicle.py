@@ -76,8 +76,7 @@ class Basevehicle:
             self.car_data['manual_gear_shift'] = last_applied_vehicle_control.manual_gear_shift
             self.car_data['gear'] = last_applied_vehicle_control.gear
 
-        except:
-            # vehicle object
+        except Exception as inst:
             self.car_data['vehicle_object'] = self
             pass
 
