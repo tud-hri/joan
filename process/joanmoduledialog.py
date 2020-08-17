@@ -101,10 +101,6 @@ class JoanModuleDialog(QtWidgets.QDialog):
         if file_to_save_in:
             self.module_action.save_settings_to_file(file_to_save_in)
 
-    @QtCore.pyqtSlot(str)
-    def _set_tick_interval_ms(self, interval_ms):
-        self.module_action.set_tick_interval_ms(interval_ms)
-
     def handle_state_change(self):
         """
         handle state change

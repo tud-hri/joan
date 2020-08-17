@@ -55,13 +55,15 @@ class JoanModuleAction(QtCore.QObject):
             else:
                 self.timer.timeout.connect(self.do)
 
-            # initialize state machine
-            self.state_machine = StateMachine(module)
-            self.singleton_status.update_state_machine(module, self.state_machine)
+        # initialize state machine
+        self.state_machine = StateMachine(module)
+        self.singleton_status.update_state_machine(module, self.state_machine)
 
         # initialize own data and create channel in news
         self.data = {}
         self.write_news(news=self.data)
+
+        self.settings = None
 
         # (py)Qt signals for triggering specific module actions/functions
         # these signals are all stored in a JoanModuleSignal class; add them there if you need more signals.
@@ -102,17 +104,20 @@ class JoanModuleAction(QtCore.QObject):
         else:
             return False
 
-    def set_tick_interval_ms(self, interval_ms):
-        try:
-            self.tick_interval_ms = int(interval_ms)
-        except ValueError:
-            pass
-
     def write_news(self, news: dict):
         """
         Write new data to channel
         """
         self.singleton_news.write_news(self.module, news)
+
+    def read_news(self, channel):
+        return self.singleton_news.read_news(channel)
+
+    def get_all_news(self):
+        return self.singleton_news.all_news
+
+    def get_available_news_channels(self):
+        return self.singleton_news.all_news_keys
 
     def share_settings(self, module_settings):
         """
@@ -145,15 +150,6 @@ class JoanModuleAction(QtCore.QObject):
         :return:
         """
         self.settings.save_to_file(file_to_save_in)
-
-    def get_all_news(self):
-        return self.singleton_news.all_news
-
-    def get_available_news_channels(self):
-        return self.singleton_news.all_news_keys
-
-    def read_news(self, channel):
-        return self.singleton_news.read_news(channel)
 
     def get_available_module_settings(self):
         return self.singleton_settings.all_settings_keys
