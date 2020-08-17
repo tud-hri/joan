@@ -86,7 +86,8 @@ class JoanModuleDialog(QtWidgets.QDialog):
                                                                                       'action'),
                                                                          filter='*.json')
         if settings_file_to_load:
-            pass
+            self.module_action.load_settings(settings_file_to_load)
+            self.initialize_widgets_from_settings()
 
     def _save_settings(self):
         """

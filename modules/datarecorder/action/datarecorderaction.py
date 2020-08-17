@@ -11,6 +11,21 @@ from process.joanmoduleaction import JoanModuleAction
 from process.statesenum import State
 
 
+def _create_filename(extension=''):
+    """
+    Create a filename where the name is a combination of the current date and time and the extension
+    :param extension: extension that is added to the filename
+    :return: the name of the file
+    """
+    now = datetime.now()
+    now_string = now.strftime('%Y%m%d_%H%M%S')
+    filename = '%s_%s' % ('data', now_string)
+    if extension != '':
+        extension = extension[0] == '.' or '.%s' % extension
+        filename = '%s%s' % (filename, extension)
+    return filename
+
+
 class DataRecorderAction(JoanModuleAction):
     """
     Does all kinds of action concerning the Datarecorder module
@@ -32,7 +47,7 @@ class DataRecorderAction(JoanModuleAction):
                                                            'datarecordersettings.json')
 
         if Path(self.default_settings_file_location).is_file():
-            self.load_settings_from_file(self.default_settings_file_location)
+            self._load_settings_from_file(self.default_settings_file_location)
             self.millis = self.settings.write_interval
         else:
             self.settings.set_all_true()
@@ -61,9 +76,9 @@ class DataRecorderAction(JoanModuleAction):
         """
         Creates a filename with extension
         """
-        self.filename = self._create_filename(extension='csv')
+        self.filename = _create_filename(extension='csv')
 
-    def load_settings_from_file(self, settings_file_to_load):
+    def _load_settings_from_file(self, settings_file_to_load):
         """
         Loads the settings file for the Datarecorder and saves these settings in the default settings file location
         Sets the write interval from the settings file and initializes the Datarecorder output file
@@ -131,19 +146,9 @@ class DataRecorderAction(JoanModuleAction):
         now = datetime.now()
         self.data_writer.write(timestamp=now, news=self.get_all_news(), channels=self.get_available_news_channels())
 
-    def _create_filename(self, extension=''):
-        """
-        Create a filename where the name is a combination of the current date and time and the extension
-        :param extension: extension that is added to the filename
-        :return: the name of the file
-        """
-        now = datetime.now()
-        now_string = now.strftime('%Y%m%d_%H%M%S')
-        filename = '%s_%s' % ('data', now_string)
-        if extension != '':
-            extension = extension[0] == '.' or '.%s' % extension
-            filename = '%s%s' % (filename, extension)
-        return filename
+    def load_settings(self, settings_file_to_load):
+        self._load_settings_from_file(settings_file_to_load)
+        self.module_action.state_machine.request_state_change(State.READY)
 
     def get_filename(self):
         return self.filename

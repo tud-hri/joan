@@ -181,6 +181,16 @@ class CarlaInterfaceAction(JoanModuleAction):
         else:
             self.stop()
 
+    def load_settings(self, settings_file_to_load):
+        # remove all current agents  first
+        while self.vehicles:
+            self.vehicles[-1].remove_ego_agent()
+
+        while self.traffic_vehicles:
+            self.traffic_vehicles[-1].remove_traffic_agent()
+
+        self._load_settings_from_file(settings_file_to_load)
+
     def check_connection(self):
         """
         Checks whether JOAN is connected by returning the connected parameter

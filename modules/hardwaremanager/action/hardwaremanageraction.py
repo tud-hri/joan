@@ -139,6 +139,10 @@ class HardwareManagerAction(JoanModuleAction):
             return False
         return super().stop()
 
+    def load_settings(self, settings_file_to_load):
+        self._load_settings_from_file(settings_file_to_load)
+        self.initialize()
+
     def add_a_keyboard(self, widget, keyboard_settings=None):
         """
         Adds a keyboard input

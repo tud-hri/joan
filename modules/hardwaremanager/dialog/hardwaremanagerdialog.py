@@ -78,9 +78,8 @@ class HardwareManagerDialog(JoanModuleDialog):
                 hardware_tab_widget.setParent(None)
                 self.module_action.remove(hardware_title)
 
-            self.module_action.load_settings_from_file(settings_file_to_load)
+            self.module_action.load_settings(settings_file_to_load)
             self.initialize_widgets_from_settings()
-            self.module_action.initialize()
 
     def _add_selected_input(self):
         """

@@ -85,26 +85,6 @@ class CarlaInterfaceDialog(JoanModuleDialog):
             self.module_widget.btn_destroy_all.setEnabled(False)
             self.module_widget.btn_remove_all.setEnabled(False)
 
-    def _load_settings(self):
-        """
-        Loads settings from json file
-        :return:
-        """
-        settings_file_to_load, _ = QtWidgets.QFileDialog.getOpenFileName(self, 'load settings',
-                                                                         os.path.join(self.module_action.module_path,
-                                                                                      'action'),
-                                                                         filter='*.json')
-        if settings_file_to_load:
-            # remove all current agents  first
-            while self.module_action.vehicles:
-                self.module_action.vehicles[-1].remove_ego_agent()
-
-            while self.module_action.traffic_vehicles:
-                self.module_action.traffic_vehicles[-1].remove_traffic_agent()
-
-            self.module_action.load_settings_from_file(settings_file_to_load)
-            self.initialize_widgets_from_settings()
-
     def disconnect(self):
         """
         This function disconnects from carla, when it does it will also automatically destroy any cars that were spawned

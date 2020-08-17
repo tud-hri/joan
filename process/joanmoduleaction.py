@@ -121,7 +121,15 @@ class JoanModuleAction(QtCore.QObject):
         """
         self.singleton_settings.update_settings(self.module, module_settings)
 
-    def load_settings_from_file(self, settings_file_to_load):
+    def load_settings(self, settings_file_to_load):
+        """
+        Load settings. This function allows programmers to customize the load settings (clear things, etc)
+        :param settings_file_to_load:
+        :return:
+        """
+        self._load_settings_from_file(settings_file_to_load)
+
+    def _load_settings_from_file(self, settings_file_to_load):
         """
         Loads appropriate settings from .json file
         :param settings_file_to_load:

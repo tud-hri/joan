@@ -156,9 +156,8 @@ class DataplotterDialog(JoanModuleDialog):
         """
         settings_file_to_load, _ = QtWidgets.QFileDialog.getOpenFileName(self, 'load settings', filter='*.json')
         if settings_file_to_load:
-            self.module_action.load_settings_from_file(settings_file_to_load)
+            self.module_action.load_settings(settings_file_to_load)
             self.create_tree_widget()
-        self.module_action.state_machine.request_state_change(State.READY)
 
     def _save_settings(self):
         """

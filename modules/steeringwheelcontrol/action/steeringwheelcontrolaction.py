@@ -120,7 +120,7 @@ class SteeringWheelControlAction(JoanModuleAction):
 
     def load_settings(self, settings_file_to_load):
         """
-        Load settings. Called from Dialog. Handles module-specific actions that need to occur before the generic "load_settings_from_file" is called
+        Load settings. Called from Dialog. Handles module-specific actions that need to occur before the generic "_load_settings_from_file" is called
         :param settings_file_to_load:
         :return:
         """
@@ -128,7 +128,7 @@ class SteeringWheelControlAction(JoanModuleAction):
         for controller in self._controllers.copy():
             self.remove_controller(self._controllers[controller])
 
-        self.load_settings_from_file(settings_file_to_load)
+        self._load_settings_from_file(settings_file_to_load)
 
         self.initialize()
 

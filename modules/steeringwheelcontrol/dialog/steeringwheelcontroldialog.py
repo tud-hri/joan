@@ -40,15 +40,6 @@ class SteeringWheelControlDialog(JoanModuleDialog):
         else:
             self.module_widget.btn_add_sw_controller.setEnabled(False)
 
-    def _load_settings(self):
-        settings_file_to_load, _ = QtWidgets.QFileDialog.getOpenFileName(self, 'load settings',
-                                                                         os.path.join(self.module_action.module_path,
-                                                                                      'action'),
-                                                                         filter='*.json')
-        if settings_file_to_load:
-            self.module_action.load_settings(settings_file_to_load)
-            self.initialize_widgets_from_settings()
-
     def _controller_type_selection(self):
         self._controller_type_dialog.combobox_sw_controller_type.clear()
         for controllers in SWControllerTypes:
