@@ -26,7 +26,7 @@ class BaseInput:
         self._action.remove(tab.groupBox.title())
         tab.setParent(None)
 
-    def process(self):
+    def do(self):
         """
         Processes any input, in this case will just return the current data since there is nothing to process.
         :return: current data

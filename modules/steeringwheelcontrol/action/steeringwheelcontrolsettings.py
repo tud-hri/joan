@@ -95,7 +95,7 @@ class PDcontrollerSettings:
         self.k_d = 1.0
         self.w_lat = 1.0
         self.w_heading = 2.0
-        self._trajectory_name = "TestTrajectory2.csv"
+        self._trajectory_name = "MiddleRoadTVRecord_filtered_ffswang_heading_2hz.csv"
 
     def as_dict(self):
         return self.__dict__
@@ -109,11 +109,11 @@ class FDCAcontrollerSettings:
     def __init__(self):
         self.t_lookahead = 0.0
         self.k_y = 0.1
-        self.k_psi = 0.4
-        self.lohs = 1.0
-        self.sohf = 1.0
+        self.k_psi = 1.5
+        self.lohs = 3.5
+        self.sohf = 1.5
         self.loha = 0.0
-        self._trajectory_name = "TestTrajectory2.csv"
+        self._trajectory_name = "MiddleRoadTVRecord_filtered_ffswang_heading_2hz.csv"
 
     def as_dict(self):
         return self.__dict__

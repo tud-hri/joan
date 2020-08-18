@@ -352,7 +352,7 @@ class JOAN_Joystick(BaseInput):
         else:
             pass
 
-    def process(self):
+    def do(self):
         """
         Processes all the inputs of the joystick and writes them to self._data which is then written to the news in the
         action class
