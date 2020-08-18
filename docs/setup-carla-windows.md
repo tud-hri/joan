@@ -100,7 +100,7 @@ or
     >>> quit()
 
 !!! Important
-    Only use python 3, preferably python 3.8. Installing python 2.7 will be a waste of your time ;-)
+    Only use python 3, preferably [python 3.8 (64 bit)](https://www.python.org/ftp/python/3.8.5/python-3.8.5-amd64.exe). Installing python 2.7 will be a waste of your time ;-)
 
 ### Python editors
 
@@ -175,7 +175,7 @@ Furthermore, a `carla.egg` file should be in `..\carla\PythonAPI\carla\dist`:
 
 ![alt text](imgs/setup-carla-windows-egg-file.png "eggfile")
 
-The exact filename depends on the CARLA version and python version (in our case python 3.8). Please check if the build was succesful by checking if the egg file is there, you will need this file later on when we setup the JOAN environment.
+The exact filename depends on the CARLA version and python version (in our case Python 3.8 64 bit). Please check if the build was succesful by checking if the egg file is there, you will need this file later on when we setup the JOAN environment.
 
 ### Step 5: Building and launching CARLA
 
