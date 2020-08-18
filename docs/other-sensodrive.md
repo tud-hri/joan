@@ -39,7 +39,7 @@ to know all about CAN communication protocols and how the PCAN API works please 
 provided by PEAK Systems. (Same link as the drivers)
 
 The main document of reference for this section is the 'Software manual Version 3.10.0 SENSO-wheel' by the SensoDrive company
-itself. (FIX LINK HERE) This explains all relevant info regarding the messages you can send and receive and what the messages
+itself. [LINK](https://www.dropbox.com/s/zzh1kauwl3apl50/SoftwareManual_SENSO-Wheel_v3p20p0.pdf?dl=0) This explains all relevant info regarding the messages you can send and receive and what the messages
 should look like that you send. For the rest of this section we will explain the different steps to communicate over 
 PCAN in python.
 
@@ -88,6 +88,6 @@ small program here that communicates with the sensodrive and has functionality f
 !!! Note
     Please read all included comments carefully since they do explain some crucial information about the sensodrive's functionality,
     however if you really want to know the exact workings I refer you to the previously stated Software Manual by SensoDrive
-    themselves.
+    themselves. [LINK](https://www.dropbox.com/s/zzh1kauwl3apl50/SoftwareManual_SENSO-Wheel_v3p20p0.pdf?dl=0)
     
     (UNDER CONSTRUCTION)
