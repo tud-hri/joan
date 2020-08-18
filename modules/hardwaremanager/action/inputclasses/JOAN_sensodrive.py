@@ -335,7 +335,6 @@ class JOAN_SensoDrive(BaseInput):
             temp = desired_steering_angle - 12
         elif desired_steering_angle > 0:
             temp = desired_steering_angle + 12
-
         extra_endstop = math.ceil(abs(temp))
 
         # print(extra_endstop)

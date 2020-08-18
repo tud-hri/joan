@@ -259,7 +259,6 @@ class FDCASWController(BaseSWController):
         heading_ref = self._trajectory[index_closest_waypoint, 6]
 
         error_heading = (math.radians(heading_ref) - math.radians(heading_car))
-        # print(error_heading)
 
         # Make sure you dont get jumps (basically unwrap the angle with a threshold of pi radians (180 degrees))
         if error_heading > math.pi:
