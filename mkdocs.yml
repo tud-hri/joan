@@ -21,6 +21,7 @@ nav:
     - Other documentation:
       - Quick start CARLA Unreal Engine (under construction): other-carle-ue4.md
       - Quick start source Control (git): other-git.md
+      - Sensodrive Explanation: other-sensodrive.md
 
     - Contributing:
       - Guidelines: contributing-guidelines.md
