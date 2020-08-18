@@ -27,6 +27,12 @@ prepared) you need to get:
 
 Now you should be all set to use the PCAN-Basic API with the SensoDrive. 
 
+## System overview
+The total system is shown in a simplified version below. The main thing we will focus on furthermore in this documentation is the
+'CAN' piece. This contains all the information we can send and receive from the sensowheel system.
+
+![System Overview](imgs/other-sensodrive-setup.png)
+
 ## Software Explanation
 This section will describe how the current communication with the SensoDrive with PCAN is done. If you really want
 to know all about CAN communication protocols and how the PCAN API works please read the extensive documentation
@@ -37,4 +43,27 @@ itself. (FIX LINK HERE) This explains all relevant info regarding the messages y
 should look like that you send. For the rest of this section we will explain the different steps to communicate over 
 PCAN in python.
 
-### Creating a PCAN Message
+Before giving an example we first need to know what actually is a CAN (Controller Area NEetwork) message, and a short introduction
+to the PCAN-BASIC API.
+
+### CAN Messages
+In this case the CAN message is just a collection of bytes we send to the sensodrive.
+![CAN message layout](imgs/other-sensodrive-canmessage-layout.png)
+
+As can be seen from the image the CAN Message typically contains:
+
+- `Identifier (CAN-ID)`
+- `DLC` This is a 'Data Length Code' and contains info as to how many bytes are in the message.
+-  `Data` These are 0 to 8 bytes of data.
+
+Now a bit more on the 'Data' part, as with many applications the data that can be set in bytes is often done by using
+hexadecimal numbers (as is evident by the 0h's shown in the picture). It is therefore recommended to at least have some understanding of how this works. However 
+because we are using python it is (luckily) also very easy to just convert your integers into bytes that you can send.
+
+### PCAN BASIC API
+The PCAN Basic api is basically a C library, for python there has been written a 'wrapper' which makes this 
+C library available to us. There are however a couple of things that you really have to keep in mind when
+working with this library, they are listed here:
+
+
+
