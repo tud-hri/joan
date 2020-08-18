@@ -9,6 +9,7 @@ and what has been done in JOAN to make it work.
     
 ## Hardware
 The SensoDrive's hardware mainly consists of three necessary parts.
+
 - `SensoWheel` This is the biggest part, where the BLDC motor is attached to on the frame
 - `Steering wheel` Self explanatory, can be removed and switched for other wheels
 - `PCAN USB Dongle` This is the bridge between the internal controller of the sensodrive and your PC
@@ -16,6 +17,7 @@ The SensoDrive's hardware mainly consists of three necessary parts.
 ## Setting up your PC for a sensodrive
 Before you can plug and play the SensoDrive with JOAN (on a new PC, all pc's that we use on the university are already 
 prepared) you need to get:
+
 1. The drivers for the PEAK systems PCAN USB. You can find them here: [link](https://www.peak-system.com/PCAN-USB.199.0.html?&L=1)
 2. The DLL's (Dynamic Linker Libraries) for PCAN-Basic-API. These can also be found here:  [link](https://www.peak-system.com/PCAN-USB.199.0.html?&L=1)
 
