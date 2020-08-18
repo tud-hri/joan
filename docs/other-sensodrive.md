@@ -32,3 +32,7 @@ This section will describe how the current communication with the SensoDrive wit
 to know all about CAN communication protocols and how the PCAN API works please read the extensive documentation
 provided by PEAK Systems. (Same link as the drivers)
 
+The main document of reference for this section is the 'Software manual Version 3.10.0 SENSO-wheel' by the SensoDrive company
+itself. (FIX LINK HERE) This explains all relevant info regarding the messages you can send and receive and what the messages
+should look like that you send. For the rest of this section we will explain different things you can do and how you would implement this 
+in python.
