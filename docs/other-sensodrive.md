@@ -34,5 +34,7 @@ provided by PEAK Systems. (Same link as the drivers)
 
 The main document of reference for this section is the 'Software manual Version 3.10.0 SENSO-wheel' by the SensoDrive company
 itself. (FIX LINK HERE) This explains all relevant info regarding the messages you can send and receive and what the messages
-should look like that you send. For the rest of this section we will explain different things you can do and how you would implement this 
-in python.
+should look like that you send. For the rest of this section we will explain the different steps to communicate over 
+PCAN in python.
+
+### Creating a PCAN Message
