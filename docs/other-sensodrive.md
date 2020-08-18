@@ -65,5 +65,29 @@ The PCAN Basic api is basically a C library, for python there has been written a
 C library available to us. There are however a couple of things that you really have to keep in mind when
 working with this library, they are listed here:
 
+- `Be aware that you are not directly sending CAN messages to the senso drive but firstly to the PCAN Basic Dongle`
 
+This is a very important concept to understand because the SensoDrive itself is capable (and does) of sending info of its
+current state. The state can be error for example. However the PCAN Basic library has the same functionality. So 
+DO NOT CONFUSE THESE FOR EACHOTHER. The status of the sensodrive is only included in actual data it sends back, however
+the status of the PCAN Basic libary is only the dongle. So for example if you yank out the USB cable the PCAN Basic 
+api can return an error, this is not the sensowheel itself (obviously)
 
+- `Make sure you initialize the Dongle with appropriate USB channel and BAUDRATE`
+
+We will show this in the example later but just to emphasize that you should initialize the dongle.
+
+- `Make sure you read all the messages you send, else a buffer will fill up and you introduce lag`
+
+Self explanatory
+
+## Code Example
+Not all the nitty gritty of the sensodrive has been explained yet but I think its more productive to just show a 
+small program here that communicates with the sensodrive and has functionality for turning it off and on.
+
+!!! Note
+    Please read all included comments carefully since they do explain some crucial information about the sensodrive's functionality,
+    however if you really want to know the exact workings I refer you to the previously stated Software Manual by SensoDrive
+    themselves.
+    
+ 
