@@ -29,6 +29,7 @@ JOAN is developed by members of the [Human-Robot Interaction group](https://delf
 * __[Quick start CARLA Unreal Engine](other-carle-ue4.md)__ - Quick start guide with Unreal Editor for CARLA and JOAN (under construction)
 * __[Quick start source Control (git)](other-git.md)__ - Quick start guide for source control with GIT
 * __[SensoDrive Explanation](other-sensodrive.md)__ - Some remarks/explanation and 'best practices' for working with a SensoDrive (mainly TUDelft Students)
+
 ## Contributing
 * __[Guidelines](contributing-guidelines.md)__ - Short explanation of guidelines if you want to add to JOAN
 * __[Coding Standard](contributing-coding-standard.md)__ - Brief explanation of the coding standard of JOAN
