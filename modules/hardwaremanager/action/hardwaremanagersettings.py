@@ -198,7 +198,7 @@ class SensoDriveSettings:
         self.torque_limit_between_endstops = 254  # percent
         self.torque_limit_beyond_endstops = 254  # percent
         self.friction = 0  # mNm
-        self.damping = 50 # mNm/rev/min
+        self.damping = 80 # mNm/rev/min
         self.spring_stiffness = 40  # mNm/deg
         self.torque = 0 #mNm
 
