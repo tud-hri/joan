@@ -190,5 +190,5 @@ class Egovehicle(Basevehicle):
         self._vehicle_tab.setParent(None)
         self.destroy_car()
 
-        self.module_action.settings.ego_vehicles.remove(self.settings)
-        self.module_action.vehicles.remove(self)
+        self.module_action.settings.ego_vehicles.remove_input_device(self.settings)
+        self.module_action.vehicles.remove_input_device(self)

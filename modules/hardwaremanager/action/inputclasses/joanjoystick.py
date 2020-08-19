@@ -254,17 +254,16 @@ class JOANJoystick(BaseInput):
     Main class for the Joystick input, inherits from BaseInput (as it should!)
     """
 
-    def __init__(self, hardware_manager_action, joystick_tab, settings: JoyStickSettings):
+    def __init__(self, hardware_manager_action, settings: JoyStickSettings, name=''):
         """
         Initializes the class
         :param hardware_manager_action:
         :param joystick_tab:
         :param settings:
         """
-        super().__init__(hardware_manager_action)
+        super().__init__(hardware_manager_action, name=name)
         self.module_action = hardware_manager_action
         self.currentInput = 'Joystick'
-        self._joystick_tab = joystick_tab
         self.settings = settings
 
         # Initialize Variables
@@ -278,13 +277,16 @@ class JOANJoystick(BaseInput):
         self._joystick_open = False
         self._joystick = hid.device()
 
-        #  hook up buttons
-        self._joystick_tab.btn_settings.clicked.connect(self._open_settings_dialog)
-        self._joystick_tab.btn_settings.clicked.connect(self._open_settings_from_button)
-        self._joystick_tab.btn_visualization.setEnabled(False)
-        self._joystick_tab.btn_remove_hardware.clicked.connect(self.remove_func)
-
         self._open_settings_dialog()
+
+    def connect_widget(self, widget):
+        self._tab_widget = widget
+
+        #  hook up buttons
+        self._tab_widget.btn_settings.clicked.connect(self._open_settings_dialog)
+        self._tab_widget.btn_settings.clicked.connect(self._open_settings_from_button)
+        self._tab_widget.btn_visualization.setEnabled(False)
+        self._tab_widget.btn_remove_hardware.clicked.connect(self.remove_func)
 
     def _open_settings_from_button(self):
         """
@@ -321,27 +323,27 @@ class JOANJoystick(BaseInput):
         actually disappear from the module.
         :return:
         """
-        self.remove_tab(self._joystick_tab)
-        self.module_action.settings.joy_sticks.remove(self.settings)
+        self.remove_tab(self._tab_widget)
+        self.module_action.settings.joy_sticks.remove_input_device(self.settings)
 
     def disable_remove_button(self):
         """
-        Disables the remove joystick button (useful for example when you dont want to be able to remove an input when the
+        Disables the remove_input_device joystick button (useful for example when you dont want to be able to remove_input_device an input when the
         simulator is running)
         :return:
         """
-        if self._joystick_tab.btn_remove_hardware.isEnabled() is True:
-            self._joystick_tab.btn_remove_hardware.setEnabled(False)
+        if self._tab_widget.btn_remove_hardware.isEnabled() is True:
+            self._tab_widget.btn_remove_hardware.setEnabled(False)
         else:
             pass
 
     def enable_remove_button(self):
         """
-        Enables the remove joystick button
+        Enables the remove_input_device joystick button
         :return:
         """
-        if self._joystick_tab.btn_remove_hardware.isEnabled() is False:
-            self._joystick_tab.btn_remove_hardware.setEnabled(True)
+        if self._tab_widget.btn_remove_hardware.isEnabled() is False:
+            self._tab_widget.btn_remove_hardware.setEnabled(True)
         else:
             pass
 

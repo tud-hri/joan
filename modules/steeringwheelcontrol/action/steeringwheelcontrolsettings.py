@@ -12,7 +12,7 @@ class SteeringWheelControlSettings(JoanModuleSettings):
         self.pd_controllers = []
         self.fdca_controllers = []
 
-    def set_from_loaded_dict(self, loaded_dict):
+    def load_from_dict(self, loaded_dict):
         """
         This method overrides the base implementation of loading settings from dicts. This is done because hardware manager has the unique property that
         multiple custom settings classes are combined in a list. This behavior is not supported by the normal joan module settings, so it an specific solution

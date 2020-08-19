@@ -12,7 +12,7 @@ class SettingsOverviewDialog(QtWidgets.QDialog):
             try:
                 self._create_tree_item(self.treeWidget, module_key, settings_object.as_dict())
             except AttributeError:
-                # This means the settings object is a dict, which is old style  TODO remove this try/except when fully converted to new style
+                # This means the settings object is a dict, which is old style  TODO remove_input_device this try/except when fully converted to new style
                 self._create_tree_item(self.treeWidget, module_key, settings_object)
 
         self.show()

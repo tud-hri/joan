@@ -182,7 +182,7 @@ class CarlaInterfaceAction(JoanModuleAction):
             self.stop()
 
     def load_settings(self, settings_file_to_load):
-        # remove all current agents  first
+        # remove_input_device all current agents  first
         while self.vehicles:
             self.vehicles[-1].remove_ego_agent()
 

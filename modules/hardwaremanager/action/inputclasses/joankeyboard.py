@@ -144,20 +144,16 @@ class JOANKeyboard(BaseInput):
     Main class for the Keyboard input, inherits from BaseInput (as it should!)
     """
 
-    def __init__(self, hardware_manager_action, keyboard_tab, settings: KeyBoardSettings):
+    def __init__(self, hardware_manager_action, settings: KeyBoardSettings, name=''):
         """
         Initializes the class
         :param hardware_manager_action:
         :param keyboard_tab:
         :param settings:
         """
-        super().__init__(hardware_manager_action)
-        self._keyboard_tab = keyboard_tab
-        self.hardware_manager_action = hardware_manager_action
+        super().__init__(hardware_manager_action, name=name)
         self.settings = settings
         self.settings_dialog = None
-
-        self.module_action = hardware_manager_action
 
         # Initialize needed variables:
         self._throttle = False
@@ -167,40 +163,36 @@ class JOANKeyboard(BaseInput):
         self._handbrake = False
         self._reverse = False
 
-        # Connect the settings button to the settings window
-        self._keyboard_tab.btn_settings.clicked.connect(self._open_settings_dialog)
-        self._keyboard_tab.btn_settings.clicked.connect(self._open_settings_from_button)
-        self._keyboard_tab.btn_remove_hardware.clicked.connect(self.remove_func)
-        self._keyboard_tab.btn_visualization.setEnabled(False)
-
         keyboard.hook(self.key_event, False)
         self._open_settings_dialog()
 
-    def initialize(self):
-        """
-        Function is called when initialize is pressed, can be altered for more functionality
-        :return:
-        """
-        print('initializing keyboard')
+    def connect_widget(self, widget):
+        self._tab_widget = widget
+
+        # Connect the settings button to the settings window
+        self._tab_widget.btn_settings.clicked.connect(self._open_settings_dialog)
+        self._tab_widget.btn_settings.clicked.connect(self._open_settings_from_button)
+        self._tab_widget.btn_remove_hardware.clicked.connect(self.remove_func)
+        self._tab_widget.btn_visualization.setEnabled(False)
 
     def disable_remove_button(self):
         """
-        Disables the remove keybaord button (useful for example when you dont want to be able to remove an input when the
+        Disables the remove_input_device keybaord button (useful for example when you dont want to be able to remove_input_device an input when the
         simulator is running)
                 :return:
         """
-        if self._keyboard_tab.btn_remove_hardware.isEnabled() is True:
-            self._keyboard_tab.btn_remove_hardware.setEnabled(False)
+        if self._tab_widget.btn_remove_hardware.isEnabled() is True:
+            self._tab_widget.btn_remove_hardware.setEnabled(False)
         else:
             pass
 
     def enable_remove_button(self):
         """
-        Enables the remove keyboard button
+        Enables the remove_input_device keyboard button
         :return:
         """
-        if self._keyboard_tab.btn_remove_hardware.isEnabled() is False:
-            self._keyboard_tab.btn_remove_hardware.setEnabled(True)
+        if self._tab_widget.btn_remove_hardware.isEnabled() is False:
+            self._tab_widget.btn_remove_hardware.setEnabled(True)
         else:
             pass
 
@@ -211,8 +203,7 @@ class JOANKeyboard(BaseInput):
         actually disappear from the module.
         :return:
         """
-        self.remove_tab(self._keyboard_tab)
-        self.module_action.settings.key_boards.remove(self.settings)
+        self.module_action.remove_input_device(self.name)
 
     def _open_settings_from_button(self):
         """

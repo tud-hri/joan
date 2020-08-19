@@ -124,7 +124,7 @@ class SteeringWheelControlAction(JoanModuleAction):
         :param settings_file_to_load:
         :return:
         """
-        # remove all current controllers first:
+        # remove_input_device all current controllers first:
         for controller in self._controllers.copy():
             self.remove_controller(self._controllers[controller])
 
@@ -163,19 +163,19 @@ class SteeringWheelControlAction(JoanModuleAction):
         return self._controllers[controller_list_key].get_controller_tab
 
     def remove_controller(self, controller):
-        # remove controller from the news
+        # remove_input_device controller from the news
         try:
             del self.data[controller.get_controller_list_key]
         except KeyError:  # data is only present if the hardware manager ran since the hardware was added
             pass
-        # remove controller settings
+        # remove_input_device controller settings
         try:
-            self.settings.pd_controllers.remove(self._controllers[controller.get_controller_list_key].settings)
+            self.settings.pd_controllers.remove_input_device(self._controllers[controller.get_controller_list_key].settings)
         except ValueError:  # depends if right controller list is present
             pass
 
         try:
-            self.settings.fdca_controllers.remove(self._controllers[controller.get_controller_list_key].settings)
+            self.settings.fdca_controllers.remove_input_device(self._controllers[controller.get_controller_list_key].settings)
         except ValueError:  # depends if right controller list is present
             pass
 

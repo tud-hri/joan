@@ -37,7 +37,7 @@ class JoanHQAction(QtCore.QObject):
         for _, module in self._instantiated_modules.items():
             try:
                 module.action.initialize()
-            except AttributeError:  # module has new style TODO: remove statement above when moving to new style
+            except AttributeError:  # module has new style TODO: remove_input_device statement above when moving to new style
                 module.initialize()
 
     def start_all(self):
@@ -47,7 +47,7 @@ class JoanHQAction(QtCore.QObject):
         for _, module in self._instantiated_modules.items():
             try:
                 module.action.start()
-            except AttributeError:  # module has new style TODO: remove statement above when moving to new style
+            except AttributeError:  # module has new style TODO: remove_input_device statement above when moving to new style
                 module.start()
 
     def stop_all(self):
@@ -57,7 +57,7 @@ class JoanHQAction(QtCore.QObject):
         for _, module in self._instantiated_modules.items():
             try:
                 module.action.stop()
-            except AttributeError:  # module has new style TODO: remove statement above when moving to new style
+            except AttributeError:  # module has new style TODO: remove_input_device statement above when moving to new style
                 module.stop()
 
     def add_module(self, module: JOANModules, name='', parent=None, millis=100):

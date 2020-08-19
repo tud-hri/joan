@@ -80,7 +80,7 @@ class JOANSensoDrive(BaseInput):
     Main class for the SensoDrive input, inherits from BaseInput (as it should!)
     """
 
-    def __init__(self, hardware_manager_action, sensodrive_tab, nr_of_sensodrives, settings: SensoDriveSettings):
+    def __init__(self, hardware_manager_action, nr_of_sensodrives, settings: SensoDriveSettings, name=''):
         """
         Initializes the class, also uses some more parameters to keep track of how many sensodrives are connected
         :param hardware_manager_action:
@@ -88,7 +88,7 @@ class JOANSensoDrive(BaseInput):
         :param nr_of_sensodrives:
         :param settings:
         """
-        super().__init__(hardware_manager_action)
+        super().__init__(hardware_manager_action, name=name)
         # torque safety variables
         self.counter = 0
         self.old_requested_torque = 0
@@ -97,11 +97,8 @@ class JOANSensoDrive(BaseInput):
         self.torque_rate = 0
 
         self.currentInput = 'SensoDrive'
-        self._sensodrive_tab = sensodrive_tab
         self.settings = settings
         self.sensodrive_running = False
-
-        self.module_action = hardware_manager_action
 
         # Create PCAN object
         self.PCAN_object = PCANBasic()
@@ -115,16 +112,6 @@ class JOANSensoDrive(BaseInput):
             self._pcan_channel = PCAN_USBBUS1
         elif nr_of_sensodrives == 1:
             self._pcan_channel = PCAN_USBBUS2
-
-        #  hook up buttons
-        self._sensodrive_tab.btn_settings.clicked.connect(self._open_settings_dialog)
-        self._sensodrive_tab.btn_settings.clicked.connect(self._open_settings_from_button)
-        self._sensodrive_tab.btn_visualization.setEnabled(False)
-        self._sensodrive_tab.btn_remove_hardware.clicked.connect(self.remove_func)
-        self._sensodrive_tab.btn_on_off.clicked.connect(self.on_off)
-        self._sensodrive_tab.btn_on_off.setStyleSheet("background-color: orange")
-        self._sensodrive_tab.btn_on_off.setText('Off')
-        self._sensodrive_tab.btn_on_off.setEnabled(True)
 
         # Initialize message structures
         self.steering_wheel_message = TPCANMsg()
@@ -153,6 +140,19 @@ class JOANSensoDrive(BaseInput):
         self.steering_wheel_parameters['friction'] = self.settings.friction
         self.steering_wheel_parameters['damping'] = self.settings.damping
         self.steering_wheel_parameters['spring_stiffness'] = self.settings.spring_stiffness
+
+    def connect_widget(self, widget):
+        self._tab_widget = widget
+
+        #  hook up buttons
+        self._tab_widget.btn_settings.clicked.connect(self._open_settings_dialog)
+        self._tab_widget.btn_settings.clicked.connect(self._open_settings_from_button)
+        self._tab_widget.btn_visualization.setEnabled(False)
+        self._tab_widget.btn_remove_hardware.clicked.connect(self.remove_func)
+        self._tab_widget.btn_on_off.clicked.connect(self.on_off)
+        self._tab_widget.btn_on_off.setStyleSheet("background-color: orange")
+        self._tab_widget.btn_on_off.setText('Off')
+        self._tab_widget.btn_on_off.setEnabled(True)
 
     def update_settings(self):
         """
@@ -303,27 +303,27 @@ class JOANSensoDrive(BaseInput):
             self.PCAN_object.Uninitialize(self._pcan_channel)
         except:
             pass
-        self.module_action.settings.sensodrives.remove(self.settings)
-        self.remove_tab(self._sensodrive_tab)
+        self.module_action.settings.sensodrives.remove_input_device(self.settings)
+        self.remove_tab(self._tab_widget)
 
     def disable_remove_button(self):
         """
-        Disables the sensodrive Remove button, (useful for example when you dont want to be able to remove an input when the
+        Disables the sensodrive Remove button, (useful for example when you dont want to be able to remove_input_device an input when the
         simulator is running)
         :return:
         """
-        if self._sensodrive_tab.btn_remove_hardware.isEnabled() is True:
-            self._sensodrive_tab.btn_remove_hardware.setEnabled(False)
+        if self._tab_widget.btn_remove_hardware.isEnabled() is True:
+            self._tab_widget.btn_remove_hardware.setEnabled(False)
         else:
             pass
 
     def enable_remove_button(self):
         """
-        Enables the sensodrive remove button.
+        Enables the sensodrive remove_input_device button.
         :return:
         """
-        if self._sensodrive_tab.btn_remove_hardware.isEnabled() is False:
-            self._sensodrive_tab.btn_remove_hardware.setEnabled(True)
+        if self._tab_widget.btn_remove_hardware.isEnabled() is False:
+            self._tab_widget.btn_remove_hardware.setEnabled(True)
         else:
             pass
 
@@ -334,7 +334,7 @@ class JOANSensoDrive(BaseInput):
         :return:
         """
         if self._pcan_error:
-            answer = QtWidgets.QMessageBox.warning(self._sensodrive_tab, 'Warning',
+            answer = QtWidgets.QMessageBox.warning(self._tab_widget, 'Warning',
                                                    "The PCAN connection was not initialized properly, please reopen settings menu to try and reinitialize.",
                                                    buttons=QtWidgets.QMessageBox.Ok)
             if answer == QtWidgets.QMessageBox.Ok:
@@ -365,8 +365,8 @@ class JOANSensoDrive(BaseInput):
 
         message.DATA[0] = 0x14
         self.PCAN_object.Write(self._pcan_channel, message)
-        self._sensodrive_tab.btn_on_off.setStyleSheet("background-color: lightgreen")
-        self._sensodrive_tab.btn_on_off.setText('On')
+        self._tab_widget.btn_on_off.setStyleSheet("background-color: lightgreen")
+        self._tab_widget.btn_on_off.setText('On')
 
     def on_to_off(self, message):
         """
@@ -380,8 +380,8 @@ class JOANSensoDrive(BaseInput):
         message.DATA[0] = 0x10
         self.PCAN_object.Write(self._pcan_channel, message)
         time.sleep(0.02)
-        self._sensodrive_tab.btn_on_off.setStyleSheet("background-color: orange")
-        self._sensodrive_tab.btn_on_off.setText('Off')
+        self._tab_widget.btn_on_off.setStyleSheet("background-color: orange")
+        self._tab_widget.btn_on_off.setText('Off')
 
     def clear_error(self, message):
         """
@@ -392,8 +392,8 @@ class JOANSensoDrive(BaseInput):
         message.DATA[0] = 0x1F
         self.PCAN_object.Write(self._pcan_channel, message)
         time.sleep(0.02)
-        self._sensodrive_tab.btn_on_off.setStyleSheet("background-color: orange")
-        self._sensodrive_tab.btn_on_off.setText('Off')
+        self._tab_widget.btn_on_off.setStyleSheet("background-color: orange")
+        self._tab_widget.btn_on_off.setText('Off')
 
     def process(self):
         """
@@ -412,8 +412,8 @@ class JOANSensoDrive(BaseInput):
         self._data['Handbrake'] = 0
 
         # check whether we have a sw_controller that should be updated
-        self._steering_wheel_control_data = self._action.read_news(JOANModules.STEERING_WHEEL_CONTROL)
-        self._carla_interface_data = self._action.read_news(JOANModules.CARLA_INTERFACE)
+        self._steering_wheel_control_data = self.module_action.read_news(JOANModules.STEERING_WHEEL_CONTROL)
+        self._carla_interface_data = self.module_action.read_news(JOANModules.CARLA_INTERFACE)
 
         try:
             requested_torque_by_controller = self._steering_wheel_control_data[
@@ -500,8 +500,8 @@ class JOANSensoDrive(BaseInput):
                 self._data['BrakeInput'] = (int.from_bytes(received3[1].DATA[4:6], byteorder='little') - 1) / 500 * 100
 
         if (self._current_state_hex == 0x18):
-            self._sensodrive_tab.btn_on_off.setStyleSheet("background-color: red")
-            self._sensodrive_tab.btn_on_off.setText('Clear Error')
+            self._tab_widget.btn_on_off.setStyleSheet("background-color: red")
+            self._tab_widget.btn_on_off.setText('Clear Error')
 
         # writing the spring stiffness in news because we need this parameter in the 'steeringwheelcontrol' module :)
         self._data['spring_stiffness'] = self.steering_wheel_parameters['spring_stiffness']

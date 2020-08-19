@@ -7,25 +7,26 @@ class BaseInput:
     this class.
     """
 
-    def __init__(self, hardware_manager_action):
+    def __init__(self, hardware_manager_action, name=''):
         """
         Initializes the class
         :param hardware_manager_action: Uses the action class of the module so we can read the news.
         """
-        self._carla_interface_data = hardware_manager_action.read_news(JOANModules.CARLA_INTERFACE)
-        self._action = hardware_manager_action
+        self.name = name
+        self.module_action = hardware_manager_action
+        self._carla_interface_data = self.module_action.read_news(JOANModules.CARLA_INTERFACE)
         self._data = {'SteeringInput': 0, 'ThrottleInput': 0, 'BrakeInput': 0, 'Reverse': False, 'Handbrake': False}
         self.currentInput = 'None'
+        self._tab_widget = None
 
-    def remove_tab(self, tab):
-        """
-        This function removes the widget from the module. NOTE: this function can be overwritten in new inputclasses but
-        this is not recommended.
-        :param tab: the Widget
-        :return: -
-        """
-        self._action.remove(tab.groupBox.title())
-        tab.setParent(None)
+    def initialize(self):
+        """initialize, can be overwritten"""
+        pass
+
+    def remove_tab(self):
+        """Remove the connected tab widget (and tab widget only)"""
+        if self._tab_widget is not None:
+            self._tab_widget.setParent(None)
 
     def process(self):
         """

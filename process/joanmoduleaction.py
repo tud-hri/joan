@@ -120,6 +120,8 @@ class JoanModuleAction(QtCore.QObject):
     def get_available_news_channels(self):
         return self.singleton_news.all_news_keys
 
+
+
     def share_settings(self, module_settings):
         """
         Shares the settings of this module with all other modules through the settings singleton.
