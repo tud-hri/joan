@@ -249,7 +249,7 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
             self.value_preview_check_boxes.append(check_box)
 
 
-class JOAN_Joystick(BaseInput):
+class JOANJoystick(BaseInput):
     """
     Main class for the Joystick input, inherits from BaseInput (as it should!)
     """

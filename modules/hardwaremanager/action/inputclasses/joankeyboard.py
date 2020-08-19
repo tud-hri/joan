@@ -139,7 +139,7 @@ class KeyBoardSettingsDialog(QtWidgets.QDialog):
                 self.btn_set_keys.setEnabled(True)
 
 
-class JOAN_Keyboard(BaseInput):
+class JOANKeyboard(BaseInput):
     """
     Main class for the Keyboard input, inherits from BaseInput (as it should!)
     """

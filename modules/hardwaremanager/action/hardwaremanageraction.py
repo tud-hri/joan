@@ -4,9 +4,9 @@ import keyboard
 
 from modules.hardwaremanager.action.hardwaremanagersettings import KeyBoardSettings, JoyStickSettings, \
     SensoDriveSettings, HardwareManagerSettings
-from modules.hardwaremanager.action.inputclasses.JOAN_joystick import JOAN_Joystick
-from modules.hardwaremanager.action.inputclasses.JOAN_keyboard import JOAN_Keyboard
-from modules.hardwaremanager.action.inputclasses.JOAN_sensodrive import JOAN_SensoDrive
+from modules.hardwaremanager.action.inputclasses.joanjoystick import JOANJoystick
+from modules.hardwaremanager.action.inputclasses.joankeyboard import JOANKeyboard
+from modules.hardwaremanager.action.inputclasses.joansensodrive import JOANSensoDrive
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
 from process.statesenum import State
@@ -156,7 +156,7 @@ class HardwareManagerAction(JoanModuleAction):
 
         number_of_keyboards = sum([bool("Keyboard" in k) for k in self.input_devices_classes.keys()])
         device_title = "Keyboard %s" % (number_of_keyboards + 1)
-        self.input_devices_classes.update([(device_title, JOAN_Keyboard(self, widget, keyboard_settings))])
+        self.input_devices_classes.update([(device_title, JOANKeyboard(self, widget, keyboard_settings))])
         if is_a_new_keyboard:
             self.settings.key_boards.append(keyboard_settings)
 
@@ -176,7 +176,7 @@ class HardwareManagerAction(JoanModuleAction):
         number_of_joysticks = sum([bool("Joystick" in k) for k in self.input_devices_classes.keys()])
         device_title = "Joystick %s" % (number_of_joysticks + 1)
 
-        self.input_devices_classes.update([(device_title, JOAN_Joystick(self, widget, joystick_settings))])
+        self.input_devices_classes.update([(device_title, JOANJoystick(self, widget, joystick_settings))])
         if is_a_new_joystick:
             self.settings.joy_sticks.append(joystick_settings)
         return device_title
@@ -198,7 +198,7 @@ class HardwareManagerAction(JoanModuleAction):
         if number_of_sensodrives < 2:
             device_title = "SensoDrive %s" % (number_of_sensodrives + 1)
 
-            self.input_devices_classes.update([(device_title, JOAN_SensoDrive(self, widget, number_of_sensodrives, sensodrive_settings))])
+            self.input_devices_classes.update([(device_title, JOANSensoDrive(self, widget, number_of_sensodrives, sensodrive_settings))])
             if is_a_new_sensodrive:
                 self.settings.sensodrives.append(sensodrive_settings)
             return device_title

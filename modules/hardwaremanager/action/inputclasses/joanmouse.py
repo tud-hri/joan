@@ -1,7 +1,7 @@
 from modules.hardwaremanager.action.inputclasses.baseinput import BaseInput
 
 
-class JOAN_Mouse(BaseInput):  # DEPRECATED FOR NOW  TODO: remove from interface for now
+class JOANMouse(BaseInput):  # DEPRECATED FOR NOW  TODO: remove from interface for now
     """
        Main class for the Mouseinput, inherits from BaseInput (as it should!)
        NOTE: This class is currently not used!!

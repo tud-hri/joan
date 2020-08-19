@@ -74,7 +74,7 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
         self._display_values(SensoDriveSettings())
 
 
-class JOAN_SensoDrive(BaseInput):
+class JOANSensoDrive(BaseInput):
     """
     Main class for the SensoDrive input, inherits from BaseInput (as it should!)
     """
