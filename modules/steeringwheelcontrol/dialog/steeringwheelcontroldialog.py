@@ -34,6 +34,8 @@ class SteeringWheelControlDialog(JoanModuleDialog):
         hardware (only possible in ready or idle states
 
         """
+        super().handle_state_change()
+
         current_state = self.module_action.state_machine.current_state
         if current_state == State.READY or current_state == State.IDLE:
             self.module_widget.btn_add_sw_controller.setEnabled(True)

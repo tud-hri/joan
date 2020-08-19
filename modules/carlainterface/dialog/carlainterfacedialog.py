@@ -29,7 +29,6 @@ class CarlaInterfaceDialog(JoanModuleDialog):
 
         self.module_widget.btn_add_ego_agent.clicked.connect(self.add_ego_agent)
         self.module_widget.btn_add_traffic_agent.clicked.connect(self.add_traffic_agent)
-        self.module_action.state_machine.add_state_change_listener(self._state_change_listener)
         self.module_widget.btn_spawn_all.clicked.connect(self._spawn_all)
         self.module_widget.btn_destroy_all.clicked.connect(self._destroy_all)
         self.module_widget.btn_remove_all.clicked.connect(self._remove_all)
@@ -43,10 +42,12 @@ class CarlaInterfaceDialog(JoanModuleDialog):
         self.module_widget.btn_destroy_all.setEnabled(False)
         self.module_widget.btn_remove_all.setEnabled(False)
 
-    def _state_change_listener(self):
+    def handle_state_change(self):
         """"
         This function handles the enabling and disabling of the carla interface change
         """
+        super().handle_state_change()
+
         self.connected = self.module_action.check_connection()
         # link the spawning of vehicles to connected state
         # make sure you can only disconnect in the ready state

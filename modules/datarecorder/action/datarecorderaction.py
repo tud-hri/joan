@@ -148,7 +148,7 @@ class DataRecorderAction(JoanModuleAction):
 
     def load_settings(self, settings_file_to_load):
         self._load_settings_from_file(settings_file_to_load)
-        self.module_action.state_machine.request_state_change(State.READY)
+        self.state_machine.request_state_change(State.READY)
 
     def get_filename(self):
         return self.filename

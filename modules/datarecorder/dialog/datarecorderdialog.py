@@ -83,7 +83,6 @@ class DataRecorderDialog(JoanModuleDialog):
         """
         super().__init__(module=JOANModules.DATA_RECORDER, module_action=module_action, parent=parent)
 
-        self.module_action.state_machine.add_state_change_listener(self._handle_module_specific_state)
         self.module_action.state_machine.set_entry_action(State.READY, self.create_tree_widget)
 
         # set current data file name
@@ -95,19 +94,6 @@ class DataRecorderDialog(JoanModuleDialog):
 
         # get news items
         self.news = News()
-
-        # Settings
-        self.settings_menu = QtWidgets.QMenu('Settings')
-        self.load_settings = QtWidgets.QAction('Load DataRecorder Settings')
-        self.load_settings.triggered.connect(self._load_settings)
-        self.settings_menu.addAction(self.load_settings)
-        self.save_settings = QtWidgets.QAction('Save DataRecorder Settings')
-        self.save_settings.triggered.connect(self._save_settings)
-        self.settings_menu.addAction(self.save_settings)
-        self.menu_bar.addMenu(self.settings_menu)
-        # load/save file
-        self.load_settings.setEnabled(True)
-        self.save_settings.setEnabled(False)
 
         # set trajectory buttons functionality
         self.module_widget.btn_save.setEnabled(False)
@@ -265,11 +251,13 @@ class DataRecorderDialog(JoanModuleDialog):
         self.module_widget.check_trajectory.setEnabled(False)
         self.module_widget.check_trajectory.setChecked(False)
 
-    def _handle_module_specific_state(self):
+    def handle_state_change(self):
         """
         Handle the state transition by updating the status label and have the
         GUI reflect the possibilities of the current state.
         """
+        super().handle_state_change()
+
         try:
             current_state = self.module_action.state_machine.current_state
 

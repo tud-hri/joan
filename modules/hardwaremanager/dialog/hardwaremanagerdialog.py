@@ -23,7 +23,7 @@ class HardwareManagerDialog(JoanModuleDialog):
 
         # initialize dicts
         self._input_data = {}
-        self._inputlist = {}
+        self._input_list = {}
         self.hardware_widgets = {}
 
         # setup dialogs
@@ -31,29 +31,19 @@ class HardwareManagerDialog(JoanModuleDialog):
             os.path.join(os.path.dirname(os.path.realpath(__file__)), "../action/ui/inputtype.ui"))
         self._input_type_dialog.btns_hardware_inputtype.accepted.connect(self._add_selected_input)
 
-        # Settings
-        self.settings_menu = QtWidgets.QMenu('Settings')
-        self.load_settings = QtWidgets.QAction('Load Settings')
-        self.load_settings.triggered.connect(self._load_settings)
-        self.settings_menu.addAction(self.load_settings)
-        self.save_settings = QtWidgets.QAction('Save Settings')
-        self.save_settings.triggered.connect(self._save_settings)
-        self.settings_menu.addAction(self.save_settings)
-        self.menu_bar.addMenu(self.settings_menu)
         self.initialize_widgets_from_settings()
-
-        # add state change listener
-        self.module_action.state_machine.add_state_change_listener(self._state_change_listener)
 
         # connect buttons
         self.module_widget.btn_add_hardware.clicked.connect(self._input_type_dialog.show)
 
-    def _state_change_listener(self):
+    def handle_state_change(self):
         """
         This function is called upon whenever the change of the module changes it checks whether its allowed to add
         hardware (only possible in ready or idle states
 
         """
+        super().handle_state_change()
+
         current_state = self.module_action.state_machine.current_state
         if current_state == State.READY or current_state == State.IDLE:
             self.module_widget.btn_add_hardware.setEnabled(True)
