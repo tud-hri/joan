@@ -1,9 +1,12 @@
+import os
+
+from PyQt5 import QtWidgets
+
 from .newexperimentdialog_ui import Ui_Dialog
-from PyQt5 import QtWidgets, QtGui, QtCore
 
 
 class NewExperimentDialog(QtWidgets.QDialog):
-    def __init__(self, all_modules_in_settings, parent=None):
+    def __init__(self, all_modules_in_settings, parent=None, path=''):
         super().__init__(parent)
         self.checkboxes = {}
         self.ui = Ui_Dialog()
@@ -13,6 +16,7 @@ class NewExperimentDialog(QtWidgets.QDialog):
         self.ui.browsePushButton.clicked.connect(self._browse_file)
 
         self.file_path = ""
+        self.path = path
         self.modules_to_include = []
 
         self.show()
@@ -24,7 +28,9 @@ class NewExperimentDialog(QtWidgets.QDialog):
             self.ui.modulesGroupBox.layout().addWidget(checkbox)
 
     def _browse_file(self):
-        path_to_file, _ = QtWidgets.QFileDialog.getSaveFileName(self, "Save experiment to...", filter='JSON (*.json)')
+        path_to_file, _ = QtWidgets.QFileDialog.getSaveFileName(self, "Save experiment to...",
+                                                                os.path.join(self.path, 'experiments'),
+                                                                filter='*.json')
         if path_to_file:
             self.ui.fileLineEdit.setText(path_to_file)
 
@@ -39,4 +45,5 @@ class NewExperimentDialog(QtWidgets.QDialog):
         if self.file_path and self.modules_to_include:
             super().accept()
         else:
-            QtWidgets.QMessageBox.warning(self, "Warning", "Please select at least one module and supply a save path for your experiment.")
+            QtWidgets.QMessageBox.warning(self, "Warning",
+                                          "Please select at least one module and supply a save path for your experiment.")

@@ -12,6 +12,7 @@ class ExperimentManagerAction(JoanModuleAction):
 
         # create/get default experiment_settings
         self.my_file = os.path.join('.', 'default_experiment_settings.json')
+
         # First remove current file
         if os.path.exists(self.my_file):
             os.remove(self.my_file)
