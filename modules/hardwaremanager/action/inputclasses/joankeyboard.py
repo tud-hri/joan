@@ -5,7 +5,6 @@ from PyQt5 import QtWidgets, QtGui, uic
 
 from modules.hardwaremanager.action.hardwaremanagersettings import KeyBoardSettings
 from modules.hardwaremanager.action.inputclasses.baseinput import BaseInput
-from modules.joanmodules import JOANModules
 
 
 class KeyBoardSettingsDialog(QtWidgets.QDialog):
@@ -13,6 +12,7 @@ class KeyBoardSettingsDialog(QtWidgets.QDialog):
       Class for the settings Dialog of a keyboard, this class should pop up whenever it is asked by the user or when
       creating the joystick class for the first time. NOTE: it should not show whenever settings are loaded by .json file.
       """
+
     def __init__(self, keyboard_settings, parent=None):
         """
         Initializes the settings dialog with the appropriate keyboard settings
@@ -228,7 +228,6 @@ class JOANKeyboard(BaseInput):
         :return:
         """
         self.settings_dialog = KeyBoardSettingsDialog(self.settings)
-
 
     def key_event(self, key):
         """

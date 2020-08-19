@@ -6,6 +6,7 @@ class BaseInput:
     This class is the base class of any (new) input that is implemented. Any implemented input class should inherit from
     this class.
     """
+
     def __init__(self, hardware_manager_action):
         """
         Initializes the class

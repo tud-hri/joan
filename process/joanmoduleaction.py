@@ -63,6 +63,7 @@ class JoanModuleAction(QtCore.QObject):
         self.data = {}
         self.write_news(news=self.data)
 
+        # settings
         self.settings = None
 
         # (py)Qt signals for triggering specific module actions/functions

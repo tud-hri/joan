@@ -6,6 +6,7 @@ class JOANMouse(BaseInput):  # DEPRECATED FOR NOW  TODO: remove from interface f
        Main class for the Mouseinput, inherits from BaseInput (as it should!)
        NOTE: This class is currently not used!!
     """
+
     def __init__(self, hardware_manager_action, mouse_tab):
         """
         Initializes the class
@@ -29,4 +30,4 @@ class JOANMouse(BaseInput):  # DEPRECATED FOR NOW  TODO: remove from interface f
         self.remove_tab(self._mouse_tab)
 
     def process(self):
-            return self._data
+        return self._data
