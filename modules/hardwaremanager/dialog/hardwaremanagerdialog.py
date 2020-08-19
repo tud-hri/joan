@@ -2,11 +2,11 @@ import os
 
 from PyQt5 import uic, QtWidgets
 
+from modules.hardwaremanager.action.inputclasses.joansensodrive import JOANSensoDrive
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
 from process.joanmoduledialog import JoanModuleDialog
 from process.statesenum import State
-from modules.hardwaremanager.action.inputclasses.joansensodrive import JOANSensoDrive
 
 
 class HardwareManagerDialog(JoanModuleDialog):
@@ -14,6 +14,7 @@ class HardwareManagerDialog(JoanModuleDialog):
     This class is the actual dialog you see when you open up the module. Mostly this class serves as a
     connection between the user and the 'brains', which is the action module.
     """
+
     def __init__(self, module_action: JoanModuleAction, parent=None):
         """
         Initializes the class
@@ -49,19 +50,6 @@ class HardwareManagerDialog(JoanModuleDialog):
         else:
             self.module_widget.btn_add_hardware.setEnabled(False)
 
-    def _load_settings(self):
-        """
-        Loads settings from json file.
-        :return:
-        """
-        settings_file_to_load, _ = QtWidgets.QFileDialog.getOpenFileName(self, 'load settings',
-                                                                         os.path.join(self.module_action.module_path,
-                                                                                      'action'),
-                                                                         filter='*.json')
-        if settings_file_to_load:
-
-            self.module_action.load_settings_from_file(settings_file_to_load)
-
     def _add_selected_input(self):
         """
         Adds the selected input
@@ -74,18 +62,16 @@ class HardwareManagerDialog(JoanModuleDialog):
         input_type = self._input_type_dialog.combo_hardware_inputtype.currentText()
 
         if "Keyboard" in input_type:
-            success = self.module_action.add_a_keyboard()
+            self.module_action.add_a_keyboard()
         elif "Joystick" in input_type:
-            success = self.module_action.add_a_joystick()
+            self.module_action.add_a_joystick()
         elif "SensoDrive" in input_type:
-            success = self.module_action.add_a_sensodrive()
+            if not self.module_action.add_a_sensodrive():
+                # TODO find a more elegant solution that just goes into error state when trying to add more sensodrives than dongles
+                self.module_action.state_machine.request_state_change(State.ERROR,
+                                                                      'Currently only 2 sensodrives are supported')
 
         # self.module_action.input_devices_classes[device_title].settings_dialog.show()
-
-        # This is a temporary fix so that we cannot add another sensodrive which will make pcan crash because we only have one PCAN usb interface dongle
-        # TODO find a more elegant solution that just goes into error state when trying to add more sensodrives than dongles
-        if not success:
-            self.module_action.state_machine.request_state_change(State.ERROR, 'Currently only 2 sensodrives are supported')
 
     def add_device_tab(self, device):
         """add a tab widget for a new keyboard, """
@@ -97,6 +83,7 @@ class HardwareManagerDialog(JoanModuleDialog):
                 os.path.join(os.path.dirname(os.path.realpath(__file__)), "../action/ui/hardware_tab_sensodrive.ui"))
 
         new_widget.groupBox.setTitle(device.name)
-
         self.module_widget.hardware_list_layout.addWidget(new_widget)
+
+        # connect the widget to the device
         device.connect_widget(new_widget)

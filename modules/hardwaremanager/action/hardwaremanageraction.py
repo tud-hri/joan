@@ -17,6 +17,7 @@ class HardwareManagerAction(JoanModuleAction):
     HardwareManagerAction is the 'brains' of the module and does most of the calculations and data handling regarding the hardware. Inherits
     from JoanModuleAction.
     """
+
     def __init__(self, millis=5):
         """
         Initializes the class
@@ -32,7 +33,7 @@ class HardwareManagerAction(JoanModuleAction):
         self.carla_interface_data = self.read_news(JOANModules.CARLA_INTERFACE)
         self.settings = HardwareManagerSettings(module_enum=JOANModules.HARDWARE_MANAGER)
         self.settings.before_load_settings.connect(self.prepare_load_settings)
-        self.settings.load_settings_done.connect(self.apply_settings)
+        self.settings.load_settings_done.connect(self.apply_loaded_settings)
 
         # load existing settings
         default_settings_file_location = os.path.join(os.path.dirname(os.path.realpath(__file__)),
@@ -102,7 +103,7 @@ class HardwareManagerAction(JoanModuleAction):
         :return:
         """
         self.carla_interface_data = self.read_news(JOANModules.CARLA_INTERFACE)
-        #make sure you can only turn on the motor of the wheel if carla is connected
+        # make sure you can only turn on the motor of the wheel if carla is connected
         for inputs in self.input_devices_classes:
             if 'SensoDrive' in inputs:
                 self.input_devices_classes[inputs]._toggle_on_off(self.carla_interface_data['connected'])
@@ -135,15 +136,19 @@ class HardwareManagerAction(JoanModuleAction):
         return super().stop()
 
     def load_settings_from_file(self, settings_file_path):
-        self.settings.load_from_file(settings_file_path)
-        self.share_settings(self.settings)
+
+        self.state_machine.request_state_change(State.IDLE)
+
+        if self.state_machine.current_state == State.IDLE:
+            self.settings.load_from_file(settings_file_path)
+            self.share_settings(self.settings)
 
     def prepare_load_settings(self):
         # remove_input_device any existing input devices
         for key in list(self.input_devices_classes.keys()):
             self.remove_input_device(key)
 
-    def apply_settings(self):
+    def apply_loaded_settings(self):
         for keyboard_settings in self.settings.key_boards:
             self.add_a_keyboard(keyboard_settings=keyboard_settings)
 

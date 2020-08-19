@@ -131,7 +131,7 @@ class JoanModuleAction(QtCore.QObject):
         """Override this function if you need to prepare your module before the new settings are loaded"""
         pass
 
-    def apply_settings(self):
+    def apply_loaded_settings(self):
         """Apply the new settings once these are loaded"""
         pass
 
