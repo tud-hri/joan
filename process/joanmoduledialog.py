@@ -81,7 +81,7 @@ class JoanModuleDialog(QtWidgets.QDialog):
         self.module_action.initialize()
 
     def _load_settings(self):
-        settings_file_to_load, _ = QtWidgets.QFileDialog.getOpenFileName(self, 'load settings',
+        settings_file_to_load, _ = QtWidgets.QFileDialog.getOpenFileName(self, 'Load settings',
                                                                          os.path.join(self.module_action.module_path,
                                                                                       'action'),
                                                                          filter='*.json')
@@ -100,6 +100,9 @@ class JoanModuleDialog(QtWidgets.QDialog):
                                                                    filter='*.json')
         if file_to_save_in:
             self.module_action.save_settings_to_file(file_to_save_in)
+
+    def _set_tick_interval_ms(self, text):
+        self.module_action.tick_interval_ms = int(text)
 
     def handle_state_change(self):
         """
