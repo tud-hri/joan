@@ -10,7 +10,6 @@ from modules.hardwaremanager.action.inputclasses.joansensodrive import JOANSenso
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
 from process.statesenum import State
-from process.status import Status
 
 
 class HardwareManagerAction(JoanModuleAction):
@@ -32,7 +31,8 @@ class HardwareManagerAction(JoanModuleAction):
 
         self.carla_interface_data = self.read_news(JOANModules.CARLA_INTERFACE)
         self.settings = HardwareManagerSettings(module_enum=JOANModules.HARDWARE_MANAGER)
-        self.settings.new_settings_loaded.connect(self.apply_settings)
+        self.settings.before_load_settings.connect(self.prepare_load_settings)
+        self.settings.load_settings_done.connect(self.apply_settings)
 
         # load existing settings
         default_settings_file_location = os.path.join(os.path.dirname(os.path.realpath(__file__)),
@@ -134,34 +134,24 @@ class HardwareManagerAction(JoanModuleAction):
             return False
         return super().stop()
 
-    def apply_settings(self):
+    def load_settings_from_file(self, settings_file_path):
+        self.settings.load_from_file(settings_file_path)
+        self.share_settings(self.settings)
 
+    def prepare_load_settings(self):
         # remove_input_device any existing input devices
         for key in list(self.input_devices_classes.keys()):
             self.remove_input_device(key)
 
+    def apply_settings(self):
         for keyboard_settings in self.settings.key_boards:
             self.add_a_keyboard(keyboard_settings=keyboard_settings)
 
-        # for joystick_settings in self.module_action.settings.joy_sticks:
-        #     new_widget = uic.loadUi(
-        #         os.path.join(os.path.dirname(os.path.realpath(__file__)), "../action/ui/hardware_tab.ui"))
-        #     device_title = self.module_action.add_a_joystick(new_widget, joystick_settings=joystick_settings)
-        #     new_widget.groupBox.setTitle(device_title)
-        #     self.module_widget.hardware_list_layout.addWidget(new_widget)
-        #
-        # for sensodrive_settings in self.module_action.settings.sensodrives:
-        #     new_widget = uic.loadUi(
-        #         os.path.join(os.path.dirname(os.path.realpath(__file__)), "../action/ui/hardware_tab_sensodrive.ui"))
-        #     device_title = self.module_action.add_a_sensodrive(new_widget, sensodrive_settings=sensodrive_settings)
-        #     new_widget.groupBox.setTitle(device_title)
-        #     self.module_widget.hardware_list_layout.addWidget(new_widget)
+        for joystick_settings in self.settings.joy_sticks:
+            self.add_a_joystick(joystick_settings=joystick_settings)
 
-    def load_settings(self, settings_file_to_load):
-
-        self._load_settings_from_file(settings_file_to_load)
-
-        self.initialize()
+        for sensodrive_settings in self.settings.sensodrives:
+            self.add_a_sensodrive(sensodrive_settings=sensodrive_settings)
 
     def add_a_keyboard(self, keyboard_settings=None):
         """
@@ -187,7 +177,7 @@ class HardwareManagerAction(JoanModuleAction):
         if is_a_new_keyboard:
             self.settings.key_boards.append(keyboard_settings)
 
-        return device_name
+        return True
 
     def add_a_joystick(self, joystick_settings=None):
         """
@@ -212,7 +202,7 @@ class HardwareManagerAction(JoanModuleAction):
         if is_a_new_joystick:
             self.settings.joy_sticks.append(joystick_settings)
 
-        return device_name
+        return True
 
     def add_a_sensodrive(self, sensodrive_settings=None):
         """
@@ -221,9 +211,10 @@ class HardwareManagerAction(JoanModuleAction):
         :param sensodrive_settings:
         :return:
         """
+        # This is a temporary fix so that we cannot add another sensodrive which will make pcan crash because we only have one PCAN usb interface dongle
+        number_of_sensodrives = sum([bool("SensoDrive" in k) for k in self.input_devices_classes.keys()])
+
         if number_of_sensodrives < 2:
-            # This is a temporary fix so that we cannot add another sensodrive which will make pcan crash because we only have one PCAN usb interface dongle
-            number_of_sensodrives = sum([bool("SensoDrive" in k) for k in self.input_devices_classes.keys()])
             device_name = "SensoDrive %s" % (number_of_sensodrives + 1)
 
             is_a_new_sensodrive = not sensodrive_settings
@@ -237,9 +228,9 @@ class HardwareManagerAction(JoanModuleAction):
             self.input_devices_classes.update({device_name: device})
             if is_a_new_sensodrive:
                 self.settings.sensodrives.append(sensodrive_settings)
-            return device_name
+            return True
         else:
-            return 'DO_NOT_ADD'
+            return False
 
     def remove_input_device(self, device_name):
         """
@@ -247,15 +238,11 @@ class HardwareManagerAction(JoanModuleAction):
         :param device_name: name of the input
         :return:
         """
-        print("removing "+device_name)
-
         if "Keyboard" in device_name:
             keyboard.unhook(self.input_devices_classes[device_name].key_event)
 
-        # remove from settings
-        print(self.settings.as_dict())
+        # remove device from settings object
         self.settings.remove_input_device(device_name)
-        print(self.settings.as_dict())
 
         # get rid of the device tab
         self.input_devices_classes[device_name].remove_tab()
@@ -263,6 +250,7 @@ class HardwareManagerAction(JoanModuleAction):
         # delete the input device object
         del self.input_devices_classes[device_name]
 
+        # remove device from data (news)
         try:
             del self.data[device_name]
         except KeyError:  # data is only present if the hardware manager ran since the hardware was added

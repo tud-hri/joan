@@ -20,7 +20,7 @@ class JOANMouse(BaseInput):  # DEPRECATED FOR NOW  TODO: remove_input_device fro
 
     def connect_widget(self, widget):
         self._tab_widget = widget
-        self._tab_widget.btn_remove_hardware.clicked.connect(self.remove_func)
+        self._tab_widget.btn_remove_hardware.clicked.connect(lambda: self.module_action.remove_input_device(self.name))
 
     def remove_func(self):
         """

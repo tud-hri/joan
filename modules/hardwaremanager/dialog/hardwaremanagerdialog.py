@@ -6,6 +6,7 @@ from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
 from process.joanmoduledialog import JoanModuleDialog
 from process.statesenum import State
+from modules.hardwaremanager.action.inputclasses.joansensodrive import JOANSensoDrive
 
 
 class HardwareManagerDialog(JoanModuleDialog):
@@ -30,8 +31,6 @@ class HardwareManagerDialog(JoanModuleDialog):
         self._input_type_dialog = uic.loadUi(
             os.path.join(os.path.dirname(os.path.realpath(__file__)), "../action/ui/inputtype.ui"))
         self._input_type_dialog.btns_hardware_inputtype.accepted.connect(self._add_selected_input)
-
-        self.initialize_widgets_from_settings()
 
         # connect buttons
         self.module_widget.btn_add_hardware.clicked.connect(self._input_type_dialog.show)
@@ -60,14 +59,8 @@ class HardwareManagerDialog(JoanModuleDialog):
                                                                                       'action'),
                                                                          filter='*.json')
         if settings_file_to_load:
-            self.module_action.settings.load_from_file(settings_file_to_load)
 
-            # # remove_input_device all current hardware elements first
-            # while self.module_widget.hardware_list_layout.count():
-            #     hardware_tab_widget = self.module_widget.hardware_list_layout.takeAt(0).widget()
-            #     hardware_tab_widget.setParent(None)
-
-            # self.initialize_widgets_from_settings()
+            self.module_action.load_settings_from_file(settings_file_to_load)
 
     def _add_selected_input(self):
         """
@@ -81,53 +74,29 @@ class HardwareManagerDialog(JoanModuleDialog):
         input_type = self._input_type_dialog.combo_hardware_inputtype.currentText()
 
         if "Keyboard" in input_type:
-            self.module_action.add_a_keyboard()
+            success = self.module_action.add_a_keyboard()
         elif "Joystick" in input_type:
-            self.module_action.add_a_joystick()
+            success = self.module_action.add_a_joystick()
         elif "SensoDrive" in input_type:
-            self.module_action.add_a_sensodrive()
+            success = self.module_action.add_a_sensodrive()
 
         # self.module_action.input_devices_classes[device_title].settings_dialog.show()
-        #
-        # ## This is a temporary fix so that we cannot add another sensodrive which will make pcan crash because we only have one PCAN usb interface dongle
-        # ## TODO find a more elegant solution that just goes into error state when trying to add more sensodrives than dongles
-        # if device_title != 'DO_NOT_ADD':
-        #     new_widget.groupBox.setTitle(device_title)
-        #     self.module_widget.hardware_list_layout.addWidget(new_widget)
-        # else:
-        #     self.module_action.state_machine.request_state_change(State.ERROR, 'Currently only 2 sensodrives are supported')
+
+        # This is a temporary fix so that we cannot add another sensodrive which will make pcan crash because we only have one PCAN usb interface dongle
+        # TODO find a more elegant solution that just goes into error state when trying to add more sensodrives than dongles
+        if not success:
+            self.module_action.state_machine.request_state_change(State.ERROR, 'Currently only 2 sensodrives are supported')
 
     def add_device_tab(self, device):
         """add a tab widget for a new keyboard, """
-        new_widget = uic.loadUi(
-            os.path.join(os.path.dirname(os.path.realpath(__file__)), "../action/ui/hardware_tab.ui"))
+        if not isinstance(device, JOANSensoDrive):
+            new_widget = uic.loadUi(
+                os.path.join(os.path.dirname(os.path.realpath(__file__)), "../action/ui/hardware_tab.ui"))
+        elif isinstance(device, JOANSensoDrive):
+            new_widget = uic.loadUi(
+                os.path.join(os.path.dirname(os.path.realpath(__file__)), "../action/ui/hardware_tab_sensodrive.ui"))
+
         new_widget.groupBox.setTitle(device.name)
 
         self.module_widget.hardware_list_layout.addWidget(new_widget)
         device.connect_widget(new_widget)
-
-    def initialize_widgets_from_settings(self):
-        """
-        Initializes the widgets from loaded settings.
-        :return:
-        """
-        # for keyboard_settings in self.module_action.settings.key_boards:
-        #     new_widget = uic.loadUi(
-        #         os.path.join(os.path.dirname(os.path.realpath(__file__)), "../action/ui/hardware_tab.ui"))
-        #     device_title = self.module_action.add_a_keyboard(new_widget, keyboard_settings=keyboard_settings)
-        #     new_widget.groupBox.setTitle(device_title)
-        #     self.module_widget.hardware_list_layout.addWidget(new_widget)
-
-        # for joystick_settings in self.module_action.settings.joy_sticks:
-        #     new_widget = uic.loadUi(
-        #         os.path.join(os.path.dirname(os.path.realpath(__file__)), "../action/ui/hardware_tab.ui"))
-        #     device_title = self.module_action.add_a_joystick(new_widget, joystick_settings=joystick_settings)
-        #     new_widget.groupBox.setTitle(device_title)
-        #     self.module_widget.hardware_list_layout.addWidget(new_widget)
-        #
-        # for sensodrive_settings in self.module_action.settings.sensodrives:
-        #     new_widget = uic.loadUi(
-        #         os.path.join(os.path.dirname(os.path.realpath(__file__)), "../action/ui/hardware_tab_sensodrive.ui"))
-        #     device_title = self.module_action.add_a_sensodrive(new_widget, sensodrive_settings=sensodrive_settings)
-        #     new_widget.groupBox.setTitle(device_title)
-        #     self.module_widget.hardware_list_layout.addWidget(new_widget)

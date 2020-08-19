@@ -286,7 +286,7 @@ class JOANJoystick(BaseInput):
         self._tab_widget.btn_settings.clicked.connect(self._open_settings_dialog)
         self._tab_widget.btn_settings.clicked.connect(self._open_settings_from_button)
         self._tab_widget.btn_visualization.setEnabled(False)
-        self._tab_widget.btn_remove_hardware.clicked.connect(self.remove_func)
+        self._tab_widget.btn_remove_hardware.clicked.connect(lambda: self.module_action.remove_input_device(self.name))
 
     def _open_settings_from_button(self):
         """
@@ -315,16 +315,6 @@ class JOANJoystick(BaseInput):
         except OSError:
             print('Connection to USB Joystick failed')  # TODO: move to messagebox
             self._joystick_open = False
-
-    def remove_func(self):
-        """
-        Removes the joystick from the widget and settings
-        NOTE: calls 'self.remove_tab' which is a function of the BaseInput class, if you do not do this the tab will not
-        actually disappear from the module.
-        :return:
-        """
-        self.remove_tab(self._tab_widget)
-        self.module_action.settings.joy_sticks.remove_input_device(self.settings)
 
     def disable_remove_button(self):
         """

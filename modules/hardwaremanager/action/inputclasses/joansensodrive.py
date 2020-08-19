@@ -148,7 +148,7 @@ class JOANSensoDrive(BaseInput):
         self._tab_widget.btn_settings.clicked.connect(self._open_settings_dialog)
         self._tab_widget.btn_settings.clicked.connect(self._open_settings_from_button)
         self._tab_widget.btn_visualization.setEnabled(False)
-        self._tab_widget.btn_remove_hardware.clicked.connect(self.remove_func)
+        self._tab_widget.btn_remove_hardware.clicked.connect(self.remove_device)
         self._tab_widget.btn_on_off.clicked.connect(self.on_off)
         self._tab_widget.btn_on_off.setStyleSheet("background-color: orange")
         self._tab_widget.btn_on_off.setText('Off')
@@ -292,7 +292,7 @@ class JOANSensoDrive(BaseInput):
         """
         pass
 
-    def remove_func(self):
+    def remove_device(self):
         """
         Removes the keyboard from the widget and settings
         NOTE: calls 'self.remove_tab' which is a function of the BaseInput class, if you do not do this the tab will not
@@ -303,8 +303,8 @@ class JOANSensoDrive(BaseInput):
             self.PCAN_object.Uninitialize(self._pcan_channel)
         except:
             pass
-        self.module_action.settings.sensodrives.remove_input_device(self.settings)
-        self.remove_tab(self._tab_widget)
+
+        self.module_action.remove_input_device(self.name)
 
     def disable_remove_button(self):
         """

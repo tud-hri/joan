@@ -24,7 +24,21 @@ class HardwareManagerSettings(JoanModuleSettings):
         :param loaded_dict: (dict) dictionary containing the settings to load
         :return: None
         """
+        # prepare the module for the new settings
+        self.before_load_settings.emit()
+
         module_settings_to_load = loaded_dict[str(self._module_enum)]
+
+        # clean up existing settings
+        while self.key_boards:
+            device = self.key_boards.pop()
+            del device
+        while self.joy_sticks:
+            device = self.joy_sticks.pop()
+            del device
+        while self.sensodrives:
+            device = self.sensodrives.pop()
+            del device
 
         self.key_boards = []
         for keyboard_settings_dict in module_settings_to_load['key_boards']:
@@ -45,13 +59,23 @@ class HardwareManagerSettings(JoanModuleSettings):
             self.sensodrives.append(sensodrive_settings)
 
         # done loading settings, emit signal
-        self.new_settings_loaded.emit()
+        self.load_settings_done.emit()
 
     def remove_input_device(self, name):
         if "Keyboard" in name:
-            for keyboard in self.key_boards:
-                if keyboard.name == name:
-                    self.key_boards.remove(keyboard)
+            for device in self.key_boards:
+                if device.name == name:
+                    self.key_boards.remove(device)
+
+        if "Joystick" in name:
+            for device in self.joy_sticks:
+                if device.name == name:
+                    self.joy_sticks.remove(device)
+
+        if "SensoDrive" in name:
+            for device in self.sensodrives:
+                if device.name == name:
+                    self.sensodrives.remove(device)
 
     @staticmethod
     def _copy_dict(source, destination):

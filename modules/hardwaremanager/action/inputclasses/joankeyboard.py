@@ -172,7 +172,7 @@ class JOANKeyboard(BaseInput):
         # Connect the settings button to the settings window
         self._tab_widget.btn_settings.clicked.connect(self._open_settings_dialog)
         self._tab_widget.btn_settings.clicked.connect(self._open_settings_from_button)
-        self._tab_widget.btn_remove_hardware.clicked.connect(self.remove_func)
+        self._tab_widget.btn_remove_hardware.clicked.connect(lambda: self.module_action.remove_input_device(self.name))
         self._tab_widget.btn_visualization.setEnabled(False)
 
     def disable_remove_button(self):
@@ -195,15 +195,6 @@ class JOANKeyboard(BaseInput):
             self._tab_widget.btn_remove_hardware.setEnabled(True)
         else:
             pass
-
-    def remove_func(self):
-        """
-        Removes the keyboard from the widget and settings
-        NOTE: calls 'self.remove_tab' which is a function of the BaseInput class, if you do not do this the tab will not
-        actually disappear from the module.
-        :return:
-        """
-        self.module_action.remove_input_device(self.name)
 
     def _open_settings_from_button(self):
         """

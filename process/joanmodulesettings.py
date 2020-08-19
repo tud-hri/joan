@@ -22,7 +22,8 @@ In JOANModuleSettings, we need to clearly distinguish between settings loaded fr
 class JoanModuleSettings(QtCore.QObject):
 
     # signal when new settings are loaded. Action and Dialog can connect to this signal to apply the new settings
-    new_settings_loaded = pyqtSignal()
+    before_load_settings = pyqtSignal()
+    load_settings_done = pyqtSignal()
 
     def __init__(self, module_enum: JOANModules):
         """
@@ -68,8 +69,9 @@ class JoanModuleSettings(QtCore.QObject):
         :return:
         """
         try:
+            self.before_load_settings.emit()
             self._copy_dict_to_class_dict(loaded_dict[str(self._module_enum)], self.__dict__)
-            self.new_settings_loaded.emit()  # to let others know new settings are available
+            self.load_settings_done.emit()  # to let others know new settings are available
         except KeyError:
             warning_message = "WARNING: loading settings for the " + str(self._module_enum) + \
                               " module from a dictionary failed. The loaded dictionary did not contain " + \
