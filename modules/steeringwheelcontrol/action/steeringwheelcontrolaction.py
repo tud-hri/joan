@@ -13,42 +13,29 @@ class SteeringWheelControlAction(JoanModuleAction):
     def __init__(self, millis=10):
         super().__init__(module=JOANModules.STEERING_WHEEL_CONTROL, millis=millis)
 
-        # initialize modulewide state handler
-        self.status = Status()
-
         self.settings = SteeringWheelControlSettings(module_enum=JOANModules.STEERING_WHEEL_CONTROL)
+        self.share_settings(self.settings)
+        self.load_default_settings() # probably problematic because module_dialog does not exist yet
 
         self._controllers = {}
 
-        self.state_machine.add_state_change_listener(self._state_change_listener)
-
         # Setup state machine transition conditions
+        self.state_machine.add_state_change_listener(self._state_change_listener)
         self.state_machine.set_transition_condition(State.READY, State.RUNNING, self._starting_condition)
         self.state_machine.set_transition_condition(State.RUNNING, State.READY, self._stopping_condition)
 
         # set up news
         self.data = {}
-
-        default_settings_file_location = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                                      'steeringwheel_control_settings.json')
-        if os.path.isfile(default_settings_file_location):
-            self.settings.load_from_file(default_settings_file_location)
-
-        self.share_settings(self.settings)
-
         self.write_news(news=self.data)
-
-        self.temporary = {}
-        self.share_settings(self.settings)
 
     def _state_change_listener(self):
         sim_data_in = self.read_news(JOANModules.CARLA_INTERFACE)
         hw_data_in = self.read_news(JOANModules.HARDWARE_MANAGER)
         for controller in self._controllers:
             if 'ego_agents' in sim_data_in:
-                if 'Car 1' in sim_data_in['ego_agents']:
+                if 'Vehicle 1' in sim_data_in['ego_agents']:
                     self.data[controller] = self._controllers[controller].calculate(
-                        sim_data_in['ego_agents']['Car 1']['vehicle_object'], hw_data_in)
+                        sim_data_in['ego_agents']['Vehicle 1']['vehicle_object'], hw_data_in)
                 else:
                     self.data[controller] = None
 
@@ -62,32 +49,19 @@ class SteeringWheelControlAction(JoanModuleAction):
 
         self.write_news(self.data)
 
-    def _starting_condition(self):
-        try:
-            return True, ''
-        except KeyError:
-            return False, 'Could not check whether carla is connected'
-
-    def _stopping_condition(self):
-        try:
-            return True
-        except KeyError:
-            return False, 'Could not check whether carla is connected'
-
     def do(self):
         """
         This function is called every controller tick of this module implement your main calculations here
         """
-
         sim_data_in = self.read_news(JOANModules.CARLA_INTERFACE)
         hw_data_in = self.read_news(JOANModules.HARDWARE_MANAGER)
 
         # FOR NOW WE ONLY TRY TO APPLY CONTROLLER ON 1 CAR CAUSE MULTIPLE IS TOTAL MAYHEM
         for controller in self._controllers:
             if 'ego_agents' in sim_data_in:
-                if 'Car 1' in sim_data_in['ego_agents']:
+                if 'Vehicle 1' in sim_data_in['ego_agents']:
                     self.data[controller] = self._controllers[controller].calculate(
-                        sim_data_in['ego_agents']['Car 1']['vehicle_object'], hw_data_in)
+                        sim_data_in['ego_agents']['Vehicle 1']['vehicle_object'], hw_data_in)
 
         # for controller in self._controllers:
         #     if sim_data_in['vehicles'] is not None:
@@ -110,13 +84,29 @@ class SteeringWheelControlAction(JoanModuleAction):
                         self._controllers[controllers].initialize()
                     self.state_machine.request_state_change(State.READY, 'You can now run the module')
                 else:
-                    self.state_machine.request_state_change(State.ERROR, 'No controllers to Initialize')
+                    self.state_machine.request_state_change(State.ERROR, 'No controllers to initialize')
             elif self.state_machine.current_state == State.ERROR:
                 self.state_machine.request_state_change(State.IDLE)
 
         except RuntimeError:
             return False
         return super().initialize()
+
+    def prepare_load_settings(self):
+        """
+        Prepare the module for new settings: remove all 'old' hardware from the list
+        :return:
+        """
+        # remove_input_device any existing input devices
+        for key in list(self.input_devices_classes.keys()):
+            self.remove_input_device(key)
+
+    def apply_loaded_settings(self):
+        """
+        Create hardware inputs based on the loaded settings
+        :return:
+        """
+
 
     def load_settings(self, settings_file_to_load):
         """
@@ -137,30 +127,26 @@ class SteeringWheelControlAction(JoanModuleAction):
         self.state_machine.request_state_change(State.IDLE, 'You can now add more and reinitialize controllers')
         # add appropriate settings
         if not controller_settings:
-            settings_for_controller = controller_type.settings
+            controller_settings = controller_type.settings
             if controller_type == SWControllerTypes.PD_SWCONTROLLER:
-                self.settings.pd_controllers.append(settings_for_controller)
+                self.settings.pd_controllers.append(controller_settings)
             if controller_type == SWControllerTypes.FDCA_SWCONTROLLER:
-                self.settings.fdca_controllers.append(settings_for_controller)
-        else:
-            settings_for_controller = controller_settings
+                self.settings.fdca_controllers.append(controller_settings)
 
         number_of_controllers = sum([bool(controller_type.__str__() in k) for k in self._controllers.keys()]) + 1
-        controller_list_key = controller_type.__str__() + ' ' + str(number_of_controllers)
-        self._controllers[controller_list_key] = controller_type.klass(self, controller_list_key,
-                                                                       settings_for_controller)
-        self._controllers[controller_list_key].get_controller_tab.controller_groupbox.setTitle(controller_list_key)
-
-        self._controllers[controller_list_key].update_trajectory_list()
+        controller_name = controller_type.__str__() + ' ' + str(number_of_controllers)
+        self._controllers[controller_name] = controller_type.klass(self, controller_name, controller_settings)
+        self._controllers[controller_name].get_controller_tab.controller_groupbox.setTitle(controller_name)
+        self._controllers[controller_name].update_trajectory_list()
 
         self._state_change_listener()
 
         if not controller_settings:
-            self._controllers[controller_list_key]._open_settings_dialog_from_button()
+            self._controllers[controller_name]._open_settings_dialog_from_button()
         else:
-            self._controllers[controller_list_key]._open_settings_dialog()
+            self._controllers[controller_name]._open_settings_dialog()
 
-        return self._controllers[controller_list_key].get_controller_tab
+        return self._controllers[controller_name].get_controller_tab
 
     def remove_controller(self, controller):
         # remove_input_device controller from the news

@@ -141,7 +141,7 @@ class CarlaInterfaceAction(JoanModuleAction):
 
     def _init_condition(self):
         try:
-            if self.connected is True:
+            if self.connected:
                 # TODO: move this example to the new enum
                 return True, ''
             else:

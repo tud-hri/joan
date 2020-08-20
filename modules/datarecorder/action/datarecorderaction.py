@@ -43,8 +43,7 @@ class DataRecorderAction(JoanModuleAction):
 
         # start settings for this module
         self.settings = DataRecorderSettings(JOANModules.DATA_RECORDER)
-        self.default_settings_file_location = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                                           'datarecordersettings.json')
+        self.default_settings_file_location = os.path.join(self.module_path, 'action', 'default_settings.json')
 
         if Path(self.default_settings_file_location).is_file():
             self._load_settings_from_file(self.default_settings_file_location)
@@ -61,7 +60,8 @@ class DataRecorderAction(JoanModuleAction):
         self.data_writer = DataWriter(news=self.get_all_news(),
                                       channels=self.get_available_news_channels(),
                                       settings=self.get_module_settings(JOANModules.DATA_RECORDER))
-        # TODO: run data_writer in separate thread
+
+        # TODO: run data_writer in separate process (multiprocess)
         # self.data_writer.start()
 
         # signals and slots
