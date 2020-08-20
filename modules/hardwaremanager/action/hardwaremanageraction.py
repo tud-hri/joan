@@ -137,11 +137,19 @@ class HardwareManagerAction(JoanModuleAction):
             self.share_settings(self.settings)
 
     def prepare_load_settings(self):
+        """
+        Prepare the module for new settings: remove all 'old' hardware from the list
+        :return:
+        """
         # remove_input_device any existing input devices
         for key in list(self.input_devices_classes.keys()):
             self.remove_input_device(key)
 
     def apply_loaded_settings(self):
+        """
+        Create hardware inputs based on the loaded settings
+        :return:
+        """
         for keyboard_settings in self.settings.key_boards:
             self.add_a_keyboard(keyboard_settings=keyboard_settings)
 
@@ -154,11 +162,9 @@ class HardwareManagerAction(JoanModuleAction):
     def add_a_keyboard(self, keyboard_settings=None):
         """
         Adds a keyboard input
-        :param widget:
-        :param keyboard_settings:
+        :param keyboard_settings: self-explanatory
         :return:
         """
-
         number_of_keyboards = sum([bool("Keyboard" in k) for k in self.input_devices_classes.keys()])
         device_name = "Keyboard %s" % (number_of_keyboards + 1)
 
@@ -182,7 +188,6 @@ class HardwareManagerAction(JoanModuleAction):
     def add_a_joystick(self, joystick_settings=None):
         """
         Adds a joystick input
-        :param widget:
         :param joystick_settings:
         :return:
         """
@@ -209,7 +214,6 @@ class HardwareManagerAction(JoanModuleAction):
     def add_a_sensodrive(self, sensodrive_settings=None):
         """
         Adds a sensodrive input
-        :param widget:
         :param sensodrive_settings:
         :return:
         """

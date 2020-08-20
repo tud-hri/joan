@@ -59,18 +59,18 @@ class EgovehicleSettingsDialog(QtWidgets.QDialog):
 
 
 class EgoVehicle(Basevehicle):
-    def __init__(self, agent_manager_action, car_nr, nr_spawn_points, tags, settings: EgoVehicleSettings):
+    def __init__(self, agent_manager_action, name, nr_spawn_points, tags, settings: EgoVehicleSettings):
         super().__init__(agent_manager_action)
 
         self.settings = settings
 
         self.vehicle_tab_widget = uic.loadUi(
             uifile=os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/vehicletab.ui"))
-        self.vehicle_tab_widget.group_car.setTitle('Car ' + str(car_nr + 1))
+        self.name = name
+        self.vehicle_tab_widget.group_car.setTitle(self.name)
         self._spawned = False
         self._hardware_data = {}
         self._sw_controller_data = {}
-        self.name = 'Vehicle ' + str(car_nr + 1)
 
         self.vehicle_tab_widget.btn_destroy.setEnabled(False)
 

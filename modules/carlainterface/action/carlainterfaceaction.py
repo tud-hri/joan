@@ -79,6 +79,8 @@ class CarlaInterfaceAction(JoanModuleAction):
         self.vehicles = []
         self.traffic_vehicles = []
         self._available_controllers = []
+        self.client = None
+        self.world = None
 
         self.hardware_manager_state_machine = self.singleton_status.get_module_state_machine(
             JOANModules.HARDWARE_MANAGER)
@@ -108,7 +110,7 @@ class CarlaInterfaceAction(JoanModuleAction):
 
     @property
     def world(self):
-        return self._world
+        return self.world
 
     @property
     def spawnpoints(self):
@@ -179,14 +181,23 @@ class CarlaInterfaceAction(JoanModuleAction):
             self.stop()
 
     def prepare_load_settings(self):
-        # remove_input_device all current agents  first
-        while self.vehicles:
-            self.vehicles[-1].remove_ego_agent()
-
-        while self.traffic_vehicles:
-            self.traffic_vehicles[-1].remove_traffic_agent()
+        # remove all agents
+        self.remove_all()
 
     def apply_loaded_settings(self):
+
+        if not self.connected:
+            return self.state_machine.request_state_change(State.ERROR,
+                                                           "You can only load settings when CARLA is connected. " + \
+                                                           "Connect and reload settings")
+
+        # create vehicles and traffic_vehicles
+        for setting in self.settings.ego_vehicles:
+            self.add_ego_agent(setting)
+
+        for setting in self.settings.traffic_vehicles:
+            self.add_traffic_agent(setting)
+
         pass
 
     def check_connection(self):
@@ -203,17 +214,16 @@ class CarlaInterfaceAction(JoanModuleAction):
         """
         if not self.connected:
             try:
-                print(' connecting')
                 QApplication.setOverrideCursor(Qt.WaitCursor)
                 self.client = carla.Client(self.host, self.port)  # connecting to server
                 self.client.set_timeout(2.0)
                 time.sleep(2)
-                self._world = self.client.get_world()  # get world object (contains everything)
+                self.world = self.client.get_world()  # get world object (contains everything)
                 blueprint_library = self.world.get_blueprint_library()
                 self._vehicle_bp_library = blueprint_library.filter('vehicle.*')
                 for items in self.vehicle_bp_library:
                     self.vehicle_tags.append(items.id[8:])
-                world_map = self._world.get_map()
+                world_map = self.world.get_map()
                 self._spawn_points = world_map.get_spawn_points()
                 self.nr_spawn_points = len(self._spawn_points)
 
@@ -248,13 +258,12 @@ class CarlaInterfaceAction(JoanModuleAction):
         an error state
         """
         if self.connected:
-            print('Disconnecting')
             for cars in self.vehicles:
                 cars.destroy_car()
                 cars.remove_car()
 
             self.client = None
-            self._world = None
+            self.world = None
             self.connected = False
             self.data['connected'] = self.connected
             self.write_news(news=self.data)
@@ -324,7 +333,10 @@ class CarlaInterfaceAction(JoanModuleAction):
             ego_vehicle_settings = EgoVehicleSettings()
             self.settings.ego_vehicles.append(ego_vehicle_settings)
 
-        vehicle = EgoVehicle(self, len(self.vehicles), self.nr_spawn_points, self.vehicle_tags, ego_vehicle_settings)
+        # TODO find unique name for vehicle name
+        vehicle_name = "Vehicle" + str(len(self.vehicles) + 1)
+
+        vehicle = EgoVehicle(self, vehicle_name, self.nr_spawn_points, self.vehicle_tags, ego_vehicle_settings)
         self.vehicles.append(vehicle)
 
         if is_a_new_ego_agent:
@@ -409,45 +421,79 @@ class CarlaInterfaceAction(JoanModuleAction):
             return False
         return super().stop()
 
-    def remove_vehicle(self, agent):
+    def remove_agent(self, agent):
         agent.remove_ego_agent()  # destroy the vehicle in carla, and corresponding dialogs
 
-        print("herre")
+        print("Removing vehicle")
 
         if isinstance(agent, EgoVehicle):
-
-            # remove from settings
-            print(self.settings.as_dict())
-
-            # remove from data
-            try:
-                del self.data['ego_agents'][agent.vehicle_nr]
-            except KeyError:  # data is only present if the hardware manager ran since the hardware was added
-                pass
-
-            # del self.vehicles[agent]  # delete object and remove from dict
-
+            self._remove_vehicle(agent)
         elif isinstance(agent, TrafficVehicle):
-            del self.traffic_vehicles[agent]
+            self._remove_traffic_vehicle(agent)
 
             # try:
             # del self.data['traffic_vehicles']
 
+    def _remove_vehicle(self, agent):
+        # remove from settings
+        print(self.settings.as_dict())
+        for vehicle_setting in self.settings.vehicles:
+            if vehicle_setting.name == agent.name:
+                try:
+                    self.settings.vehicle.remove(vehicle_setting)  # TODO does this delete the class?
+                except ValueError:
+                    pass
+        print(self.settings.as_dict())
+
+        # remove from data
+        try:
+            del self.data['ego_agents'][agent.vehicle_nr]
+        except KeyError:  # data is only present if the hardware manager ran since the hardware was added
+            pass
+
+        # remove from settins
+        for vehicle in self.vehicles:
+            if vehicle.name == agent.name:
+                try:
+                    v = self.vehicles.pop(self.vehicles.index(vehicle))
+                    del v
+                except ValueError:
+                    pass
+
+    def _remove_traffic_vehicle(self, agent):
+        # remove from settings
+        for vehicle_setting in self.settings.traffic_vehicles:
+            if vehicle_setting.name == agent.name:
+                try:
+                    self.settings.traffic_vehicles.remove(vehicle_setting)  # TODO does this delete the class?
+                except ValueError:
+                    pass
+
+        # remove object
+        for vehicle in self.traffic_vehicles:
+            if vehicle.name == agent.name:
+                try:
+                    v = self.traffic_vehicles.pop(self.traffic_vehicles.index(vehicle))
+                    del v
+                except ValueError:
+                    pass
+
     def remove_all(self):
         while self.vehicles:
-            self.vehicles[-1].remove_ego_agent()
+            self._remove_vehicle(self.vehicles.pop())
 
         while self.traffic_vehicles:
-            self.traffic_vehicles[-1].remove_traffic_agent()
+            self._remove_traffic_vehicle(self.traffic_vehicles.pop())
 
     def spawn_all(self):
         """
         Spawn all agents in CARLA
         :return:
         """
-        for agents in self.module_action.vehicles:
+        for agents in self.vehicles:
             agents.spawn_car()
-        for traffic_agents in self.module_action.traffic_vehicles:
+
+        for traffic_agents in self.traffic_vehicles:
             traffic_agents.spawn_car()
 
     def destroy_all(self):
