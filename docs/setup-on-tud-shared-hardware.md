@@ -29,14 +29,18 @@ You will probably need to build your own map with a road in CARLA for your own p
 We prepared a map for you as a template/starting point called `DebugMap`, which you can find in `C:\carla\Unreal\CarlaUE4\Content\Carla\Maps`.
 
 
-- Create a folder with name `<YEAR>_<NETID>` in the directory `C:\carla\Unreal\CarlaUE4\Content\Developers\`. 
-- Download the 
-- Open the Epic Game Launcher, you need to login (use your login of choice)
+- Create a folder with name `<YEAR>_<NETID>` in the directory `C:\carla\Unreal\CarlaUE4\Content\Research\` (create the folder `Research` if it does not exist). 
+- Download the template map [here](https://www.dropbox.com/s/qu8ejogahhre0el/Template_Maps_08_2020.zip?dl=0), extract it, and copy the folder called `Maps` it in your own folder under `C:\carla\Unreal\CarlaUE4\Content\Research\<YEAR>_<NETID>\`.
+- Open the Epic Game Launcher (you might need to login (use your login of choice)).
+- Launch Unreal Engine, top-right corner (Unreal should be installed).
+- In Unreal Engine, CarlaUE4 should be listed under 'Recent projects'. If not, open the `CarlaUE4` project (browse to `C:\carla\Unreal\CarlaUE4\` and open `CarlaUE4.uproject`). 
+- The CarlaUE4 will now start; this may take a while if you start it for the first time.
+- To open your own level, click `File` &rarr; `Open level` and select `DebugMap.umap` __in your folder__ (navigate to your folder!)
+- If you want, you can rename your map to a more descriptive name (right-click on the map in the editor &rarr; rename, for example <YEAR>_<NAME>_<SHORT DESCRIPTION>) or you can save the DebugMap as another name.
+- Your level will load, but this may take some time.
+- To run your map, hit the play button.
+  
+
 
 !!! Warning
-    UNDER CONSTRUCTION
-    
-    - In this new folder, create a folder `Maps`. 
-    - __Copy__ the folder `DebugMap` and file `DebugMap.umap` and `DebugMap_BuiltData.uasset` to the folder you just created.
-    - Create a folder `OpenDrive`
-    - Copy `DebugMap.xodr` to this folder
+    Make sure to load your own map, so double check that you are in the right directory when opening your level!
