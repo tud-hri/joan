@@ -32,7 +32,7 @@ We prepared a map for you as a template/starting point called `DebugMap`, which 
 - Create a folder with name `<YEAR>_<NETID>` in the directory `C:\carla\Unreal\CarlaUE4\Content\Research\` (create the folder `Research` if it does not exist). 
 - Download the template map [here](https://www.dropbox.com/s/qu8ejogahhre0el/Template_Maps_08_2020.zip?dl=0), extract it, and copy the folder called `Maps` it in your own folder under `C:\carla\Unreal\CarlaUE4\Content\Research\<YEAR>_<NETID>\`.
 - Open the Epic Game Launcher (you might need to login (use your login of choice)).
-- Launch Unreal Engine, top-right corner (Unreal should be installed).
+- Launch Unreal Engine, top-right corner (Unreal should be installed; if not, restart the Epci Game Launcher or reboot the computer, this normally works).
 - In Unreal Engine, CarlaUE4 should be listed under 'Recent projects'. If not, open the `CarlaUE4` project (browse to `C:\carla\Unreal\CarlaUE4\` and open `CarlaUE4.uproject`). 
 - The CarlaUE4 will now start; this may take a while if you start it for the first time.
 - To open your own level, click `File` &rarr; `Open level` and select `DebugMap.umap` __in your folder__ (navigate to your folder!)
