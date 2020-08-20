@@ -5,38 +5,40 @@ from modules.joanmodules import JOANModules
 from PyQt5 import uic, QtWidgets
 import os, math
 
+
 class EgovehicleSettingsDialog(QtWidgets.QDialog):
-    def __init__(self, egovehicle_settings, parent=None):
+    def __init__(self, settings_egovehicle, parent=None):
         super().__init__(parent)
-        self.egovehicle_settings = egovehicle_settings
+        self.settings_egovehicle = settings_egovehicle
         uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/vehicle_settings_ui.ui"), self)
 
-        self.button_box_egovehicle_settings.button(self.button_box_egovehicle_settings.RestoreDefaults).clicked.connect(self._set_default_values)
+        self.button_box_egovehicle_settings.button(self.button_box_egovehicle_settings.RestoreDefaults).clicked.connect(
+            self._set_default_values)
         self.btn_apply_parameters.clicked.connect(self.update_parameters)
         self._display_values()
 
     def update_parameters(self):
-        self.egovehicle_settings._velocity = self.spin_velocity.value()
-        self.egovehicle_settings._selected_input = self.combo_input.currentText()
-        self.egovehicle_settings._selected_controller = self.combo_sw_controller.currentText()
-        self.egovehicle_settings._selected_car = self.combo_car_type.currentText()
-        self.egovehicle_settings._selected_spawnpoint = self.spin_spawn_points.value()
-        self.egovehicle_settings._set_velocity= self.check_box_set_vel.isChecked()
+        self.settings_egovehicle.velocity = self.spin_velocity.value()
+        self.settings_egovehicle.selected_input = self.combo_input.currentText()
+        self.settings_egovehicle.selected_controller = self.combo_sw_controller.currentText()
+        self.settings_egovehicle.selected_car = self.combo_car_type.currentText()
+        self.settings_egovehicle.selected_spawnpoint = self.spin_spawn_points.value()
+        self.settings_egovehicle.set_velocity = self.check_box_set_vel.isChecked()
         self._display_values()
 
     def accept(self):
-        self.egovehicle_settings._velocity = self.spin_velocity.value()
-        self.egovehicle_settings._selected_input = self.combo_input.currentText()
-        self.egovehicle_settings._selected_controller = self.combo_sw_controller.currentText()
-        self.egovehicle_settings._selected_car = self.combo_car_type.currentText()
-        self.egovehicle_settings._selected_spawnpoint = self.spin_spawn_points.value()
-        self.egovehicle_settings._set_velocity= self.check_box_set_vel.isChecked()
+        self.settings_egovehicle.velocity = self.spin_velocity.value()
+        self.settings_egovehicle.selected_input = self.combo_input.currentText()
+        self.settings_egovehicle.selected_controller = self.combo_sw_controller.currentText()
+        self.settings_egovehicle.selected_car = self.combo_car_type.currentText()
+        self.settings_egovehicle.selected_spawnpoint = self.spin_spawn_points.value()
+        self.settings_egovehicle.set_velocity = self.check_box_set_vel.isChecked()
 
         super().accept()
 
-    def _display_values(self, settings_to_display = None):
+    def _display_values(self, settings_to_display=None):
         if not settings_to_display:
-            settings_to_display = self.egovehicle_settings
+            settings_to_display = self.settings_egovehicle
 
         idx_controller = self.combo_sw_controller.findText(settings_to_display._selected_controller)
         self.combo_sw_controller.setCurrentIndex(idx_controller)
@@ -52,9 +54,9 @@ class EgovehicleSettingsDialog(QtWidgets.QDialog):
         self.spin_velocity.setValue(settings_to_display._velocity)
         self.check_box_set_vel.setChecked(settings_to_display._set_velocity)
 
-
     def _set_default_values(self):
         self._display_values(EgoVehicleSettings())
+
 
 class Egovehicle(Basevehicle):
     def __init__(self, agent_manager_action, car_nr, nr_spawn_points, tags, settings: EgoVehicleSettings):
@@ -62,37 +64,34 @@ class Egovehicle(Basevehicle):
 
         self.settings = settings
 
-        self._vehicle_tab = uic.loadUi(uifile=os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/vehicletab.ui"))
-        self._vehicle_tab.group_car.setTitle('Car ' + str(car_nr+1))
+        self.vehicle_tab_widget = uic.loadUi(
+            uifile=os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/vehicletab.ui"))
+        self.vehicle_tab_widget.group_car.setTitle('Car ' + str(car_nr + 1))
         self._spawned = False
         self._hardware_data = {}
         self._sw_controller_data = {}
-        self._vehicle_nr = 'Car ' + str(car_nr+1)
+        self._vehicle_nr = 'Car ' + str(car_nr + 1)
 
-        self._vehicle_tab.btn_destroy.setEnabled(False)
+        self.vehicle_tab_widget.btn_destroy.setEnabled(False)
 
-        self._vehicle_tab.btn_spawn.clicked.connect(self.spawn_car)
-        self._vehicle_tab.btn_destroy.clicked.connect(self.destroy_car)
-        self._vehicle_tab.btn_remove_ego_agent.clicked.connect(self.remove_ego_agent)
-        self._vehicle_tab.btn_settings.clicked.connect(self._open_settings_dialog)
-        self._vehicle_tab.btn_settings.clicked.connect(self._open_settings_dialog_from_button)
+        self.vehicle_tab_widget.btn_spawn.clicked.connect(self.spawn_car)
+        self.vehicle_tab_widget.btn_destroy.clicked.connect(self.destroy_car)
+        self.vehicle_tab_widget.btn_remove_ego_agent.clicked.connect(self.remove_ego_agent)
+        self.vehicle_tab_widget.btn_settings.clicked.connect(self._open_settings_dialog)
+        self.vehicle_tab_widget.btn_settings.clicked.connect(self._open_settings_dialog_from_button)
 
         self.settings_dialog = EgovehicleSettingsDialog(self.settings)
 
         for item in tags:
             self.settings_dialog.combo_car_type.addItem(item)
 
-
         self.settings_dialog.spin_spawn_points.setRange(0, nr_spawn_points - 1)
-
 
         self._open_settings_dialog()
 
-
-
     @property
     def vehicle_tab(self):
-        return self._vehicle_tab
+        return self.vehicle_tab_widget
 
     @property
     def selected_input(self):
@@ -117,7 +116,6 @@ class Egovehicle(Basevehicle):
         self.settings_dialog._display_values()
         self.settings_dialog.show()
 
-
     def get_available_inputs(self):
         self.settings_dialog.combo_input.clear()
         self.settings_dialog.combo_input.addItem('None')
@@ -132,11 +130,9 @@ class Egovehicle(Basevehicle):
         for keys in self._sw_controller_data:
             self.settings_dialog.combo_sw_controller.addItem(str(keys))
 
-
     def destroy_inputs(self):
-        self._vehicle_tab.combo_input.clear()
-        self._vehicle_tab.combo_input.addItem('None')
-
+        self.vehicle_tab_widget.combo_input.clear()
+        self.vehicle_tab_widget.combo_input.addItem('None')
 
     def apply_control(self, data):
         car = self.spawned_vehicle
@@ -171,7 +167,6 @@ class Egovehicle(Basevehicle):
             else:
                 self._control.throttle = data[self.settings._selected_input]['ThrottleInput'] / 100
 
-
             self.spawned_vehicle.apply_control(self._control)
 
     def egovehicle_velocityPD(self, error):
@@ -182,13 +177,15 @@ class Egovehicle(Basevehicle):
         if temp > 100:
             temp = 100
 
-        output = temp/100
+        output = temp / 100
 
         return output
 
     def remove_ego_agent(self):
-        self._vehicle_tab.setParent(None)
+
+        print("here")
+        self.vehicle_tab_widget.setParent(None)
         self.destroy_car()
 
-        self.module_action.settings.ego_vehicles.remove_input_device(self.settings)
-        self.module_action.vehicles.remove_input_device(self)
+        # self.module_action.settings.ego_vehicles.remove_input_device(self.settings)
+        # self.module_action.vehicles.remove_input_device(self)

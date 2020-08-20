@@ -127,6 +127,13 @@ class JoanModuleAction(QtCore.QObject):
         """
         self.singleton_settings.update_settings(self.module, module_settings)
 
+    def load_default_settings(self):
+        # load existing settings
+        default_settings_file_location = os.path.join(self.module_path, 'action', 'default_settings.json')
+
+        if os.path.isfile(default_settings_file_location):
+            self.settings.load_from_file(default_settings_file_location)
+
     def prepare_load_settings(self):
         """Override this function if you need to prepare your module before the new settings are loaded"""
         pass

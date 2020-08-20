@@ -35,9 +35,9 @@ class TrafficvehicleSettingsDialog(QtWidgets.QDialog):
         Accepts and saves the current settings internally (Closes the dialog)
         :return:
         """
-        self.trafficvehicle_settings._velocity = self.spin_velocity.value()
-        self.trafficvehicle_settings._selected_car = self.combo_car_type.currentText()
-        self.trafficvehicle_settings._selected_spawnpoint = self.spin_spawn_points.value()
+        self.trafficvehicle_settings.velocity = self.spin_velocity.value()
+        self.trafficvehicle_settings.selected_car = self.combo_car_type.currentText()
+        self.trafficvehicle_settings.selected_spawnpoint = self.spin_spawn_points.value()
         self.trafficvehicle_settings._t_lookahead = float(self.edit_t_ahead.text())
         self.trafficvehicle_settings._k_p = float(self.edit_gain_prop.text())
         self.trafficvehicle_settings._k_d = float(self.edit_gain_deriv.text())
@@ -84,9 +84,9 @@ class TrafficvehicleSettingsDialog(QtWidgets.QDialog):
         Saves the current settings internally without closing the settings dialog
         :return:
         """
-        self.trafficvehicle_settings._velocity = self.spin_velocity.value()
-        self.trafficvehicle_settings._selected_car = self.combo_car_type.currentText()
-        self.trafficvehicle_settings._selected_spawnpoint = self.spin_spawn_points.value()
+        self.trafficvehicle_settings.velocity = self.spin_velocity.value()
+        self.trafficvehicle_settings.selected_car = self.combo_car_type.currentText()
+        self.trafficvehicle_settings.selected_spawnpoint = self.spin_spawn_points.value()
         self.trafficvehicle_settings._t_lookahead = float(self.edit_t_ahead.text())
         self.trafficvehicle_settings._k_p = float(self.edit_gain_prop.text())
         self.trafficvehicle_settings._k_d = float(self.edit_gain_deriv.text())

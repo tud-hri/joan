@@ -8,7 +8,6 @@ from PyQt5.QtWidgets import QMessageBox
 msg_box = QMessageBox()
 msg_box.setTextFormat(QtCore.Qt.RichText)
 
-
 try:
     sys.path.append(glob.glob('carla_pythonapi/carla-*%d.%d-%s.egg' % (
         sys.version_info.major,
@@ -26,10 +25,12 @@ except IndexError:
     msg_box.exec()
     pass
 
+
 class Basevehicle:
     """
     The base class of any vehicle or 'agent', any agent of which you want to collect data should inherit from this class
     """
+
     def __init__(self, carlainterface_action):
         """
         Initializes class
@@ -37,16 +38,15 @@ class Basevehicle:
         """
         self.module_action = carlainterface_action
         self._spawned = False
-        self._vehicle_tab = None
+        self.vehicle_tab_widget = None
         self.car_data = {}
-
 
     def unpack_vehicle_data(self):
         try:
-            #vehicle object
+            # vehicle object
             self.car_data['vehicle_object'] = self
 
-            #spatial:
+            # spatial:
             self.car_data['x_pos'] = self.spawned_vehicle.get_transform().location.x
             self.car_data['y_pos'] = self.spawned_vehicle.get_transform().location.y
             self.car_data['z_pos'] = self.spawned_vehicle.get_transform().location.z
@@ -62,12 +62,14 @@ class Basevehicle:
             self.car_data['x_acc'] = self.spawned_vehicle.get_acceleration().x
             self.car_data['y_acc'] = self.spawned_vehicle.get_acceleration().y
             self.car_data['z_acc'] = self.spawned_vehicle.get_acceleration().z
-            self.car_data['forward_vector_x_component'] = self.spawned_vehicle.get_transform().rotation.get_forward_vector().x
-            self.car_data['forward_vector_y_component'] = self.spawned_vehicle.get_transform().rotation.get_forward_vector().y
-            self.car_data['forward_vector_z_component'] = self.spawned_vehicle.get_transform().rotation.get_forward_vector().z
+            self.car_data['forward_vector_x_component'] = \
+                self.spawned_vehicle.get_transform().rotation.get_forward_vector().x
+            self.car_data['forward_vector_y_component'] \
+                = self.spawned_vehicle.get_transform().rotation.get_forward_vector().y
+            self.car_data['forward_vector_z_component'] \
+                = self.spawned_vehicle.get_transform().rotation.get_forward_vector().z
 
-
-            #inputs
+            # inputs
             last_applied_vehicle_control = self.spawned_vehicle.get_control()
             self.car_data['throttle_input'] = last_applied_vehicle_control.throttle
             self.car_data['brake_input'] = last_applied_vehicle_control.brake
@@ -88,7 +90,7 @@ class Basevehicle:
         Tries to spawn the agent/vehicle
         :return:
         """
-        self._BP = random.choice(self.module_action.vehicle_bp_library.filter("vehicle." + self.settings._selected_car))
+        self._BP = random.choice(self.module_action.vehicle_bp_library.filter("vehicle." + self.settings.selected_car))
         self._control = carla.VehicleControl()
         torque_curve = []
         gears = []
@@ -98,7 +100,8 @@ class Basevehicle:
         gears.append(carla.GearPhysicsControl(ratio=7.73, down_ratio=0.5, up_ratio=1))
 
         try:
-            self.spawned_vehicle = self.module_action.world.spawn_actor(self._BP, self.module_action.spawnpoints[self.settings._selected_spawnpoint])
+            self.spawned_vehicle = self.module_action.world.spawn_actor(self._BP, self.module_action.spawnpoints[
+                self.settings.selected_spawnpoint])
             self._physics = self.spawned_vehicle.get_physics_control()
             self._physics.torque_curve = torque_curve
             self._physics.max_rpm = 14000
@@ -112,14 +115,13 @@ class Basevehicle:
             self._physics.gear_switch_time = 0
             self.spawned_vehicle.apply_physics_control(self._physics)
 
-
-            self._vehicle_tab.btn_spawn.setEnabled(False)
-            self._vehicle_tab.btn_destroy.setEnabled(True)
+            self.vehicle_tab_widget.btn_spawn.setEnabled(False)
+            self.vehicle_tab_widget.btn_destroy.setEnabled(True)
             self._spawned = True
         except Exception as inst:
             print('Could not spawn car:', inst)
-            self._vehicle_tab.btn_spawn.setEnabled(True)
-            self._vehicle_tab.btn_destroy.setEnabled(False)
+            self.vehicle_tab_widget.btn_spawn.setEnabled(True)
+            self.vehicle_tab_widget.btn_destroy.setEnabled(False)
             self._spawned = False
 
     def destroy_car(self):
@@ -130,13 +132,13 @@ class Basevehicle:
         try:
             self._spawned = False
             self.spawned_vehicle.destroy()
-            self._vehicle_tab.btn_spawn.setEnabled(True)
-            self._vehicle_tab.btn_destroy.setEnabled(False)
+            self.vehicle_tab_widget.btn_spawn.setEnabled(True)
+            self.vehicle_tab_widget.btn_destroy.setEnabled(False)
         except Exception as inst:
             self._spawned = True
             print('Could not destroy spawn car:', inst)
-            self._vehicle_tab.btn_spawn.setEnabled(False)
-            self._vehicle_tab.btn_destroy.setEnabled(True)
+            self.vehicle_tab_widget.btn_spawn.setEnabled(False)
+            self.vehicle_tab_widget.btn_destroy.setEnabled(True)
 
     @property
     def vehicle_id(self):
@@ -148,10 +150,8 @@ class Basevehicle:
 
     @property
     def vehicle_tab(self):
-        return self._vehicle_tab
+        return self.vehicle_tab_widget
 
     @property
     def vehicle_id(self):
         return self._BP.id
-
-

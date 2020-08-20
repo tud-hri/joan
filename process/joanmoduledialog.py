@@ -68,6 +68,9 @@ class JoanModuleDialog(QtWidgets.QDialog):
 
         self.module_action.register_module_dialog(module_dialog=self)
 
+        # load default settings
+        self.module_action.load_default_settings()
+
         # reflect latest state
         self.handle_state_change()
 

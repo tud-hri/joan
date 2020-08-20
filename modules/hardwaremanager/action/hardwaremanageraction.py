@@ -34,13 +34,6 @@ class HardwareManagerAction(JoanModuleAction):
         self.settings = HardwareManagerSettings(module_enum=JOANModules.HARDWARE_MANAGER)
         self.settings.before_load_settings.connect(self.prepare_load_settings)
         self.settings.load_settings_done.connect(self.apply_loaded_settings)
-
-        # load existing settings
-        default_settings_file_location = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                                      'hardware_settings.json')
-        if os.path.isfile(default_settings_file_location):
-            self.settings.load_from_file(default_settings_file_location)
-
         self.share_settings(self.settings)
 
         self.state_machine.add_state_change_listener(self._state_change_listener)
@@ -178,6 +171,8 @@ class HardwareManagerAction(JoanModuleAction):
         self.module_dialog.add_device_tab(device)
 
         self.input_devices_classes.update({device_name: device})
+        self.data[device_name] = device.process()
+        self.write_news(self.data)
 
         if is_a_new_keyboard:
             self.settings.key_boards.append(keyboard_settings)
@@ -203,6 +198,8 @@ class HardwareManagerAction(JoanModuleAction):
         self.module_dialog.add_device_tab(device)
 
         self.input_devices_classes.update({device_name: device})
+        self.data[device_name] = device.process()
+        self.write_news(self.data)
 
         if is_a_new_joystick:
             self.settings.joy_sticks.append(joystick_settings)
@@ -231,6 +228,9 @@ class HardwareManagerAction(JoanModuleAction):
             self.module_dialog.add_device_tab(device)
 
             self.input_devices_classes.update({device_name: device})
+            self.data[device_name] = device.process()
+            self.write_news(self.data)
+
             if is_a_new_sensodrive:
                 self.settings.sensodrives.append(sensodrive_settings)
             return True

@@ -280,7 +280,7 @@ class CarlaInterfaceAction(JoanModuleAction):
             angle = waypoint.transform.rotation.yaw
             angle = angle % 360
             angle = (angle + 360) % 360
-            if (angle > 180):
+            if angle > 180:
                 angle -= 360
 
             self._waypoints.append([i, waypoint.transform.location.x, waypoint.transform.location.y, 0, 0, 0, angle, 0])
@@ -323,6 +323,9 @@ class CarlaInterfaceAction(JoanModuleAction):
         if is_a_new_ego_agent:
             ego_vehicle_settings = EgoVehicleSettings()
             self.settings.ego_vehicles.append(ego_vehicle_settings)
+
+
+        print(self.settings.as_dict())
 
         vehicle = Egovehicle(self, len(self.vehicles), self.nr_spawn_points, self.vehicle_tags, ego_vehicle_settings)
         self.vehicles.append(vehicle)

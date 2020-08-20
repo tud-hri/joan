@@ -102,7 +102,7 @@ class CarlaInterfaceDialog(JoanModuleDialog):
         Adds an ego agent (in this case a vehicle a user can control)
         :return:
         """
-        # agent.settings_dialog.show()
+        agent.settings_dialog.show()
         self.module_widget.layOut.insertWidget(len(self.module_action.vehicles) - 1, agent.vehicle_tab)
 
     def add_traffic_agent_widget(self, agent):
@@ -110,5 +110,5 @@ class CarlaInterfaceDialog(JoanModuleDialog):
         Adds a traffic agent
         :return:
         """
-        # agent.settings_dialog.show()
+        agent.settings_dialog.show()
         self.module_widget.layOut.insertWidget(-1, agent.vehicle_tab)
