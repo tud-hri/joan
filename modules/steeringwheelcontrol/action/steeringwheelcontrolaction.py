@@ -1,7 +1,4 @@
-import os
-
 from modules.joanmodules import JOANModules
-from process import Status
 from process.joanmoduleaction import JoanModuleAction
 from process.statesenum import State
 from .steeringwheelcontrolsettings import SteeringWheelControlSettings
@@ -14,15 +11,15 @@ class SteeringWheelControlAction(JoanModuleAction):
         super().__init__(module=JOANModules.STEERING_WHEEL_CONTROL, millis=millis)
 
         self.settings = SteeringWheelControlSettings(module_enum=JOANModules.STEERING_WHEEL_CONTROL)
+        self.settings.before_load_settings.connect(self.prepare_load_settings)
+        self.settings.load_settings_done.connect(self.apply_loaded_settings)
         self.share_settings(self.settings)
-        self.load_default_settings() # probably problematic because module_dialog does not exist yet
+        self.load_default_settings()  # probably problematic because module_dialog does not exist yet
 
         self._controllers = {}
 
         # Setup state machine transition conditions
         self.state_machine.add_state_change_listener(self._state_change_listener)
-        self.state_machine.set_transition_condition(State.READY, State.RUNNING, self._starting_condition)
-        self.state_machine.set_transition_condition(State.RUNNING, State.READY, self._stopping_condition)
 
         # set up news
         self.data = {}
@@ -97,28 +94,20 @@ class SteeringWheelControlAction(JoanModuleAction):
         Prepare the module for new settings: remove all 'old' hardware from the list
         :return:
         """
-        # remove_input_device any existing input devices
-        for key in list(self.input_devices_classes.keys()):
-            self.remove_input_device(key)
+        # remove_input_device all current controllers first:
+        for controller in list(self._controllers.keys()):
+            self.remove_controller(self._controllers[controller])
 
     def apply_loaded_settings(self):
         """
         Create hardware inputs based on the loaded settings
         :return:
         """
+        for pd_controller_settings in self.settings.pd_controllers:
+            self.add_controller(SWControllerTypes.PD_SWCONTROLLER, pd_controller_settings)
 
-
-    def load_settings(self, settings_file_to_load):
-        """
-        Load settings. Called from Dialog. Handles module-specific actions that need to occur before the generic "_load_settings_from_file" is called
-        :param settings_file_to_load:
-        :return:
-        """
-        # remove_input_device all current controllers first:
-        for controller in self._controllers.copy():
-            self.remove_controller(self._controllers[controller])
-
-        self._load_settings_from_file(settings_file_to_load)
+        for fdca_controller_settings in self.settings.fdca_controllers:
+            self.add_controller(SWControllerTypes.FDCA_SWCONTROLLER, fdca_controller_settings)
 
         self.initialize()
 
@@ -139,6 +128,9 @@ class SteeringWheelControlAction(JoanModuleAction):
         self._controllers[controller_name].get_controller_tab.controller_groupbox.setTitle(controller_name)
         self._controllers[controller_name].update_trajectory_list()
 
+        self.module_dialog.module_widget.sw_controller_list_layout.addWidget(
+            self._controllers[controller_name].get_controller_tab)
+
         self._state_change_listener()
 
         if not controller_settings:
@@ -154,20 +146,27 @@ class SteeringWheelControlAction(JoanModuleAction):
             del self.data[controller.get_controller_list_key]
         except KeyError:  # data is only present if the hardware manager ran since the hardware was added
             pass
+
         # remove_input_device controller settings
         try:
-            self.settings.pd_controllers.remove_input_device(self._controllers[controller.get_controller_list_key].settings)
+            self.settings.remove_controller(
+                self._controllers[controller.get_controller_list_key].settings)
         except ValueError:  # depends if right controller list is present
             pass
 
         try:
-            self.settings.fdca_controllers.remove_input_device(self._controllers[controller.get_controller_list_key].settings)
+            self.settings.remove_controller(
+                self._controllers[controller.get_controller_list_key].settings)
         except ValueError:  # depends if right controller list is present
             pass
 
+        # remove dialog
         self._controllers[controller.get_controller_list_key].get_controller_tab.setParent(None)
+
+        # delete object
         del self._controllers[controller.get_controller_list_key]
 
+        # remove controller from data
         try:
             del self.data[controller]
         except KeyError:  # data is only present if the hardware manager ran since the hardware was added

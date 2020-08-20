@@ -4,7 +4,7 @@ import time
 import numpy as np
 from PyQt5 import QtWidgets, uic
 
-from modules.steeringwheelcontrol.action.steeringwheelcontrolsettings import FDCAcontrollerSettings
+from modules.steeringwheelcontrol.action.steeringwheelcontrolsettings import FDCAControllerSettings
 from modules.steeringwheelcontrol.action.swcontrollertypes import SWControllerTypes
 from tools import LowPassFilterBiquad
 from .baseswcontroller import BaseSWController
@@ -74,7 +74,7 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
         self.cmbbox_hcr_selection.setCurrentIndex(idx_traj)
 
     def _set_default_values(self):
-        self._display_values(FDCAcontrollerSettings())
+        self._display_values(FDCAControllerSettings())
         self.update_parameters()
 
 

@@ -23,12 +23,12 @@ class SteeringWheelControlDialog(JoanModuleDialog):
         self._controller_type_dialog.btnbox_sw_controller_type.accepted.connect(self.add_selected_controller_type)
 
         # add state change listener (for adding controllers)
-        self.module_action.state_machine.add_state_change_listener(self._state_change_listener)
+        self.module_action.state_machine.add_state_change_listener(self.handle_state_change)
 
         # attach add controller button to code
         self.module_widget.btn_add_sw_controller.clicked.connect(self._controller_type_selection)
 
-    def _state_change_listener(self):
+    def handle_state_change(self):
         """
         This function is called upon whenever the change of the module changes it checks whether its allowed to add
         hardware (only possible in ready or idle states
@@ -52,18 +52,7 @@ class SteeringWheelControlDialog(JoanModuleDialog):
     def add_selected_controller_type(self):
         chosen_controller = self._controller_type_dialog.combobox_sw_controller_type.itemData(
             self._controller_type_dialog.combobox_sw_controller_type.currentIndex())
-        new_controller_widget = self.module_action.add_controller(chosen_controller)
-        self.module_widget.sw_controller_list_layout.addWidget(new_controller_widget)
-
-    def initialize_widgets_from_settings(self):
-        for pd_controller_settings in self.module_action.settings.pd_controllers:
-            new_controller_widget = self.module_action.add_controller(SWControllerTypes.PD_SWCONTROLLER,
-                                                                      pd_controller_settings)
-            self.module_widget.sw_controller_list_layout.addWidget(new_controller_widget)
-        for fdca_controller_settings in self.module_action.settings.fdca_controllers:
-            new_controller_widget = self.module_action.add_controller(SWControllerTypes.FDCA_SWCONTROLLER,
-                                                                      fdca_controller_settings)
-            self.module_widget.sw_controller_list_layout.addWidget(new_controller_widget)
+        self.module_action.add_controller(chosen_controller)
 
     def apply_selected_controller(self):
         vehicle_list = self.module_action.update_vehicle_list()
