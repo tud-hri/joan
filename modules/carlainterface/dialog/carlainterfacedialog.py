@@ -103,7 +103,7 @@ class CarlaInterfaceDialog(JoanModuleDialog):
         :return:
         """
         agent.settings_dialog.show()
-        self.module_widget.layOut.insertWidget(len(self.module_action.vehicles) - 1, agent.vehicle_tab)
+        self.module_widget.layOut.insertWidget(len(self.module_action.vehicles) - 1, agent.vehicle_tab_widget)
 
     def add_traffic_agent_widget(self, agent):
         """

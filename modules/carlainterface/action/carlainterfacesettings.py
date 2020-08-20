@@ -110,12 +110,13 @@ class EgoVehicleSettings():
         """
         Initializes the class with default variables
         """
-        self._selected_input = 'None'
-        self._selected_controller = 'None'
-        self._selected_spawnpoint = 0
-        self._selected_car = 'hapticslab.nissan'
-        self._velocity = 80
-        self._set_velocity = False
+        self.selected_input = 'None'
+        self.selected_controller = 'None'
+        self.selected_spawnpoint = 0
+        self.selected_car = 'hapticslab.nissan'
+        self.velocity = 80
+        self.set_velocity = False
+        self.name = ''
 
     def as_dict(self):
         return self.__dict__
@@ -144,6 +145,7 @@ class TrafficVehicleSettings():
         self._k_p = 6
         self._k_d = 2.5
         self._set_velocity_with_pd = False
+        self.name = ''
 
     def as_dict(self):
         return self.__dict__

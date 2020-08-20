@@ -104,7 +104,7 @@ class TrafficvehicleSettingsDialog(QtWidgets.QDialog):
         """
         self._display_values(TrafficVehicleSettings())
 
-class Trafficvehicle(Basevehicle):
+class TrafficVehicle(Basevehicle):
     """
     This class contains everything you need to make a vehicle follow a predefined route by PD control
     """

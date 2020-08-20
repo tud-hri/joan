@@ -12,8 +12,8 @@ from PyQt5.QtWidgets import QMessageBox, QApplication
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
 from process.statesenum import State
-from .agents.egovehicle import Egovehicle
-from .agents.trafficvehicle import Trafficvehicle
+from .agents.egovehicle import EgoVehicle
+from .agents.trafficvehicle import TrafficVehicle
 from .carlainterfacesettings import CarlaInterfaceSettings, EgoVehicleSettings, TrafficVehicleSettings
 from .carlainterfacesignals import CarlaInterfaceSignals
 
@@ -163,7 +163,7 @@ class CarlaInterfaceAction(JoanModuleAction):
         """
         if self.connected:
             for agent in self.vehicles:
-                self.data['ego_agents'][agent.vehicle_nr] = agent.unpack_vehicle_data()
+                self.data['ego_agents'][agent.name] = agent.unpack_vehicle_data()
             self.write_news(news=self.data)
             self._data_from_hardware = self.read_news(JOANModules.HARDWARE_MANAGER)
             try:
@@ -324,11 +324,11 @@ class CarlaInterfaceAction(JoanModuleAction):
             ego_vehicle_settings = EgoVehicleSettings()
             self.settings.ego_vehicles.append(ego_vehicle_settings)
 
-
-        print(self.settings.as_dict())
-
-        vehicle = Egovehicle(self, len(self.vehicles), self.nr_spawn_points, self.vehicle_tags, ego_vehicle_settings)
+        vehicle = EgoVehicle(self, len(self.vehicles), self.nr_spawn_points, self.vehicle_tags, ego_vehicle_settings)
         self.vehicles.append(vehicle)
+
+        if is_a_new_ego_agent:
+            self.settings.ego_vehicles.name = vehicle.name
 
         # add widget
         self.module_dialog.add_ego_agent_widget(vehicle)
@@ -351,10 +351,13 @@ class CarlaInterfaceAction(JoanModuleAction):
             traffic_vehicle_settings = TrafficVehicleSettings()
             self.settings.traffic_vehicles.append(traffic_vehicle_settings)
 
-        vehicle = Trafficvehicle(self, len(self.traffic_vehicles), self.nr_spawn_points, self.vehicle_tags,
+        vehicle = TrafficVehicle(self, len(self.traffic_vehicles), self.nr_spawn_points, self.vehicle_tags,
                                  traffic_vehicle_settings)
         vehicle.load_trajectory()
         self.traffic_vehicles.append(vehicle)
+
+        if is_a_new_traffic_agent:
+            self.settings.traffic_vehicles.name = vehicle.name
 
         # add widget
         self.module_dialog.add_traffic_agent_widget(vehicle)
@@ -405,6 +408,30 @@ class CarlaInterfaceAction(JoanModuleAction):
         except RuntimeError:
             return False
         return super().stop()
+
+    def remove_vehicle(self, agent):
+        agent.remove_ego_agent()  # destroy the vehicle in carla, and corresponding dialogs
+
+        print("herre")
+
+        if isinstance(agent, EgoVehicle):
+
+            # remove from settings
+            print(self.settings.as_dict())
+
+            # remove from data
+            try:
+                del self.data['ego_agents'][agent.vehicle_nr]
+            except KeyError:  # data is only present if the hardware manager ran since the hardware was added
+                pass
+
+            # del self.vehicles[agent]  # delete object and remove from dict
+
+        elif isinstance(agent, TrafficVehicle):
+            del self.traffic_vehicles[agent]
+
+            # try:
+            # del self.data['traffic_vehicles']
 
     def remove_all(self):
         while self.vehicles:

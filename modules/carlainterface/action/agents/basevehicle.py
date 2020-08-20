@@ -31,7 +31,7 @@ class Basevehicle:
     The base class of any vehicle or 'agent', any agent of which you want to collect data should inherit from this class
     """
 
-    def __init__(self, carlainterface_action):
+    def __init__(self, carlainterface_action, name=''):
         """
         Initializes class
         :param carlainterface_action:
@@ -40,6 +40,7 @@ class Basevehicle:
         self._spawned = False
         self.vehicle_tab_widget = None
         self.car_data = {}
+        self.spawned_vehicle = None
 
     def unpack_vehicle_data(self):
         try:
@@ -102,18 +103,18 @@ class Basevehicle:
         try:
             self.spawned_vehicle = self.module_action.world.spawn_actor(self._BP, self.module_action.spawnpoints[
                 self.settings.selected_spawnpoint])
-            self._physics = self.spawned_vehicle.get_physics_control()
-            self._physics.torque_curve = torque_curve
-            self._physics.max_rpm = 14000
-            self._physics.moi = 1.5
-            self._physics.final_ratio = 1
-            self._physics.clutch_strength = 1000  # very big no clutch
-            self._physics.final_ratio = 1  # ratio from transmission to wheels
-            self._physics.forward_gears = gears
-            self._physics.mass = 2316
-            self._physics.drag_coefficient = 0.24
-            self._physics.gear_switch_time = 0
-            self.spawned_vehicle.apply_physics_control(self._physics)
+            physics = self.spawned_vehicle.get_physics_control()
+            physics.torque_curve = torque_curve
+            physics.max_rpm = 14000
+            physics.moi = 1.5
+            physics.final_ratio = 1
+            physics.clutch_strength = 1000  # very big no clutch
+            physics.final_ratio = 1  # ratio from transmission to wheels
+            physics.forward_gears = gears
+            physics.mass = 2316
+            physics.drag_coefficient = 0.24
+            physics.gear_switch_time = 0
+            self.spawned_vehicle.apply_physics_control(physics)
 
             self.vehicle_tab_widget.btn_spawn.setEnabled(False)
             self.vehicle_tab_widget.btn_destroy.setEnabled(True)
@@ -130,8 +131,9 @@ class Basevehicle:
         :return:
         """
         try:
-            self._spawned = False
-            self.spawned_vehicle.destroy()
+            if self._spawned:
+                self.spawned_vehicle.destroy()
+                self._spawned = False
             self.vehicle_tab_widget.btn_spawn.setEnabled(True)
             self.vehicle_tab_widget.btn_destroy.setEnabled(False)
         except Exception as inst:
