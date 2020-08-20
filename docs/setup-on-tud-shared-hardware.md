@@ -28,7 +28,6 @@ You will probably need to build your own map with a road in CARLA for your own p
 
 We prepared a map for you as a template/starting point called `DebugMap`, which you can find in `C:\carla\Unreal\CarlaUE4\Content\Carla\Maps`.
 
-
 - Create a folder with name `<YEAR>_<NETID>` in the directory `C:\carla\Unreal\CarlaUE4\Content\Research\` (create the folder `Research` if it does not exist). 
 - Download the template map [here](https://www.dropbox.com/s/qu8ejogahhre0el/Template_Maps_08_2020.zip?dl=0), extract it, and copy the folder called `Maps` it in your own folder under `C:\carla\Unreal\CarlaUE4\Content\Research\<YEAR>_<NETID>\`.
 - Open the Epic Game Launcher (you might need to login (use your login of choice)).
@@ -40,7 +39,5 @@ We prepared a map for you as a template/starting point called `DebugMap`, which 
 - Your level will load, but this may take some time.
 - To run your map, hit the play button.
   
-
-
 !!! Warning
     Make sure to load your own map, so double check that you are in the right directory when opening your level!
