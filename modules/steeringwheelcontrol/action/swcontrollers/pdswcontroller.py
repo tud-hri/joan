@@ -29,7 +29,7 @@ class PDcontrollerSettingsDialog(QtWidgets.QDialog):
         self.pd_controller_settings.k_d = float(self.edit_gain_deriv.text())
         self.pd_controller_settings.w_lat = float(self.edit_weight_lat.text())
         self.pd_controller_settings.w_heading = float(self.edit_weight_heading.text())
-        self.pd_controller_settings._trajectory_name = self.cmbbox_hcr_selection.itemText(self.cmbbox_hcr_selection.currentIndex())
+        self.pd_controller_settings.trajectory_name = self.cmbbox_hcr_selection.itemText(self.cmbbox_hcr_selection.currentIndex())
 
         self._display_values()
 
@@ -39,7 +39,7 @@ class PDcontrollerSettingsDialog(QtWidgets.QDialog):
         self.pd_controller_settings.k_d = float(self.edit_gain_deriv.text())
         self.pd_controller_settings.w_lat = float(self.edit_weight_lat.text())
         self.pd_controller_settings.w_heading = float(self.edit_weight_heading.text())
-        self.pd_controller_settings._trajectory_name = self.cmbbox_hcr_selection.itemText(self.cmbbox_hcr_selection.currentIndex())
+        self.pd_controller_settings.trajectory_name = self.cmbbox_hcr_selection.itemText(self.cmbbox_hcr_selection.currentIndex())
 
 
         super().accept()

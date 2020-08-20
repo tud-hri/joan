@@ -30,7 +30,7 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
         self.fdca_controller_settings.lohs = float(self.edit_lohs.text())
         self.fdca_controller_settings.sohf = float(self.edit_sohf.text())
         self.fdca_controller_settings.loha = self.slider_loha.value() / 100
-        self.fdca_controller_settings._trajectory_name = self.cmbbox_hcr_selection.itemText(
+        self.fdca_controller_settings.trajectory_name = self.cmbbox_hcr_selection.itemText(
             self.cmbbox_hcr_selection.currentIndex())
 
         self._display_values()
@@ -48,7 +48,7 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
         self.fdca_controller_settings.lohs = float(self.edit_lohs.text())
         self.fdca_controller_settings.sohf = float(self.edit_sohf.text())
         self.fdca_controller_settings.loha = self.slider_loha.value() / 100
-        self.fdca_controller_settings._trajectory_name = self.cmbbox_hcr_selection.itemText(
+        self.fdca_controller_settings.trajectory_name = self.cmbbox_hcr_selection.itemText(
             self.cmbbox_hcr_selection.currentIndex())
 
         super().accept()

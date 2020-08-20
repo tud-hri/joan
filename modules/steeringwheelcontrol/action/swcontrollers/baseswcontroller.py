@@ -49,14 +49,14 @@ class BaseSWController:
         """Load HCR trajectory"""
         try:
 
-            tmp = pd.read_csv(os.path.join(self._path_trajectory_directory, self.settings._trajectory_name))
+            tmp = pd.read_csv(os.path.join(self._path_trajectory_directory, self.settings.trajectory_name))
             if np.array_equal(tmp.values, self._trajectory):
                 print('trajectory already loaded')
             else:
                 self._trajectory = tmp.values
                 print('loaded')
             # TODO We might want to do some checks on the trajectory here.
-            # self._trajectory_name = fname
+            # self.trajectory_name = fname
         except OSError as err:
                 print('Error loading HCR trajectory file: ', err)
 

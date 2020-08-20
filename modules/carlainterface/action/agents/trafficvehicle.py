@@ -43,7 +43,7 @@ class TrafficvehicleSettingsDialog(QtWidgets.QDialog):
         self.trafficvehicle_settings._k_d = float(self.edit_gain_deriv.text())
         self.trafficvehicle_settings._w_lat = float(self.edit_weight_lat.text())
         self.trafficvehicle_settings._w_heading = float(self.edit_weight_heading.text())
-        self.trafficvehicle_settings._trajectory_name = self.combo_box_traffic_trajectory.itemText(self.combo_box_traffic_trajectory.currentIndex())
+        self.trafficvehicle_settings.trajectory_name = self.combo_box_traffic_trajectory.itemText(self.combo_box_traffic_trajectory.currentIndex())
         self.trafficvehicle_settings._set_velocity_with_pd = self.check_box_pd_vel.isChecked()
 
         super().accept()
@@ -92,7 +92,7 @@ class TrafficvehicleSettingsDialog(QtWidgets.QDialog):
         self.trafficvehicle_settings._k_d = float(self.edit_gain_deriv.text())
         self.trafficvehicle_settings._w_lat = float(self.edit_weight_lat.text())
         self.trafficvehicle_settings._w_heading = float(self.edit_weight_heading.text())
-        self.trafficvehicle_settings._trajectory_name = self.combo_box_traffic_trajectory.itemText(self.combo_box_traffic_trajectory.currentIndex())
+        self.trafficvehicle_settings.trajectory_name = self.combo_box_traffic_trajectory.itemText(self.combo_box_traffic_trajectory.currentIndex())
         self.trafficvehicle_settings._set_velocity_with_pd = self.check_box_pd_vel.isChecked()
 
         self._display_values()
@@ -218,7 +218,7 @@ class TrafficVehicle(Basevehicle):
             self._trajectory = tmp.values
             print('loaded')
             # TODO We might want to do some checks on the trajectory here.
-            # self._trajectory_name = fname
+            # self.trajectory_name = fname
         except OSError as err:
                 print('Error loading HCR trajectory file: ', err)
 
