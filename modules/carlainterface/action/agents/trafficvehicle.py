@@ -216,7 +216,6 @@ class TrafficVehicle(Basevehicle):
         try:
             tmp = pd.read_csv(os.path.join(self._path_trajectory_directory, self.settings._trajectory_name))
             self._trajectory = tmp.values
-            print('loaded')
             # TODO We might want to do some checks on the trajectory here.
             # self.trajectory_name = fname
         except OSError as err:

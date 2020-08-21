@@ -1,6 +1,7 @@
 import multiprocessing as mp
-from modules.hardwaremanager.action.inputclasses.PCANBasic import *
 import time
+
+from modules.hardwaremanager.action.inputclasses.PCANBasic import *
 
 """
 These global parameters are used to make the message ID's more identifiable than just the hex nr.
@@ -149,7 +150,7 @@ class SensoDriveComm(mp.Process):
         self.initialize()
 
         while True:
-            #Turn off sensodrive immediately (only when torque limits are breached)
+            # Turn off sensodrive immediately (only when torque limits are breached)
             if self.shutoff_event.is_set():
                 self.on_to_off(self.state_message)
                 self.shutoff_event.clear()
@@ -169,8 +170,6 @@ class SensoDriveComm(mp.Process):
             self.write_message_steering_wheel(self.PCAN_object, self.steering_wheel_message,
                                               self.steering_wheel_parameters)
             received = self.PCAN_object.Read(self._pcan_channel)
-
-
 
             # request state data
             self.PCAN_object.Write(self._pcan_channel, self.state_message)
@@ -234,7 +233,6 @@ class SensoDriveComm(mp.Process):
             if self.toggle_sensodrive_motor_event.is_set():
                 self.on_off()
                 self.toggle_sensodrive_motor_event.clear()
-
 
             if self.update_settings_event.is_set():
                 self.update_settings()

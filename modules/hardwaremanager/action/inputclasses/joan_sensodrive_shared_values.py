@@ -1,5 +1,7 @@
 import multiprocessing as mp
+
 from modules.hardwaremanager.action.inputclasses.PCANBasic import *
+
 
 class SensoDriveSharedValues:
     """"
@@ -28,8 +30,8 @@ class SensoDriveSharedValues:
         self._torque_limit_between_endstops = mp.Value(c_int, 0)
         self._torque_limit_beyond_endstops = mp.Value(c_int, 0)
 
-        #SensoDrive (ID) or number of sensodrives
-        self._sensodrive_ID = mp.Value(c_int,0)
+        # SensoDrive (ID) or number of sensodrives
+        self._sensodrive_ID = mp.Value(c_int, 0)
 
     @property
     def steering_angle(self):
@@ -130,6 +132,7 @@ class SensoDriveSharedValues:
     @property
     def sensodrive_ID(self):
         return self._sensodrive_ID.value
+
     @sensodrive_ID.setter
     def sensodrive_ID(self, var):
         self._sensodrive_ID.value = var

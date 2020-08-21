@@ -79,8 +79,6 @@ class CarlaInterfaceAction(JoanModuleAction):
         self.vehicles = []
         self.traffic_vehicles = []
         self._available_controllers = []
-        self.client = None
-        self.world = None
 
         self.hardware_manager_state_machine = self.singleton_status.get_module_state_machine(
             JOANModules.HARDWARE_MANAGER)

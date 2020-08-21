@@ -77,7 +77,7 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
         self.edit_sohf.setText(str(settings_to_display.sohf))
         self.slider_loha.setValue(settings_to_display.loha * 10)
 
-        idx_traj = self.cmbbox_hcr_selection.findText(settings_to_display._trajectory_name)
+        idx_traj = self.cmbbox_hcr_selection.findText(settings_to_display.trajectory_name)
         self.cmbbox_hcr_selection.setCurrentIndex(idx_traj)
 
     def _set_default_values(self):
