@@ -417,7 +417,7 @@ class JOANSensoDrive(BaseInput):
 
         try:
             requested_torque_by_controller = self._steering_wheel_control_data[
-                self._carla_interface_data['ego_agents']['Car 1']['vehicle_object'].selected_sw_controller]['sw_torque']
+                self._carla_interface_data['ego_agents']['Vehicle 1']['vehicle_object'].selected_sw_controller]['sw_torque']
         except:
             requested_torque_by_controller = 0
 
@@ -446,8 +446,8 @@ class JOANSensoDrive(BaseInput):
         self.write_message_pedals(self.PCAN_object, self.pedal_message)
         received3 = self.PCAN_object.Read(self._pcan_channel)
 
-        if (received[0] or received2[0] or received3[0] == PCAN_ERROR_OK):
-            if (received[1].ID == 0x211):
+        if received[0] or received2[0] or received3[0] == PCAN_ERROR_OK:
+            if received[1].ID == 0x211:
                 Increments = int.from_bytes(received[1].DATA[0:4], byteorder='little', signed=True)
                 Angle = round(Increments * 0.009, 4)
                 # Steering:
@@ -455,16 +455,16 @@ class JOANSensoDrive(BaseInput):
                 # Torque
                 Torque = int.from_bytes(received[1].DATA[6:], byteorder='little', signed=True)
                 self._data['Torque'] = Torque
-            elif (received[1].ID == 0x210):
+            elif received[1].ID == 0x210:
                 self._current_state_hex = received[1].DATA[0]
                 self._error_state[0] = received[1].DATA[2]
                 self._error_state[1] = received[1].DATA[3]
-            elif (received[1].ID == 0x21C):
+            elif received[1].ID == 0x21C:
                 self._data['ThrottleInput'] = (int.from_bytes(received[1].DATA[2:4],
                                                               byteorder='little') - 1100) / 2460 * 100
                 self._data['BrakeInput'] = (int.from_bytes(received[1].DATA[4:6], byteorder='little') - 1) / 500 * 100
 
-            if (received2[1].ID == 0x211):
+            if received2[1].ID == 0x211:
                 Increments = int.from_bytes(received2[1].DATA[0:4], byteorder='little', signed=True)
                 Angle = round(Increments * 0.009, 4)
                 # Steering:
@@ -472,17 +472,17 @@ class JOANSensoDrive(BaseInput):
                 # Torque
                 Torque = int.from_bytes(received2[1].DATA[6:], byteorder='little', signed=True)
                 self._data['Torque'] = Torque
-            elif (received2[1].ID == 0x210):
+            elif received2[1].ID == 0x210:
                 self._current_state_hex = received2[1].DATA[0]
                 self._error_state[0] = received2[1].DATA[2]
                 self._error_state[1] = received2[1].DATA[3]
-            elif (received2[1].ID == 0x21C):
+            elif received2[1].ID == 0x21C:
                 self._data['ThrottleInput'] = (int.from_bytes(received2[1].DATA[2:4],
                                                               byteorder='little') - 1100) / 2460 * 100
                 self._data['BrakeInput'] = (int.from_bytes(received2[1].DATA[4:6], byteorder='little') - 1) / 500 * 100
                 # self._data['Clut'] = int.from_bytes(result[1].DATA[6:], byteorder = 'little')
 
-            if (received3[1].ID == 0x211):
+            if received3[1].ID == 0x211:
                 Increments = int.from_bytes(received3[1].DATA[0:4], byteorder='little', signed=True)
                 Angle = round(Increments * 0.009, 4)
                 # Steering:
@@ -490,16 +490,16 @@ class JOANSensoDrive(BaseInput):
                 # Torque
                 Torque = int.from_bytes(received3[1].DATA[6:], byteorder='little', signed=True)
                 self._data['Torque'] = Torque
-            elif (received3[1].ID == 0x210):
+            elif received3[1].ID == 0x210:
                 self._current_state_hex = received3[1].DATA[0]
                 self._error_state[0] = received3[1].DATA[2]
                 self._error_state[1] = received3[1].DATA[3]
-            elif (received3[1].ID == 0x21C):
+            elif received3[1].ID == 0x21C:
                 self._data['ThrottleInput'] = (int.from_bytes(received3[1].DATA[2:4],
                                                               byteorder='little') - 1100) / 2460 * 100
                 self._data['BrakeInput'] = (int.from_bytes(received3[1].DATA[4:6], byteorder='little') - 1) / 500 * 100
 
-        if (self._current_state_hex == 0x18):
+        if self._current_state_hex == 0x18:
             self._tab_widget.btn_on_off.setStyleSheet("background-color: red")
             self._tab_widget.btn_on_off.setText('Clear Error')
 
@@ -559,7 +559,7 @@ class JOANSensoDrive(BaseInput):
 
         torque_rate = (self.old_requested_torque - requested_torque) / ((t2 - t1) * 1000) * 1000  # Nm/s
 
-        if (abs(torque_rate) > 20):
+        if abs(torque_rate) > 20:
             print('TORQUE RATE TOO HIGH! TURNING OFF SENSODRIVE')
             self.on_to_off(self.sensodrive_initialization_message)
 
