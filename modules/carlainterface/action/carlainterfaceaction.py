@@ -174,7 +174,7 @@ class CarlaInterfaceAction(JoanModuleAction):
                         items.apply_control(self._data_from_hardware)
                 for items in self.traffic_vehicles:
                     if items.spawned:
-                        items.process()
+                        items.do()
             except Exception as inst:
                 print('Could not apply control', inst)
         else:

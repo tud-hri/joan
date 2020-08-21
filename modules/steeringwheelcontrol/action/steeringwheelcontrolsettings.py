@@ -117,9 +117,9 @@ class FDCAControllerSettings:
     def __init__(self):
         self.t_lookahead = 0.0
         self.k_y = 0.1
-        self.k_psi = 0.4
-        self.lohs = 1.0
-        self.sohf = 1.0
+        self.k_psi = 1.5
+        self.lohs = 3.5
+        self.sohf = 1.5
         self.loha = 0.0
         self.trajectory_name = "default_hcr_trajectory.csv"
 

@@ -252,7 +252,7 @@ class TrafficVehicle(Basevehicle):
         dist_squared = np.einsum('ij,ij->i', deltas, deltas)
         return np.argmin(dist_squared)
 
-    def process(self):
+    def do(self):
         """
         This ticks at the interval of the module and will update the traffic vehicles control input appropriately.
         :return:
