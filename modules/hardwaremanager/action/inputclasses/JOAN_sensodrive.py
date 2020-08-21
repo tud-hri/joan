@@ -1,18 +1,17 @@
+import math
+import multiprocessing as mp
 import os
 import time
 
 from PyQt5 import uic, QtWidgets
 
 from modules.hardwaremanager.action.hardwaremanagersettings import SensoDriveSettings
-from modules.hardwaremanager.action.inputclasses.PCANBasic import *
-from modules.hardwaremanager.action.inputclasses.baseinput import BaseInput
 from modules.hardwaremanager.action.inputclasses.JOAN_sensodrive_communication import SensoDriveComm
 from modules.hardwaremanager.action.inputclasses.JOAN_sensodrive_shared_values import SensoDriveSharedValues
+from modules.hardwaremanager.action.inputclasses.baseinput import BaseInput
 from modules.joanmodules import JOANModules
 from process.statesenum import State
 
-import multiprocessing as mp
-import math
 
 class SensoDriveSettingsDialog(QtWidgets.QDialog):
     """
@@ -101,7 +100,6 @@ class JOAN_SensoDrive(BaseInput):
 
         self.sensodrive_shared_values.sensodrive_ID = nr_of_sensodrives
 
-
         # Torque safety variables
         self.counter = 0
         self.old_requested_torque = 0
@@ -139,17 +137,15 @@ class JOAN_SensoDrive(BaseInput):
         self.init_event = mp.Event()
         self.close_event = mp.Event()
         self.toggle_sensodrive_motor_event = mp.Event()
-        self.update_settings_event = mp.Event()
+        self.update_shared_values_from_settings_event = mp.Event()
         self.shutoff_event = mp.Event()
         self.sensodrive_communication_process = SensoDriveComm(self.sensodrive_shared_values, self.init_event,
                                                                self.toggle_sensodrive_motor_event, self.close_event,
-                                                               self.update_settings_event, self.shutoff_event)
+                                                               self.update_shared_values_from_settings_event, self.shutoff_event)
 
         self._open_settings_dialog()
 
-
-
-    def update_settings(self):
+    def update_shared_values_from_settings(self):
         """
         Updates the settings that are saved internally. NOTE: this is different than with other input modules because
         we want to be ablte to set friction, damping and spring stiffnes parameters without closing the dialog window.
@@ -162,7 +158,8 @@ class JOAN_SensoDrive(BaseInput):
         self.sensodrive_shared_values.friction = self.settings.friction
         self.sensodrive_shared_values.damping = self.settings.damping
         self.sensodrive_shared_values.spring_stiffness = self.settings.spring_stiffness
-        self.update_settings_event.set()
+
+        self.update_shared_values_from_settings_event.set()
 
     def initialize(self):
         """
@@ -300,11 +297,11 @@ class JOAN_SensoDrive(BaseInput):
             requested_torque_by_controller = self._steering_wheel_control_data[
                 self._carla_interface_data['ego_agents']['Car 1']['vehicle_object'].selected_sw_controller]['sw_torque']
             desired_steering_angle = self._steering_wheel_control_data[
-                self._carla_interface_data['ego_agents']['Car 1']['vehicle_object'].selected_sw_controller]['sw_angle_desired_degrees']
+                self._carla_interface_data['ego_agents']['Car 1']['vehicle_object'].selected_sw_controller][
+                'sw_angle_desired_degrees']
         except KeyError:
             requested_torque_by_controller = 0
             desired_steering_angle = 360
-
 
         self.counter = self.counter + 1
 
@@ -315,14 +312,11 @@ class JOAN_SensoDrive(BaseInput):
             self.t1 = int(round(time.time() * 1000))
             self.counter = 0
 
-
-
         # Write away torque parameters and torque checks
         self._data['requested_torque'] = requested_torque_by_controller
         self._data['checked_torque'] = self.safety_checked_torque
         self._data['torque_rate'] = self.torque_rate
         self._data['measured_torque'] = self.sensodrive_shared_values.measured_torque
-
 
         # Handle all shared parameters with the seperate sensodrive communication process
         # Get parameters
@@ -343,7 +337,7 @@ class JOAN_SensoDrive(BaseInput):
         self.sensodrive_shared_values.torque = self.safety_checked_torque
         self.sensodrive_shared_values.friction = self.settings.friction
         self.sensodrive_shared_values.damping = self.settings.damping
-        #UNCOMMENT THIS IF YOU WANT VARIABLE ENDSTOPS
+        # UNCOMMENT THIS IF YOU WANT VARIABLE ENDSTOPS
         # if abs(self.sensodrive_shared_values.steering_angle) < extra_endstop - 2:
         #     self.sensodrive_shared_values.endstops = extra_endstop
         self.sensodrive_shared_values.endstops = self.settings.endstops
@@ -351,10 +345,8 @@ class JOAN_SensoDrive(BaseInput):
         self.sensodrive_shared_values.torque_limit_beyond_endstops = self.settings.torque_limit_beyond_endstops
         self.sensodrive_shared_values.spring_stiffness = self.settings.spring_stiffness
 
-
         # Lastly we also need to write the spring stiffness in data for controller purposes
         self._data['spring_stiffness'] = self.sensodrive_shared_values.spring_stiffness
-
 
         return self._data
 
@@ -383,5 +375,3 @@ class JOAN_SensoDrive(BaseInput):
         self.old_requested_torque = requested_torque
 
         return [checked_torque, torque_rate]
-
-
