@@ -295,9 +295,9 @@ class JOAN_SensoDrive(BaseInput):
 
         try:
             requested_torque_by_controller = self._steering_wheel_control_data[
-                self._carla_interface_data['ego_agents']['Car 1']['vehicle_object'].selected_sw_controller]['sw_torque']
+                self._carla_interface_data['ego_agents']['Vehicle 1']['vehicle_object'].selected_sw_controller]['sw_torque']
             desired_steering_angle = self._steering_wheel_control_data[
-                self._carla_interface_data['ego_agents']['Car 1']['vehicle_object'].selected_sw_controller][
+                self._carla_interface_data['ego_agents']['Vehicle 1']['vehicle_object'].selected_sw_controller][
                 'sw_angle_desired_degrees']
         except KeyError:
             requested_torque_by_controller = 0
@@ -307,8 +307,8 @@ class JOAN_SensoDrive(BaseInput):
 
         if self.counter == 5:
             [self.safety_checked_torque, self.torque_rate] = self.torque_check(
-                requested_torque=requested_torque_by_controller, t1=self.t1, torque_limit_mNm=20000,
-                torque_rate_limit_Nms=150)
+                requested_torque=requested_torque_by_controller, t1=self.t1, torque_limit_mnm=20000,
+                torque_rate_limit_nms=150)
             self.t1 = int(round(time.time() * 1000))
             self.counter = 0
 
@@ -350,7 +350,7 @@ class JOAN_SensoDrive(BaseInput):
 
         return self._data
 
-    def torque_check(self, requested_torque, t1, torque_rate_limit_Nms, torque_limit_mNm):
+    def torque_check(self, requested_torque, t1, torque_rate_limit_nms, torque_limit_mnm):
         """
         Checks the torque in 2 ways, one the max capped torque
         And the torque rate.
@@ -360,14 +360,14 @@ class JOAN_SensoDrive(BaseInput):
 
         torque_rate = (self.old_requested_torque - requested_torque) / ((t2 - t1) * 1000) * 1000  # Nm/s
 
-        if (abs(torque_rate) > torque_rate_limit_Nms):
+        if abs(torque_rate) > torque_rate_limit_nms:
             print('TORQUE RATE TOO HIGH! TURNING OFF SENSODRIVE')
             self.shut_off_sensodrive()
 
-        if requested_torque > torque_limit_mNm:
-            checked_torque = torque_limit_mNm
-        elif requested_torque < -torque_limit_mNm:
-            checked_torque = -torque_limit_mNm
+        if requested_torque > torque_limit_mnm:
+            checked_torque = torque_limit_mnm
+        elif requested_torque < -torque_limit_mnm:
+            checked_torque = -torque_limit_mnm
         else:
             checked_torque = requested_torque
 
