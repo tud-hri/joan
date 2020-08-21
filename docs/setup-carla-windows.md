@@ -3,6 +3,8 @@
 !!! Note
     If you are a TU Delft student working on one of the TUD computers with CARLA installed, you can skip these instructions. Go to the [setup guide for installing on TUD shared hardware](setup-on-tud-shared-hardware.md) instead.
 
+!!! Note
+    If you want to do a clean install of CARLA, Python etc. on a TUD PC (if it's a new PC, or when you want to upgrade Python or Unreal Engine), first ask one of the JOAN developer team on Slack or your supervisor. Next, you need to do all the installations on the `localadmin` account to make everything available for all users.
 ---
 These instructions are are heavily based on the awesome documentation provided by the CARLA team. If you get stuck somewhere, you could have a look at [their documentation](https://carla.readthedocs.io/en/latest/) as well.
 
@@ -72,9 +74,14 @@ Download Unreal Engine 4.24.x and use the default install settings. Make sure to
     
 ### Python3 x64
 
- Install python 3 and __make sure you get the x64 version__ else it will not work, there is even some speculation that if you have a x32 version installed it can cause conflicts so its best to only have x64. At the time of writing this guide the working version of python is __[Python 3.8.2](https://www.python.org/downloads/release/python-382/)__
+Install python 3 and __make sure you get the x64 version__ else it will not work, there is even some speculation that if you have a x32 version installed it can cause conflicts so its best to only have x64. At the time of writing this guide the working version of python is __[Python 3.8.5](https://www.python.org/downloads/release/python-385/)__
 
-Having multiple versions of python installed (even if they're all x64) can cause issues. If you don't really need multiple versions, the best option is to get
+!!! Note
+    If you are installing Python as `localadmin` on a shared TUD PC, 
+    - set the installation directory to `c:\python` 
+    - make sure to check the 'make available for all users' and 'add to path' boxes.
+
+Having multiple versions of Python installed (even if they're all x64) can cause issues. If you don't really need multiple versions, the best option is to get
 rid of the version(s) you don't really need. If you do need multiple versions, please make sure that the version you will be using for joan (3.8 if you've
 followed above instructions) is the only version in your system and user `PATH` variable.
 
@@ -85,7 +92,7 @@ versions of Python installed. Open a command line window and type:
 
 This should give a response similar to the one below. Please make sure that you are running the Python version you have just installed.
 
-    Python 3.8.2 (tags/v3.8.2:7b3ab59, Feb 25 2020, 23:03:10) [MSC v.1916 64 bit (AMD64)] on win32
+    Python 3.8.5 (tags/v3.8.5:7b3ab59, Feb 25 2020, 23:03:10) [MSC v.1916 64 bit (AMD64)] on win32
     Type "help", "copyright", "credits" or "license" for more information.
     >>>
     
@@ -101,6 +108,9 @@ or
 
 !!! Important
     Only use python 3, preferably [python 3.8 (64 bit)](https://www.python.org/ftp/python/3.8.5/python-3.8.5-amd64.exe). Installing python 2.7 will be a waste of your time ;-)
+
+!!! Note
+    We noticed that also having Anaconda installed can result in issues. Please let us know through Slack if you found a way to separate Anaconda from the freshly installed Python version.
 
 ### Python editors
 

@@ -2,6 +2,8 @@
 
 You will most likely create your own project (a map) on a shared computer. To make sure we keep everything organized, you need to follow the following steps precisely. Follow these steps for every computer you want to install your project on.
 
+If you need to do a fresh install on the computer, follow the steps in both the [CARLA setup guide](setup-carla-windows.md) and [JOAN setup guide](setup-joan.md).
+
 ## How to install your project on a shared computer
 
 - Login with your TU Delft NETID. 
@@ -41,3 +43,7 @@ We prepared a map for you as a template/starting point called `DebugMap`, which 
   
 !!! Warning
     Make sure to load your own map, so double check that you are in the right directory when opening your level!
+    
+## Reserving and sharing the TUD computers
+
+We have limited hardware at the TUD for you to work on. Please share the PCs fairly among your fellow students. You can coordinate through Slack (joan-forum, for example). Furthermore, you can reserve the computers through a shared calendar. Ask Timo Melman to add you to the calendar. Be nice to each other :-)
