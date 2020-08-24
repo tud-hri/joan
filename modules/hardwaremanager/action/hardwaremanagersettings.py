@@ -15,7 +15,7 @@ class HardwareManagerSettings(JoanModuleSettings):
         self.joy_sticks = []
         self.sensodrives = []
 
-    def set_from_loaded_dict(self, loaded_dict):
+    def load_from_dict(self, loaded_dict):
         """
         This method overrides the base implementation of loading settings from dicts. This is done because hardware manager has the unique property that
         multiple custom settings classes are combined in a list. This behavior is not supported by the normal joan module settings, so it an specific solution
@@ -24,16 +24,21 @@ class HardwareManagerSettings(JoanModuleSettings):
         :param loaded_dict: (dict) dictionary containing the settings to load
         :return: None
         """
-        try:
-            module_settings_to_load = loaded_dict[str(self._module_enum)]
-        except KeyError:
-            warning_message = "WARNING: loading settings for the " + str(self._module_enum) + \
-                              " module from a dictionary failed. The loaded dictionary did not contain " + str(
-                self._module_enum) + " settings." + \
-                              (" It did contain settings for: " + ", ".join(
-                                  loaded_dict.keys()) if loaded_dict.keys() else "")
-            print(warning_message)
-            return
+        # prepare the module for the new settings
+        self.before_load_settings.emit()
+
+        module_settings_to_load = loaded_dict[str(self._module_enum)]
+
+        # clean up existing settings
+        while self.key_boards:
+            device = self.key_boards.pop()
+            del device
+        while self.joy_sticks:
+            device = self.joy_sticks.pop()
+            del device
+        while self.sensodrives:
+            device = self.sensodrives.pop()
+            del device
 
         self.key_boards = []
         for keyboard_settings_dict in module_settings_to_load['key_boards']:
@@ -52,6 +57,25 @@ class HardwareManagerSettings(JoanModuleSettings):
             sensodrive_settings = SensoDriveSettings()
             sensodrive_settings.set_from_loaded_dict(sensodrive)
             self.sensodrives.append(sensodrive_settings)
+
+        # done loading settings, emit signal
+        self.load_settings_done.emit()
+
+    def remove_input_device(self, name):
+        if "Keyboard" in name:
+            for device in self.key_boards:
+                if device.name == name:
+                    self.key_boards.remove(device)
+
+        if "Joystick" in name:
+            for device in self.joy_sticks:
+                if device.name == name:
+                    self.joy_sticks.remove(device)
+
+        if "SensoDrive" in name:
+            for device in self.sensodrives:
+                if device.name == name:
+                    self.sensodrives.remove(device)
 
     @staticmethod
     def _copy_dict(source, destination):
@@ -100,6 +124,7 @@ class KeyBoardSettings:
     """
     Default keyboard settings that will load whenever a keyboard class is created.
     """
+
     def __init__(self):
         self.steer_left_key = QtGui.QKeySequence('a')[0]
         self.steer_right_key = QtGui.QKeySequence('d')[0]
@@ -107,6 +132,7 @@ class KeyBoardSettings:
         self.brake_key = QtGui.QKeySequence('s')[0]
         self.reverse_key = QtGui.QKeySequence('r')[0]
         self.handbrake_key = QtGui.QKeySequence('space')[0]
+        self.name = "Keyboard"
 
         # Steering Range
         self.min_steer = -90
@@ -132,11 +158,13 @@ class JoyStickSettings:
     """
     Default joystick settings that will load whenever a keyboard class is created.
     """
+
     def __init__(self):
         self.min_steer = -90
         self.max_steer = 90
         self.device_vendor_id = 0
         self.device_product_id = 0
+        self.name = "Joystick"
 
         self.degrees_of_freedom = 12
         self.gas_channel = 9
@@ -193,13 +221,15 @@ class SensoDriveSettings:
     """
     Default sensodrive settings that will load whenever a keyboard class is created.
     """
+
     def __init__(self):
         self.endstops = 360  # degrees
-        self.torque_limit_between_endstops = 100  # percent
-        self.torque_limit_beyond_endstops = 100  # percent
-        self.friction = 300  # mNm
-        self.damping = 30  # mNm/rev/min
-        self.spring_stiffness = 20  # mNm/deg
+        self.torque_limit_between_endstops = 254  # percent
+        self.torque_limit_beyond_endstops = 254  # percent
+        self.friction = 0  # mNm
+        self.damping = 80 # mNm/rev/min
+        self.spring_stiffness = 40  # mNm/deg
+        self.torque = 0 #mNm
 
     def as_dict(self):
         return self.__dict__

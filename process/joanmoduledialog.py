@@ -59,9 +59,6 @@ class JoanModuleDialog(QtWidgets.QDialog):
             self.state_widget.input_tick_millis.setPlaceholderText(str(self.module_action.tick_interval_ms))
             self.state_widget.input_tick_millis.textChanged.connect(self._set_tick_interval_ms)
 
-            # reflect current state
-            self.handle_state_change()
-
             # setup button enables
             self.state_widget.btn_start.setEnabled(False)
 
@@ -70,6 +67,12 @@ class JoanModuleDialog(QtWidgets.QDialog):
         self.layout().addWidget(self.module_widget)
 
         self.module_action.register_module_dialog(module_dialog=self)
+
+        # load default settings
+        self.module_action.load_default_settings()
+
+        # reflect latest state
+        self.handle_state_change()
 
     def _button_start_clicked(self):
         self.module_action.start()
@@ -81,13 +84,16 @@ class JoanModuleDialog(QtWidgets.QDialog):
         self.module_action.initialize()
 
     def _load_settings(self):
-        settings_file_to_load, _ = QtWidgets.QFileDialog.getOpenFileName(self, 'Load settings',
+        """
+        Loads settings from json file.
+        :return:
+        """
+        settings_file_to_load, _ = QtWidgets.QFileDialog.getOpenFileName(self, 'load settings',
                                                                          os.path.join(self.module_action.module_path,
                                                                                       'action'),
                                                                          filter='*.json')
         if settings_file_to_load:
-            self.module_action.load_settings(settings_file_to_load)
-            self.initialize_widgets_from_settings()
+            self.module_action.load_settings_from_file(settings_file_to_load)
 
     def _save_settings(self):
         """
@@ -109,63 +115,65 @@ class JoanModuleDialog(QtWidgets.QDialog):
         handle state change
         This function is connected to the module's state machine
         """
-        current_state = self.module_action.state_machine.current_state
-        message = self.module_action.state_machine.state_message
 
-        # update the state label
-        self.state_widget.lbl_module_state.setText(str(current_state))
-        self.state_widget.lbl_state_message.setText(message)
+        if hasattr(self, 'state_widget'):
+            current_state = self.module_action.state_machine.current_state
+            message = self.module_action.state_machine.state_message
 
-        if current_state is State.RUNNING:
-            self.state_widget.lbl_module_state.setStyleSheet("background: green;")
-        elif current_state is State.IDLE:
-            self.state_widget.lbl_module_state.setStyleSheet("background: orange;")
-        elif current_state is State.READY:
-            self.state_widget.lbl_module_state.setStyleSheet("background: yellow;")
-        elif current_state is State.ERROR:  # an Error state
-            self.state_widget.lbl_module_state.setStyleSheet("background: red;")
+            # update the state label
+            self.state_widget.lbl_module_state.setText(str(current_state))
+            self.state_widget.lbl_state_message.setText(message)
 
-        if current_state == State.READY:
-            self.state_widget.btn_start.setEnabled(True)
-            self.state_widget.input_tick_millis.setEnabled(True)
-            self.state_widget.input_tick_millis.clear()
-            self.state_widget.input_tick_millis.setPlaceholderText(str(self.module_action.tick_interval_ms))
-        else:
-            self.state_widget.btn_start.setEnabled(False)
+            if current_state is State.RUNNING:
+                self.state_widget.lbl_module_state.setStyleSheet("background: green;")
+            elif current_state is State.IDLE:
+                self.state_widget.lbl_module_state.setStyleSheet("background: orange;")
+            elif current_state is State.READY:
+                self.state_widget.lbl_module_state.setStyleSheet("background: yellow;")
+            elif current_state is State.ERROR:  # an Error state
+                self.state_widget.lbl_module_state.setStyleSheet("background: red;")
 
-        if current_state == State.IDLE or current_state == State.ERROR:
-            self.state_widget.btn_initialize.setEnabled(True)
-        else:
-            self.state_widget.btn_initialize.setEnabled(False)
+            if current_state == State.READY:
+                self.state_widget.btn_start.setEnabled(True)
+                self.state_widget.input_tick_millis.setEnabled(True)
+                self.state_widget.input_tick_millis.clear()
+                self.state_widget.input_tick_millis.setPlaceholderText(str(self.module_action.tick_interval_ms))
+            else:
+                self.state_widget.btn_start.setEnabled(False)
 
-        if current_state == State.RUNNING:
-            self.state_widget.btn_stop.setEnabled(True)
-            self.state_widget.input_tick_millis.setEnabled(False)
-            self.state_widget.input_tick_millis.clear()
-            self.state_widget.input_tick_millis.clearFocus()
-            self.state_widget.input_tick_millis.setPlaceholderText(str(self.module_action.tick_interval_ms))
-        else:
-            self.state_widget.btn_stop.setEnabled(False)
+            if current_state == State.IDLE or current_state == State.ERROR:
+                self.state_widget.btn_initialize.setEnabled(True)
+            else:
+                self.state_widget.btn_initialize.setEnabled(False)
 
-        if current_state == State.IDLE:
-            self.state_widget.input_tick_millis.setEnabled(True)
-            self.state_widget.input_tick_millis.clear()
-            self.state_widget.input_tick_millis.setPlaceholderText(str(self.module_action.tick_interval_ms))
+            if current_state == State.RUNNING:
+                self.state_widget.btn_stop.setEnabled(True)
+                self.state_widget.input_tick_millis.setEnabled(False)
+                self.state_widget.input_tick_millis.clear()
+                self.state_widget.input_tick_millis.clearFocus()
+                self.state_widget.input_tick_millis.setPlaceholderText(str(self.module_action.tick_interval_ms))
+            else:
+                self.state_widget.btn_stop.setEnabled(False)
 
-        # If module is running change button color
-        if current_state == State.RUNNING:
-            self.state_widget.btn_start.setStyleSheet("background-color: lightgreen")
-            self.state_widget.btn_start.setText('Running')
-            # self.state_widget.btn_start.setEnabled(False)
-        elif current_state == State.ERROR:
-            self.state_widget.btn_initialize.setStyleSheet("background-color: orange")
-            self.state_widget.btn_initialize.setText('Clear Error')
-        else:
-            self.state_widget.btn_start.setStyleSheet("background-color: none")
-            self.state_widget.btn_initialize.setStyleSheet("background-color: none")
-            self.state_widget.btn_initialize.setText('Initialize')
-            self.state_widget.btn_start.setText('Start')
-            # self.state_widget.btn_start.setEnabled(True)
+            if current_state == State.IDLE:
+                self.state_widget.input_tick_millis.setEnabled(True)
+                self.state_widget.input_tick_millis.clear()
+                self.state_widget.input_tick_millis.setPlaceholderText(str(self.module_action.tick_interval_ms))
+
+            # If module is running change button color
+            if current_state == State.RUNNING:
+                self.state_widget.btn_start.setStyleSheet("background-color: lightgreen")
+                self.state_widget.btn_start.setText('Running')
+                # self.state_widget.btn_start.setEnabled(False)
+            elif current_state == State.ERROR:
+                self.state_widget.btn_initialize.setStyleSheet("background-color: orange")
+                self.state_widget.btn_initialize.setText('Clear Error')
+            else:
+                self.state_widget.btn_start.setStyleSheet("background-color: none")
+                self.state_widget.btn_initialize.setStyleSheet("background-color: none")
+                self.state_widget.btn_initialize.setText('Initialize')
+                self.state_widget.btn_start.setText('Start')
+                # self.state_widget.btn_start.setEnabled(True)
 
     def toggle_show_close(self):
         """

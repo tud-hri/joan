@@ -75,5 +75,5 @@ class TrajectoryRecorder:
             self._trajectory_data = [[x_pos, y_pos, steering_wheel_angle, throttle_input, brake_input, heading, vel]]
             self._trajectory_data_spaced = [
                 [x_pos, y_pos, steering_wheel_angle, throttle_input, brake_input, heading, vel]]
-        except Exception as inst:
-            print(inst)
+        except KeyError:
+            pass

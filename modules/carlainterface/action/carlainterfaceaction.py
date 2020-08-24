@@ -12,9 +12,8 @@ from PyQt5.QtWidgets import QMessageBox, QApplication
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
 from process.statesenum import State
-from process.status import Status
-from .agents.egovehicle import Egovehicle
-from .agents.trafficvehicle import Trafficvehicle
+from .agents.egovehicle import EgoVehicle
+from .agents.trafficvehicle import TrafficVehicle
 from .carlainterfacesettings import CarlaInterfaceSettings, EgoVehicleSettings, TrafficVehicleSettings
 from .carlainterfacesignals import CarlaInterfaceSignals
 
@@ -63,42 +62,41 @@ class CarlaInterfaceAction(JoanModuleAction):
         self._data_from_hardware = {}
 
         self.settings = CarlaInterfaceSettings(module_enum=JOANModules.CARLA_INTERFACE)
+        self.settings.before_load_settings.connect(self.prepare_load_settings)
+        self.settings.load_settings_done.connect(self.apply_loaded_settings)
+        default_settings_file_location = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                                      'carlainterface_settings.json')
+        if os.path.isfile(default_settings_file_location):
+            self.settings.load_from_file(default_settings_file_location)
 
-        # Carla connection variables:
+        self.share_settings(self.settings)
+
+        # CARLA connection variables:
         self.host = 'localhost'
         self.port = 2000
         self.connected = False
         self.vehicle_tags = []
         self.vehicles = []
         self.traffic_vehicles = []
-
-        # initialize modulewide state handler
-        self.status = Status()
-
         self._available_controllers = []
 
-        self.hardware_manager_state_machine = self.status.get_module_state_machine(JOANModules.HARDWARE_MANAGER)
+        self.hardware_manager_state_machine = self.singleton_status.get_module_state_machine(
+            JOANModules.HARDWARE_MANAGER)
         self.hardware_manager_state_machine.add_state_change_listener(self._hardware_state_change_listener)
         self._hardware_state_change_listener()
 
-        self.sw_controller_state_machine = self.status.get_module_state_machine(JOANModules.STEERING_WHEEL_CONTROL)
+        self.sw_controller_state_machine = self.singleton_status.get_module_state_machine(
+            JOANModules.STEERING_WHEEL_CONTROL)
         self.sw_controller_state_machine.add_state_change_listener(self._sw_controller_state_change_listener)
         self._sw_controller_state_change_listener()
 
         # message box for error display
         self.msg = QMessageBox()
 
-        ## State handling (these are for now all the same however maybe in the future you want to add other functionality)
+        # state handling
         self.state_machine.set_transition_condition(State.IDLE, State.READY, self._init_condition)
         self.state_machine.set_transition_condition(State.READY, State.RUNNING, self._starting_condition)
         self.state_machine.set_transition_condition(State.RUNNING, State.READY, self._stopping_condition)
-
-        default_settings_file_location = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                                      'agent_manager_settings.json')
-        if os.path.isfile(default_settings_file_location):
-            self.settings.load_from_file(default_settings_file_location)
-
-        self.share_settings(self.settings)
 
         # signals
         self._module_signals = CarlaInterfaceSignals(self.module)
@@ -110,21 +108,20 @@ class CarlaInterfaceAction(JoanModuleAction):
 
     @property
     def world(self):
-        return self._world
+        return self.world
 
     @property
     def spawnpoints(self):
         return self._spawn_points
 
     def _hardware_state_change_listener(self):
-        " This function is linked to the state change of the hardware manager and updates the state whenever it changes"
-
-        self.hardware_manager_state = self.status.get_module_current_state(JOANModules.HARDWARE_MANAGER)
+        """ This function is linked to the state change of the hardware manager and updates the state whenever it changes"""
+        self.hardware_manager_state = self.singleton_status.get_module_current_state(JOANModules.HARDWARE_MANAGER)
 
     def _sw_controller_state_change_listener(self):
         """This function is linked to the state change of the sw_controller, if new controllers are initialized they will be
         automatically added to a variable which contains the options in the SW controller combobox"""
-        self.sw_controller_state = self.status.get_module_current_state(JOANModules.STEERING_WHEEL_CONTROL)
+        self.sw_controller_state = self.singleton_status.get_module_current_state(JOANModules.STEERING_WHEEL_CONTROL)
 
     def _starting_condition(self):
         """
@@ -142,7 +139,7 @@ class CarlaInterfaceAction(JoanModuleAction):
 
     def _init_condition(self):
         try:
-            if self.connected is True:
+            if self.connected:
                 # TODO: move this example to the new enum
                 return True, ''
             else:
@@ -166,7 +163,7 @@ class CarlaInterfaceAction(JoanModuleAction):
         """
         if self.connected:
             for agent in self.vehicles:
-                self.data['ego_agents'][agent.vehicle_nr] = agent.unpack_vehicle_data()
+                self.data['ego_agents'][agent.name] = agent.unpack_vehicle_data()
             self.write_news(news=self.data)
             self._data_from_hardware = self.read_news(JOANModules.HARDWARE_MANAGER)
             try:
@@ -175,21 +172,31 @@ class CarlaInterfaceAction(JoanModuleAction):
                         items.apply_control(self._data_from_hardware)
                 for items in self.traffic_vehicles:
                     if items.spawned:
-                        items.process()
+                        items.do()
             except Exception as inst:
                 print('Could not apply control', inst)
         else:
             self.stop()
 
-    def load_settings(self, settings_file_to_load):
-        # remove all current agents  first
-        while self.vehicles:
-            self.vehicles[-1].remove_ego_agent()
+    def prepare_load_settings(self):
+        # remove all agents
+        self.remove_all()
 
-        while self.traffic_vehicles:
-            self.traffic_vehicles[-1].remove_traffic_agent()
+    def apply_loaded_settings(self):
 
-        self._load_settings_from_file(settings_file_to_load)
+        if not self.connected:
+            return self.state_machine.request_state_change(State.ERROR,
+                                                           "You can only load settings when CARLA is connected. " + \
+                                                           "Connect and reload settings")
+
+        # create vehicles and traffic_vehicles
+        for setting in self.settings.ego_vehicles:
+            self.add_ego_agent(setting)
+
+        for setting in self.settings.traffic_vehicles:
+            self.add_traffic_agent(setting)
+
+        pass
 
     def check_connection(self):
         """
@@ -198,30 +205,28 @@ class CarlaInterfaceAction(JoanModuleAction):
         """
         return self.connected
 
-    def connect(self):
+    def connect_carla(self):
         """
         This function will try and connect to carla server if it is running in unreal
         If not a message box will pop up and the module will transition to error state.
         """
         if not self.connected:
             try:
-                print(' connecting')
                 QApplication.setOverrideCursor(Qt.WaitCursor)
                 self.client = carla.Client(self.host, self.port)  # connecting to server
                 self.client.set_timeout(2.0)
                 time.sleep(2)
-                self._world = self.client.get_world()  # get world object (contains everything)
+                self.world = self.client.get_world()  # get world object (contains everything)
                 blueprint_library = self.world.get_blueprint_library()
                 self._vehicle_bp_library = blueprint_library.filter('vehicle.*')
                 for items in self.vehicle_bp_library:
                     self.vehicle_tags.append(items.id[8:])
-                world_map = self._world.get_map()
+                world_map = self.world.get_map()
                 self._spawn_points = world_map.get_spawn_points()
                 self.nr_spawn_points = len(self._spawn_points)
 
                 ## Uncomment this if you want to save the opendrive trajectory to a csv file,
                 ## PLEASE CHECK THE FILE SAVING LOCATION!!
-
                 # print('saving current opendrive trajectory to csv file')
                 # self.save_opendrive_trajectory(world_map)
 
@@ -245,25 +250,25 @@ class CarlaInterfaceAction(JoanModuleAction):
 
         return self.connected
 
-    def disconnect(self):
+    def disconnect_carla(self):
         """
         This function will try and disconnect from the carla server, if the module was running it will transition into
         an error state
         """
         if self.connected:
-            print('Disconnecting')
             for cars in self.vehicles:
                 cars.destroy_car()
+                cars.remove_car()
 
             self.client = None
-            self._world = None
+            self.world = None
             self.connected = False
             self.data['connected'] = self.connected
             self.write_news(news=self.data)
 
             self.state_machine.request_state_change(State.IDLE, 'Carla Disconnected')
 
-        return self.connected
+        self.module_dialog.disconnect_carla(self.connected)
 
     def save_opendrive_trajectory(self, world_map):
         """
@@ -282,7 +287,7 @@ class CarlaInterfaceAction(JoanModuleAction):
             angle = waypoint.transform.rotation.yaw
             angle = angle % 360
             angle = (angle + 360) % 360
-            if (angle > 180):
+            if angle > 180:
                 angle -= 360
 
             self._waypoints.append([i, waypoint.transform.location.x, waypoint.transform.location.y, 0, 0, 0, angle, 0])
@@ -292,22 +297,20 @@ class CarlaInterfaceAction(JoanModuleAction):
             i = i + 1
 
         for k in range(0, len(self._waypoints)):
-            FirstPoint = np.array([self._waypoints[k][1], self._waypoints[k][2]])
+            first_point = np.array([self._waypoints[k][1], self._waypoints[k][2]])
             if k < len(self._waypoints) - 1:
-                SecondPoint = np.array([self._waypoints[k + 1][1], self._waypoints[k + 1][2]])
+                second_point = np.array([self._waypoints[k + 1][1], self._waypoints[k + 1][2]])
             else:
-                SecondPoint = np.array([self._waypoints[0][1], self._waypoints[0][2]])
+                second_point = np.array([self._waypoints[0][1], self._waypoints[0][2]])
 
-            dirvec = SecondPoint - FirstPoint
+            dirvec = second_point - first_point
             dirvec_unit = dirvec / np.linalg.norm(dirvec)
 
             self._waypoints[k][6] = np.math.atan2(dirvec_unit[1], dirvec_unit[0]) - np.math.atan2(xvec[1], xvec[0])
 
-        self._waypoints_visual = self._waypoints[0:len(self._waypoints):5]
-
         df = pd.DataFrame(self._waypoints,
                           columns=['Row Name', 'PosX', 'PosY', 'SteeringAngle', 'Throttle', 'Brake', 'Psi', 'Vel'])
-        df2 = pd.DataFrame(self._waypoints_visual,
+        df2 = pd.DataFrame(self._waypoints[0:len(self._waypoints):5],
                            columns=['Row Name', 'PosX', 'PosY', 'SteeringAngle', 'Throttle', 'Brake', 'Psi', 'Vel'])
         df.to_csv(
             r'C:\Repositories\joan\modules\steeringwheelcontrol\action\swcontrollers\trajectories\opendrive_trajectory.csv',
@@ -328,10 +331,19 @@ class CarlaInterfaceAction(JoanModuleAction):
             ego_vehicle_settings = EgoVehicleSettings()
             self.settings.ego_vehicles.append(ego_vehicle_settings)
 
-        self.vehicles.append(
-            Egovehicle(self, len(self.vehicles), self.nr_spawn_points, self.vehicle_tags, ego_vehicle_settings))
+        # TODO find unique name for vehicle name
+        vehicle_name = "Vehicle" + str(len(self.vehicles) + 1)
 
-        " only make controller available for first car for now"
+        vehicle = EgoVehicle(self, vehicle_name, self.nr_spawn_points, self.vehicle_tags, ego_vehicle_settings)
+        self.vehicles.append(vehicle)
+
+        if is_a_new_ego_agent:
+            self.settings.ego_vehicles.name = vehicle.name
+
+        # add widget
+        self.module_dialog.add_ego_agent_widget(vehicle)
+
+        # only make controller available for first car for now
         for vehicle in self.vehicles[1:]:
             vehicle.settings_dialog.combo_sw_controller.setEnabled(False)
 
@@ -349,9 +361,16 @@ class CarlaInterfaceAction(JoanModuleAction):
             traffic_vehicle_settings = TrafficVehicleSettings()
             self.settings.traffic_vehicles.append(traffic_vehicle_settings)
 
-        self.traffic_vehicles.append(
-            Trafficvehicle(self, len(self.traffic_vehicles), self.nr_spawn_points, self.vehicle_tags,
-                           traffic_vehicle_settings))
+        vehicle = TrafficVehicle(self, len(self.traffic_vehicles), self.nr_spawn_points, self.vehicle_tags,
+                                 traffic_vehicle_settings)
+        vehicle.load_trajectory()
+        self.traffic_vehicles.append(vehicle)
+
+        if is_a_new_traffic_agent:
+            self.settings.traffic_vehicles.name = vehicle.name
+
+        # add widget
+        self.module_dialog.add_traffic_agent_widget(vehicle)
 
         return self.traffic_vehicles
 
@@ -364,8 +383,7 @@ class CarlaInterfaceAction(JoanModuleAction):
                                                     "carla module is NOT imported, make sure the API is available and restart the program")
 
         if self.state_machine.current_state is State.IDLE:
-
-            self.connect()
+            self.connect_carla()
             self.state_machine.request_state_change(State.READY, "You can now add vehicles and start module")
         elif self.state_machine.current_state is State.ERROR and 'carla' in sys.modules.keys():
             self.state_machine.request_state_change(State.IDLE)
@@ -400,3 +418,89 @@ class CarlaInterfaceAction(JoanModuleAction):
         except RuntimeError:
             return False
         return super().stop()
+
+    def remove_agent(self, agent):
+        agent.remove_ego_agent()  # destroy the vehicle in carla, and corresponding dialogs
+
+        print("Removing vehicle")
+
+        if isinstance(agent, EgoVehicle):
+            self._remove_vehicle(agent)
+        elif isinstance(agent, TrafficVehicle):
+            self._remove_traffic_vehicle(agent)
+
+            # try:
+            # del self.data['traffic_vehicles']
+
+    def _remove_vehicle(self, agent):
+        # remove from settings
+        print(self.settings.as_dict())
+        for vehicle_setting in self.settings.vehicles:
+            if vehicle_setting.name == agent.name:
+                try:
+                    self.settings.vehicle.remove(vehicle_setting)  # TODO does this delete the class?
+                except ValueError:
+                    pass
+        print(self.settings.as_dict())
+
+        # remove from data
+        try:
+            del self.data['ego_agents'][agent.vehicle_nr]
+        except KeyError:  # data is only present if the hardware manager ran since the hardware was added
+            pass
+
+        # remove from settins
+        for vehicle in self.vehicles:
+            if vehicle.name == agent.name:
+                try:
+                    v = self.vehicles.pop(self.vehicles.index(vehicle))
+                    del v
+                except ValueError:
+                    pass
+
+    def _remove_traffic_vehicle(self, agent):
+        # remove from settings
+        for vehicle_setting in self.settings.traffic_vehicles:
+            if vehicle_setting.name == agent.name:
+                try:
+                    self.settings.traffic_vehicles.remove(vehicle_setting)  # TODO does this delete the class?
+                except ValueError:
+                    pass
+
+        # remove object
+        for vehicle in self.traffic_vehicles:
+            if vehicle.name == agent.name:
+                try:
+                    v = self.traffic_vehicles.pop(self.traffic_vehicles.index(vehicle))
+                    del v
+                except ValueError:
+                    pass
+
+    def remove_all(self):
+        while self.vehicles:
+            self._remove_vehicle(self.vehicles.pop())
+
+        while self.traffic_vehicles:
+            self._remove_traffic_vehicle(self.traffic_vehicles.pop())
+
+    def spawn_all(self):
+        """
+        Spawn all agents in CARLA
+        :return:
+        """
+        for agents in self.vehicles:
+            agents.spawn_car()
+
+        for traffic_agents in self.traffic_vehicles:
+            traffic_agents.spawn_car()
+
+    def destroy_all(self):
+        """
+        Destroys all agents currently in simulation
+        :return:
+        """
+        for agents in self.vehicles:
+            agents.destroy_car()
+
+        for traffic_agents in self.traffic_vehicles:
+            traffic_agents.destroy_car()

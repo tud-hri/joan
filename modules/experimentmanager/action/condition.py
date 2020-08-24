@@ -47,7 +47,7 @@ class Condition:
         for key in base_dict.keys():
             if key not in specific_dict.keys():
                 raise ValueError(
-                    'It is not possible to remove settings that are present in the base of in experiment in a certain condition. '
+                    'It is not possible to remove_input_device settings that are present in the base of in experiment in a certain condition. '
                     'Conditions can only add or change settings.')
 
         # TODO: list handling here is pretty inefficient have a look later

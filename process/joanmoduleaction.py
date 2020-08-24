@@ -63,6 +63,7 @@ class JoanModuleAction(QtCore.QObject):
         self.data = {}
         self.write_news(news=self.data)
 
+        # settings
         self.settings = None
 
         # (py)Qt signals for triggering specific module actions/functions
@@ -126,15 +127,22 @@ class JoanModuleAction(QtCore.QObject):
         """
         self.singleton_settings.update_settings(self.module, module_settings)
 
-    def load_settings(self, settings_file_to_load):
-        """
-        Load settings. This function allows programmers to customize the load settings (clear things, etc)
-        :param settings_file_to_load:
-        :return:
-        """
-        self._load_settings_from_file(settings_file_to_load)
+    def load_default_settings(self):
+        # load existing settings
+        default_settings_file_location = os.path.join(self.module_path, 'action', 'default_settings.json')
 
-    def _load_settings_from_file(self, settings_file_to_load):
+        if os.path.isfile(default_settings_file_location):
+            self.settings.load_from_file(default_settings_file_location)
+
+    def prepare_load_settings(self):
+        """Override this function if you need to prepare your module before the new settings are loaded"""
+        pass
+
+    def apply_loaded_settings(self):
+        """Apply the new settings once these are loaded"""
+        pass
+
+    def load_settings_from_file(self, settings_file_to_load):
         """
         Loads appropriate settings from .json file
         :param settings_file_to_load:

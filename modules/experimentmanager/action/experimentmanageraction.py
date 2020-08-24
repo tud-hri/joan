@@ -13,7 +13,7 @@ class ExperimentManagerAction(JoanModuleAction):
         # create/get default experiment_settings
         self.my_file = os.path.join('.', 'default_experiment_settings.json')
 
-        # First remove current file
+        # First remove_input_device current file
         if os.path.exists(self.my_file):
             os.remove(self.my_file)
 
@@ -76,9 +76,9 @@ class ExperimentManagerAction(JoanModuleAction):
         # apply base settings first, then condition settings
 
         for module, settings_dict in self.current_experiment.base_settings.items():
-            self.singleton_settings.get_settings(module).set_from_loaded_dict({str(module): settings_dict})
+            self.singleton_settings.get_settings(module).load_from_dict({str(module): settings_dict})
 
         #for module, settings_dict in condition.diff:
-         #   self.singleton_settings.get_settings(module).set_from_loaded_dict(settings_dict)
+         #   self.singleton_settings.get_settings(module).load_from_dict(settings_dict)
 
         # TODO signals to nodules (transitions)

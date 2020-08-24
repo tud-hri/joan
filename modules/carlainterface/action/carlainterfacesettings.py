@@ -16,7 +16,7 @@ class CarlaInterfaceSettings(JoanModuleSettings):
         self.ego_vehicles = []
         self.traffic_vehicles = []
 
-    def set_from_loaded_dict(self, loaded_dict):
+    def load_from_dict(self, loaded_dict):
         """
         This method overrides the base implementation of loading settings from dicts. This is done because hardware manager has the unique property that
         multiple custom settings classes are combined in a list. This behavior is not supported by the normal joan module settings, so it an specific solution
@@ -26,6 +26,7 @@ class CarlaInterfaceSettings(JoanModuleSettings):
         :return: None
         """
         try:
+            self.before_load_settings.emit()
             module_settings_to_load = loaded_dict[str(self._module_enum)]
         except KeyError:
             warning_message = "WARNING: loading settings for the " + str(self._module_enum) + \
@@ -36,17 +37,26 @@ class CarlaInterfaceSettings(JoanModuleSettings):
             print(warning_message)
             return
 
-        self.ego_vehicles = []
+        # remove old existing settings
+        while self.ego_vehicles:
+            vehicle = self.ego_vehicles.pop()
+            del vehicle
+
+        while self.traffic_vehicles:
+            vehicle = self.traffic_vehicles.pop()
+            del vehicle
+
         for egovehicle_settings_dict in module_settings_to_load['ego_vehicles']:
             egovehicle_settings = EgoVehicleSettings()
             egovehicle_settings.set_from_loaded_dict(egovehicle_settings_dict)
             self.ego_vehicles.append(egovehicle_settings)
 
-        self.traffic_vehicles = []
         for trafficvehicle_settings_dict in module_settings_to_load['traffic_vehicles']:
             trafficvehicle_settings = TrafficVehicleSettings()
             trafficvehicle_settings.set_from_loaded_dict(trafficvehicle_settings_dict)
             self.traffic_vehicles.append(trafficvehicle_settings)
+
+        self.load_settings_done.emit()
 
     @staticmethod
     def _copy_dict(source, destination):
@@ -100,12 +110,13 @@ class EgoVehicleSettings():
         """
         Initializes the class with default variables
         """
-        self._selected_input = 'None'
-        self._selected_controller = 'None'
-        self._selected_spawnpoint = 0
-        self._selected_car = 'hapticslab.nissan'
-        self._velocity = 80
-        self._set_velocity = False
+        self.selected_input = 'None'
+        self.selected_controller = 'None'
+        self.selected_spawnpoint = 0
+        self.selected_car = 'hapticslab.nissan'
+        self.velocity = 80
+        self.set_velocity = False
+        self.name = ''
 
     def as_dict(self):
         return self.__dict__
@@ -134,6 +145,7 @@ class TrafficVehicleSettings():
         self._k_p = 6
         self._k_d = 2.5
         self._set_velocity_with_pd = False
+        self.name = ''
 
     def as_dict(self):
         return self.__dict__
