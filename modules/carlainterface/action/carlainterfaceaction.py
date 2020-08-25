@@ -74,6 +74,7 @@ class CarlaInterfaceAction(JoanModuleAction):
         # CARLA connection variables:
         self.host = 'localhost'
         self.port = 2000
+        self._world = None
         self.connected = False
         self.vehicle_tags = []
         self.vehicles = []
@@ -108,7 +109,7 @@ class CarlaInterfaceAction(JoanModuleAction):
 
     @property
     def world(self):
-        return self.world
+        return self._world
 
     @property
     def spawnpoints(self):
@@ -186,7 +187,7 @@ class CarlaInterfaceAction(JoanModuleAction):
 
         if not self.connected:
             return self.state_machine.request_state_change(State.ERROR,
-                                                           "You can only load settings when CARLA is connected. " + \
+                                                           "You can only load settings when CARLA is connected. " +
                                                            "Connect and reload settings")
 
         # create vehicles and traffic_vehicles
@@ -216,12 +217,12 @@ class CarlaInterfaceAction(JoanModuleAction):
                 self.client = carla.Client(self.host, self.port)  # connecting to server
                 self.client.set_timeout(2.0)
                 time.sleep(2)
-                self.world = self.client.get_world()  # get world object (contains everything)
-                blueprint_library = self.world.get_blueprint_library()
+                self._world = self.client.get_world()  # get world object (contains everything)
+                blueprint_library = self._world.get_blueprint_library()
                 self._vehicle_bp_library = blueprint_library.filter('vehicle.*')
                 for items in self.vehicle_bp_library:
                     self.vehicle_tags.append(items.id[8:])
-                world_map = self.world.get_map()
+                world_map = self._world.get_map()
                 self._spawn_points = world_map.get_spawn_points()
                 self.nr_spawn_points = len(self._spawn_points)
 
@@ -260,8 +261,6 @@ class CarlaInterfaceAction(JoanModuleAction):
                 cars.destroy_car()
                 cars.remove_car()
 
-            self.client = None
-            self.world = None
             self.connected = False
             self.data['connected'] = self.connected
             self.write_news(news=self.data)
@@ -329,7 +328,6 @@ class CarlaInterfaceAction(JoanModuleAction):
 
         if is_a_new_ego_agent:
             ego_vehicle_settings = EgoVehicleSettings()
-            self.settings.ego_vehicles.append(ego_vehicle_settings)
 
         # TODO find unique name for vehicle name
         vehicle_name = "Vehicle" + str(len(self.vehicles) + 1)
@@ -338,7 +336,8 @@ class CarlaInterfaceAction(JoanModuleAction):
         self.vehicles.append(vehicle)
 
         if is_a_new_ego_agent:
-            self.settings.ego_vehicles.name = vehicle.name
+            ego_vehicle_settings.name = vehicle.name
+            self.settings.ego_vehicles.append(ego_vehicle_settings)
 
         # add widget
         self.module_dialog.add_ego_agent_widget(vehicle)
@@ -347,7 +346,7 @@ class CarlaInterfaceAction(JoanModuleAction):
         for vehicle in self.vehicles[1:]:
             vehicle.settings_dialog.combo_sw_controller.setEnabled(False)
 
-        return self.vehicles
+        return vehicle
 
     def add_traffic_agent(self, traffic_vehicle_settings=None):
         """
@@ -372,7 +371,7 @@ class CarlaInterfaceAction(JoanModuleAction):
         # add widget
         self.module_dialog.add_traffic_agent_widget(vehicle)
 
-        return self.traffic_vehicles
+        return vehicle
 
     def initialize(self):
         """
@@ -420,36 +419,40 @@ class CarlaInterfaceAction(JoanModuleAction):
         return super().stop()
 
     def remove_agent(self, agent):
+        """
+        remove an agent (including destroying in CARLA, and in action and dialog
+        :param agent: the agent to be removed; instance check in the funtion below
+        :return:
+        """
         agent.remove_ego_agent()  # destroy the vehicle in carla, and corresponding dialogs
-
-        print("Removing vehicle")
 
         if isinstance(agent, EgoVehicle):
             self._remove_vehicle(agent)
         elif isinstance(agent, TrafficVehicle):
             self._remove_traffic_vehicle(agent)
 
-            # try:
-            # del self.data['traffic_vehicles']
-
     def _remove_vehicle(self, agent):
+        """
+        Removes vehicle agent, from the settings, vehicles list, data (news)
+        :param agent:
+        :return:
+        """
+
         # remove from settings
-        print(self.settings.as_dict())
-        for vehicle_setting in self.settings.vehicles:
+        for vehicle_setting in self.settings.ego_vehicles:
             if vehicle_setting.name == agent.name:
                 try:
-                    self.settings.vehicle.remove(vehicle_setting)  # TODO does this delete the class?
+                    self.settings.ego_vehicles.remove(vehicle_setting)  # TODO does this delete the class?
                 except ValueError:
                     pass
-        print(self.settings.as_dict())
 
         # remove from data
         try:
-            del self.data['ego_agents'][agent.vehicle_nr]
+            del self.data['ego_agents'][agent.name]
         except KeyError:  # data is only present if the hardware manager ran since the hardware was added
             pass
 
-        # remove from settins
+        # remove from vehicles list
         for vehicle in self.vehicles:
             if vehicle.name == agent.name:
                 try:
@@ -478,10 +481,10 @@ class CarlaInterfaceAction(JoanModuleAction):
 
     def remove_all(self):
         while self.vehicles:
-            self._remove_vehicle(self.vehicles.pop())
+            self.remove_agent(self.vehicles.pop())
 
         while self.traffic_vehicles:
-            self._remove_traffic_vehicle(self.traffic_vehicles.pop())
+            self.remove_agent(self.traffic_vehicles.pop())
 
     def spawn_all(self):
         """

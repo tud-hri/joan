@@ -76,7 +76,7 @@ class EgoVehicle(Basevehicle):
 
         self.vehicle_tab_widget.btn_spawn.clicked.connect(self.spawn_car)
         self.vehicle_tab_widget.btn_destroy.clicked.connect(self.destroy_car)
-        self.vehicle_tab_widget.btn_remove_ego_agent.clicked.connect(lambda: self.module_action.remove_vehicle(self))
+        self.vehicle_tab_widget.btn_remove_ego_agent.clicked.connect(lambda: self.module_action.remove_agent(self))
         self.vehicle_tab_widget.btn_settings.clicked.connect(self._open_settings_dialog)
         self.vehicle_tab_widget.btn_settings.clicked.connect(self._open_settings_dialog_from_button)
 
@@ -103,7 +103,7 @@ class EgoVehicle(Basevehicle):
 
     @property
     def vehicle_nr(self):
-        return self.vehicle_nr
+        return self._vehicle_nr
 
     def _open_settings_dialog(self):
         self.get_available_controllers()
@@ -179,6 +179,5 @@ class EgoVehicle(Basevehicle):
         return output
 
     def remove_ego_agent(self):
-        print("In egovehicle")
         self.vehicle_tab_widget.setParent(None)
-        self.destroy_car()
+        self.destroy_car()  # destroy the ve
