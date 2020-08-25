@@ -75,10 +75,26 @@ class ExperimentManagerAction(JoanModuleAction):
         # TODO: implement update_settings_from_dict function in each module settings class
         # apply base settings first, then condition settings
 
-        for module, settings_dict in self.current_experiment.base_settings.items():
-            self.singleton_settings.get_settings(module).load_from_dict({str(module): settings_dict})
+        for module, base_settings_dict in self.current_experiment.base_settings.items():
+
+            module_settings_dict = base_settings_dict.copy()
+
+            self._recursively_copy_dict(condition.diff[module], module_settings_dict)
+            self.singleton_settings.get_settings(module).load_from_dict({str(module): module_settings_dict})
 
         #for module, settings_dict in condition.diff:
          #   self.singleton_settings.get_settings(module).load_from_dict(settings_dict)
 
         # TODO signals to nodules (transitions)
+
+    @staticmethod
+    def _recursively_copy_dict(source, destination):
+        for key, item in source.items():
+            if isinstance(item, dict):
+                try:
+                    ExperimentManagerAction._recursively_copy_dict(item, destination[key])
+                except KeyError:
+                    destination[key] = {}
+                    ExperimentManagerAction._recursively_copy_dict(item, destination[key])
+            else:
+                destination[key] = item

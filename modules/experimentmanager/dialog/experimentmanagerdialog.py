@@ -154,7 +154,7 @@ class ExperimentManagerDialog(JoanModuleDialog):
         self._update_enabled_condition_buttons()
 
     def activate_condition(self):
-        current_condition = self.module_widget.currentConditionsListWidget.item(0).data(QtCore.Qt.UserRole)
+        current_condition = self.module_widget.currentConditionsListWidget.currentItem().data(QtCore.Qt.UserRole)
         self.module_action.activate_condition(current_condition)
 
     def _update_base_settings_tree(self):
@@ -165,7 +165,7 @@ class ExperimentManagerDialog(JoanModuleDialog):
 
             selected_module = self.module_widget.modulesIncludedListWidget.currentItem().data(QtCore.Qt.UserRole)
             settings_to_display = self.module_action.current_experiment.base_settings[selected_module]
-            for key, value in settings_to_display[str(selected_module)].items():
+            for key, value in settings_to_display.items():
                 self._create_tree_item(self.module_widget.baseSettingsTreeWidget, key, value)
         else:
             self.module_widget.baseSettingsTreeWidget.setEnabled(False)

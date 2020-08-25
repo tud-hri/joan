@@ -22,7 +22,7 @@ if __name__ == '__main__':
     JOANHQACTION.add_module(JOANModules.HARDWARE_MANAGER, millis=2)
     JOANHQACTION.add_module(JOANModules.STEERING_WHEEL_CONTROL, millis=2)
     JOANHQACTION.add_module(JOANModules.CARLA_INTERFACE, millis=5)
-    # JOANHQACTION.add_module(JOANModules.TEMPLATE)
+    JOANHQACTION.add_module(JOANModules.TEMPLATE)
     JOANHQACTION.add_module(JOANModules.DATA_RECORDER, millis=5)
     # JOANHQACTION.add_module(JOANModules.DATA_PLOTTER, millis=2000)
 
