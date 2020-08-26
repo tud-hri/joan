@@ -40,6 +40,7 @@ class ExperimentManagerDialog(JoanModuleDialog):
         self.module_widget.availableConditionsListWidget.itemDoubleClicked.connect(self._preview_condition)
 
         self.module_widget.activateConditionPushButton.clicked.connect(self.activate_condition)
+        self.module_widget.transitionToNextConditionPushButton.clicked.connect(self.transition_to_next_condition)
 
         self.all_transitions = TransitionsList()
         self._fill_transition_list_widget()
@@ -133,6 +134,7 @@ class ExperimentManagerDialog(JoanModuleDialog):
         self.module_widget.conditionDownPushButton.setEnabled(bool(self.module_widget.currentConditionsListWidget.currentRow() != -1))
 
         self.module_widget.activateConditionPushButton.setEnabled(selected_current_is_condition)
+        self.module_widget.transitionToNextConditionPushButton.setEnabled(bool(self.module_action.current_experiment))
 
     def update_gui(self):
         self.module_widget.modulesIncludedListWidget.clear()
@@ -177,11 +179,17 @@ class ExperimentManagerDialog(JoanModuleDialog):
             self.module_widget.currentConditionsListWidget.setEnabled(False)
             self.module_widget.availableConditionsListWidget.setEnabled(False)
         self._update_enabled_condition_buttons()
+        self._update_highlighted_condition()
 
     def activate_condition(self):
-        current_condition = self.module_widget.currentConditionsListWidget.currentItem().data(QtCore.Qt.UserRole)
-        success = self.module_action.activate_condition(current_condition)
+        current_selected_condition = self.module_widget.currentConditionsListWidget.currentItem().data(QtCore.Qt.UserRole)
+        success = self.module_action.activate_condition(current_selected_condition, self.module_widget.currentConditionsListWidget.currentRow())
 
+        if success:
+            self._update_highlighted_condition()
+
+    def transition_to_next_condition(self):
+        success = self.module_action.transition_to_next_condition()
         if success:
             self._update_highlighted_condition()
 
@@ -189,8 +197,10 @@ class ExperimentManagerDialog(JoanModuleDialog):
         if self.module_action.current_experiment and self.module_action.active_condition:
             for item_index in range(self.module_widget.currentConditionsListWidget.count()):
                 item = self.module_widget.currentConditionsListWidget.item(item_index)
-                if item.data(QtCore.Qt.UserRole) is self.module_action.active_condition:
+                if item.data(QtCore.Qt.UserRole) is self.module_action.active_condition and item_index == self.module_action.active_condition_index:
                     item.setBackground(QtGui.QBrush(QtGui.QColor(50, 255, 50, 100)))
+                elif not isinstance(item.data(QtCore.Qt.UserRole), Condition):
+                    item.setBackground(QtGui.QBrush(QtGui.QColor(200, 100, 200, 50)))
                 else:
                     item.setBackground(QtGui.QBrush(QtCore.Qt.NoBrush))
 

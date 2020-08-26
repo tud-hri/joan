@@ -20,6 +20,7 @@ class ExperimentManagerAction(JoanModuleAction):
         self.current_experiment = None
         self.experiment_save_path = ''
         self.active_condition = None
+        self.active_condition_index = None
 
     def initialize_new_experiment(self, modules_to_include, save_path):
         self.current_experiment = Experiment(modules_to_include)
@@ -76,7 +77,7 @@ class ExperimentManagerAction(JoanModuleAction):
         self.module_dialog.update_gui()
         self.module_dialog.update_condition_lists()
 
-    def activate_condition(self, condition):
+    def activate_condition(self, condition, condition_index):
         """
         To activate the condition, send the settings to the corresponding module (settings)
         :param condition:
@@ -84,15 +85,47 @@ class ExperimentManagerAction(JoanModuleAction):
         """
 
         for module, base_settings_dict in self.current_experiment.base_settings.items():
-
             module_settings_dict = base_settings_dict.copy()
 
             self._recursively_copy_dict(condition.diff[module], module_settings_dict)
             self.singleton_settings.get_settings(module).load_from_dict({str(module): module_settings_dict})
 
         self.active_condition = condition
+        self.active_condition_index = condition_index
 
         return True
+
+    def transition_to_next_condition(self):
+        if not self.current_experiment:
+            return
+
+        if not self.active_condition:
+            if isinstance(self.current_experiment.active_condition_sequence[0], Condition):
+                return self.activate_condition(self.current_experiment.active_condition_sequence[0], 0)
+            else:
+                transition = self.current_experiment.active_condition_sequence[0]
+                transition.execute_before_new_condition_activation(self.current_experiment, None)
+                if self.activate_condition(self.current_experiment.active_condition_sequence[1], 1):
+                    transition.execute_after_new_condition_activation(self.current_experiment, self.active_condition)
+                    return True
+                else:
+                    return False
+        else:
+            try:
+                next_condition_or_transition = self.current_experiment.active_condition_sequence[self.active_condition_index + 1]
+                if isinstance(next_condition_or_transition, Condition):
+                    return self.activate_condition(next_condition_or_transition, self.active_condition_index + 1)
+                else:
+                    transition = next_condition_or_transition
+                    transition.execute_before_new_condition_activation(self.current_experiment, self.active_condition)
+                    if self.activate_condition(self.current_experiment.active_condition_sequence[self.active_condition_index + 2],
+                                               self.active_condition_index + 2):
+                        transition.execute_after_new_condition_activation(self.current_experiment, self.active_condition)
+                        return True
+                    else:
+                        return False
+            except IndexError:
+                return False
 
     @staticmethod
     def _recursively_copy_dict(source, destination):
