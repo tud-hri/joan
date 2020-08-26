@@ -1,6 +1,7 @@
 import os
 
 from modules.joanmodules import JOANModules
+from modules.experimentmanager.transitions import *
 from process.joanmoduleaction import JoanModuleAction
 from .condition import Condition
 from .experiment import Experiment
