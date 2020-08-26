@@ -19,6 +19,7 @@ class ExperimentManagerAction(JoanModuleAction):
 
         self.current_experiment = None
         self.experiment_save_path = ''
+        self.active_condition = None
 
     def initialize_new_experiment(self, modules_to_include, save_path):
         self.current_experiment = Experiment(modules_to_include)
@@ -72,9 +73,6 @@ class ExperimentManagerAction(JoanModuleAction):
         :return:
         """
 
-        # TODO: implement update_settings_from_dict function in each module settings class
-        # apply base settings first, then condition settings
-
         for module, base_settings_dict in self.current_experiment.base_settings.items():
 
             module_settings_dict = base_settings_dict.copy()
@@ -82,10 +80,9 @@ class ExperimentManagerAction(JoanModuleAction):
             self._recursively_copy_dict(condition.diff[module], module_settings_dict)
             self.singleton_settings.get_settings(module).load_from_dict({str(module): module_settings_dict})
 
-        #for module, settings_dict in condition.diff:
-         #   self.singleton_settings.get_settings(module).load_from_dict(settings_dict)
+        self.active_condition = condition
 
-        # TODO signals to nodules (transitions)
+        return True
 
     @staticmethod
     def _recursively_copy_dict(source, destination):

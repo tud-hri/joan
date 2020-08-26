@@ -1,7 +1,8 @@
 import os
 
-from PyQt5 import QtWidgets, QtCore
+from PyQt5 import QtWidgets, QtCore, QtGui
 
+from modules.experimentmanager.action.experimentmanageraction import ExperimentManagerAction
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
 from process.joanmoduledialog import JoanModuleDialog
@@ -10,6 +11,8 @@ from .previewconditiondialog import PreviewConditionDialog
 
 
 class ExperimentManagerDialog(JoanModuleDialog):
+    module_action: ExperimentManagerAction
+
     def __init__(self, module_action: JoanModuleAction, parent=None):
         super().__init__(module=JOANModules.EXPERIMENT_MANAGER, module_action=module_action,
                          use_state_machine_and_timer=False, parent=parent)
@@ -155,7 +158,19 @@ class ExperimentManagerDialog(JoanModuleDialog):
 
     def activate_condition(self):
         current_condition = self.module_widget.currentConditionsListWidget.currentItem().data(QtCore.Qt.UserRole)
-        self.module_action.activate_condition(current_condition)
+        success = self.module_action.activate_condition(current_condition)
+
+        if success:
+            self._update_highlighted_condition()
+
+    def _update_highlighted_condition(self):
+        if self.module_action.current_experiment and self.module_action.active_condition:
+            for item_index in range(self.module_widget.currentConditionsListWidget.count()):
+                item = self.module_widget.currentConditionsListWidget.item(item_index)
+                if item.data(QtCore.Qt.UserRole) is self.module_action.active_condition:
+                    item.setBackground(QtGui.QBrush(QtGui.QColor(50, 255, 50, 100)))
+                else:
+                    item.setBackground(QtGui.QBrush(QtCore.Qt.NoBrush))
 
     def _update_base_settings_tree(self):
         self.module_widget.baseSettingsTreeWidget.clear()
