@@ -23,8 +23,6 @@ class DataplotterAction(JoanModuleAction):
         """
         super().__init__(module=JOANModules.DATA_PLOTTER, millis=millis)
 
-        self.status = Status()
-
         # start settings for this module
         self.settings = DataPlotterSettings(JOANModules.DATA_PLOTTER)
         self.default_settings_file_location = os.path.join(os.path.dirname(os.path.realpath(__file__)),
