@@ -3,6 +3,7 @@ import json
 
 from process import Settings
 from modules.joanmodules import JOANModules
+from modules.experimentmanager.transitions import TransitionsList
 from .condition import Condition
 
 
@@ -38,7 +39,7 @@ class Experiment:
 
     @staticmethod
     def load_from_file(file_path):
-
+        transitions_list = TransitionsList()
         with open(file_path, 'r') as settings_file:
             loaded_dict = json.load(settings_file)
 
@@ -59,8 +60,15 @@ class Experiment:
                 if condition_name == condition.name:
                     new_experiment.active_condition_sequence.append(condition)
                     condition_found = True
+
+            if not condition_found:
+                for transition in transitions_list:
+                    if condition_name == transition.name:
+                        new_experiment.active_condition_sequence.append(transition)
+                        condition_found = True
+
             if not condition_found:
                 print('WARNING: a condition named: "' + condition_name + '" was used in the loaded experiment. But this condition does not exist in the '
-                                                                         'experiment. It was ignored. ')
+                                                                         'experiment. There are also no transitions known with this name. It was ignored. ')
 
         return new_experiment
