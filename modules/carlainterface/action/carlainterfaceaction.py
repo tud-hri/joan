@@ -197,8 +197,6 @@ class CarlaInterfaceAction(JoanModuleAction):
         for setting in self.settings.traffic_vehicles:
             self.add_traffic_agent(setting)
 
-        pass
-
     def check_connection(self):
         """
         Checks whether JOAN is connected by returning the connected parameter
