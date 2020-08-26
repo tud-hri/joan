@@ -2,8 +2,9 @@ import os
 
 from PyQt5 import QtWidgets, QtCore, QtGui
 
-import modules.experimentmanager.transitions as transitions
+from modules.experimentmanager.transitions import TransitionsList
 from modules.experimentmanager.action.experimentmanageraction import ExperimentManagerAction
+from modules.experimentmanager.action.condition import Condition
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
 from process.joanmoduledialog import JoanModuleDialog
@@ -27,19 +28,21 @@ class ExperimentManagerDialog(JoanModuleDialog):
         self.module_widget.createConditionPushButton.clicked.connect(self.create_new_condition)
         self.module_widget.addConditionPushButton.clicked.connect(self.add_condition)
         self.module_widget.removeConditionPushButton.clicked.connect(self.remove_condition)
+        self.module_widget.addTransitionPushButton.clicked.connect(self.add_transition)
+        self.module_widget.removeTransitionPushButton.clicked.connect(self.remove_transition)
         self.module_widget.conditionUpPushButton.clicked.connect(self.condition_up)
         self.module_widget.conditionDownPushButton.clicked.connect(self.condition_down)
 
-        self.module_widget.availableConditionsListWidget.itemSelectionChanged.connect(
-            self._update_enabled_condition_buttons)
-        self.module_widget.currentConditionsListWidget.itemSelectionChanged.connect(
-            self._update_enabled_condition_buttons)
+        self.module_widget.availableConditionsListWidget.itemSelectionChanged.connect(self._update_enabled_condition_buttons)
+        self.module_widget.currentConditionsListWidget.itemSelectionChanged.connect(self._update_enabled_condition_buttons)
+        self.module_widget.availableTransitionsListWidget.itemSelectionChanged.connect(self._update_enabled_condition_buttons)
 
         self.module_widget.availableConditionsListWidget.itemDoubleClicked.connect(self._preview_condition)
 
         self.module_widget.activateConditionPushButton.clicked.connect(self.activate_condition)
 
-        self._fill_transition_list()
+        self.all_transitions = TransitionsList()
+        self._fill_transition_list_widget()
         self.update_gui()
         self._update_enabled_condition_buttons()
         self.update_condition_lists()
@@ -71,6 +74,14 @@ class ExperimentManagerDialog(JoanModuleDialog):
     def remove_condition(self):
         selected_condition = self.module_widget.currentConditionsListWidget.currentRow()
         self.module_action.remove_condition(selected_condition)
+
+    def add_transition(self):
+        selected_condition = self.module_widget.availableTransitionsListWidget.currentItem().data(QtCore.Qt.UserRole)
+        self.module_action.add_transition(selected_condition)
+
+    def remove_transition(self):
+        selected_condition = self.module_widget.currentConditionsListWidget.currentRow()
+        self.module_action.remove_transition(selected_condition)
 
     def condition_up(self):
         old_index = self.module_widget.currentConditionsListWidget.currentRow()
@@ -105,16 +116,23 @@ class ExperimentManagerDialog(JoanModuleDialog):
         PreviewConditionDialog(condition, self)
 
     def _update_enabled_condition_buttons(self):
-        self.module_widget.addConditionPushButton.setEnabled(
-            bool(self.module_widget.availableConditionsListWidget.currentRow() != -1))
-        self.module_widget.removeConditionPushButton.setEnabled(
-            bool(self.module_widget.currentConditionsListWidget.currentRow() != -1))
-        self.module_widget.conditionUpPushButton.setEnabled(
-            bool(self.module_widget.currentConditionsListWidget.currentRow() != -1))
-        self.module_widget.conditionDownPushButton.setEnabled(
-            bool(self.module_widget.currentConditionsListWidget.currentRow() != -1))
-        self.module_widget.activateConditionPushButton.setEnabled(
-            bool(self.module_widget.currentConditionsListWidget.currentRow() != -1))
+        if bool(self.module_widget.currentConditionsListWidget.currentItem()):
+            selected_current_is_condition = isinstance(self.module_widget.currentConditionsListWidget.currentItem().data(QtCore.Qt.UserRole), Condition)
+            selected_current_is_transition = not selected_current_is_condition
+        else:
+            selected_current_is_condition = False
+            selected_current_is_transition = False
+
+        self.module_widget.addConditionPushButton.setEnabled(bool(self.module_widget.availableConditionsListWidget.currentRow() != -1))
+        self.module_widget.removeConditionPushButton.setEnabled(selected_current_is_condition)
+
+        self.module_widget.addTransitionPushButton.setEnabled(bool(self.module_widget.availableTransitionsListWidget.currentRow() != -1))
+        self.module_widget.removeTransitionPushButton.setEnabled(selected_current_is_transition)
+
+        self.module_widget.conditionUpPushButton.setEnabled(bool(self.module_widget.currentConditionsListWidget.currentRow() != -1))
+        self.module_widget.conditionDownPushButton.setEnabled(bool(self.module_widget.currentConditionsListWidget.currentRow() != -1))
+
+        self.module_widget.activateConditionPushButton.setEnabled(selected_current_is_condition)
 
     def update_gui(self):
         self.module_widget.modulesIncludedListWidget.clear()
@@ -149,9 +167,11 @@ class ExperimentManagerDialog(JoanModuleDialog):
                 item.setData(QtCore.Qt.UserRole, condition)
                 self.module_widget.availableConditionsListWidget.addItem(item)
 
-            for condition in self.module_action.current_experiment.active_condition_sequence:
-                item = QtWidgets.QListWidgetItem(condition.name)
-                item.setData(QtCore.Qt.UserRole, condition)
+            for condition_or_transition in self.module_action.current_experiment.active_condition_sequence:
+                item = QtWidgets.QListWidgetItem(condition_or_transition.name)
+                item.setData(QtCore.Qt.UserRole, condition_or_transition)
+                if not isinstance(condition_or_transition, Condition):
+                    item.setBackground(QtGui.QBrush(QtGui.QColor(200, 100, 200, 50)))
                 self.module_widget.currentConditionsListWidget.addItem(item)
         else:
             self.module_widget.currentConditionsListWidget.setEnabled(False)
@@ -174,10 +194,9 @@ class ExperimentManagerDialog(JoanModuleDialog):
                 else:
                     item.setBackground(QtGui.QBrush(QtCore.Qt.NoBrush))
 
-    def _fill_transition_list(self):
-        transition_classes = [t for _, t in transitions.__dict__.items() if isinstance(t, type)]
-        for transition in transition_classes:
-            item = QtWidgets.QListWidgetItem(transition.get_name())
+    def _fill_transition_list_widget(self):
+        for transition in self.all_transitions:
+            item = QtWidgets.QListWidgetItem(transition.name)
             item.setData(QtCore.Qt.UserRole, transition)
             self.module_widget.availableTransitionsListWidget.addItem(item)
 

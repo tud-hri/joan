@@ -50,6 +50,16 @@ class ExperimentManagerAction(JoanModuleAction):
             self.current_experiment.active_condition_sequence.pop(index)
             self.module_dialog.update_condition_lists()
 
+    def add_transition(self, transition):
+        if self.current_experiment:
+            self.current_experiment.active_condition_sequence.append(transition)
+            self.module_dialog.update_condition_lists()
+
+    def remove_transition(self, index):
+        if self.current_experiment:
+            self.current_experiment.active_condition_sequence.pop(index)
+            self.module_dialog.update_condition_lists()
+
     def update_condition_sequence(self, new_sequence):
         if self.current_experiment:
             self.current_experiment.active_condition_sequence = []
