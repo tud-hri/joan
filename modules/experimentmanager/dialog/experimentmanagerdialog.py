@@ -2,6 +2,7 @@ import os
 
 from PyQt5 import QtWidgets, QtCore, QtGui
 
+import modules.experimentmanager.transitions as transitions
 from modules.experimentmanager.action.experimentmanageraction import ExperimentManagerAction
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
@@ -38,6 +39,7 @@ class ExperimentManagerDialog(JoanModuleDialog):
 
         self.module_widget.activateConditionPushButton.clicked.connect(self.activate_condition)
 
+        self._fill_transition_list()
         self.update_gui()
         self._update_enabled_condition_buttons()
         self.update_condition_lists()
@@ -171,6 +173,13 @@ class ExperimentManagerDialog(JoanModuleDialog):
                     item.setBackground(QtGui.QBrush(QtGui.QColor(50, 255, 50, 100)))
                 else:
                     item.setBackground(QtGui.QBrush(QtCore.Qt.NoBrush))
+
+    def _fill_transition_list(self):
+        transition_classes = [t for _, t in transitions.__dict__.items() if isinstance(t, type)]
+        for transition in transition_classes:
+            item = QtWidgets.QListWidgetItem(transition.get_name())
+            item.setData(QtCore.Qt.UserRole, transition)
+            self.module_widget.availableTransitionsListWidget.addItem(item)
 
     def _update_base_settings_tree(self):
         self.module_widget.baseSettingsTreeWidget.clear()

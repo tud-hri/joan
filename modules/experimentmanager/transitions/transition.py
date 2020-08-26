@@ -2,15 +2,17 @@ import abc
 
 
 class Transition:
+    @staticmethod
     @abc.abstractmethod
-    def execute_before_new_condition_activation(self, experiment, previous_condition):
+    def execute_before_new_condition_activation(experiment, previous_condition):
         pass
 
+    @staticmethod
     @abc.abstractmethod
-    def execute_after_new_condition_activation(self, experiment, next_condition):
+    def execute_after_new_condition_activation(experiment, next_condition):
         pass
 
-    @property
+    @staticmethod
     @abc.abstractmethod
-    def name(self):
+    def get_name():
         pass
