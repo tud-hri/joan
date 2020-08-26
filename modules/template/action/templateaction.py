@@ -86,7 +86,7 @@ class TemplateAction(JoanModuleAction):
         # template signals
         # in templatesignals.py the pyqtsignals are defined to trigger specific actions from this module
         # here, connect the function to the appropriate signal
-        self._module_signals = TemplateSignals(self.module)
+        self._module_signals = TemplateSignals(self.module, self)
         self.singleton_signals.add_signals(self.module, self._module_signals)
 
         # we connect a dummy

@@ -1,5 +1,4 @@
 from modules.joanmodules import JOANModules
-from process.joanmodulesignals import JoanModuleSignal
 
 
 class Signals:
@@ -17,7 +16,7 @@ class Signals:
 
         return cls.instance
 
-    def add_signals(self, module: JOANModules, signals: JoanModuleSignal):
+    def add_signals(self, module: JOANModules, signals):
         """
         add new signals
         :param module: used as an identifier

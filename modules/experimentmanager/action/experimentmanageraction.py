@@ -7,6 +7,8 @@ from .experiment import Experiment
 
 
 class ExperimentManagerAction(JoanModuleAction):
+    current_experiment: Experiment
+
     def __init__(self, millis=100):
         super().__init__(module=JOANModules.EXPERIMENT_MANAGER, use_state_machine_and_timer=False)
 
@@ -94,6 +96,24 @@ class ExperimentManagerAction(JoanModuleAction):
         self.active_condition_index = condition_index
 
         return True
+
+    def initialize_all(self):
+        if self.current_experiment:
+            for module in self.current_experiment.modules_included:
+                signals = self.singleton_signals.get_signals(module)
+                signals.initialize_module.emit()
+
+    def start_all(self):
+        if self.current_experiment:
+            for module in self.current_experiment.modules_included:
+                signals = self.singleton_signals.get_signals(module)
+                signals.start_module.emit()
+
+    def stop_all(self):
+        if self.current_experiment:
+            for module in self.current_experiment.modules_included:
+                signals = self.singleton_signals.get_signals(module)
+                signals.stop_module.emit()
 
     def transition_to_next_condition(self):
         if not self.current_experiment:

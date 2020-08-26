@@ -8,6 +8,7 @@ from modules.experimentmanager.action.condition import Condition
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
 from process.joanmoduledialog import JoanModuleDialog
+from process.statesenum import State
 from .newexperimentdialog import NewExperimentDialog
 from .previewconditiondialog import PreviewConditionDialog
 
@@ -33,19 +34,23 @@ class ExperimentManagerDialog(JoanModuleDialog):
         self.module_widget.conditionUpPushButton.clicked.connect(self.condition_up)
         self.module_widget.conditionDownPushButton.clicked.connect(self.condition_down)
 
-        self.module_widget.availableConditionsListWidget.itemSelectionChanged.connect(self._update_enabled_condition_buttons)
-        self.module_widget.currentConditionsListWidget.itemSelectionChanged.connect(self._update_enabled_condition_buttons)
-        self.module_widget.availableTransitionsListWidget.itemSelectionChanged.connect(self._update_enabled_condition_buttons)
+        self.module_widget.availableConditionsListWidget.itemSelectionChanged.connect(self._update_enabled_buttons)
+        self.module_widget.currentConditionsListWidget.itemSelectionChanged.connect(self._update_enabled_buttons)
+        self.module_widget.availableTransitionsListWidget.itemSelectionChanged.connect(self._update_enabled_buttons)
 
         self.module_widget.availableConditionsListWidget.itemDoubleClicked.connect(self._preview_condition)
 
         self.module_widget.activateConditionPushButton.clicked.connect(self.activate_condition)
         self.module_widget.transitionToNextConditionPushButton.clicked.connect(self.transition_to_next_condition)
 
+        self.module_widget.initializeAllPushButton.clicked.connect(self.initialize_all)
+        self.module_widget.startAllPushButton.clicked.connect(self.start_all)
+        self.module_widget.stopAllPushButton.clicked.connect(self.stop_all)
+
         self.all_transitions = TransitionsList()
         self._fill_transition_list_widget()
         self.update_gui()
-        self._update_enabled_condition_buttons()
+        self._update_enabled_buttons()
         self.update_condition_lists()
 
     def initialize_new_experiment(self):
@@ -67,6 +72,17 @@ class ExperimentManagerDialog(JoanModuleDialog):
                     self.module_action.create_new_condition(condition_name)
                 except ValueError as e:
                     QtWidgets.QMessageBox.warning(self, 'Warning', str(e))
+
+    def start_all(self):
+        self.module_action.start_all()
+
+    def initialize_all(self):
+        self.module_action.initialize_all()
+
+    def stop_all(self):
+        self.module_action.stop_all()
+        if self.module_widget.autoTransitionCheckBox.isChecked():
+            self.transition_to_next_condition()
 
     def add_condition(self):
         selected_condition = self.module_widget.availableConditionsListWidget.currentItem().data(QtCore.Qt.UserRole)
@@ -116,7 +132,7 @@ class ExperimentManagerDialog(JoanModuleDialog):
         condition = list_item.data(QtCore.Qt.UserRole)
         PreviewConditionDialog(condition, self)
 
-    def _update_enabled_condition_buttons(self):
+    def _update_enabled_buttons(self):
         if bool(self.module_widget.currentConditionsListWidget.currentItem()):
             selected_current_is_condition = isinstance(self.module_widget.currentConditionsListWidget.currentItem().data(QtCore.Qt.UserRole), Condition)
             selected_current_is_transition = not selected_current_is_condition
@@ -136,6 +152,29 @@ class ExperimentManagerDialog(JoanModuleDialog):
         self.module_widget.activateConditionPushButton.setEnabled(selected_current_is_condition)
         self.module_widget.transitionToNextConditionPushButton.setEnabled(bool(self.module_action.current_experiment))
 
+        self._update_run_buttons_enabled()
+
+    def _update_run_buttons_enabled(self):
+        if self.module_action.current_experiment:
+            all_idle = bool(len(self.module_action.current_experiment.modules_included))
+            all_running = bool(len(self.module_action.current_experiment.modules_included))
+            all_ready = bool(len(self.module_action.current_experiment.modules_included))
+
+            for module in self.module_action.current_experiment.modules_included:
+                current_state = self.module_action.singleton_status.get_module_current_state(module)
+
+                all_idle &= current_state is State.IDLE
+                all_running &= current_state is State.RUNNING
+                all_ready &= current_state is State.READY
+
+            self.module_widget.startAllPushButton.setEnabled(all_ready)
+            self.module_widget.stopAllPushButton.setEnabled(all_running)
+            self.module_widget.initializeAllPushButton.setEnabled(all_idle)
+        else:
+            self.module_widget.startAllPushButton.setEnabled(False)
+            self.module_widget.stopAllPushButton.setEnabled(False)
+            self.module_widget.initializeAllPushButton.setEnabled(False)
+
     def update_gui(self):
         self.module_widget.modulesIncludedListWidget.clear()
 
@@ -153,6 +192,9 @@ class ExperimentManagerDialog(JoanModuleDialog):
                 item = QtWidgets.QListWidgetItem(str(module))
                 item.setData(QtCore.Qt.UserRole, module)
                 self.module_widget.modulesIncludedListWidget.addItem(item)
+
+                module_state_machine = self.module_action.singleton_status.get_module_state_machine(module)
+                module_state_machine.add_state_change_listener(self._update_run_buttons_enabled)
         else:
             self.module_widget.experimentNameLineEdit.setText('-')
 
@@ -178,7 +220,7 @@ class ExperimentManagerDialog(JoanModuleDialog):
         else:
             self.module_widget.currentConditionsListWidget.setEnabled(False)
             self.module_widget.availableConditionsListWidget.setEnabled(False)
-        self._update_enabled_condition_buttons()
+        self._update_enabled_buttons()
         self._update_highlighted_condition()
 
     def activate_condition(self):

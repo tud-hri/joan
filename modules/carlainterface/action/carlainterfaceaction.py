@@ -100,7 +100,7 @@ class CarlaInterfaceAction(JoanModuleAction):
         self.state_machine.set_transition_condition(State.RUNNING, State.READY, self._stopping_condition)
 
         # signals
-        self._module_signals = CarlaInterfaceSignals(self.module)
+        self._module_signals = CarlaInterfaceSignals(self.module, self)
         self.singleton_signals.add_signals(self.module, self._module_signals)
 
     @property

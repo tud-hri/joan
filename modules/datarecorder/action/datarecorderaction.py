@@ -65,7 +65,7 @@ class DataRecorderAction(JoanModuleAction):
         # self.data_writer.start()
 
         # signals and slots
-        self._module_signals = DataRecorderSignals(self.module)
+        self._module_signals = DataRecorderSignals(self.module, self)
         self.singleton_signals.add_signals(self.module, self._module_signals)
 
         self._module_signals.prepare_recording.connect(self.initialize)

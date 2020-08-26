@@ -37,8 +37,7 @@ class JoanModuleAction(QtCore.QObject):
 
         self.module = module
 
-        self.module_path = os.path.dirname(os.path.abspath(sys.modules[self.__class__.__module__].__file__)).strip(
-            'action')
+        self.module_path = os.path.dirname(os.path.abspath(sys.modules[self.__class__.__module__].__file__)).strip('action')
 
         self.singleton_status = Status()
         self.singleton_news = News()
@@ -68,13 +67,8 @@ class JoanModuleAction(QtCore.QObject):
 
         # (py)Qt signals for triggering specific module actions/functions
         # these signals are all stored in a JoanModuleSignal class; add them there if you need more signals.
-        self._module_signals = JoanModuleSignal(module)
+        self._module_signals = JoanModuleSignal(module, self)
         self.singleton_signals.add_signals(self.module, self._module_signals)
-
-        # connect the module signals to the module functions
-        self._module_signals.start_module.connect(self.start)
-        self._module_signals.stop_module.connect(self.stop)
-        self._module_signals.initialize_module.connect(self.initialize)
 
     def register_module_dialog(self, module_dialog):
         self.module_dialog = module_dialog
