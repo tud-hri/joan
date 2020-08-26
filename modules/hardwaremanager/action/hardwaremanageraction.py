@@ -58,7 +58,7 @@ class HardwareManagerAction(JoanModuleAction):
         This function is called every controller tick of this module implement your main calculations here
         """
         self.carla_interface_data = self.read_news(JOANModules.CARLA_INTERFACE)
-        self.carla_interface_status = self.status.get_module_current_state(JOANModules.CARLA_INTERFACE)
+        self.carla_interface_status = self.singleton_status.get_module_current_state(JOANModules.CARLA_INTERFACE)
 
         self.sw_controller_data = self.read_news(JOANModules.STEERING_WHEEL_CONTROL)
 
