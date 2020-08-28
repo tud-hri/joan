@@ -1,4 +1,5 @@
 import os
+from PyQt5 import QtWidgets
 
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
@@ -117,35 +118,40 @@ class ExperimentManagerAction(JoanModuleAction):
 
     def transition_to_next_condition(self):
         if not self.current_experiment:
-            return
+            return False
 
         if not self.active_condition:
-            if isinstance(self.current_experiment.active_condition_sequence[0], Condition):
-                return self.activate_condition(self.current_experiment.active_condition_sequence[0], 0)
+            self.active_condition_index = -1
+        try:
+            next_condition_or_transition = self.current_experiment.active_condition_sequence[self.active_condition_index + 1]
+            if isinstance(next_condition_or_transition, Condition):
+                return self.activate_condition(next_condition_or_transition, self.active_condition_index + 1)
             else:
-                transition = self.current_experiment.active_condition_sequence[0]
-                transition.execute_before_new_condition_activation(self.current_experiment, None)
-                if self.activate_condition(self.current_experiment.active_condition_sequence[1], 1):
+                transition = next_condition_or_transition
+                transition.execute_before_new_condition_activation(self.current_experiment, self.active_condition)
+
+                # search for the next condition
+                added_index = 1
+                while not isinstance(next_condition_or_transition, Condition):
+                    try:
+                        added_index += 1
+                        next_condition_or_transition = self.current_experiment.active_condition_sequence[self.active_condition_index + added_index]
+                    except IndexError:
+                        # end of the list of conditions and transitions
+                        return True
+                    finally:
+                        if added_index > 2:
+                            QtWidgets.QMessageBox.warning(self.module_dialog, 'Warning', 'A sequence of multiple consecutive transitions was found. '
+                                                                                         'This is illegal, only the first was executed, the others were '
+                                                                                         'ignored.')
+
+                if self.activate_condition(next_condition_or_transition, self.active_condition_index + added_index):
                     transition.execute_after_new_condition_activation(self.current_experiment, self.active_condition)
                     return True
                 else:
                     return False
-        else:
-            try:
-                next_condition_or_transition = self.current_experiment.active_condition_sequence[self.active_condition_index + 1]
-                if isinstance(next_condition_or_transition, Condition):
-                    return self.activate_condition(next_condition_or_transition, self.active_condition_index + 1)
-                else:
-                    transition = next_condition_or_transition
-                    transition.execute_before_new_condition_activation(self.current_experiment, self.active_condition)
-                    if self.activate_condition(self.current_experiment.active_condition_sequence[self.active_condition_index + 2],
-                                               self.active_condition_index + 2):
-                        transition.execute_after_new_condition_activation(self.current_experiment, self.active_condition)
-                        return True
-                    else:
-                        return False
-            except IndexError:
-                return False
+        except IndexError:
+            return False
 
     @staticmethod
     def _recursively_copy_dict(source, destination):

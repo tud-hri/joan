@@ -2,9 +2,9 @@ import os
 
 from PyQt5 import QtWidgets, QtCore, QtGui
 
-from modules.experimentmanager.transitions import TransitionsList
-from modules.experimentmanager.action.experimentmanageraction import ExperimentManagerAction
 from modules.experimentmanager.action.condition import Condition
+from modules.experimentmanager.action.experimentmanageraction import ExperimentManagerAction
+from modules.experimentmanager.transitions import TransitionsList
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
 from process.joanmoduledialog import JoanModuleDialog
@@ -150,7 +150,12 @@ class ExperimentManagerDialog(JoanModuleDialog):
         self.module_widget.conditionDownPushButton.setEnabled(bool(self.module_widget.currentConditionsListWidget.currentRow() != -1))
 
         self.module_widget.activateConditionPushButton.setEnabled(selected_current_is_condition)
-        self.module_widget.transitionToNextConditionPushButton.setEnabled(bool(self.module_action.current_experiment))
+        self.module_widget.transitionToNextConditionPushButton.setEnabled(
+            bool(self.module_action.current_experiment) and len(
+                self.module_action.current_experiment.active_condition_sequence) and self.module_action.active_condition_index != len(
+                self.module_action.current_experiment.active_condition_sequence)-1)
+
+        self.module_widget.saveExperimentPushButton.setEnabled(self.module_action.current_experiment is not None)
 
         self._update_run_buttons_enabled()
 
@@ -170,6 +175,20 @@ class ExperimentManagerDialog(JoanModuleDialog):
             self.module_widget.startAllPushButton.setEnabled(all_ready)
             self.module_widget.stopAllPushButton.setEnabled(all_running)
             self.module_widget.initializeAllPushButton.setEnabled(all_idle)
+
+            if not all_idle or all_ready:
+                self.module_widget.activateConditionPushButton.setEnabled(False)
+                self.module_widget.transitionToNextConditionPushButton.setEnabled(False)
+            else:
+                if bool(self.module_widget.currentConditionsListWidget.currentItem()):
+                    selected_current_is_condition = isinstance(self.module_widget.currentConditionsListWidget.currentItem().data(QtCore.Qt.UserRole), Condition)
+                else:
+                    selected_current_is_condition = False
+                self.module_widget.activateConditionPushButton.setEnabled(selected_current_is_condition)
+                self.module_widget.transitionToNextConditionPushButton.setEnabled(
+                    bool(self.module_action.current_experiment) and len(
+                        self.module_action.current_experiment.active_condition_sequence) and self.module_action.active_condition_index != len(
+                        self.module_action.current_experiment.active_condition_sequence)-1)
         else:
             self.module_widget.startAllPushButton.setEnabled(False)
             self.module_widget.stopAllPushButton.setEnabled(False)
@@ -182,6 +201,7 @@ class ExperimentManagerDialog(JoanModuleDialog):
         self.module_widget.baseSettingsTreeWidget.setEnabled(bool(self.module_action.current_experiment))
         self.module_widget.currentConditionsListWidget.setEnabled(bool(self.module_action.current_experiment))
         self.module_widget.availableConditionsListWidget.setEnabled(bool(self.module_action.current_experiment))
+        self.module_widget.availableTransitionsListWidget.setEnabled(bool(self.module_action.current_experiment))
         self.module_widget.createConditionPushButton.setEnabled(bool(self.module_action.current_experiment))
 
         if self.module_action.current_experiment:
@@ -229,11 +249,13 @@ class ExperimentManagerDialog(JoanModuleDialog):
 
         if success:
             self._update_highlighted_condition()
+            self._update_enabled_buttons()
 
     def transition_to_next_condition(self):
         success = self.module_action.transition_to_next_condition()
         if success:
             self._update_highlighted_condition()
+            self._update_enabled_buttons()
 
     def _update_highlighted_condition(self):
         if self.module_action.current_experiment and self.module_action.active_condition:
