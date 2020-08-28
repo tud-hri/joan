@@ -24,6 +24,7 @@ if __name__ == '__main__':
     JOANHQACTION.add_module(JOANModules.CARLA_INTERFACE, millis=5)
     # JOANHQACTION.add_module(JOANModules.TEMPLATE)
     JOANHQACTION.add_module(JOANModules.DATA_RECORDER, millis=5)
+    JOANHQACTION.add_module(JOANModules.SCENARIOS, millis=5)
     # JOANHQACTION.add_module(JOANModules.DATA_PLOTTER, millis=2000)
 
     # add the EXPERIMENT_MANAGER last because this one collects settings from JOAN modules that are already loaded
