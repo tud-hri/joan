@@ -14,6 +14,7 @@ from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
 from process.statesenum import State
 from .templatesettings import TemplateSettings
+from .templatesignals import TemplateSignals
 
 
 class TemplateAction(JoanModuleAction):
@@ -82,12 +83,25 @@ class TemplateAction(JoanModuleAction):
         self.share_settings(self.settings)
         # end settings for this module
 
-    def load_settings_from_file(self, settings_file_to_load):
-        self.settings.load_from_file(settings_file_to_load)
-        self.share_settings(self.settings)
+        # template signals
+        # in templatesignals.py the pyqtsignals are defined to trigger specific actions from this module
+        # here, connect the function to the appropriate signal
+        self._module_signals = TemplateSignals(self.module, self)
+        self.singleton_signals.add_signals(self.module, self._module_signals)
 
-    def save_settings_to_file(self, file_to_save_in):
-        self.settings.save_to_file(file_to_save_in)
+        # we connect a dummy
+        self._module_signals.my_custom_signal_str.connect(self.test_slot)
+
+        # here's a way how to emit one of the module_signals. This can be done in any module
+        self.singleton_signals.get_signals(self.module).my_custom_signal_str.emit("TEMPLATE: signal test")
+
+    def test_slot(self, message):
+        """
+        Dummy function to illustrate the signal-slot functionality
+        :param message:
+        :return: prints stuffs
+        """
+        print(message)
 
     def do(self):
         """
@@ -130,8 +144,9 @@ class TemplateAction(JoanModuleAction):
 
     def stop(self):
         """stop the module"""
-        self.state_machine.request_state_change(
-            State.IDLE)  # Will automatically go to READY as defined above in self.state_machine.set_automatic_transition
+        # Will automatically go to READY as defined above in self.state_machine.set_automatic_transition
+        self.state_machine.request_state_change(State.IDLE)
+
         return super().stop()
 
     def _starting_condition(self):

@@ -23,15 +23,13 @@ class DataplotterAction(JoanModuleAction):
         """
         super().__init__(module=JOANModules.DATA_PLOTTER, millis=millis)
 
-        self.status = Status()
-
         # start settings for this module
         self.settings = DataPlotterSettings(JOANModules.DATA_PLOTTER)
         self.default_settings_file_location = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                                            'dataplottersettings.json')
 
         if Path(self.default_settings_file_location).is_file():
-            self.load_settings_from_file(self.default_settings_file_location)
+            self._load_settings_from_file(self.default_settings_file_location)
             self.millis = self.settings.write_interval
         else:
             self.settings.set_all_empty()
@@ -49,7 +47,7 @@ class DataplotterAction(JoanModuleAction):
         # TODO: run data_plotter in separate thread
         # self.data_plotter.start()
 
-    def load_settings_from_file(self, settings_file_to_load):
+    def _load_settings_from_file(self, settings_file_to_load):
         """
         Loads the settings file for the Datarecorder and saves these settings in the default settings file location
         Sets the write interval from the settings file and initializes the Datarecorder output file
@@ -109,6 +107,10 @@ class DataplotterAction(JoanModuleAction):
         self.state_machine.request_state_change(State.RUNNING)
         self.data_plotter.set_window()
         super().start()
+
+    def load_settings(self, settings_file_to_load):
+        self._load_settings_from_file(settings_file_to_load)
+        self.state_machine.request_state_change(State.READY)
 
     def _plot(self):
         """

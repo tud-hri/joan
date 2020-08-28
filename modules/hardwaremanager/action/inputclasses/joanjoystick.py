@@ -5,7 +5,6 @@ from PyQt5 import uic, QtWidgets, QtCore
 
 from modules.hardwaremanager.action.hardwaremanagersettings import JoyStickSettings
 from modules.hardwaremanager.action.inputclasses.baseinput import BaseInput
-from modules.joanmodules import JOANModules
 
 
 class JoystickSettingsDialog(QtWidgets.QDialog):
@@ -13,6 +12,7 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
     Class for the settings Dialog of a joystick, this class should pop up whenever it is asked by the user or when
     creating the joystick class for the first time. NOTE: it should not show whenever settings are loaded by .json file.
     """
+
     def __init__(self, joystick_settings, parent=None):
         """
         Initializes the joystick class with the proper settings.
@@ -249,21 +249,21 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
             self.value_preview_check_boxes.append(check_box)
 
 
-class JOAN_Joystick(BaseInput):
+class JOANJoystick(BaseInput):
     """
     Main class for the Joystick input, inherits from BaseInput (as it should!)
     """
-    def __init__(self, hardware_manager_action, joystick_tab, settings: JoyStickSettings):
+
+    def __init__(self, hardware_manager_action, settings: JoyStickSettings, name=''):
         """
         Initializes the class
         :param hardware_manager_action:
         :param joystick_tab:
         :param settings:
         """
-        super().__init__(hardware_manager_action)
+        super().__init__(hardware_manager_action, name=name)
         self.module_action = hardware_manager_action
         self.currentInput = 'Joystick'
-        self._joystick_tab = joystick_tab
         self.settings = settings
 
         # Initialize Variables
@@ -277,20 +277,16 @@ class JOAN_Joystick(BaseInput):
         self._joystick_open = False
         self._joystick = hid.device()
 
-        #  hook up buttons
-        self._joystick_tab.btn_settings.clicked.connect(self._open_settings_dialog)
-        self._joystick_tab.btn_settings.clicked.connect(self._open_settings_from_button)
-        self._joystick_tab.btn_visualization.setEnabled(False)
-        self._joystick_tab.btn_remove_hardware.clicked.connect(self.remove_func)
-
         self._open_settings_dialog()
 
-    def initialize(self):
-        """
-        Function is called when initialize is pressed, can be altered for more functionality
-        :return:
-        """
-        print('initializing Joystick')
+    def connect_widget(self, widget):
+        self._tab_widget = widget
+
+        #  hook up buttons
+        self._tab_widget.btn_settings.clicked.connect(self._open_settings_dialog)
+        self._tab_widget.btn_settings.clicked.connect(self._open_settings_from_button)
+        self._tab_widget.btn_visualization.setEnabled(False)
+        self._tab_widget.btn_remove_hardware.clicked.connect(lambda: self.module_action.remove_input_device(self.name))
 
     def _open_settings_from_button(self):
         """
@@ -299,7 +295,6 @@ class JOAN_Joystick(BaseInput):
         """
         if self.settings_dialog:
             self.settings_dialog.show()
-
 
     def _open_settings_dialog(self):
         """
@@ -321,38 +316,28 @@ class JOAN_Joystick(BaseInput):
             print('Connection to USB Joystick failed')  # TODO: move to messagebox
             self._joystick_open = False
 
-    def remove_func(self):
-        """
-        Removes the joystick from the widget and settings
-        NOTE: calls 'self.remove_tab' which is a function of the BaseInput class, if you do not do this the tab will not
-        actually disappear from the module.
-        :return:
-        """
-        self.remove_tab(self._joystick_tab)
-        self.module_action.settings.joy_sticks.remove(self.settings)
-
     def disable_remove_button(self):
         """
-        Disables the remove joystick button (useful for example when you dont want to be able to remove an input when the
+        Disables the remove_input_device joystick button (useful for example when you dont want to be able to remove_input_device an input when the
         simulator is running)
         :return:
         """
-        if self._joystick_tab.btn_remove_hardware.isEnabled() is True:
-            self._joystick_tab.btn_remove_hardware.setEnabled(False)
+        if self._tab_widget.btn_remove_hardware.isEnabled() is True:
+            self._tab_widget.btn_remove_hardware.setEnabled(False)
         else:
             pass
 
     def enable_remove_button(self):
         """
-        Enables the remove joystick button
+        Enables the remove_input_device joystick button
         :return:
         """
-        if self._joystick_tab.btn_remove_hardware.isEnabled() is False:
-            self._joystick_tab.btn_remove_hardware.setEnabled(True)
+        if self._tab_widget.btn_remove_hardware.isEnabled() is False:
+            self._tab_widget.btn_remove_hardware.setEnabled(True)
         else:
             pass
 
-    def do(self):
+    def process(self):
         """
         Processes all the inputs of the joystick and writes them to self._data which is then written to the news in the
         action class
@@ -392,12 +377,12 @@ class JOAN_Joystick(BaseInput):
             if self.settings.use_double_steering_resolution:
                 self.steer = round(
                     (((joystick_data[self.settings.first_steer_channel]) + (
-                    joystick_data[self.settings.second_steer_channel]) * 256) / (256 * 256)) * (
+                        joystick_data[self.settings.second_steer_channel]) * 256) / (256 * 256)) * (
                             self.settings.max_steer - self.settings.min_steer) - self.settings.max_steer)
             else:
                 self.steer = round(
                     ((joystick_data[self.settings.first_steer_channel]) / 255) * (
-                                self.settings.max_steer - self.settings.min_steer) - self.settings.max_steer)
+                            self.settings.max_steer - self.settings.min_steer) - self.settings.max_steer)
 
         self._data['BrakeInput'] = self.brake
         self._data['ThrottleInput'] = self.throttle

@@ -1,17 +1,23 @@
+import os
+import sys
 import time
 
 from PyQt5 import QtCore
 
 from modules.joanmodules import JOANModules
+from process.joanmodulesignals import JoanModuleSignal
 from process.news import News
 from process.settings import Settings
+from process.signals import Signals
 from process.statemachine import StateMachine
 from process.status import Status
 from tools import AveragedFloat
 
 
 class JoanModuleAction(QtCore.QObject):
-    def __init__(self, module: JOANModules, millis=100, enable_performance_monitor=True):
+
+    def __init__(self, module: JOANModules, millis=100, enable_performance_monitor=True,
+                 use_state_machine_and_timer=True):
         """
         Initialize
         :param module: module type
@@ -24,23 +30,29 @@ class JoanModuleAction(QtCore.QObject):
 
         self._millis = millis
         self._performance_monitor_enabled = enable_performance_monitor
+        self._use_state_machine_and_timer = use_state_machine_and_timer
         self.time_of_last_tick = time.time_ns() / 10 ** 6
         self._average_tick_time = AveragedFloat(samples=int(1000 / millis))
         self._average_run_time = AveragedFloat(samples=int(1000 / millis))
 
         self.module = module
-        self.timer = QtCore.QTimer()
-        self.timer.setTimerType(QtCore.Qt.PreciseTimer)
-        self.timer.setInterval(millis)
 
-        if enable_performance_monitor:
-            self.timer.timeout.connect(self._do_with_performance_monitor)
-        else:
-            self.timer.timeout.connect(self.do)
+        self.module_path = os.path.dirname(os.path.abspath(sys.modules[self.__class__.__module__].__file__)).strip('action')
 
         self.singleton_status = Status()
         self.singleton_news = News()
         self.singleton_settings = Settings()
+        self.singleton_signals = Signals()
+
+        if use_state_machine_and_timer:
+            self.timer = QtCore.QTimer()
+            self.timer.setTimerType(QtCore.Qt.PreciseTimer)
+            self.timer.setInterval(millis)
+
+            if enable_performance_monitor:
+                self.timer.timeout.connect(self._do_with_performance_monitor)
+            else:
+                self.timer.timeout.connect(self.do)
 
         # initialize state machine
         self.state_machine = StateMachine(module)
@@ -49,6 +61,17 @@ class JoanModuleAction(QtCore.QObject):
         # initialize own data and create channel in news
         self.data = {}
         self.write_news(news=self.data)
+
+        # settings
+        self.settings = None
+
+        # (py)Qt signals for triggering specific module actions/functions
+        # these signals are all stored in a JoanModuleSignal class; add them there if you need more signals.
+        self._module_signals = JoanModuleSignal(module, self)
+        self.singleton_signals.add_signals(self.module, self._module_signals)
+
+    def register_module_dialog(self, module_dialog):
+        self.module_dialog = module_dialog
 
     def _do_with_performance_monitor(self):
         self._average_tick_time.value = (time.time_ns() - self.time_of_last_tick) / 10 ** 6
@@ -63,24 +86,33 @@ class JoanModuleAction(QtCore.QObject):
         pass
 
     def start(self):
-        self.timer.start()
-        return True
+        if self._use_state_machine_and_timer:
+            self.timer.start()
+            return True
+        else:
+            return False
 
     def stop(self):
-        self.timer.stop()
-        return True
-
-    def set_tick_interval_ms(self, interval_ms):
-        try:
-            self.tick_interval_ms = int(interval_ms)
-        except ValueError:
-            pass
+        if self._use_state_machine_and_timer:
+            self.timer.stop()
+            return True
+        else:
+            return False
 
     def write_news(self, news: dict):
         """
         Write new data to channel
         """
         self.singleton_news.write_news(self.module, news)
+
+    def read_news(self, channel):
+        return self.singleton_news.read_news(channel)
+
+    def get_all_news(self):
+        return self.singleton_news.all_news
+
+    def get_available_news_channels(self):
+        return self.singleton_news.all_news_keys
 
     def share_settings(self, module_settings):
         """
@@ -89,28 +121,37 @@ class JoanModuleAction(QtCore.QObject):
         """
         self.singleton_settings.update_settings(self.module, module_settings)
 
-    def get_all_news(self):
-        return self.singleton_news.all_news
+    def load_default_settings(self):
+        # load existing settings
+        default_settings_file_location = os.path.join(self.module_path, 'action', 'default_settings.json')
 
-    def get_available_news_channels(self):
-        return self.singleton_news.all_news_keys
+        if os.path.isfile(default_settings_file_location):
+            self.settings.load_from_file(default_settings_file_location)
 
-    def read_news(self, channel):
-        return self.singleton_news.read_news(channel)
+    def prepare_load_settings(self):
+        """Override this function if you need to prepare your module before the new settings are loaded"""
+        pass
 
-    # deprecated
-    """
-    def get_all_module_state_packages(self):
-        return self.singleton_status.all_module_state_packages
+    def apply_loaded_settings(self):
+        """Apply the new settings once these are loaded"""
+        pass
 
-    # deprecated
-    def get_available_module_state_packages(self):
-        return self.singleton_status.all_module_state_package_keys
+    def load_settings_from_file(self, settings_file_to_load):
+        """
+        Loads appropriate settings from .json file
+        :param settings_file_to_load:
+        :return:
+        """
+        self.settings.load_from_file(settings_file_to_load)
+        self.share_settings(self.settings)
 
-    #deprecated
-    def get_module_state_package(self, module):
-        return self.singleton_status.get_module_state_package(module)
-    """
+    def save_settings_to_file(self, file_to_save_in):
+        """
+        Saves current settings to json file
+        :param file_to_save_in:
+        :return:
+        """
+        self.settings.save_to_file(file_to_save_in)
 
     def get_available_module_settings(self):
         return self.singleton_settings.all_settings_keys

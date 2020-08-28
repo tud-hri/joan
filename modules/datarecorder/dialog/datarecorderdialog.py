@@ -70,7 +70,7 @@ class CreateTreeWidgetDialog(QtWidgets.QDialog):
             return item
 
 
-class DatarecorderDialog(JoanModuleDialog):
+class DataRecorderDialog(JoanModuleDialog):
     """
     Builts the dialog used for the Data Recorder and shows it on the inherited dialog
     Inherits the dialog from the JoanModuleDialog
@@ -83,7 +83,6 @@ class DatarecorderDialog(JoanModuleDialog):
         """
         super().__init__(module=JOANModules.DATA_RECORDER, module_action=module_action, parent=parent)
 
-        self.module_action.state_machine.add_state_change_listener(self._handle_module_specific_state)
         self.module_action.state_machine.set_entry_action(State.READY, self.create_tree_widget)
 
         # set current data file name
@@ -95,19 +94,6 @@ class DatarecorderDialog(JoanModuleDialog):
 
         # get news items
         self.news = News()
-
-        # Settings
-        self.settings_menu = QtWidgets.QMenu('Settings')
-        self.load_settings = QtWidgets.QAction('Load DataRecorder Settings')
-        self.load_settings.triggered.connect(self._load_settings)
-        self.settings_menu.addAction(self.load_settings)
-        self.save_settings = QtWidgets.QAction('Save DataRecorder Settings')
-        self.save_settings.triggered.connect(self._save_settings)
-        self.settings_menu.addAction(self.save_settings)
-        self.menu_bar.addMenu(self.settings_menu)
-        # load/save file
-        self.load_settings.setEnabled(True)
-        self.save_settings.setEnabled(False)
 
         # set trajectory buttons functionality
         self.module_widget.btn_save.setEnabled(False)
@@ -125,19 +111,14 @@ class DatarecorderDialog(JoanModuleDialog):
         When loading is cancelled, the default settings are used, otherwise the loaded fiule is used
         State is set to READY
         """
-        settings_file_to_load, _ = QtWidgets.QFileDialog.getOpenFileName(self, 'load settings', filter='*.json')
-        if settings_file_to_load:
-            self.module_action.load_settings_from_file(settings_file_to_load)
-            self.create_tree_widget()
-        self.module_action.state_machine.request_state_change(State.READY)
+        settings_file_to_load, _ = QtWidgets.QFileDialog.getOpenFileName(self, 'load settings',
+                                                                         os.path.join(self.module_action.module_path,
+                                                                                      'action'),
+                                                                         filter='*.json')
 
-    def _save_settings(self):
-        """
-        Opens a dialog to save the current settings in a json formatted file with the json extension
-        """
-        file_to_save_in, _ = QtWidgets.QFileDialog.getSaveFileName(self, 'save settings', filter='*.json')
-        if file_to_save_in:
-            self.module_action.save_settings_to_file(file_to_save_in)
+        if settings_file_to_load:
+            self.module_action.load_settings(settings_file_to_load)
+            self.create_tree_widget()
 
     def handle_click(self, nodes):
         """
@@ -270,11 +251,13 @@ class DatarecorderDialog(JoanModuleDialog):
         self.module_widget.check_trajectory.setEnabled(False)
         self.module_widget.check_trajectory.setChecked(False)
 
-    def _handle_module_specific_state(self):
+    def handle_state_change(self):
         """
         Handle the state transition by updating the status label and have the
         GUI reflect the possibilities of the current state.
         """
+        super().handle_state_change()
+
         try:
             current_state = self.module_action.state_machine.current_state
 

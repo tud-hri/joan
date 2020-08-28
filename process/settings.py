@@ -58,7 +58,7 @@ class Settings:
         return self._settings.keys()
 
 
-"""DEPRECATED - NOW ONLY USED IN EXPERIMENT MANAGER"""
+"""DEPRECATED - NOW ONLY USED IN EXPERIMENT MANAGER"""  # TODO: now it is not used anywhere, so clean up
 
 
 class ModuleSettings:
@@ -103,8 +103,8 @@ class ModuleSettings:
         """
         # if type(result) == str then something went wrong with reading the JSON file
         result = self.read_settings()
-        # add/remove/change content to self._module_settings
-        # remove settings from removed data
+        # add/remove_input_device/change content to self._module_settings
+        # remove_input_device settings from removed data
         if len(filter) > 0:
             self._filter_settings(keys=filter)
 

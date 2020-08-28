@@ -1,12 +1,13 @@
 from modules.hardwaremanager.action.inputclasses.baseinput import BaseInput
 
 
-class JOAN_Mouse(BaseInput):  # DEPRECATED FOR NOW  TODO: remove from interface for now
+class JOANMouse(BaseInput):  # DEPRECATED FOR NOW  TODO: remove_input_device from interface for now
     """
        Main class for the Mouseinput, inherits from BaseInput (as it should!)
        NOTE: This class is currently not used!!
     """
-    def __init__(self, hardware_manager_action, mouse_tab):
+
+    def __init__(self, hardware_manager_action):
         """
         Initializes the class
         :param hardware_manager_action:
@@ -16,8 +17,10 @@ class JOAN_Mouse(BaseInput):  # DEPRECATED FOR NOW  TODO: remove from interface 
         raise NotImplementedError('Mouse input is not yet implemented')
         self.currentInput = 'Mouse'
         # Add the tab to the widget
-        self._mouse_tab = mouse_tab
-        self._mouse_tab.btn_remove_hardware.clicked.connect(self.remove_func)
+
+    def connect_widget(self, widget):
+        self._tab_widget = widget
+        self._tab_widget.btn_remove_hardware.clicked.connect(lambda: self.module_action.remove_input_device(self.name))
 
     def remove_func(self):
         """
@@ -26,7 +29,7 @@ class JOAN_Mouse(BaseInput):  # DEPRECATED FOR NOW  TODO: remove from interface 
         actually disappear from the module.
         :return:
         """
-        self.remove_tab(self._mouse_tab)
+        self.remove_tab(self._tab_widget)
 
-    def do(self):
-            return self._data
+    def process(self):
+        return self._data
