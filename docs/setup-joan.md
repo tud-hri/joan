@@ -29,8 +29,12 @@ We will explain how to setup your own project repository and how to connect it t
 - Go to the JOAN repository. You can either search for it, or use this [link](https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan). Welcome! But do nothing - for now.
 - Open a new browser tab, and navigate to the [JOAN-students group](https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan-students). If you don't have access, you can request access through the "Request access" link (see the image below) Note: this group is visible to anyone with a TUDelft `netid`.
   ![joan-students-access](imgs/setup-joan-gitlab-request-access-joanstudents.png)
-    - For PhD researchers, please yse the JOAN-projects group.
+    - For PhD researchers, please use the JOAN-projects group.
 - Make a new project using the green 'New project' button. Please name your repository starting with JOAN, followed by your name and any other project description. Use hyphens. Example project name: `JOAN-niek-myfirstjoanproject`. Click on 'Create project'. You will be redirected to your empty repository page. 
+
+!!!Note
+    When asked, do not automatically create a readme file on gitlab
+
 - Do not close this webpage, we will need it in a moment.
 
 ---
