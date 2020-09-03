@@ -8,7 +8,7 @@ It is possible to store all Python base type data in a settings object. But it i
 automatically stored and loaded from JSON files.
 
 !!! Warning  
-    Multiple levels of custom objects cannot be rebuild from a json file (e.g. SettingsObject -> ChildObject -> GrandChildObject is not supported). Limit the data
+    Multiple levels of custom objects cannot be rebuild from a `json` file (e.g. SettingsObject -> ChildObject -> GrandChildObject is not supported). Limit the data
     stored in a custom child objects to Python base type data.
 
 The settings object is usually directly referenced when a setting is needed. If, for example, the settings object holds a limit it is oke to write:
