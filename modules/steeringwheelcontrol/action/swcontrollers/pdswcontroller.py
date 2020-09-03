@@ -4,13 +4,13 @@ import time
 import numpy as np
 from PyQt5 import QtWidgets, uic
 
-from modules.steeringwheelcontrol.action.steeringwheelcontrolsettings import PDcontrollerSettings
+from modules.steeringwheelcontrol.action.steeringwheelcontrolsettings import PDControllerSettings
 from modules.steeringwheelcontrol.action.swcontrollertypes import SWControllerTypes
 from tools import LowPassFilterBiquad
 from .baseswcontroller import BaseSWController
 
 
-class PDcontrollerSettingsDialog(QtWidgets.QDialog):
+class PDControllerSettingsDialog(QtWidgets.QDialog):
     def __init__(self, pd_controller_settings, controller, parent=None):
         super().__init__(parent)
         self.controller = controller
@@ -21,15 +21,14 @@ class PDcontrollerSettingsDialog(QtWidgets.QDialog):
             self._set_default_values)
         self.btn_apply_parameters.clicked.connect(self.update_parameters)
 
-
-
     def update_parameters(self):
         self.pd_controller_settings.t_lookahead = float(self.edit_t_ahead.text())
         self.pd_controller_settings.k_p = float(self.edit_gain_prop.text())
         self.pd_controller_settings.k_d = float(self.edit_gain_deriv.text())
         self.pd_controller_settings.w_lat = float(self.edit_weight_lat.text())
         self.pd_controller_settings.w_heading = float(self.edit_weight_heading.text())
-        self.pd_controller_settings._trajectory_name = self.cmbbox_hcr_selection.itemText(self.cmbbox_hcr_selection.currentIndex())
+        self.pd_controller_settings.trajectory_name = self.cmbbox_hcr_selection.itemText(
+            self.cmbbox_hcr_selection.currentIndex())
 
         self._display_values()
 
@@ -39,8 +38,8 @@ class PDcontrollerSettingsDialog(QtWidgets.QDialog):
         self.pd_controller_settings.k_d = float(self.edit_gain_deriv.text())
         self.pd_controller_settings.w_lat = float(self.edit_weight_lat.text())
         self.pd_controller_settings.w_heading = float(self.edit_weight_heading.text())
-        self.pd_controller_settings._trajectory_name = self.cmbbox_hcr_selection.itemText(self.cmbbox_hcr_selection.currentIndex())
-
+        self.pd_controller_settings.trajectory_name = self.cmbbox_hcr_selection.itemText(
+            self.cmbbox_hcr_selection.currentIndex())
 
         super().accept()
 
@@ -60,11 +59,11 @@ class PDcontrollerSettingsDialog(QtWidgets.QDialog):
         self.edit_weight_lat.setText(str(settings_to_display.w_lat))
         self.edit_weight_heading.setText(str(settings_to_display.w_heading))
 
-        idx_traj = self.cmbbox_hcr_selection.findText(settings_to_display._trajectory_name)
+        idx_traj = self.cmbbox_hcr_selection.findText(settings_to_display.trajectory_name)
         self.cmbbox_hcr_selection.setCurrentIndex(idx_traj)
 
     def _set_default_values(self):
-        self._display_values(PDcontrollerSettings())
+        self._display_values(PDControllerSettings())
         self.update_parameters()
 
 
@@ -83,8 +82,8 @@ class PDSWController(BaseSWController):
         self._t2 = 0
 
         # Setting up filters
-        self._bq_filter_heading = LowPassFilterBiquad(fc=10, fs=1000/self.module_action._millis)
-        self._bq_filter_velocity = LowPassFilterBiquad(fc=10, fs=1000/self.module_action._millis)
+        self._bq_filter_heading = LowPassFilterBiquad(fc=10, fs=1000 / self.module_action._millis)
+        self._bq_filter_velocity = LowPassFilterBiquad(fc=10, fs=1000 / self.module_action._millis)
 
         # controller errors
         # [0]: lateral error
@@ -105,12 +104,12 @@ class PDSWController(BaseSWController):
 
         # immediately load the correct HCR after index change
 
-
-        self.settings_dialog = PDcontrollerSettingsDialog(self.settings, SWControllerTypes.PD_SWCONTROLLER)
+        self.settings_dialog = PDControllerSettingsDialog(self.settings, SWControllerTypes.PD_SWCONTROLLER)
 
         self.settings_dialog.btn_apply_parameters.clicked.connect(self.load_trajectory)
         self.settings_dialog.accepted.connect(self.load_trajectory)
-        self.settings_dialog.btnbox_pd_controller_settings.button(self.settings_dialog.btnbox_pd_controller_settings.RestoreDefaults).clicked.connect(
+        self.settings_dialog.btnbox_pd_controller_settings.button(
+            self.settings_dialog.btnbox_pd_controller_settings.RestoreDefaults).clicked.connect(
             self.load_trajectory)
 
         # self.settings_dialog.cmbbox_hcr_selection.currentIndexChanged.connect(self.load_trajectory)
@@ -148,8 +147,8 @@ class PDSWController(BaseSWController):
                 delta_t = t1 - self._t2
 
                 delta_t = t1 - self._t2
-                if delta_t < (self.module_action.millis - 0.5) / 1000:
-                    delta_t = self.module_action.millis / 1000
+                if delta_t < (self.module_action._millis - 0.5) / 1000:
+                    delta_t = self.module_action._millis / 1000
 
                 # extract data
                 car = vehicle_object.spawned_vehicle
@@ -178,14 +177,12 @@ class PDSWController(BaseSWController):
                 self._data_out['lat_error_rate_filtered'] = error_lateral_rate_filtered
                 self._data_out['heading_error_rate_filtered'] = error_heading_rate_filtered
 
-
                 # update variables
                 self.error_static_old = error_static
                 self._t2 = t1
             except Exception as inst:
                 self._data_out['sw_torque'] = 0
                 print(inst)
-
 
             return self._data_out
 
@@ -248,6 +245,5 @@ class PDSWController(BaseSWController):
         torque_gain = torque_gain_lateral + torque_gain_heading
 
         torque = -stiffness * torque_gain
-
 
         return int(torque)

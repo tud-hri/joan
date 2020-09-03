@@ -1,198 +1,166 @@
-from PyQt5 import QtCore
+import os
+from PyQt5 import QtWidgets
 
 from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
-from .states import ExperimentManagerStates
-
-# Used for Settings
-import os
-from process.settings import ModuleSettings
-from process.settings import Settings
-import json
-import copy
-from json import JSONDecodeError
+from .condition import Condition
+from .experiment import Experiment
 
 
 class ExperimentManagerAction(JoanModuleAction):
+    current_experiment: Experiment
+
     def __init__(self, millis=100):
-        super().__init__(module=JOANModules.EXPERIMENT_MANAGER, millis=millis)
-    #def __init__(self, master_state_handler, tick_interval_ms=100):
-    #    super().__init__(module=JOANModules.EXPERIMENT_MANAGER, master_state_handler=master_state_handler, tick_interval_ms=tick_interval_ms)
-
-        self.module_state_handler.request_state_change(ExperimentManagerStates.EXEC.READY)
-
-        self.data = {}
-        self.write_news(news=self.data)
-
-        # set factory settings per module, must be called before self.write_default_experiment()
-        self._set_factory_settings_in_singleton()
+        super().__init__(module=JOANModules.EXPERIMENT_MANAGER, use_state_machine_and_timer=False)
 
         # create/get default experiment_settings
         self.my_file = os.path.join('.', 'default_experiment_settings.json')
-        # First remove current file
+
+        # First remove_input_device current file
         if os.path.exists(self.my_file):
             os.remove(self.my_file)
-        self.settings_object = ModuleSettings(file=self.my_file)
-        self.settings = self.settings_object.read_settings()
-        self.settings.update(self._get_attention_message())
-        self.share_settings(self.settings)
 
-        self.write_default_experiment()  # maybe used as an example for experiment conditions
-        self.experiment_settings = {}    # will contain experiment_settings
-        self.condition_names = []        # will contain condition_names for use in getting correct settings
+        self.current_experiment = None
+        self.experiment_save_path = ''
+        self.active_condition = None
+        self.active_condition_index = None
 
-    def do(self):
-        """
-        This function is called every controller tick of this module implement your main calculations here
-        """
-        # self.write_news(news=self.data)
+    def initialize_new_experiment(self, modules_to_include, save_path):
+        self.current_experiment = Experiment(modules_to_include)
+        self.current_experiment.set_from_current_settings(self.singleton_settings)
+        self.experiment_save_path = save_path
+        self.save_experiment()
 
-    def initialize(self):
+        self.module_dialog.update_gui()
+        self.module_dialog.update_condition_lists()
+
+    def create_new_condition(self, condition_name):
+        if self.current_experiment:
+            if condition_name in [condition.name for condition in self.current_experiment.all_conditions]:
+                raise ValueError('You cannot create two condition with the same name in one experiment')
+
+            new_condition = Condition.set_from_current_settings(condition_name, self.current_experiment, self.singleton_settings)
+            self.current_experiment.all_conditions.append(new_condition)
+
+            self.module_dialog.update_condition_lists()
+
+    def add_condition(self, condition):
+        if self.current_experiment:
+            self.current_experiment.active_condition_sequence.append(condition)
+            self.module_dialog.update_condition_lists()
+
+    def remove_condition(self, index):
+        if self.current_experiment:
+            self.current_experiment.active_condition_sequence.pop(index)
+            self.module_dialog.update_condition_lists()
+
+    def add_transition(self, transition):
+        if self.current_experiment:
+            self.current_experiment.active_condition_sequence.append(transition)
+            self.module_dialog.update_condition_lists()
+
+    def remove_transition(self, index):
+        if self.current_experiment:
+            self.current_experiment.active_condition_sequence.pop(index)
+            self.module_dialog.update_condition_lists()
+
+    def update_condition_sequence(self, new_sequence):
+        if self.current_experiment:
+            self.current_experiment.active_condition_sequence = []
+            for list_item in new_sequence:
+                self.current_experiment.active_condition_sequence.append(list_item)
+
+    def save_experiment(self):
+        if self.current_experiment:
+            self.current_experiment.save_to_file(self.experiment_save_path)
+
+    def load_experiment(self, file_path):
+        self.experiment_save_path = file_path
+        self.current_experiment = Experiment.load_from_file(file_path)
+        self.module_dialog.update_gui()
+        self.module_dialog.update_condition_lists()
+
+    def activate_condition(self, condition, condition_index):
         """
-        This function is called before the module is started
+        To activate the condition, send the settings to the corresponding module (settings)
+        :param condition:
+        :return:
         """
-        try:
-            self.module_state_handler.request_state_change(ExperimentManagerStates.INIT.INITIALIZING)
-        except RuntimeError:
+
+        for module, base_settings_dict in self.current_experiment.base_settings.items():
+            module_settings_dict = base_settings_dict.copy()
+
+            self._recursively_copy_dict(condition.diff[module], module_settings_dict)
+            self.singleton_settings.get_settings(module).load_from_dict({str(module): module_settings_dict})
+
+        self.active_condition = condition
+        self.active_condition_index = condition_index
+
+        return True
+
+    def initialize_all(self):
+        if self.current_experiment:
+            for module in self.current_experiment.modules_included:
+                signals = self.singleton_signals.get_signals(module)
+                signals.initialize_module.emit()
+
+    def start_all(self):
+        if self.current_experiment:
+            for module in self.current_experiment.modules_included:
+                signals = self.singleton_signals.get_signals(module)
+                signals.start_module.emit()
+
+    def stop_all(self):
+        if self.current_experiment:
+            for module in self.current_experiment.modules_included:
+                signals = self.singleton_signals.get_signals(module)
+                signals.stop_module.emit()
+
+    def transition_to_next_condition(self):
+        if not self.current_experiment:
             return False
-        return super().initialize()
 
-    def start(self):
+        if not self.active_condition:
+            self.active_condition_index = -1
         try:
-            self.module_state_handler.request_state_change(ExperimentManagerStates.EXEC.RUNNING)
-        except RuntimeError:
+            next_condition_or_transition = self.current_experiment.active_condition_sequence[self.active_condition_index + 1]
+            if isinstance(next_condition_or_transition, Condition):
+                return self.activate_condition(next_condition_or_transition, self.active_condition_index + 1)
+            else:
+                transition = next_condition_or_transition
+                transition.execute_before_new_condition_activation(self.current_experiment, self.active_condition)
+
+                # search for the next condition
+                added_index = 1
+                while not isinstance(next_condition_or_transition, Condition):
+                    try:
+                        added_index += 1
+                        next_condition_or_transition = self.current_experiment.active_condition_sequence[self.active_condition_index + added_index]
+                    except IndexError:
+                        # end of the list of conditions and transitions
+                        return True
+                    finally:
+                        if added_index > 2:
+                            QtWidgets.QMessageBox.warning(self.module_dialog, 'Warning', 'A sequence of multiple consecutive transitions was found. '
+                                                                                         'This is illegal, only the first was executed, the others were '
+                                                                                         'ignored.')
+
+                if self.activate_condition(next_condition_or_transition, self.active_condition_index + added_index):
+                    transition.execute_after_new_condition_activation(self.current_experiment, self.active_condition)
+                    return True
+                else:
+                    return False
+        except IndexError:
             return False
-        return super().start()
 
-    def stop(self):
-        try:
-            self.module_state_handler.request_state_change(ExperimentManagerStates.EXEC.STOPPED)
-        except RuntimeError:
-            return False
-        return super().stop()
-
-    def initialize_condition(self, condition_nr):
-        """Initialize JOAN for the chosen experiment with user-defined conditions
-        First: The default settings per module are set to the initial values
-        These initial values can be found in the 'def __init__' of a module
-        Second: The modified settings as found in the condition-part will replace the initial value
-        These modified values will be read by a module in the 'def initialize' of a module 
-        """
-        self._set_default_settings_in_singleton()  # Set factory settings per module in working-settings
-        self.write_default_experiment()            # create default settings file with content of all modules
-        if 'condition' in self.experiment_settings.keys():
-            for condition in self.experiment_settings['condition']:
-                if 'name' in condition.keys():
-                    if self.condition_names[condition_nr] == condition['name']:
-                        self._set_condition_settings_in_singleton(condition)
-
-    def load_experiment(self, experiment_settings_filenames):
-        """All the action stuff for loading a new experiment settings file
-        called from 'menu->file->load'
-        """
-        experiment_settings_filename = experiment_settings_filenames
-        if isinstance(experiment_settings_filename, list):
-            for element in experiment_settings_filename:
-                experiment_settings_filename = element
-
-        self.condition_names.clear()
-        try:
-            with open(experiment_settings_filename, 'r') as experiment_settings_file:
-                self.experiment_settings = json.load(experiment_settings_file)
-        except JSONDecodeError as inst:
-            return '%s line: %s column: %s, characterposition: %s' % (inst.msg, inst.lineno, inst.colno, inst.pos)
-        except IsADirectoryError as inst:
-            return 'Error: %s , %s is a directory' % (inst, experiment_settings_filename)
-
-        # fill condition_names again with the conditions ins self.experiment_settings (just loaded)
-        if 'condition' in self.experiment_settings.keys():
-            for condition in self.experiment_settings['condition']:
-                if 'name' in condition.keys():
-                    self.condition_names.append(condition['name'])
-
-        return self.experiment_settings
-
-    def write_default_experiment(self):
-        """Creates a default_experiment_settings_file in JSON format
-        with all settings from all modules
-        """
-        # First remove current file
-        if os.path.exists(self.my_file):
-            os.remove(self.my_file)
-        # Create new file
-        for module_object in JOANModules:
-            module_factory_settings = self.get_module_factory_settings(module=module_object)
-            self.item_dict = {}
-            try:
-                self.item_dict = module_factory_settings['data'][module_object.name]
-            except KeyError:
-                pass
-                #print('Info: Module %s has no settings' % module_object.name)
-            except TypeError:  # Module settings are of new style, TODO: remove old style above
-                self.item_dict = module_factory_settings.as_dict()
-
-            self.settings_object.write_settings(group_key=module_object.name, item=self.item_dict)
-
-    def get_experiment_conditions(self):
-        return self.condition_names
-
-    def _get_attention_message(self):
-        attention_message = {}
-        data_part = {}
-        condition_part = {}
-        data_part["ALTER"] = "do NOT alter this data-part for this file is automatically generated"
-        data_part["PURPOSE"] = "an example for the condition-settings to be altered"
-        condition_part["ALTER"] = "please do, that is the purpose"
-        condition_part["PURPOSE"] = "set predefined conditions for your experiment"
-
-        condition_part_example_1_module = {}
-        condition_part_example_1_module["TEMPLATE"] = {"steer_sensitivity": 12, "throttle_sensitivity": 5}
-        condition_part_example_1_module["name"] = "experiment 1"
-        condition_part_example_2_module = {}
-        condition_part_example_2_module["TEMPLATE"] = {"steer_sensitivity": 10, "throttle_sensitivity": 5}
-        condition_part_example_2_module["name"] = "experiment 2"
-        
-        condition_part_example = []
-        condition_part_example.append(condition_part_example_1_module)
-        condition_part_example.append(condition_part_example_2_module)
-
-        condition_part["condition"] = condition_part_example
-
-        attention_message["data-part"] = data_part
-        attention_message["condition-part"] = condition_part
-
-        return {"ATTENTION - Copy this file and set conditions for your experiment": attention_message, "condition": [{"name": "No Experiment condition defined"}]}
-
-    def _set_factory_settings_in_singleton(self):
-        """ Sets factory settings in settings_singleton for each module at the start of the program"""
-        for module_object in JOANModules:
-            module_settings = self.get_module_settings(module=module_object)
-            module_factory_settings = copy.deepcopy(module_settings)
-            self.singleton_settings.update_factory_settings(module_object, {})
-            self.singleton_settings.update_factory_settings(module_object, module_factory_settings)
-
-    def _set_default_settings_in_singleton(self):
-        """ Sets the default settings per module back to the module 'def __init__' settings"""
-        for module_object in JOANModules:
-            module_factory_settings = self.get_module_factory_settings(module=module_object)
-            module_settings = copy.deepcopy(module_factory_settings)
-            self.singleton_settings.share_settings(module_object, {})
-            self.singleton_settings.share_settings(module_object, module_settings)
-
-    def _set_condition_settings_in_singleton(self, condition):
-        """ Set the condition settings per module, must be read through the module 'def initialize'
-        data will overrule the default settings
-        """
-        for joan_module in JOANModules:
-            update_settings = copy.deepcopy(self.singleton_settings.get_factory_settings(joan_module))
-            if 'data' in update_settings.keys():
-                update_settings = update_settings['data']
-            try:
-                if joan_module.name in condition.keys():
-                    item_keys = update_settings[joan_module.name].keys()
-                    for item in item_keys:
-                        if item in condition[joan_module.name].keys():
-                            update_settings[joan_module.name][item] = condition[joan_module.name][item]
-                            self.singleton_settings.share_settings(joan_module, update_settings)
-            except KeyError:
-                pass
+    @staticmethod
+    def _recursively_copy_dict(source, destination):
+        for key, item in source.items():
+            if isinstance(item, dict):
+                try:
+                    ExperimentManagerAction._recursively_copy_dict(item, destination[key])
+                except KeyError:
+                    destination[key] = {}
+                    ExperimentManagerAction._recursively_copy_dict(item, destination[key])
+            else:
+                destination[key] = item

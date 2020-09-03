@@ -124,8 +124,11 @@ class JoanHQWindow(QtWidgets.QMainWindow):
         self.adjustSize()
 
         # with state_machine
-        module_dialog.module_action.state_machine.add_state_change_listener(
-            lambda: widget.lbl_state.setText(str(module_dialog.module_action.state_machine.current_state)))
+        try:
+            module_dialog.module_action.state_machine.add_state_change_listener(
+                lambda: widget.lbl_state.setText(str(module_dialog.module_action.state_machine.current_state)))
+        except AttributeError:  # display nothing if the module has no state machine
+            widget.lbl_state.setText(" - ")
 
         # and to the list
         self._module_cards[name] = widget

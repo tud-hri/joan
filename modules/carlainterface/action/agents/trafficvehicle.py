@@ -35,15 +35,15 @@ class TrafficvehicleSettingsDialog(QtWidgets.QDialog):
         Accepts and saves the current settings internally (Closes the dialog)
         :return:
         """
-        self.trafficvehicle_settings._velocity = self.spin_velocity.value()
-        self.trafficvehicle_settings._selected_car = self.combo_car_type.currentText()
-        self.trafficvehicle_settings._selected_spawnpoint = self.spin_spawn_points.value()
+        self.trafficvehicle_settings.velocity = self.spin_velocity.value()
+        self.trafficvehicle_settings.selected_car = self.combo_car_type.currentText()
+        self.trafficvehicle_settings.selected_spawnpoint = self.spin_spawn_points.value()
         self.trafficvehicle_settings._t_lookahead = float(self.edit_t_ahead.text())
         self.trafficvehicle_settings._k_p = float(self.edit_gain_prop.text())
         self.trafficvehicle_settings._k_d = float(self.edit_gain_deriv.text())
         self.trafficvehicle_settings._w_lat = float(self.edit_weight_lat.text())
         self.trafficvehicle_settings._w_heading = float(self.edit_weight_heading.text())
-        self.trafficvehicle_settings._trajectory_name = self.combo_box_traffic_trajectory.itemText(self.combo_box_traffic_trajectory.currentIndex())
+        self.trafficvehicle_settings.trajectory_name = self.combo_box_traffic_trajectory.itemText(self.combo_box_traffic_trajectory.currentIndex())
         self.trafficvehicle_settings._set_velocity_with_pd = self.check_box_pd_vel.isChecked()
 
         super().accept()
@@ -84,15 +84,15 @@ class TrafficvehicleSettingsDialog(QtWidgets.QDialog):
         Saves the current settings internally without closing the settings dialog
         :return:
         """
-        self.trafficvehicle_settings._velocity = self.spin_velocity.value()
-        self.trafficvehicle_settings._selected_car = self.combo_car_type.currentText()
-        self.trafficvehicle_settings._selected_spawnpoint = self.spin_spawn_points.value()
+        self.trafficvehicle_settings.velocity = self.spin_velocity.value()
+        self.trafficvehicle_settings.selected_car = self.combo_car_type.currentText()
+        self.trafficvehicle_settings.selected_spawnpoint = self.spin_spawn_points.value()
         self.trafficvehicle_settings._t_lookahead = float(self.edit_t_ahead.text())
         self.trafficvehicle_settings._k_p = float(self.edit_gain_prop.text())
         self.trafficvehicle_settings._k_d = float(self.edit_gain_deriv.text())
         self.trafficvehicle_settings._w_lat = float(self.edit_weight_lat.text())
         self.trafficvehicle_settings._w_heading = float(self.edit_weight_heading.text())
-        self.trafficvehicle_settings._trajectory_name = self.combo_box_traffic_trajectory.itemText(self.combo_box_traffic_trajectory.currentIndex())
+        self.trafficvehicle_settings.trajectory_name = self.combo_box_traffic_trajectory.itemText(self.combo_box_traffic_trajectory.currentIndex())
         self.trafficvehicle_settings._set_velocity_with_pd = self.check_box_pd_vel.isChecked()
 
         self._display_values()
@@ -104,7 +104,7 @@ class TrafficvehicleSettingsDialog(QtWidgets.QDialog):
         """
         self._display_values(TrafficVehicleSettings())
 
-class Trafficvehicle(Basevehicle):
+class TrafficVehicle(Basevehicle):
     """
     This class contains everything you need to make a vehicle follow a predefined route by PD control
     """
@@ -195,8 +195,8 @@ class Trafficvehicle(Basevehicle):
         self._vehicle_tab.setParent(None)
         self.destroy_car()
 
-        self.module_action.traffic_vehicles.remove(self)
-        self.module_action.settings.traffic_vehicles.remove(self.settings)
+        self.module_action.traffic_vehicles.remove_input_device(self)
+        self.module_action.settings.traffic_vehicles.remove_input_device(self.settings)
 
     def set_trajectory_name(self):
         """
@@ -216,9 +216,8 @@ class Trafficvehicle(Basevehicle):
         try:
             tmp = pd.read_csv(os.path.join(self._path_trajectory_directory, self.settings._trajectory_name))
             self._trajectory = tmp.values
-            print('loaded')
             # TODO We might want to do some checks on the trajectory here.
-            # self._trajectory_name = fname
+            # self.trajectory_name = fname
         except OSError as err:
                 print('Error loading HCR trajectory file: ', err)
 
@@ -252,7 +251,7 @@ class Trafficvehicle(Basevehicle):
         dist_squared = np.einsum('ij,ij->i', deltas, deltas)
         return np.argmin(dist_squared)
 
-    def process(self):
+    def do(self):
         """
         This ticks at the interval of the module and will update the traffic vehicles control input appropriately.
         :return:

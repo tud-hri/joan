@@ -1,18 +1,37 @@
 import inspect
-import abc
 import json
-
 from enum import Enum
 
+from PyQt5 import QtCore
+from PyQt5.QtCore import pyqtSignal
 from modules.joanmodules import JOANModules
 
 
-class JoanModuleSettings(abc.ABC):
+"""
+Proposal for restructuring
+
+Need: At the moment, loading of settings occurs through several functions in settings, action and dialog. This needs to be simplified/structurized
+
+Proposal: Settings are set in JOANModuleSettings. JOANModuleSettings sends out signal apply_loaded_settings. Action or dialog can connect to this signal to, you guessed it, apply the settings
+In JOANModuleSettings, we need to clearly distinguish between settings loaded from file and settings loaded through, for example, the experimentmanaer )dict)
+
+
+"""
+
+
+class JoanModuleSettings(QtCore.QObject):
+
+    # signal when new settings are loaded. Action and Dialog can connect to this signal to apply the new settings
+    before_load_settings = pyqtSignal()
+    load_settings_done = pyqtSignal()
+
     def __init__(self, module_enum: JOANModules):
         """
         Initialize
         :param module_enum: module type
         """
+        super(QtCore.QObject, self).__init__()
+
         self._module_enum = module_enum
 
     def save_to_file(self, file_path, keys_to_omit=()):
@@ -41,23 +60,24 @@ class JoanModuleSettings(abc.ABC):
         with open(file_path, 'r') as settings_file:
             loaded_dict = json.load(settings_file)
 
-        self.set_from_loaded_dict(loaded_dict)
+        self.load_from_dict(loaded_dict)
 
-    def set_from_loaded_dict(self, loaded_dict):
+    def load_from_dict(self, loaded_dict):
         """
         Set the settings in dict to the settings object
         :param loaded_dict: dictionary with loaded settings (keys, values)
         :return:
         """
         try:
+            self.before_load_settings.emit()
             self._copy_dict_to_class_dict(loaded_dict[str(self._module_enum)], self.__dict__)
+            self.load_settings_done.emit()  # to let others know new settings are available
         except KeyError:
             warning_message = "WARNING: loading settings for the " + str(self._module_enum) + \
-                              " module from a dictionary failed. The loaded dictionary did not contain " + str(
-                self._module_enum) + " settings." + \
-                              (" It did contain settings for: " + ", ".join(
-                                  loaded_dict.keys()) if loaded_dict.keys() else "")
-
+                              " module from a dictionary failed. The loaded dictionary did not contain " + \
+                              str(self._module_enum) + " settings." + \
+                              (" It did contain settings for: " +
+                               ", ".join(loaded_dict.keys()) if loaded_dict.keys() else "")
             print(warning_message)
 
     def as_dict(self):

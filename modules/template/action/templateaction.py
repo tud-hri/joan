@@ -14,6 +14,7 @@ from modules.joanmodules import JOANModules
 from process.joanmoduleaction import JoanModuleAction
 from process.statesenum import State
 from .templatesettings import TemplateSettings
+from .templatesignals import TemplateSignals
 
 
 class TemplateAction(JoanModuleAction):
@@ -53,6 +54,9 @@ class TemplateAction(JoanModuleAction):
         # here, we are added a variable called 'datawriter output' to this modules News. 
         # You can choose your own variable names and you can add as many vairables to self.data as you want.
         self.data['datawriter output'] = 2020
+        self.data['nesting'] = {'example 1': 44, 'example 2': 35}
+        self.counter = 0  # see def do(self):
+        self.sign = 1     # see def do(self):
         self.write_news(news=self.data)
         self.time = QtCore.QTime()
         # end news for the datarecorder
@@ -79,12 +83,25 @@ class TemplateAction(JoanModuleAction):
         self.share_settings(self.settings)
         # end settings for this module
 
-    def load_settings_from_file(self, settings_file_to_load):
-        self.settings.load_from_file(settings_file_to_load)
-        self.share_settings(self.settings)
+        # template signals
+        # in templatesignals.py the pyqtsignals are defined to trigger specific actions from this module
+        # here, connect the function to the appropriate signal
+        self._module_signals = TemplateSignals(self.module, self)
+        self.singleton_signals.add_signals(self.module, self._module_signals)
 
-    def save_settings_to_file(self, file_to_save_in):
-        self.settings.save_to_file(file_to_save_in)
+        # we connect a dummy
+        self._module_signals.my_custom_signal_str.connect(self.test_slot)
+
+        # here's a way how to emit one of the module_signals. This can be done in any module
+        self.singleton_signals.get_signals(self.module).my_custom_signal_str.emit("TEMPLATE: signal test")
+
+    def test_slot(self, message):
+        """
+        Dummy function to illustrate the signal-slot functionality
+        :param message:
+        :return: prints stuffs
+        """
+        print(message)
 
     def do(self):
         """
@@ -95,6 +112,11 @@ class TemplateAction(JoanModuleAction):
         self.data['datawriter output'] = self.time.elapsed()
 
         # and we write the news (actually update the news), such that all the other modules get the latest value of 'datawriter output'
+        if self.counter < 1:
+            self.sign = -1
+        if self.counter > 99:
+            self.sign = 1
+        self.data['counter'] = self.counter * self.sign
         self.write_news(news=self.data)
 
     def initialize(self):
@@ -104,6 +126,9 @@ class TemplateAction(JoanModuleAction):
         # This is de place to do all initialization needed. In the example here, the necessary settings are copied from the settings object.
         # This is done during the initialization to prevent settings from changing while the module is running. This does mean that the module needs to be
         # reinitialised every time the settings are changed.
+        self.data['counter'] = self.counter
+        self.write_news(news=self.data)
+        
         self.millis = self.settings.millis
 
         # if (self.state_machine.current_state is State.IDLE):
@@ -119,8 +144,9 @@ class TemplateAction(JoanModuleAction):
 
     def stop(self):
         """stop the module"""
-        self.state_machine.request_state_change(
-            State.IDLE)  # Will automatically go to READY as defined above in self.state_machine.set_automatic_transition
+        # Will automatically go to READY as defined above in self.state_machine.set_automatic_transition
+        self.state_machine.request_state_change(State.IDLE)
+
         return super().stop()
 
     def _starting_condition(self):

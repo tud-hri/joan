@@ -12,7 +12,7 @@ class SteeringWheelControlSettings(JoanModuleSettings):
         self.pd_controllers = []
         self.fdca_controllers = []
 
-    def set_from_loaded_dict(self, loaded_dict):
+    def load_from_dict(self, loaded_dict):
         """
         This method overrides the base implementation of loading settings from dicts. This is done because hardware manager has the unique property that
         multiple custom settings classes are combined in a list. This behavior is not supported by the normal joan module settings, so it an specific solution
@@ -22,27 +22,28 @@ class SteeringWheelControlSettings(JoanModuleSettings):
         :return: None
         """
         try:
+            self.before_load_settings.emit()
             module_settings_to_load = loaded_dict[str(self._module_enum)]
         except KeyError:
-            warning_message = "WARNING: loading settings for the " + str(self._module_enum) + \
-                              " module from a dictionary failed. The loaded dictionary did not contain " + str(
-                self._module_enum) + " settings." + \
-                              (" It did contain settings for: " + ", ".join(
-                                  loaded_dict.keys()) if loaded_dict.keys() else "")
+            warning_message = "WARNING: loading settings for the " + str(
+                self._module_enum) + " module from a dictionary failed. The loaded dictionary did not contain " + str(
+                self._module_enum) + " settings."  # + (" It did contain settings for: " + ", ".join(loaded_dict.keys()) if loaded_dict.keys() else "")
             print(warning_message)
             return
 
         self.pd_controllers = []
         for pdcontroller_settings_dict in module_settings_to_load['pd_controllers']:
-            pdcontroller_settings = PDcontrollerSettings()
+            pdcontroller_settings = PDControllerSettings()
             pdcontroller_settings.set_from_loaded_dict(pdcontroller_settings_dict)
             self.pd_controllers.append(pdcontroller_settings)
 
         self.fdca_controllers = []
         for fdcacontroller_settings_dict in module_settings_to_load['fdca_controllers']:
-            fdcacontroller_settings = FDCAcontrollerSettings()
+            fdcacontroller_settings = FDCAControllerSettings()
             fdcacontroller_settings.set_from_loaded_dict(fdcacontroller_settings_dict)
             self.fdca_controllers.append(fdcacontroller_settings)
+
+        self.load_settings_done.emit()
 
     @staticmethod
     def _copy_dict(source, destination):
@@ -86,8 +87,15 @@ class SteeringWheelControlSettings(JoanModuleSettings):
                 output_list.append(item)
         return output_list
 
+    def remove_controller(self, setting):
+        if isinstance(setting, PDControllerSettings):
+            self.pd_controllers.remove(setting)
 
-class PDcontrollerSettings:
+        if isinstance(setting, FDCAControllerSettings):
+            self.fdca_controllers.remove(setting)
+
+
+class PDControllerSettings:
     def __init__(self):
         # default controller values
         self.t_lookahead = 0.6
@@ -95,7 +103,7 @@ class PDcontrollerSettings:
         self.k_d = 1.0
         self.w_lat = 1.0
         self.w_heading = 2.0
-        self._trajectory_name = "TestTrajectory2.csv"
+        self.trajectory_name = "default_hcr_trajectory.csv"
 
     def as_dict(self):
         return self.__dict__
@@ -105,15 +113,15 @@ class PDcontrollerSettings:
             self.__setattr__(key, value)
 
 
-class FDCAcontrollerSettings:
+class FDCAControllerSettings:
     def __init__(self):
         self.t_lookahead = 0.0
         self.k_y = 0.1
-        self.k_psi = 0.4
-        self.lohs = 1.0
-        self.sohf = 1.0
+        self.k_psi = 1.5
+        self.lohs = 3.5
+        self.sohf = 1.5
         self.loha = 0.0
-        self._trajectory_name = "TestTrajectory2.csv"
+        self.trajectory_name = "default_hcr_trajectory.csv"
 
     def as_dict(self):
         return self.__dict__
