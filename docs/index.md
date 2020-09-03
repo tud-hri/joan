@@ -24,6 +24,8 @@ JOAN is developed by members of the [Human-Robot Interaction group](https://delf
 * __[How to create a custom JOAN module](joan-add-module.md)__ - Guide on how to create your own JOAN modules
 * __[Info on JOAN's settings structure](joan-settings.md)__ - JOAN uses `Settings` to save you to set up every module after you run JOAN; read more about them here.
 * __[Info on JOAN's state machine](joan-state-machine.md)__ - Info on JOAN's state machine
+* __[Info on JOAN's experiment manager](joan-experiment-manager.md)__ - How to use the experiment manager
+
 
 ## Other documentation
 * __[Quick start CARLA Unreal Engine](other-carle-ue4.md)__ - Quick start guide with Unreal Editor for CARLA and JOAN (under construction)

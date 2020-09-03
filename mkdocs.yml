@@ -17,6 +17,7 @@ nav:
       - Create custom JOAN modules: joan-add-module.md
       - Settings: joan-settings.md
       - State Machine: joan-state-machine.md
+      - Experiment manager: joan-experiment-manager.md
 
     - Other documentation:
       - Quick start CARLA Unreal Engine (under construction): other-carle-ue4.md
