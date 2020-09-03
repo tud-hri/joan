@@ -34,6 +34,8 @@ For now, familiarize yourself with the following `git` things:
 
 In addition, we will provide some instructions on how to retrieve the latest changes of JOAN. 
 
+__merge__: a slightly more advanced action in `git` is merging incoming changes to your current working version. PyCharm can help you to merge files. We are not going to give a full description on how to do this here. Google is your friend. If you really cannot figure it out, ask your supervisor.
+
 ### git tutorials and documentation
 
 The official `git` [website](https://git-scm.com/doc) has a ton of useful information about `git` and how to use it. Scroll through the documentation section for more information and videos. However, the most important things you need to know are:
