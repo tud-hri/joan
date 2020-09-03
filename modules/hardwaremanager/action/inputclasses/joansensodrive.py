@@ -254,14 +254,14 @@ class JOANSensoDrive(BaseInput):
             time.sleep(0.02)
 
         if self.sensodrive_shared_values.sensodrive_motorstate == 0x10:
-            self._sensodrive_tab.btn_on_off.setStyleSheet("background-color: orange")
-            self._sensodrive_tab.btn_on_off.setText('Off')
+            self._tab_widget.btn_on_off.setStyleSheet("background-color: orange")
+            self._tab_widget.btn_on_off.setText('Off')
         elif self.sensodrive_shared_values.sensodrive_motorstate == 0x14:
-            self._sensodrive_tab.btn_on_off.setStyleSheet("background-color: lightgreen")
-            self._sensodrive_tab.btn_on_off.setText('On')
+            self._tab_widget.btn_on_off.setStyleSheet("background-color: lightgreen")
+            self._tab_widget.btn_on_off.setText('On')
         elif self.sensodrive_shared_values.sensodrive_motorstate == 0x18:
-            self._sensodrive_tab.btn_on_off.setStyleSheet("background-color: red")
-            self._sensodrive_tab.btn_on_off.setText('Clear Error')
+            self._tab_widget.btn_on_off.setStyleSheet("background-color: red")
+            self._tab_widget.btn_on_off.setText('Clear Error')
 
     def shut_off_sensodrive(self):
         self.shutoff_event.set()
@@ -284,14 +284,14 @@ class JOANSensoDrive(BaseInput):
         """
         # check on the motordrive status and change button appearance
         if self.sensodrive_shared_values.sensodrive_motorstate == 0x10:
-            self._sensodrive_tab.btn_on_off.setStyleSheet("background-color: orange")
-            self._sensodrive_tab.btn_on_off.setText('Off')
+            self._tab_widget.btn_on_off.setStyleSheet("background-color: orange")
+            self._tab_widget.btn_on_off.setText('Off')
         elif self.sensodrive_shared_values.sensodrive_motorstate == 0x14:
-            self._sensodrive_tab.btn_on_off.setStyleSheet("background-color: lightgreen")
-            self._sensodrive_tab.btn_on_off.setText('On')
+            self._tab_widget.btn_on_off.setStyleSheet("background-color: lightgreen")
+            self._tab_widget.btn_on_off.setText('On')
         elif self.sensodrive_shared_values.sensodrive_motorstate == 0x18:
-            self._sensodrive_tab.btn_on_off.setStyleSheet("background-color: red")
-            self._sensodrive_tab.btn_on_off.setText('Clear Error')
+            self._tab_widget.btn_on_off.setStyleSheet("background-color: red")
+            self._tab_widget.btn_on_off.setText('Clear Error')
 
         # check whether we have a sw_controller that should be updated
         self._steering_wheel_control_data = self.module_action.read_news(JOANModules.STEERING_WHEEL_CONTROL)
@@ -354,6 +354,12 @@ class JOANSensoDrive(BaseInput):
         self._data['spring_stiffness'] = self.sensodrive_shared_values.spring_stiffness
 
         return self._data
+
+    def process(self):
+        """
+        TODO: hack, rename process everywhere in do?
+        """
+        return self.do()
 
     def torque_check(self, requested_torque, t1, torque_rate_limit_nms, torque_limit_mnm):
         """
