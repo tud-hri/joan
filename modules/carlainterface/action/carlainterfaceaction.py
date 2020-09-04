@@ -257,7 +257,6 @@ class CarlaInterfaceAction(JoanModuleAction):
         if self.connected:
             for cars in self.vehicles:
                 cars.destroy_car()
-                cars.remove_car()
 
             self.connected = False
             self.data['connected'] = self.connected
@@ -265,7 +264,7 @@ class CarlaInterfaceAction(JoanModuleAction):
 
             self.state_machine.request_state_change(State.IDLE, 'Carla Disconnected')
 
-        self.module_dialog.disconnect_carla(self.connected)
+            self.module_dialog.disconnect_carla(self.connected)
 
     def save_opendrive_trajectory(self, world_map):
         """
@@ -309,12 +308,9 @@ class CarlaInterfaceAction(JoanModuleAction):
                           columns=['Row Name', 'PosX', 'PosY', 'SteeringAngle', 'Throttle', 'Brake', 'Psi', 'Vel'])
         df2 = pd.DataFrame(self._waypoints[0:len(self._waypoints):5],
                            columns=['Row Name', 'PosX', 'PosY', 'SteeringAngle', 'Throttle', 'Brake', 'Psi', 'Vel'])
-        df.to_csv(
-            r'C:\Repositories\joan\modules\steeringwheelcontrol\action\swcontrollers\trajectories\opendrive_trajectory.csv',
-            index=False, header=False)
-        df2.to_csv(
-            r'C:\Repositories\joan\modules\steeringwheelcontrol\action\swcontrollers\trajectories\opendrive_trajectory_VISUAL.csv',
-            index=False, header=True)
+        df.to_csv(os.path.join(self.module_path, 'trajectories', 'opendrive_trajectory.csv'), index=False, header=False)
+        df2.to_csv(os.path.join(self.module_path, 'trajectories', 'opendrive_trajectory_VISUAL.csv'), index=False,
+                   header=True)
 
     def add_ego_agent(self, ego_vehicle_settings=None):
         """
@@ -328,7 +324,7 @@ class CarlaInterfaceAction(JoanModuleAction):
             ego_vehicle_settings = EgoVehicleSettings()
 
         # TODO find unique name for vehicle name
-        vehicle_name = "Vehicle" + str(len(self.vehicles) + 1)
+        vehicle_name = "Vehicle " + str(len(self.vehicles) + 1)
 
         vehicle = EgoVehicle(self, vehicle_name, self.nr_spawn_points, self.vehicle_tags, ego_vehicle_settings)
         self.vehicles.append(vehicle)
