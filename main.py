@@ -8,7 +8,7 @@ import sys
 from PyQt5 import QtWidgets
 
 from modules.joanmodules import JOANModules
-from process import JoanHQAction, JoanHQWindow
+from core import JoanHQAction, JoanHQWindow
 
 if __name__ == '__main__':
     APP = QtWidgets.QApplication(sys.argv)

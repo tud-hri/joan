@@ -1,4 +1,4 @@
-from process.joanmodulesettings import JoanModuleSettings
+from core.joanmodulesettings import JoanModuleSettings
 from modules.joanmodules import JOANModules
 from modules.scenarios.scenarios.scenarioslist import ScenariosList
 

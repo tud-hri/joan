@@ -2,7 +2,7 @@ import os
 from PyQt5 import QtWidgets
 
 from modules.joanmodules import JOANModules
-from process.joanmoduleaction import JoanModuleAction
+from core.joanmoduleaction import JoanModuleAction
 from .condition import Condition
 from .experiment import Experiment
 

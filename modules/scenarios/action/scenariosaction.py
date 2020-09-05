@@ -1,5 +1,5 @@
-from process.joanmoduleaction import JoanModuleAction
-from process.statesenum import State
+from core.joanmoduleaction import JoanModuleAction
+from core.statesenum import State
 from modules.joanmodules import JOANModules
 from .scenariossettings import ScenarioSettings
 

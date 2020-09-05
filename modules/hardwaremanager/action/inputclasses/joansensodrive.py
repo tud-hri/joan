@@ -10,7 +10,7 @@ from modules.hardwaremanager.action.inputclasses.baseinput import BaseInput
 from modules.hardwaremanager.action.inputclasses.joan_sensodrive_communication import SensoDriveComm
 from modules.hardwaremanager.action.inputclasses.joan_sensodrive_shared_values import SensoDriveSharedValues
 from modules.joanmodules import JOANModules
-from process.statesenum import State
+from core.statesenum import State
 
 
 class SensoDriveSettingsDialog(QtWidgets.QDialog):
@@ -249,7 +249,7 @@ class JOANSensoDrive(BaseInput):
         :return:
         """
         self.toggle_sensodrive_motor_event.set()
-        # give the seperate process time to handle the signal
+        # give the seperate core time to handle the signal
         if self.module_action.state_machine.current_state != State.RUNNING:
             time.sleep(0.02)
 
@@ -268,9 +268,9 @@ class JOANSensoDrive(BaseInput):
 
     def do(self):
         """
-        Basically acts as a portal of variables to the seperate sensodrive communication process. You can send info to this
-        process using the shared variables in 'SensoDriveSharedValues' Class. NOTE THAT YOU SHOULD ONLY SET VARIABLES
-        ON 1 SIDE!! Do not overwrite variables, if you want to send signals for events to the seperate process please use
+        Basically acts as a portal of variables to the seperate sensodrive communication core. You can send info to this
+        core using the shared variables in 'SensoDriveSharedValues' Class. NOTE THAT YOU SHOULD ONLY SET VARIABLES
+        ON 1 SIDE!! Do not overwrite variables, if you want to send signals for events to the seperate core please use
         the multiprocessing.Events structure.
         :return: self._data a dictionary containing :
             self._data['SteeringInput'] = self.sensodrive_shared_values.steering_angle
@@ -323,7 +323,7 @@ class JOANSensoDrive(BaseInput):
         self._data['torque_rate'] = self.torque_rate
         self._data['measured_torque'] = self.sensodrive_shared_values.measured_torque
 
-        # Handle all shared parameters with the seperate sensodrive communication process
+        # Handle all shared parameters with the seperate sensodrive communication core
         # Get parameters
         self._data['SteeringInput'] = self.sensodrive_shared_values.steering_angle
         self._data['BrakeInput'] = self.sensodrive_shared_values.brake
@@ -357,7 +357,7 @@ class JOANSensoDrive(BaseInput):
 
     def process(self):
         """
-        TODO: hack, rename process everywhere in do?
+        TODO: hack, rename core everywhere in do?
         """
         return self.do()
 

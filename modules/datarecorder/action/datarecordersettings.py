@@ -1,8 +1,9 @@
-from modules.joanmodules import JOANModules
-from process.joanmodulesettings import JoanModuleSettings
-
-from process.news import News
 import copy
+
+from core.joanmodulesettings import JoanModuleSettings
+from core.news import News
+from modules.joanmodules import JOANModules
+
 
 class DataRecorderSettings(JoanModuleSettings):
     def __init__(self, module_enum: JOANModules):
@@ -37,7 +38,6 @@ class DataRecorderSettings(JoanModuleSettings):
             self.variables_to_save[str(module)] = module_news
         self._set_checked(self.variables_to_save)
 
-
     def _set_new_entries_checked(self, element, variables_element):
         """
         Set only the new news-item in the variables_to_save to True 
@@ -62,7 +62,6 @@ class DataRecorderSettings(JoanModuleSettings):
         for module in JOANModules:
             self.existing_variables_to_save = copy.deepcopy(existing_variables_to_save)
 
-
             original_news = news.read_news(module)
             if 'ego_agents' in original_news:
                 for cars in original_news['ego_agents']:
@@ -85,6 +84,3 @@ class DataRecorderSettings(JoanModuleSettings):
 
     def get_variables_to_save(self):
         return self.variables_to_save
-
-
-

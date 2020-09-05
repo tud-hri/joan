@@ -1,7 +1,7 @@
 import copy
 import json
 
-from process import Settings
+from core import Settings
 from modules.joanmodules import JOANModules
 from modules.experimentmanager.transitions import TransitionsList
 from .condition import Condition

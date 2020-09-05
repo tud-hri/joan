@@ -11,8 +11,8 @@ import os
 from PyQt5 import QtCore
 
 from modules.joanmodules import JOANModules
-from process.joanmoduleaction import JoanModuleAction
-from process.statesenum import State
+from core.joanmoduleaction import JoanModuleAction
+from core.statesenum import State
 from .templatesettings import TemplateSettings
 from .templatesignals import TemplateSignals
 
@@ -25,8 +25,8 @@ class TemplateAction(JoanModuleAction):
 
         # The modules work with states. Also see: TemplateDialog in templatedialog.py
         # Each JOAN module has its own state machine that can be customized by adding module specific transition conditions
-        # Besides that the state machine supports entry actions and and exit actions per state. For more info on the state machine check process/statemachine.py
-        # for more info on the possible states check process/statesenum.py
+        # Besides that the state machine supports entry actions and and exit actions per state. For more info on the state machine check core/statemachine.py
+        # for more info on the possible states check core/statesenum.py
         #
         # transition conditions are called when transitioning and can impose simple or more complex rules to check is a state transition is legal.
         # If a state change is illegal it is also possible to add an error message explaining why the state change is illegal

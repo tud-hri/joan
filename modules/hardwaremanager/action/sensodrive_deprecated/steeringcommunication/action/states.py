@@ -1,4 +1,4 @@
-from process import State, MasterStates, translate
+from core import State, MasterStates, translate
 
 class SteeringcommunicationStates(MasterStates):
     # SensoDrive states

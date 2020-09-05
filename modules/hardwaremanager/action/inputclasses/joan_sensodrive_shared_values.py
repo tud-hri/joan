@@ -5,8 +5,8 @@ from modules.hardwaremanager.action.inputclasses.PCANBasic import *
 
 class SensoDriveSharedValues:
     """"
-    This class contains all the variables that are shared between the seperate hardware communication process and the
-    main JOAN process.
+    This class contains all the variables that are shared between the seperate hardware communication core and the
+    main JOAN core.
     """
 
     def __init__(self):

@@ -1,6 +1,6 @@
 from PyQt5.QtCore import pyqtSignal
 
-from process.joanmodulesignals import JoanModuleSignal
+from core.joanmodulesignals import JoanModuleSignal
 
 
 class DataRecorderSignals(JoanModuleSignal):

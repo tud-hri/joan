@@ -30,7 +30,7 @@ class BaseInput:
 
     def do(self):
         """
-        Processes any input, in this case will just return the current data since there is nothing to process.
+        Processes any input, in this case will just return the current data since there is nothing to core.
         :return: current data
         """
         return self._data

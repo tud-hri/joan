@@ -2,8 +2,8 @@ import os
 
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 
-from process.joanmoduleaction import JoanModuleAction
-from process.status import Status
+from core.joanmoduleaction import JoanModuleAction
+from core.status import Status
 
 from .performancemonitordialog import PerformanceMonitorDialog
 from .settingsoverviewdialog import SettingsOverviewDialog

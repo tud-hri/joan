@@ -1,8 +1,8 @@
 from PyQt5 import QtWidgets
 
 from modules.joanmodules import JOANModules
-from process.joanmoduleaction import JoanModuleAction
-from process.joanmoduledialog import JoanModuleDialog
+from core.joanmoduleaction import JoanModuleAction
+from core.joanmoduledialog import JoanModuleDialog
 
 
 class TemplateDialog(JoanModuleDialog):
@@ -13,8 +13,8 @@ class TemplateDialog(JoanModuleDialog):
 
         # The modules work with states. Also see: TemplateAction in templateaction.py
         # Each JOAN module has its own state machine that can be customized by adding module specific transition conditions
-        # Besides that the state machine supports entry actions and and exit actions per state. For more info on the state machine check process/statemachine.py
-        # for more info on the possible states check process/statesenum.py
+        # Besides that the state machine supports entry actions and and exit actions per state. For more info on the state machine check core/statemachine.py
+        # for more info on the possible states check core/statesenum.py
         # the state machine is part of the module_action which is passed through as an argument in the module_dialog
 
         # a list of methods can be added to the state_machine listener

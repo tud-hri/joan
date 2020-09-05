@@ -1,6 +1,6 @@
+from core.joanmoduleaction import JoanModuleAction
+from core.statesenum import State
 from modules.joanmodules import JOANModules
-from process.joanmoduleaction import JoanModuleAction
-from process.statesenum import State
 from .steeringwheelcontrolsettings import SteeringWheelControlSettings
 from .swcontrollertypes import SWControllerTypes
 
@@ -14,7 +14,6 @@ class SteeringWheelControlAction(JoanModuleAction):
         self.settings.before_load_settings.connect(self.prepare_load_settings)
         self.settings.load_settings_done.connect(self.apply_loaded_settings)
         self.share_settings(self.settings)
-        self.load_default_settings()  # probably problematic because module_dialog does not exist yet
 
         self._controllers = {}
 

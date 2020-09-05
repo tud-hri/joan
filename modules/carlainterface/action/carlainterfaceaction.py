@@ -10,8 +10,8 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMessageBox, QApplication
 
 from modules.joanmodules import JOANModules
-from process.joanmoduleaction import JoanModuleAction
-from process.statesenum import State
+from core.joanmoduleaction import JoanModuleAction
+from core.statesenum import State
 from .agents.egovehicle import EgoVehicle
 from .agents.trafficvehicle import TrafficVehicle
 from .carlainterfacesettings import CarlaInterfaceSettings, EgoVehicleSettings, TrafficVehicleSettings

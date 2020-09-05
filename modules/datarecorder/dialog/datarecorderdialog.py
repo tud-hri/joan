@@ -7,10 +7,10 @@ from PyQt5 import QtWidgets
 from PyQt5.Qt import Qt
 
 from modules.joanmodules import JOANModules
-from process import News
-from process.joanmoduleaction import JoanModuleAction
-from process.joanmoduledialog import JoanModuleDialog
-from process.statesenum import State
+from core import News
+from core.joanmoduleaction import JoanModuleAction
+from core.joanmoduledialog import JoanModuleDialog
+from core.statesenum import State
 
 
 class CreateTreeWidgetDialog(QtWidgets.QDialog):

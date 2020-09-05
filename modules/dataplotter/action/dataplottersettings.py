@@ -1,7 +1,7 @@
 from modules.joanmodules import JOANModules
-from process.joanmodulesettings import JoanModuleSettings
+from core.joanmodulesettings import JoanModuleSettings
 
-from process.news import News
+from core.news import News
 import copy
 
 from enum import Enum

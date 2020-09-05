@@ -3,10 +3,10 @@ from PyQt5 import QtWidgets
 from PyQt5.Qt import Qt
 
 from modules.joanmodules import JOANModules
-from process.joanmoduledialog import JoanModuleDialog
-from process.joanmoduleaction import JoanModuleAction
-from process.statesenum import State
-from process import News
+from core.joanmoduledialog import JoanModuleDialog
+from core.joanmoduleaction import JoanModuleAction
+from core.statesenum import State
+from core import News
 from modules.dataplotter.action.dataplottersettings import PlotWindows
 from modules.dataplotter.action.dataplottersettings import LineTypes
 from modules.dataplotter.action.dataplottersettings import LineColors

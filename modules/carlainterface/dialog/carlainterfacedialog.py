@@ -3,9 +3,9 @@ import os
 from PyQt5 import QtWidgets
 
 from modules.joanmodules import JOANModules
-from process.joanmoduleaction import JoanModuleAction
-from process.joanmoduledialog import JoanModuleDialog
-from process.statesenum import State
+from core.joanmoduleaction import JoanModuleAction
+from core.joanmoduledialog import JoanModuleDialog
+from core.statesenum import State
 
 
 class CarlaInterfaceDialog(JoanModuleDialog):

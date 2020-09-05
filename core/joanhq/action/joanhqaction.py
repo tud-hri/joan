@@ -3,8 +3,8 @@ import os
 from PyQt5 import QtCore
 
 from modules.joanmodules import JOANModules
-from process import News
-from process import Settings
+from core import News
+from core import Settings
 
 
 class JoanHQAction(QtCore.QObject):

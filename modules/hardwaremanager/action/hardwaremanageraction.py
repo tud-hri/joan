@@ -8,8 +8,8 @@ from modules.hardwaremanager.action.inputclasses.joanjoystick import JOANJoystic
 from modules.hardwaremanager.action.inputclasses.joankeyboard import JOANKeyboard
 from modules.hardwaremanager.action.inputclasses.joansensodrive import JOANSensoDrive
 from modules.joanmodules import JOANModules
-from process.joanmoduleaction import JoanModuleAction
-from process.statesenum import State
+from core.joanmoduleaction import JoanModuleAction
+from core.statesenum import State
 
 
 class HardwareManagerAction(JoanModuleAction):

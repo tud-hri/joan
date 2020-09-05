@@ -6,9 +6,9 @@ from modules.dataplotter.action.dataplotter import DataPlotter
 from modules.dataplotter.action.dataplottersettings import DataPlotterSettings
 from modules.joanmodules import JOANModules
 
-from process.joanmoduleaction import JoanModuleAction
-from process.statesenum import State
-from process.status import Status
+from core.joanmoduleaction import JoanModuleAction
+from core.statesenum import State
+from core.status import Status
 
 
 class DataplotterAction(JoanModuleAction):

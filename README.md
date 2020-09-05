@@ -121,7 +121,7 @@ Datarecorder consist of a moduleWidget called DatarecorderWidget and a moduleAct
 ```
 ## Directories
 
-## process
+## core
 
 * control.py <br>
 holds the Control class that takes care of loading widgets<br>
@@ -135,7 +135,7 @@ holds the class MasterStates and an __init__ method that handles the (attribute)
 ## signals
 
 * pulsar.py <br>
-purpose is to use 2 threads, beside the main process.<br>
+purpose is to use 2 threads, beside the main core.<br>
 It turns out that the QTimer object are running in seperate threads but the methods (acting as 'pyqSlots') that should do something (depending on the widget), are part of the main thread. This is something to look at if this is turns out to be a problem.
 1. communication with input devices (Sensodrive Steering wheel through PCAN) (as fast as possible, hopefully 1 msec)
 2. spread data around to whatever module want to listen; datarecorder, plotter, GUI (200msec or so)

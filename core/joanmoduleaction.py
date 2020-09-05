@@ -5,12 +5,12 @@ import time
 from PyQt5 import QtCore
 
 from modules.joanmodules import JOANModules
-from process.joanmodulesignals import JoanModuleSignal
-from process.news import News
-from process.settings import Settings
-from process.signals import Signals
-from process.statemachine import StateMachine
-from process.status import Status
+from core.joanmodulesignals import JoanModuleSignal
+from core.news import News
+from core.settings import Settings
+from core.signals import Signals
+from core.statemachine import StateMachine
+from core.status import Status
 from tools import AveragedFloat
 
 

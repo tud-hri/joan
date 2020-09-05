@@ -4,9 +4,9 @@ from PyQt5 import uic, QtWidgets
 
 from modules.hardwaremanager.action.inputclasses.joansensodrive import JOANSensoDrive
 from modules.joanmodules import JOANModules
-from process.joanmoduleaction import JoanModuleAction
-from process.joanmoduledialog import JoanModuleDialog
-from process.statesenum import State
+from core.joanmoduleaction import JoanModuleAction
+from core.joanmoduledialog import JoanModuleDialog
+from core.statesenum import State
 
 
 class HardwareManagerDialog(JoanModuleDialog):

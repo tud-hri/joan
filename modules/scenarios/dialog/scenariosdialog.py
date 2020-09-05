@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets
 
-from process.statesenum import State
-from process.joanmoduledialog import JoanModuleDialog
+from core.statesenum import State
+from core.joanmoduledialog import JoanModuleDialog
 from modules.joanmodules import JOANModules
 from modules.scenarios.scenarios.scenarioslist import ScenariosList
 

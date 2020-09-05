@@ -7,8 +7,8 @@ from modules.datarecorder.action.datarecordersignals import DataRecorderSignals
 from modules.datarecorder.action.datawriter import DataWriter
 from modules.datarecorder.action.trajectoryrecorder import TrajectoryRecorder
 from modules.joanmodules import JOANModules
-from process.joanmoduleaction import JoanModuleAction
-from process.statesenum import State
+from core.joanmoduleaction import JoanModuleAction
+from core.statesenum import State
 
 
 def _create_filename(extension=''):
@@ -43,15 +43,15 @@ class DataRecorderAction(JoanModuleAction):
 
         # start settings for this module
         self.settings = DataRecorderSettings(JOANModules.DATA_RECORDER)
-        self.default_settings_file_location = os.path.join(self.module_path, 'action', 'default_settings.json')
 
+        self.default_settings_file_location = os.path.join(self.module_path, 'action', 'default_settings.json')
         if Path(self.default_settings_file_location).is_file():
-            self._load_settings_from_file(self.default_settings_file_location)
+            self.load_default_settings()
             self.millis = self.settings.write_interval
         else:
             self.settings.set_all_true()
-            self.settings.write_interval = 100
-            self.save_settings_to_file(self.default_settings_file_location)
+            self.settings.write_interval = 10
+            # self.save_settings_to_file(self.default_settings_file_location)
 
         self.share_settings(self.settings)
         # end settings for this module
@@ -61,7 +61,7 @@ class DataRecorderAction(JoanModuleAction):
                                       channels=self.get_available_news_channels(),
                                       settings=self.get_module_settings(JOANModules.DATA_RECORDER))
 
-        # TODO: run data_writer in separate process (multiprocess)
+        # TODO: run data_writer in separate core (multiprocess)
         # self.data_writer.start()
 
         # signals and slots
@@ -88,7 +88,7 @@ class DataRecorderAction(JoanModuleAction):
 
         self.share_settings(self.settings)
         self.initialize_file()
-        self.settings.save_to_file(self.default_settings_file_location)
+        # self.settings.save_to_file(self.default_settings_file_location)
 
     def do(self):
         """
@@ -110,8 +110,8 @@ class DataRecorderAction(JoanModuleAction):
             # renew settings
             self.settings.refresh(self.settings.as_dict().get(str(JOANModules.DATA_RECORDER)).get('variables_to_save'))
 
-            self.settings.save_to_file(self.default_settings_file_location)
-            self.share_settings(self.settings)
+            # self.settings.save_to_file(self.default_settings_file_location)
+            # self.share_settings(self.settings)
 
             self.initialize_file()
             self.state_machine.request_state_change(State.READY)
