@@ -2,9 +2,9 @@ import os
 
 from PyQt5 import QtWidgets, uic, QtGui, QtCore
 
-from modules.joanmodules import JOANModules
 from core.joanmoduleaction import JoanModuleAction
 from core.statesenum import State
+from modules.joanmodules import JOANModules
 
 
 class JoanModuleDialog(QtWidgets.QDialog):
@@ -101,8 +101,7 @@ class JoanModuleDialog(QtWidgets.QDialog):
         :return:
         """
         file_to_save_in, _ = QtWidgets.QFileDialog.getSaveFileName(self, 'save settings',
-                                                                   os.path.join(self.module_action.module_path,
-                                                                                'action'),
+                                                                   os.path.join(self.module_action.module_path, 'action', 'default_settings.json'),
                                                                    filter='*.json')
         if file_to_save_in:
             self.module_action.save_settings_to_file(file_to_save_in)
