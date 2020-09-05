@@ -1,9 +1,11 @@
-from .basevehicle import Basevehicle
-from modules.carlainterface.action.carlainterfacesettings import EgoVehicleSettings
-from modules.joanmodules import JOANModules
+import math
+import os
 
 from PyQt5 import uic, QtWidgets
-import os, math
+
+from modules.carlainterface.action.carlainterfacesettings import EgoVehicleSettings
+from modules.joanmodules import JOANModules
+from .basevehicle import Basevehicle
 
 
 class EgovehicleSettingsDialog(QtWidgets.QDialog):
@@ -59,14 +61,13 @@ class EgovehicleSettingsDialog(QtWidgets.QDialog):
 
 
 class EgoVehicle(Basevehicle):
-    def __init__(self, agent_manager_action, name, nr_spawn_points, tags, settings: EgoVehicleSettings):
-        super().__init__(agent_manager_action)
+    def __init__(self, carlainterface_action, name, nr_spawn_points, tags, settings: EgoVehicleSettings):
+        super().__init__(carlainterface_action, name=name)
 
         self.settings = settings
 
         self.vehicle_tab_widget = uic.loadUi(
             uifile=os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/vehicletab.ui"))
-        self.name = name
         self.vehicle_tab_widget.group_car.setTitle(self.name)
         self._spawned = False
         self._hardware_data = {}
@@ -101,9 +102,9 @@ class EgoVehicle(Basevehicle):
     def selected_sw_controller(self):
         return self.settings.selected_controller
 
-    @property
-    def vehicle_nr(self):
-        return self._vehicle_nr
+    # @property
+    # def vehicle_nr(self):
+    #     return self._vehicle_nr
 
     def _open_settings_dialog(self):
         self.get_available_controllers()

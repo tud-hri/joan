@@ -1,8 +1,9 @@
-from PyQt5 import QtCore
-import sys
 import glob
 import os
 import random
+import sys
+
+from PyQt5 import QtCore
 from PyQt5.QtWidgets import QMessageBox
 
 msg_box = QMessageBox()
@@ -41,6 +42,7 @@ class Basevehicle:
         self.vehicle_tab_widget = None
         self.car_data = {}
         self.spawned_vehicle = None
+        self.name = name
 
     def unpack_vehicle_data(self):
         try:

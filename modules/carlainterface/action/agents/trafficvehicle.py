@@ -1,13 +1,15 @@
-from .basevehicle import Basevehicle
-from modules.carlainterface.action.carlainterfacesettings import TrafficVehicleSettings
-
-from PyQt5 import uic, QtWidgets
-from tools.lowpassfilterbiquad import LowPassFilterBiquad
-import os
-import numpy as np
-import time
-import pandas as pd
 import math
+import os
+import time
+
+import numpy as np
+import pandas as pd
+from PyQt5 import uic, QtWidgets
+
+from modules.carlainterface.action.carlainterfacesettings import TrafficVehicleSettings
+from tools.lowpassfilterbiquad import LowPassFilterBiquad
+from .basevehicle import Basevehicle
+
 
 class TrafficvehicleSettingsDialog(QtWidgets.QDialog):
     """
@@ -109,7 +111,7 @@ class TrafficVehicle(Basevehicle):
     This class contains everything you need to make a vehicle follow a predefined route by PD control
     """
 
-    def __init__(self, carlainterface_action, vehicle_nr, nr_spawn_points, tags, settings: TrafficVehicleSettings):
+    def __init__(self, carlainterface_action, name, nr_spawn_points, tags, settings: TrafficVehicleSettings):
         """
         Initializes the class
         :param carlainterface_action:
@@ -118,7 +120,7 @@ class TrafficVehicle(Basevehicle):
         :param tags:
         :param settings:
         """
-
+        super().__init__(carlainterface_action, name=name)
         self.carlainterface_action = carlainterface_action
 
         self.settings = settings
@@ -136,7 +138,7 @@ class TrafficVehicle(Basevehicle):
         path = os.path.dirname(os.path.dirname(curpath))
         self._path_trajectory_directory = os.path.join(path, '../steeringwheelcontrol/action/swcontrollers/trajectories/')
 
-        self.vehicle_nr = vehicle_nr
+        # self.vehicle_nr = vehicle_nr
         self._vehicle_tab = uic.loadUi(uifile=os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/trafficvehicletab.ui"))
         self._vehicle_tab.group_traffic_agent.setTitle('Traffic Vehicle ' + str(vehicle_nr + 1))
 
@@ -161,9 +163,6 @@ class TrafficVehicle(Basevehicle):
         # self.settings_dialog.combo_box_traffic_trajectory.currentIndexChanged.connect(self.set_trajectory_name)
         self.settings_dialog.btn_apply_parameters.clicked.connect(self.load_trajectory)
         self.settings_dialog.accepted.connect(self.load_trajectory)
-
-
-
 
         self._open_settings_dialog()
 

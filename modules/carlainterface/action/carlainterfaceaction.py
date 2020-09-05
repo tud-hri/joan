@@ -328,7 +328,7 @@ class CarlaInterfaceAction(JoanModuleAction):
             ego_vehicle_settings = EgoVehicleSettings()
 
         # TODO find unique name for vehicle name
-        vehicle_name = "Vehicle" + str(len(self.vehicles) + 1)
+        vehicle_name = "Vehicle " + str(len(self.vehicles) + 1)
 
         vehicle = EgoVehicle(self, vehicle_name, self.nr_spawn_points, self.vehicle_tags, ego_vehicle_settings)
         self.vehicles.append(vehicle)
@@ -358,7 +358,9 @@ class CarlaInterfaceAction(JoanModuleAction):
             traffic_vehicle_settings = TrafficVehicleSettings()
             self.settings.traffic_vehicles.append(traffic_vehicle_settings)
 
-        vehicle = TrafficVehicle(self, len(self.traffic_vehicles), self.nr_spawn_points, self.vehicle_tags,
+        vehicle_name = "Traffic " + str(len(self.vehicles) + 1)
+
+        vehicle = TrafficVehicle(self, vehicle_name, self.nr_spawn_points, self.vehicle_tags,
                                  traffic_vehicle_settings)
         vehicle.load_trajectory()
         self.traffic_vehicles.append(vehicle)
