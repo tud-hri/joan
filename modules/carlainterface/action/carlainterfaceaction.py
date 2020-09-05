@@ -9,9 +9,9 @@ from PyQt5 import QtCore
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMessageBox, QApplication
 
-from modules.joanmodules import JOANModules
 from core.joanmoduleaction import JoanModuleAction
 from core.statesenum import State
+from modules.joanmodules import JOANModules
 from .agents.egovehicle import EgoVehicle
 from .agents.trafficvehicle import TrafficVehicle
 from .carlainterfacesettings import CarlaInterfaceSettings, EgoVehicleSettings, TrafficVehicleSettings
@@ -233,6 +233,10 @@ class CarlaInterfaceAction(JoanModuleAction):
                 QApplication.restoreOverrideCursor()
 
                 self.connected = True
+
+                # TODO: untested, settings are only able to be applied after connecting to CARLA
+                self.apply_loaded_settings()
+
             except RuntimeError as inst:
                 QApplication.restoreOverrideCursor()
                 self.msg.setText('Could not connect check if CARLA is running in Unreal')
