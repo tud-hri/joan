@@ -115,9 +115,9 @@ class DataRecorderAction(JoanModuleAction):
 
             self.initialize_file()
             self.state_machine.request_state_change(State.READY)
-
+            print('mehh')
             # Try and get the current position of car if you want to record a trajectory
-            self.trajectory_recorder.initialize_trajectory_recorder_variables()
+
 
         except RuntimeError:
             return False
@@ -137,6 +137,8 @@ class DataRecorderAction(JoanModuleAction):
         """
         self.state_machine.request_state_change(State.RUNNING)
         self.data_writer.open(filename=self.get_filename(), filepath='datalogs')
+        if self.trajectory_recorder.should_record_trajectory:
+            self.trajectory_recorder.initialize_trajectory_recorder_variables()
         super().start()
 
     def _write(self):
