@@ -53,6 +53,7 @@ class BaseSWController:
             if not np.array_equal(tmp.values, self._trajectory):
                 self._trajectory = tmp.values
             # TODO We might want to do some checks on the trajectory here.
+            print('Loaded trajectory = ', self.settings.trajectory_name)
             # self.trajectory_name = fname
         except OSError as err:
                 print('Error loading HCR trajectory file: ', err)
