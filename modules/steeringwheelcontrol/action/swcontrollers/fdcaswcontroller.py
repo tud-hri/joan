@@ -41,7 +41,6 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
 
     def _update_loha_slider_label(self):
         self.lbl_loha_slider.setText(str(self.slider_loha.value() / 5))
-        # Uncomment this if you want to real time change the loha value when you slide the slider:
         if self.checkbox_tuning_loha.isChecked():
             self.fdca_controller_settings.loha = float(self.slider_loha.value() / 5)
             self.lbl_loha.setText(str(self.fdca_controller_settings.loha))
@@ -75,7 +74,7 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
         self.edit_t_lookahead.setText(str(settings_to_display.t_lookahead))
         self.edit_lohs.setText(str(settings_to_display.lohs))
         self.edit_sohf.setText(str(settings_to_display.sohf))
-        self.slider_loha.setValue(settings_to_display.loha * 10)
+        self.slider_loha.setValue(settings_to_display.loha * 5)
 
         idx_traj = self.cmbbox_hcr_selection.findText(settings_to_display.trajectory_name)
         self.cmbbox_hcr_selection.setCurrentIndex(idx_traj)
