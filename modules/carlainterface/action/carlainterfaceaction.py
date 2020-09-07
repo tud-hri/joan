@@ -497,10 +497,12 @@ class CarlaInterfaceAction(JoanModuleAction):
         :return:
         """
         for agents in self.vehicles:
-            agents.spawn_car()
+            if not agents.spawned:
+                agents.spawn_car()
 
         for traffic_agents in self.traffic_vehicles:
-            traffic_agents.spawn_car()
+            if not traffic_agents.spawned:
+                traffic_agents.spawn_car()
 
     def destroy_all(self):
         """
