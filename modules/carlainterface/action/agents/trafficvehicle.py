@@ -115,7 +115,7 @@ class TrafficVehicle(Basevehicle):
         """
         Initializes the class
         :param carlainterface_action:
-        :param vehicle_nr:
+        :param name:
         :param nr_spawn_points:
         :param tags:
         :param settings:
@@ -138,17 +138,17 @@ class TrafficVehicle(Basevehicle):
         path = os.path.dirname(os.path.dirname(curpath))
         self._path_trajectory_directory = os.path.join(path, '../steeringwheelcontrol/action/swcontrollers/trajectories/')
 
-        # self.vehicle_nr = vehicle_nr
-        self._vehicle_tab = uic.loadUi(uifile=os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/trafficvehicletab.ui"))
-        self._vehicle_tab.group_traffic_agent.setTitle('Traffic Vehicle ' + str(vehicle_nr + 1))
 
-        self._vehicle_tab.btn_destroy.setEnabled(False)
+        self.vehicle_tab_widget = uic.loadUi(uifile=os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/trafficvehicletab.ui"))
+        self.vehicle_tab_widget.group_traffic_agent.setTitle(name)
 
-        self._vehicle_tab.btn_spawn.clicked.connect(self.spawn_car)
-        self._vehicle_tab.btn_destroy.clicked.connect(self.destroy_car)
-        self._vehicle_tab.btn_remove_traffic_agent.clicked.connect(self.remove_traffic_agent)
-        self._vehicle_tab.btn_settings.clicked.connect(self._open_settings_dialog)
-        self._vehicle_tab.btn_settings.clicked.connect(self._open_settings_dialog_from_button)
+        self.vehicle_tab_widget.btn_destroy.setEnabled(False)
+
+        self.vehicle_tab_widget.btn_spawn.clicked.connect(self.spawn_car)
+        self.vehicle_tab_widget.btn_destroy.clicked.connect(self.destroy_car)
+        self.vehicle_tab_widget.btn_remove_traffic_agent.clicked.connect(self.remove_traffic_agent)
+        self.vehicle_tab_widget.btn_settings.clicked.connect(self._open_settings_dialog)
+        self.vehicle_tab_widget.btn_settings.clicked.connect(self._open_settings_dialog_from_button)
 
         self.settings_dialog = TrafficvehicleSettingsDialog(self.settings)
 
@@ -160,7 +160,7 @@ class TrafficVehicle(Basevehicle):
 
         self.settings_dialog.spin_spawn_points.setRange(0, nr_spawn_points - 1)
 
-        # self.settings_dialog.combo_box_traffic_trajectory.currentIndexChanged.connect(self.set_trajectory_name)
+        self.settings_dialog.combo_box_traffic_trajectory.currentIndexChanged.connect(self.set_trajectory_name)
         self.settings_dialog.btn_apply_parameters.clicked.connect(self.load_trajectory)
         self.settings_dialog.accepted.connect(self.load_trajectory)
 
@@ -169,7 +169,7 @@ class TrafficVehicle(Basevehicle):
 
     @property
     def vehicle_tab(self):
-        return self._vehicle_tab
+        return self.vehicle_tab_widget
 
     def _open_settings_dialog(self):
         """
@@ -191,7 +191,7 @@ class TrafficVehicle(Basevehicle):
         Removes the traffic agent
         :return:
         """
-        self._vehicle_tab.setParent(None)
+        self.vehicle_tab.setParent(None)
         self.destroy_car()
 
         self.module_action.traffic_vehicles.remove_input_device(self)

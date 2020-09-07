@@ -366,7 +366,7 @@ class CarlaInterfaceAction(JoanModuleAction):
         self.traffic_vehicles.append(vehicle)
 
         if is_a_new_traffic_agent:
-            self.settings.traffic_vehicles.name = vehicle.name
+            traffic_vehicle_settings._name = vehicle_name
 
         # add widget
         self.module_dialog.add_traffic_agent_widget(vehicle)
