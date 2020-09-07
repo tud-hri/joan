@@ -121,7 +121,7 @@ class FDCAControllerSettings:
         self.lohs = 3.5
         self.sohf = 1.5
         self.loha = 0.0
-        self.trajectory_name = "default_hcr_trajectory.csv"
+        self.trajectory_name = "MiddleRoadTVRecord_filtered_ffswang_heading_3hz.csv"
 
     def as_dict(self):
         return self.__dict__

@@ -296,7 +296,7 @@ class JOANSensoDrive(BaseInput):
         # check whether we have a sw_controller that should be updated
         self._steering_wheel_control_data = self.module_action.read_news(JOANModules.STEERING_WHEEL_CONTROL)
         self._carla_interface_data = self.module_action.read_news(JOANModules.CARLA_INTERFACE)
-
+        #print(self._steering_wheel_control_data)
         try:
             requested_torque_by_controller = self._steering_wheel_control_data[
                 self._carla_interface_data['ego_agents']['Vehicle 1']['vehicle_object'].selected_sw_controller][
