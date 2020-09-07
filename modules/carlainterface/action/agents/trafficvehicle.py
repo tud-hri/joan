@@ -194,8 +194,9 @@ class TrafficVehicle(Basevehicle):
         self.vehicle_tab.setParent(None)
         self.destroy_car()
 
-        self.module_action.traffic_vehicles.remove_input_device(self)
-        self.module_action.settings.traffic_vehicles.remove_input_device(self.settings)
+        #I dont know what these are?
+        # self.module_action.traffic_vehicles.remove_input_device(self)
+        # self.module_action.settings.traffic_vehicles.remove_input_device(self.settings)
 
     def set_trajectory_name(self):
         """

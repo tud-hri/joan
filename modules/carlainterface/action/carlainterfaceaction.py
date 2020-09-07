@@ -234,8 +234,8 @@ class CarlaInterfaceAction(JoanModuleAction):
 
                 self.connected = True
 
-                # TODO: untested, settings are only able to be applied after connecting to CARLA
-                self.apply_loaded_settings()
+                # # TODO: untested, settings are only able to be applied after connecting to CARLA
+                # self.apply_loaded_settings()
 
             except RuntimeError as inst:
                 QApplication.restoreOverrideCursor()
@@ -265,6 +265,9 @@ class CarlaInterfaceAction(JoanModuleAction):
             self.connected = False
             self.data['connected'] = self.connected
             self.write_news(news=self.data)
+            self.vehicle_tags.clear()
+            self._spawn_points.clear()
+
 
             self.state_machine.request_state_change(State.IDLE, 'Carla Disconnected')
 
@@ -424,12 +427,14 @@ class CarlaInterfaceAction(JoanModuleAction):
         :param agent: the agent to be removed; instance check in the funtion below
         :return:
         """
-        agent.remove_ego_agent()  # destroy the vehicle in carla, and corresponding dialogs
+         # destroy the vehicle in carla, and corresponding dialogs
 
         if isinstance(agent, EgoVehicle):
             self._remove_vehicle(agent)
+            agent.remove_ego_agent()
         elif isinstance(agent, TrafficVehicle):
             self._remove_traffic_vehicle(agent)
+            agent.remove_traffic_agent()
 
     def _remove_vehicle(self, agent):
         """
@@ -464,7 +469,7 @@ class CarlaInterfaceAction(JoanModuleAction):
     def _remove_traffic_vehicle(self, agent):
         # remove from settings
         for vehicle_setting in self.settings.traffic_vehicles:
-            if vehicle_setting.name == agent.name:
+            if vehicle_setting._name == agent.name:
                 try:
                     self.settings.traffic_vehicles.remove(vehicle_setting)  # TODO does this delete the class?
                 except ValueError:
