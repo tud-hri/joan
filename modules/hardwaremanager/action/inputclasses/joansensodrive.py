@@ -93,7 +93,7 @@ class JOANSensoDrive(BaseInput):
         :param nr_of_sensodrives:
         :param settings:
         """
-        super().__init__(hardware_manager_action, name='')
+        super().__init__(hardware_manager_action, name = name)
         self.module_action = hardware_manager_action
         # Create the shared variables class
         self.sensodrive_shared_values = SensoDriveSharedValues()
@@ -354,12 +354,6 @@ class JOANSensoDrive(BaseInput):
         self._data['spring_stiffness'] = self.sensodrive_shared_values.spring_stiffness
 
         return self._data
-
-    def process(self):
-        """
-        TODO: hack, rename core everywhere in do?
-        """
-        return self.do()
 
     def torque_check(self, requested_torque, t1, torque_rate_limit_nms, torque_limit_mnm):
         """
