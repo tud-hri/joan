@@ -47,7 +47,7 @@
            </font>
           </property>
           <property name="text">
-           <string>Damping (mNm/rev/min)</string>
+           <string>Damping (Nm*s/rad) (0 - 4.77)</string>
           </property>
          </widget>
         </item>
@@ -78,12 +78,25 @@
            </font>
           </property>
           <property name="text">
-           <string>Friction (mNm) </string>
+           <string>Friction (Nm) (0- 5)</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_spring_stiffness">
+          <property name="font">
+           <font>
+            <weight>50</weight>
+            <bold>false</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Spring Stiffness (Nm/rad) (0 - 143)</string>
           </property>
          </widget>
         </item>
         <item row="0" column="1">
-         <widget class="QSpinBox" name="spin_friction">
+         <widget class="QDoubleSpinBox" name="spin_friction">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -97,44 +110,34 @@
            </font>
           </property>
           <property name="maximum">
-           <number>1000</number>
+           <double>5.000000000000000</double>
           </property>
-          <property name="value">
-           <number>300</number>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="label_spring_stiffness">
-          <property name="font">
-           <font>
-            <weight>50</weight>
-            <bold>false</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>Spring Stiffness (mNm/deg)</string>
+          <property name="singleStep">
+           <double>0.010000000000000</double>
           </property>
          </widget>
         </item>
         <item row="1" column="1">
-         <widget class="QSpinBox" name="spin_damping">
+         <widget class="QDoubleSpinBox" name="spin_damping">
           <property name="font">
            <font>
             <weight>50</weight>
             <bold>false</bold>
            </font>
           </property>
-          <property name="maximum">
-           <number>1000</number>
+          <property name="decimals">
+           <number>2</number>
           </property>
-          <property name="value">
-           <number>30</number>
+          <property name="maximum">
+           <double>4.770000000000000</double>
+          </property>
+          <property name="singleStep">
+           <double>0.010000000000000</double>
           </property>
          </widget>
         </item>
         <item row="2" column="1">
-         <widget class="QSpinBox" name="spin_spring_stiffness">
+         <widget class="QDoubleSpinBox" name="spin_spring_stiffness">
           <property name="font">
            <font>
             <weight>50</weight>
@@ -142,10 +145,13 @@
            </font>
           </property>
           <property name="maximum">
-           <number>500</number>
+           <double>143.000000000000000</double>
+          </property>
+          <property name="singleStep">
+           <double>0.010000000000000</double>
           </property>
           <property name="value">
-           <number>20</number>
+           <double>0.000000000000000</double>
           </property>
          </widget>
         </item>
@@ -168,25 +174,6 @@
      <layout class="QGridLayout" name="gridLayout_3">
       <item row="0" column="0">
        <layout class="QGridLayout" name="gridLayout_2">
-        <item row="0" column="1">
-         <widget class="QSpinBox" name="spin_endstop_position">
-          <property name="font">
-           <font>
-            <weight>50</weight>
-            <bold>false</bold>
-           </font>
-          </property>
-          <property name="minimum">
-           <number>-1440</number>
-          </property>
-          <property name="maximum">
-           <number>1440</number>
-          </property>
-          <property name="value">
-           <number>360</number>
-          </property>
-         </widget>
-        </item>
         <item row="0" column="0">
          <widget class="QLabel" name="label_endstop">
           <property name="font">
@@ -196,7 +183,7 @@
            </font>
           </property>
           <property name="text">
-           <string>Endstop Position +/- (degrees)</string>
+           <string>Endstop Position +/- (rad)</string>
           </property>
          </widget>
         </item>
@@ -226,8 +213,18 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="1">
-         <widget class="QSpinBox" name="spin_torque_limit_between_endstops">
+        <item row="0" column="1">
+         <widget class="QDoubleSpinBox" name="spin_endstop_position">
+          <property name="font">
+           <font>
+            <weight>50</weight>
+            <bold>false</bold>
+           </font>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QSpinBox" name="spin_torque_limit_beyond_endstops">
           <property name="font">
            <font>
             <weight>50</weight>
@@ -242,8 +239,8 @@
           </property>
          </widget>
         </item>
-        <item row="2" column="1">
-         <widget class="QSpinBox" name="spin_torque_limit_beyond_endstops">
+        <item row="1" column="1">
+         <widget class="QSpinBox" name="spin_torque_limit_between_endstops">
           <property name="font">
            <font>
             <weight>50</weight>

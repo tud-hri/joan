@@ -1,4 +1,5 @@
 import inspect
+import math
 from enum import Enum
 
 from PyQt5 import QtGui
@@ -223,13 +224,13 @@ class SensoDriveSettings:
     """
 
     def __init__(self):
-        self.endstops = 360  # degrees
-        self.torque_limit_between_endstops = 254  # percent
-        self.torque_limit_beyond_endstops = 254  # percent
-        self.friction = 0  # mNm
-        self.damping = 80 # mNm/rev/min
-        self.spring_stiffness = 40  # mNm/deg
-        self.torque = 0 #mNm
+        self.endstops = math.radians(360.0)         # rad
+        self.torque_limit_between_endstops = 200    # percent
+        self.torque_limit_beyond_endstops = 200     # percent
+        self.friction = 0                           # Nm
+        self.damping = 0                            # Nm * s / rad
+        self.spring_stiffness = 0                   # Nm / rad
+        self.torque = 0                             # Nm
 
     def as_dict(self):
         return self.__dict__

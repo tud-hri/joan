@@ -1,3 +1,4 @@
+import math
 import multiprocessing as mp
 import time
 
@@ -8,12 +9,20 @@ These global parameters are used to make the message ID's more identifiable than
 """
 INITIALIZATION_MESSAGE_ID = 0x200
 INITIALIZATION_MESSAGE_LENGTH = 8
+STATE_MESSAGE_RECEIVE_ID = 0x210
 
-STEERINGWHEEL_MESSAGE_ID = 0x201
+STEERINGWHEEL_MESSAGE_SEND_ID = 0x201
+STEERINGWHEEL_MESSAGE_RECEIVE_ID = 0x211
 STEERINGWHEEL_MESSAGE_LENGTH = 8
 
-PEDAL_MESSAGE_ID = 0x20C
+PEDAL_MESSAGE_SEND_ID = 0x20C
+PEDAL_MESSAGE_RECEIVE_ID = 0x21C
 PEDAL_MESSAGE_LENGTH = 2
+
+
+
+
+
 
 
 class SensoDriveComm(mp.Process):
@@ -26,15 +35,19 @@ class SensoDriveComm(mp.Process):
         self.shutoff_event = shutoff_event
 
         # Create PCAN object
+        self.pcan_object = None
         self.pcan_initialization_result = None
+
+        # shared values class to exchange data between this process and others
         self.sensodrive_shared_values = shared_values
-        print(self.sensodrive_shared_values.sensodrive_ID)
+
+        # if connecting more Sensowheels, different USB/PCAN bus
         if self.sensodrive_shared_values.sensodrive_ID == 0:
             self._pcan_channel = PCAN_USBBUS1
         elif self.sensodrive_shared_values.sensodrive_ID == 1:
             self._pcan_channel = PCAN_USBBUS2
 
-        # Create steeringwheel parameters data structure
+        # Create steering wheel parameters data structure
         self.steering_wheel_parameters = {}
 
         # Initialize message structures
@@ -50,28 +63,24 @@ class SensoDriveComm(mp.Process):
         # mode of operation
         self.state_change_message.DATA[0] = 0x11
         self.state_change_message.DATA[1] = 0x00
-        # Endstop position
+        # End stop position
         self.state_change_message.DATA[2] = 0xB4
         self.state_change_message.DATA[3] = 0x00
-        # Torque beyond endstops:
+        # Torque beyond end stops:
         self.state_change_message.DATA[6] = 0x14
         self.state_change_message.DATA[7] = 0x14
 
         self._current_state_hex = 0x00
 
     def initialize(self):
-        self.PCAN_object = PCANBasic()
+        self.pcan_object = PCANBasic()
         if self.pcan_initialization_result is None:
-            self.pcan_initialization_result = self.PCAN_object.Initialize(
-                self._pcan_channel, PCAN_BAUD_1M)
+            self.pcan_initialization_result = self.pcan_object.Initialize(self._pcan_channel, PCAN_BAUD_1M)
 
         # Convert our shared settings to bytes
-
-        self.endstops_bytes = int.to_bytes(self.sensodrive_shared_values.endstops, 2, byteorder='little', signed=True)
-        self.torque_limit_between_endstops_bytes = int.to_bytes(
-            self.sensodrive_shared_values.torque_limit_between_endstops, 1, byteorder='little', signed=False)
-        self.torque_limit_beyond_endstops_bytes = int.to_bytes(
-            self.sensodrive_shared_values.torque_limit_beyond_endstops, 1, byteorder='little', signed=False)
+        endstops_bytes = int.to_bytes(int(math.degrees(self.sensodrive_shared_values.endstops)), 2, byteorder='little', signed=True)
+        torque_limit_between_endstops_bytes = int.to_bytes(self.sensodrive_shared_values.torque_limit_between_endstops, 1, byteorder='little', signed=False)
+        torque_limit_beyond_endstops_bytes = int.to_bytes(self.sensodrive_shared_values.torque_limit_beyond_endstops, 1, byteorder='little', signed=False)
 
         # We need to have our init message here as well
         self.sensodrive_initialization_message.ID = INITIALIZATION_MESSAGE_ID
@@ -82,45 +91,41 @@ class SensoDriveComm(mp.Process):
         # reserved
         self.sensodrive_initialization_message.DATA[1] = 0
         # Endstop position
-        self.sensodrive_initialization_message.DATA[2] = self.endstops_bytes[0]
-        self.sensodrive_initialization_message.DATA[3] = self.endstops_bytes[1]
+        self.sensodrive_initialization_message.DATA[2] = endstops_bytes[0]
+        self.sensodrive_initialization_message.DATA[3] = endstops_bytes[1]
         # reserved
         self.sensodrive_initialization_message.DATA[4] = 0
         self.sensodrive_initialization_message.DATA[5] = 0
         # Torque between endstops:
-        self.sensodrive_initialization_message.DATA[6] = self.torque_limit_between_endstops_bytes[0]
+        self.sensodrive_initialization_message.DATA[6] = torque_limit_between_endstops_bytes[0]
         # Torque beyond endstops:
-        self.sensodrive_initialization_message.DATA[7] = self.torque_limit_beyond_endstops_bytes[0]
+        self.sensodrive_initialization_message.DATA[7] = torque_limit_beyond_endstops_bytes[0]
 
-        self.PCAN_object.Write(self._pcan_channel, self.sensodrive_initialization_message)
+        self.pcan_object.Write(self._pcan_channel, self.sensodrive_initialization_message)
         time.sleep(0.02)
-        self.response = self.PCAN_object.Read(self._pcan_channel)
+        self.pcan_object.Read(self._pcan_channel)
 
+        # do not switch mode
         self.state_message = self.sensodrive_initialization_message
         self.state_message.DATA[0] = 0x11
 
         # Set the data structure for the steeringwheel message with the just applied values
-        self.steering_wheel_parameters['torque'] = 0  # (You dont want to start to turn the wheel at startup)
-        self.steering_wheel_parameters['friction'] = self.sensodrive_shared_values.friction
-        self.steering_wheel_parameters['damping'] = self.sensodrive_shared_values.damping
-        self.steering_wheel_parameters['spring_stiffness'] = self.sensodrive_shared_values.spring_stiffness
-        print('initializing SensoDrive')
+        self.steering_wheel_parameters = self._map_si_to_sensodrive(self.sensodrive_shared_values)
 
-        self.PCAN_object.Write(self._pcan_channel, self.sensodrive_initialization_message)
+        # TODO Do we need to do this twice?
+        self.pcan_object.Write(self._pcan_channel, self.sensodrive_initialization_message)
         time.sleep(0.02)
-        response = self.PCAN_object.Read(self._pcan_channel)
-        #
+        self.pcan_object.Read(self._pcan_channel)
+
         self.state_message = self.sensodrive_initialization_message
         self.state_message.DATA[0] = 0x11
 
         self._current_state_hex = 0x00
 
     def update_settings(self):
-        self.endstops_bytes = int.to_bytes(self.sensodrive_shared_values.endstops, 2, byteorder='little', signed=True)
-        self.torque_limit_between_endstops_bytes = int.to_bytes(
-            self.sensodrive_shared_values.torque_limit_between_endstops, 1, byteorder='little', signed=False)
-        self.torque_limit_beyond_endstops_bytes = int.to_bytes(
-            self.sensodrive_shared_values.torque_limit_beyond_endstops, 1, byteorder='little', signed=False)
+        endstops_bytes = int.to_bytes(int(math.degrees(self.sensodrive_shared_values.endstops)), 2, byteorder='little', signed=True)
+        torque_limit_between_endstops_bytes = int.to_bytes(self.sensodrive_shared_values.torque_limit_between_endstops, 1, byteorder='little', signed=False)
+        torque_limit_beyond_endstops_bytes = int.to_bytes(self.sensodrive_shared_values.torque_limit_beyond_endstops, 1, byteorder='little', signed=False)
 
         # We need to have our init message here as well
         self.sensodrive_initialization_message.ID = INITIALIZATION_MESSAGE_ID
@@ -131,102 +136,101 @@ class SensoDriveComm(mp.Process):
         # reserved
         self.sensodrive_initialization_message.DATA[1] = 0
         # Endstop position
-        self.sensodrive_initialization_message.DATA[2] = self.endstops_bytes[0]
-        self.sensodrive_initialization_message.DATA[3] = self.endstops_bytes[1]
+        self.sensodrive_initialization_message.DATA[2] = endstops_bytes[0]
+        self.sensodrive_initialization_message.DATA[3] = endstops_bytes[1]
         # reserved
         self.sensodrive_initialization_message.DATA[4] = 0
         self.sensodrive_initialization_message.DATA[5] = 0
         # Torque between endstops:
-        self.sensodrive_initialization_message.DATA[6] = self.torque_limit_between_endstops_bytes[0]
+        self.sensodrive_initialization_message.DATA[6] = torque_limit_between_endstops_bytes[0]
         # Torque beyond endstops:
-        self.sensodrive_initialization_message.DATA[7] = self.torque_limit_beyond_endstops_bytes[0]
+        self.sensodrive_initialization_message.DATA[7] = torque_limit_beyond_endstops_bytes[0]
 
-        self.PCAN_object.Write(self._pcan_channel, self.sensodrive_initialization_message)
+        self.pcan_object.Write(self._pcan_channel, self.sensodrive_initialization_message)
         time.sleep(0.02)
-        self.response = self.PCAN_object.Read(self._pcan_channel)
+        self.pcan_object.Read(self._pcan_channel)
+
+    def _map_si_to_sensodrive(self, shared_values):
+        # convert SI units to Sensowheel units
+
+        out = {
+            'torque': int(shared_values.torque * 1000.0),
+            'friction': int(shared_values.friction * 1000.0),
+            'damping': int(shared_values.damping * 1000.0 * (2.0 * math.pi)/60.0),
+            'spring_stiffness': int(shared_values.spring_stiffness * 1000.0 / (180.0 / math.pi))
+        }
+
+        return out
+
+    def _sensodrive_data_to_si(self, received):
+        if received[1].ID == STEERINGWHEEL_MESSAGE_RECEIVE_ID:
+            # steering wheel
+
+            # steering angle
+            increments = int.from_bytes(received[1].DATA[0:4], byteorder='little', signed=True)
+            self.sensodrive_shared_values.steering_angle = math.radians(float(increments) * 0.009)  # we get increments, convert to deg, convert to rad
+
+            # steering rate
+            steering_rate = int.from_bytes(received[1].DATA[4:6], byteorder='little', signed=True)
+            self.sensodrive_shared_values.steering_rate = float(steering_rate) * (2.0 * math.pi) / 60.0 # we get rev/min, convert to rad/s
+
+            # torque
+            torque = int.from_bytes(received[1].DATA[6:], byteorder='little', signed=True)
+            self.sensodrive_shared_values.measured_torque = float(torque) / 1000.0  # we get mNm convert to Nm
+
+        elif received[1].ID == PEDAL_MESSAGE_RECEIVE_ID:
+            # pedals
+            self.sensodrive_shared_values.throttle = float(int.from_bytes(received[1].DATA[2:4], byteorder='little') - 1100) / 2460.0
+            self.sensodrive_shared_values.brake = float(int.from_bytes(received[1].DATA[4:6],  byteorder='little') - 1) / 500
+
+        elif received[1].ID == STATE_MESSAGE_RECEIVE_ID:
+            #
+            self._current_state_hex = received[1].DATA[0]
+
+
 
     def run(self):
         self.init_event.wait()
         self.initialize()
 
         while True:
-            # Turn off sensodrive immediately (only when torque limits are breached)
+            # Turn off SensoDrive immediately (only when torque limits are breached)
             if self.shutoff_event.is_set():
                 self.on_to_off(self.state_message)
                 self.shutoff_event.clear()
+
             # Get latest parameters
             time.sleep(0.001)
-            self.steering_wheel_parameters['torque'] = self.sensodrive_shared_values.torque
-            self.steering_wheel_parameters['friction'] = self.sensodrive_shared_values.friction
-            self.steering_wheel_parameters['damping'] = self.sensodrive_shared_values.damping
-            self.steering_wheel_parameters['spring_stiffness'] = self.sensodrive_shared_values.spring_stiffness
 
-            self.endstops_bytes = int.to_bytes(self.sensodrive_shared_values.endstops, 2, byteorder='little',
-                                               signed=True)
-            self.state_message.DATA[2] = self.endstops_bytes[0]
-            self.state_message.DATA[3] = self.endstops_bytes[1]
+            # convert SI units to Sensowheel units
+            self.steering_wheel_parameters = self._map_si_to_sensodrive(self.sensodrive_shared_values)
 
-            # request and set steering wheel data
-            self.write_message_steering_wheel(self.PCAN_object, self.steering_wheel_message,
-                                              self.steering_wheel_parameters)
-            received = self.PCAN_object.Read(self._pcan_channel)
+            # send steering wheel data
+            self.write_message_steering_wheel(self.pcan_object, self.steering_wheel_message, self.steering_wheel_parameters)
+
+
+            # receive data from Sensodrive (wheel, pedals)
+            received = self.pcan_object.Read(self._pcan_channel)
 
             # request state data
-            self.PCAN_object.Write(self._pcan_channel, self.state_message)
-            received2 = self.PCAN_object.Read(self._pcan_channel)
+            endstops_bytes = int.to_bytes(int(math.degrees(self.sensodrive_shared_values.endstops)), 2, byteorder='little', signed=True)
+            self.state_message.DATA[2] = endstops_bytes[0]
+            self.state_message.DATA[3] = endstops_bytes[1]
+
+            self.pcan_object.Write(self._pcan_channel, self.state_message)
+            received2 = self.pcan_object.Read(self._pcan_channel)
 
             # request pedal data
-            self.write_message_pedals(self.PCAN_object, self.pedal_message)
-            received3 = self.PCAN_object.Read(self._pcan_channel)
+            self.write_message_pedals(self.pcan_object, self.pedal_message)
+            received3 = self.pcan_object.Read(self._pcan_channel)
 
-            if (received[0] or received2[0] or received3[0] == PCAN_ERROR_OK):
-                if (received[1].ID == 0x211):
-                    Increments = int.from_bytes(received[1].DATA[0:4], byteorder='little', signed=True)
-                    Angle = round(Increments * 0.009, 4)
-                    # Steering:
-                    self.sensodrive_shared_values.steering_angle = Angle
-                    # Torque
-                    Torque = int.from_bytes(received[1].DATA[6:], byteorder='little', signed=True)
-                    self.sensodrive_shared_values.measured_torque = Torque
-                elif (received[1].ID == 0x210):
-                    self._current_state_hex = received[1].DATA[0]
-                elif (received[1].ID == 0x21C):
-                    self.sensodrive_shared_values.throttle = (int.from_bytes(received[1].DATA[2:4],
-                                                                             byteorder='little') - 1100) / 2460 * 100
-                    self.sensodrive_shared_values.brake = (int.from_bytes(received[1].DATA[4:6],
-                                                                          byteorder='little') - 1) / 500 * 100
+            if received[0] or received2[0] or received3[0] == PCAN_ERROR_OK:
 
-                if (received2[1].ID == 0x211):
-                    Increments = int.from_bytes(received2[1].DATA[0:4], byteorder='little', signed=True)
-                    Angle = round(Increments * 0.009, 4)
-                    # Steering:
-                    self.sensodrive_shared_values.steering_angle = Angle
-                    # Torque
-                    Torque = int.from_bytes(received2[1].DATA[6:], byteorder='little', signed=True)
-                    self.sensodrive_shared_values.measured_torque = Torque
-                elif (received2[1].ID == 0x210):
-                    self._current_state_hex = received2[1].DATA[0]
-                elif (received2[1].ID == 0x21C):
-                    self.sensodrive_shared_values.throttle = (int.from_bytes(received2[1].DATA[2:4],
-                                                                             byteorder='little') - 1100) / 2460 * 100
-                    self.sensodrive_shared_values.brake = (int.from_bytes(received2[1].DATA[4:6],
-                                                                          byteorder='little') - 1) / 500 * 100
+                self._sensodrive_data_to_si(received)
 
-                if (received3[1].ID == 0x211):
-                    Increments = int.from_bytes(received3[1].DATA[0:4], byteorder='little', signed=True)
-                    Angle = round(Increments * 0.009, 4)
-                    # Steering:
-                    self.sensodrive_shared_values.steering_angle = Angle
-                    # Torque
-                    Torque = int.from_bytes(received3[1].DATA[6:], byteorder='little', signed=True)
-                    self.sensodrive_shared_values.measured_torque = Torque
-                elif (received3[1].ID == 0x210):
-                    self._current_state_hex = received3[1].DATA[0]
-                elif (received3[1].ID == 0x21C):
-                    self.sensodrive_shared_values.throttle = (int.from_bytes(received3[1].DATA[2:4],
-                                                                             byteorder='little') - 1100) / 2460 * 100
-                    self.sensodrive_shared_values.brake = (int.from_bytes(received3[1].DATA[4:6],
-                                                                          byteorder='little') - 1) / 500 * 100
+                self._sensodrive_data_to_si(received2)
+
+                self._sensodrive_data_to_si(received3)
 
             self.sensodrive_shared_values.sensodrive_motorstate = self._current_state_hex
 
@@ -241,8 +245,8 @@ class SensoDriveComm(mp.Process):
             # properly uninitialize the pcan dongle if sensodrive is removed
             if self.close_event.is_set():
                 self.close_event.clear()
-                print('uninitialized pcan_object')
-                self.PCAN_object.Uninitialize(self._pcan_channel)
+                print('Uninitialized pcan_object')
+                self.pcan_object.Uninitialize(self._pcan_channel)
                 break
 
             pass
@@ -261,7 +265,7 @@ class SensoDriveComm(mp.Process):
         damping_bytes = int.to_bytes(data['damping'], 2, byteorder='little', signed=True)
         spring_stiffness_bytes = int.to_bytes(data['spring_stiffness'], 2, byteorder='little', signed=True)
 
-        pcanmessage.ID = STEERINGWHEEL_MESSAGE_ID
+        pcanmessage.ID = STEERINGWHEEL_MESSAGE_SEND_ID
         pcanmessage.LEN = STEERINGWHEEL_MESSAGE_LENGTH
         pcanmessage.TYPE = PCAN_MESSAGE_STANDARD
         pcanmessage.DATA[0] = torque_bytes[0]
@@ -297,13 +301,13 @@ class SensoDriveComm(mp.Process):
         (0x10 is ready, 0x14 is on and 0x18 is error)
         :return:
         """
-        if (self._current_state_hex == 0x10):
+        if self._current_state_hex == 0x10:
             self.off_to_on(self.sensodrive_initialization_message)
 
-        elif (self._current_state_hex == 0x14):
+        elif self._current_state_hex == 0x14:
             self.on_to_off(self.sensodrive_initialization_message)
 
-        elif (self._current_state_hex == 0x18):
+        elif self._current_state_hex == 0x18:
             self.clear_error(self.sensodrive_initialization_message)
 
     def off_to_on(self, message):
@@ -313,15 +317,15 @@ class SensoDriveComm(mp.Process):
         """
         print('off to on')
         message.DATA[0] = 0x10
-        self.PCAN_object.Write(self._pcan_channel, message)
+        self.pcan_object.Write(self._pcan_channel, message)
         time.sleep(0.001)
 
         message.DATA[0] = 0x12
-        self.PCAN_object.Write(self._pcan_channel, message)
+        self.pcan_object.Write(self._pcan_channel, message)
         time.sleep(0.001)
 
         message.DATA[0] = 0x14
-        self.PCAN_object.Write(self._pcan_channel, message)
+        self.pcan_object.Write(self._pcan_channel, message)
 
     def on_to_off(self, message):
         """
@@ -330,10 +334,10 @@ class SensoDriveComm(mp.Process):
         """
         print('on to off')
         message.DATA[0] = 0x12
-        self.PCAN_object.Write(self._pcan_channel, message)
+        self.pcan_object.Write(self._pcan_channel, message)
         time.sleep(0.001)
         message.DATA[0] = 0x10
-        self.PCAN_object.Write(self._pcan_channel, message)
+        self.pcan_object.Write(self._pcan_channel, message)
         time.sleep(0.001)
 
     def clear_error(self, message):
@@ -343,5 +347,5 @@ class SensoDriveComm(mp.Process):
         """
         print('clear error')
         message.DATA[0] = 0x1F
-        self.PCAN_object.Write(self._pcan_channel, message)
+        self.pcan_object.Write(self._pcan_channel, message)
         time.sleep(0.001)

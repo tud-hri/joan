@@ -341,9 +341,9 @@ class JOANJoystick(BaseInput):
         """
         Processes all the inputs of the joystick and writes them to self._data which is then written to the news in the
         action class
-        :return: self._data a dictionary containing :self._data['BrakeInput'] = self.brake
-            self._data['ThrottleInput'] = self.throttle
-            self._data['SteeringInput'] = self.steer
+        :return: self._data a dictionary containing :self._data['brake'] = self.brake
+            self._data['throttle'] = self.throttle
+            self._data['steering_angle'] = self.steer
             self._data['Handbrake'] = self.handbrake
             self._data['Reverse'] = self.reverse
         """
@@ -384,9 +384,9 @@ class JOANJoystick(BaseInput):
                     ((joystick_data[self.settings.first_steer_channel]) / 255) * (
                             self.settings.max_steer - self.settings.min_steer) - self.settings.max_steer)
 
-        self._data['BrakeInput'] = self.brake
-        self._data['ThrottleInput'] = self.throttle
-        self._data['SteeringInput'] = self.steer
+        self._data['brake'] = self.brake
+        self._data['throttle'] = self.throttle
+        self._data['steering_angle'] = self.steer
         self._data['Handbrake'] = self.handbrake
         self._data['Reverse'] = self.reverse
 

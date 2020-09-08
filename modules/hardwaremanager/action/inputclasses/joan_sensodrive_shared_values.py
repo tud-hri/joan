@@ -11,27 +11,29 @@ class SensoDriveSharedValues:
 
     def __init__(self):
         # Encoder Values
-        self._steering_angle = mp.Value(c_float, 0)
-        self._throttle = mp.Value(c_float, 0)
-        self._brake = mp.Value(c_float, 0)
+        self._steering_angle = mp.Value(c_float, 0.0)             # [rad]
+        self._throttle = mp.Value(c_float, 0.0)                   # [-] 0 - 1
+        self._brake = mp.Value(c_float, 0.0)                      # [-] 0 - 1
+
+        self._steering_rate = mp.Value(c_float, 0.0)          # [rad/s]
 
         # Steering Parameter Values
-        self._friction = mp.Value(c_int, 0)
-        self._damping = mp.Value(c_int, 0)
-        self._spring_stiffness = mp.Value(c_int, 0)
-        self._torque = mp.Value(c_int, 0)
+        self._friction = mp.Value(c_float, 0.0)                     # [Nm]
+        self._damping = mp.Value(c_float, 0.0)                      # [Nm s / rad]
+        self._spring_stiffness = mp.Value(c_float, 0.0)             # [Nm / rad]
+        self._torque = mp.Value(c_float, 0.0)                       # [Nm]
 
         # Extra Info Parameters
-        self._measured_torque = mp.Value(c_int, 0)
-        self._sensodrive_motorstate = mp.Value(c_int, 0)
+        self._measured_torque = mp.Value(c_float, 0.0)              # [Nm]
+        self._sensodrive_motorstate = mp.Value(c_int, 0)        # [-]
 
         # SensoDrive Settings (torque limits, endstops etc)
-        self._endstops = mp.Value(c_int, 0)
-        self._torque_limit_between_endstops = mp.Value(c_int, 0)
-        self._torque_limit_beyond_endstops = mp.Value(c_int, 0)
+        self._endstops = mp.Value(c_float, 0.0)                     # [rad]
+        self._torque_limit_between_endstops = mp.Value(c_int, 0) # [%]
+        self._torque_limit_beyond_endstops = mp.Value(c_int, 0)  # [%]
 
         # SensoDrive (ID) or number of sensodrives
-        self._sensodrive_ID = mp.Value(c_int, 0)
+        self._sensodrive_ID = mp.Value(c_int, 0)                # [-]
 
     @property
     def steering_angle(self):
@@ -40,6 +42,14 @@ class SensoDriveSharedValues:
     @steering_angle.setter
     def steering_angle(self, var):
         self._steering_angle.value = var
+
+    @property
+    def steering_rate(self):
+        return self._steering_rate.value
+
+    @steering_rate.setter
+    def steering_rate(self, var):
+        self._steering_rate.value = var
 
     @property
     def throttle(self):

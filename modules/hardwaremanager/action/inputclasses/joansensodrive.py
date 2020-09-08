@@ -19,10 +19,12 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
     creating the joystick class for the first time. NOTE: it should not show whenever settings are loaded by .json file.
     """
 
-    def __init__(self, sensodrive_settings, parent=None):
+    def __init__(self, sensodrive_settings,parent=None):
         super().__init__(parent)
         self.sensodrive_settings = sensodrive_settings
         uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/sensodrive_settings_ui.ui"), self)
+
+
 
         self.button_box_settings.button(self.button_box_settings.RestoreDefaults).clicked.connect(
             self._set_default_values)
@@ -97,6 +99,7 @@ class JOANSensoDrive(BaseInput):
         self.module_action = hardware_manager_action
         # Create the shared variables class
         self.sensodrive_shared_values = SensoDriveSharedValues()
+
 
         self.sensodrive_shared_values.sensodrive_ID = nr_of_sensodrives
 
@@ -205,6 +208,7 @@ class JOANSensoDrive(BaseInput):
         Not used for this input
         """
         self.settings_dialog = SensoDriveSettingsDialog(self.settings)
+        self.settings_dialog.btn_apply.clicked.connect(self.update_shared_values_from_settings)
 
     def remove_device(self):
         """
@@ -273,9 +277,9 @@ class JOANSensoDrive(BaseInput):
         ON 1 SIDE!! Do not overwrite variables, if you want to send signals for events to the seperate core please use
         the multiprocessing.Events structure.
         :return: self._data a dictionary containing :
-            self._data['SteeringInput'] = self.sensodrive_shared_values.steering_angle
-            self._data['BrakeInput'] = self.sensodrive_shared_values.brake
-            self._data['ThrottleInput'] = self.sensodrive_shared_values.throttle
+            self._data['steering_angle'] = self.sensodrive_shared_values.steering_angle
+            self._data['brake'] = self.sensodrive_shared_values.brake
+            self._data['throttle'] = self.sensodrive_shared_values.throttle
             self._data['Handbrake'] = 0
             self._data['Reverse'] = 0
             self._data['requested_torque'] = requested_torque_by_controller
@@ -296,7 +300,7 @@ class JOANSensoDrive(BaseInput):
         # check whether we have a sw_controller that should be updated
         self._steering_wheel_control_data = self.module_action.read_news(JOANModules.STEERING_WHEEL_CONTROL)
         self._carla_interface_data = self.module_action.read_news(JOANModules.CARLA_INTERFACE)
-        #print(self._steering_wheel_control_data)
+
         try:
             requested_torque_by_controller = self._steering_wheel_control_data[
                 self._carla_interface_data['ego_agents']['Vehicle 1']['vehicle_object'].selected_sw_controller][
@@ -325,9 +329,10 @@ class JOANSensoDrive(BaseInput):
 
         # Handle all shared parameters with the seperate sensodrive communication core
         # Get parameters
-        self._data['SteeringInput'] = self.sensodrive_shared_values.steering_angle
-        self._data['BrakeInput'] = self.sensodrive_shared_values.brake
-        self._data['ThrottleInput'] = self.sensodrive_shared_values.throttle
+        self._data['steering_angle'] = self.sensodrive_shared_values.steering_angle
+        self._data['steering_rate'] = self.sensodrive_shared_values.steering_rate
+        self._data['brake'] = self.sensodrive_shared_values.brake
+        self._data['throttle'] = self.sensodrive_shared_values.throttle
         self._data['Handbrake'] = 0
         self._data['Reverse'] = 0
 
@@ -352,6 +357,8 @@ class JOANSensoDrive(BaseInput):
 
         # Lastly we also need to write the spring stiffness in data for controller purposes
         self._data['spring_stiffness'] = self.sensodrive_shared_values.spring_stiffness
+
+
 
         return self._data
 

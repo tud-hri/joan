@@ -242,33 +242,33 @@ class JOANKeyboard(BaseInput):
         Processes all the inputs of the keyboard and writes them to self._data which is then written to the news in the
         action class
         :return: self._data a dictionary containing :
-            self._data['BrakeInput'] = self.brake
-            self._data['ThrottleInput'] = self.throttle
-            self._data['SteeringInput'] = self.steer
+            self._data['brake'] = self.brake
+            self._data['throttle'] = self.throttle
+            self._data['steering_angle'] = self.steer
             self._data['Handbrake'] = self.handbrake
             self._data['Reverse'] = self.reverse
         """
         # Throttle:
-        if self._throttle and self._data['ThrottleInput'] < 100:
-            self._data['ThrottleInput'] = self._data['ThrottleInput'] + (5 * self.settings.throttle_sensitivity / 100)
-        elif self._data['ThrottleInput'] > 0 and not self._throttle:
-            self._data['ThrottleInput'] = self._data['ThrottleInput'] - (5 * self.settings.throttle_sensitivity / 100)
+        if self._throttle and self._data['throttle'] < 100:
+            self._data['throttle'] = self._data['throttle'] + (5 * self.settings.throttle_sensitivity / 100)
+        elif self._data['throttle'] > 0 and not self._throttle:
+            self._data['throttle'] = self._data['throttle'] - (5 * self.settings.throttle_sensitivity / 100)
 
         # Brake:
-        if self._brake and self._data['BrakeInput'] < 100:
-            self._data['BrakeInput'] = self._data['BrakeInput'] + (5 * self.settings.brake_sensitivity / 100)
-        elif self._data['BrakeInput'] > 0 and not self._brake:
-            self._data['BrakeInput'] = self._data['BrakeInput'] - (5 * self.settings.brake_sensitivity / 100)
+        if self._brake and self._data['brake'] < 100:
+            self._data['brake'] = self._data['brake'] + (5 * self.settings.brake_sensitivity / 100)
+        elif self._data['brake'] > 0 and not self._brake:
+            self._data['brake'] = self._data['brake'] - (5 * self.settings.brake_sensitivity / 100)
 
         # Steering:
-        if self._steer_left and self.settings.max_steer > self._data['SteeringInput'] > self.settings.min_steer:
-            self._data['SteeringInput'] = self._data['SteeringInput'] - (4 * self.settings.steer_sensitivity / 100)
-        elif self._steer_right and self.settings.min_steer < self._data['SteeringInput'] < self.settings.max_steer:
-            self._data['SteeringInput'] = self._data['SteeringInput'] + (4 * self.settings.steer_sensitivity / 100)
-        elif self._data['SteeringInput'] > 0 and self.settings.auto_center:
-            self._data['SteeringInput'] = self._data['SteeringInput'] - (2 * self.settings.steer_sensitivity / 100)
-        elif self._data['SteeringInput'] < 0 and self.settings.auto_center:
-            self._data['SteeringInput'] = self._data['SteeringInput'] + (2 * self.settings.steer_sensitivity / 100)
+        if self._steer_left and self.settings.max_steer > self._data['steering_angle'] > self.settings.min_steer:
+            self._data['steering_angle'] = self._data['steering_angle'] - (4 * self.settings.steer_sensitivity / 100)
+        elif self._steer_right and self.settings.min_steer < self._data['steering_angle'] < self.settings.max_steer:
+            self._data['steering_angle'] = self._data['steering_angle'] + (4 * self.settings.steer_sensitivity / 100)
+        elif self._data['steering_angle'] > 0 and self.settings.auto_center:
+            self._data['steering_angle'] = self._data['steering_angle'] - (2 * self.settings.steer_sensitivity / 100)
+        elif self._data['steering_angle'] < 0 and self.settings.auto_center:
+            self._data['steering_angle'] = self._data['steering_angle'] + (2 * self.settings.steer_sensitivity / 100)
 
         # Reverse
         self._data['Reverse'] = self._reverse

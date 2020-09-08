@@ -15,7 +15,7 @@ class BaseInput:
         self.name = name
         self.module_action = hardware_manager_action
         self._carla_interface_data = self.module_action.read_news(JOANModules.CARLA_INTERFACE)
-        self._data = {'SteeringInput': 0, 'ThrottleInput': 0, 'BrakeInput': 0, 'Reverse': False, 'Handbrake': False}
+        self._data = {'steering_angle': 0, 'throttle': 0, 'brake': 0, 'Reverse': False, 'Handbrake': False}
         self.currentInput = 'None'
         self._tab_widget = None
 

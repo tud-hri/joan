@@ -139,10 +139,10 @@ class EgoVehicle(Basevehicle):
         car = self.spawned_vehicle
 
         if self.settings.selected_input != 'None':
-            self._control.steer = data[self.settings.selected_input]['SteeringInput'] / 450
+            self._control.steer = data[self.settings.selected_input]['steering_angle'] / math.radians(450)
             self._control.reverse = data[self.settings.selected_input]['Reverse']
             self._control.hand_brake = data[self.settings.selected_input]['Handbrake']
-            self._control.brake = data[self.settings.selected_input]['BrakeInput'] / 100
+            self._control.brake = data[self.settings.selected_input]['brake']
 
             if self.settings.set_velocity:
                 vel_error = self.settings.velocity - (math.sqrt(
@@ -163,7 +163,7 @@ class EgoVehicle(Basevehicle):
                     else:
                         self._control.throttle = 0
             else:
-                self._control.throttle = data[self.settings.selected_input]['ThrottleInput'] / 100
+                self._control.throttle = data[self.settings.selected_input]['throttle']
 
             self.spawned_vehicle.apply_control(self._control)
 

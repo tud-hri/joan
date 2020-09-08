@@ -155,7 +155,7 @@ class FDCASWController(BaseSWController):
             try:
                 stiffness = hw_data_in[vehicle_object.selected_input]['spring_stiffness']
 
-                sw_angle = hw_data_in[vehicle_object.selected_input]['SteeringInput']
+                sw_angle = hw_data_in[vehicle_object.selected_input]['steering_angle']
 
 
                 """Perform the controller-specific calculations"""
