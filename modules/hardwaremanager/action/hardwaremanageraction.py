@@ -177,7 +177,7 @@ class HardwareManagerAction(JoanModuleAction):
         self.module_dialog.add_device_tab(device)
 
         self.input_devices_classes.update({device_name: device})
-        self.data[device_name] = device.process()
+        self.data[device_name] = device.do()
         self.write_news(self.data)
 
         if is_a_new_keyboard:
@@ -203,7 +203,7 @@ class HardwareManagerAction(JoanModuleAction):
         self.module_dialog.add_device_tab(device)
 
         self.input_devices_classes.update({device_name: device})
-        self.data[device_name] = device.process()
+        self.data[device_name] = device.do()
         self.write_news(self.data)
 
         if is_a_new_joystick:
@@ -232,7 +232,7 @@ class HardwareManagerAction(JoanModuleAction):
             self.module_dialog.add_device_tab(device)
 
             self.input_devices_classes.update({device_name: device})
-            self.data[device_name] = device.process()
+            self.data[device_name] = device.do()
             self.write_news(self.data)
 
             if is_a_new_sensodrive:

@@ -237,7 +237,7 @@ class JOANKeyboard(BaseInput):
         elif int_key_identifier == self.settings.reverse_key and boolean_key_press_value:
             self._reverse = not self._reverse
 
-    def process(self):
+    def do(self):
         """
         Processes all the inputs of the keyboard and writes them to self._data which is then written to the news in the
         action class
