@@ -305,11 +305,15 @@ class JOANSensoDrive(BaseInput):
             requested_torque_by_controller = self._steering_wheel_control_data[
                 self._carla_interface_data['ego_agents']['Vehicle 1']['vehicle_object'].selected_sw_controller][
                 'sw_torque']
+            # print("requested torque ", requested_torque_by_controller)
+        except:
+            requested_torque_by_controller = 0
+
+        try:
             desired_steering_angle = self._steering_wheel_control_data[
                 self._carla_interface_data['ego_agents']['Vehicle 1']['vehicle_object'].selected_sw_controller][
                 'sw_angle_desired_degrees']
         except KeyError:
-            requested_torque_by_controller = 0
             desired_steering_angle = 360
 
         self.counter = self.counter + 1
