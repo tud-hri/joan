@@ -24,8 +24,6 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
         self.sensodrive_settings = sensodrive_settings
         uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/sensodrive_settings_ui.ui"), self)
 
-
-
         self.button_box_settings.button(self.button_box_settings.RestoreDefaults).clicked.connect(
             self._set_default_values)
 
@@ -99,7 +97,6 @@ class JOANSensoDrive(BaseInput):
         self.module_action = hardware_manager_action
         # Create the shared variables class
         self.sensodrive_shared_values = SensoDriveSharedValues()
-
 
         self.sensodrive_shared_values.sensodrive_ID = nr_of_sensodrives
 
@@ -208,7 +205,6 @@ class JOANSensoDrive(BaseInput):
         Not used for this input
         """
         self.settings_dialog = SensoDriveSettingsDialog(self.settings)
-        self.settings_dialog.btn_apply.clicked.connect(self.update_shared_values_from_settings)
 
     def remove_device(self):
         """
@@ -231,20 +227,16 @@ class JOANSensoDrive(BaseInput):
         simulator is running)
         :return:
         """
-        if self._tab_widget.btn_remove_hardware.isEnabled() is True:
+        if self._tab_widget.btn_remove_hardware.isEnabled():
             self._tab_widget.btn_remove_hardware.setEnabled(False)
-        else:
-            pass
 
     def enable_remove_button(self):
         """
         Enables the sensodrive remove button.
         :return:
         """
-        if self._tab_widget.btn_remove_hardware.isEnabled() is False:
+        if not self._tab_widget.btn_remove_hardware.isEnabled():
             self._tab_widget.btn_remove_hardware.setEnabled(True)
-        else:
-            pass
 
     def toggle_on_off(self):
         """
@@ -361,8 +353,6 @@ class JOANSensoDrive(BaseInput):
 
         # Lastly we also need to write the spring stiffness in data for controller purposes
         self._data['spring_stiffness'] = self.sensodrive_shared_values.spring_stiffness
-
-
 
         return self._data
 

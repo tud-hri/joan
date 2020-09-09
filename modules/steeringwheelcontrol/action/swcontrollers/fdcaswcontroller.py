@@ -7,7 +7,7 @@ from PyQt5 import QtWidgets, uic
 from modules.steeringwheelcontrol.action.steeringwheelcontrolsettings import FDCAControllerSettings
 from modules.steeringwheelcontrol.action.swcontrollertypes import SWControllerTypes
 from tools import LowPassFilterBiquad
-from .baseswcontroller import BaseSWController
+from .baseswcontroller import BaseSWController, find_closest_node
 
 
 class FDCAControllerSettingsDialog(QtWidgets.QDialog):
@@ -233,7 +233,7 @@ class FDCASWController(BaseSWController):
         pos_car_future = pos_car + vel_car * self.settings.t_lookahead  # linear extrapolation, should be updated
 
         # Find waypoint index of the point that the car would be in the future (compared to own driven trajectory)
-        index_closest_waypoint = self.find_closest_node(pos_car_future, self._trajectory[:, 1:3])
+        index_closest_waypoint = find_closest_node(pos_car_future, self._trajectory[:, 1:3])
 
         if index_closest_waypoint >= len(self._trajectory) - 3:
             index_closest_waypoint_next = 0
@@ -291,7 +291,7 @@ class FDCASWController(BaseSWController):
 
         future_location = location + extra_distance
 
-        feed_forward_index = self.find_closest_node(future_location, self._trajectory[:, 1:3])
+        feed_forward_index = find_closest_node(future_location, self._trajectory[:, 1:3])
         if (feed_forward_index >= len(self._trajectory) - 20):
             feed_forward_index_plus1 = 0
         else:

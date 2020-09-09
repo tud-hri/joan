@@ -9,6 +9,20 @@ from modules.joanmodules import JOANModules
 from modules.steeringwheelcontrol.action.swcontrollertypes import SWControllerTypes
 
 
+def check_equal(lst):
+    return lst[1:] == lst[:-1]
+
+
+def find_closest_node(node, nodes):
+    """
+    Find the node in the nodes list (trajectory)
+    """
+    nodes = np.asarray(nodes)
+    deltas = nodes - node
+    dist_squared = np.einsum('ij,ij->i', deltas, deltas)
+    return np.argmin(dist_squared)
+
+
 class BaseSWController:
     def __init__(self, controller_type: SWControllerTypes, module_action: JOANModules):
         self._action = module_action
@@ -58,8 +72,7 @@ class BaseSWController:
         except OSError as err:
                 print('Error loading HCR trajectory file: ', err)
 
-    def checkEqual(lst):
-        return lst[1:] == lst[:-1]
+
 
     def update_trajectory_list(self):
         """
@@ -68,6 +81,7 @@ class BaseSWController:
         # get list of csv files in directory
         if not os.path.isdir(self._path_trajectory_directory):
             os.mkdir(self._path_trajectory_directory)
+
         files = [filename for filename in os.listdir(self._path_trajectory_directory) if filename.endswith('csv')]
 
         self.settings_dialog.cmbbox_hcr_selection.clear()
@@ -76,15 +90,6 @@ class BaseSWController:
         idx = self.settings_dialog.cmbbox_hcr_selection.findText(self._current_trajectory_name)
         if idx != -1:
             self.settings_dialog.cmbbox_hcr_selection.setCurrentIndex(idx)
-
-    def find_closest_node(self, node, nodes):
-        """
-        Find the node in the nodes list (trajectory)
-        """
-        nodes = np.asarray(nodes)
-        deltas = nodes - node
-        dist_squared = np.einsum('ij,ij->i', deltas, deltas)
-        return np.argmin(dist_squared)
 
     @property
     def get_controller_tab(self):
