@@ -7,7 +7,7 @@ from PyQt5 import QtWidgets, uic
 from modules.steeringwheelcontrol.action.steeringwheelcontrolsettings import PDControllerSettings
 from modules.steeringwheelcontrol.action.swcontrollertypes import SWControllerTypes
 from tools import LowPassFilterBiquad
-from .baseswcontroller import BaseSWController
+from .baseswcontroller import BaseSWController, find_closest_node
 
 
 class PDControllerSettingsDialog(QtWidgets.QDialog):
@@ -30,7 +30,7 @@ class PDControllerSettingsDialog(QtWidgets.QDialog):
         self.pd_controller_settings.trajectory_name = self.cmbbox_hcr_selection.itemText(
             self.cmbbox_hcr_selection.currentIndex())
 
-        self._display_values()
+        self.display_values()
 
     def accept(self):
         self.pd_controller_settings.t_lookahead = float(self.edit_t_ahead.text())
@@ -43,7 +43,7 @@ class PDControllerSettingsDialog(QtWidgets.QDialog):
 
         super().accept()
 
-    def _display_values(self, settings_to_display=None):
+    def display_values(self, settings_to_display=None):
         if not settings_to_display:
             settings_to_display = self.pd_controller_settings
 
@@ -63,7 +63,7 @@ class PDControllerSettingsDialog(QtWidgets.QDialog):
         self.cmbbox_hcr_selection.setCurrentIndex(idx_traj)
 
     def _set_default_values(self):
-        self._display_values(PDControllerSettings())
+        self.display_values(PDControllerSettings())
         self.update_parameters()
 
 
@@ -79,11 +79,11 @@ class PDSWController(BaseSWController):
         self.current_reference_trajectory = []
 
         # Variables to make differential control possible (need to declare second timevariable before use)
-        self._t2 = 0
+        self._time_previous_tick = time.time_ns() / (10 ** 9)  # time in nanosecond
 
         # Setting up filters
-        self._bq_filter_heading = LowPassFilterBiquad(fc=10, fs=1000 / self.module_action._millis)
-        self._bq_filter_velocity = LowPassFilterBiquad(fc=10, fs=1000 / self.module_action._millis)
+        self._bq_filter_heading = LowPassFilterBiquad(fc=10, fs=1000 / self.module_action.tick_interval_ms)
+        self._bq_filter_velocity = LowPassFilterBiquad(fc=10, fs=1000 / self.module_action.tick_interval_ms)
 
         # controller errors
         # [0]: lateral error
@@ -91,7 +91,7 @@ class PDSWController(BaseSWController):
         # [2]: lateral rate error
         # [3]: heading rate error
         self._controller_error = np.array([0.0, 0.0, 0.0, 0.0])
-        self.error_static_old = np.array([0.0, 0.0])
+        self._error_old = np.array([0.0, 0.0])
 
         # Get the target trajectory name from settings
         self.selected_reference_trajectory = []
@@ -122,13 +122,11 @@ class PDSWController(BaseSWController):
 
     def _open_settings_dialog(self):
         self.load_trajectory()
-        self.settings_dialog._display_values()
-        pass
-        # self.update_trajectory_list()
+        self.settings_dialog.display_values()
 
     def _open_settings_dialog_from_button(self):
         # self.load_trajectory()
-        self.settings_dialog._display_values()
+        self.settings_dialog.display_values()
         self.settings_dialog.show()
 
     def initialize(self):
@@ -139,47 +137,57 @@ class PDSWController(BaseSWController):
             stiffness = hw_data_in[vehicle_object.selected_input]['spring_stiffness']
         except:
             stiffness = 1
+
         if vehicle_object.selected_sw_controller == self.controller_list_key:
             try:
                 """Perform the controller-specific calculations"""
                 # get delta_t (we could also use 'tick_interval_ms' but this is a bit more precise)
-                t1 = time.time()
-                delta_t = t1 - self._t2
+                delta_t = self.module_action.tick_interval_ms
+                # _time_this_tick = time.time_ns() / (10 ** 9)  # time in seconds
+                # delta_t = _time_this_tick - self._time_previous_tick
+                # if delta_t < (self.module_action.tick_interval_ms - 0.5) / 1000:
+                #     delta_t = self.module_action.tick_interval_ms / 1000
 
-                delta_t = t1 - self._t2
-                if delta_t < (self.module_action._millis - 0.5) / 1000:
-                    delta_t = self.module_action._millis / 1000
+                # extract data from CARLA
+                # CARLA coordinate system (left-handed coordinate system)
+                # X: forward
+                # Y: right
+                # Z: upward
+                # Psi (heading): left-hand z-axis positive (yaw to the right is positive)
+                # torque: rightward rotation is positive
 
-                # extract data
                 car = vehicle_object.spawned_vehicle
+
+                # keep is 2D for now
                 pos_car = np.array([car.get_location().x, car.get_location().y])
                 vel_car = np.array([car.get_velocity().x, car.get_velocity().y])
                 heading_car = car.get_transform().rotation.yaw
 
                 # find static error and error rate:
-                error_static = self.error(pos_car, heading_car, vel_car)
-                error_rate = self.error_rates(error_static, self.error_static_old, delta_t)
+                error = self.calculate_error(pos_car, heading_car, vel_car)
+                error_rate = (error - self._error_old) / delta_t
 
                 # filter the error rate with biquad filter
-                error_lateral_rate_filtered = self._bq_filter_velocity.step(error_rate[0])
-                error_heading_rate_filtered = self._bq_filter_heading.step(error_rate[1])
+                error_rate_filtered = np.array([0.0, 0.0])
+                error_rate_filtered[0] = self._bq_filter_velocity.step(error_rate[0])
+                error_rate_filtered[1] = self._bq_filter_heading.step(error_rate[1])
 
                 # put errors in 1 variable
-                self._controller_error[0:2] = error_static
-                self._controller_error[2:] = np.array([error_lateral_rate_filtered, error_heading_rate_filtered])
+                self._controller_error[0:2] = error
+                self._controller_error[2:4] = error_rate_filtered
 
                 # put error through controller to get sw torque out
                 self._data_out['sw_torque'] = self.pd_controller(self._controller_error, stiffness)
-                self._data_out['lat_error'] = error_static[0]
-                self._data_out['heading_error'] = error_static[1]
+                self._data_out['lat_error'] = error[0]
+                self._data_out['heading_error'] = error[1]
                 self._data_out['lat_error_rate_unfiltered'] = error_rate[0]
                 self._data_out['heading_error_rate_unfiltered'] = error_rate[1]
-                self._data_out['lat_error_rate_filtered'] = error_lateral_rate_filtered
-                self._data_out['heading_error_rate_filtered'] = error_heading_rate_filtered
+                self._data_out['lat_error_rate_filtered'] = error_rate_filtered[0]
+                self._data_out['heading_error_rate_filtered'] = error_rate_filtered[1]
 
                 # update variables
-                self.error_static_old = error_static
-                self._t2 = t1
+                self._error_old = error
+                # self._time_previous_tick = _time_this_tick
             except Exception as inst:
                 self._data_out['sw_torque'] = 0
                 print(inst)
@@ -190,37 +198,52 @@ class PDSWController(BaseSWController):
             self._data_out['sw_torque'] = 0
             return self._data_out
 
-    def error(self, pos_car, heading_car, vel_car=np.array([0.0, 0.0, 0.0])):
-        """Calculate the controller error"""
-        pos_car_future = pos_car + vel_car * self.settings.t_lookahead  # linear extrapolation, should be updated
+    def calculate_error(self, pos_car, heading_car, vel_car=np.array([0.0, 0.0])):
+        """
+        Calculate the controller error
+        CARLA coordinate frame
+        X: forward
+        Y: right
+        Z: upward
+        Psi (heading): left-hand z-axis positive (yaw to the right is positive)
+        Torque: rightward rotation is positive
+        :param pos_car:
+        :param heading_car:
+        :param vel_car:
+        :return:
+        """
+        pos_car = pos_car + vel_car * self.settings.t_lookahead  # linear extrapolation, should be updated
 
         # Find waypoint index of the point that the car would be in the future (compared to own driven trajectory)
-        index_closest_waypoint = self.find_closest_node(pos_car_future, self._trajectory[:, 1:3])
+        index_closest_waypoint = find_closest_node(pos_car, self._trajectory[:, 1:3])
 
+        # TODO: this needs checking
+        # circular: if end of the trajectory, go back to the first one; note that this is risky, if the reference trajectory is not circular!
         if index_closest_waypoint >= len(self._trajectory) - 3:
             index_closest_waypoint_next = 0
         else:
             index_closest_waypoint_next = index_closest_waypoint + 3
 
         # calculate lateral error
-        pos_ref_future = self._trajectory[index_closest_waypoint, 1:3]
-        pos_ref_future_next = self._trajectory[index_closest_waypoint_next, 1:3]
+        pos_ref = self._trajectory[index_closest_waypoint, 1:3]
+        pos_ref_next = self._trajectory[index_closest_waypoint_next, 1:3]
 
-        vec_pos_future = pos_car_future - pos_ref_future
-        vec_dir_future = pos_ref_future_next - pos_ref_future
+        vec_car = pos_car - pos_ref
+        vec_dir = pos_ref_next - pos_ref
 
-        error_lat_sign = np.math.atan2(np.linalg.det([vec_dir_future, vec_pos_future]),
-                                       np.dot(vec_dir_future, vec_pos_future))
+        # find the lateral error. Project vec_car on the reference trajectory direction vector
+        vec_error_lat = vec_car - (np.dot(vec_car, vec_dir) / np.dot(vec_dir, vec_dir)) * vec_dir
+        error_lat = np.sqrt(np.dot(vec_error_lat, vec_error_lat))
 
-        error_pos_lat = np.sqrt(vec_pos_future.dot(vec_pos_future))
+        # calculate sign of error using the cross product
+        e_sign = np.cross(vec_dir, vec_car)  # used to be e_sign = np.math.atan2(np.linalg.det([vec_dir, vec_car]), np.dot(vec_dir, vec_car))
+        e_sign = e_sign / np.abs(e_sign)
+        error_lat *= e_sign
 
-        if error_lat_sign < 0:
-            error_pos_lat = -error_pos_lat
-
-        # calculate heading error
+        # calculate heading error: left-handed CW positive
         heading_ref = self._trajectory[index_closest_waypoint, 6]
 
-        error_heading = -(math.radians(heading_ref) - math.radians(heading_car))
+        error_heading = math.radians(heading_ref) - math.radians(heading_car)  # in radians
 
         # Make sure you dont get jumps (basically unwrap the angle with a threshold of pi radians (180 degrees))
         if error_heading > math.pi:
@@ -228,22 +251,27 @@ class PDSWController(BaseSWController):
         if error_heading < -math.pi:
             error_heading = error_heading + 2.0 * math.pi
 
-        return np.array([error_pos_lat, error_heading])
-
-    def error_rates(self, error, error_old, delta_t):
-        """Calculate the controller error rates"""
-
-        heading_error_rate = (error[0] - error_old[0]) / delta_t
-        velocity_error_rate = (error[1] - error_old[1]) / delta_t
-
-        return np.array([velocity_error_rate, heading_error_rate])
+        return np.array([error_lat, error_heading])
 
     def pd_controller(self, error, stiffness):
-        torque_gain_lateral = self.settings.w_lat * (self.settings.k_p * error[0] + self.settings.k_d * error[2])
-        torque_gain_heading = self.settings.w_heading * (self.settings.k_p * error[1] + self.settings.k_d * error[3])
+        """
+        Calculate torque for sensodrive
+        torque sensordrive: positive clockwise
+        CARLA coordinate system:
+        X: forward
+        Y: right
+        Z: upward
+        Psi (heading): left-hand z-axis positive (yaw to the right is positive)
 
-        torque_gain = torque_gain_lateral + torque_gain_heading
+        signs lateral error: if the car is to the right of the reference trajectory, sign_lat_error = -1
+        sign heading error: if the car is pointing to the right w.r.t. the reference heading, the sign_heading_error = -1
+        In both -1 signs, the torque also needs to be negative (e.g. steer to the left).
+        :param error:
+        :param stiffness:
+        :return:
+        """
+        torque_error_lateral = self.settings.k_p_lat * error[0] + self.settings.k_d_lat * error[2]
+        torque_error_heading = self.settings.k_p_heading * error[1] + self.settings.k_d_heading * error[3]
 
-        torque = -stiffness * torque_gain
+        return torque_error_lateral + torque_error_heading
 
-        return int(torque)

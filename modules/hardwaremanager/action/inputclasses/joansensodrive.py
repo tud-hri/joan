@@ -19,17 +19,17 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
     creating the joystick class for the first time. NOTE: it should not show whenever settings are loaded by .json file.
     """
 
-    def __init__(self, sensodrive_settings, parent=None):
+    def __init__(self, sensodrive_settings, klass=None, parent=None):
         super().__init__(parent)
         self.sensodrive_settings = sensodrive_settings
         uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/sensodrive_settings_ui.ui"), self)
+
+        self._klass = klass
 
         self.button_box_settings.button(self.button_box_settings.RestoreDefaults).clicked.connect(
             self._set_default_values)
 
         self.btn_apply.clicked.connect(self.update_parameters)
-
-        self._display_values()
 
     def update_parameters(self):
         """
@@ -41,6 +41,9 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
         self.sensodrive_settings.friction = self.spin_friction.value()
         self.sensodrive_settings.damping = self.spin_damping.value()
         self.sensodrive_settings.spring_stiffness = self.spin_spring_stiffness.value()
+
+        if not self._klass:
+            self._klass.update_shared_values_from_settings()
 
     def accept(self):
         """
@@ -204,7 +207,7 @@ class JOANSensoDrive(BaseInput):
         """
         Not used for this input
         """
-        self.settings_dialog = SensoDriveSettingsDialog(self.settings)
+        self.settings_dialog = SensoDriveSettingsDialog(self.settings, klass=self)
 
     def remove_device(self):
         """
@@ -227,20 +230,16 @@ class JOANSensoDrive(BaseInput):
         simulator is running)
         :return:
         """
-        if self._tab_widget.btn_remove_hardware.isEnabled() is True:
+        if self._tab_widget.btn_remove_hardware.isEnabled():
             self._tab_widget.btn_remove_hardware.setEnabled(False)
-        else:
-            pass
 
     def enable_remove_button(self):
         """
         Enables the sensodrive remove button.
         :return:
         """
-        if self._tab_widget.btn_remove_hardware.isEnabled() is False:
+        if not self._tab_widget.btn_remove_hardware.isEnabled():
             self._tab_widget.btn_remove_hardware.setEnabled(True)
-        else:
-            pass
 
     def toggle_on_off(self):
         """
