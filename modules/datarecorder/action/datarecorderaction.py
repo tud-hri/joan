@@ -1,4 +1,5 @@
 import os
+import time
 from datetime import datetime
 from pathlib import Path
 
@@ -115,10 +116,6 @@ class DataRecorderAction(JoanModuleAction):
 
             self.initialize_file()
             self.state_machine.request_state_change(State.READY)
-            print('mehh')
-            # Try and get the current position of car if you want to record a trajectory
-
-
         except RuntimeError:
             return False
         return True
@@ -145,7 +142,9 @@ class DataRecorderAction(JoanModuleAction):
         """
         Create a time-field with the current time and writes available news from all channels(=modules)
         """
-        now = datetime.now()
+        # now = datetime.now()  # we see jumps in the time vector; hence using perf_counter_ns() as a fix
+
+        now = time.perf_counter_ns() / (10 ** 6)  # nanosecond to millisecond
         self.data_writer.write(timestamp=now, news=self.get_all_news(), channels=self.get_available_news_channels())
 
     def load_settings(self, settings_file_to_load):
