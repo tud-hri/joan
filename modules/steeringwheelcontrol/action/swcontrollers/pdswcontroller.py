@@ -144,7 +144,7 @@ class PDSWController(BaseSWController):
                 """Perform the controller-specific calculations"""
                 # get delta_t (we could also use 'tick_interval_ms' but this is a bit more precise)
                 t1 = time.time()
-                delta_t = t1 - self._t2
+
 
                 delta_t = t1 - self._t2
                 if delta_t < (self.module_action._millis - 0.5) / 1000:
@@ -172,6 +172,7 @@ class PDSWController(BaseSWController):
                 self._data_out['sw_torque'] = self.pd_controller(self._controller_error, stiffness)
                 self._data_out['lat_error'] = error_static[0]
                 self._data_out['heading_error'] = error_static[1]
+                self._data_out['delta_t'] = delta_t
                 self._data_out['lat_error_rate_unfiltered'] = error_rate[0]
                 self._data_out['heading_error_rate_unfiltered'] = error_rate[1]
                 self._data_out['lat_error_rate_filtered'] = error_lateral_rate_filtered
@@ -233,17 +234,14 @@ class PDSWController(BaseSWController):
     def error_rates(self, error, error_old, delta_t):
         """Calculate the controller error rates"""
 
-        heading_error_rate = (error[0] - error_old[0]) / delta_t
-        velocity_error_rate = (error[1] - error_old[1]) / delta_t
+        velocity_error_rate = (error[0] - error_old[0]) / delta_t
+        heading_error_rate = (error[1] - error_old[1]) / delta_t
 
         return np.array([velocity_error_rate, heading_error_rate])
 
     def pd_controller(self, error, stiffness):
-        torque_gain_lateral = self.settings.w_lat * (self.settings.k_p * error[0] + self.settings.k_d * error[2])
-        torque_gain_heading = self.settings.w_heading * (self.settings.k_p * error[1] + self.settings.k_d * error[3])
 
-        torque_gain = torque_gain_lateral + torque_gain_heading
+        torque_lateral = self.settings.k_p * error[0] + self.settings.k_d * error[2]
+        torque_heading = self.settings.w_heading * (self.settings.k_p * error[1] + self.settings.k_d * error[3])
 
-        torque = -stiffness * torque_gain
-
-        return int(torque)
+        return -(torque_lateral + torque_heading)
