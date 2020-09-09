@@ -139,7 +139,8 @@ class DataWriter(threading.Thread):
         :param channels: are actually the keys to identify a module
         """
         row = {}
-        row['time'] = timestamp.strftime('%H%M%S%f')
+        # row['time'] = timestamp.strftime('%H%M%S%f')  # had jumps in the time vector
+        row['time'] = timestamp
 
         row.update(self.filter_row(news=news, channels=channels))
         self.dict_writer.writerow(row)
