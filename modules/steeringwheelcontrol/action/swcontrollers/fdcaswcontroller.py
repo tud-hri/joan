@@ -1,5 +1,4 @@
 import math
-import time
 
 import numpy as np
 from PyQt5 import QtWidgets, uic
@@ -33,9 +32,6 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
         self.fdca_controller_settings.loha = float(self.slider_loha.value() / 5)
         self.fdca_controller_settings.trajectory_name = self.cmbbox_hcr_selection.itemText(
             self.cmbbox_hcr_selection.currentIndex())
-
-
-
 
         self._display_values()
 
@@ -97,8 +93,8 @@ class FDCASWController(BaseSWController):
 
         self._t2 = 0
 
-        self._bq_filter_heading = LowPassFilterBiquad(fc=30, fs=1000/self.module_action._millis)
-        self._bq_filter_velocity = LowPassFilterBiquad(fc=30, fs=1000/self.module_action._millis)
+        self._bq_filter_heading = LowPassFilterBiquad(fc=30, fs=1000 / self.module_action._millis)
+        self._bq_filter_velocity = LowPassFilterBiquad(fc=30, fs=1000 / self.module_action._millis)
 
         self.stiffness = 1
 
@@ -153,17 +149,25 @@ class FDCASWController(BaseSWController):
         """
         if vehicle_object.selected_sw_controller == self.controller_list_key:
             try:
+                ## make sure this is in [Nm/rad]
                 stiffness = hw_data_in[vehicle_object.selected_input]['spring_stiffness']
 
-                sw_angle = hw_data_in[vehicle_object.selected_input]['steering_angle']
+                sw_angle = hw_data_in[vehicle_object.selected_input]['steering_angle']  # should be [Nm/rad]
 
-
-                """Perform the controller-specific calculations"""
                 # get delta_t (we could also use 'tick_interval_ms' but this is a bit more precise)
-                t1 = time.time()
-                delta_t = t1 - self._t2
-                if delta_t < (self.module_action._millis - 0.5)/1000:
-                    delta_t = self.module_action._millis/1000
+                delta_t = self.module_action.tick_interval_ms / 1000  # [s]
+                # _time_this_tick = time.time_ns() / (10 ** 9)  # time in seconds
+                # delta_t = _time_this_tick - self._time_previous_tick
+                # if delta_t < (self.module_action.tick_interval_ms - 0.5) / 1000:
+                #     delta_t = self.module_action.tick_interval_ms / 1000
+
+                # extract data from CARLA
+                # CARLA coordinate system (left-handed coordinate system)
+                # X: forward
+                # Y: right
+                # Z: upward
+                # Psi (heading): left-hand z-axis positive (yaw to the right is positive)
+                # torque: rightward rotation is positive
 
                 # extract data
                 car = vehicle_object.spawned_vehicle
@@ -172,93 +176,117 @@ class FDCASWController(BaseSWController):
                 heading_car = car.get_transform().rotation.yaw
 
                 # find static error and error rate:
-                error_static = self.error(pos_car, heading_car, vel_car)
-                error_rate = self.error_rates(error_static, self.error_static_old, delta_t)
+                error = self.calculate_error(pos_car, heading_car, vel_car)
+                error_rate = (error - self._error_old) / delta_t
 
                 # filter the error rate with biquad filter
-                error_lateral_rate_filtered = self._bq_filter_velocity.step(error_rate[0])
-                error_heading_rate_filtered = self._bq_filter_heading.step(error_rate[1])
+                error_rate_filtered = np.array([0.0, 0.0])
+                error_rate_filtered[0] = self._bq_filter_velocity.step(error_rate[0])
+                error_rate_filtered[1] = self._bq_filter_heading.step(error_rate[1])
 
                 # put errors in 1 variable
-                self._controller_error[0:2] = error_static
-                self._controller_error[2:] = np.array([error_lateral_rate_filtered, error_heading_rate_filtered])
+                self._controller_error[0:2] = error
+                self._controller_error[2:4] = error_rate_filtered
 
-                ############## FDCA SPECIFIC CALCULATIONS HERE ##############
+                # FDCA specific calculations here
                 self._data_out['sw_torque'] = 0
-                sw_angle_fb = self._sohf_func(self.settings.k_y, self.settings.k_psi, self.settings.sohf,
-                                              -self._controller_error[0], self._controller_error[1])
-                sw_angle_ff_des = self._feed_forward_controller(self.settings.t_lookahead, car)
-                sw_angle_ff = self.lohs_func(self.settings.lohs, sw_angle_ff_des)
-                sw_angle_fb_ff_des = sw_angle_fb + sw_angle_ff_des  # in radians
-                sw_angle_current = math.radians(sw_angle)
-                delta_sw = sw_angle_fb_ff_des - sw_angle_current
-                sw_angle_ff_fb = sw_angle_ff + sw_angle_fb
-                torque_loha = self._loha_func(self.settings.loha, delta_sw)  # Torque resulting from feedback
-                k_stiffness_deg = stiffness  # 40mNm/deg [DEGREES! CONVERT TO RADIANS!!]
-                k_stiffness_rad = k_stiffness_deg * (math.pi / 180)
-                torque_ff_fb = self._inverse_steering_dyn(sw_angle_ff_fb, k_stiffness_rad)
 
+                # strength of haptic feedback
+                sw_angle_fb = self.settings.sohf * (self.settings.k_y * self._controller_error[0] + self.settings.k_psi * self._controller_error[1])
+
+                # get feedforward sw angle
+                sw_angle_ff_des = self._get_reference_sw_angle(self.settings.t_lookahead, car)
+
+                # level of haptic support (feedforward); get sw angle needed for haptic support
+                sw_angle_ff = self.settings.lohs * sw_angle_ff_des
+
+                # calculate torques
+
+                # loha torque
+                # calculate sw error; BASED ON BASTIAAN PETERMEIJER's SIMULINK IMPLEMENTATION OF THE FDCA
+                # add fb and ff sw angles to get total desired sw angle; this is the sw angle the sw should get
+                delta_sw = (sw_angle_fb + sw_angle_ff_des) - sw_angle
+
+                torque_loha = delta_sw * self.settings.loha  # loha should be [Nm/rad]
+
+                # feedforward/feedback torque
+                sw_angle_ff_fb = sw_angle_ff + sw_angle_fb
+
+                # simplified inverse steering dynamics
+
+                # check: the inherent SW stiffness should not be zero (div by 0)
+                if abs(stiffness) < (1 ** -6):
+                    stiffness = np.sign(stiffness) * (1 ** -6)
+
+                torque_ff_fb = sw_angle_ff_fb * 1.0 / (1.0 / stiffness)  # !!! stiffness should be in [Nm/rad]
+
+                # total torque of FDCA, to be sent to SW controller in Nm
                 torque_fdca = torque_loha + torque_ff_fb
 
-                # print(round(Torque_FDCA*1000))
-                torque_integer = int(round(torque_fdca * 1000))
                 # print(torque_integer)
-                self._data_out['sw_torque'] = torque_integer
+                self._data_out['sw_torque'] = torque_fdca  # [Nm]
 
                 # update variables
-                self.error_static_old = error_static
-                self._t2 = t1
+                self.error_static_old = error
                 self._data_out['sw_angle_desired_radians'] = sw_angle_ff_des
-                self._data_out['sw_angle_current_radians'] = sw_angle_current
+                self._data_out['sw_angle_current_radians'] = sw_angle
                 self._data_out['sw_angle_desired_degrees'] = math.degrees(sw_angle_ff_des)
 
-
-
             except Exception as inst:
-                pass
-
-                self._data_out['sw_torque'] = 0
+                self._data_out['sw_torque'] = 0.0
                 self._data_out['sw_angle_desired_degrees'] = 360
-
-
-            return self._data_out
-
         else:
-            self._data_out['sw_torque'] = 0
+            self._data_out['sw_torque'] = 0.0
             self._data_out['sw_angle_desired_degrees'] = 360
-            return self._data_out
 
-    def error(self, pos_car, heading_car, vel_car=np.array([0.0, 0.0, 0.0])):
-        """Calculate the controller error"""
-        pos_car_future = pos_car + vel_car * self.settings.t_lookahead  # linear extrapolation, should be updated
+        return self._data_out
+
+    def calculate_error(self, pos_car, heading_car, vel_car=np.array([0.0, 0.0])):
+        """
+        Calculate the controller error
+        CARLA coordinate frame
+        X: forward
+        Y: right
+        Z: upward
+        Psi (heading): left-hand z-axis positive (yaw to the right is positive)
+        Torque: rightward rotation is positive
+        :param pos_car:
+        :param heading_car:
+        :param vel_car:
+        :return:
+        """
+        pos_car = pos_car + vel_car * self.settings.t_lookahead  # linear extrapolation, should be updated
 
         # Find waypoint index of the point that the car would be in the future (compared to own driven trajectory)
-        index_closest_waypoint = find_closest_node(pos_car_future, self._trajectory[:, 1:3])
+        index_closest_waypoint = find_closest_node(pos_car, self._trajectory[:, 1:3])
 
+        # TODO: this needs checking
+        # circular: if end of the trajectory, go back to the first one; note that this is risky, if the reference trajectory is not circular!
         if index_closest_waypoint >= len(self._trajectory) - 3:
             index_closest_waypoint_next = 0
         else:
             index_closest_waypoint_next = index_closest_waypoint + 3
 
         # calculate lateral error
-        pos_ref_future = self._trajectory[index_closest_waypoint, 1:3]
-        pos_ref_future_next = self._trajectory[index_closest_waypoint_next, 1:3]
+        pos_ref = self._trajectory[index_closest_waypoint, 1:3]
+        pos_ref_next = self._trajectory[index_closest_waypoint_next, 1:3]
 
-        vec_pos_future = pos_car_future - pos_ref_future
-        vec_dir_future = pos_ref_future_next - pos_ref_future
+        vec_car = pos_car - pos_ref
+        vec_dir = pos_ref_next - pos_ref
 
-        error_lat_sign = np.math.atan2(np.linalg.det([vec_dir_future, vec_pos_future]),
-                                       np.dot(vec_dir_future, vec_pos_future))
+        # find the lateral error. Project vec_car on the reference trajectory direction vector
+        vec_error_lat = vec_car - (np.dot(vec_car, vec_dir) / np.dot(vec_dir, vec_dir)) * vec_dir
+        error_lat = np.sqrt(np.dot(vec_error_lat, vec_error_lat))
 
-        error_pos_lat = np.sqrt(vec_pos_future.dot(vec_pos_future))
+        # calculate sign of error using the cross product
+        e_sign = np.cross(vec_dir, vec_car)  # used to be e_sign = np.math.atan2(np.linalg.det([vec_dir, vec_car]), np.dot(vec_dir, vec_car))
+        e_sign = -1.0 * e_sign / np.abs(e_sign)
+        error_lat *= e_sign
 
-        if error_lat_sign < 0:
-            error_pos_lat = -error_pos_lat
-
-        # calculate heading error
+        # calculate heading error: left-handed CW positive
         heading_ref = self._trajectory[index_closest_waypoint, 6]
 
-        error_heading = (math.radians(heading_ref) - math.radians(heading_car))
+        error_heading = math.radians(heading_ref) - math.radians(heading_car)  # in radians
 
         # Make sure you dont get jumps (basically unwrap the angle with a threshold of pi radians (180 degrees))
         if error_heading > math.pi:
@@ -266,52 +294,25 @@ class FDCASWController(BaseSWController):
         if error_heading < -math.pi:
             error_heading = error_heading + 2.0 * math.pi
 
-        return np.array([error_pos_lat, error_heading])
+        return np.array([error_lat, error_heading])
 
-    def error_rates(self, error, error_old, delta_t):
-        """Calculate the controller error rates"""
-
-        heading_error_rate = (error[0] - error_old[0]) / delta_t
-        velocity_error_rate = (error[1] - error_old[1]) / delta_t
-
-        return np.array([velocity_error_rate, heading_error_rate])
-
-    def _sohf_func(self, _k_y, _k_psi, _sohf, DeltaY, DeltaPsi):
-        temp = _sohf * (_k_y * DeltaY + _k_psi * DeltaPsi)
-
-        return temp
-
-    def _feed_forward_controller(self, t_ahead, car):
+    def _get_reference_sw_angle(self, t_ahead, car):
         car_location = car.get_location()
         car_velocity = car.get_velocity()
 
         location = np.array([car_location.x, car_location.y])
         velocity = np.array([car_velocity.x, car_velocity.y])
-        extra_distance = velocity * t_ahead
 
-        future_location = location + extra_distance
+        future_location = location + velocity * t_ahead
 
-        feed_forward_index = find_closest_node(future_location, self._trajectory[:, 1:3])
-        if (feed_forward_index >= len(self._trajectory) - 20):
-            feed_forward_index_plus1 = 0
+        idx = find_closest_node(future_location, self._trajectory[:, 1:3])
+        if idx >= len(self._trajectory) - 20:
+            idx1 = 0
         else:
-            feed_forward_index_plus1 = feed_forward_index + 20
+            idx1 = idx + 1
 
-        sw_angle_ff_des = math.radians(self._trajectory[feed_forward_index_plus1, 3] * 450)
+        # the trajectory is recorded in unitless steering angles (verify this in the csv)
+        # so, we need to convert this to radians. First, multiply with 450 (1, -1) [-] = (450,-450) [deg]
+        sw_angle_ff_des = math.radians(self._trajectory[idx1, 3] * 450)
 
         return sw_angle_ff_des
-
-    def lohs_func(self, _lohs, sw_angle_ff_des):
-        sw_angle_ff = sw_angle_ff_des * _lohs
-
-        return sw_angle_ff
-
-    def _loha_func(self, _loha, delta_sw):
-        torque_loha = _loha * delta_sw
-
-        return torque_loha
-
-    def _inverse_steering_dyn(self, sw_angle, k_stiffness):
-        torque = sw_angle * 1 / (1.0 / k_stiffness)
-
-        return torque
