@@ -29,16 +29,16 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
         self.fdca_controller_settings.t_lookahead = float(self.edit_t_lookahead.text())
         self.fdca_controller_settings.lohs = float(self.edit_lohs.text())
         self.fdca_controller_settings.sohf = float(self.edit_sohf.text())
-        self.fdca_controller_settings.loha = float(self.slider_loha.value() / 5)
+        self.fdca_controller_settings.loha = float(self.slider_loha.value())
         self.fdca_controller_settings.trajectory_name = self.cmbbox_hcr_selection.itemText(
             self.cmbbox_hcr_selection.currentIndex())
 
         self._display_values()
 
     def _update_loha_slider_label(self):
-        self.lbl_loha_slider.setText(str(self.slider_loha.value() / 5))
+        self.lbl_loha_slider.setText(str(self.slider_loha.value()))
         if self.checkbox_tuning_loha.isChecked():
-            self.fdca_controller_settings.loha = float(self.slider_loha.value() / 5)
+            self.fdca_controller_settings.loha = float(self.slider_loha.value())
             self.lbl_loha.setText(str(self.fdca_controller_settings.loha))
 
     def accept(self):
@@ -47,7 +47,7 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
         self.fdca_controller_settings.t_lookahead = float(self.edit_t_lookahead.text())
         self.fdca_controller_settings.lohs = float(self.edit_lohs.text())
         self.fdca_controller_settings.sohf = float(self.edit_sohf.text())
-        self.fdca_controller_settings.loha = float(self.slider_loha.value() / 5)
+        self.fdca_controller_settings.loha = float(self.slider_loha.value())
         self.fdca_controller_settings.trajectory_name = self.cmbbox_hcr_selection.itemText(
             self.cmbbox_hcr_selection.currentIndex())
 
@@ -70,7 +70,7 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
         self.edit_t_lookahead.setText(str(settings_to_display.t_lookahead))
         self.edit_lohs.setText(str(settings_to_display.lohs))
         self.edit_sohf.setText(str(settings_to_display.sohf))
-        self.slider_loha.setValue(settings_to_display.loha * 5)
+        self.slider_loha.setValue(settings_to_display.loha)
 
         idx_traj = self.cmbbox_hcr_selection.findText(settings_to_display.trajectory_name)
         self.cmbbox_hcr_selection.setCurrentIndex(idx_traj)
@@ -104,7 +104,7 @@ class FDCASWController(BaseSWController):
         # [2]: lateral rate error
         # [3]: heading rate error
         self._controller_error = np.array([0.0, 0.0, 0.0, 0.0])
-        self.error_static_old = np.array([0.0, 0.0])
+        self._error_old = np.array([0.0, 0.0])
 
         # Get the target trajectory name from settings
         self.selected_reference_trajectory = []
@@ -149,10 +149,10 @@ class FDCASWController(BaseSWController):
         """
         if vehicle_object.selected_sw_controller == self.controller_list_key:
             try:
-                ## make sure this is in [Nm/rad]
+                # make sure this is in [Nm/rad]
                 stiffness = hw_data_in[vehicle_object.selected_input]['spring_stiffness']
 
-                sw_angle = hw_data_in[vehicle_object.selected_input]['steering_angle']  # should be [Nm/rad]
+                sw_angle = hw_data_in[vehicle_object.selected_input]['steering_angle']  # [rad]
 
                 # get delta_t (we could also use 'tick_interval_ms' but this is a bit more precise)
                 delta_t = self.module_action.tick_interval_ms / 1000  # [s]
@@ -223,23 +223,32 @@ class FDCASWController(BaseSWController):
                 # total torque of FDCA, to be sent to SW controller in Nm
                 torque_fdca = torque_loha + torque_ff_fb
 
+                # print("torque_fdca = {}, torque_ff_fb = {}, torque_loha = {}, sw_angle_des = {}, sw_angle = {}".format(torque_fdca, torque_ff_fb, torque_loha, sw_angle_ff_des, sw_angle))
+                # print("sw_angle = {}, sw_angle_fb = {}, sw_angle_ff = {}, ".format(sw_angle, sw_angle_fb, sw_angle_ff))
+
+
                 # print(torque_integer)
-                self._data_out['sw_torque'] = torque_fdca  # [Nm]
+                # self._data_out['sw_torque'] = torque_fdca  # [Nm]
+                self._data_out['sw_torque'] = 0
 
                 # update variables
-                self.error_static_old = error
+                self._error_old = error
                 self._data_out['sw_angle_desired_radians'] = sw_angle_ff_des
                 self._data_out['sw_angle_current_radians'] = sw_angle
-                self._data_out['sw_angle_desired_degrees'] = math.degrees(sw_angle_ff_des)
+                # self._data_out['sw_angle_desired_degrees'] = math.degrees(sw_angle_ff_des)
+
+                return self._data_out
 
             except Exception as inst:
+                print(inst)
                 self._data_out['sw_torque'] = 0.0
-                self._data_out['sw_angle_desired_degrees'] = 360
+                self._data_out['sw_angle_desired_radians'] = 0
+                return self._data_out
         else:
             self._data_out['sw_torque'] = 0.0
-            self._data_out['sw_angle_desired_degrees'] = 360
+            self._data_out['sw_angle_desired_radians'] = 0
 
-        return self._data_out
+            return self._data_out
 
     def calculate_error(self, pos_car, heading_car, vel_car=np.array([0.0, 0.0])):
         """

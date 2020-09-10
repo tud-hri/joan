@@ -295,18 +295,10 @@ class JOANSensoDrive(BaseInput):
 
         try:
             requested_torque_by_controller = self._steering_wheel_control_data[
-                self._carla_interface_data['ego_agents']['Vehicle 1']['vehicle_object'].selected_sw_controller][
-                'sw_torque']
+                self._carla_interface_data['ego_agents']['Vehicle 1']['vehicle_object'].selected_sw_controller]['sw_torque']
             # print("requested torque ", requested_torque_by_controller)
         except:
             requested_torque_by_controller = 0
-
-        try:
-            desired_steering_angle = self._steering_wheel_control_data[
-                self._carla_interface_data['ego_agents']['Vehicle 1']['vehicle_object'].selected_sw_controller][
-                'sw_angle_desired_degrees']
-        except KeyError:
-            desired_steering_angle = 360
 
         self.counter = self.counter + 1
 
@@ -332,20 +324,11 @@ class JOANSensoDrive(BaseInput):
         self._data['Handbrake'] = 0
         self._data['Reverse'] = 0
 
-        # Set parameters
-        if desired_steering_angle <= 0:
-            temp = desired_steering_angle - 12
-        elif desired_steering_angle > 0:
-            temp = desired_steering_angle + 12
-        extra_endstop = math.ceil(abs(temp))
-
         # print(extra_endstop)
         self.sensodrive_shared_values.torque = self.safety_checked_torque
         self.sensodrive_shared_values.friction = self.settings.friction
         self.sensodrive_shared_values.damping = self.settings.damping
-        # UNCOMMENT THIS IF YOU WANT VARIABLE ENDSTOPS
-        # if abs(self.sensodrive_shared_values.steering_angle) < extra_endstop - 2:
-        #     self.sensodrive_shared_values.endstops = extra_endstop
+
         self.sensodrive_shared_values.endstops = self.settings.endstops
         self.sensodrive_shared_values.torque_limit_between_endstops = self.settings.torque_limit_between_endstops
         self.sensodrive_shared_values.torque_limit_beyond_endstops = self.settings.torque_limit_beyond_endstops
