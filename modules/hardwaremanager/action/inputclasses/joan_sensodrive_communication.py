@@ -20,11 +20,6 @@ PEDAL_MESSAGE_RECEIVE_ID = 0x21C
 PEDAL_MESSAGE_LENGTH = 2
 
 
-
-
-
-
-
 class SensoDriveComm(mp.Process):
     def __init__(self, shared_values, init_event, toggle_event, close_event, update_event, shutoff_event):
         super().__init__()
@@ -156,7 +151,7 @@ class SensoDriveComm(mp.Process):
         out = {
             'torque': int(shared_values.torque * 1000.0),
             'friction': int(shared_values.friction * 1000.0),
-            'damping': int(shared_values.damping * 1000.0 * (2.0 * math.pi)/60.0),
+            'damping': int(shared_values.damping * 1000.0 * (2.0 * math.pi) / 60.0),
             'spring_stiffness': int(shared_values.spring_stiffness * 1000.0 / (180.0 / math.pi))
         }
 
@@ -172,7 +167,7 @@ class SensoDriveComm(mp.Process):
 
             # steering rate
             steering_rate = int.from_bytes(received[1].DATA[4:6], byteorder='little', signed=True)
-            self.sensodrive_shared_values.steering_rate = float(steering_rate) * (2.0 * math.pi) / 60.0 # we get rev/min, convert to rad/s
+            self.sensodrive_shared_values.steering_rate = float(steering_rate) * (2.0 * math.pi) / 60.0  # we get rev/min, convert to rad/s
 
             # torque
             torque = int.from_bytes(received[1].DATA[6:], byteorder='little', signed=True)
@@ -181,13 +176,11 @@ class SensoDriveComm(mp.Process):
         elif received[1].ID == PEDAL_MESSAGE_RECEIVE_ID:
             # pedals
             self.sensodrive_shared_values.throttle = float(int.from_bytes(received[1].DATA[2:4], byteorder='little') - 1100) / 2460.0
-            self.sensodrive_shared_values.brake = float(int.from_bytes(received[1].DATA[4:6],  byteorder='little') - 1) / 500
+            self.sensodrive_shared_values.brake = float(int.from_bytes(received[1].DATA[4:6], byteorder='little') - 1) / 500
 
         elif received[1].ID == STATE_MESSAGE_RECEIVE_ID:
             #
             self._current_state_hex = received[1].DATA[0]
-
-
 
     def run(self):
         self.init_event.wait()
@@ -208,7 +201,6 @@ class SensoDriveComm(mp.Process):
             # send steering wheel data
             self.write_message_steering_wheel(self.pcan_object, self.steering_wheel_message, self.steering_wheel_parameters)
 
-
             # receive data from Sensodrive (wheel, pedals)
             received = self.pcan_object.Read(self._pcan_channel)
 
@@ -225,7 +217,6 @@ class SensoDriveComm(mp.Process):
             received3 = self.pcan_object.Read(self._pcan_channel)
 
             if received[0] or received2[0] or received3[0] == PCAN_ERROR_OK:
-
                 self._sensodrive_data_to_si(received)
 
                 self._sensodrive_data_to_si(received2)
