@@ -212,7 +212,7 @@ class PDSWController(BaseSWController):
         :param vel_car:
         :return:
         """
-        pos_car = pos_car + vel_car * self.settings.t_lookahead  # linear extrapolation, should be updated
+        pos_car = pos_car + vel_car * self.settings.t_lookahead   # linear extrapolation, should be updated
 
         # Find waypoint index of the point that the car would be in the future (compared to own driven trajectory)
         index_closest_waypoint = find_closest_node(pos_car, self._trajectory[:, 1:3])
@@ -237,8 +237,8 @@ class PDSWController(BaseSWController):
 
         # calculate sign of error using the cross product
         e_sign = np.cross(vec_dir, vec_car)  # used to be e_sign = np.math.atan2(np.linalg.det([vec_dir, vec_car]), np.dot(vec_dir, vec_car))
-        e_sign = e_sign / np.abs(e_sign)
-        error_lat *= -e_sign
+        e_sign = -1.0 * e_sign / np.abs(e_sign)
+        error_lat *= e_sign
 
         # calculate heading error: left-handed CW positive
         heading_ref = self._trajectory[index_closest_waypoint, 6]
