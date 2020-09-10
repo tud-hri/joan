@@ -99,10 +99,10 @@ class PDControllerSettings:
     def __init__(self):
         # default controller values
         self.t_lookahead = 0.6
-        self.k_p = 0.05
-        self.k_d = 0.0
-        self.w_lat = 1.0
-        self.w_heading = 0.1
+        self.k_p_lat = 0.05
+        self.k_d_lat = 0.0
+        self.k_p_heading = 1.0
+        self.k_d_heading = 0.1
         self.trajectory_name = "default_hcr_trajectory.csv"
 
     def as_dict(self):

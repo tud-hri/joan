@@ -23,10 +23,10 @@ class PDControllerSettingsDialog(QtWidgets.QDialog):
 
     def update_parameters(self):
         self.pd_controller_settings.t_lookahead = float(self.edit_t_ahead.text())
-        self.pd_controller_settings.k_p = float(self.edit_gain_prop.text())
-        self.pd_controller_settings.k_d = float(self.edit_gain_deriv.text())
-        self.pd_controller_settings.w_lat = float(self.edit_weight_lat.text())
-        self.pd_controller_settings.w_heading = float(self.edit_weight_heading.text())
+        self.pd_controller_settings.k_p_lat = float(self.edit_kp_lat.text())
+        self.pd_controller_settings.k_d_lat = float(self.edit_kd_lat.text())
+        self.pd_controller_settings.k_p_heading = float(self.edit_kp_head.text())
+        self.pd_controller_settings.k_d_heading = float(self.edit_kd_head.text())
         self.pd_controller_settings.trajectory_name = self.cmbbox_hcr_selection.itemText(
             self.cmbbox_hcr_selection.currentIndex())
 
@@ -34,10 +34,10 @@ class PDControllerSettingsDialog(QtWidgets.QDialog):
 
     def accept(self):
         self.pd_controller_settings.t_lookahead = float(self.edit_t_ahead.text())
-        self.pd_controller_settings.k_p = float(self.edit_gain_prop.text())
-        self.pd_controller_settings.k_d = float(self.edit_gain_deriv.text())
-        self.pd_controller_settings.w_lat = float(self.edit_weight_lat.text())
-        self.pd_controller_settings.w_heading = float(self.edit_weight_heading.text())
+        self.pd_controller_settings.k_p_lat = float(self.edit_kp_lat.text())
+        self.pd_controller_settings.k_d_lat = float(self.edit_kd_lat.text())
+        self.pd_controller_settings.k_p_heading = float(self.edit_kp_head.text())
+        self.pd_controller_settings.k_d_heading = float(self.edit_kd_head.text())
         self.pd_controller_settings.trajectory_name = self.cmbbox_hcr_selection.itemText(
             self.cmbbox_hcr_selection.currentIndex())
 
@@ -48,16 +48,16 @@ class PDControllerSettingsDialog(QtWidgets.QDialog):
             settings_to_display = self.pd_controller_settings
 
         self.lbl_current_t_lookahead.setText(str(settings_to_display.t_lookahead))
-        self.lbl_current_gain_prop.setText(str(settings_to_display.k_p))
-        self.lbl_current_gain_deriv.setText(str(settings_to_display.k_d))
-        self.lbl_current_weight_lat.setText(str(settings_to_display.w_lat))
-        self.lbl_current_weight_heading.setText(str(settings_to_display.w_heading))
+        self.lbl_current_kp_lat.setText(str(settings_to_display.k_p_lat))
+        self.lbl_current_kd_lat.setText(str(settings_to_display.k_d_lat))
+        self.lbl_current_kp_head.setText(str(settings_to_display.k_p_heading))
+        self.lbl_current_kd_head.setText(str(settings_to_display.k_d_heading))
 
         self.edit_t_ahead.setText(str(settings_to_display.t_lookahead))
-        self.edit_gain_prop.setText(str(settings_to_display.k_p))
-        self.edit_gain_deriv.setText(str(settings_to_display.k_d))
-        self.edit_weight_lat.setText(str(settings_to_display.w_lat))
-        self.edit_weight_heading.setText(str(settings_to_display.w_heading))
+        self.edit_kp_lat.setText(str(settings_to_display.k_p_lat))
+        self.edit_kd_lat.setText(str(settings_to_display.k_d_lat))
+        self.edit_kp_head.setText(str(settings_to_display.k_p_heading))
+        self.edit_kd_head.setText(str(settings_to_display.k_d_heading))
 
         idx_traj = self.cmbbox_hcr_selection.findText(settings_to_display.trajectory_name)
         self.cmbbox_hcr_selection.setCurrentIndex(idx_traj)
@@ -142,7 +142,7 @@ class PDSWController(BaseSWController):
             try:
                 """Perform the controller-specific calculations"""
                 # get delta_t (we could also use 'tick_interval_ms' but this is a bit more precise)
-                delta_t = self.module_action.tick_interval_ms
+                delta_t = self.module_action.tick_interval_ms / 1000
                 # _time_this_tick = time.time_ns() / (10 ** 9)  # time in seconds
                 # delta_t = _time_this_tick - self._time_previous_tick
                 # if delta_t < (self.module_action.tick_interval_ms - 0.5) / 1000:
@@ -187,7 +187,7 @@ class PDSWController(BaseSWController):
 
                 # update variables
                 self._error_old = error
-                # self._time_previous_tick = _time_this_tick
+
             except Exception as inst:
                 self._data_out['sw_torque'] = 0
                 print(inst)
@@ -238,7 +238,7 @@ class PDSWController(BaseSWController):
         # calculate sign of error using the cross product
         e_sign = np.cross(vec_dir, vec_car)  # used to be e_sign = np.math.atan2(np.linalg.det([vec_dir, vec_car]), np.dot(vec_dir, vec_car))
         e_sign = e_sign / np.abs(e_sign)
-        error_lat *= e_sign
+        error_lat *= -e_sign
 
         # calculate heading error: left-handed CW positive
         heading_ref = self._trajectory[index_closest_waypoint, 6]
@@ -273,5 +273,5 @@ class PDSWController(BaseSWController):
         torque_error_lateral = self.settings.k_p_lat * error[0] + self.settings.k_d_lat * error[2]
         torque_error_heading = self.settings.k_p_heading * error[1] + self.settings.k_d_heading * error[3]
 
+        #print('Lateral Torque:', torque_error_lateral, ' Heading Torque:', torque_error_heading)
         return torque_error_lateral + torque_error_heading
-
