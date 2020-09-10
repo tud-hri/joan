@@ -166,6 +166,7 @@ class JOANSensoDrive(BaseInput):
 
         self.update_shared_values_from_settings_event.set()
 
+
     def initialize(self):
         """
         Initializes the sensodrive by sending several PCAN messages which will get the sensodrive in the appropriate

@@ -228,8 +228,8 @@ class SensoDriveSettings:
         self.torque_limit_between_endstops = 200    # percent
         self.torque_limit_beyond_endstops = 200     # percent
         self.friction = 0                           # Nm
-        self.damping = 0                            # Nm * s / rad
-        self.spring_stiffness = 0                   # Nm / rad
+        self.damping = 0.1                            # Nm * s / rad
+        self.spring_stiffness = 1                   # Nm / rad
         self.torque = 0                             # Nm
 
     def as_dict(self):
