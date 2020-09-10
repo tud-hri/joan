@@ -140,7 +140,7 @@ class DataWriter(threading.Thread):
         """
         row = {}
         # row['time'] = timestamp.strftime('%H%M%S%f')  # had jumps in the time vector
-        row['time_ms'] = timestamp
+        row['time'] = timestamp
 
         row.update(self.filter_row(news=news, channels=channels))
         self.dict_writer.writerow(row)

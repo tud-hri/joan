@@ -180,10 +180,15 @@ class PDSWController(BaseSWController):
                 self._data_out['sw_torque'] = self.pd_controller(self._controller_error, stiffness)
                 self._data_out['lat_error'] = error[0]
                 self._data_out['heading_error'] = error[1]
+                self._data_out['delta_t'] = delta_t
                 self._data_out['lat_error_rate_unfiltered'] = error_rate[0]
                 self._data_out['heading_error_rate_unfiltered'] = error_rate[1]
                 self._data_out['lat_error_rate_filtered'] = error_rate_filtered[0]
                 self._data_out['heading_error_rate_filtered'] = error_rate_filtered[1]
+                self._data_out['kp_lat'] = self.settings.k_p_lat
+                self._data_out['kd_lat'] = self.settings.k_d_lat
+                self._data_out['kp_head'] = self.settings.k_p_heading
+                self._data_out['kd_head'] = self.settings.k_d_heading
 
                 # update variables
                 self._error_old = error

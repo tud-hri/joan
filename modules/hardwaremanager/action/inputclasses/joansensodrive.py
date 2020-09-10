@@ -205,6 +205,7 @@ class JOANSensoDrive(BaseInput):
         Not used for this input
         """
         self.settings_dialog = SensoDriveSettingsDialog(self.settings)
+        self.settings_dialog.btn_apply.clicked.connect(self.update_shared_values_from_settings)
 
     def remove_device(self):
         """

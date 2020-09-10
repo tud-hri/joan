@@ -163,6 +163,7 @@ class CarlaInterfaceAction(JoanModuleAction):
         This function is called every controller tick of this module implement your main calculations here
         """
         if self.connected:
+            # self._world.tick()
             for agent in self.vehicles:
                 self.data['ego_agents'][agent.name] = agent.unpack_vehicle_data()
             self.write_news(news=self.data)
@@ -223,6 +224,9 @@ class CarlaInterfaceAction(JoanModuleAction):
                 world_map = self._world.get_map()
                 self._spawn_points = world_map.get_spawn_points()
                 self.nr_spawn_points = len(self._spawn_points)
+                # carlasettings = self._world.get_settings()
+                # carlasettings.synchronous_mode=True
+                # self._world.apply_settings(carlasettings)
 
                 ## Uncomment this if you want to save the opendrive trajectory to a csv file,
                 ## PLEASE CHECK THE FILE SAVING LOCATION!!
