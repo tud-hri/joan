@@ -30,7 +30,7 @@ class HardwareManagerDialog(JoanModuleDialog):
 
         # setup dialogs
         self._input_type_dialog = uic.loadUi(
-            os.path.join(os.path.dirname(os.path.realpath(__file__)), "../action/ui/inputtype.ui"))
+            os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/inputtype.ui"))
         self._input_type_dialog.btns_hardware_inputtype.accepted.connect(self._add_selected_input)
 
         # connect buttons
@@ -77,10 +77,10 @@ class HardwareManagerDialog(JoanModuleDialog):
         """add a tab widget for a new keyboard, """
         if not isinstance(device, JOANSensoDrive):
             new_widget = uic.loadUi(
-                os.path.join(os.path.dirname(os.path.realpath(__file__)), "../action/ui/hardware_tab.ui"))
+                os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/hardware_tab.ui"))
         elif isinstance(device, JOANSensoDrive):
             new_widget = uic.loadUi(
-                os.path.join(os.path.dirname(os.path.realpath(__file__)), "../action/ui/hardware_tab_sensodrive.ui"))
+                os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/hardware_tab_sensodrive.ui"))
 
         new_widget.groupBox.setTitle(device.name)
         self.module_widget.hardware_list_layout.addWidget(new_widget)

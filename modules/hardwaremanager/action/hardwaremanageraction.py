@@ -2,11 +2,8 @@ import os
 
 import keyboard
 
-from modules.hardwaremanager.action.hardwaremanagersettings import KeyBoardSettings, JoyStickSettings, \
-    SensoDriveSettings, HardwareManagerSettings
-from modules.hardwaremanager.action.inputclasses.joanjoystick import JOANJoystick
-from modules.hardwaremanager.action.inputclasses.joankeyboard import JOANKeyboard
-from modules.hardwaremanager.action.inputclasses.joansensodrive import JOANSensoDrive
+from modules.hardwaremanager.action.hardwaremanagersettings import HardwareManagerSettings
+from modules.hardwaremanager.action.hwinputtypes import HardwareInputTypes
 from modules.joanmodules import JOANModules
 from core.joanmoduleaction import JoanModuleAction
 from core.statesenum import State
