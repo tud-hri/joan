@@ -23,9 +23,9 @@ class HardwareManagerAction(JoanModuleAction):
         super().__init__(module=JOANModules.HARDWARE_MANAGER, millis=millis)
 
         # Initialize dicts and variables
-        self.input_devices_classes = {}
         self.data = {}
         self.write_news(news=self.data)
+        self._hardware_inputs = {}
 
         self.carla_interface_data = self.read_news(JOANModules.CARLA_INTERFACE)
         self.settings = HardwareManagerSettings(module_enum=JOANModules.HARDWARE_MANAGER)
@@ -40,15 +40,16 @@ class HardwareManagerAction(JoanModuleAction):
         Listens to any state change of the module, whenever the state changes this will be executed.
         :return:
         """
-        for inputs in self.input_devices_classes:
-            self.data[inputs] = self.input_devices_classes[inputs].do()
-
-        for inputs in self.input_devices_classes:
-            if self.state_machine.current_state == State.READY or self.state_machine.current_state == State.IDLE:
-                self.input_devices_classes[inputs].enable_remove_button()
-            else:
-                self.input_devices_classes[inputs].disable_remove_button()
-        self.write_news(self.data)
+        pass
+        # for inputs in self.input_devices_classes:
+        #     self.data[inputs] = self.input_devices_classes[inputs].do()
+        #
+        # for inputs in self.input_devices_classes:
+        #     if self.state_machine.current_state == State.READY or self.state_machine.current_state == State.IDLE:
+        #         self.input_devices_classes[inputs].enable_remove_button()
+        #     else:
+        #         self.input_devices_classes[inputs].disable_remove_button()
+        # self.write_news(self.data)
 
     def do(self):
         """
@@ -148,119 +149,158 @@ class HardwareManagerAction(JoanModuleAction):
         :return:
         """
         for keyboard_settings in self.settings.key_boards:
-            self.add_a_keyboard(keyboard_settings=keyboard_settings)
+            self.add_an_input(HardwareInputTypes.KEYBOARD, keyboard_settings)
 
         for joystick_settings in self.settings.joy_sticks:
-            self.add_a_joystick(joystick_settings=joystick_settings)
+            self.add_an_input(HardwareInputTypes.JOYSTICK, joystick_settings)
 
         for sensodrive_settings in self.settings.sensodrives:
-            self.add_a_sensodrive(sensodrive_settings=sensodrive_settings)
+            self.add_an_input(HardwareInputTypes.SENSODRIVE, sensodrive_settings)
 
-    def add_a_keyboard(self, keyboard_settings=None):
-        """
-        Adds a keyboard input
-        :param keyboard_settings: self-explanatory
-        :return:
-        """
-        number_of_keyboards = sum([bool("Keyboard" in k) for k in self.input_devices_classes.keys()])
-        device_name = "Keyboard %s" % (number_of_keyboards + 1)
 
-        is_a_new_keyboard = not keyboard_settings
-        if is_a_new_keyboard:
-            keyboard_settings = KeyBoardSettings()
-            keyboard_settings.name = device_name
 
-        device = JOANKeyboard(self, keyboard_settings, name=device_name)
-        self.module_dialog.add_device_tab(device)
+    def add_hardware_input(self, hardware_input_type, hardware_input_settings = None):
+        if not hardware_input_settings:
+            hardware_input_settings = hardware_input_type.settings
+            if hardware_input_type == HardwareInputTypes.KEYBOARD:
+                self.settings.key_boards.append(hardware_input_settings)
+            if hardware_input_type == HardwareInputTypes.JOYSTICK:
+                self.settings.joy_sticks.append(hardware_input_settings)
+            if hardware_input_type == HardwareInputTypes.SENSODRIVE:
+                self.settings.sensodrives.append(hardware_input_settings)
 
-        self.input_devices_classes.update({device_name: device})
-        self.data[device_name] = device.do()
-        self.write_news(self.data)
+        number_of_inputs = sum([bool(hardware_input_type.__str__() in k) for k in self._hardware_inputs.keys()]) + 1
+        hardware_input_name = hardware_input_type.__str__() + ' ' + str(number_of_inputs)
 
-        if is_a_new_keyboard:
-            self.settings.key_boards.append(keyboard_settings)
+        self._hardware_inputs[hardware_input_name] = hardware_input_type.klass(self, hardware_input_name, hardware_input_settings)
+        self._hardware_inputs[hardware_input_name].get_hardware_input_tab.groupBox.setTitle(hardware_input_name)
 
-        return True
+        self.module_dialog.module_widget.hardware_list_layout.addWidget(self._hardware_inputs[hardware_input_name].get_hardware_input_tab)
 
-    def add_a_joystick(self, joystick_settings=None):
-        """
-        Adds a joystick input
-        :param joystick_settings:
-        :return:
-        """
-        number_of_joysticks = sum([bool("Joystick" in k) for k in self.input_devices_classes.keys()])
-        device_name = "Joystick %s" % (number_of_joysticks + 1)
+        self._state_change_listener()
 
-        is_a_new_joystick = not joystick_settings
-        if is_a_new_joystick:
-            joystick_settings = JoyStickSettings()
-            joystick_settings.name = device_name
-
-        device = JOANJoystick(self, joystick_settings, name=device_name)
-        self.module_dialog.add_device_tab(device)
-
-        self.input_devices_classes.update({device_name: device})
-        self.data[device_name] = device.do()
-        self.write_news(self.data)
-
-        if is_a_new_joystick:
-            self.settings.joy_sticks.append(joystick_settings)
-
-        return True
-
-    def add_a_sensodrive(self, sensodrive_settings=None):
-        """
-        Adds a sensodrive input
-        :param sensodrive_settings:
-        :return:
-        """
-        # This is a temporary fix so that we cannot add another sensodrive which will make pcan crash because we only have one PCAN usb interface dongle
-        number_of_sensodrives = sum([bool("SensoDrive" in k) for k in self.input_devices_classes.keys()])
-
-        if number_of_sensodrives < 2:
-            device_name = "SensoDrive %s" % (number_of_sensodrives + 1)
-
-            is_a_new_sensodrive = not sensodrive_settings
-            if is_a_new_sensodrive:
-                sensodrive_settings = SensoDriveSettings()
-                sensodrive_settings.name = device_name
-
-            device = JOANSensoDrive(self, number_of_sensodrives, sensodrive_settings, name=device_name)
-            self.module_dialog.add_device_tab(device)
-
-            self.input_devices_classes.update({device_name: device})
-            self.data[device_name] = device.do()
-            self.write_news(self.data)
-
-            if is_a_new_sensodrive:
-                self.settings.sensodrives.append(sensodrive_settings)
-            return True
+        if not hardware_input_settings:
+            self._hardware_inputs[hardware_input_name]._open_settings_dialog_from_button()
         else:
-            return False
+            self._hardware_inputs[hardware_input_name]._open_settings_dialog()
 
-    def remove_input_device(self, device_name):
-        """
-        Removes an input
-        :param device_name: name of the input
-        :return:
-        """
-        if "Keyboard" in device_name:
-            keyboard.unhook(self.input_devices_classes[device_name].key_event)
+        return self._hardware_inputs[hardware_input_name].get_hardware_input_tab
 
-        # remove device from settings object
-        self.settings.remove_input_device(device_name)
+    @property
+    def hardware_inputs(self):
+        return self._hardware_inputs
 
-        # get rid of the device tab
-        self.input_devices_classes[device_name].remove_tab()
+    @property
+    def current_hardware_input(self):
+        return self._current_hardware_input
 
-        # delete the input device object
-        del self.input_devices_classes[device_name]
+    # def add_a_keyboard(self, keyboard_settings=None):
+    #     """
+    #     Adds a keyboard input
+    #     :param keyboard_settings: self-explanatory
+    #     :return:
+    #     """
+    #     number_of_keyboards = sum([bool("Keyboard" in k) for k in self.input_devices_classes.keys()])
+    #     device_name = "Keyboard %s" % (number_of_keyboards + 1)
+    #
+    #     is_a_new_keyboard = not keyboard_settings
+    #     if is_a_new_keyboard:
+    #         keyboard_settings = KeyBoardSettings()
+    #         keyboard_settings.name = device_name
+    #
+    #     device = JOANKeyboard(self, keyboard_settings, name=device_name)
+    #     self.module_dialog.add_device_tab(device)
+    #
+    #     self.input_devices_classes.update({device_name: device})
+    #     self.data[device_name] = device.do()
+    #     self.write_news(self.data)
+    #
+    #     if is_a_new_keyboard:
+    #         self.settings.key_boards.append(keyboard_settings)
+    #
+    #     return True
+    #
+    # def add_a_joystick(self, joystick_settings=None):
+    #     """
+    #     Adds a joystick input
+    #     :param joystick_settings:
+    #     :return:
+    #     """
+    #     number_of_joysticks = sum([bool("Joystick" in k) for k in self.input_devices_classes.keys()])
+    #     device_name = "Joystick %s" % (number_of_joysticks + 1)
+    #
+    #     is_a_new_joystick = not joystick_settings
+    #     if is_a_new_joystick:
+    #         joystick_settings = JoyStickSettings()
+    #         joystick_settings.name = device_name
+    #
+    #     device = JOANJoystick(self, joystick_settings, name=device_name)
+    #     self.module_dialog.add_device_tab(device)
+    #
+    #     self.input_devices_classes.update({device_name: device})
+    #     self.data[device_name] = device.do()
+    #     self.write_news(self.data)
+    #
+    #     if is_a_new_joystick:
+    #         self.settings.joy_sticks.append(joystick_settings)
+    #
+    #     return True
+    #
+    # def add_a_sensodrive(self, sensodrive_settings=None):
+    #     """
+    #     Adds a sensodrive input
+    #     :param sensodrive_settings:
+    #     :return:
+    #     """
+    #     # This is a temporary fix so that we cannot add another sensodrive which will make pcan crash because we only have one PCAN usb interface dongle
+    #     number_of_sensodrives = sum([bool("SensoDrive" in k) for k in self.input_devices_classes.keys()])
+    #
+    #     if number_of_sensodrives < 2:
+    #         device_name = "SensoDrive %s" % (number_of_sensodrives + 1)
+    #
+    #         is_a_new_sensodrive = not sensodrive_settings
+    #         if is_a_new_sensodrive:
+    #             sensodrive_settings = SensoDriveSettings()
+    #             sensodrive_settings.name = device_name
+    #
+    #         device = JOANSensoDrive(self, number_of_sensodrives, sensodrive_settings, name=device_name)
+    #         self.module_dialog.add_device_tab(device)
+    #
+    #         self.input_devices_classes.update({device_name: device})
+    #         self.data[device_name] = device.do()
+    #         self.write_news(self.data)
+    #
+    #         if is_a_new_sensodrive:
+    #             self.settings.sensodrives.append(sensodrive_settings)
+    #         return True
+    #     else:
+    #         return False
 
-        # remove device from data (news)
-        try:
-            del self.data[device_name]
-        except KeyError:  # data is only present if the hardware manager ran since the hardware was added
-            pass
+    # def remove_input_device(self, device_name):
+    #     """
+    #     Removes an input
+    #     :param device_name: name of the input
+    #     :return:
+    #     """
+    #     if "Keyboard" in device_name:
+    #         keyboard.unhook(self.input_devices_classes[device_name].key_event)
+    #
+    #     # remove device from settings object
+    #     self.settings.remove_input_device(device_name)
+    #
+    #     # get rid of the device tab
+    #     self.input_devices_classes[device_name].remove_tab()
+    #
+    #     # delete the input device object
+    #     del self.input_devices_classes[device_name]
+    #
+    #     # remove device from data (news)
+    #     try:
+    #         del self.data[device_name]
+    #     except KeyError:  # data is only present if the hardware manager ran since the hardware was added
+    #         pass
+    #
+    #     if not self.input_devices_classes:
+    #         self.stop()
 
-        if not self.input_devices_classes:
-            self.stop()
+

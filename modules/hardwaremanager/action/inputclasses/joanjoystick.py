@@ -5,7 +5,7 @@ from PyQt5 import uic, QtWidgets, QtCore
 
 from modules.hardwaremanager.action.hardwaremanagersettings import JoyStickSettings
 from modules.hardwaremanager.action.inputclasses.baseinput import BaseInput
-
+from modules.hardwaremanager.action.hwinputtypes import HardwareInputTypes
 
 class JoystickSettingsDialog(QtWidgets.QDialog):
     """
@@ -254,16 +254,17 @@ class JOANJoystick(BaseInput):
     Main class for the Joystick input, inherits from BaseInput (as it should!)
     """
 
-    def __init__(self, hardware_manager_action, settings: JoyStickSettings, name=''):
+    def __init__(self, module_action, hardware_input_list_key, settings):
+        super().__init__(hardware_input_type = HardwareInputTypes.JOYSTICK, module_action=module_action)
         """
         Initializes the class
         :param hardware_manager_action:
         :param joystick_tab:
         :param settings:
         """
-        super().__init__(hardware_manager_action, name=name)
-        self.module_action = hardware_manager_action
-        self.currentInput = 'Joystick'
+
+        self.module_action = module_action
+        self.hardware_input_list_key = hardware_input_list_key
         self.settings = settings
 
         # Initialize Variables

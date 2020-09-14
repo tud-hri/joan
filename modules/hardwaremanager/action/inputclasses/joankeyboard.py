@@ -144,7 +144,7 @@ class JOANKeyboard(BaseInput):
     Main class for the Keyboard input, inherits from BaseInput (as it should!)
     """
 
-    def __init__(self, hardware_manager_action, settings: KeyBoardSettings, name=''):
+    def __init__(self, hardware_manager_action, settings: KeyBoardSettings):
         """
         Initializes the class
         :param hardware_manager_action:

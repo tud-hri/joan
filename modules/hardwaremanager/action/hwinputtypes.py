@@ -30,7 +30,7 @@ class HardwareInputTypes(enum.Enum):
 
     @property
     def hardware_tab_ui_file(self):
-        path_to_uis = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../dialog/")
+        path_to_uis = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../dialog/ui/")
         return {HardwareInputTypes.KEYBOARD: os.path.join(path_to_uis, "hardware_tab.ui"),
                 HardwareInputTypes.JOYSTICK: os.path.join(path_to_uis, "hardware_tab.ui"),
                 HardwareInputTypes.SENSODRIVE: os.path.join(path_to_uis, "hardware_tab_sensodrive.ui") }[self]
