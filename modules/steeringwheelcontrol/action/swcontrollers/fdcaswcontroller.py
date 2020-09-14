@@ -12,6 +12,7 @@ from .baseswcontroller import BaseSWController, find_closest_node
 class FDCAControllerSettingsDialog(QtWidgets.QDialog):
     def __init__(self, fdca_controller_settings, controller, parent=None):
         super().__init__(parent)
+        self._loha_resolution = 50
         self.controller = controller
         self.fdca_controller_settings = fdca_controller_settings
 
@@ -23,22 +24,23 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
 
         self._display_values()
 
+
     def update_parameters(self):
         self.fdca_controller_settings.k_y = float(self.edit_k_y.text())
         self.fdca_controller_settings.k_psi = float(self.edit_k_psi.text())
         self.fdca_controller_settings.t_lookahead = float(self.edit_t_lookahead.text())
         self.fdca_controller_settings.lohs = float(self.edit_lohs.text())
         self.fdca_controller_settings.sohf = float(self.edit_sohf.text())
-        self.fdca_controller_settings.loha = float(self.slider_loha.value()/10)
+        self.fdca_controller_settings.loha = float(self.slider_loha.value()/ (100/self._loha_resolution))
         self.fdca_controller_settings.trajectory_name = self.cmbbox_hcr_selection.itemText(
             self.cmbbox_hcr_selection.currentIndex())
 
         self._display_values()
 
     def _update_loha_slider_label(self):
-        self.lbl_loha_slider.setText(str(self.slider_loha.value()/10))
+        self.lbl_loha_slider.setText(str(self.slider_loha.value()/(100/self._loha_resolution)))
         if self.checkbox_tuning_loha.isChecked():
-            self.fdca_controller_settings.loha = float(self.slider_loha.value()/10)
+            self.fdca_controller_settings.loha = float(self.slider_loha.value()/(100/self._loha_resolution))
             self.lbl_loha.setText(str(self.fdca_controller_settings.loha))
 
     def accept(self):
@@ -47,7 +49,7 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
         self.fdca_controller_settings.t_lookahead = float(self.edit_t_lookahead.text())
         self.fdca_controller_settings.lohs = float(self.edit_lohs.text())
         self.fdca_controller_settings.sohf = float(self.edit_sohf.text())
-        self.fdca_controller_settings.loha = float(self.slider_loha.value()/10)
+        self.fdca_controller_settings.loha = float(self.slider_loha.value()/(100/self._loha_resolution))
         self.fdca_controller_settings.trajectory_name = self.cmbbox_hcr_selection.itemText(
             self.cmbbox_hcr_selection.currentIndex())
 
@@ -70,7 +72,7 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
         self.edit_t_lookahead.setText(str(settings_to_display.t_lookahead))
         self.edit_lohs.setText(str(settings_to_display.lohs))
         self.edit_sohf.setText(str(settings_to_display.sohf))
-        self.slider_loha.setValue(settings_to_display.loha * 10)
+        self.slider_loha.setValue(settings_to_display.loha * (100/self._loha_resolution))
 
         idx_traj = self.cmbbox_hcr_selection.findText(settings_to_display.trajectory_name)
         self.cmbbox_hcr_selection.setCurrentIndex(idx_traj)
@@ -216,7 +218,7 @@ class FDCASWController(BaseSWController):
                 if abs(stiffness) < (1 ** -6):
                     stiffness = np.sign(stiffness) * (1 ** -6)
 
-                torque_ff_fb = sw_angle_ff_fb * 1.0 / (1.0 / stiffness)  # !!! stiffness should be in [Nm/rad]
+                torque_ff_fb = sw_angle_ff_fb * 1.0  / (1.0 / stiffness)  # !!! stiffness should be in [Nm/rad]
 
                 # total torque of FDCA, to be sent to SW controller in Nm
                 torque_fdca = torque_loha + torque_ff_fb
@@ -233,6 +235,21 @@ class FDCASWController(BaseSWController):
                 self._error_old = error
                 self._data_out['sw_angle_desired_radians'] = sw_angle_ff_des
                 self._data_out['sw_angle_current_radians'] = sw_angle
+                self._data_out['lat_error'] = error[0]
+                self._data_out['heading_error'] = error[1]
+                self._data_out['delta_t'] = delta_t
+                self._data_out['lat_error_rate_unfiltered'] = error_rate[0]
+                self._data_out['heading_error_rate_unfiltered'] = error_rate[1]
+                self._data_out['lat_error_rate_filtered'] = error_rate_filtered[0]
+                self._data_out['heading_error_rate_filtered'] = error_rate_filtered[1]
+                self._data_out['k_psi'] = self.settings.k_psi
+                self._data_out['k_y'] = self.settings.k_y
+                self._data_out['sohf'] = self.settings.sohf
+                self._data_out['loha'] = self.settings.loha
+                self._data_out['lohs'] = self.settings.lohs
+                self._data_out['delta_sw'] = delta_sw
+
+
                 # self._data_out['sw_angle_desired_degrees'] = math.degrees(sw_angle_ff_des)
 
 
