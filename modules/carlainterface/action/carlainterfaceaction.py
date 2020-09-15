@@ -182,22 +182,25 @@ class CarlaInterfaceAction(JoanModuleAction):
             self.stop()
 
     def prepare_load_settings(self):
-        # remove all agents
-        self.remove_all()
+        """
+        Prepare the module for new settings: remove all 'old' hardware from the list
+        :return:
+        """
+        # remove_input_device any existing input devices
+        for agents in self._agents:
+            self.remove_agent(agents)
 
     def apply_loaded_settings(self):
+        """
+        Create hardware inputs based on the loaded settings
+        :return:
+        """
+        for ego_vehicle_settings in self.settings.ego_vehicles:
+            self.add_agent(AgentTypes.EGOVEHICLE, ego_vehicle_settings)
 
-        if not self.connected:
-            return self.state_machine.request_state_change(State.ERROR,
-                                                           "You can only load settings when CARLA is connected. " +
-                                                           "Connect and reload settings")
+        for traffic_vehicle_settings in self.settings.traffic_vehicles:
+            self.add_agent(AgentTypes.TRAFFICVEHICLE, traffic_vehicle_settings)
 
-        # create vehicles and traffic_vehicles
-        for setting in self.settings.ego_vehicles:
-            self.add_ego_agent(setting)
-
-        for setting in self.settings.traffic_vehicles:
-            self.add_traffic_agent(setting)
 
     def check_connection(self):
         """
@@ -325,6 +328,9 @@ class CarlaInterfaceAction(JoanModuleAction):
 
 
     def add_agent(self, agent_type, agent_settings = None):
+        number_of_agents = sum([bool(agent_type.__str__() in k) for k in self._agents.keys()]) + 1
+        agent_name = agent_type.__str__() + ' ' + str(number_of_agents)
+
         if not agent_settings:
             agent_settings = agent_type.settings
             if agent_type == AgentTypes.EGOVEHICLE:
@@ -332,21 +338,19 @@ class CarlaInterfaceAction(JoanModuleAction):
             if agent_type == AgentTypes.TRAFFICVEHICLE:
                 self.settings.traffic_vehicles.append(agent_settings)
 
-        number_of_agents = sum([bool(agent_type.__str__() in k) for k in self._agents.keys()]) + 1
-        agent_name = agent_type.__str__() + ' ' + str(number_of_agents)
-
-        self._agents[agent_name] = agent_type.klass(self, agent_name, agent_settings
+            self._agents[agent_name] = agent_type.klass(self, agent_name, agent_settings
                                                     , self.vehicle_tags, self._spawn_points)
-        self._agents[agent_name].get_agent_tab.group_agent.setTitle(agent_name)
-
-        self.module_dialog.module_widget.agent_list_layout.addWidget(self._agents[agent_name].get_agent_tab)
-
-        self._state_change_listener()
-
-        if not agent_settings:
+            self._agents[agent_name].get_agent_tab.group_agent.setTitle(agent_name)
+            self.module_dialog.module_widget.agent_list_layout.addWidget(self._agents[agent_name].get_agent_tab)
             self._agents[agent_name]._open_settings_dialog_from_button()
         else:
+            self._agents[agent_name] = agent_type.klass(self, agent_name, agent_settings
+                                                        , self.vehicle_tags, self._spawn_points)
+            self._agents[agent_name].get_agent_tab.group_agent.setTitle(agent_name)
+            self.module_dialog.module_widget.agent_list_layout.addWidget(self._agents[agent_name].get_agent_tab)
             self._agents[agent_name]._open_settings_dialog()
+
+        self._state_change_listener()
 
         return self._agents[agent_name].get_agent_tab
 

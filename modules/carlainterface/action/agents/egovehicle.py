@@ -82,7 +82,7 @@ class EgoVehicle(Basevehicle):
 
         self.settings_dialog.spin_spawn_points.setRange(0, len(spawn_points)- 1)
 
-        self._open_settings_dialog_from_button()
+        self._open_settings_dialog()
 
     @property
     def agent_tab(self):

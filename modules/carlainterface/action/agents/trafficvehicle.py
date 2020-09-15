@@ -164,7 +164,7 @@ class TrafficVehicle(Basevehicle):
         self.settings_dialog.accepted.connect(self.load_trajectory)
 
         self.load_trajectory()
-        self._open_settings_dialog_from_button()
+        self._open_settings_dialog()
 
     @property
     def agent_tab(self):
