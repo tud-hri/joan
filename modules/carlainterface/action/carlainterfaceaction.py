@@ -394,7 +394,7 @@ class CarlaInterfaceAction(JoanModuleAction):
             self.state_machine.request_state_change(State.ERROR,
                                                     "carla module is NOT imported, make sure the API is available and restart the program")
 
-        if self.state_machine.current_state is State.IDLE and self.connected:
+        if self.state_machine.current_state is State.IDLE:
             self.state_machine.request_state_change(State.READY, "You can now add vehicles and start module")
         elif self.state_machine.current_state is State.ERROR and 'carla' in sys.modules.keys():
             self.state_machine.request_state_change(State.IDLE)
