@@ -169,17 +169,14 @@ class CarlaInterfaceAction(JoanModuleAction):
         """
         if self.connected:
             # self._world.tick()
-            for agent in self.vehicles:
-                self.data['ego_agents'][agent.name] = agent.unpack_vehicle_data()
+            for agent in self._agents:
+                self.data['ego_agents'][agent] = self._agents[agent].unpack_vehicle_data()
             self.write_news(news=self.data)
             self._data_from_hardware = self.read_news(JOANModules.HARDWARE_MANAGER)
             try:
-                for items in self.vehicles:
-                    if items.spawned:
-                        items.apply_control(self._data_from_hardware)
-                for items in self.traffic_vehicles:
-                    if items.spawned:
-                        items.do()
+                for agent in self._agents:
+                    if self._agents[agent].spawned:
+                        self._agents[agent].do(self._data_from_hardware)
             except Exception as inst:
                 print('Could not apply control', inst)
         else:

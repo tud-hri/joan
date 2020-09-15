@@ -43,6 +43,7 @@ class Basevehicle:
         self._agent_type = agent_type
         self._vehicle_tags = vehicle_tags
         self._spawn_points = spawnpoints
+        self.settings = None
 
         # widget
         self._settings_tab = uic.loadUi(self._agent_type.settings_ui_file)
@@ -76,6 +77,7 @@ class Basevehicle:
 
     def remove_agent(self):
         """Remove the connected tab widget (and tab widget only)"""
+        self.destroy()
         self.module_action.remove_agent(self)
 
     def unpack_vehicle_data(self):

@@ -66,7 +66,6 @@ class EgoVehicle(Basevehicle):
 
         self.settings = settings
         self._agent_list_key = agent_list_key
-        
 
         self._spawned = False
         self._hardware_data = {}
@@ -101,10 +100,6 @@ class EgoVehicle(Basevehicle):
     def selected_sw_controller(self):
         return self.settings.selected_controller
 
-    # @property
-    # def vehicle_nr(self):
-    #     return self._vehicle_nr
-
     def _open_settings_dialog(self):
         self.get_available_controllers()
         self.get_available_inputs()
@@ -134,7 +129,7 @@ class EgoVehicle(Basevehicle):
         self._agent_tab.combo_input.clear()
         self._agent_tab.combo_input.addItem('None')
 
-    def apply_control(self, data):
+    def do(self, data):
         car = self.spawned_vehicle
 
         if self.settings.selected_input != 'None':
@@ -178,6 +173,4 @@ class EgoVehicle(Basevehicle):
 
         return output
 
-    def remove_ego_agent(self):
-        self._agent_tab.setParent(None)
-        self.destroy_car()  # destroy the ve
+
