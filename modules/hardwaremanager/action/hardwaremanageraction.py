@@ -1,7 +1,3 @@
-import os
-
-import keyboard
-
 from modules.hardwaremanager.action.hardwaremanagersettings import HardwareManagerSettings
 from modules.hardwaremanager.action.hwinputtypes import HardwareInputTypes
 from modules.joanmodules import JOANModules

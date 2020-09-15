@@ -1,8 +1,7 @@
 import os
 
-from PyQt5 import uic, QtWidgets
+from PyQt5 import uic
 
-from modules.hardwaremanager.action.inputclasses.joansensodrive import JOANSensoDrive
 from modules.joanmodules import JOANModules
 from core.joanmoduleaction import JoanModuleAction
 from core.joanmoduledialog import JoanModuleDialog
