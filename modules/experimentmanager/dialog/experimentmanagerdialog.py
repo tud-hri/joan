@@ -206,7 +206,7 @@ class ExperimentManagerDialog(JoanModuleDialog):
 
         if self.module_action.current_experiment:
             self.module_widget.experimentNameLineEdit.setText(
-                os.path.abspath(self.module_action.experiment_save_path).split('\\')[-1])
+                os.path.abspath(self.module_action.experiment_save_path).split(os.sep)[-1])
 
             for module in self.module_action.current_experiment.modules_included:
                 item = QtWidgets.QListWidgetItem(str(module))
