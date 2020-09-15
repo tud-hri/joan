@@ -49,6 +49,8 @@ class Basevehicle:
         self._settings_tab = uic.loadUi(self._agent_type.settings_ui_file)
         self._agent_tab = uic.loadUi(self._agent_type.agent_tab_ui_file)
 
+
+
         # widget actions
         self._agent_tab.btn_remove_agent.clicked.connect(self.remove_agent)
         self._agent_tab.btn_destroy.clicked.connect(self.destroy)
@@ -56,6 +58,7 @@ class Basevehicle:
 
 
         self._spawned = False
+        self._agent_tab.btn_destroy.setEnabled(self._spawned)
         self.car_data = {}
         self.spawned_vehicle = None
 

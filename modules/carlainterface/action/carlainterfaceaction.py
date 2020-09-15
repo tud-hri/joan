@@ -168,7 +168,6 @@ class CarlaInterfaceAction(JoanModuleAction):
         This function is called every controller tick of this module implement your main calculations here
         """
         if self.connected:
-            # self._world.tick()
             for agent in self._agents:
                 self.data['ego_agents'][agent] = self._agents[agent].unpack_vehicle_data()
             self.write_news(news=self.data)
@@ -226,9 +225,6 @@ class CarlaInterfaceAction(JoanModuleAction):
                 world_map = self._world.get_map()
                 self._spawn_points = world_map.get_spawn_points()
                 self.nr_spawn_points = len(self._spawn_points)
-                # carlasettings = self._world.get_settings()
-                # carlasettings.synchronous_mode=True
-                # self._world.apply_settings(carlasettings)
 
                 ## Uncomment this if you want to save the opendrive trajectory to a csv file,
                 ## PLEASE CHECK THE FILE SAVING LOCATION!!
@@ -265,8 +261,7 @@ class CarlaInterfaceAction(JoanModuleAction):
         an error state
         """
         if self.connected:
-            for cars in self.vehicles:
-                cars.destroy_car()
+            self.destroy_all()
 
             self.connected = False
             self.data['connected'] = self.connected
@@ -431,32 +426,24 @@ class CarlaInterfaceAction(JoanModuleAction):
         return super().stop()
 
     def remove_all(self):
-        while self.vehicles:
-            self.remove_agent(self.vehicles.pop())
+        for agent in list(self._agents):
+            self._agents[agent].remove_agent()
 
-        while self.traffic_vehicles:
-            self.remove_agent(self.traffic_vehicles.pop())
+
 
     def spawn_all(self):
         """
         Spawn all agents in CARLA
         :return:
         """
-        for agents in self.vehicles:
-            if not agents.spawned:
-                agents.spawn_car()
-
-        for traffic_agents in self.traffic_vehicles:
-            if not traffic_agents.spawned:
-                traffic_agents.spawn_car()
+        for agent in self._agents:
+            if not self._agents[agent].spawned:
+                self._agents[agent].spawn()
 
     def destroy_all(self):
         """
         Destroys all agents currently in simulation
         :return:
         """
-        for agents in self.vehicles:
-            agents.destroy_car()
-
-        for traffic_agents in self.traffic_vehicles:
-            traffic_agents.destroy_car()
+        for agent in self._agents:
+            self._agents[agent].destroy()
