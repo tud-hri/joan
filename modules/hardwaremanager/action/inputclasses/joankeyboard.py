@@ -5,7 +5,7 @@ from PyQt5 import QtWidgets, QtGui, uic
 
 from modules.hardwaremanager.action.hardwaremanagersettings import KeyBoardSettings
 from modules.hardwaremanager.action.inputclasses.baseinput import BaseInput
-
+from modules.hardwaremanager.action.hwinputtypes import  HardwareInputTypes
 
 class KeyBoardSettingsDialog(QtWidgets.QDialog):
     """
@@ -144,14 +144,15 @@ class JOANKeyboard(BaseInput):
     Main class for the Keyboard input, inherits from BaseInput (as it should!)
     """
 
-    def __init__(self, hardware_manager_action, settings: KeyBoardSettings):
+    def __init__(self, module_action, hardware_input_list_key, settings):
+        super().__init__(hardware_input_type=HardwareInputTypes.KEYBOARD, module_action=module_action)
         """
         Initializes the class
         :param hardware_manager_action:
         :param keyboard_tab:
         :param settings:
         """
-        super().__init__(hardware_manager_action, name=name)
+        self.hardware_input_list_key = hardware_input_list_key
         self.settings = settings
         self.settings_dialog = None
 
@@ -163,17 +164,16 @@ class JOANKeyboard(BaseInput):
         self._handbrake = False
         self._reverse = False
 
+        self._hardware_input_tab.btn_settings.clicked.connect(self._open_settings_dialog)
+        self._hardware_input_tab.btn_settings.clicked.connect(self._open_settings_from_button)
+        self._hardware_input_tab.btn_visualization.setEnabled(False)
+
         keyboard.hook(self.key_event, False)
         self._open_settings_dialog()
 
-    def connect_widget(self, widget):
-        self._tab_widget = widget
-
-        # Connect the settings button to the settings window
-        self._tab_widget.btn_settings.clicked.connect(self._open_settings_dialog)
-        self._tab_widget.btn_settings.clicked.connect(self._open_settings_from_button)
-        self._tab_widget.btn_remove_hardware.clicked.connect(lambda: self.module_action.remove_input_device(self.name))
-        self._tab_widget.btn_visualization.setEnabled(False)
+    @property
+    def get_hardware_input_list_key(self):
+        return self.hardware_input_list_key
 
     def disable_remove_button(self):
         """

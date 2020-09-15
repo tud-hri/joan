@@ -282,17 +282,8 @@ class JOANJoystick(BaseInput):
         self._hardware_input_tab.btn_settings.clicked.connect(self._open_settings_from_button)
         self._hardware_input_tab.btn_visualization.setEnabled(False)
 
-
         self._open_settings_dialog()
 
-    # def connect_widget(self, widget):
-    #     self._tab_widget = widget
-    #
-    #     #  hook up buttons
-    #     self._tab_widget.btn_settings.clicked.connect(self._open_settings_dialog)
-    #     self._tab_widget.btn_settings.clicked.connect(self._open_settings_from_button)
-    #     self._tab_widget.btn_visualization.setEnabled(False)
-    #     self._tab_widget.btn_remove_hardware.clicked.connect(lambda: self.module_action.remove_input_device(self.name))
     @property
     def get_hardware_input_list_key(self):
         return self.hardware_input_list_key

@@ -60,10 +60,12 @@ class HardwareManagerAction(JoanModuleAction):
 
         self.sw_controller_data = self.read_news(JOANModules.STEERING_WHEEL_CONTROL)
 
-        for inputs in self.input_devices_classes:
-            self.data[inputs] = self.input_devices_classes[inputs].do()
-            if 'SensoDrive' in inputs:
-                self.input_devices_classes[inputs]._toggle_on_off(self.carla_interface_data['connected'])
+        for hardware_input in self._hardware_inputs:
+            self.data[hardware_input] = self._hardware_inputs[hardware_input].do()
+            if hardware_input == HardwareInputTypes.SENSODRIVE:
+                pass
+            # if 'SensoDrive' in inputs:
+            #     self.input_devices_classes[inputs]._toggle_on_off(self.carla_interface_data['connected'])
 
         self.write_news(self.data)
 
@@ -73,12 +75,12 @@ class HardwareManagerAction(JoanModuleAction):
         """
         try:
             if self.state_machine.current_state == State.IDLE:
-                if len(self.input_devices_classes) != 0:
-                    for input_device in self.input_devices_classes:
-                        self.input_devices_classes[input_device].initialize()
+                if len(self._hardware_inputs) != 0:
+                    for input_device in self._hardware_inputs:
+                        self._hardware_inputs[input_device].initialize()
                         self.state_machine.request_state_change(State.READY, '')
-                        for inputs in self.input_devices_classes:
-                            self.data[inputs] = self.input_devices_classes[inputs].do()
+                        for inputs in self._hardware_inputs:
+                            self.data[inputs] = self._hardware_inputs[inputs].do()
                 else:
                     self.state_machine.request_state_change(State.ERROR, 'No hardware to Initialize')
             elif self.state_machine.current_state == State.ERROR:
@@ -95,9 +97,11 @@ class HardwareManagerAction(JoanModuleAction):
         """
         self.carla_interface_data = self.read_news(JOANModules.CARLA_INTERFACE)
         # make sure you can only turn on the motor of the wheel if carla is connected
-        for inputs in self.input_devices_classes:
-            if 'SensoDrive' in inputs:
-                self.input_devices_classes[inputs]._toggle_on_off(self.carla_interface_data['connected'])
+        for hardware_input in self._hardware_inputs:
+            if hardware_input == HardwareInputTypes.JOYSTICK:
+                print('yay')
+            # if 'SensoDrive' in inputs:
+            #     self.input_devices_classes[inputs]._toggle_on_off(self.carla_interface_data['connected'])
 
         try:
             self.state_machine.request_state_change(State.RUNNING, 'Hardware manager running')
