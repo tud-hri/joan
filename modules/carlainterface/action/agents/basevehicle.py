@@ -34,13 +34,15 @@ class Basevehicle:
     The base class of any vehicle or 'agent', any agent of which you want to collect data should inherit from this class
     """
 
-    def __init__(self, agent_type: AgentTypes,  module_action: JOANModules):
+    def __init__(self, agent_type: AgentTypes,  module_action: JOANModules, vehicle_tags, spawnpoints):
         """
         Initializes class
         :param carlainterface_action:
         """
         self.module_action = module_action
         self._agent_type = agent_type
+        self._vehicle_tags = vehicle_tags
+        self._spawn_points = spawnpoints
 
         # widget
         self._settings_tab = uic.loadUi(self._agent_type.settings_ui_file)
@@ -53,7 +55,6 @@ class Basevehicle:
 
 
         self._spawned = False
-        self.vehicle_tab_widget = None
         self.car_data = {}
         self.spawned_vehicle = None
 
@@ -69,21 +70,13 @@ class Basevehicle:
     def spawned(self):
         return self._spawned
 
-    @property
-    def vehicle_tab(self):
-        return self.vehicle_tab_widget
-
-    @property
-    def vehicle_id(self):
-        return self._BP.id
-
     def initialize(self):
         """initialize, can be overwritten"""
         pass
 
     def remove_agent(self):
         """Remove the connected tab widget (and tab widget only)"""
-        self.module_action.remove_hardware_input_device(self)
+        self.module_action.remove_agent(self)
 
     def unpack_vehicle_data(self):
         try:
@@ -159,13 +152,13 @@ class Basevehicle:
             physics.gear_switch_time = 0
             self.spawned_vehicle.apply_physics_control(physics)
 
-            self.vehicle_tab_widget.btn_spawn.setEnabled(False)
-            self.vehicle_tab_widget.btn_destroy.setEnabled(True)
+            self._agent_tab.btn_spawn.setEnabled(False)
+            self._agent_tab.btn_destroy.setEnabled(True)
             self._spawned = True
         except Exception as inst:
             print('Could not spawn car:', inst)
-            self.vehicle_tab_widget.btn_spawn.setEnabled(True)
-            self.vehicle_tab_widget.btn_destroy.setEnabled(False)
+            self._agent_tab.btn_spawn.setEnabled(True)
+            self._agent_tab.btn_destroy.setEnabled(False)
             self._spawned = False
 
     def destroy(self):
@@ -177,12 +170,12 @@ class Basevehicle:
             if self._spawned:
                 self.spawned_vehicle.destroy()
                 self._spawned = False
-            self.vehicle_tab_widget.btn_spawn.setEnabled(True)
-            self.vehicle_tab_widget.btn_destroy.setEnabled(False)
+            self._agent_tab.btn_spawn.setEnabled(True)
+            self._agent_tab.btn_destroy.setEnabled(False)
         except Exception as inst:
             self._spawned = True
             print('Could not destroy spawn car:', inst)
-            self.vehicle_tab_widget.btn_spawn.setEnabled(False)
-            self.vehicle_tab_widget.btn_destroy.setEnabled(True)
+            self._agent_tab.btn_spawn.setEnabled(False)
+            self._agent_tab.btn_destroy.setEnabled(True)
 
 

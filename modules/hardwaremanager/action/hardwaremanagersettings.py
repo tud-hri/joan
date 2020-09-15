@@ -62,22 +62,6 @@ class HardwareManagerSettings(JoanModuleSettings):
         # done loading settings, emit signal
         self.load_settings_done.emit()
 
-    def remove_input_device(self, name):
-        if "Keyboard" in name:
-            for device in self.key_boards:
-                if device.name == name:
-                    self.key_boards.remove(device)
-
-        if "Joystick" in name:
-            for device in self.joy_sticks:
-                if device.name == name:
-                    self.joy_sticks.remove(device)
-
-        if "SensoDrive" in name:
-            for device in self.sensodrives:
-                if device.name == name:
-                    self.sensodrives.remove(device)
-
     @staticmethod
     def _copy_dict(source, destination):
         for key, value in source.items():

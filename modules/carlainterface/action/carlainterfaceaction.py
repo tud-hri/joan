@@ -340,7 +340,8 @@ class CarlaInterfaceAction(JoanModuleAction):
         number_of_agents = sum([bool(agent_type.__str__() in k) for k in self._agents.keys()]) + 1
         agent_name = agent_type.__str__() + ' ' + str(number_of_agents)
 
-        self._agents[agent_name] = agent_type.klass(self, agent_name, agent_settings)
+        self._agents[agent_name] = agent_type.klass(self, agent_name, agent_settings
+                                                    , self.vehicle_tags, self._spawn_points)
         self._agents[agent_name].get_agent_tab.group_agent.setTitle(agent_name)
 
         self.module_dialog.module_widget.agent_list_layout.addWidget(self._agents[agent_name].get_agent_tab)
@@ -363,13 +364,13 @@ class CarlaInterfaceAction(JoanModuleAction):
 
         # remove_input_device controller settings
         try:
-            self.settings.remove_agent_device(
+            self.settings.remove_agent(
                 self._agents[agent.get_agent_list_key].settings)
         except ValueError:  # depends if right controller list is present
             pass
 
         try:
-            self.settings.remove_agent_device(
+            self.settings.remove_agent(
                 self._agents[agent.get_agent_list_key].settings)
         except ValueError:  # depends if right controller list is present
             pass
@@ -426,74 +427,11 @@ class CarlaInterfaceAction(JoanModuleAction):
         try:
             self.state_machine.request_state_change(State.READY, "You can now add vehicles and start the module")
 
-            for traffic in self.traffic_vehicles:
-                traffic.stop_traffic()
+            # for traffic in self.traffic_vehicles:
+            #     traffic.stop_traffic()
         except RuntimeError:
             return False
         return super().stop()
-
-    # def remove_agent(self, agent):
-    #     """
-    #     remove an agent (including destroying in CARLA, and in action and dialog
-    #     :param agent: the agent to be removed; instance check in the funtion below
-    #     :return:
-    #     """
-    #      # destroy the vehicle in carla, and corresponding dialogs
-    #
-    #     if isinstance(agent, EgoVehicle):
-    #         self._remove_vehicle(agent)
-    #         agent.remove_ego_agent()
-    #     elif isinstance(agent, TrafficVehicle):
-    #         self._remove_traffic_vehicle(agent)
-    #         agent.remove_traffic_agent()
-
-    # def _remove_vehicle(self, agent):
-    #     """
-    #     Removes vehicle agent, from the settings, vehicles list, data (news)
-    #     :param agent:
-    #     :return:
-    #     """
-    #
-    #     # remove from settings
-    #     for vehicle_setting in self.settings.ego_vehicles:
-    #         if vehicle_setting.name == agent.name:
-    #             try:
-    #                 self.settings.ego_vehicles.remove(vehicle_setting)  # TODO does this delete the class?
-    #             except ValueError:
-    #                 pass
-    #
-    #     # remove from data
-    #     try:
-    #         del self.data['ego_agents'][agent.name]
-    #     except KeyError:  # data is only present if the hardware manager ran since the hardware was added
-    #         pass
-    #
-    #     # remove from vehicles list
-    #     for vehicle in self.vehicles:
-    #         if vehicle.name == agent.name:
-    #             try:
-    #                 v = self.vehicles.pop(self.vehicles.index(vehicle))
-    #                 del v
-    #             except ValueError:
-    #                 pass
-    #
-    # def _remove_traffic_vehicle(self, agent):
-    #     # remove from settings
-    #     for vehicle_setting in self.settings.traffic_vehicles:
-    #         if vehicle_setting._name == agent.name:
-    #             try:
-    #                 self.settings.traffic_vehicles.remove(vehicle_setting)  # TODO does this delete the class?
-    #             except ValueError:
-    #                 pass
-    #
-    #     # remove object
-    #     for vehicle in self.traffic_vehicles:
-    #         if vehicle.name == agent.name:
-    #             try:
-    #                 v = self.traffic_vehicles.pop(self.traffic_vehicles.index(vehicle))
-    #                 del v
-    #             except ValueError:
-    #                 pass
 
     def remove_all(self):
         while self.vehicles:

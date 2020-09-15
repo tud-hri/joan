@@ -61,11 +61,11 @@ class EgovehicleSettingsDialog(QtWidgets.QDialog):
 
 
 class EgoVehicle(Basevehicle):
-    def __init__(self, module_action, agent_list_key, settings):
-        super().__init__(agent_type=AgentTypes.EGOVEHICLE, module_action=module_action)
+    def __init__(self, module_action, agent_list_key, settings, vehicle_tags, spawn_points):
+        super().__init__(agent_type=AgentTypes.EGOVEHICLE, module_action=module_action, vehicle_tags=vehicle_tags, spawnpoints=spawn_points)
 
         self.settings = settings
-
+        self._agent_list_key = agent_list_key
         
 
         self._spawned = False
@@ -78,16 +78,20 @@ class EgoVehicle(Basevehicle):
 
         self.settings_dialog = EgovehicleSettingsDialog(self.settings)
 
-        # for item in tags:
-        #     self.settings_dialog.combo_car_type.addItem(item)
+        for item in vehicle_tags:
+            self.settings_dialog.combo_car_type.addItem(item)
 
-        # self.settings_dialog.spin_spawn_points.setRange(0, nr_spawn_points - 1)
+        self.settings_dialog.spin_spawn_points.setRange(0, len(spawn_points)- 1)
 
         self._open_settings_dialog()
 
     @property
-    def vehicle_tab(self):
+    def agent_tab(self):
         return self._agent_tab
+
+    @property
+    def get_agent_list_key(self):
+        return self._agent_list_key
 
     @property
     def selected_input(self):

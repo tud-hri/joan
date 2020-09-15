@@ -100,6 +100,14 @@ class CarlaInterfaceSettings(JoanModuleSettings):
                 output_list.append(item)
         return output_list
 
+    def remove_agent(self, setting):
+        if isinstance(setting, EgoVehicleSettings):
+            self.ego_vehicles.remove(setting)
+
+        if isinstance(setting, TrafficVehicleSettings):
+            self.traffic_vehicles.remove(setting)
+
+
 
 class EgoVehicleSettings():
     """
