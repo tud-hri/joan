@@ -341,9 +341,9 @@ class CarlaInterfaceAction(JoanModuleAction):
         agent_name = agent_type.__str__() + ' ' + str(number_of_agents)
 
         self._agents[agent_name] = agent_type.klass(self, agent_name, agent_settings)
-        self._agents[agent_name].get_hardware_input_tab.groupBox.setTitle(agent_name)
+        self._agents[agent_name].get_agent_tab.group_agent.setTitle(agent_name)
 
-        self.module_dialog.module_widget.hardware_list_layout.addWidget(self._agents[agent_name].get_hardware_input_tab)
+        self.module_dialog.module_widget.agent_list_layout.addWidget(self._agents[agent_name].get_agent_tab)
 
         self._state_change_listener()
 
@@ -352,63 +352,43 @@ class CarlaInterfaceAction(JoanModuleAction):
         else:
             self._agents[agent_name]._open_settings_dialog()
 
-        return self._agents[agent_name].get_hardware_input_tab
-    # def add_ego_agent(self, ego_vehicle_settings=None):
-    #     """
-    #     Adds an 'Ego Agent', or a vehicle that a user can control by selecting an input.
-    #     :param ego_vehicle_settings:
-    #     :return:
-    #     """
-    #     is_a_new_ego_agent = not ego_vehicle_settings
-    #
-    #     if is_a_new_ego_agent:
-    #         ego_vehicle_settings = EgoVehicleSettings()
-    #
-    #     # TODO find unique name for vehicle name
-    #     vehicle_name = "Vehicle " + str(len(self.vehicles) + 1)
-    #
-    #     vehicle = EgoVehicle(self, vehicle_name, self.nr_spawn_points, self.vehicle_tags, ego_vehicle_settings)
-    #     self.vehicles.append(vehicle)
-    #
-    #     if is_a_new_ego_agent:
-    #         ego_vehicle_settings.name = vehicle.name
-    #         self.settings.ego_vehicles.append(ego_vehicle_settings)
-    #
-    #     # add widget
-    #     self.module_dialog.add_ego_agent_widget(vehicle)
-    #
-    #     # only make controller available for first car for now
-    #     for vehicle in self.vehicles[1:]:
-    #         vehicle.settings_dialog.combo_sw_controller.setEnabled(False)
-    #
-    #     return vehicle
-    #
-    # def add_traffic_agent(self, traffic_vehicle_settings=None):
-    #     """
-    #     Adds a traffic agent which can be controlled by PD control (throttle and steering)
-    #     :param traffic_vehicle_settings:
-    #     :return:
-    #     """
-    #     is_a_new_traffic_agent = not traffic_vehicle_settings
-    #
-    #     if is_a_new_traffic_agent:
-    #         traffic_vehicle_settings = TrafficVehicleSettings()
-    #         self.settings.traffic_vehicles.append(traffic_vehicle_settings)
-    #
-    #     vehicle_name = "Traffic " + str(len(self.vehicles) + 1)
-    #
-    #     vehicle = TrafficVehicle(self, vehicle_name, self.nr_spawn_points, self.vehicle_tags,
-    #                              traffic_vehicle_settings)
-    #     vehicle.load_trajectory()
-    #     self.traffic_vehicles.append(vehicle)
-    #
-    #     if is_a_new_traffic_agent:
-    #         traffic_vehicle_settings._name = vehicle_name
-    #
-    #     # add widget
-    #     self.module_dialog.add_traffic_agent_widget(vehicle)
-    #
-    #     return vehicle
+        return self._agents[agent_name].get_agent_tab
+
+    def remove_agent(self, agent):
+        # remove_input_device controller from the news
+        try:
+            del self.data[agent.get_agent_list_key]
+        except KeyError:  # data is only present if the hardware manager ran since the hardware was added
+            pass
+
+        # remove_input_device controller settings
+        try:
+            self.settings.remove_agent_device(
+                self._agents[agent.get_agent_list_key].settings)
+        except ValueError:  # depends if right controller list is present
+            pass
+
+        try:
+            self.settings.remove_agent_device(
+                self._agents[agent.get_agent_list_key].settings)
+        except ValueError:  # depends if right controller list is present
+            pass
+
+        # remove dialog
+        self._agents[agent.get_agent_list_key].get_agent_tab.setParent(None)
+
+        # delete object
+        del self._agents[agent.get_agent_list_key]
+
+        # remove controller from data
+        try:
+            del self.data[agent]
+        except KeyError:  # data is only present if the hardware manager ran since the hardware was added
+            pass
+
+        if not self._agents:
+            self.stop()
+
 
     def initialize(self):
         """

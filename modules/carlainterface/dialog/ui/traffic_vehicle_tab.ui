@@ -24,7 +24,7 @@
     <number>3</number>
    </property>
    <item row="0" column="1">
-    <widget class="QGroupBox" name="group_traffic_agent">
+    <widget class="QGroupBox" name="group_agent">
      <property name="minimumSize">
       <size>
        <width>600</width>
@@ -78,7 +78,7 @@
        </widget>
       </item>
       <item row="0" column="2">
-       <widget class="QPushButton" name="btn_remove_traffic_agent">
+       <widget class="QPushButton" name="btn_remove_agent">
         <property name="font">
          <font>
           <pointsize>8</pointsize>

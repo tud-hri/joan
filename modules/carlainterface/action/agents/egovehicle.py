@@ -6,7 +6,7 @@ from PyQt5 import uic, QtWidgets
 from modules.carlainterface.action.carlainterfacesettings import EgoVehicleSettings
 from modules.joanmodules import JOANModules
 from .basevehicle import Basevehicle
-
+from modules.carlainterface.action.agenttypes import AgentTypes
 
 class EgovehicleSettingsDialog(QtWidgets.QDialog):
     def __init__(self, settings_egovehicle, parent=None):
@@ -61,38 +61,33 @@ class EgovehicleSettingsDialog(QtWidgets.QDialog):
 
 
 class EgoVehicle(Basevehicle):
-    def __init__(self, carlainterface_action, name, nr_spawn_points, tags, settings: EgoVehicleSettings):
-        super().__init__(carlainterface_action, name=name)
+    def __init__(self, module_action, agent_list_key, settings):
+        super().__init__(agent_type=AgentTypes.EGOVEHICLE, module_action=module_action)
 
         self.settings = settings
 
-        self.vehicle_tab_widget = uic.loadUi(
-            uifile=os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/ego_vehicle_tab.ui"))
-        self.vehicle_tab_widget.group_car.setTitle(self.name)
+        
+
         self._spawned = False
         self._hardware_data = {}
         self._sw_controller_data = {}
 
-        self.vehicle_tab_widget.btn_destroy.setEnabled(False)
-
-        self.vehicle_tab_widget.btn_spawn.clicked.connect(self.spawn_car)
-        self.vehicle_tab_widget.btn_destroy.clicked.connect(self.destroy_car)
-        self.vehicle_tab_widget.btn_remove_ego_agent.clicked.connect(lambda: self.module_action.remove_agent(self))
-        self.vehicle_tab_widget.btn_settings.clicked.connect(self._open_settings_dialog)
-        self.vehicle_tab_widget.btn_settings.clicked.connect(self._open_settings_dialog_from_button)
+        self.settings_dialog = None
+        self._agent_tab.btn_settings.clicked.connect(self._open_settings_dialog)
+        self._agent_tab.btn_settings.clicked.connect(self._open_settings_dialog_from_button)
 
         self.settings_dialog = EgovehicleSettingsDialog(self.settings)
 
-        for item in tags:
-            self.settings_dialog.combo_car_type.addItem(item)
+        # for item in tags:
+        #     self.settings_dialog.combo_car_type.addItem(item)
 
-        self.settings_dialog.spin_spawn_points.setRange(0, nr_spawn_points - 1)
+        # self.settings_dialog.spin_spawn_points.setRange(0, nr_spawn_points - 1)
 
         self._open_settings_dialog()
 
     @property
     def vehicle_tab(self):
-        return self.vehicle_tab_widget
+        return self._agent_tab
 
     @property
     def selected_input(self):
@@ -132,8 +127,8 @@ class EgoVehicle(Basevehicle):
             self.settings_dialog.combo_sw_controller.addItem(str(keys))
 
     def destroy_inputs(self):
-        self.vehicle_tab_widget.combo_input.clear()
-        self.vehicle_tab_widget.combo_input.addItem('None')
+        self._agent_tab.combo_input.clear()
+        self._agent_tab.combo_input.addItem('None')
 
     def apply_control(self, data):
         car = self.spawned_vehicle
@@ -180,5 +175,5 @@ class EgoVehicle(Basevehicle):
         return output
 
     def remove_ego_agent(self):
-        self.vehicle_tab_widget.setParent(None)
+        self._agent_tab.setParent(None)
         self.destroy_car()  # destroy the ve
