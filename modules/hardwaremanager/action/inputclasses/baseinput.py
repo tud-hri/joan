@@ -39,8 +39,7 @@ class BaseInput:
 
     def remove_hardware_input(self):
         """Remove the connected tab widget (and tab widget only)"""
-        if self._tab_widget is not None:
-            self._tab_widget.setParent(None)
+        self.module_action.remove_hardware_input_device(self)
 
     def do(self):
         """

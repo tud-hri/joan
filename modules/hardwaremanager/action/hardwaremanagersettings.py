@@ -120,6 +120,18 @@ class HardwareManagerSettings(JoanModuleSettings):
                 output_list.append(item)
         return output_list
 
+    def remove_hardware_input_device(self, setting):
+        if isinstance(setting, KeyBoardSettings):
+            self.key_boards.remove(setting)
+
+        if isinstance(setting, JoyStickSettings):
+            self.joy_sticks.remove(setting)
+
+        if isinstance(setting, SensoDriveSettings):
+            self.sensodrives.remove(setting)
+
+
+
 
 class KeyBoardSettings:
     """

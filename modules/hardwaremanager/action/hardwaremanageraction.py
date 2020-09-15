@@ -112,15 +112,17 @@ class HardwareManagerAction(JoanModuleAction):
         :return:
         """
         self.carla_interface_data = self.read_news(JOANModules.CARLA_INTERFACE)
-        for inputs in self.input_devices_classes:
-            if 'SensoDrive' in inputs:
-                self.input_devices_classes[inputs]._tab_widget.btn_on_off.setStyleSheet("background-color: orange")
-                self.input_devices_classes[inputs]._tab_widget.btn_on_off.setText('Off')
-                self.input_devices_classes[inputs]._toggle_on_off(False)
+        for hardware_input in self.hardware_inputs:
+            if hardware_input == HardwareInputTypes.SENSODRIVE:
+                pass
+            # if 'SensoDrive' in hardware_inputs.:
+            #     self.input_devices_classes[inputs]._tab_widget.btn_on_off.setStyleSheet("background-color: orange")
+            #     self.input_devices_classes[inputs]._tab_widget.btn_on_off.setText('Off')
+            #     self.input_devices_classes[inputs]._toggle_on_off(False)
 
         try:
             self.state_machine.request_state_change(State.IDLE)
-            if len(self.input_devices_classes) != 0:
+            if len(self._hardware_inputs) != 0:
                 self.state_machine.request_state_change(State.READY)
         except RuntimeError:
             return False
@@ -185,6 +187,41 @@ class HardwareManagerAction(JoanModuleAction):
             self._hardware_inputs[hardware_input_name]._open_settings_dialog()
 
         return self._hardware_inputs[hardware_input_name].get_hardware_input_tab
+
+    def remove_hardware_input_device(self, hardware_input):
+        # remove_input_device controller from the news
+        try:
+            del self.data[hardware_input.get_hardware_input_list_key]
+        except KeyError:  # data is only present if the hardware manager ran since the hardware was added
+            pass
+
+        # remove_input_device controller settings
+        try:
+            self.settings.remove_hardware_input_device(
+                self._hardware_inputs[hardware_input.get_hardware_input_list_key].settings)
+        except ValueError:  # depends if right controller list is present
+            pass
+
+        try:
+            self.settings.remove_hardware_input_device(
+                self._hardware_inputs[hardware_input.get_hardware_input_list_key].settings)
+        except ValueError:  # depends if right controller list is present
+            pass
+
+        # remove dialog
+        self._hardware_inputs[hardware_input.get_hardware_input_list_key].get_hardware_input_tab.setParent(None)
+
+        # delete object
+        del self._hardware_inputs[hardware_input.get_hardware_input_list_key]
+
+        # remove controller from data
+        try:
+            del self.data[hardware_input]
+        except KeyError:  # data is only present if the hardware manager ran since the hardware was added
+            pass
+
+        if not self._hardware_inputs:
+            self.stop()
 
     @property
     def hardware_inputs(self):
