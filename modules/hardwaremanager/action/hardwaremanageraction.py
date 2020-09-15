@@ -144,13 +144,13 @@ class HardwareManagerAction(JoanModuleAction):
         :return:
         """
         for keyboard_settings in self.settings.key_boards:
-            self.add_an_input(HardwareInputTypes.KEYBOARD, keyboard_settings)
+            self.add_hardware_input(HardwareInputTypes.KEYBOARD, keyboard_settings)
 
         for joystick_settings in self.settings.joy_sticks:
-            self.add_an_input(HardwareInputTypes.JOYSTICK, joystick_settings)
+            self.add_hardware_input(HardwareInputTypes.JOYSTICK, joystick_settings)
 
         for sensodrive_settings in self.settings.sensodrives:
-            self.add_an_input(HardwareInputTypes.SENSODRIVE, sensodrive_settings)
+            self.add_hardware_input(HardwareInputTypes.SENSODRIVE, sensodrive_settings)
 
 
 
