@@ -246,6 +246,8 @@ class CarlaInterfaceAction(JoanModuleAction):
                 self.connected = False
                 QApplication.restoreOverrideCursor()
 
+            self.module_dialog.module_widget.btn_connect.setEnabled(not self.connected)
+            self.module_dialog.module_widget.btn_disconnect.setEnabled(self.connected)
             self.data['connected'] = self.connected
             self.write_news(news=self.data)
 
@@ -272,7 +274,8 @@ class CarlaInterfaceAction(JoanModuleAction):
 
             self.state_machine.request_state_change(State.IDLE, 'Carla Disconnected')
 
-            self.module_dialog.disconnect_carla(self.connected)
+            self.module_dialog.module_widget.btn_connect.setEnabled(not self.connected)
+            self.module_dialog.module_widget.btn_disconnect.setEnabled(self.connected)
 
     def save_opendrive_trajectory(self, world_map):
         """
@@ -391,8 +394,7 @@ class CarlaInterfaceAction(JoanModuleAction):
             self.state_machine.request_state_change(State.ERROR,
                                                     "carla module is NOT imported, make sure the API is available and restart the program")
 
-        if self.state_machine.current_state is State.IDLE:
-            self.connect_carla()
+        if self.state_machine.current_state is State.IDLE and self.connected:
             self.state_machine.request_state_change(State.READY, "You can now add vehicles and start module")
         elif self.state_machine.current_state is State.ERROR and 'carla' in sys.modules.keys():
             self.state_machine.request_state_change(State.IDLE)

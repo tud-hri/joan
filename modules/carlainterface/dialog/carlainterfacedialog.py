@@ -31,10 +31,11 @@ class CarlaInterfaceDialog(JoanModuleDialog):
         self.module_widget.btn_destroy_all.clicked.connect(self.module_action.destroy_all)
         self.module_widget.btn_remove_all.clicked.connect(self.module_action.remove_all)
 
-        self.module_widget.btnDisconnect.clicked.connect(self.module_action.disconnect_carla)
+        self.module_widget.btn_disconnect.clicked.connect(self.module_action.disconnect_carla)
+        self.module_widget.btn_connect.clicked.connect(self.module_action.connect_carla)
         self.module_widget.groupVehicles.setEnabled(False)
         self.module_widget.btn_add_agent.setEnabled(False)
-        self.module_widget.btnDisconnect.setEnabled(False)
+        self.module_widget.btn_disconnect.setEnabled(False)
         self.module_widget.btn_spawn_all.setEnabled(False)
         self.module_widget.btn_destroy_all.setEnabled(False)
         self.module_widget.btn_remove_all.setEnabled(False)
@@ -55,11 +56,9 @@ class CarlaInterfaceDialog(JoanModuleDialog):
         super().handle_state_change()
 
         self.connected_carla = self.module_action.check_connection()
-        # link the spawning of vehicles to connected state
         # make sure you can only disconnect in the ready state
         if self.module_action.state_machine.current_state == State.READY:
             self.load_settings.setEnabled(self.connected_carla)
-            self.module_widget.btnDisconnect.setEnabled(True)
             self.module_widget.groupVehicles.setEnabled(self.connected_carla)
             self.module_widget.btn_add_agent.setEnabled(self.connected_carla)
             self.module_widget.btn_spawn_all.setEnabled(self.connected_carla)
@@ -67,21 +66,18 @@ class CarlaInterfaceDialog(JoanModuleDialog):
             self.module_widget.btn_remove_all.setEnabled(self.connected_carla)
         elif self.module_action.state_machine.current_state == State.RUNNING:
             self.load_settings.setEnabled(False)
-            self.module_widget.btnDisconnect.setEnabled(False)
             self.module_widget.btn_add_agent.setEnabled(False)
             self.module_widget.btn_spawn_all.setEnabled(False)
             self.module_widget.btn_destroy_all.setEnabled(False)
             self.module_widget.btn_remove_all.setEnabled(False)
         elif self.module_action.state_machine.current_state == State.ERROR:
             self.load_settings.setEnabled(False)
-            self.module_widget.btnDisconnect.setEnabled(False)
             self.module_widget.btn_add_agent.setEnabled(False)
             self.module_widget.btn_spawn_all.setEnabled(False)
             self.module_widget.btn_destroy_all.setEnabled(False)
             self.module_widget.btn_remove_all.setEnabled(False)
         else:
             self.load_settings.setEnabled(False)
-            self.module_widget.btnDisconnect.setEnabled(False)
             # self.module_widget.groupVehicles.setEnabled(False)
             self.module_widget.btn_add_agent.setEnabled(False)
             self.module_widget.btn_spawn_all.setEnabled(False)
@@ -108,5 +104,5 @@ class CarlaInterfaceDialog(JoanModuleDialog):
         self.connected_carla = connected
         self.module_widget.groupVehicles.setEnabled(self.connected_carla)
         self.module_widget.btn_add_agent.setEnabled(self.connected_carla)
-        self.module_widget.btnDisconnect.setEnabled(self.connected_carla)
+        self.module_widget.btn_disconnect.setEnabled(self.connected_carla)
 

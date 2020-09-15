@@ -163,7 +163,8 @@ class TrafficVehicle(Basevehicle):
         self.settings_dialog.btn_apply_parameters.clicked.connect(self.load_trajectory)
         self.settings_dialog.accepted.connect(self.load_trajectory)
 
-        self._open_settings_dialog()
+        self.load_trajectory()
+        self._open_settings_dialog_from_button()
 
     @property
     def agent_tab(self):
@@ -205,7 +206,7 @@ class TrafficVehicle(Basevehicle):
         """
         try:
             tmp = pd.read_csv(os.path.join(self._path_trajectory_directory, self.settings.trajectory_name))
-            self._trajectory = tmp.values
+            self.trajectory = tmp.values
             # TODO We might want to do some checks on the trajectory here.
             # self.trajectory_name = fname
         except OSError as err:
@@ -330,16 +331,16 @@ class TrafficVehicle(Basevehicle):
         pos_car_future = pos_car + vel_car * 0.6  # linear extrapolation, should be updated
 
 
-        index_closest_waypoint = self.find_closest_node(pos_car_future, self._trajectory[:, 1:3])
+        index_closest_waypoint = self.find_closest_node(pos_car_future, self.trajectory[:, 1:3])
 
-        if index_closest_waypoint >= len(self._trajectory) - 3:
+        if index_closest_waypoint >= len(self.trajectory) - 3:
             index_closest_waypoint_next = 0
         else:
             index_closest_waypoint_next = index_closest_waypoint + 3
 
         # calculate lateral error
-        pos_ref_future = self._trajectory[index_closest_waypoint, 1:3]
-        pos_ref_future_next = self._trajectory[index_closest_waypoint_next, 1:3]
+        pos_ref_future = self.trajectory[index_closest_waypoint, 1:3]
+        pos_ref_future_next = self.trajectory[index_closest_waypoint_next, 1:3]
 
         vec_pos_future = pos_car_future - pos_ref_future
         vec_dir_future = pos_ref_future_next - pos_ref_future
@@ -353,7 +354,7 @@ class TrafficVehicle(Basevehicle):
             error_pos_lat = -error_pos_lat
 
         # calculate heading error
-        heading_ref = self._trajectory[index_closest_waypoint, 6]
+        heading_ref = self.trajectory[index_closest_waypoint, 6]
 
         error_heading = -(math.radians(heading_ref) - math.radians(heading_car))
 
