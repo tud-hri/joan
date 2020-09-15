@@ -279,7 +279,7 @@ class JOANJoystick(BaseInput):
         self._joystick = hid.device()
 
         self._hardware_input_tab.btn_settings.clicked.connect(self._open_settings_dialog)
-        self._hardware_input_tab.btn_settings.clicked.connect(self._open_settings_from_button)
+        self._hardware_input_tab.btn_settings.clicked.connect(self._open_settings_dialog_from_button)
         self._hardware_input_tab.btn_visualization.setEnabled(False)
 
         self._open_settings_dialog()
@@ -288,11 +288,12 @@ class JOANJoystick(BaseInput):
     def get_hardware_input_list_key(self):
         return self.hardware_input_list_key
 
-    def _open_settings_from_button(self):
+    def _open_settings_dialog_from_button(self):
         """
         Opens the settings dialog from the button on the tab
         :return:
         """
+        self._open_settings_dialog()
         if self.settings_dialog:
             self.settings_dialog.show()
 

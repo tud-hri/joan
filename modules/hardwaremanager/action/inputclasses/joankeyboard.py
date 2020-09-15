@@ -165,7 +165,7 @@ class JOANKeyboard(BaseInput):
         self._reverse = False
 
         self._hardware_input_tab.btn_settings.clicked.connect(self._open_settings_dialog)
-        self._hardware_input_tab.btn_settings.clicked.connect(self._open_settings_from_button)
+        self._hardware_input_tab.btn_settings.clicked.connect(self._open_settings_dialog_from_button)
         self._hardware_input_tab.btn_visualization.setEnabled(False)
 
         keyboard.hook(self.key_event, False)
@@ -196,11 +196,12 @@ class JOANKeyboard(BaseInput):
         else:
             pass
 
-    def _open_settings_from_button(self):
+    def _open_settings_dialog_from_button(self):
         """
         Opens and shows the settings dialog from the button on the tab
         :return:
         """
+        self._open_settings_dialog()
         if self.settings_dialog:
             self.settings_dialog.show()
 

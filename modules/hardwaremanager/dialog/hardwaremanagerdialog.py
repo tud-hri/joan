@@ -61,3 +61,4 @@ class HardwareManagerDialog(JoanModuleDialog):
             self._input_type_dialog.combo_hardware_inputtype.currentIndex())
         self.module_action.add_hardware_input(chosen_hardware_input)
 
+

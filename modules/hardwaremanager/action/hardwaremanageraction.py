@@ -155,6 +155,9 @@ class HardwareManagerAction(JoanModuleAction):
 
 
     def add_hardware_input(self, hardware_input_type, hardware_input_settings = None):
+        number_of_inputs = sum([bool(hardware_input_type.__str__() in k) for k in self._hardware_inputs.keys()]) + 1
+        hardware_input_name = hardware_input_type.__str__() + ' ' + str(number_of_inputs)
+
         if not hardware_input_settings:
             hardware_input_settings = hardware_input_type.settings
             if hardware_input_type == HardwareInputTypes.KEYBOARD:
@@ -164,20 +167,21 @@ class HardwareManagerAction(JoanModuleAction):
             if hardware_input_type == HardwareInputTypes.SENSODRIVE:
                 self.settings.sensodrives.append(hardware_input_settings)
 
-        number_of_inputs = sum([bool(hardware_input_type.__str__() in k) for k in self._hardware_inputs.keys()]) + 1
-        hardware_input_name = hardware_input_type.__str__() + ' ' + str(number_of_inputs)
+            self._hardware_inputs[hardware_input_name] = hardware_input_type.klass(self, hardware_input_name, hardware_input_settings)
+            self._hardware_inputs[hardware_input_name].get_hardware_input_tab.groupBox.setTitle(hardware_input_name)
+            self.module_dialog.module_widget.hardware_list_layout.addWidget(self._hardware_inputs[hardware_input_name].get_hardware_input_tab)
 
-        self._hardware_inputs[hardware_input_name] = hardware_input_type.klass(self, hardware_input_name, hardware_input_settings)
-        self._hardware_inputs[hardware_input_name].get_hardware_input_tab.groupBox.setTitle(hardware_input_name)
+            self._hardware_inputs[hardware_input_name]._open_settings_dialog_from_button()
 
-        self.module_dialog.module_widget.hardware_list_layout.addWidget(self._hardware_inputs[hardware_input_name].get_hardware_input_tab)
+        else:
+            self._hardware_inputs[hardware_input_name] = hardware_input_type.klass(self, hardware_input_name,
+                                                                                   hardware_input_settings)
+            self._hardware_inputs[hardware_input_name].get_hardware_input_tab.groupBox.setTitle(hardware_input_name)
+            self.module_dialog.module_widget.hardware_list_layout.addWidget(
+                self._hardware_inputs[hardware_input_name].get_hardware_input_tab)
+            self._hardware_inputs[hardware_input_name]._open_settings_dialog()
 
         self._state_change_listener()
-
-        if not hardware_input_settings:
-            self._hardware_inputs[hardware_input_name]._open_settings_dialog_from_button()
-        else:
-            self._hardware_inputs[hardware_input_name]._open_settings_dialog()
 
         return self._hardware_inputs[hardware_input_name].get_hardware_input_tab
 

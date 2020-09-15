@@ -112,6 +112,9 @@ class SteeringWheelControlAction(JoanModuleAction):
     def add_controller(self, controller_type, controller_settings=None):
         # set the module to idle because we need to reinitialize our controllers!
         self.state_machine.request_state_change(State.IDLE, 'You can now add more and reinitialize controllers')
+        number_of_controllers = sum([bool(controller_type.__str__() in k) for k in self._controllers.keys()]) + 1
+        controller_name = controller_type.__str__() + ' ' + str(number_of_controllers)
+
         # add appropriate settings
         if not controller_settings:
             controller_settings = controller_type.settings
@@ -120,21 +123,23 @@ class SteeringWheelControlAction(JoanModuleAction):
             if controller_type == SWControllerTypes.FDCA_SWCONTROLLER:
                 self.settings.fdca_controllers.append(controller_settings)
 
-        number_of_controllers = sum([bool(controller_type.__str__() in k) for k in self._controllers.keys()]) + 1
-        controller_name = controller_type.__str__() + ' ' + str(number_of_controllers)
-        self._controllers[controller_name] = controller_type.klass(self, controller_name, controller_settings)
-        self._controllers[controller_name].get_controller_tab.controller_groupbox.setTitle(controller_name)
-        self._controllers[controller_name].update_trajectory_list()
+            self._controllers[controller_name] = controller_type.klass(self, controller_name, controller_settings)
+            self._controllers[controller_name].get_controller_tab.controller_groupbox.setTitle(controller_name)
+            self._controllers[controller_name].update_trajectory_list()
+            self.module_dialog.module_widget.sw_controller_list_layout.addWidget(
+                self._controllers[controller_name].get_controller_tab)
 
-        self.module_dialog.module_widget.sw_controller_list_layout.addWidget(
-            self._controllers[controller_name].get_controller_tab)
+            self._controllers[controller_name]._open_settings_dialog_from_button()
+
+        else:
+            self._controllers[controller_name] = controller_type.klass(self, controller_name, controller_settings)
+            self._controllers[controller_name].get_controller_tab.controller_groupbox.setTitle(controller_name)
+            self._controllers[controller_name].update_trajectory_list()
+            self.module_dialog.module_widget.sw_controller_list_layout.addWidget(
+                self._controllers[controller_name].get_controller_tab)
+            self._controllers[controller_name]._open_settings_dialog()
 
         self._state_change_listener()
-
-        if not controller_settings:
-            self._controllers[controller_name]._open_settings_dialog_from_button()
-        else:
-            self._controllers[controller_name]._open_settings_dialog()
 
         return self._controllers[controller_name].get_controller_tab
 

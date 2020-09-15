@@ -136,7 +136,7 @@ class JOANSensoDrive(BaseInput):
                                                                self.update_shared_values_from_settings_event,
                                                                self.shutoff_event)
         self._hardware_input_tab.btn_settings.clicked.connect(self._open_settings_dialog)
-        self._hardware_input_tab.btn_settings.clicked.connect(self._open_settings_from_button)
+        self._hardware_input_tab.btn_settings.clicked.connect(self._open_settings_dialog_from_button)
         self._hardware_input_tab.btn_visualization.setEnabled(False)
         self._hardware_input_tab.btn_remove_hardware.clicked.connect(self.remove_device)
         self._hardware_input_tab.btn_on_off.clicked.connect(self.toggle_on_off)
@@ -190,11 +190,12 @@ class JOANSensoDrive(BaseInput):
             except:
                 pass
 
-    def _open_settings_from_button(self):
+    def _open_settings_dialog_from_button(self):
         """
         Opens and shows the settings dialog from the button on the tab
         :return:
         """
+        self._open_settings_dialog()
         if self.settings_dialog:
             self.settings_dialog.show()
 
