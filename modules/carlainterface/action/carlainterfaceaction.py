@@ -12,9 +12,8 @@ from PyQt5.QtWidgets import QMessageBox, QApplication
 from core.joanmoduleaction import JoanModuleAction
 from core.statesenum import State
 from modules.joanmodules import JOANModules
-from .agents.egovehicle import EgoVehicle
-from .agents.trafficvehicle import TrafficVehicle
-from .carlainterfacesettings import CarlaInterfaceSettings, EgoVehicleSettings, TrafficVehicleSettings
+from .carlainterfacesettings import CarlaInterfaceSettings
+from modules.carlainterface.action.agenttypes import AgentTypes
 from .carlainterfacesignals import CarlaInterfaceSignals
 
 msg_box = QMessageBox()
@@ -76,9 +75,8 @@ class CarlaInterfaceAction(JoanModuleAction):
         self.port = 2000
         self._world = None
         self.connected = False
+        self._agents = {}
         self.vehicle_tags = []
-        self.vehicles = []
-        self.traffic_vehicles = []
         self._available_controllers = []
 
         self.hardware_manager_state_machine = self.singleton_status.get_module_state_machine(
@@ -102,6 +100,13 @@ class CarlaInterfaceAction(JoanModuleAction):
         # signals
         self._module_signals = CarlaInterfaceSignals(self.module, self)
         self.singleton_signals.add_signals(self.module, self._module_signals)
+
+    def _state_change_listener(self):
+        """
+        Listens to any state change of the module, whenever the state changes this will be executed.
+        :return:
+        """
+        pass
 
     @property
     def vehicle_bp_library(self):
@@ -323,62 +328,87 @@ class CarlaInterfaceAction(JoanModuleAction):
         df2.to_csv(os.path.join(self.module_path, 'trajectories', 'opendrive_trajectory_VISUAL.csv'), index=False,
                    header=True)
 
-    def add_ego_agent(self, ego_vehicle_settings=None):
-        """
-        Adds an 'Ego Agent', or a vehicle that a user can control by selecting an input.
-        :param ego_vehicle_settings:
-        :return:
-        """
-        is_a_new_ego_agent = not ego_vehicle_settings
 
-        if is_a_new_ego_agent:
-            ego_vehicle_settings = EgoVehicleSettings()
+    def add_agent(self, agent_type, agent_settings = None):
+        if not agent_settings:
+            agent_settings = agent_type.settings
+            if agent_type == AgentTypes.EGOVEHICLE:
+                self.settings.ego_vehicles.append(agent_settings)
+            if agent_type == AgentTypes.TRAFFICVEHICLE:
+                self.settings.traffic_vehicles.append(agent_settings)
 
-        # TODO find unique name for vehicle name
-        vehicle_name = "Vehicle " + str(len(self.vehicles) + 1)
+        number_of_agents = sum([bool(agent_type.__str__() in k) for k in self._agents.keys()]) + 1
+        agent_name = agent_type.__str__() + ' ' + str(number_of_agents)
 
-        vehicle = EgoVehicle(self, vehicle_name, self.nr_spawn_points, self.vehicle_tags, ego_vehicle_settings)
-        self.vehicles.append(vehicle)
+        self._agents[agent_name] = agent_type.klass(self, agent_name, agent_settings)
+        self._agents[agent_name].get_hardware_input_tab.groupBox.setTitle(agent_name)
 
-        if is_a_new_ego_agent:
-            ego_vehicle_settings.name = vehicle.name
-            self.settings.ego_vehicles.append(ego_vehicle_settings)
+        self.module_dialog.module_widget.hardware_list_layout.addWidget(self._agents[agent_name].get_hardware_input_tab)
 
-        # add widget
-        self.module_dialog.add_ego_agent_widget(vehicle)
+        self._state_change_listener()
 
-        # only make controller available for first car for now
-        for vehicle in self.vehicles[1:]:
-            vehicle.settings_dialog.combo_sw_controller.setEnabled(False)
+        if not agent_settings:
+            self._agents[agent_name]._open_settings_dialog_from_button()
+        else:
+            self._agents[agent_name]._open_settings_dialog()
 
-        return vehicle
-
-    def add_traffic_agent(self, traffic_vehicle_settings=None):
-        """
-        Adds a traffic agent which can be controlled by PD control (throttle and steering)
-        :param traffic_vehicle_settings:
-        :return:
-        """
-        is_a_new_traffic_agent = not traffic_vehicle_settings
-
-        if is_a_new_traffic_agent:
-            traffic_vehicle_settings = TrafficVehicleSettings()
-            self.settings.traffic_vehicles.append(traffic_vehicle_settings)
-
-        vehicle_name = "Traffic " + str(len(self.vehicles) + 1)
-
-        vehicle = TrafficVehicle(self, vehicle_name, self.nr_spawn_points, self.vehicle_tags,
-                                 traffic_vehicle_settings)
-        vehicle.load_trajectory()
-        self.traffic_vehicles.append(vehicle)
-
-        if is_a_new_traffic_agent:
-            traffic_vehicle_settings._name = vehicle_name
-
-        # add widget
-        self.module_dialog.add_traffic_agent_widget(vehicle)
-
-        return vehicle
+        return self._agents[agent_name].get_hardware_input_tab
+    # def add_ego_agent(self, ego_vehicle_settings=None):
+    #     """
+    #     Adds an 'Ego Agent', or a vehicle that a user can control by selecting an input.
+    #     :param ego_vehicle_settings:
+    #     :return:
+    #     """
+    #     is_a_new_ego_agent = not ego_vehicle_settings
+    #
+    #     if is_a_new_ego_agent:
+    #         ego_vehicle_settings = EgoVehicleSettings()
+    #
+    #     # TODO find unique name for vehicle name
+    #     vehicle_name = "Vehicle " + str(len(self.vehicles) + 1)
+    #
+    #     vehicle = EgoVehicle(self, vehicle_name, self.nr_spawn_points, self.vehicle_tags, ego_vehicle_settings)
+    #     self.vehicles.append(vehicle)
+    #
+    #     if is_a_new_ego_agent:
+    #         ego_vehicle_settings.name = vehicle.name
+    #         self.settings.ego_vehicles.append(ego_vehicle_settings)
+    #
+    #     # add widget
+    #     self.module_dialog.add_ego_agent_widget(vehicle)
+    #
+    #     # only make controller available for first car for now
+    #     for vehicle in self.vehicles[1:]:
+    #         vehicle.settings_dialog.combo_sw_controller.setEnabled(False)
+    #
+    #     return vehicle
+    #
+    # def add_traffic_agent(self, traffic_vehicle_settings=None):
+    #     """
+    #     Adds a traffic agent which can be controlled by PD control (throttle and steering)
+    #     :param traffic_vehicle_settings:
+    #     :return:
+    #     """
+    #     is_a_new_traffic_agent = not traffic_vehicle_settings
+    #
+    #     if is_a_new_traffic_agent:
+    #         traffic_vehicle_settings = TrafficVehicleSettings()
+    #         self.settings.traffic_vehicles.append(traffic_vehicle_settings)
+    #
+    #     vehicle_name = "Traffic " + str(len(self.vehicles) + 1)
+    #
+    #     vehicle = TrafficVehicle(self, vehicle_name, self.nr_spawn_points, self.vehicle_tags,
+    #                              traffic_vehicle_settings)
+    #     vehicle.load_trajectory()
+    #     self.traffic_vehicles.append(vehicle)
+    #
+    #     if is_a_new_traffic_agent:
+    #         traffic_vehicle_settings._name = vehicle_name
+    #
+    #     # add widget
+    #     self.module_dialog.add_traffic_agent_widget(vehicle)
+    #
+    #     return vehicle
 
     def initialize(self):
         """
@@ -414,9 +444,6 @@ class CarlaInterfaceAction(JoanModuleAction):
         :return:
         """
         try:
-            # for vehicle in self.vehicles:
-            # vehicle.get_available_inputs()
-            # vehicle.get_available_controllers()
             self.state_machine.request_state_change(State.READY, "You can now add vehicles and start the module")
 
             for traffic in self.traffic_vehicles:
@@ -425,68 +452,68 @@ class CarlaInterfaceAction(JoanModuleAction):
             return False
         return super().stop()
 
-    def remove_agent(self, agent):
-        """
-        remove an agent (including destroying in CARLA, and in action and dialog
-        :param agent: the agent to be removed; instance check in the funtion below
-        :return:
-        """
-         # destroy the vehicle in carla, and corresponding dialogs
+    # def remove_agent(self, agent):
+    #     """
+    #     remove an agent (including destroying in CARLA, and in action and dialog
+    #     :param agent: the agent to be removed; instance check in the funtion below
+    #     :return:
+    #     """
+    #      # destroy the vehicle in carla, and corresponding dialogs
+    #
+    #     if isinstance(agent, EgoVehicle):
+    #         self._remove_vehicle(agent)
+    #         agent.remove_ego_agent()
+    #     elif isinstance(agent, TrafficVehicle):
+    #         self._remove_traffic_vehicle(agent)
+    #         agent.remove_traffic_agent()
 
-        if isinstance(agent, EgoVehicle):
-            self._remove_vehicle(agent)
-            agent.remove_ego_agent()
-        elif isinstance(agent, TrafficVehicle):
-            self._remove_traffic_vehicle(agent)
-            agent.remove_traffic_agent()
-
-    def _remove_vehicle(self, agent):
-        """
-        Removes vehicle agent, from the settings, vehicles list, data (news)
-        :param agent:
-        :return:
-        """
-
-        # remove from settings
-        for vehicle_setting in self.settings.ego_vehicles:
-            if vehicle_setting.name == agent.name:
-                try:
-                    self.settings.ego_vehicles.remove(vehicle_setting)  # TODO does this delete the class?
-                except ValueError:
-                    pass
-
-        # remove from data
-        try:
-            del self.data['ego_agents'][agent.name]
-        except KeyError:  # data is only present if the hardware manager ran since the hardware was added
-            pass
-
-        # remove from vehicles list
-        for vehicle in self.vehicles:
-            if vehicle.name == agent.name:
-                try:
-                    v = self.vehicles.pop(self.vehicles.index(vehicle))
-                    del v
-                except ValueError:
-                    pass
-
-    def _remove_traffic_vehicle(self, agent):
-        # remove from settings
-        for vehicle_setting in self.settings.traffic_vehicles:
-            if vehicle_setting._name == agent.name:
-                try:
-                    self.settings.traffic_vehicles.remove(vehicle_setting)  # TODO does this delete the class?
-                except ValueError:
-                    pass
-
-        # remove object
-        for vehicle in self.traffic_vehicles:
-            if vehicle.name == agent.name:
-                try:
-                    v = self.traffic_vehicles.pop(self.traffic_vehicles.index(vehicle))
-                    del v
-                except ValueError:
-                    pass
+    # def _remove_vehicle(self, agent):
+    #     """
+    #     Removes vehicle agent, from the settings, vehicles list, data (news)
+    #     :param agent:
+    #     :return:
+    #     """
+    #
+    #     # remove from settings
+    #     for vehicle_setting in self.settings.ego_vehicles:
+    #         if vehicle_setting.name == agent.name:
+    #             try:
+    #                 self.settings.ego_vehicles.remove(vehicle_setting)  # TODO does this delete the class?
+    #             except ValueError:
+    #                 pass
+    #
+    #     # remove from data
+    #     try:
+    #         del self.data['ego_agents'][agent.name]
+    #     except KeyError:  # data is only present if the hardware manager ran since the hardware was added
+    #         pass
+    #
+    #     # remove from vehicles list
+    #     for vehicle in self.vehicles:
+    #         if vehicle.name == agent.name:
+    #             try:
+    #                 v = self.vehicles.pop(self.vehicles.index(vehicle))
+    #                 del v
+    #             except ValueError:
+    #                 pass
+    #
+    # def _remove_traffic_vehicle(self, agent):
+    #     # remove from settings
+    #     for vehicle_setting in self.settings.traffic_vehicles:
+    #         if vehicle_setting._name == agent.name:
+    #             try:
+    #                 self.settings.traffic_vehicles.remove(vehicle_setting)  # TODO does this delete the class?
+    #             except ValueError:
+    #                 pass
+    #
+    #     # remove object
+    #     for vehicle in self.traffic_vehicles:
+    #         if vehicle.name == agent.name:
+    #             try:
+    #                 v = self.traffic_vehicles.pop(self.traffic_vehicles.index(vehicle))
+    #                 del v
+    #             except ValueError:
+    #                 pass
 
     def remove_all(self):
         while self.vehicles:

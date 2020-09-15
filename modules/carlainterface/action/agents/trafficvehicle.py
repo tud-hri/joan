@@ -139,7 +139,7 @@ class TrafficVehicle(Basevehicle):
         self._path_trajectory_directory = os.path.join(path, '../steeringwheelcontrol/action/swcontrollers/trajectories/')
 
 
-        self.vehicle_tab_widget = uic.loadUi(uifile=os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/trafficvehicletab.ui"))
+        self.vehicle_tab_widget = uic.loadUi(uifile=os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/traffic_vehicle_tab.ui"))
         self.vehicle_tab_widget.group_traffic_agent.setTitle(name)
 
         self.vehicle_tab_widget.btn_destroy.setEnabled(False)

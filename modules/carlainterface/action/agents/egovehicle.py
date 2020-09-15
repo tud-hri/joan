@@ -12,7 +12,7 @@ class EgovehicleSettingsDialog(QtWidgets.QDialog):
     def __init__(self, settings_egovehicle, parent=None):
         super().__init__(parent)
         self.settings = settings_egovehicle
-        uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/vehicle_settings_ui.ui"), self)
+        uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/ego_vehicle_settings_ui.ui"), self)
 
         self.button_box_egovehicle_settings.button(self.button_box_egovehicle_settings.RestoreDefaults).clicked.connect(
             self._set_default_values)
@@ -67,7 +67,7 @@ class EgoVehicle(Basevehicle):
         self.settings = settings
 
         self.vehicle_tab_widget = uic.loadUi(
-            uifile=os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/vehicletab.ui"))
+            uifile=os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/ego_vehicle_tab.ui"))
         self.vehicle_tab_widget.group_car.setTitle(self.name)
         self._spawned = False
         self._hardware_data = {}
