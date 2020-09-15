@@ -322,8 +322,8 @@ class JOANJoystick(BaseInput):
         simulator is running)
         :return:
         """
-        if self._tab_widget.btn_remove_hardware.isEnabled() is True:
-            self._tab_widget.btn_remove_hardware.setEnabled(False)
+        if self._hardware_input_tab.btn_remove_hardware.isEnabled() is True:
+            self._hardware_input_tab.btn_remove_hardware.setEnabled(False)
         else:
             pass
 
@@ -332,8 +332,8 @@ class JOANJoystick(BaseInput):
         Enables the remove_input_device joystick button
         :return:
         """
-        if self._tab_widget.btn_remove_hardware.isEnabled() is False:
-            self._tab_widget.btn_remove_hardware.setEnabled(True)
+        if self._hardware_input_tab.btn_remove_hardware.isEnabled() is False:
+            self._hardware_input_tab.btn_remove_hardware.setEnabled(True)
         else:
             pass
 
