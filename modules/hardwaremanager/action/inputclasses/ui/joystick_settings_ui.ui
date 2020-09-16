@@ -115,36 +115,30 @@
            </font>
           </property>
           <property name="text">
-           <string>deg</string>
+           <string>rad</string>
           </property>
          </widget>
         </item>
         <item row="2" column="0">
-         <widget class="QSpinBox" name="spin_box_min_steer">
+         <widget class="QDoubleSpinBox" name="spin_box_min_steer">
           <property name="buttonSymbols">
            <enum>QAbstractSpinBox::NoButtons</enum>
           </property>
+          <property name="decimals">
+           <number>4</number>
+          </property>
           <property name="minimum">
-           <number>-180</number>
-          </property>
-          <property name="maximum">
-           <number>0</number>
-          </property>
-          <property name="value">
-           <number>-90</number>
+           <double>-999.000000000000000</double>
           </property>
          </widget>
         </item>
         <item row="2" column="1">
-         <widget class="QSpinBox" name="spin_box_max_steer">
+         <widget class="QDoubleSpinBox" name="spin_box_max_steer">
           <property name="buttonSymbols">
            <enum>QAbstractSpinBox::NoButtons</enum>
           </property>
-          <property name="maximum">
-           <number>180</number>
-          </property>
-          <property name="value">
-           <number>90</number>
+          <property name="decimals">
+           <number>4</number>
           </property>
          </widget>
         </item>
