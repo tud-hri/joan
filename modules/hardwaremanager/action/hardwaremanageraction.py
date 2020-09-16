@@ -58,8 +58,6 @@ class HardwareManagerAction(JoanModuleAction):
 
         for hardware_input in self._hardware_inputs:
             self.data[hardware_input] = self._hardware_inputs[hardware_input].do()
-            # if HardwareInputTypes.SENSODRIVE.__str__() in hardware_input:
-            #      self._hardware_inputs[hardware_input].toggle_on_off()
 
         self.write_news(self.data)
 

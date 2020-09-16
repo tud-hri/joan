@@ -356,10 +356,10 @@ class JOANJoystick(BaseInput):
         if joystick_data:
             # print(joystick_data)
             if self.settings.use_separate_brake_channel:
-                self.throttle = round(((joystick_data[self.settings.gas_channel]) / 255) * 100)
-                self.brake = - round(((joystick_data[self.settings.brake_channel]) / 255) * 100)
+                self.throttle = ((joystick_data[self.settings.gas_channel]) / 255)
+                self.brake = - ((joystick_data[self.settings.brake_channel]) / 255)
             else:
-                input_value = 100 - round(((joystick_data[self.settings.gas_channel]) / 128) * 100)
+                input_value = 1 - ((joystick_data[self.settings.gas_channel]) / 128)
                 if input_value > 0:
                     self.throttle = input_value
                     self.brake = 0
@@ -376,14 +376,12 @@ class JOANJoystick(BaseInput):
                 self.reverse = False
 
             if self.settings.use_double_steering_resolution:
-                self.steer = round(
-                    (((joystick_data[self.settings.first_steer_channel]) + (
+                self.steer = (((joystick_data[self.settings.first_steer_channel]) + (
                         joystick_data[self.settings.second_steer_channel]) * 256) / (256 * 256)) * (
-                            self.settings.max_steer - self.settings.min_steer) - self.settings.max_steer)
+                            self.settings.max_steer - self.settings.min_steer) - self.settings.max_steer
             else:
-                self.steer = round(
-                    ((joystick_data[self.settings.first_steer_channel]) / 255) * (
-                            self.settings.max_steer - self.settings.min_steer) - self.settings.max_steer)
+                self.steer = ((joystick_data[self.settings.first_steer_channel]) / 255) * (
+                            self.settings.max_steer - self.settings.min_steer) - self.settings.max_steer
 
         self._data['brake'] = self.brake
         self._data['throttle'] = self.throttle
