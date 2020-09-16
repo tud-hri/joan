@@ -57,7 +57,7 @@ class BaseSWController:
         """
         Remove the sw controller
         """
-        self.module_action.remove_controller(self)
+        self._action.remove_controller(self)
 
     def load_trajectory(self):
         """Load HCR trajectory"""

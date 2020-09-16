@@ -7,6 +7,7 @@ import pandas as pd
 from PyQt5 import uic, QtWidgets
 
 from modules.carlainterface.action.carlainterfacesettings import TrafficVehicleSettings
+from modules.carlainterface.action.agenttypes import AgentTypes
 from tools.lowpassfilterbiquad import LowPassFilterBiquad
 from .basevehicle import Basevehicle
 
@@ -40,13 +41,13 @@ class TrafficvehicleSettingsDialog(QtWidgets.QDialog):
         self.trafficvehicle_settings.velocity = self.spin_velocity.value()
         self.trafficvehicle_settings.selected_car = self.combo_car_type.currentText()
         self.trafficvehicle_settings.selected_spawnpoint = self.spin_spawn_points.value()
-        self.trafficvehicle_settings._t_lookahead = float(self.edit_t_ahead.text())
-        self.trafficvehicle_settings._k_p = float(self.edit_gain_prop.text())
-        self.trafficvehicle_settings._k_d = float(self.edit_gain_deriv.text())
-        self.trafficvehicle_settings._w_lat = float(self.edit_weight_lat.text())
-        self.trafficvehicle_settings._w_heading = float(self.edit_weight_heading.text())
+        self.trafficvehicle_settings.t_lookahead = float(self.edit_t_ahead.text())
+        self.trafficvehicle_settings.k_p = float(self.edit_gain_prop.text())
+        self.trafficvehicle_settings.k_d = float(self.edit_gain_deriv.text())
+        self.trafficvehicle_settings.w_lat = float(self.edit_weight_lat.text())
+        self.trafficvehicle_settings.w_heading = float(self.edit_weight_heading.text())
         self.trafficvehicle_settings.trajectory_name = self.combo_box_traffic_trajectory.itemText(self.combo_box_traffic_trajectory.currentIndex())
-        self.trafficvehicle_settings._set_velocity_with_pd = self.check_box_pd_vel.isChecked()
+        self.trafficvehicle_settings.set_velocity_with_pd = self.check_box_pd_vel.isChecked()
 
         super().accept()
 
@@ -59,27 +60,27 @@ class TrafficvehicleSettingsDialog(QtWidgets.QDialog):
         if not settings_to_display:
             settings_to_display = self.trafficvehicle_settings
 
-        self.lbl_current_t_lookahead.setText(str(settings_to_display._t_lookahead))
-        self.lbl_current_gain_prop.setText(str(settings_to_display._k_p))
-        self.lbl_current_gain_deriv.setText(str(settings_to_display._k_d))
-        self.lbl_current_weight_lat.setText(str(settings_to_display._w_lat))
-        self.lbl_current_weight_heading.setText(str(settings_to_display._w_heading))
+        self.lbl_current_t_lookahead.setText(str(settings_to_display.t_lookahead))
+        self.lbl_current_gain_prop.setText(str(settings_to_display.k_p))
+        self.lbl_current_gain_deriv.setText(str(settings_to_display.k_d))
+        self.lbl_current_weight_lat.setText(str(settings_to_display.w_lat))
+        self.lbl_current_weight_heading.setText(str(settings_to_display.w_heading))
 
-        self.spin_velocity.setValue(settings_to_display._velocity)
-        self.edit_t_ahead.setText(str(settings_to_display._t_lookahead))
-        self.edit_gain_prop.setText(str(settings_to_display._k_p))
-        self.edit_gain_deriv.setText(str(settings_to_display._k_d))
-        self.edit_weight_lat.setText(str(settings_to_display._w_lat))
-        self.edit_weight_heading.setText(str(settings_to_display._w_heading))
+        self.spin_velocity.setValue(settings_to_display.velocity)
+        self.edit_t_ahead.setText(str(settings_to_display.t_lookahead))
+        self.edit_gain_prop.setText(str(settings_to_display.k_p))
+        self.edit_gain_deriv.setText(str(settings_to_display.k_d))
+        self.edit_weight_lat.setText(str(settings_to_display.w_lat))
+        self.edit_weight_heading.setText(str(settings_to_display.w_heading))
 
-        idx_car = self.combo_car_type.findText(settings_to_display._selected_car)
+        idx_car = self.combo_car_type.findText(settings_to_display.selected_car)
         self.combo_car_type.setCurrentIndex(idx_car)
 
-        idx_traj = self.combo_box_traffic_trajectory.findText(settings_to_display._trajectory_name)
+        idx_traj = self.combo_box_traffic_trajectory.findText(settings_to_display.trajectory_name)
         self.combo_box_traffic_trajectory.setCurrentIndex(idx_traj)
 
-        self.spin_spawn_points.setValue(settings_to_display._selected_spawnpoint)
-        self.check_box_pd_vel.setChecked(settings_to_display._set_velocity_with_pd)
+        self.spin_spawn_points.setValue(settings_to_display.selected_spawnpoint)
+        self.check_box_pd_vel.setChecked(settings_to_display.set_velocity_with_pd)
 
     def _update_variables(self):
         """
@@ -89,13 +90,13 @@ class TrafficvehicleSettingsDialog(QtWidgets.QDialog):
         self.trafficvehicle_settings.velocity = self.spin_velocity.value()
         self.trafficvehicle_settings.selected_car = self.combo_car_type.currentText()
         self.trafficvehicle_settings.selected_spawnpoint = self.spin_spawn_points.value()
-        self.trafficvehicle_settings._t_lookahead = float(self.edit_t_ahead.text())
-        self.trafficvehicle_settings._k_p = float(self.edit_gain_prop.text())
-        self.trafficvehicle_settings._k_d = float(self.edit_gain_deriv.text())
-        self.trafficvehicle_settings._w_lat = float(self.edit_weight_lat.text())
-        self.trafficvehicle_settings._w_heading = float(self.edit_weight_heading.text())
+        self.trafficvehicle_settings.t_lookahead = float(self.edit_t_ahead.text())
+        self.trafficvehicle_settings.k_p = float(self.edit_gain_prop.text())
+        self.trafficvehicle_settings.k_d = float(self.edit_gain_deriv.text())
+        self.trafficvehicle_settings.w_lat = float(self.edit_weight_lat.text())
+        self.trafficvehicle_settings.w_heading = float(self.edit_weight_heading.text())
         self.trafficvehicle_settings.trajectory_name = self.combo_box_traffic_trajectory.itemText(self.combo_box_traffic_trajectory.currentIndex())
-        self.trafficvehicle_settings._set_velocity_with_pd = self.check_box_pd_vel.isChecked()
+        self.trafficvehicle_settings.set_velocity_with_pd = self.check_box_pd_vel.isChecked()
 
         self._display_values()
 
@@ -111,7 +112,9 @@ class TrafficVehicle(Basevehicle):
     This class contains everything you need to make a vehicle follow a predefined route by PD control
     """
 
-    def __init__(self, carlainterface_action, name, nr_spawn_points, tags, settings: TrafficVehicleSettings):
+    def __init__(self, module_action, agent_list_key, settings, vehicle_tags, spawn_points):
+        super().__init__(agent_type=AgentTypes.TRAFFICVEHICLE, module_action=module_action, vehicle_tags=vehicle_tags,
+                         spawnpoints=spawn_points)
         """
         Initializes the class
         :param carlainterface_action:
@@ -120,13 +123,12 @@ class TrafficVehicle(Basevehicle):
         :param tags:
         :param settings:
         """
-        super().__init__(carlainterface_action, name=name)
-        self.carlainterface_action = carlainterface_action
+        self.module_action = module_action
+        self._agent_list_key = agent_list_key
 
         self.settings = settings
-        self._bq_filter_heading = LowPassFilterBiquad(fs =1000/self.carlainterface_action.tick_interval_ms, fc = 3)
-        self._bq_filter_velocity = LowPassFilterBiquad(fs = 1000/self.carlainterface_action.tick_interval_ms, fc = 3)
-        self.module_action = carlainterface_action
+        self._bq_filter_heading = LowPassFilterBiquad(fs =1000/self.module_action.tick_interval_ms, fc = 3)
+        self._bq_filter_velocity = LowPassFilterBiquad(fs = 1000/self.module_action.tick_interval_ms, fc = 3)
 
         self._t2 = 0
 
@@ -138,38 +140,39 @@ class TrafficVehicle(Basevehicle):
         path = os.path.dirname(os.path.dirname(curpath))
         self._path_trajectory_directory = os.path.join(path, '../steeringwheelcontrol/action/swcontrollers/trajectories/')
 
+        self._spawned = False
+        self._hardware_data = {}
+        self._sw_controller_data = {}
 
-        self.vehicle_tab_widget = uic.loadUi(uifile=os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/trafficvehicletab.ui"))
-        self.vehicle_tab_widget.group_traffic_agent.setTitle(name)
-
-        self.vehicle_tab_widget.btn_destroy.setEnabled(False)
-
-        self.vehicle_tab_widget.btn_spawn.clicked.connect(self.spawn_car)
-        self.vehicle_tab_widget.btn_destroy.clicked.connect(self.destroy_car)
-        self.vehicle_tab_widget.btn_remove_traffic_agent.clicked.connect(self.remove_traffic_agent)
-        self.vehicle_tab_widget.btn_settings.clicked.connect(self._open_settings_dialog)
-        self.vehicle_tab_widget.btn_settings.clicked.connect(self._open_settings_dialog_from_button)
+        self.settings_dialog = None
+        self._agent_tab.btn_settings.clicked.connect(self._open_settings_dialog)
+        self._agent_tab.btn_settings.clicked.connect(self._open_settings_dialog_from_button)
 
         self.settings_dialog = TrafficvehicleSettingsDialog(self.settings)
 
-
-        self.update_trajectory_list()
-
-        for item in tags:
+        for item in vehicle_tags:
             self.settings_dialog.combo_car_type.addItem(item)
 
-        self.settings_dialog.spin_spawn_points.setRange(0, nr_spawn_points - 1)
+        self.settings_dialog.spin_spawn_points.setRange(0, len(spawn_points) - 1)
+
+        self._open_settings_dialog()
+
+        self.update_trajectory_list()
 
         self.settings_dialog.combo_box_traffic_trajectory.currentIndexChanged.connect(self.set_trajectory_name)
         self.settings_dialog.btn_apply_parameters.clicked.connect(self.load_trajectory)
         self.settings_dialog.accepted.connect(self.load_trajectory)
 
+        self.load_trajectory()
         self._open_settings_dialog()
 
+    @property
+    def agent_tab(self):
+        return self._agent_tab
 
     @property
-    def vehicle_tab(self):
-        return self.vehicle_tab_widget
+    def get_agent_list_key(self):
+        return self._agent_list_key
 
     def _open_settings_dialog(self):
         """
@@ -186,24 +189,12 @@ class TrafficVehicle(Basevehicle):
         self.settings_dialog._display_values()
         self.settings_dialog.show()
 
-    def remove_traffic_agent(self):
-        """
-        Removes the traffic agent
-        :return:
-        """
-        self.vehicle_tab.setParent(None)
-        self.destroy_car()
-
-        #I dont know what these are?
-        # self.module_action.traffic_vehicles.remove_input_device(self)
-        # self.module_action.settings.traffic_vehicles.remove_input_device(self.settings)
-
     def set_trajectory_name(self):
         """
         Sets the current to follow trajectory name
         :return:
         """
-        self.settings._trajectory_name = self.settings_dialog.combo_box_traffic_trajectory.itemText(self.settings_dialog.combo_box_traffic_trajectory.currentIndex())
+        self.settings.trajectory_name = self.settings_dialog.combo_box_traffic_trajectory.itemText(self.settings_dialog.combo_box_traffic_trajectory.currentIndex())
 
     def load_trajectory(self):
         """
@@ -214,8 +205,8 @@ class TrafficVehicle(Basevehicle):
         :return:
         """
         try:
-            tmp = pd.read_csv(os.path.join(self._path_trajectory_directory, self.settings._trajectory_name))
-            self._trajectory = tmp.values
+            tmp = pd.read_csv(os.path.join(self._path_trajectory_directory, self.settings.trajectory_name))
+            self.trajectory = tmp.values
             # TODO We might want to do some checks on the trajectory here.
             # self.trajectory_name = fname
         except OSError as err:
@@ -235,7 +226,7 @@ class TrafficVehicle(Basevehicle):
         self.settings_dialog.combo_box_traffic_trajectory.clear()
         self.settings_dialog.combo_box_traffic_trajectory.addItems(files)
 
-        idx = self.settings_dialog.combo_box_traffic_trajectory.findText(self.settings._trajectory_name)
+        idx = self.settings_dialog.combo_box_traffic_trajectory.findText(self.settings.trajectory_name)
         if idx != -1:
             self.settings_dialog.combo_box_traffic_trajectory.setCurrentIndex(idx)
 
@@ -251,7 +242,7 @@ class TrafficVehicle(Basevehicle):
         dist_squared = np.einsum('ij,ij->i', deltas, deltas)
         return np.argmin(dist_squared)
 
-    def do(self):
+    def do(self, data):
         """
         This ticks at the interval of the module and will update the traffic vehicles control input appropriately.
         :return:
@@ -291,9 +282,9 @@ class TrafficVehicle(Basevehicle):
 
 
             # VELOCITY
-            if self.settings._set_velocity_with_pd:
+            if self.settings.set_velocity_with_pd:
                 #Throttle method:
-                vel_error = self.settings._velocity - (math.sqrt(car.get_velocity().x**2 + car.get_velocity().y**2 + car.get_velocity().z**2)*3.6)
+                vel_error = self.settings.velocity - (math.sqrt(car.get_velocity().x**2 + car.get_velocity().y**2 + car.get_velocity().z**2)*3.6)
                 vel_error_rate = (math.sqrt(car.get_acceleration().x**2 + car.get_acceleration().y**2 + car.get_acceleration().z**2)*3.6)
                 error_velocity = [vel_error, vel_error_rate]
 
@@ -312,7 +303,7 @@ class TrafficVehicle(Basevehicle):
                 # Setting velocity method
                 forward_vector = car.get_transform().rotation.get_forward_vector()
                 vel_traffic = car.get_velocity()
-                vel_traffic = forward_vector * self.settings._velocity / 3.6
+                vel_traffic = forward_vector * self.settings.velocity / 3.6
                 self.spawned_vehicle.set_velocity(vel_traffic)
                 self._control.brake = 0
                 self._control.throttle = 0
@@ -340,16 +331,16 @@ class TrafficVehicle(Basevehicle):
         pos_car_future = pos_car + vel_car * 0.6  # linear extrapolation, should be updated
 
 
-        index_closest_waypoint = self.find_closest_node(pos_car_future, self._trajectory[:, 1:3])
+        index_closest_waypoint = self.find_closest_node(pos_car_future, self.trajectory[:, 1:3])
 
-        if index_closest_waypoint >= len(self._trajectory) - 3:
+        if index_closest_waypoint >= len(self.trajectory) - 3:
             index_closest_waypoint_next = 0
         else:
             index_closest_waypoint_next = index_closest_waypoint + 3
 
         # calculate lateral error
-        pos_ref_future = self._trajectory[index_closest_waypoint, 1:3]
-        pos_ref_future_next = self._trajectory[index_closest_waypoint_next, 1:3]
+        pos_ref_future = self.trajectory[index_closest_waypoint, 1:3]
+        pos_ref_future_next = self.trajectory[index_closest_waypoint_next, 1:3]
 
         vec_pos_future = pos_car_future - pos_ref_future
         vec_dir_future = pos_ref_future_next - pos_ref_future
@@ -363,7 +354,7 @@ class TrafficVehicle(Basevehicle):
             error_pos_lat = -error_pos_lat
 
         # calculate heading error
-        heading_ref = self._trajectory[index_closest_waypoint, 6]
+        heading_ref = self.trajectory[index_closest_waypoint, 6]
 
         error_heading = -(math.radians(heading_ref) - math.radians(heading_car))
 
@@ -394,8 +385,8 @@ class TrafficVehicle(Basevehicle):
         :param error:
         :return: steering angle
         """
-        lateral_gain = self.settings._w_lat * (self.settings._k_p * error[0] + self.settings._k_d * error[2])
-        heading_gain = self.settings._w_heading * (self.settings._k_p * error[1] + self.settings._k_d* error[3])
+        lateral_gain = self.settings.w_lat * (self.settings.k_p * error[0] + self.settings.k_d * error[2])
+        heading_gain = self.settings.w_heading * (self.settings.k_p * error[1] + self.settings.k_d* error[3])
         #
         total_gain = lateral_gain+ heading_gain
         sw_angle = total_gain/450

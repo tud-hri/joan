@@ -3,8 +3,10 @@ import os
 import random
 import sys
 
-from PyQt5 import QtCore
+from PyQt5 import QtCore, uic
 from PyQt5.QtWidgets import QMessageBox
+from modules.carlainterface.action.agenttypes import AgentTypes
+from modules.joanmodules import JOANModules
 
 msg_box = QMessageBox()
 msg_box.setTextFormat(QtCore.Qt.RichText)
@@ -32,17 +34,54 @@ class Basevehicle:
     The base class of any vehicle or 'agent', any agent of which you want to collect data should inherit from this class
     """
 
-    def __init__(self, carlainterface_action, name=''):
+    def __init__(self, agent_type: AgentTypes,  module_action: JOANModules, vehicle_tags, spawnpoints):
         """
         Initializes class
         :param carlainterface_action:
         """
-        self.module_action = carlainterface_action
+        self.module_action = module_action
+        self._agent_type = agent_type
+        self._vehicle_tags = vehicle_tags
+        self._spawn_points = spawnpoints
+        self.settings = None
+
+        # widget
+        self._settings_tab = uic.loadUi(self._agent_type.settings_ui_file)
+        self._agent_tab = uic.loadUi(self._agent_type.agent_tab_ui_file)
+
+
+
+        # widget actions
+        self._agent_tab.btn_remove_agent.clicked.connect(self.remove_agent)
+        self._agent_tab.btn_destroy.clicked.connect(self.destroy)
+        self._agent_tab.btn_spawn.clicked.connect(self.spawn)
+
+
         self._spawned = False
-        self.vehicle_tab_widget = None
+        self._agent_tab.btn_destroy.setEnabled(self._spawned)
         self.car_data = {}
         self.spawned_vehicle = None
-        self.name = name
+
+    @property
+    def get_agent_tab(self):
+        return self._agent_tab
+
+    @property
+    def vehicle_id(self):
+        return self._BP.id
+
+    @property
+    def spawned(self):
+        return self._spawned
+
+    def initialize(self):
+        """initialize, can be overwritten"""
+        pass
+
+    def remove_agent(self):
+        """Remove the connected tab widget (and tab widget only)"""
+        self.destroy()
+        self.module_action.remove_agent(self)
 
     def unpack_vehicle_data(self):
         try:
@@ -88,7 +127,7 @@ class Basevehicle:
 
         return self.car_data
 
-    def spawn_car(self):
+    def spawn(self):
         """
         Tries to spawn the agent/vehicle
         :return:
@@ -118,16 +157,16 @@ class Basevehicle:
             physics.gear_switch_time = 0
             self.spawned_vehicle.apply_physics_control(physics)
 
-            self.vehicle_tab_widget.btn_spawn.setEnabled(False)
-            self.vehicle_tab_widget.btn_destroy.setEnabled(True)
+            self._agent_tab.btn_spawn.setEnabled(False)
+            self._agent_tab.btn_destroy.setEnabled(True)
             self._spawned = True
         except Exception as inst:
             print('Could not spawn car:', inst)
-            self.vehicle_tab_widget.btn_spawn.setEnabled(True)
-            self.vehicle_tab_widget.btn_destroy.setEnabled(False)
+            self._agent_tab.btn_spawn.setEnabled(True)
+            self._agent_tab.btn_destroy.setEnabled(False)
             self._spawned = False
 
-    def destroy_car(self):
+    def destroy(self):
         """
         Tries to destroy the agent/car
         :return:
@@ -136,26 +175,12 @@ class Basevehicle:
             if self._spawned:
                 self.spawned_vehicle.destroy()
                 self._spawned = False
-            self.vehicle_tab_widget.btn_spawn.setEnabled(True)
-            self.vehicle_tab_widget.btn_destroy.setEnabled(False)
+            self._agent_tab.btn_spawn.setEnabled(True)
+            self._agent_tab.btn_destroy.setEnabled(False)
         except Exception as inst:
             self._spawned = True
             print('Could not destroy spawn car:', inst)
-            self.vehicle_tab_widget.btn_spawn.setEnabled(False)
-            self.vehicle_tab_widget.btn_destroy.setEnabled(True)
+            self._agent_tab.btn_spawn.setEnabled(False)
+            self._agent_tab.btn_destroy.setEnabled(True)
 
-    @property
-    def vehicle_id(self):
-        return self._BP.id
 
-    @property
-    def spawned(self):
-        return self._spawned
-
-    @property
-    def vehicle_tab(self):
-        return self.vehicle_tab_widget
-
-    @property
-    def vehicle_id(self):
-        return self._BP.id
