@@ -44,6 +44,7 @@ class HardwareManagerAction(JoanModuleAction):
                 self._hardware_inputs[hardware_input].enable_remove_button()
             else:
                 self._hardware_inputs[hardware_input].disable_remove_button()
+
         self.write_news(self.data)
 
     def do(self):
@@ -57,8 +58,8 @@ class HardwareManagerAction(JoanModuleAction):
 
         for hardware_input in self._hardware_inputs:
             self.data[hardware_input] = self._hardware_inputs[hardware_input].do()
-            if hardware_input == HardwareInputTypes.SENSODRIVE:
-                 self._hardware_inputs[hardware_input]._toggle_on_off(self.carla_interface_data['connected'])
+            # if HardwareInputTypes.SENSODRIVE.__str__() in hardware_input:
+            #      self._hardware_inputs[hardware_input].toggle_on_off()
 
         self.write_news(self.data)
 
@@ -90,9 +91,9 @@ class HardwareManagerAction(JoanModuleAction):
         """
         self.carla_interface_data = self.read_news(JOANModules.CARLA_INTERFACE)
         # make sure you can only turn on the motor of the wheel if carla is connected
-        for hardware_input in self._hardware_inputs:
-            if hardware_input == HardwareInputTypes.SENSODRIVE:
-                self._hardware_inputs[hardware_input]._toggle_on_off(self.carla_interface_data['connected'])
+        # for hardware_input in self._hardware_inputs:
+        #     if HardwareInputTypes.SENSODRIVE.__str__() in hardware_input:
+        #         pass
 
         try:
             self.state_machine.request_state_change(State.RUNNING, 'Hardware manager running')
@@ -107,11 +108,9 @@ class HardwareManagerAction(JoanModuleAction):
         :return:
         """
         self.carla_interface_data = self.read_news(JOANModules.CARLA_INTERFACE)
-        for hardware_input in self.hardware_inputs:
-            if hardware_input == HardwareInputTypes.SENSODRIVE:
-                 self._hardware_inputs[hardware_input]._hardware_input_tab.btn_on_off.setStyleSheet("background-color: orange")
-                 self._hardware_inputs[hardware_input]._hardware_input_tab.btn_on_off.setText('Off')
-                 self._hardware_inputs[hardware_input]._toggle_on_off(False)
+        for hardware_input in self._hardware_inputs:
+            if HardwareInputTypes.SENSODRIVE.__str__() in hardware_input:
+                self._hardware_inputs[hardware_input].shut_off_sensodrive()
 
         try:
             self.state_machine.request_state_change(State.IDLE)

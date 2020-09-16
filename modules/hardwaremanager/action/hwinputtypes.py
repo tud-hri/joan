@@ -44,4 +44,4 @@ class HardwareInputTypes(enum.Enum):
     def __str__(self):
         return {HardwareInputTypes.KEYBOARD: 'Keyboard',
                 HardwareInputTypes.JOYSTICK: 'Joystick',
-                HardwareInputTypes.SENSODRIVE: 'SensoDrive',}[self]
+                HardwareInputTypes.SENSODRIVE: 'SensoDrive'}[self]
