@@ -295,8 +295,7 @@ class JOANSensoDrive(BaseInput):
 
         try:
             requested_torque_by_controller = self._steering_wheel_control_data[
-                self._carla_interface_data['ego_agents']['Vehicle 1']['vehicle_object'].selected_sw_controller]['sw_torque']
-            # print("requested torque ", requested_torque_by_controller)
+                self._carla_interface_data['ego_agents']['EgoVehicle 1']['vehicle_object'].selected_sw_controller]['sw_torque']
         except:
             requested_torque_by_controller = 0
 
@@ -325,6 +324,7 @@ class JOANSensoDrive(BaseInput):
         self._data['Reverse'] = 0
 
         # print(extra_endstop)
+        print('req:= ', requested_torque_by_controller, 'safe = ', self.safety_checked_torque)
         self.sensodrive_shared_values.torque = self.safety_checked_torque
         self.sensodrive_shared_values.friction = self.settings.friction
         self.sensodrive_shared_values.damping = self.settings.damping
