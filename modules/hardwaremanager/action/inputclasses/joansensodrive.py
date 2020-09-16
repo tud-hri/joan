@@ -137,12 +137,12 @@ class JOANSensoDrive(BaseInput):
                                                                self.shutoff_event)
         self._hardware_input_tab.btn_settings.clicked.connect(self._open_settings_dialog)
         self._hardware_input_tab.btn_settings.clicked.connect(self._open_settings_dialog_from_button)
-        self._hardware_input_tab.btn_visualization.setEnabled(False)
         self._hardware_input_tab.btn_remove_hardware.clicked.connect(self.remove_hardware_input)
-        self._hardware_input_tab.btn_on_off.clicked.connect(self.toggle_on_off)
-        self._hardware_input_tab.btn_on_off.setStyleSheet("background-color: orange")
-        self._hardware_input_tab.btn_on_off.setText('Off')
-        self._hardware_input_tab.btn_on_off.setEnabled(True)
+        self._hardware_input_tab.btn_on.clicked.connect(self.turn_motor_sensodrive_on)
+        self._hardware_input_tab.btn_off.clicked.connect(self.turn_motor_sensodrive_off)
+        self._hardware_input_tab.btn_on.setEnabled(False)
+        self._hardware_input_tab.btn_off.setEnabled(False)
+        self._hardware_input_tab.btn_clear_error.setEnabled(False)
 
         self._open_settings_dialog()
 
@@ -177,6 +177,7 @@ class JOANSensoDrive(BaseInput):
             self.init_event.set()
             self.sensodrive_communication_process.start()
             self.counter = 0
+        self._hardware_input_tab.btn_on.setEnabled(True)
 
     def _open_settings_dialog_from_button(self):
         """
@@ -229,29 +230,38 @@ class JOANSensoDrive(BaseInput):
     def toggle_button_handling(self):
         pass
 
-    def toggle_on_off(self):
-        """
-        If a PCAN dongle is connected and working will check what state the sensodrive is in and take the appropriate action
-        (0x10 is ready, 0x14 is on and 0x18 is error)
-        :return:
-        """
+    def turn_motor_sensodrive_on(self):
         self.toggle_sensodrive_motor_event.set()
-        # give the seperate core time to handle the signal
-        time.sleep(0.02)
+        self._hardware_input_tab.btn_on.setEnabled(False)
+        self._hardware_input_tab.btn_off.setEnabled(True)
 
-        if self.sensodrive_shared_values.sensodrive_motorstate == 0x10:
-            self._hardware_input_tab.btn_on_off.setStyleSheet("background-color: orange")
-            self._hardware_input_tab.btn_on_off.setText('Off')
-        elif self.sensodrive_shared_values.sensodrive_motorstate == 0x14:
-            self._hardware_input_tab.btn_on_off.setStyleSheet("background-color: lightgreen")
-            self._hardware_input_tab.btn_on_off.setText('On')
-        elif self.sensodrive_shared_values.sensodrive_motorstate == 0x18:
-            self._hardware_input_tab.btn_on_off.setStyleSheet("background-color: red")
-            self._hardware_input_tab.btn_on_off.setText('Clear Error')
+    def turn_motor_sensodrive_off(self):
+        self.toggle_sensodrive_motor_event.set()
+        self._hardware_input_tab.btn_on.setEnabled(True)
+        self._hardware_input_tab.btn_off.setEnabled(False)
+    # def toggle_on_off(self):
+    #     """
+    #     If a PCAN dongle is connected and working will check what state the sensodrive is in and take the appropriate action
+    #     (0x10 is ready, 0x14 is on and 0x18 is error)
+    #     :return:
+    #     """
+    #     self.toggle_sensodrive_motor_event.set()
+    #     # give the seperate core time to handle the signal
+    #     time.sleep(0.02)
+    #
+    #     if self.sensodrive_shared_values.sensodrive_motorstate == 0x10:
+    #         self._hardware_input_tab.btn_on.setStyleSheet("background-color: orange")
+    #         self._hardware_input_tab.btn_on.setText('Off')
+    #     elif self.sensodrive_shared_values.sensodrive_motorstate == 0x14:
+    #         self._hardware_input_tab.btn_on.setStyleSheet("background-color: lightgreen")
+    #         self._hardware_input_tab.btn_on.setText('On')
+    #     elif self.sensodrive_shared_values.sensodrive_motorstate == 0x18:
+    #         self._hardware_input_tab.btn_on.setStyleSheet("background-color: red")
+    #         self._hardware_input_tab.btn_on.setText('Clear Error')
 
     def shut_off_sensodrive(self):
-        self._hardware_input_tab.btn_on_off.setStyleSheet("background-color: orange")
-        self._hardware_input_tab.btn_on_off.setText('Stopped Module')
+        self._hardware_input_tab.btn_on.setStyleSheet("background-color: orange")
+        self._hardware_input_tab.btn_on.setText('Stopped Module')
         self._hardware_input_tab.repaint()
         self.shutoff_event.set()
         time.sleep(0.02)
@@ -276,15 +286,15 @@ class JOANSensoDrive(BaseInput):
             self._data['torque_rate'] = self.torque_rate
         """
 
-        if self.sensodrive_shared_values.sensodrive_motorstate == 0x10:
-            self._hardware_input_tab.btn_on_off.setStyleSheet("background-color: orange")
-            self._hardware_input_tab.btn_on_off.setText('Off')
-        elif self.sensodrive_shared_values.sensodrive_motorstate == 0x14:
-            self._hardware_input_tab.btn_on_off.setStyleSheet("background-color: lightgreen")
-            self._hardware_input_tab.btn_on_off.setText('On')
-        elif self.sensodrive_shared_values.sensodrive_motorstate == 0x18:
-            self._hardware_input_tab.btn_on_off.setStyleSheet("background-color: red")
-            self._hardware_input_tab.btn_on_off.setText('Clear Error')
+        # if self.sensodrive_shared_values.sensodrive_motorstate == 0x10:
+        #     self._hardware_input_tab.btn_on.setStyleSheet("background-color: orange")
+        #     self._hardware_input_tab.btn_on.setText('Off')
+        # elif self.sensodrive_shared_values.sensodrive_motorstate == 0x14:
+        #     self._hardware_input_tab.btn_on.setStyleSheet("background-color: lightgreen")
+        #     self._hardware_input_tab.btn_on.setText('On')
+        # elif self.sensodrive_shared_values.sensodrive_motorstate == 0x18:
+        #     self._hardware_input_tab.btn_on.setStyleSheet("background-color: red")
+        #     self._hardware_input_tab.btn_on.setText('Clear Error')
 
         # check whether we have a sw_controller that should be updated
         self._steering_wheel_control_data = self.module_action.read_news(JOANModules.STEERING_WHEEL_CONTROL)
