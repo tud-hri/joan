@@ -132,16 +132,16 @@ class KeyBoardSettings:
         self.name = "Keyboard"
 
         # Steering Range
-        self.min_steer = -90
-        self.max_steer = 90
+        self.min_steer = - 0.5 * math.pi
+        self.max_steer = 0.5 * math.pi
 
         # Check auto center
         self.auto_center = True
 
         # Sensitivities
-        self.steer_sensitivity = 50
-        self.throttle_sensitivity = 50
-        self.brake_sensitivity = 50
+        self.steer_sensitivity = float(50.0)
+        self.throttle_sensitivity =  float(50.0)
+        self.brake_sensitivity =  float(50.0)
 
     def as_dict(self):
         return self.__dict__
@@ -157,8 +157,8 @@ class JoyStickSettings:
     """
 
     def __init__(self):
-        self.min_steer = -90
-        self.max_steer = 90
+        self.min_steer = -0.5 * math.pi
+        self.max_steer = 0.5 * math.pi
         self.device_vendor_id = 0
         self.device_product_id = 0
         self.name = "Joystick"
