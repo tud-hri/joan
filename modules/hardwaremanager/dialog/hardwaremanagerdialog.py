@@ -50,6 +50,9 @@ class HardwareManagerDialog(JoanModuleDialog):
             self.module_widget.btn_add_hardware.setEnabled(False)
 
     def _hardware_input_selection(self):
+        # request state change to IDLE
+        self.module_action.state_machine.request_state_change(State.IDLE, '')
+
         self._input_type_dialog.combo_hardware_inputtype.clear()
         for hardware_inputs in HardwareInputTypes:
             self._input_type_dialog.combo_hardware_inputtype.addItem(hardware_inputs.__str__(),
