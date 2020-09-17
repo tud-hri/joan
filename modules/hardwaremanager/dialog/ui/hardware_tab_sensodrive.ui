@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>472</width>
-    <height>96</height>
+    <width>552</width>
+    <height>134</height>
    </rect>
   </property>
   <property name="font">
@@ -44,10 +44,10 @@
       <string>hardware_name</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
-      <item row="0" column="4" rowspan="3">
+      <item row="3" column="4" rowspan="2">
        <widget class="QPushButton" name="btn_remove_hardware">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
@@ -63,29 +63,10 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="0" rowspan="2">
-       <widget class="QPushButton" name="btn_on_off">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="font">
-         <font>
-          <weight>50</weight>
-          <bold>false</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>Off</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="2" rowspan="3">
+      <item row="3" column="2" rowspan="2">
        <widget class="QPushButton" name="btn_settings">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
@@ -101,30 +82,109 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="1" rowspan="3">
-       <widget class="Line" name="line_2">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="3" rowspan="3">
-       <widget class="Line" name="line_3">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QPushButton" name="btn_visualization">
+      <item row="3" column="0" colspan="2">
+       <widget class="QGroupBox" name="groupBox_2">
         <property name="font">
          <font>
+          <pointsize>8</pointsize>
           <weight>50</weight>
           <bold>false</bold>
          </font>
         </property>
-        <property name="text">
-         <string>Visualize</string>
+        <property name="title">
+         <string>SensoDrive motor controls and state</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_3">
+         <property name="leftMargin">
+          <number>3</number>
+         </property>
+         <property name="topMargin">
+          <number>3</number>
+         </property>
+         <property name="rightMargin">
+          <number>3</number>
+         </property>
+         <property name="bottomMargin">
+          <number>3</number>
+         </property>
+         <property name="spacing">
+          <number>3</number>
+         </property>
+         <item row="2" column="0">
+          <widget class="QPushButton" name="btn_on">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="font">
+            <font>
+             <weight>50</weight>
+             <bold>false</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Turn On</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <widget class="QPushButton" name="btn_clear_error">
+           <property name="font">
+            <font>
+             <weight>50</weight>
+             <bold>false</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Clear Error</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QPushButton" name="btn_off">
+           <property name="font">
+            <font>
+             <weight>50</weight>
+             <bold>false</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Turn Off</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1" rowspan="2">
+          <widget class="QLabel" name="lbl_sensodrive_state">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>State</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>Current state:</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="3" column="3">
+       <widget class="Line" name="line">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
         </property>
        </widget>
       </item>

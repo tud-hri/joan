@@ -21,13 +21,14 @@ PEDAL_MESSAGE_LENGTH = 2
 
 
 class SensoDriveComm(mp.Process):
-    def __init__(self, shared_values, init_event, toggle_event, close_event, update_event, shutoff_event):
+    def __init__(self, shared_values, init_event, turn_on_event, turn_off_event, clear_error_event, close_event, update_event):
         super().__init__()
         self.init_event = init_event
-        self.toggle_sensodrive_motor_event = toggle_event
+        self.turn_on_event = turn_on_event
         self.close_event = close_event
         self.update_settings_event = update_event
-        self.shutoff_event = shutoff_event
+        self.turn_off_event = turn_off_event
+        self.clear_error_event = clear_error_event
 
         # Create PCAN object
         self.pcan_object = None
@@ -97,7 +98,7 @@ class SensoDriveComm(mp.Process):
         self.sensodrive_initialization_message.DATA[7] = torque_limit_beyond_endstops_bytes[0]
 
         self.pcan_object.Write(self._pcan_channel, self.sensodrive_initialization_message)
-        time.sleep(0.02)
+        time.sleep(0.002)
         self.pcan_object.Read(self._pcan_channel)
 
         # do not switch mode
@@ -110,12 +111,16 @@ class SensoDriveComm(mp.Process):
         # TODO Do we need to do this twice?
         self.pcan_object.Write(self._pcan_channel, self.sensodrive_initialization_message)
         time.sleep(0.02)
-        self.pcan_object.Read(self._pcan_channel)
+        response = self.pcan_object.Read(self._pcan_channel)
+
+        self._current_state_hex = response[1].DATA[0]
 
         self.state_message = self.sensodrive_initialization_message
         self.state_message.DATA[0] = 0x11
+        print(hex(self._current_state_hex))
+        self.sensodrive_shared_values.sensodrive_motorstate = self._current_state_hex
 
-        self._current_state_hex = 0x00
+        # self._current_state_hex = 0x00
 
     def update_settings(self):
         endstops_bytes = int.to_bytes(int(math.degrees(self.sensodrive_shared_values.endstops)), 2, byteorder='little', signed=True)
@@ -142,9 +147,11 @@ class SensoDriveComm(mp.Process):
         self.sensodrive_initialization_message.DATA[7] = torque_limit_beyond_endstops_bytes[0]
 
         self.pcan_object.Write(self._pcan_channel, self.sensodrive_initialization_message)
-        time.sleep(0.02)
-        self.pcan_object.Read(self._pcan_channel)
+        time.sleep(0.002)
+        response = self.pcan_object.Read(self._pcan_channel)
 
+        self._current_state_hex = response[1].DATA[0]
+        self.sensodrive_shared_values.sensodrive_motorstate = self._current_state_hex
     def _map_si_to_sensodrive(self, shared_values):
         # convert SI units to Sensowheel units
 
@@ -188,12 +195,12 @@ class SensoDriveComm(mp.Process):
 
         while True:
             # Turn off SensoDrive immediately (only when torque limits are breached)
-            if self.shutoff_event.is_set():
+            if self.turn_off_event.is_set():
                 self.on_to_off(self.state_message)
-                self.shutoff_event.clear()
+                self.turn_off_event.clear()
 
             # Get latest parameters
-            time.sleep(0.001)
+            time.sleep(0.00001)
 
             # convert SI units to Sensowheel units
             self.steering_wheel_parameters = self._map_si_to_sensodrive(self.sensodrive_shared_values)
@@ -225,9 +232,13 @@ class SensoDriveComm(mp.Process):
 
             self.sensodrive_shared_values.sensodrive_motorstate = self._current_state_hex
 
-            if self.toggle_sensodrive_motor_event.is_set():
-                self.on_off()
-                self.toggle_sensodrive_motor_event.clear()
+            if self.turn_on_event.is_set():
+                self.off_to_on(self.state_message)
+                self.turn_on_event.clear()
+
+            if self.clear_error_event.is_set():
+                self.clear_error(self.state_message)
+                self.clear_error_event.clear()
 
             if self.update_settings_event.is_set():
                 self.update_settings()
@@ -286,20 +297,20 @@ class SensoDriveComm(mp.Process):
 
         pcan_object.Write(self._pcan_channel, pcanmessage)
 
-    def on_off(self):
-        """
-        If a PCAN dongle is connected and working will check what state the sensodrive is in and take the appropriate action
-        (0x10 is ready, 0x14 is on and 0x18 is error)
-        :return:
-        """
-        if self._current_state_hex == 0x10:
-            self.off_to_on(self.sensodrive_initialization_message)
-
-        elif self._current_state_hex == 0x14:
-            self.on_to_off(self.sensodrive_initialization_message)
-
-        elif self._current_state_hex == 0x18:
-            self.clear_error(self.sensodrive_initialization_message)
+    # def on_off(self):
+    #     """
+    #     If a PCAN dongle is connected and working will check what state the sensodrive is in and take the appropriate action
+    #     (0x10 is ready, 0x14 is on and 0x18 is error)
+    #     :return:
+    #     """
+    #     if self._current_state_hex == 0x10:
+    #         self.off_to_on(self.sensodrive_initialization_message)
+    #
+    #     elif self._current_state_hex == 0x14:
+    #         self.on_to_off(self.sensodrive_initialization_message)
+    #
+    #     elif self._current_state_hex == 0x18:
+    #         self.clear_error(self.sensodrive_initialization_message)
 
     def off_to_on(self, message):
         """
@@ -309,14 +320,24 @@ class SensoDriveComm(mp.Process):
         print('off to on')
         message.DATA[0] = 0x10
         self.pcan_object.Write(self._pcan_channel, message)
-        time.sleep(0.001)
+        time.sleep(0.002)
 
         message.DATA[0] = 0x12
         self.pcan_object.Write(self._pcan_channel, message)
-        time.sleep(0.001)
+        time.sleep(0.002)
 
         message.DATA[0] = 0x14
         self.pcan_object.Write(self._pcan_channel, message)
+        time.sleep(0.002)
+        response = self.pcan_object.Read(self._pcan_channel)
+
+        self._current_state_hex = response[1].DATA[0]
+        # print(hex(self._current_state_hex))
+        time.sleep(0.002)
+        self.sensodrive_shared_values.sensodrive_motorstate = self._current_state_hex
+
+
+
 
     def on_to_off(self, message):
         """
@@ -326,10 +347,16 @@ class SensoDriveComm(mp.Process):
         print('on to off')
         message.DATA[0] = 0x12
         self.pcan_object.Write(self._pcan_channel, message)
-        time.sleep(0.001)
+        time.sleep(0.002)
         message.DATA[0] = 0x10
         self.pcan_object.Write(self._pcan_channel, message)
-        time.sleep(0.001)
+        time.sleep(0.002)
+        response = self.pcan_object.Read(self._pcan_channel)
+
+        self._current_state_hex = response[1].DATA[0]
+        # print(hex(self._current_state_hex))
+        time.sleep(0.002)
+        self.sensodrive_shared_values.sensodrive_motorstate = self._current_state_hex
 
     def clear_error(self, message):
         """
@@ -339,4 +366,10 @@ class SensoDriveComm(mp.Process):
         print('clear error')
         message.DATA[0] = 0x1F
         self.pcan_object.Write(self._pcan_channel, message)
-        time.sleep(0.001)
+        time.sleep(0.002)
+        response = self.pcan_object.Read(self._pcan_channel)
+
+        self._current_state_hex = response[1].DATA[0]
+        print(hex(self._current_state_hex))
+        time.sleep(0.002)
+        self.sensodrive_shared_values.sensodrive_motorstate = self._current_state_hex

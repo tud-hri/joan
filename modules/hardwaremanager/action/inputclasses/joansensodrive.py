@@ -126,29 +126,42 @@ class JOANSensoDrive(BaseInput):
 
         self.init_event = mp.Event()
         self.close_event = mp.Event()
-        self.toggle_sensodrive_motor_event = mp.Event()
+        self.turn_on_event = mp.Event()
         self.update_shared_values_from_settings_event = mp.Event()
-        self.shutoff_event = mp.Event()
+        self.turn_off_event = mp.Event()
+        self.clear_error_event = mp.Event()
 
         # create SensoDriveComm object
         self.sensodrive_communication_process = SensoDriveComm(self.sensodrive_shared_values, self.init_event,
-                                                               self.toggle_sensodrive_motor_event, self.close_event,
-                                                               self.update_shared_values_from_settings_event,
-                                                               self.shutoff_event)
+                                                               self.turn_on_event, self.turn_off_event,
+                                                               self.clear_error_event, self.close_event,
+                                                               self.update_shared_values_from_settings_event)
         self._hardware_input_tab.btn_settings.clicked.connect(self._open_settings_dialog)
         self._hardware_input_tab.btn_settings.clicked.connect(self._open_settings_dialog_from_button)
-        self._hardware_input_tab.btn_visualization.setEnabled(False)
         self._hardware_input_tab.btn_remove_hardware.clicked.connect(self.remove_hardware_input)
-        self._hardware_input_tab.btn_on_off.clicked.connect(self.toggle_on_off)
-        self._hardware_input_tab.btn_on_off.setStyleSheet("background-color: orange")
-        self._hardware_input_tab.btn_on_off.setText('Off')
-        self._hardware_input_tab.btn_on_off.setEnabled(True)
+        self._hardware_input_tab.btn_on.clicked.connect(self.turn_motor_sensodrive_on)
+        self._hardware_input_tab.btn_off.clicked.connect(self.turn_motor_sensodrive_off)
+        self._hardware_input_tab.btn_clear_error.clicked.connect(self.clear_error)
+        self._hardware_input_tab.btn_on.setEnabled(False)
+        self._hardware_input_tab.btn_off.setEnabled(False)
+        self._hardware_input_tab.btn_clear_error.setEnabled(False)
+        self._hardware_input_tab.lbl_sensodrive_state.setText('Uninitialized')
 
         self._open_settings_dialog()
+        
+        if not self.sensodrive_communication_process.is_alive():
+            self.init_event.set()
+            self.sensodrive_communication_process.start()
+            self.counter = 0
+        self._hardware_input_tab.btn_on.setEnabled(True)
+        self.lbl_state_update()
 
     @property
     def get_hardware_input_list_key(self):
         return self.hardware_input_list_key
+
+    def state_change_listener(self):
+        self.lbl_state_update()
 
     def update_shared_values_from_settings(self):
         """
@@ -169,14 +182,10 @@ class JOANSensoDrive(BaseInput):
 
     def initialize(self):
         """
-        Initializes the sensodrive by sending several PCAN messages which will get the sensodrive in the appropriate
-        state.
+        Just updates the already initialized sensodrive.
         :return:
         """
-        if not self.sensodrive_communication_process.is_alive():
-            self.init_event.set()
-            self.sensodrive_communication_process.start()
-            self.counter = 0
+        self.lbl_state_update()
 
     def _open_settings_dialog_from_button(self):
         """
@@ -226,37 +235,63 @@ class JOANSensoDrive(BaseInput):
         if not self._hardware_input_tab.btn_remove_hardware.isEnabled():
             self._hardware_input_tab.btn_remove_hardware.setEnabled(True)
 
-    def toggle_button_handling(self):
-        pass
-
-    def toggle_on_off(self):
-        """
-        If a PCAN dongle is connected and working will check what state the sensodrive is in and take the appropriate action
-        (0x10 is ready, 0x14 is on and 0x18 is error)
-        :return:
-        """
-        self.toggle_sensodrive_motor_event.set()
-        # give the seperate core time to handle the signal
-        time.sleep(0.02)
-
+    def lbl_state_update(self):
         if self.sensodrive_shared_values.sensodrive_motorstate == 0x10:
-            self._hardware_input_tab.btn_on_off.setStyleSheet("background-color: orange")
-            self._hardware_input_tab.btn_on_off.setText('Off')
+            self._hardware_input_tab.lbl_sensodrive_state.setStyleSheet("background-color: orange")
+            self._hardware_input_tab.lbl_sensodrive_state.setText('Off')
+            self._hardware_input_tab.btn_on.setEnabled(True)
+            self._hardware_input_tab.btn_off.setEnabled(False)
+            self._hardware_input_tab.btn_clear_error.setEnabled(False)
         elif self.sensodrive_shared_values.sensodrive_motorstate == 0x14:
-            self._hardware_input_tab.btn_on_off.setStyleSheet("background-color: lightgreen")
-            self._hardware_input_tab.btn_on_off.setText('On')
+            self._hardware_input_tab.lbl_sensodrive_state.setStyleSheet("background-color: lightgreen")
+            self._hardware_input_tab.lbl_sensodrive_state.setText('On')
+            self._hardware_input_tab.btn_on.setEnabled(False)
+            self._hardware_input_tab.btn_off.setEnabled(True)
+            self._hardware_input_tab.btn_clear_error.setEnabled(False)
         elif self.sensodrive_shared_values.sensodrive_motorstate == 0x18:
-            self._hardware_input_tab.btn_on_off.setStyleSheet("background-color: red")
-            self._hardware_input_tab.btn_on_off.setText('Clear Error')
-
-    def shut_off_sensodrive(self):
-        self._hardware_input_tab.btn_on_off.setStyleSheet("background-color: orange")
-        self._hardware_input_tab.btn_on_off.setText('Stopped Module')
+            self._hardware_input_tab.lbl_sensodrive_state.setStyleSheet("background-color: red")
+            self._hardware_input_tab.lbl_sensodrive_state.setText('Error')
+            self._hardware_input_tab.btn_on.setEnabled(False)
+            self._hardware_input_tab.btn_off.setEnabled(False)
+            self._hardware_input_tab.btn_clear_error.setEnabled(True)
         self._hardware_input_tab.repaint()
-        self.shutoff_event.set()
-        time.sleep(0.02)
+
+    def turn_motor_sensodrive_on(self):
+        self.turn_on_event.set()
+        time.sleep(0.05)
+        self.lbl_state_update()
+
+    def turn_motor_sensodrive_off(self):
+        self.turn_off_event.set()
+        time.sleep(0.05)
+        self.lbl_state_update()
 
 
+    def clear_error(self):
+        self.clear_error_event.set()
+        time.sleep(0.05)
+        self.lbl_state_update()
+
+
+    # def toggle_on_off(self):
+    #     """
+    #     If a PCAN dongle is connected and working will check what state the sensodrive is in and take the appropriate action
+    #     (0x10 is ready, 0x14 is on and 0x18 is error)
+    #     :return:
+    #     """
+    #     self.toggle_sensodrive_motor_event.set()
+    #     # give the seperate core time to handle the signal
+    #     time.sleep(0.02)
+    #
+    #     if self.sensodrive_shared_values.sensodrive_motorstate == 0x10:
+    #         self._hardware_input_tab.btn_on.setStyleSheet("background-color: orange")
+    #         self._hardware_input_tab.btn_on.setText('Off')
+    #     elif self.sensodrive_shared_values.sensodrive_motorstate == 0x14:
+    #         self._hardware_input_tab.btn_on.setStyleSheet("background-color: lightgreen")
+    #         self._hardware_input_tab.btn_on.setText('On')
+    #     elif self.sensodrive_shared_values.sensodrive_motorstate == 0x18:
+    #         self._hardware_input_tab.btn_on.setStyleSheet("background-color: red")
+    #         self._hardware_input_tab.btn_on.setText('Clear Error')
 
 
     def do(self):
@@ -276,19 +311,21 @@ class JOANSensoDrive(BaseInput):
             self._data['torque_rate'] = self.torque_rate
         """
 
-        if self.sensodrive_shared_values.sensodrive_motorstate == 0x10:
-            self._hardware_input_tab.btn_on_off.setStyleSheet("background-color: orange")
-            self._hardware_input_tab.btn_on_off.setText('Off')
-        elif self.sensodrive_shared_values.sensodrive_motorstate == 0x14:
-            self._hardware_input_tab.btn_on_off.setStyleSheet("background-color: lightgreen")
-            self._hardware_input_tab.btn_on_off.setText('On')
-        elif self.sensodrive_shared_values.sensodrive_motorstate == 0x18:
-            self._hardware_input_tab.btn_on_off.setStyleSheet("background-color: red")
-            self._hardware_input_tab.btn_on_off.setText('Clear Error')
+        # if self.sensodrive_shared_values.sensodrive_motorstate == 0x10:
+        #     self._hardware_input_tab.btn_on.setStyleSheet("background-color: orange")
+        #     self._hardware_input_tab.btn_on.setText('Off')
+        # elif self.sensodrive_shared_values.sensodrive_motorstate == 0x14:
+        #     self._hardware_input_tab.btn_on.setStyleSheet("background-color: lightgreen")
+        #     self._hardware_input_tab.btn_on.setText('On')
+        # elif self.sensodrive_shared_values.sensodrive_motorstate == 0x18:
+        #     self._hardware_input_tab.btn_on.setStyleSheet("background-color: red")
+        #     self._hardware_input_tab.btn_on.setText('Clear Error')
 
         # check whether we have a sw_controller that should be updated
         self._steering_wheel_control_data = self.module_action.read_news(JOANModules.STEERING_WHEEL_CONTROL)
         self._carla_interface_data = self.module_action.read_news(JOANModules.CARLA_INTERFACE)
+
+        self.lbl_state_update()
 
         try:
             requested_torque_by_controller = self._steering_wheel_control_data[
