@@ -110,9 +110,9 @@ class HardwareManagerAction(JoanModuleAction):
         :return:
         """
         self.carla_interface_data = self.read_news(JOANModules.CARLA_INTERFACE)
-        # for hardware_input in self._hardware_inputs:
-        #     if HardwareInputTypes.SENSODRIVE.__str__() in hardware_input:
-        #         self._hardware_inputs[hardware_input].shut_off_sensodrive()
+        for hardware_input in self._hardware_inputs:
+            if HardwareInputTypes.SENSODRIVE.__str__() in hardware_input:
+                self._hardware_inputs[hardware_input].turn_motor_sensodrive_off()
 
         try:
             self.state_machine.request_state_change(State.IDLE)
