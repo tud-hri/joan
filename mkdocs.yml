@@ -1,30 +1,41 @@
-site_name: JOAN Simulator Documentation
+site_name: JOAN documentation
 theme: readthedocs
 
 
 nav:
     - Home: 'index.md'
-    - Setup:
-      - Setup your JOAN and CARLA project on TUD shared hardware: setup-on-tud-shared-hardware.md
-      - Setup on Windows: setup-carla-windows.md
-      - Setup on Linux: setup-carla-linux.md
-      - Setup JOAN: setup-joan.md
+    - Introduction: introduction.md
 
-    - How to work with JOAN:
-      - JOAN structure: joan-structure.md
-      - Run JOAN: joan-run.md
-      - Starting JOAN (workflow): joan-workflow.md
-      - Create custom JOAN modules: joan-add-module.md
-      - Settings: joan-settings.md
-      - State Machine: joan-state-machine.md
-      - Experiment manager: joan-experiment-manager.md
+    - Setup JOAN and CARLA:
+      - Build CARLA on Windows: setup-carla-windows.md
+#      - Setup on Linux: setup-carla-linux.md
+      - Install JOAN: setup-joan.md
+      - Setup JOAN on a TUD computer: setup-on-tud-shared-hardware.md
 
-    - Other documentation:
-      - Quick start CARLA Unreal Engine (under construction): other-carle-ue4.md
-      - Quick start source Control (git): other-git.md
-      - Sensodrive Explanation: other-sensodrive.md
+    - First steps:
+      - JOAN overview: firststeps-joan-overview.md
+      - Run JOAN and CARLA: firststeps-joan-run.md
+#      - Starting JOAN and CARLA: joan-workflow.md
+      - Quick start CARLA: firststeps-carle-ue4.md
 
-    - Contributing:
+    - Using the JOAN core modules:
+      - Data Recorder: modules-datarecorder.md
+      - CARLA interface: modules-carlainterface.md
+      - Hardware Manager: modules-hardwaremanager.md
+      - Experiment Manager: modules-experimentmanager.md
+      - Steering Wheel Controller: modules-swcontroller.md
+
+    - Advanced steps:
+      - Create custom JOAN modules: advancedsteps-add-custom-module.md
+      - Using JOAN Settings: advancedsteps-settings.md
+      - JOAN State Machine: advancedsteps-state-machine.md
+#      - How to create your own map using RoadRunner: howto-roadrunner.md
+
+    - Other stuff:
+      - Quick start on using source control (git): other-git.md
+      - A short Sensodrive SENSO Wheel explanation: other-sensodrive.md
+
+    - Want to contribute?:
       - Guidelines: contributing-guidelines.md
       - Coding Standard: contributing-coding-standard.md
 
