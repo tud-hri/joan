@@ -1,45 +1,46 @@
 # Working with JOAN and CARLA on shared TU Delft hardware
 
-You will most likely create your own project (a map) on a shared computer. To make sure we keep everything organized, you need to follow the following steps precisely. Follow these steps for every computer you want to install your project on.
+These instructions are specifically for students at TU Delft, but they may be useful for others too. 
 
-If you need to do a fresh install on the computer, follow the steps in both the [CARLA setup guide](setup-carla-windows.md) and [JOAN setup guide](setup-joan.md).
+If you are a student at the TUD, you will share our limited hardware (computers, steering wheels) with your fellow students. To make sure we keep everything organized, you need to follow the following steps. Follow these steps for every computer you want to install your project on.
 
-## How to install your project on a shared computer
+---
 
-- Login with your TU Delft NETID. 
+## Step 1: preparations
 
-!!! Important
-    When you log in to a computer for the first time, the computer needs to be connected with a LAN cable to the TU Delft network.
+Log in with your TU Delft NETID.
 
-- If correct, CARLA (see `c:\carla`), Python 3.8.5 (64 bit) and PyCharm are already installed. If not, follow the CARLA build steps ([here](setup-carla-windows.md)) and install the community version of PyCharm. If CARLA is already present, then you obviously do not need to rebuild. Also, you should not have to reinstall Python.
+If correct, CARLA (see `C:\carla`), python 3.8.5 (64 bit; type `python` in a command terminal, you should see a python version > 3.8), and PyCharm are already installed. 
 
 !!! Note
-    If CARLA needs rebuilding (for example because we upgraded Python version), this needs to be done using the administrator's account. Ask your supervisor.
+    If you need to do a fresh install (CARLA, python, PyCharm, ...) on the computer, follow the steps in both the [Build CARLA on Windows](setup-carla-windows.md) and [Install JOAN](setup-joan.md). This needs to be done as an administrator to make CARLA, python and PyCharm available for everyone. Ask your supervisor first.
 
-### Steps to setup JOAN
+## Step 2: clone your JOAN project
 
-You can run your JOAN and CARLA project on any TUD computer that we prepared for you. For each PC, you need to clone and setup your JOAN project. Follow all the steps in the [setting up JOAN guide](setup-joan.md) (step 1 only when you first create your JOAN project, else, only do steps 2-5). 
+You can run your JOAN and CARLA project on any TUD computer that we prepared for you. For each PC, you need to clone and setup your JOAN project. Follow the steps in the [Install JOAN](setup-joan.md): do step 1 only when you first create your JOAN project, else, only do steps 2-5. 
 
 
-### Steps to setup your own CARLA map
+## Step 3: setup your own CARLA map
 
 You will probably need to build your own map with a road in CARLA for your own project.
 
 !!! Important
-    You need to be very careful not to tamper with another student's CARLA project or the CARLA installation itself. Therefore, please be cautious when working in the `c:\carla` folder. __You can screw up your fellow students' projects if you don't.__
+    Maps need to be in the `C:\carla` directory. You need to be very careful not to tamper with another student's CARLA project or the CARLA installation itself. Therefore, please be cautious when working in the `C:\carla` folder. __You can screw up your fellow students' projects if you don't.__
 
-We prepared a map for you as a template/starting point called `DebugMap`, which you can find in `C:\carla\Unreal\CarlaUE4\Content\Carla\Maps`.
+We prepared a template map (`DebugMap`), which you can find in `C:\carla\Unreal\CarlaUE4\Content\Carla\Maps`.
+
+To create your own map: 
 
 - Create a folder with name `<YEAR>_<NETID>` in the directory `C:\carla\Unreal\CarlaUE4\Content\Research\` (create the folder `Research` if it does not exist). 
 - Download the template map [here](https://www.dropbox.com/s/qu8ejogahhre0el/Template_Maps_08_2020.zip?dl=0), extract it, and copy the folder called `Maps` it in your own folder under `C:\carla\Unreal\CarlaUE4\Content\Research\<YEAR>_<NETID>\`.
-- Open the Epic Game Launcher (you might need to login (use your login of choice)).
-- Launch Unreal Engine, top-right corner (Unreal should be installed; if not, restart the Epci Game Launcher or reboot the computer, this normally works).
+- Open the Epic Game Launcher (you might need to login; use your login of choice).
+- Launch Unreal Engine, top-right corner (Unreal should be installed; if not, restart the Epic Game Launcher or reboot the computer, this normally works).
 - In Unreal Engine, CarlaUE4 should be listed under 'Recent projects'. If not, open the `CarlaUE4` project (browse to `C:\carla\Unreal\CarlaUE4\` and open `CarlaUE4.uproject`). 
 - The CarlaUE4 will now start; this may take a while if you start it for the first time.
-- To open your own level, click `File` &rarr; `Open level` and select `DebugMap.umap` __in your folder__ (navigate to your folder!)
-- If you want, you can rename your map to a more descriptive name (right-click on the map in the editor &rarr; rename, for example <YEAR>_<NAME>_<SHORT DESCRIPTION>) or you can save the DebugMap as another name.
+- To open your own level, click `File` &rarr; `Open level` and select `DebugMap.umap` __in your folder__ (navigate to your 'Research' folder!)
+- If you want, you can rename your map to a more descriptive name (right-click on the map in the editor &rarr; `rename`, for example, `<YEAR>_Map_<NAME>_<SHORT DESCRIPTION>`, or use `File` &rarr; `Save as`).
 - Your level will load, but this may take some time.
-- To run your map, hit the play button.
+- To run the Unreal Engine, hit the play button.
   
 !!! Warning
     Make sure to load your own map, so double check that you are in the right directory when opening your level!

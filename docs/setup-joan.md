@@ -1,5 +1,31 @@
 # Setting up JOAN
 
+Once you have CARLA running, the hard part is over. JOAN is a relative walk in the park, except perhaps for setting up a project repository. TU Delft students need to follow all steps in the 'less-quick start' guide.
+
+## Quick start
+
+1. Clone JOAN in the directory of your choice
+```
+git clone https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan.git
+```
+
+2. We recommend setting up a python virtual environment (see step 3 below)
+```
+python -m venv venv
+```
+
+3. Install the dependencies using `pip` (see step 4) 
+```
+pip install -r requirements.txt
+```
+4. Include the CARLA `.egg` file in the JOAN project (see step 5)
+
+5. If you want to use `git` for your own project, set up your own remote project (see step 2).
+
+---
+
+## Less-quick start
+
 Please follow the following steps:
 
 1. __Create your own JOAN project__
@@ -8,7 +34,7 @@ Please follow the following steps:
 4. __Retrieve the Python libraries__
 5. __Include the CARLA .*egg file in your JOAN project__
 
-Step 1 you need to do only once per project (probably). Step 2, cloning your project, is something you need to do on every computer that you use for working with JOAN. Suppose you move from one PC to another and you have not cloned your project on that computer, you need to do step 2. Similarly, you need to do steps 3 and 4 when setting up your project for the first time. 
+Step 1 you need to do only once per project. Step 2, cloning your project, is something you need to do on every computer that you use for working with JOAN. Suppose you move from one PC to another and you have not cloned your project on that computer, you need to do step 2. Similarly, you need to do steps 3 and 4 when setting up your project for the first time. 
 
 Finally, you need to update your project with the latest version of JOAN. We try to update JOAN regularly, based on the issues we all find and features we want to include. It is good practice to regularly update your project. See the final step below for more info.
 
@@ -18,12 +44,12 @@ Finally, you need to update your project with the latest version of JOAN. We try
 JOAN is maintained in a GitLab repository by a team of contributors. There are a couple of ways though which you can download JOAN:
 
 - You can download a __zipped copy__ of the repository (note: you not receive any updates when we change the code)
-- You can __clone__ the repository. However, if you do not have write permission to the repository, you can't make your own changes and store them on a repository (well, not easily).
-- (_recommended for TUDelft students_) You can follow our instructions below to create your own repository and connect to JOAN to receive any updates. This allows you to receive any updates in the JOAN code, make your own research-specific changes and commit (e.g. store) them in your own repository! Awesome!
+- You can __clone__ the repository using the command `git clone . However, if you do not have write permission to the repository, you can't make your own changes and store them on a repository (well, not easily).
+- (_recommended for TU Delft students_) You can follow our instructions below to create your own repository and connect to JOAN to receive any updates. This allows you to receive any updates in the JOAN code, make your own research-specific changes and commit (e.g. store) them in your own repository! Awesome!
 
-We will explain how to setup your own project repository and how to connect it to JOAN. This explanation will be tailored to TUDelft students who have access to the TUDelft GitLab server. We will explain these steps using PyCharm IDE. The steps are similar if you wish to use VS Code.
+We will explain how to setup your own project repository and how to connect it to JOAN. This explanation will be tailored to TUDelft students who have access to the TUDelft GitLab server. However, you can also use GitHub, create your own project there and take similar steps. We will explain these steps using PyCharm IDE.
 
-### Make your own JOAN project on gitlab.tudelft.nl
+### Make your own JOAN project on gitlab.tudelft.nl (TU Delft students and employees only)
 
 - Log in to the TUDelft's GitLab server at [gitlab.tudelft.nl](https://gitlab.tudelft.nl/) using your `netid`
 - Go to the JOAN repository. You can either search for it, or use this [link](https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan). Welcome! But do nothing - for now.
@@ -125,7 +151,6 @@ Using PyCharm, open the terminal again (in PyCharm), check if the directory is s
 
 This will create a folder called `venv` containing a new and clean virtual environment. To start working in this environment, we have to activate it first. 
 
-
 If you are using PyCharm, you might need to add your virtual environment as a Python interpreter. Click on the interpreter widget in the bottom right next to `master` (it should say something with interpreter) and click `Add interpreter`.  It should automatically select the _existing_ `venv` Python interpreter (__do not create a new environment__). Confirm everything and wait for a bit. PyCharm should show the Python version of your venv in the bottom-right corner. 
 
 Then type in the terminal:
@@ -147,10 +172,10 @@ To install all requirements from the command prompt, make sure you are in the pr
 
 ---
 ## Step 5. Include the CARLA .egg file
-The only dependency not in the `requirements.txt` is the CARLA PythonAPI which we built earlier. To use this dependency __copy__ the `*.egg` (navigate to `C:\carla\PythonAPI\carla\dist` in Windows file explorer) file to the empty folder `carla_pythonapi` in your JOAN project folder (`c:\Users\<NETID>\joan-project\<YOUR PROJECT NAME>\carla_pythonapi`). If you have not done this step you will get an error message whenever you start JOAN.
+The only dependency not in the `requirements.txt` is the CARLA PythonAPI which we built earlier. To use this dependency __copy__ the `*.egg` (navigate to `C:\carla\PythonAPI\carla\dist` in Windows file explorer) file to the empty folder `CARLA_PythonAPI` in your JOAN project folder (`C:\Users\<NETID>\joan-project\<YOUR PROJECT NAME>\carla_pythonapi`). If you have not done this step you will get an error message whenever you start JOAN.
     
 !!! Important
-    Please note that the file name of the `*.egg` file might be slightly different in your case, it depends on the Python version. Make sure that the filename in `carlainterfaceaction.py` matches the name of your own `*.egg` file. 
+    Please note that the file name of the `*.egg` file might be slightly different in your case, it depends on the Python version.
 
 
 --- 
@@ -164,4 +189,4 @@ Finally, you need to update your project with the latest version of JOAN. We try
 These commands will pull any changes from the main JOAN repository into your project.
 
 !!! Important
-    It is possible that conflicts occur when pulling the latest JOAN version. These conflicts are between changes you made, and changes in the main JOAN code. Often, these conflicts can be resolved through PyCharm, but sometimes it is more difficult than this. If you're used to git, resolve all conflicts by yourself. Else, perhaps good to ask your supervisor.
+    It is possible that conflicts occur when pulling the latest JOAN version. These conflicts are between changes you made and changes in the main JOAN code. Often, these conflicts can be resolved through PyCharm, but sometimes it is more difficult than this. If you're used to git, resolve all conflicts by yourself. Else, perhaps good to ask your supervisor.

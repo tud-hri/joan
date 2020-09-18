@@ -1,4 +1,4 @@
-# JOAN experiment manager
+# Module: Experiment Manager
 
 To run experiments, you need to define your conditions and run them in the order you want. To make your life a bit easier, we built an Experiment Manager module, in which you can:
 
@@ -14,7 +14,7 @@ The experiment manager has two main components: __conditions__ and __transitions
 
 ## How does the experiment manager work?
 
-The experiment manager stores and sets the [settings of all modules](joan-settings.md) that are relevant for your experiment. Each modules has its own settings. For example, the settings of the steering wheel controller module contain the current values of the controller gains. 
+The experiment manager stores and sets the [settings of all modules](advancedsteps-settings.md) that are relevant for your experiment. Each modules has its own settings. For example, the settings of the steering wheel controller module contain the current values of the controller gains. 
 
 When running and experiment, per condition, you want to change these settings. The experiment manager checks the current settings of the controller module and sets the value that corresponds to the condition you want to activate and run next in your experiment. 
 
