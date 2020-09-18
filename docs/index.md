@@ -12,6 +12,7 @@ You can find the public repository [here][repolink]. Note that JOAN is still und
 JOAN is developed by members of the [Human-Robot Interaction group](https://delfthapticslab.nl) at Cognitive Robotics of Delft University of Technology. This home-page serves as the table of contents of this document, a little bit below an overview is given with a short description of the sections and what they contain. 
 
 ## Setup
+* __[Setup your JOAN and CARLA project on TUD hardware](setup-on-tud-shared-hardware.md)__ - guide on how to install your project on TUD shared hardware (probably your first step)
 * __[Setup on Windows](setup-carla-windows.md)__ - Guide on how to setup CARLA and JOAN on Windows OS
 * __[Setup on Linux](setup-carla-linux.md)__ - Guide on how to setup CARLA and JOAN on Linux OS (Not documented yet)
 * __[Setup JOAN](setup-joan.md)__ - Guide on how to setup your own JOAN project
@@ -23,10 +24,13 @@ JOAN is developed by members of the [Human-Robot Interaction group](https://delf
 * __[How to create a custom JOAN module](joan-add-module.md)__ - Guide on how to create your own JOAN modules
 * __[Info on JOAN's settings structure](joan-settings.md)__ - JOAN uses `Settings` to save you to set up every module after you run JOAN; read more about them here.
 * __[Info on JOAN's state machine](joan-state-machine.md)__ - Info on JOAN's state machine
+* __[Info on JOAN's experiment manager](joan-experiment-manager.md)__ - How to use the experiment manager
+
 
 ## Other documentation
 * __[Quick start CARLA Unreal Engine](other-carle-ue4.md)__ - Quick start guide with Unreal Editor for CARLA and JOAN (under construction)
 * __[Quick start source Control (git)](other-git.md)__ - Quick start guide for source control with GIT
+* __[SensoDrive Explanation](other-sensodrive.md)__ - Some remarks/explanation and 'best practices' for working with a SensoDrive (mainly TUDelft Students)
 
 ## Contributing
 * __[Guidelines](contributing-guidelines.md)__ - Short explanation of guidelines if you want to add to JOAN

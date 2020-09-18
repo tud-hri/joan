@@ -4,9 +4,6 @@
 
 <!-- What problem do we solve? Try to define the who/what/why of the opportunity as a user story. For example, "As a (who), I want (what), so I can (why/value)." -->
 
-### Intended users
-
-<!-- Who will use this feature? If known, include any of the following: types of users (e.g. Developer), personas, or specific company roles (e.g. Release Manager). It's okay to write "Unknown" and fill this field in later.-->
 
 ### Further details
 
@@ -22,9 +19,6 @@
 
 What risks does this change pose to our availability? How might it affect the quality of the product? What additional test coverage or changes to tests will be needed? 
 -->
-
-### What does success look like, and how can we measure that?
-
 <!-- Define both the success metrics and acceptance criteria. Note that success metrics indicate the desired business outcomes, while acceptance criteria indicate when the solution is working correctly. If there is no way to measure success, link to an issue that will implement a way to measure this. -->
 
 ### Links / references
