@@ -8,6 +8,7 @@ To make your life a bit easier, use linters. We recommend `flake8` or `pylint`, 
 
 Use in editors:
 
+*  You can install these linters in Visual Studio Code, see their instructions [here][vscodelinterlink]
 *  PyCharm checks the code according to PEP8 automatically. To change the maximum line length to 160 follow these steps:
 
     1. Click: file -> settings
@@ -19,6 +20,7 @@ Use in editors:
     To auto format your code in PyCharm use ctrl + alt + L
 
 [pep8link]: https://www.python.org/dev/peps/pep-0008/
+[vscodelinterlink]: https://code.visualstudio.com/docs/python/linting
 [pycharmlinterlink]: https://www.google.com
 
 ---
@@ -32,6 +34,8 @@ Use in editors:
   * Use _informative_ variable names, not `self.bla = 1` or `self.whatever`. 
   * Remove any commented code once you are done with coding. 
   * [Pylint][pylintlink] or [flake8][flake8link] should not give any error or warning (few exceptions apply with external classes like `numpy` and `pygame`, etcetera).
+    * To enable PyLint in Visual Studio Code, make sure you installed the Python extension. Then, use `Ctrl+Shift+P` and type `Python: Enable linting`, set it to `yes`.
+    * You can also enable flake8 in Visual Studio Code in the same way. You can install flake8 through `pip install flake8`.
   * Python code follows [PEP8 style guide][pep8link].
 
 [pylintlink]: https://www.pylint.org/

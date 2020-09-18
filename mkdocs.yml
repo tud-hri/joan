@@ -5,7 +5,6 @@ theme: readthedocs
 nav:
     - Home: 'index.md'
     - Setup:
-      - Setup your JOAN and CARLA project on TUD shared hardware: setup-on-tud-shared-hardware.md
       - Setup on Windows: setup-carla-windows.md
       - Setup on Linux: setup-carla-linux.md
       - Setup JOAN: setup-joan.md
@@ -17,12 +16,10 @@ nav:
       - Create custom JOAN modules: joan-add-module.md
       - Settings: joan-settings.md
       - State Machine: joan-state-machine.md
-      - Experiment manager: joan-experiment-manager.md
 
     - Other documentation:
       - Quick start CARLA Unreal Engine (under construction): other-carle-ue4.md
       - Quick start source Control (git): other-git.md
-      - Sensodrive Explanation: other-sensodrive.md
 
     - Contributing:
       - Guidelines: contributing-guidelines.md
@@ -36,7 +33,7 @@ markdown_extensions:
         custom_fences:
           - name: mermaid
             class: mermaid
-#            format: !!python/name:pymdownx.superfences.fence_div_format
+            format: !!python/name:pymdownx.superfences.fence_div_format
 
 extra_css:
   - https://unpkg.com/mermaid@8.6.0/dist/mermaid.css
