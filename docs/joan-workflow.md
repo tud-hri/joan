@@ -13,6 +13,8 @@ The workflow will be explained in several steps:
 5. __Setup and run CarlaInterface__
 6. __Drive!__
 
+The workflow described above still works with the latest version of JOAN, however there are some extra steps that might come in handy regarding the loading and saving of settings, this has been described in the 'settings workflow' section.
+
 ### Step 1. Adding the modules in main.py
 This step is easy, just add the following piece of code to the main.py file (or uncomment them):
 
@@ -62,3 +64,7 @@ If everything was done correctly you should now be able to drive the car with th
 The steps described above are also shown in the flowchart below:
 
 ![workflow](imgs/joan-workflow-JOAN-workflow.png)
+
+
+## Workflow making use of settings in json files
+(under construction)

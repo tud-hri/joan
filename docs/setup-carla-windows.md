@@ -1,6 +1,12 @@
 # Setting up CARLA for Windows
 
-These instructions are complete and are heavily based on the awesome documentation provided by the CARLA team. If you get stuck somewhere, you could have a look at [their documentation](https://carla.readthedocs.io/en/latest/) as well.
+!!! Note
+    If you are a TU Delft student working on one of the TUD computers with CARLA installed, you can skip these instructions. Go to the [setup guide for installing on TUD shared hardware](setup-on-tud-shared-hardware.md) instead.
+
+!!! Note
+    If you want to do a clean install of CARLA, Python etc. on a TUD PC (if it's a new PC, or when you want to upgrade Python or Unreal Engine), first ask one of the JOAN developer team on Slack or your supervisor. Next, you need to do all the installations on the `localadmin` account to make everything available for all users.
+---
+These instructions are are heavily based on the awesome documentation provided by the CARLA team. If you get stuck somewhere, you could have a look at [their documentation](https://carla.readthedocs.io/en/latest/) as well.
 
 ---
 ## Introduction
@@ -49,9 +55,6 @@ In the installer, select the "Visual C++ build tools" and ".NET build tools" che
 
 #### Approach 2: Visual Studio 2017 community edition
 
-Alternatively, you can install the full Visual Studio community edition, this is a complete code editor but it will require some disk space. Download the Visual 2017 Studio Community edition installer by following the link above, again this will require creating an account and navigation the extensive downloads list. 
-When installing please make sure you install it with the following properties:
-
 Alternatively, you can install the full Visual Studio community edition, this is a complete code editor but it will require some disk space. Download the Visual 2017 Studio Community edition installer [here](https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=Community&rel=15). 
 When installing please make sure you install it with the following properties in Visual Studio Installer:
 
@@ -71,9 +74,14 @@ Download Unreal Engine 4.24.x and use the default install settings. Make sure to
     
 ### Python3 x64
 
- Install python 3 and __make sure you get the x64 version__ else it will not work, there is even some speculation that if you have a x32 version installed it can cause conflicts so its best to only have x64. At the time of writing this guide the working version of python is __[Python 3.8.2](https://www.python.org/downloads/release/python-382/)__
+Install python 3 and __make sure you get the x64 version__ else it will not work, there is even some speculation that if you have a x32 version installed it can cause conflicts so its best to only have x64. At the time of writing this guide the working version of python is __[Python 3.8.5](https://www.python.org/downloads/release/python-385/)__
 
-Having multiple versions of python installed (even if they're all x64) can cause issues. If you don't really need multiple versions, the best option is to get
+!!! Note
+    If you are installing Python as `localadmin` on a shared TUD PC, 
+    - set the installation directory to `c:\python` 
+    - make sure to check the 'make available for all users' and 'add to path' boxes.
+
+Having multiple versions of Python installed (even if they're all x64) can cause issues. If you don't really need multiple versions, the best option is to get
 rid of the version(s) you don't really need. If you do need multiple versions, please make sure that the version you will be using for joan (3.8 if you've
 followed above instructions) is the only version in your system and user `PATH` variable.
 
@@ -84,7 +92,7 @@ versions of Python installed. Open a command line window and type:
 
 This should give a response similar to the one below. Please make sure that you are running the Python version you have just installed.
 
-    Python 3.8.2 (tags/v3.8.2:7b3ab59, Feb 25 2020, 23:03:10) [MSC v.1916 64 bit (AMD64)] on win32
+    Python 3.8.5 (tags/v3.8.5:7b3ab59, Feb 25 2020, 23:03:10) [MSC v.1916 64 bit (AMD64)] on win32
     Type "help", "copyright", "credits" or "license" for more information.
     >>>
     
@@ -93,14 +101,20 @@ If Python does not start or if a different version is shown, you should make sur
 Please not the >>> symbols indicating that you are now within a python environment. To close Python again type:
 
     >>> exit() 
+    
+or
+
+    >>> quit()
 
 !!! Important
-    Only use python 3, preferably python 3.8. Installing python 2.7 will be a waste of your time ;-)
+    Only use python 3, preferably [python 3.8 (64 bit)](https://www.python.org/ftp/python/3.8.5/python-3.8.5-amd64.exe). Installing python 2.7 will be a waste of your time ;-)
+
+!!! Note
+    We noticed that also having Anaconda installed can result in issues. Please let us know through Slack if you found a way to separate Anaconda from the freshly installed Python version.
 
 ### Python editors
 
-We recommend installing __[PyCharm](https://www.jetbrains.com/pycharm/)__ as your python editor. __[Visual Studio Code](https://code.visualstudio.com/)__ is a good alternative.
-
+We recommend installing __[PyCharm](https://www.jetbrains.com/pycharm/)__ as your python editor. 
 
 ---
 ## Building and installing CARLA & the CARLA PythonAPI
@@ -143,17 +157,12 @@ Unpack these assets in `\carla\Unreal\CarlaUE4\Content\Carla`. If the directory 
 
 ### Step 3: Get specific JOAN Assets
 To have a nice car interior which also turns the steering wheel when you turn your physical steering wheel, some extra assets are required. You can download them [here](https://www.dropbox.com/s/yhbf59t7i5iu6rw/JOAN_Assets.zip?dl=0). The file contains:
+This folder contains the assets which are needed to accomplish this. The file structure is exactly the same as it should be in the carla content folder. Before you do that please unzip the folder and go into 'assets voor thuis', copy the contents of this folder to
+have carla installed for example:
 
-* `JOAN_Blueprints`
-* `JOAN_Static`
-* `JOAN_Map`
-
-Please copy the contents of `JOAN_Blueprints` to `\carla\Unreal\CarlaUE4\Content\Carla\Blueprints`. To be neat copy the vehicles in the vehicles blueprint folder.
-
-Copy the contents of `JOAN_Static` (only cars) to `\carla\Unreal\CarlaUE4\Content\Carla\Static\Vehicles\4Wheeled`.
-
-Then, copy all `.xodr` files in `JOAN_Map` to `\carla\Unreal\CarlaUE4\Content\Carla\Maps\OpenDrive`. Copy the remaining files in `JOAN_Map` to `\carla\Unreal\CarlaUE4\Content\Carla\Maps`. 
-
+    C:\carla\Unreal\CarlaUE4\Content
+    
+Now all relevant assets should be in the right place :)
 ### Step 4: Build the PythonAPI
 
 In order to build the python API open the 'x64 Native Tools Command Prompt for VS 2017' terminal. 
@@ -176,7 +185,7 @@ Furthermore, a `carla.egg` file should be in `..\carla\PythonAPI\carla\dist`:
 
 ![alt text](imgs/setup-carla-windows-egg-file.png "eggfile")
 
-The exact filename depends on the CARLA version and python version (in our case python 3.8). Now copy this egg file to the folder `carla_pythonapi` (replace the already existing `egg` file if it's there) in your JOAN project folder.
+The exact filename depends on the CARLA version and python version (in our case Python 3.8 64 bit). Please check if the build was succesful by checking if the egg file is there, you will need this file later on when we setup the JOAN environment.
 
 ### Step 5: Building and launching CARLA
 
