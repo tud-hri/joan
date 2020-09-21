@@ -210,11 +210,10 @@ class JOANSensoDrive(BaseInput):
         actually disappear from the module.
         :return:
         """
-        if self.module_action.state_machine.current_state != State.IDLE:
-            self.close_event.set()
-            while self.close_event.is_set():
-                pass
-            self.sensodrive_communication_process.terminate()
+        self.close_event.set()
+        while self.close_event.is_set():
+            pass
+        self.sensodrive_communication_process.terminate()
 
         self.module_action.remove_hardware_input_device(self)
 
