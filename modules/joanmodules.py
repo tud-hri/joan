@@ -71,7 +71,7 @@ class JOANModules(Enum):
                 JOANModules.CARLA_INTERFACE: os.path.join(path_to_modules, "carlainterface/dialog/carlainterface.ui"),
                 JOANModules.STEERING_WHEEL_CONTROL: os.path.join(path_to_modules,
                                                                  "steeringwheelcontrol/dialog/steeringwheelcontrol.ui"),
-                JOANModules.HARDWARE_MANAGER: os.path.join(path_to_modules, "hardwaremanager/dialog/ui/hardwaremanager.ui"),
+                JOANModules.HARDWARE_MANAGER: os.path.join(path_to_modules, "hardwaremanager/dialog/hardwaremanager.ui"),
                 JOANModules.DATA_PLOTTER: os.path.join(path_to_modules, "dataplotter/dialog/dataplotter.ui"),
                 JOANModules.EXPERIMENT_MANAGER: os.path.join(path_to_modules,
                                                              "experimentmanager/dialog/experimentmanager_widget.ui"),
