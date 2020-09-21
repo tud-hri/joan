@@ -41,7 +41,7 @@ class TrajectoryRecorder:
 
     def write_trajectory(self):
         _data = self.data_recorder_action.read_news(JOANModules.CARLA_INTERFACE)
-        car = _data['ego_agents']['Vehicle 1']['vehicle_object'].spawned_vehicle
+        car = _data['ego_agents']['EgoVehicle 1']['vehicle_object'].spawned_vehicle
         control = car.get_control()
 
         x_pos = car.get_transform().location.x
@@ -60,7 +60,7 @@ class TrajectoryRecorder:
     def initialize_trajectory_recorder_variables(self):
         try:
             _data = self.data_recorder_action.read_news(JOANModules.CARLA_INTERFACE)
-            car = _data['ego_agents']['Vehicle 1']['vehicle_object'].spawned_vehicle
+            car = _data['ego_agents']['EgoVehicle 1']['vehicle_object'].spawned_vehicle
             control = car.get_control()
 
             x_pos = car.get_transform().location.x
@@ -70,7 +70,6 @@ class TrajectoryRecorder:
             brake_input = control.brake
             heading = car.get_transform().rotation.yaw
             vel = math.sqrt(car.get_velocity().x ** 2 + car.get_velocity().y ** 2 + car.get_velocity().z ** 2)
-            print('joe')
             # initialize variables here because we want the current position as first entry!
             self._trajectory_data = [[x_pos, y_pos, steering_wheel_angle, throttle_input, brake_input, heading, vel]]
             self._trajectory_data_spaced = [
