@@ -12,7 +12,7 @@ from .baseswcontroller import BaseSWController, find_closest_node
 class FDCAControllerSettingsDialog(QtWidgets.QDialog):
     def __init__(self, fdca_controller_settings, controller, parent=None):
         super().__init__(parent)
-        self._loha_resolution = 50
+
         self.controller = controller
         self.fdca_controller_settings = fdca_controller_settings
 
@@ -22,34 +22,41 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
         self.slider_loha.valueChanged.connect(self._update_loha_slider_label)
         self.btn_apply_parameters.clicked.connect(self.update_parameters)
 
+        #hardcode lookahead time if someone needs it
+        self.t_lookahead = 0
+
+        self._loha_resolution = 50
+        self.slider_loha.setMaximum(self._loha_resolution)
+        self.spin_loha.setMaximum(self._loha_resolution)
+
         self._display_values()
 
 
     def update_parameters(self):
+        self.slider_loha.setValue(self.spin_loha.value())
         self.fdca_controller_settings.k_y = float(self.edit_k_y.text())
         self.fdca_controller_settings.k_psi = float(self.edit_k_psi.text())
-        self.fdca_controller_settings.t_lookahead = float(self.edit_t_lookahead.text())
         self.fdca_controller_settings.lohs = float(self.edit_lohs.text())
         self.fdca_controller_settings.sohf = float(self.edit_sohf.text())
-        self.fdca_controller_settings.loha = float(self.slider_loha.value()/ (100/self._loha_resolution))
+        self.fdca_controller_settings.loha = float(self.slider_loha.value())
         self.fdca_controller_settings.trajectory_name = self.cmbbox_hcr_selection.itemText(
             self.cmbbox_hcr_selection.currentIndex())
 
         self._display_values()
 
     def _update_loha_slider_label(self):
-        self.lbl_loha_slider.setText(str(self.slider_loha.value()/(100/self._loha_resolution)))
+        self.spin_loha.setValue(self.slider_loha.value())
         if self.checkbox_tuning_loha.isChecked():
-            self.fdca_controller_settings.loha = float(self.slider_loha.value()/(100/self._loha_resolution))
+            self.fdca_controller_settings.loha = float(self.slider_loha.value())
             self.lbl_loha.setText(str(self.fdca_controller_settings.loha))
+
 
     def accept(self):
         self.fdca_controller_settings.k_y = float(self.edit_k_y.text())
         self.fdca_controller_settings.k_psi = float(self.edit_k_psi.text())
-        self.fdca_controller_settings.t_lookahead = float(self.edit_t_lookahead.text())
         self.fdca_controller_settings.lohs = float(self.edit_lohs.text())
         self.fdca_controller_settings.sohf = float(self.edit_sohf.text())
-        self.fdca_controller_settings.loha = float(self.slider_loha.value()/(100/self._loha_resolution))
+        self.fdca_controller_settings.loha = float(self.slider_loha.value())
         self.fdca_controller_settings.trajectory_name = self.cmbbox_hcr_selection.itemText(
             self.cmbbox_hcr_selection.currentIndex())
 
@@ -62,17 +69,16 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
         # update the current controller settings
         self.lbl_k_y.setText(str(settings_to_display.k_y))
         self.lbl_k_psi.setText(str(settings_to_display.k_psi))
-        self.lbl_t_lookahead.setText(str(settings_to_display.t_lookahead))
         self.lbl_lohs.setText(str(settings_to_display.lohs))
         self.lbl_sohf.setText(str(settings_to_display.sohf))
         self.lbl_loha.setText(str(settings_to_display.loha))
 
         self.edit_k_y.setText(str(settings_to_display.k_y))
         self.edit_k_psi.setText(str(settings_to_display.k_psi))
-        self.edit_t_lookahead.setText(str(settings_to_display.t_lookahead))
         self.edit_lohs.setText(str(settings_to_display.lohs))
         self.edit_sohf.setText(str(settings_to_display.sohf))
-        self.slider_loha.setValue(settings_to_display.loha * (100/self._loha_resolution))
+        self.slider_loha.setValue(settings_to_display.loha)
+        self.spin_loha.setValue(settings_to_display.loha)
 
         idx_traj = self.cmbbox_hcr_selection.findText(settings_to_display.trajectory_name)
         self.cmbbox_hcr_selection.setCurrentIndex(idx_traj)
@@ -195,7 +201,7 @@ class FDCASWController(BaseSWController):
                 sw_angle_fb = self.settings.sohf * (self.settings.k_y * self._controller_error[0] + self.settings.k_psi * self._controller_error[1])
 
                 # get feedforward sw angle
-                sw_angle_ff_des = self._get_reference_sw_angle(self.settings.t_lookahead, car)
+                sw_angle_ff_des = self._get_reference_sw_angle(self.t_lookahead, car)
 
                 # level of haptic support (feedforward); get sw angle needed for haptic support
                 sw_angle_ff = self.settings.lohs * sw_angle_ff_des
@@ -280,7 +286,7 @@ class FDCASWController(BaseSWController):
         :param vel_car:
         :return:
         """
-        pos_car = pos_car + vel_car * self.settings.t_lookahead  # linear extrapolation, should be updated
+        pos_car = pos_car + vel_car * self.t_lookahead  # linear extrapolation, should be updated
 
         # Find waypoint index of the point that the car would be in the future (compared to own driven trajectory)
         index_closest_waypoint = find_closest_node(pos_car, self._trajectory[:, 1:3])
