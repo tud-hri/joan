@@ -52,6 +52,7 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
 
 
     def accept(self):
+        self.slider_loha.setValue(self.spin_loha.value())
         self.fdca_controller_settings.k_y = float(self.edit_k_y.text())
         self.fdca_controller_settings.k_psi = float(self.edit_k_psi.text())
         self.fdca_controller_settings.lohs = float(self.edit_lohs.text())
