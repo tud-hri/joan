@@ -50,7 +50,7 @@ class DataWriter(threading.Thread):
             for _key, _value in current_allow.items():
                 if isinstance(_value, dict):
                     row_name = '%s.%s' % (row_name, _key)
-                    return self.recursive_filter_row(current_allow.get(_key), current_data.get(_key), row_name)
+                    self.recursive_filter_row(current_allow.get(_key), current_data.get(_key), row_name)
                 else:
                     row_names = []
                     for deepest_key in current_allow.keys():
