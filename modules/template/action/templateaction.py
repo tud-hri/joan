@@ -110,13 +110,13 @@ class TemplateAction(JoanModuleAction):
 
         # in this template example, we update the 'datawriter output' news with the elapsed time.
         self.data['datawriter output'] = self.time.elapsed()
-
+        self.counter += 2 * self.sign
         # and we write the news (actually update the news), such that all the other modules get the latest value of 'datawriter output'
-        if self.counter < 1:
-            self.sign = -1
         if self.counter > 99:
+            self.sign = -1
+        if self.counter < 1:
             self.sign = 1
-        self.data['counter'] = self.counter * self.sign
+        self.data['counter'] = self.counter
         self.write_news(news=self.data)
 
     def initialize(self):
