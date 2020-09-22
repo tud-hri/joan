@@ -17,6 +17,7 @@ class JOANModules(Enum):
     EXPERIMENT_MANAGER = auto()
     DATA_PLOTTER = auto()
     SCENARIOS = auto()
+    CONTROLLER_PLOTTER = auto()
 
 
     @property
@@ -29,6 +30,7 @@ class JOANModules(Enum):
         from modules.carlainterface.action.carlainterfaceaction import CarlaInterfaceAction
         from modules.experimentmanager.action.experimentmanageraction import ExperimentManagerAction
         from modules.scenarios.action.scenariosaction import ScenariosAction
+        from modules.controllerplotter.action.controllerplotteraction import ControllerPlotterAction
 
         return {JOANModules.TEMPLATE: TemplateAction,
                 JOANModules.DATA_RECORDER: DataRecorderAction,
@@ -37,7 +39,8 @@ class JOANModules(Enum):
                 JOANModules.CARLA_INTERFACE: CarlaInterfaceAction,
                 JOANModules.DATA_PLOTTER: DataplotterAction,
                 JOANModules.EXPERIMENT_MANAGER: ExperimentManagerAction,
-                JOANModules.SCENARIOS: ScenariosAction
+                JOANModules.SCENARIOS: ScenariosAction,
+                JOANModules.CONTROLLER_PLOTTER: ControllerPlotterAction
                 }[self]
 
 
@@ -51,6 +54,7 @@ class JOANModules(Enum):
         from modules.carlainterface.dialog.carlainterfacedialog import CarlaInterfaceDialog
         from modules.experimentmanager.dialog.experimentmanagerdialog import ExperimentManagerDialog
         from modules.scenarios.dialog.scenariosdialog import ScenariosDialog
+        from modules.controllerplotter.dialog.controllerplotterdialog import ControllerPlotterDialog
 
         return {JOANModules.TEMPLATE: TemplateDialog,
                 JOANModules.DATA_RECORDER: DataRecorderDialog,
@@ -59,7 +63,8 @@ class JOANModules(Enum):
                 JOANModules.CARLA_INTERFACE: CarlaInterfaceDialog,
                 JOANModules.DATA_PLOTTER: DataplotterDialog,
                 JOANModules.EXPERIMENT_MANAGER: ExperimentManagerDialog,
-                JOANModules.SCENARIOS: ScenariosDialog
+                JOANModules.SCENARIOS: ScenariosDialog,
+                JOANModules.CONTROLLER_PLOTTER: ControllerPlotterDialog
                 }[self]
 
 
@@ -75,7 +80,8 @@ class JOANModules(Enum):
                 JOANModules.DATA_PLOTTER: os.path.join(path_to_modules, "dataplotter/dialog/dataplotter.ui"),
                 JOANModules.EXPERIMENT_MANAGER: os.path.join(path_to_modules,
                                                              "experimentmanager/dialog/experimentmanager_widget.ui"),
-                JOANModules.SCENARIOS: os.path.join(path_to_modules, "scenarios/dialog/scenarios.ui")
+                JOANModules.SCENARIOS: os.path.join(path_to_modules, "scenarios/dialog/scenarios.ui"),
+                JOANModules.CONTROLLER_PLOTTER: os.path.join(path_to_modules, "controllerplotter/dialog/controllerplotter.ui")
                 }[self]
 
 
@@ -87,7 +93,8 @@ class JOANModules(Enum):
                 JOANModules.EXPERIMENT_MANAGER: 'Experiment Manager',
                 JOANModules.CARLA_INTERFACE: 'Carla Interface',
                 JOANModules.DATA_PLOTTER: 'Data Plotter',
-                JOANModules.SCENARIOS: 'Scenarios'
+                JOANModules.SCENARIOS: 'Scenarios',
+                JOANModules.CONTROLLER_PLOTTER: 'Controller Plotter'
                 }[self]
 
 

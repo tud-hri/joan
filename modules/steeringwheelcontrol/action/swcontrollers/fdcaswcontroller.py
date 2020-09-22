@@ -107,6 +107,9 @@ class FDCASWController(BaseSWController):
 
         self.stiffness = 1
 
+        # hardcode lookahead time if someone needs it
+        self.t_lookahead = 0
+
         # controller errors
         # [0]: lateral error
         # [1]: heading error
