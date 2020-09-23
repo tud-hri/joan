@@ -102,12 +102,17 @@ class ControllerPlotterAction(JoanModuleAction):
 
         # try assigning variables:
         try:
-            steering_ang = data_from_hardware_manager['SensoDrive 1']['steering_angle']
-            req_torque = data_from_hardware_manager['SensoDrive 1']['measured_torque']
-            sw_actual = data_from_hardware_manager['SensoDrive 1']['steering_angle']
+            #sensodrive
+            # steering_ang = data_from_hardware_manager['SensoDrive 1']['steering_angle']
+            # req_torque = data_from_hardware_manager['SensoDrive 1']['measured_torque']
+            # sw_actual = data_from_hardware_manager['SensoDrive 1']['steering_angle']
+
+            #joystick
+            steering_ang = data_from_hardware_manager['Joystick 1']['steering_angle']
+            sw_actual = data_from_hardware_manager['Joystick 1']['steering_angle']
         except KeyError or TypeError:
             steering_ang = 0
-            req_torque = 0
+            # req_torque = 0
             sw_actual = 0
 
         try:
@@ -115,12 +120,14 @@ class ControllerPlotterAction(JoanModuleAction):
             sw_des = data_from_sw_controller['FDCA 1']['sw_angle_desired_radians']
             heading_error = data_from_sw_controller['FDCA 1']['heading_error']
             loha = data_from_sw_controller['FDCA 1']['loha']
+            req_torque = data_from_sw_controller['FDCA 1']['sw_torque']
 
         except KeyError or TypeError:
             lat_error = 0
             sw_des = 0
             heading_error = 0
             loha = 0
+            req_torque = 0
 
         # Torque plot
         self.plot_data_torque_x.append(steering_ang)

@@ -162,8 +162,10 @@ class FDCASWController(BaseSWController):
         if vehicle_object.selected_sw_controller == self.controller_list_key:
             try:
                 # make sure this is in [Nm/rad]
-                stiffness = hw_data_in[vehicle_object.selected_input]['spring_stiffness']
-
+                try:
+                    stiffness = hw_data_in[vehicle_object.selected_input]['spring_stiffness']
+                except:
+                    stiffness = 1
                 sw_angle = hw_data_in[vehicle_object.selected_input]['steering_angle']  # [rad]
 
                 # get delta_t (we could also use 'tick_interval_ms' but this is a bit more precise)
