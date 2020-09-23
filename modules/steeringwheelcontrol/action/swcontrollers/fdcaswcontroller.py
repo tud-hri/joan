@@ -243,7 +243,7 @@ class FDCASWController(BaseSWController):
 
                 # update variables
                 self._error_old = error
-                self._data_out['sw_angle_desired_radians'] = sw_angle_ff_des
+                self._data_out['sw_angle_desired_radians'] = sw_angle_ff_des + sw_angle_fb
                 self._data_out['sw_angle_current_radians'] = sw_angle
                 self._data_out['lat_error'] = error[0]
                 self._data_out['heading_error'] = error[1]

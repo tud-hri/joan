@@ -17,7 +17,6 @@ from core.statesenum import State
 from .controllerplottersettings import ControllerPlotterSettings
 import math
 import pyqtgraph as pg
-import numpy as np
 from colour import Color
 
 
@@ -49,11 +48,23 @@ class ControllerPlotterAction(JoanModuleAction):
         self.write_news(news=self.data)
         self.time = QtCore.QTime()
         self.plotpoints = []
-        self.amount_of_remaining_points = 100
-        self.plot_data_torque_x= np.array([])
-        self.plot_data_torque_y = np.array([])
-        self.plot_data_e_lat_y = np.zeros(100)
-        self.time_vector = np.linspace(-10, 0, 100)
+
+        self.amount_of_remaining_points = 50
+        self.history_time = self.amount_of_remaining_points/round(1000/self._millis)
+        self.plot_data_torque_x = []
+        self.plot_data_torque_y = []
+        self.plot_data_e_lat_y = [0] * self.amount_of_remaining_points
+        self.plot_data_e_psi_y = [0] * self.amount_of_remaining_points
+        self.plot_data_loha_y = [0] * self.amount_of_remaining_points
+        self.plot_data_sw_des_y = [0] * self.amount_of_remaining_points
+        self.plot_data_sw_act_y = [0] * self.amount_of_remaining_points
+
+
+        length = self.amount_of_remaining_points
+        lower = -self.history_time
+        upper = 0
+        self.time_list = [lower + x*(upper-lower)/length for x in range(length)]
+
 
         # end news for the datarecorder
 
@@ -71,8 +82,8 @@ class ControllerPlotterAction(JoanModuleAction):
 
 
         for k in range(self.amount_of_remaining_points):
-            self.brushes.append(pg.mkBrush(round(256 * colors_rgb[k][0]), round(256 * colors_rgb[k][1]), round(256 * colors_rgb[k][2]), k*2))
-            self.pens.append(pg.mkPen(round(256 * colors_rgb[k][0]), round(256 * colors_rgb[k][1]), round(256 * colors_rgb[k][2]), k*2))
+            self.brushes.append(pg.mkBrush(round(256 * colors_rgb[k][0]), round(256 * colors_rgb[k][1]), round(256 * colors_rgb[k][2]), 255))
+            self.pens.append(pg.mkPen(round(256 * colors_rgb[k][0]), round(256 * colors_rgb[k][1]), round(256 * colors_rgb[k][2]), 255))
 
 
 
@@ -112,37 +123,69 @@ class ControllerPlotterAction(JoanModuleAction):
         try:
             steering_ang = data_from_hardware_manager['SensoDrive 1']['steering_angle']
             req_torque = data_from_hardware_manager['SensoDrive 1']['measured_torque']
-
-            lat_error = data_from_sw_controller['FDCA 1']['lat_error']
-        except KeyError:
+            sw_actual = data_from_hardware_manager['SensoDrive 1']['steering_angle']
+        except KeyError or TypeError:
             steering_ang = 0
             req_torque = 0
-            lat_error = 0
+            sw_actual = 0
 
-        self.torque_plot_handle = self.module_dialog.module_widget.torque_graph.plot()
-        # self.e_lat_plot_handle = self.module_dialog.module_widget.lat_e_graph.plot()
+        try:
+            lat_error = data_from_sw_controller['FDCA 1']['lat_error']
+            sw_des = data_from_sw_controller['FDCA 1']['sw_angle_desired_radians']
+            heading_error = data_from_sw_controller['FDCA 1']['heading_error']
+            loha = data_from_sw_controller['FDCA 1']['loha']
+
+        except KeyError or TypeError:
+            lat_error = 0
+            sw_des = 0
+            heading_error = 0
+            loha = 0
+
+
 
         #Torque plot
-        self.plot_data_torque_x = np.append(self.plot_data_torque_x, steering_ang)
-        self.plot_data_torque_y = np.append(self.plot_data_torque_y, req_torque)
+        self.plot_data_torque_x.append(steering_ang)
+        self.plot_data_torque_y.append(req_torque)
         if len(self.plot_data_torque_x) > self.amount_of_remaining_points:
-            self.plot_data_torque_y = np.delete(self.plot_data_torque_y, 0)
-            self.plot_data_torque_x = np.delete(self.plot_data_torque_x, 0)
-            self.torque_plot_handle.setData(x=self.plot_data_torque_x, y=self.plot_data_torque_y, size=10, pen=pg.mkPen(None), brush='g', symbol='o', symbolBrush=self.brushes, symbolPen= self.pens)
-            plot_points_torque = self.module_dialog.module_widget.torque_graph.listDataItems()
-            self.module_dialog.module_widget.torque_graph.removeItem(plot_points_torque[0])
+            self.plot_data_torque_y.pop(0)
+            self.plot_data_torque_x.pop(0)
+            self.torque_plot_handle.setData(x=self.plot_data_torque_x, y=self.plot_data_torque_y, size=10, pen=pg.mkPen((0, 0, 0, 200)), brush='g', symbol='d',
+                                            symbolBrush=self.brushes, symbolPen= self.pens, symbolSize = 10)
 
-        #Elat plot
-        self.plot_data_e_lat_y = np.append(self.plot_data_e_lat_y, lat_error)
-        self.plot_data_e_lat_y = np.delete(self.plot_data_e_lat_y, 0)
 
-        # print(self.plot_data_e_lat_y)
-        self.module_dialog.module_widget.lat_e_graph.clear()
-        self.module_dialog.module_widget.lat_e_graph.plot(x=self.time_vector, y=self.plot_data_e_lat_y, size=10, pen=pg.mkPen(None), brush='g', symbol='o', symbolBrush=self.brushes, symbolPen= self.pens)
-        # plot_points_e_lat = self.module_dialog.module_widget.lat_e_graph.listDataItems()
-        # self.module_dialog.module_widget.lat_e_graph.removeItem(plot_points_e_lat[1:])
+        #E_lat plot
+        self.plot_data_e_lat_y.append(lat_error)
+        self.plot_data_e_lat_y.pop(0)
+        self.e_lat_plot_handle.setData(x=self.time_list, y=self.plot_data_e_lat_y, size=2, pen=pg.mkPen((0, 0, 0, 200)), brush='g', symbol='d', symbolBrush=self.brushes,
+                                         symbolPen=self.pens, symbolSize = 5)
 
-        # print(len(self.plot_data_e_lat_y))
+
+        #E_psi plot
+        self.plot_data_e_psi_y.append(heading_error)
+        self.plot_data_e_psi_y.pop(0)
+        self.e_psi_plot_handle.setData(x=self.time_list, y=self.plot_data_e_psi_y, size=2, pen=pg.mkPen((0, 0, 0, 200)), brush='g', symbol='d', symbolBrush=self.brushes,
+                                       symbolPen=self.pens, symbolSize = 5)
+
+        #loha Plot
+        self.plot_data_loha_y.append(loha)
+        self.plot_data_loha_y.pop(0)
+        self.loha_plot_handle.setData(x=self.time_list, y=self.plot_data_loha_y, size=2, pen=pg.mkPen((0, 0, 0, 200)), brush='g', symbol='d', symbolBrush=self.brushes,
+                                       symbolPen=self.pens, symbolSize = 5)
+
+        #sw desired plot
+        self.plot_data_sw_des_y.append(sw_des)
+        self.plot_data_sw_des_y.pop(0)
+        self.sw_des_plot_handle.setData(x=self.time_list, y=self.plot_data_sw_des_y, size=2, pen=pg.mkPen((0, 0, 0, 200)), brush='g', symbol='d', symbolBrush=self.brushes,
+                                      symbolPen=self.pens, symbolSize = 5)
+
+        #sw actual plot
+        # sw desired plot
+        self.plot_data_sw_act_y.append(sw_actual)
+        self.plot_data_sw_act_y.pop(0)
+        self.sw_act_plot_handle.setData(x=self.time_list, y=self.plot_data_sw_act_y, size=2, pen=pg.mkPen((0, 0, 0, 200)), brush='g', symbol='d', symbolBrush=self.brushes,
+                                        symbolPen=self.pens, symbolSize = 5)
+
+
 
     def initialize(self):
         """
@@ -153,7 +196,13 @@ class ControllerPlotterAction(JoanModuleAction):
         # reinitialised every time the settings are changed.
         self.data['counter'] = self.counter
         self.write_news(news=self.data)
+
+        self.torque_plot_handle = self.module_dialog.module_widget.torque_graph.plot()
         self.e_lat_plot_handle = self.module_dialog.module_widget.lat_e_graph.plot()
+        self.e_psi_plot_handle = self.module_dialog.module_widget.psi_e_graph.plot()
+        self.loha_plot_handle = self.module_dialog.module_widget.loha_graph.plot()
+        self.sw_des_plot_handle = self.module_dialog.module_widget.sw_des_graph.plot()
+        self.sw_act_plot_handle = self.module_dialog.module_widget.sw_actual_graph.plot()
 
         ## Initialize Torque Graph
         self.module_dialog.module_widget.torque_graph.setXRange(-2 * math.pi, 2 * math.pi, padding=0)
@@ -165,13 +214,49 @@ class ControllerPlotterAction(JoanModuleAction):
         torque_viewbox = self.module_dialog.module_widget.torque_graph.getViewBox()
         torque_viewbox.setBackgroundColor((255,255,255,200))
 
-        ## Initialize Lat Error Plot
-        self.module_dialog.module_widget.lat_e_graph.setXRange(-10, 2, padding=0)
-        self.module_dialog.module_widget.lat_e_graph.setYRange(-10, 10, padding=0)
+        ## Initialize lat Error Plot
+        self.module_dialog.module_widget.lat_e_graph.setXRange(-self.history_time, self.history_time/10, padding=0)
+        self.module_dialog.module_widget.lat_e_graph.setYRange(-8, 8, padding=0)
         self.module_dialog.module_widget.lat_e_graph.showGrid(True, True, 1)
         self.module_dialog.module_widget.lat_e_graph.setLabel('left', 'Lat Error [m]')
         lat_error_viewbox = self.module_dialog.module_widget.lat_e_graph.getViewBox()
         lat_error_viewbox.setBackgroundColor((255, 255, 255, 200))
+
+        ## Initialize heading Error Plot
+        self.module_dialog.module_widget.psi_e_graph.setXRange(-self.history_time, self.history_time/10, padding=0)
+        self.module_dialog.module_widget.psi_e_graph.setYRange(-math.pi, math.pi, padding=0)
+        self.module_dialog.module_widget.psi_e_graph.showGrid(True, True, 1)
+        self.module_dialog.module_widget.psi_e_graph.setLabel('left', 'Heading Error [rad]')
+        psi_error_viewbox = self.module_dialog.module_widget.psi_e_graph.getViewBox()
+        psi_error_viewbox.setBackgroundColor((255, 255, 255, 200))
+
+        ## Initialize level of haptic authority (LOHA) Plot
+        self.module_dialog.module_widget.loha_graph.setXRange(-self.history_time, self.history_time/10, padding=0)
+        self.module_dialog.module_widget.loha_graph.setYRange(-1, 11, padding=0)
+        self.module_dialog.module_widget.loha_graph.showGrid(True, True, 1)
+        self.module_dialog.module_widget.loha_graph.setLabel('left', 'LoHA [Nm/rad]')
+        loha_viewbox = self.module_dialog.module_widget.loha_graph.getViewBox()
+        loha_viewbox.setBackgroundColor((255, 255, 255, 200))
+
+        ## Initialize sw angle desired Plot
+        self.module_dialog.module_widget.sw_des_graph.setXRange(-self.history_time, self.history_time/10, padding=0)
+        self.module_dialog.module_widget.sw_des_graph.setYRange(-math.pi , math.pi, padding=0)
+        self.module_dialog.module_widget.sw_des_graph.showGrid(True, True, 1)
+        self.module_dialog.module_widget.sw_des_graph.setLabel('left', 'Desired Steering Angle [rad]')
+        sw_des_viewbox = self.module_dialog.module_widget.sw_des_graph.getViewBox()
+        sw_des_viewbox.setBackgroundColor((255, 255, 255, 200))
+
+        ## Initialize sw angle actual plot
+        self.module_dialog.module_widget.sw_actual_graph.setXRange(-self.history_time, self.history_time/10, padding=0)
+        self.module_dialog.module_widget.sw_actual_graph.setYRange(-math.pi, math.pi, padding=0)
+        self.module_dialog.module_widget.sw_actual_graph.showGrid(True, True, 1)
+        self.module_dialog.module_widget.sw_actual_graph.setLabel('left', 'Actual Steering Angle [rad]')
+        self.module_dialog.module_widget.sw_actual_graph.setLabel('bottom', 'Time [s]')
+        sw_actual_viewbox = self.module_dialog.module_widget.sw_actual_graph.getViewBox()
+        sw_actual_viewbox.setBackgroundColor((255, 255, 255, 200))
+
+
+
 
 
 
@@ -197,6 +282,12 @@ class ControllerPlotterAction(JoanModuleAction):
         """stop the module"""
         # Will automatically go to READY as defined above in self.state_machine.set_automatic_transition
         self.state_machine.request_state_change(State.IDLE)
+        self.module_dialog.module_widget.torque_graph.clear()
+        self.module_dialog.module_widget.lat_e_graph.clear()
+        self.module_dialog.module_widget.psi_e_graph.clear()
+        self.module_dialog.module_widget.loha_graph.clear()
+        self.module_dialog.module_widget.sw_des_graph.clear()
+        self.module_dialog.module_widget.sw_actual_graph.clear()
 
         return super().stop()
 
