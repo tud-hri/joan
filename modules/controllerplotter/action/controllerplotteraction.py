@@ -55,15 +55,10 @@ class ControllerPlotterAction(JoanModuleAction):
         self.labelfont = QtGui.QFont()
         self.labelfont.setPixelSize(20)
 
-
-
         length = self.amount_of_remaining_points
         lower = -self.history_time
         upper = 0
         self.time_list = [lower + x * (upper - lower) / length for x in range(length)]
-
-        # end news for the datarecorder
-
         self.brushes = []
         self.pens = []
         colors_rgb = []
@@ -79,12 +74,6 @@ class ControllerPlotterAction(JoanModuleAction):
         for k in range(self.amount_of_remaining_points):
             self.brushes.append(pg.mkBrush(round(256 * colors_rgb[k][0]), round(256 * colors_rgb[k][1]), round(256 * colors_rgb[k][2]), 255))
             self.pens.append(pg.mkPen(round(256 * colors_rgb[k][0]), round(256 * colors_rgb[k][1]), round(256 * colors_rgb[k][2]), 255))
-
-        # start settings for this module
-        # each module has its own settings, which are stored in a .json file (e.g. template_settings.json)
-        # To create settings for your custom module create a settings class and enherit JOANMOduleSetting, as in the example TempleSettings
-        # All attributes you add to your settings class will automatically be save if you call setting.save_to_file
-        # when loading setting, all attribute in the JSON file are copied, but missing values will keep their default value as defined in your setting class
 
         # first create a settings object containing the default values
         self.settings = ControllerPlotterSettings(module_enum=JOANModules.CONTROLLER_PLOTTER)
@@ -109,6 +98,7 @@ class ControllerPlotterAction(JoanModuleAction):
 
         data_from_sw_controller = self.read_news(JOANModules.STEERING_WHEEL_CONTROL)
         data_from_hardware_manager = self.read_news(JOANModules.HARDWARE_MANAGER)
+        data_from_carla_interface = self.read_news(JOANModules.CARLA_INTERFACE)
 
         # try assigning variables:
         try:
@@ -197,7 +187,7 @@ class ControllerPlotterAction(JoanModuleAction):
         self.module_dialog.module_widget.torque_graph.showGrid(True, True, 1)
         self.module_dialog.module_widget.torque_graph.setTitle('Steering Angle vs Torque')
         self.module_dialog.module_widget.torque_graph.setLabel('left', 'Torque [Nm]', **styles)
-        self.module_dialog.module_widget.torque_graph.setLabel('bottom','<font>&Theta;SW</font> [rad]',**{'font-size':'20pt'})
+        self.module_dialog.module_widget.torque_graph.setLabel('bottom', '<font>&Theta;SW</font> [rad]', **{'font-size': '20pt'})
         self.module_dialog.module_widget.torque_graph.getAxis('bottom').setTickFont(self.labelfont)
         self.module_dialog.module_widget.torque_graph.getAxis("bottom").setStyle(tickTextOffset=20)
         self.module_dialog.module_widget.torque_graph.getAxis('left').setTickFont(self.labelfont)
@@ -210,14 +200,14 @@ class ControllerPlotterAction(JoanModuleAction):
         self.module_dialog.module_widget.lat_e_graph.setXRange(-self.history_time, self.history_time / 10, padding=0)
         self.module_dialog.module_widget.lat_e_graph.setYRange(-8, 8, padding=0)
         self.module_dialog.module_widget.lat_e_graph.showGrid(True, True, 1)
-        self.module_dialog.module_widget.lat_e_graph.setLabel('right', 'e<sub>lat</sub> [m]', **{'font-size':'14pt'})
+        self.module_dialog.module_widget.lat_e_graph.setLabel('right', 'e<sub>lat</sub> [m]', **{'font-size': '14pt'})
         lat_error_viewbox = self.module_dialog.module_widget.lat_e_graph.getViewBox()
         lat_error_viewbox.setBackgroundColor((255, 255, 255, 200))
 
         ## Initialize heading Error Plot
         self.module_dialog.module_widget.psi_e_graph.setXRange(-self.history_time, self.history_time / 10, padding=0)
         self.module_dialog.module_widget.psi_e_graph.setYRange(-math.pi, math.pi, padding=0)
-        self.module_dialog.module_widget.psi_e_graph.setLabel('right', 'e<sub><font>&Psi;</font></sub> [rad]', **{'font-size':'14pt'})
+        self.module_dialog.module_widget.psi_e_graph.setLabel('right', 'e<sub><font>&Psi;</font></sub> [rad]', **{'font-size': '14pt'})
         psi_error_viewbox = self.module_dialog.module_widget.psi_e_graph.getViewBox()
         psi_error_viewbox.setBackgroundColor((255, 255, 255, 200))
         self.module_dialog.module_widget.psi_e_graph.showGrid(True, True, 1)
@@ -226,7 +216,7 @@ class ControllerPlotterAction(JoanModuleAction):
         self.module_dialog.module_widget.loha_graph.setXRange(-self.history_time, self.history_time / 10, padding=0)
         self.module_dialog.module_widget.loha_graph.setYRange(-1, 11, padding=0)
         self.module_dialog.module_widget.loha_graph.showGrid(True, True, 1)
-        self.module_dialog.module_widget.loha_graph.setLabel('right', 'LoHA [Nm/rad]', **{'font-size':'14pt'})
+        self.module_dialog.module_widget.loha_graph.setLabel('right', 'LoHA [Nm/rad]', **{'font-size': '14pt'})
         loha_viewbox = self.module_dialog.module_widget.loha_graph.getViewBox()
         loha_viewbox.setBackgroundColor((255, 255, 255, 200))
 
@@ -234,7 +224,7 @@ class ControllerPlotterAction(JoanModuleAction):
         self.module_dialog.module_widget.sw_des_graph.setXRange(-self.history_time, self.history_time / 10, padding=0)
         self.module_dialog.module_widget.sw_des_graph.setYRange(-math.pi, math.pi, padding=0)
         self.module_dialog.module_widget.sw_des_graph.showGrid(True, True, 1)
-        self.module_dialog.module_widget.sw_des_graph.setLabel('right', '<font>&Theta;SW</font><sub>des</sub> [rad]', **{'font-size':'14pt'})
+        self.module_dialog.module_widget.sw_des_graph.setLabel('right', '<font>&Theta;SW</font><sub>des</sub> [rad]', **{'font-size': '14pt'})
         sw_des_viewbox = self.module_dialog.module_widget.sw_des_graph.getViewBox()
         sw_des_viewbox.setBackgroundColor((255, 255, 255, 200))
 
@@ -242,8 +232,8 @@ class ControllerPlotterAction(JoanModuleAction):
         self.module_dialog.module_widget.sw_actual_graph.setXRange(-self.history_time, self.history_time / 10, padding=0)
         self.module_dialog.module_widget.sw_actual_graph.setYRange(-math.pi, math.pi, padding=0)
         self.module_dialog.module_widget.sw_actual_graph.showGrid(True, True, 1)
-        self.module_dialog.module_widget.sw_actual_graph.setLabel('right', '<font>&Theta;SW</font><sub>act</sub> [rad]', **{'font-size':'14pt'})
-        self.module_dialog.module_widget.sw_actual_graph.setLabel('bottom',  'Time[s]', **{'font-size':'14pt'})
+        self.module_dialog.module_widget.sw_actual_graph.setLabel('right', '<font>&Theta;SW</font><sub>act</sub> [rad]', **{'font-size': '14pt'})
+        self.module_dialog.module_widget.sw_actual_graph.setLabel('bottom', 'Time[s]', **{'font-size': '14pt'})
 
         sw_actual_viewbox = self.module_dialog.module_widget.sw_actual_graph.getViewBox()
         sw_actual_viewbox.setBackgroundColor((255, 255, 255, 200))
