@@ -32,3 +32,4 @@ if __name__ == '__main__':
     JOANHQACTION.add_module(JOANModules.EXPERIMENT_MANAGER)
 
     APP.exec_()
+ 

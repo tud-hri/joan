@@ -154,6 +154,8 @@ class FDCASWController(BaseSWController):
     def initialize(self):
         self.load_trajectory()
 
+
+
     def calculate(self, vehicle_object, hw_data_in):
         """
         In manual, the controller has no additional control. We could add some self-centering torque, if we want.
@@ -266,6 +268,7 @@ class FDCASWController(BaseSWController):
                 self._data_out['ff_torque'] = sw_angle_ff * stiffness
                 self._data_out['fb_torque'] = sw_angle_fb * stiffness
                 self._data_out['loha_torque'] = torque_loha
+                self._data_out['trajectory_name'] = self.settings.trajectory_name
 
 
                 # self._data_out['sw_angle_desired_degrees'] = math.radians(sw_angle_ff_des)

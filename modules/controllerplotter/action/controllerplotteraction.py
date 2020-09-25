@@ -17,6 +17,7 @@ from .controllerplottersettings import ControllerPlotterSettings
 import math
 import pyqtgraph as pg
 from colour import Color
+import pandas as pd
 
 
 class ControllerPlotterAction(JoanModuleAction):
@@ -53,6 +54,8 @@ class ControllerPlotterAction(JoanModuleAction):
         self.plot_data_loha_y = [0] * self.amount_of_remaining_points
         self.plot_data_sw_des_y = [0] * self.amount_of_remaining_points
         self.plot_data_sw_act_y = [0] * self.amount_of_remaining_points
+        self.plot_data_road_x = []
+        self.plot_data_road_y = []
         self.plot_data_sw_stiffness_x = [-160, 160]
         self.plot_data_sw_stiffness_y = [0, 0]
 
@@ -113,6 +116,7 @@ class ControllerPlotterAction(JoanModuleAction):
         data_from_carla_interface = self.read_news(JOANModules.CARLA_INTERFACE)
 
         # try assigning variables:
+        #from hardware manager
         try:
             # sensodrive
             # steering_ang = data_from_hardware_manager['SensoDrive 1']['steering_angle']
@@ -123,12 +127,17 @@ class ControllerPlotterAction(JoanModuleAction):
             # joystick
             steering_ang = math.degrees(data_from_hardware_manager['Joystick 1']['steering_angle'])
             sw_actual = math.degrees(data_from_hardware_manager['Joystick 1']['steering_angle'])
+
+            # keyboard
+            # steering_ang = math.degrees(data_from_hardware_manager['Keyboard 1']['steering_angle'])
+            # sw_actual = math.degrees(data_from_hardware_manager['Keyboard 1']['steering_angle'])
         except KeyError or TypeError:
             steering_ang = 0
             # req_torque = 0
             sw_actual = 0
             sw_stiffness = math.radians(1)
 
+        #from steeringwheel controller
         try:
             lat_error = data_from_sw_controller['FDCA 1']['lat_error']
             sw_des = math.degrees(data_from_sw_controller['FDCA 1']['sw_angle_desired_radians'])
@@ -150,6 +159,47 @@ class ControllerPlotterAction(JoanModuleAction):
             ff_torque = 0
             loha_torque = 0
             sw_stiffness = math.radians(1)
+
+        #from carla interface
+        try:
+            vehicle_object = data_from_carla_interface['ego_agents']['EgoVehicle 1']['vehicle_object']
+        except:
+            vehicle_object = None
+
+        #Top view plot
+        if vehicle_object is not None:
+            if vehicle_object.spawned_vehicle is not None:
+                vehicle_location = vehicle_object.spawned_vehicle.get_location()
+                closest_waypoint = data_from_carla_interface['map'].get_waypoint(vehicle_location, project_to_road = True)
+                # next
+                temp = []
+                temp2 = []
+                for a in range(1,51):
+                    temp.append(closest_waypoint.next(a))
+
+                #previous points
+                for a in range(1,51):
+                    temp2.append(closest_waypoint.previous(a))
+
+
+                for waypoints in temp2:
+                    self.plot_data_road_x.append(waypoints[0].transform.location.x)
+                    self.plot_data_road_y.append(waypoints[0].transform.location.y)
+
+                for waypoints in temp:
+                    self.plot_data_road_x.append(waypoints[0].transform.location.x)
+                    self.plot_data_road_y.append(waypoints[0].transform.location.y)
+
+
+                self.road_plot_handle.setData(x = self.plot_data_road_x, y = self.plot_data_road_y)
+                self.module_dialog.module_widget.top_view_graph.setXRange(self.plot_data_road_x[0], self.plot_data_road_x[-1], padding=0)
+                self.module_dialog.module_widget.top_view_graph.setYRange(self.plot_data_road_y[0], self.plot_data_road_y[-1], padding=0)
+                self.plot_data_road_x = []
+                self.plot_data_road_y = []
+
+
+
+
 
         # Big Torque vs steering Angle plot
         self.plot_data_torque_x.append(steering_ang)
@@ -174,9 +224,9 @@ class ControllerPlotterAction(JoanModuleAction):
         # Steering Wheel stiffness
         self.plot_data_sw_stiffness_y = [sw_stiffness * 160, sw_stiffness * -160]
         self.sw_stiffness_plot_handle.setData(x=self.plot_data_sw_stiffness_x, y=self.plot_data_sw_stiffness_y, size=2,
-                                                                                           pen='b',
-                                                                                           brush='b', symbol=None,
-                                                                                           )
+                                              pen='b',
+                                              brush='b', symbol=None,
+                                              )
 
         # TORQUE PLOTS
         # Feedback torque
@@ -231,12 +281,45 @@ class ControllerPlotterAction(JoanModuleAction):
         """
         This function is called before the module is started
         """
-        # This is de place to do all initialization needed. In the example here, the necessary settings are copied from the settings object.
-        # This is done during the initialization to prevent settings from changing while the module is running. This does mean that the module needs to be
-        # reinitialised every time the settings are changed.
-        self.data['counter'] = self.counter
-        self.write_news(news=self.data)
+        # self.carla_interface_data = self.read_news(JOANModules.CARLA_INTERFACE)
+        #
+        # if 'waypoints' in self.carla_interface_data:
+        #     self._waypoints = self.carla_interface_data['waypoints']
+        #     self.data_road_x = []
+        #     self.data_road_y = []
+        #
+        #     list_points = []
+        #
+        #     #next 20m
+        #     for a in range(1,len(self._waypoints)):
+        #         list_points.append(self._waypoints[0].next(a))
+        #
+        #     for points in list_points:
+        #
+        #         self.data_road_x.append(points[0].transform.location.x)
+        #         self.data_road_y.append(points[0].transform.location.y)
+        #
+        #
+        #     #
+        #     # self.data_road_x_left = self.data_road_x * 0.99
+        #     # self.data_road_y_left = self.data_road_y * 0.99
+        #
+        #
 
+        # Top view graph
+        # TODO: Make this depend on the trajectory selected in FDCA controller (read news and then apply that name)
+        trajectory_name = "MiddleRoadTVRecord_filtered_ffswang_heading_2hz.csv"
+        tmp = pd.read_csv(os.path.join('modules/steeringwheelcontrol/action/swcontrollers/trajectories', trajectory_name))
+        HCR_trajectory_data = tmp.values
+        plot_data_HCR_x = HCR_trajectory_data[:, 1]
+        plot_data_HCR_y = HCR_trajectory_data[:, 2]
+        self.HCR_plot_handle = self.module_dialog.module_widget.top_view_graph.plot(x=plot_data_HCR_x, y=plot_data_HCR_y, pen=pg.mkPen(10, 200, 0, 150, width=3))
+        self.road_plot_handle = self.module_dialog.module_widget.top_view_graph.plot(x=[0], y=[0], size=2,
+                                                                                   pen=pg.mkPen((0, 0, 0, 200),
+                                                                                                width=1),
+                                                                                   brush='g', symbol=None,
+                                                                                   symbolBrush=self.brushes,
+                                                                                   symbolPen=self.pens, symbolSize=5)
         # big torque graph
 
         self.sw_des_point_plot_handle = self.module_dialog.module_widget.torque_graph.plot(x=[0], y=[0], symbol='x',
@@ -316,15 +399,31 @@ class ControllerPlotterAction(JoanModuleAction):
 
         # self.loha_plot_handle = self.module_dialog.module_widget.loha_graph.plot()
 
+
+        ## Initialize topview Graph
+        self.module_dialog.module_widget.top_view_graph.setTitle('Top View')
+        self.module_dialog.module_widget.top_view_graph.setLabel('left', 'Y position [m]',
+                                                               **{'font-size': '12pt'})
+        self.module_dialog.module_widget.top_view_graph.setLabel('bottom', '<font>&Theta;X position</font> [m]',
+                                                               **{'font-size': '12pt'})
+        top_view_viewbox = self.module_dialog.module_widget.top_view_graph.getViewBox()
+        top_view_viewbox.invertX(False)
+        top_view_viewbox.invertY(True)
+        top_view_viewbox.setBackgroundColor((255, 255, 255, 200))
+        top_view_legend = pg.LegendItem(size=(120, 0), offset=None, horSpacing=30, verSpacing=-7,
+                                      pen=pg.mkPen(0, 0, 0, 255), brush=pg.mkBrush(255, 255, 255, 255))
+        top_view_legend.setParentItem(top_view_viewbox)
+        top_view_legend.addItem(self.HCR_plot_handle, name='HCR')
+
         ## Initialize Torque Graph
         self.module_dialog.module_widget.torque_graph.setXRange(- 180, 180, padding=0)
         self.module_dialog.module_widget.torque_graph.setYRange(-15, 15, padding=0)
         self.module_dialog.module_widget.torque_graph.showGrid(True, True, 1)
         self.module_dialog.module_widget.torque_graph.setTitle('Steering Angle vs Torque')
         self.module_dialog.module_widget.torque_graph.setLabel('left', 'Torque [Nm]',
-                                                               **{'font-size': '14pt'})
+                                                               **{'font-size': '12pt'})
         self.module_dialog.module_widget.torque_graph.setLabel('bottom', '<font>&Theta;Steering Wheel</font> [deg]',
-                                                               **{'font-size': '14pt'})
+                                                               **{'font-size': '12pt'})
         self.module_dialog.module_widget.torque_graph.getAxis('bottom').setTickFont(self.labelfont)
         self.module_dialog.module_widget.torque_graph.getAxis("bottom").setStyle(tickTextOffset=20)
         self.module_dialog.module_widget.torque_graph.getAxis('left').setTickFont(self.labelfont)
@@ -338,7 +437,7 @@ class ControllerPlotterAction(JoanModuleAction):
         torque_legend.setParentItem(torque_viewbox)
         torque_legend.addItem(self.torque_plot_handle, name='Torque vs Steering Angle')
         torque_legend.addItem(self.sw_des_point_plot_handle, name='Desired Steering Angle')
-        torque_legend.addItem(self.sw_stiffness_plot_handle, name = 'Self Centering Stiffness')
+        torque_legend.addItem(self.sw_stiffness_plot_handle, name='Self Centering Stiffness')
 
         ## Initialize lat Error Plot
         self.module_dialog.module_widget.lat_e_graph.setTitle('Lateral position vs Time')
