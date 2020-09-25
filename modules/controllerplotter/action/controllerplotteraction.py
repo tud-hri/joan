@@ -18,6 +18,7 @@ import math
 import pyqtgraph as pg
 from colour import Color
 import pandas as pd
+import numpy as np
 
 
 class ControllerPlotterAction(JoanModuleAction):
@@ -55,7 +56,14 @@ class ControllerPlotterAction(JoanModuleAction):
         self.plot_data_sw_des_y = [0] * self.amount_of_remaining_points
         self.plot_data_sw_act_y = [0] * self.amount_of_remaining_points
         self.plot_data_road_x = []
+        self.plot_data_road_x_outer = []
+        self.plot_data_road_x_inner = []
         self.plot_data_road_y = []
+        self.plot_data_road_y_outer = []
+        self.plot_data_road_y_inner = []
+        self.plot_data_road_psi = []
+        self.plot_data_road_psi_deg = []
+        self.road_lanewidth = []
         self.plot_data_sw_stiffness_x = [-160, 160]
         self.plot_data_sw_stiffness_y = [0, 0]
 
@@ -171,31 +179,84 @@ class ControllerPlotterAction(JoanModuleAction):
             if vehicle_object.spawned_vehicle is not None:
                 vehicle_location = vehicle_object.spawned_vehicle.get_location()
                 closest_waypoint = data_from_carla_interface['map'].get_waypoint(vehicle_location, project_to_road = True)
+
+
+
+                # previous points
+                previous_waypoints = []
+                for a in range(51, 1):
+                    previous_waypoints.append(closest_waypoint.previous(a))
+
                 # next
-                temp = []
-                temp2 = []
+                next_waypoints = []
                 for a in range(1,51):
-                    temp.append(closest_waypoint.next(a))
-
-                #previous points
-                for a in range(1,51):
-                    temp2.append(closest_waypoint.previous(a))
+                    next_waypoints.append(closest_waypoint.next(a))
 
 
-                for waypoints in temp2:
+
+                for waypoints in previous_waypoints:
                     self.plot_data_road_x.append(waypoints[0].transform.location.x)
                     self.plot_data_road_y.append(waypoints[0].transform.location.y)
+                    # self.plot_data_road_psi.append(waypoints[0].transform.rotation.yaw)
+                    self.road_lanewidth.append(waypoints[0].lane_width)
 
-                for waypoints in temp:
+                for waypoints in next_waypoints:
                     self.plot_data_road_x.append(waypoints[0].transform.location.x)
                     self.plot_data_road_y.append(waypoints[0].transform.location.y)
+                    # self.plot_data_road_psi.append(waypoints[0].transform.rotation.yaw)
+                    self.road_lanewidth.append(waypoints[0].lane_width)
+
+                ## CALCULATE HIER DE PSI VAN DE VECTOREN WANT DAT KUT OPENDRIVE FUCKED HET
+                pos_array_x = np.array([self.plot_data_road_x])
+                pos_array_y = np.array([self.plot_data_road_y])
+                pos_array = np.column_stack((pos_array_x, pos_array_y))
+
+                dirvecs = np.diff(pos_array)
+
+                x_unit_vector = np.array([0 ,1])
+                for vecs in dirvecs:
+                    print(vecs)
+                    print(x_unit_vector)
+                    self.plot_data_road_psi.append(self.compute_angle(vecs,x_unit_vector))
+
+
+
+
+
+
+                iter_x = 0
+                for roadpoint_x in self.plot_data_road_x:
+                    self.plot_data_road_x_outer.append(roadpoint_x - math.cos(self.plot_data_road_psi[iter_x] * self.road_lanewidth[iter_x]))
+                    self.plot_data_road_x_inner.append(roadpoint_x + math.cos(self.plot_data_road_psi[iter_x] * self.road_lanewidth[iter_x]))
+                    iter_x = iter_x + 1
+
+                iter_y = 0
+                for roadpoint_y in self.plot_data_road_y:
+                    self.plot_data_road_y_outer.append(roadpoint_y + math.sin(self.plot_data_road_psi[iter_y] * self.road_lanewidth[iter_y]))
+                    self.plot_data_road_y_inner.append(roadpoint_y - math.sin(self.plot_data_road_psi[iter_y] * self.road_lanewidth[iter_y]))
+                    iter_y = iter_y + 1
+
+                max_plotrange_x = self.plot_data_road_x[50] + 10
+                min_plotrange_x = self.plot_data_road_x[50] - 10
+                max_plotrange_y = self.plot_data_road_y[50] + 10
+                min_plotrange_y = self.plot_data_road_y[50] - 10
 
 
                 self.road_plot_handle.setData(x = self.plot_data_road_x, y = self.plot_data_road_y)
-                self.module_dialog.module_widget.top_view_graph.setXRange(self.plot_data_road_x[0], self.plot_data_road_x[-1], padding=0)
-                self.module_dialog.module_widget.top_view_graph.setYRange(self.plot_data_road_y[0], self.plot_data_road_y[-1], padding=0)
+                self.road_outer_plot_handle.setData(x=self.plot_data_road_x_outer, y=self.plot_data_road_y_outer)
+                self.road_inner_plot_handle.setData(x=self.plot_data_road_x_inner, y=self.plot_data_road_y_inner)
+                self.module_dialog.module_widget.top_view_graph.setXRange(min_plotrange_x, max_plotrange_x, padding=0)
+                self.module_dialog.module_widget.top_view_graph.setYRange(min_plotrange_y, max_plotrange_y, padding=0)
+
                 self.plot_data_road_x = []
                 self.plot_data_road_y = []
+                self.plot_data_road_x_outer = []
+                self.plot_data_road_x_inner = []
+                self.plot_data_road_y_outer = []
+                self.plot_data_road_y_inner = []
+                self.plot_data_road_psi = []
+                self.plot_data_road_psi_deg = []
+                self.road_lanewidth = []
 
 
 
@@ -277,6 +338,12 @@ class ControllerPlotterAction(JoanModuleAction):
         #                               brush='g', symbol='d', symbolBrush=self.brushes,
         #                               symbolPen=self.pens, symbolSize=5)
 
+    def compute_angle(self, v1, v2):
+        arg1 = np.cross(v1, v2)
+        arg2 = np.dot(v1, v2)
+        angle = np.arctan2(arg1, arg2)
+        return angle
+
     def initialize(self):
         """
         This function is called before the module is started
@@ -313,13 +380,26 @@ class ControllerPlotterAction(JoanModuleAction):
         HCR_trajectory_data = tmp.values
         plot_data_HCR_x = HCR_trajectory_data[:, 1]
         plot_data_HCR_y = HCR_trajectory_data[:, 2]
-        self.HCR_plot_handle = self.module_dialog.module_widget.top_view_graph.plot(x=plot_data_HCR_x, y=plot_data_HCR_y, pen=pg.mkPen(10, 200, 0, 150, width=3))
+
+        self.HCR_plot_handle = self.module_dialog.module_widget.top_view_graph.plot(x=plot_data_HCR_x, y=plot_data_HCR_y, pen=pg.mkPen(10, 200, 0, 150, width=1))
         self.road_plot_handle = self.module_dialog.module_widget.top_view_graph.plot(x=[0], y=[0], size=2,
                                                                                    pen=pg.mkPen((0, 0, 0, 200),
                                                                                                 width=1),
                                                                                    brush='g', symbol=None,
                                                                                    symbolBrush=self.brushes,
                                                                                    symbolPen=self.pens, symbolSize=5)
+        self.road_outer_plot_handle = self.module_dialog.module_widget.top_view_graph.plot(x=[0], y=[0], size=2,
+                                                                                     pen=pg.mkPen((0, 0, 255, 200),
+                                                                                                  width=1),
+                                                                                     brush='g', symbol=None,
+                                                                                     symbolBrush=self.brushes,
+                                                                                     symbolPen=self.pens, symbolSize=5)
+        self.road_inner_plot_handle = self.module_dialog.module_widget.top_view_graph.plot(x=[0], y=[0], size=2,
+                                                                                     pen=pg.mkPen((255, 0, 0, 200),
+                                                                                                  width=1),
+                                                                                     brush='g', symbol=None,
+                                                                                     symbolBrush=self.brushes,
+                                                                                     symbolPen=self.pens, symbolSize=5)
         # big torque graph
 
         self.sw_des_point_plot_handle = self.module_dialog.module_widget.torque_graph.plot(x=[0], y=[0], symbol='x',
@@ -337,7 +417,7 @@ class ControllerPlotterAction(JoanModuleAction):
                                                                                      symbolBrush=self.brushes[-1],
                                                                                      symbolPen=self.pens[-1],
                                                                                      symbolSize=10)
-        self.sw_stiffness_plot_handle = self.module_dialog.module_widget.torque_graph.plot(x=[-160, 160], y=[0, 0],
+        self.sw_stiffness_plot_handle = self.module_dialog.module_widget.torque_graph.plot( x=[-160, 160], y=[0, 0],
                                                                                            pen='b',
                                                                                            brush='b', symbol=None,
                                                                                            )
@@ -556,3 +636,5 @@ class ControllerPlotterAction(JoanModuleAction):
     def _execute_on_state_change_in_module_action_2(self):
         # example of adding a method to be executed on a state change request
         pass
+
+
