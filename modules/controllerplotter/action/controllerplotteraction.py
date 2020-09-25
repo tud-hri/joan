@@ -192,8 +192,6 @@ class ControllerPlotterAction(JoanModuleAction):
                 for a in range(1,51):
                     next_waypoints.append(closest_waypoint.next(a))
 
-
-
                 for waypoints in previous_waypoints:
                     self.plot_data_road_x.append(waypoints[0].transform.location.x)
                     self.plot_data_road_y.append(waypoints[0].transform.location.y)
@@ -207,44 +205,42 @@ class ControllerPlotterAction(JoanModuleAction):
                     self.road_lanewidth.append(waypoints[0].lane_width)
 
                 ## CALCULATE HIER DE PSI VAN DE VECTOREN WANT DAT KUT OPENDRIVE FUCKED HET
-                pos_array_x = np.array([self.plot_data_road_x])
-                pos_array_y = np.array([self.plot_data_road_y])
-                pos_array = np.column_stack((pos_array_x, pos_array_y))
 
-                dirvecs = np.diff(pos_array)
+                pos_array = np.array([[self.plot_data_road_x], [self.plot_data_road_y]])
 
-                x_unit_vector = np.array([0 ,1])
-                for vecs in dirvecs:
-                    print(vecs)
-                    print(x_unit_vector)
-                    self.plot_data_road_psi.append(self.compute_angle(vecs,x_unit_vector))
+                diff = np.transpose(np.diff(pos_array, prepend =pos_array))
 
 
+
+                x_unit_vector = np.array([[1], [0]])
+                for row in diff:
+                    self.plot_data_road_psi.append(self.compute_angle(row.ravel(), x_unit_vector.ravel()))
 
 
 
 
                 iter_x = 0
                 for roadpoint_x in self.plot_data_road_x:
-                    self.plot_data_road_x_outer.append(roadpoint_x - math.cos(self.plot_data_road_psi[iter_x] * self.road_lanewidth[iter_x]))
-                    self.plot_data_road_x_inner.append(roadpoint_x + math.cos(self.plot_data_road_psi[iter_x] * self.road_lanewidth[iter_x]))
+                    self.plot_data_road_x_outer.append(roadpoint_x - math.sin(self.plot_data_road_psi[iter_x]) * self.road_lanewidth[iter_x]/2)
+                    self.plot_data_road_x_inner.append(roadpoint_x + math.sin(self.plot_data_road_psi[iter_x]) * self.road_lanewidth[iter_x]/2)
                     iter_x = iter_x + 1
 
                 iter_y = 0
                 for roadpoint_y in self.plot_data_road_y:
-                    self.plot_data_road_y_outer.append(roadpoint_y + math.sin(self.plot_data_road_psi[iter_y] * self.road_lanewidth[iter_y]))
-                    self.plot_data_road_y_inner.append(roadpoint_y - math.sin(self.plot_data_road_psi[iter_y] * self.road_lanewidth[iter_y]))
+                    self.plot_data_road_y_outer.append(roadpoint_y - math.cos(self.plot_data_road_psi[iter_y]) * self.road_lanewidth[iter_y]/2)
+                    self.plot_data_road_y_inner.append(roadpoint_y + math.cos(self.plot_data_road_psi[iter_y]) * self.road_lanewidth[iter_y]/2)
                     iter_y = iter_y + 1
 
-                max_plotrange_x = self.plot_data_road_x[50] + 10
-                min_plotrange_x = self.plot_data_road_x[50] - 10
-                max_plotrange_y = self.plot_data_road_y[50] + 10
-                min_plotrange_y = self.plot_data_road_y[50] - 10
+                print(len(self.plot_data_road_x))
+                max_plotrange_x = self.plot_data_road_x[24] + 15
+                min_plotrange_x = self.plot_data_road_x[24] - 15
+                max_plotrange_y = self.plot_data_road_y[24] + 15
+                min_plotrange_y = self.plot_data_road_y[24] - 15
 
 
-                self.road_plot_handle.setData(x = self.plot_data_road_x, y = self.plot_data_road_y)
-                self.road_outer_plot_handle.setData(x=self.plot_data_road_x_outer, y=self.plot_data_road_y_outer)
-                self.road_inner_plot_handle.setData(x=self.plot_data_road_x_inner, y=self.plot_data_road_y_inner)
+                # self.road_plot_handle.setData(x = self.plot_data_road_x, y = self.plot_data_road_y)
+                self.road_outer_plot_handle.setData(x=self.plot_data_road_x_outer[0:-2], y=self.plot_data_road_y_outer[0:-2])
+                self.road_inner_plot_handle.setData(x=self.plot_data_road_x_inner[0:-2], y=self.plot_data_road_y_inner[0:-2])
                 self.module_dialog.module_widget.top_view_graph.setXRange(min_plotrange_x, max_plotrange_x, padding=0)
                 self.module_dialog.module_widget.top_view_graph.setYRange(min_plotrange_y, max_plotrange_y, padding=0)
 
@@ -389,14 +385,14 @@ class ControllerPlotterAction(JoanModuleAction):
                                                                                    symbolBrush=self.brushes,
                                                                                    symbolPen=self.pens, symbolSize=5)
         self.road_outer_plot_handle = self.module_dialog.module_widget.top_view_graph.plot(x=[0], y=[0], size=2,
-                                                                                     pen=pg.mkPen((0, 0, 255, 200),
-                                                                                                  width=1),
+                                                                                     pen=pg.mkPen((0, 0, 0, 255),
+                                                                                                  width=2),
                                                                                      brush='g', symbol=None,
                                                                                      symbolBrush=self.brushes,
                                                                                      symbolPen=self.pens, symbolSize=5)
         self.road_inner_plot_handle = self.module_dialog.module_widget.top_view_graph.plot(x=[0], y=[0], size=2,
-                                                                                     pen=pg.mkPen((255, 0, 0, 200),
-                                                                                                  width=1),
+                                                                                     pen=pg.mkPen((0, 0, 0, 255),
+                                                                                                  width=2),
                                                                                      brush='g', symbol=None,
                                                                                      symbolBrush=self.brushes,
                                                                                      symbolPen=self.pens, symbolSize=5)
@@ -489,9 +485,11 @@ class ControllerPlotterAction(JoanModuleAction):
         top_view_viewbox = self.module_dialog.module_widget.top_view_graph.getViewBox()
         top_view_viewbox.invertX(False)
         top_view_viewbox.invertY(True)
+        top_view_viewbox.setAspectLocked(True)
+        top_view_viewbox.setBorder(pen = pg.mkPen(0,0,0,255))
         top_view_viewbox.setBackgroundColor((255, 255, 255, 200))
-        top_view_legend = pg.LegendItem(size=(120, 0), offset=None, horSpacing=30, verSpacing=-7,
-                                      pen=pg.mkPen(0, 0, 0, 255), brush=pg.mkBrush(255, 255, 255, 255))
+        top_view_legend = pg.LegendItem(offset=None, horSpacing=30, verSpacing=-7,
+                                      pen=pg.mkPen(0, 0, 0, 0), brush=pg.mkBrush(255, 255, 255, 255))
         top_view_legend.setParentItem(top_view_viewbox)
         top_view_legend.addItem(self.HCR_plot_handle, name='HCR')
 
