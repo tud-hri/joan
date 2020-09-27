@@ -21,6 +21,7 @@ import pandas as pd
 import numpy as np
 
 
+
 class ControllerPlotterAction(JoanModuleAction):
     """Example JOAN module"""
 
@@ -44,7 +45,9 @@ class ControllerPlotterAction(JoanModuleAction):
         self.time = QtCore.QTime()
         self.plotpoints = []
 
+
         self.amount_of_remaining_points = 50
+        self.car_trace_length = 10
         self.history_time = self.amount_of_remaining_points / round(1000 / self._millis)
         self.plot_data_torque_x = []
         self.plot_data_torque_y = []
@@ -64,8 +67,13 @@ class ControllerPlotterAction(JoanModuleAction):
         self.plot_data_road_psi = []
         self.plot_data_road_psi_deg = []
         self.road_lanewidth = []
+        self.car_trace_x = [0] * self.car_trace_length
+        self.car_trace_y = [0] * self.car_trace_length
+        self.car_trace_psi = [0] * self.car_trace_length
         self.plot_data_sw_stiffness_x = [-160, 160]
         self.plot_data_sw_stiffness_y = [0, 0]
+        self.converted_x_road_outer = [] * 50
+        self.converted_y_road_outer = [] * 50
 
         self.labelfont = QtGui.QFont()
         self.labelfont.setPixelSize(14)
@@ -76,13 +84,19 @@ class ControllerPlotterAction(JoanModuleAction):
         self.time_list = [lower + x * (upper - lower) / length for x in range(length)]
         self.time_list_double = self.time_list + self.time_list
         self.brushes = []
+        self.car_brushes = []
         self.pens = []
+        self.car_pens = []
         colors_rgb = []
+        colors_rgb_car = []
         red = Color("red")
         colors = list(red.range_to(Color("green"), self.amount_of_remaining_points))
+        colors_car = list(red.range_to(Color("green"), self.car_trace_length))
         for color in colors:
             colors_rgb.append(color.rgb)
 
+        for color_car in colors_car:
+            colors_rgb_car.append(color_car.rgb)
         background_color = pg.mkColor((240, 240, 240, 255))
         pg.setConfigOption('background', background_color)
         pg.setConfigOption('foreground', 'k')
@@ -94,6 +108,14 @@ class ControllerPlotterAction(JoanModuleAction):
             self.pens.append(
                 pg.mkPen(round(256 * colors_rgb[k][0]), round(256 * colors_rgb[k][1]), round(256 * colors_rgb[k][2]),
                          k * 3))
+
+        for k in range(self.car_trace_length):
+            self.car_brushes.append(
+                pg.mkBrush(round(256 * colors_rgb_car[k][0]), round(256 * colors_rgb_car[k][1]), round(256 * colors_rgb_car[k][2]),
+                           k * 25))
+            self.car_pens.append(
+                pg.mkPen((round(256 * colors_rgb[k][0]), round(256 * colors_rgb[k][1]), round(256 * colors_rgb[k][2]),
+                         k * 25), width = 3))
 
         self.double_pens = self.pens + self.pens
         self.double_brushes = self.brushes + self.brushes
@@ -124,19 +146,19 @@ class ControllerPlotterAction(JoanModuleAction):
         data_from_carla_interface = self.read_news(JOANModules.CARLA_INTERFACE)
 
         # try assigning variables:
-        #from hardware manager
+        # from hardware manager
         try:
-            # sensodrive
+            ## sensodrive
             # steering_ang = data_from_hardware_manager['SensoDrive 1']['steering_angle']
             # req_torque = data_from_hardware_manager['SensoDrive 1']['measured_torque']
             # sw_actual = data_from_hardware_manager['SensoDrive 1']['steering_angle']
             # sw_stiffness = math.radians(data_from_hardware_manager['SensoDrive 1']['spring_stiffness'])
 
-            # joystick
+            ## joystick
             steering_ang = math.degrees(data_from_hardware_manager['Joystick 1']['steering_angle'])
             sw_actual = math.degrees(data_from_hardware_manager['Joystick 1']['steering_angle'])
 
-            # keyboard
+            ## keyboard
             # steering_ang = math.degrees(data_from_hardware_manager['Keyboard 1']['steering_angle'])
             # sw_actual = math.degrees(data_from_hardware_manager['Keyboard 1']['steering_angle'])
         except KeyError or TypeError:
@@ -145,7 +167,7 @@ class ControllerPlotterAction(JoanModuleAction):
             sw_actual = 0
             sw_stiffness = math.radians(1)
 
-        #from steeringwheel controller
+        # from steeringwheel controller
         try:
             lat_error = data_from_sw_controller['FDCA 1']['lat_error']
             sw_des = math.degrees(data_from_sw_controller['FDCA 1']['sw_angle_desired_radians'])
@@ -168,28 +190,33 @@ class ControllerPlotterAction(JoanModuleAction):
             loha_torque = 0
             sw_stiffness = math.radians(1)
 
-        #from carla interface
+        # from carla interface
         try:
             vehicle_object = data_from_carla_interface['ego_agents']['EgoVehicle 1']['vehicle_object']
         except:
             vehicle_object = None
 
-        #Top view plot
+        # Top view plot
         if vehicle_object is not None:
             if vehicle_object.spawned_vehicle is not None:
                 vehicle_location = vehicle_object.spawned_vehicle.get_location()
-                closest_waypoint = data_from_carla_interface['map'].get_waypoint(vehicle_location, project_to_road = True)
+                closest_waypoint = data_from_carla_interface['map'].get_waypoint(vehicle_location, project_to_road=True)
+                vehicle_rotation = vehicle_object.spawned_vehicle.get_transform().rotation.yaw
+
+
+
+
 
 
 
                 # previous points
                 previous_waypoints = []
-                for a in range(51, 1):
+                for a in reversed(range(1, 26)):
                     previous_waypoints.append(closest_waypoint.previous(a))
 
                 # next
                 next_waypoints = []
-                for a in range(1,51):
+                for a in range(1, 26):
                     next_waypoints.append(closest_waypoint.next(a))
 
                 for waypoints in previous_waypoints:
@@ -208,41 +235,60 @@ class ControllerPlotterAction(JoanModuleAction):
 
                 pos_array = np.array([[self.plot_data_road_x], [self.plot_data_road_y]])
 
-                diff = np.transpose(np.diff(pos_array, prepend =pos_array))
-
-
+                diff = np.transpose(np.diff(pos_array, prepend=pos_array))
 
                 x_unit_vector = np.array([[1], [0]])
                 for row in diff:
                     self.plot_data_road_psi.append(self.compute_angle(row.ravel(), x_unit_vector.ravel()))
 
-
-
-
                 iter_x = 0
                 for roadpoint_x in self.plot_data_road_x:
-                    self.plot_data_road_x_outer.append(roadpoint_x - math.sin(self.plot_data_road_psi[iter_x]) * self.road_lanewidth[iter_x]/2)
-                    self.plot_data_road_x_inner.append(roadpoint_x + math.sin(self.plot_data_road_psi[iter_x]) * self.road_lanewidth[iter_x]/2)
+                    self.plot_data_road_x_outer.append(roadpoint_x - math.sin(self.plot_data_road_psi[iter_x]) * self.road_lanewidth[iter_x] / 2)
+                    self.plot_data_road_x_inner.append(roadpoint_x + math.sin(self.plot_data_road_psi[iter_x]) * self.road_lanewidth[iter_x] / 2)
                     iter_x = iter_x + 1
 
                 iter_y = 0
                 for roadpoint_y in self.plot_data_road_y:
-                    self.plot_data_road_y_outer.append(roadpoint_y - math.cos(self.plot_data_road_psi[iter_y]) * self.road_lanewidth[iter_y]/2)
-                    self.plot_data_road_y_inner.append(roadpoint_y + math.cos(self.plot_data_road_psi[iter_y]) * self.road_lanewidth[iter_y]/2)
+                    self.plot_data_road_y_outer.append(roadpoint_y - math.cos(self.plot_data_road_psi[iter_y]) * self.road_lanewidth[iter_y] / 2)
+                    self.plot_data_road_y_inner.append(roadpoint_y + math.cos(self.plot_data_road_psi[iter_y]) * self.road_lanewidth[iter_y] / 2)
                     iter_y = iter_y + 1
 
-                print(len(self.plot_data_road_x))
                 max_plotrange_x = self.plot_data_road_x[24] + 15
                 min_plotrange_x = self.plot_data_road_x[24] - 15
-                max_plotrange_y = self.plot_data_road_y[24] + 15
-                min_plotrange_y = self.plot_data_road_y[24] - 15
+                max_plotrange_y = self.plot_data_road_y[24] + 25
+                min_plotrange_y = self.plot_data_road_y[24] - 25
 
+                self.road_outer_plot_handle.setTransformOriginPoint(self.plot_data_road_x[24], self.plot_data_road_y[24])
+                self.road_outer_plot_handle.setRotation(math.degrees(self.plot_data_road_psi[24]-0.5*math.pi))
 
-                # self.road_plot_handle.setData(x = self.plot_data_road_x, y = self.plot_data_road_y)
+                self.road_inner_plot_handle.setTransformOriginPoint(self.plot_data_road_x[24], self.plot_data_road_y[24])
+                self.road_inner_plot_handle.setRotation(math.degrees(self.plot_data_road_psi[24]-0.5*math.pi))
+
+                self.auto_position_plot_handle.setTransformOriginPoint(self.plot_data_road_x[24], self.plot_data_road_y[24])
+                self.auto_position_plot_handle.setRotation(math.degrees(self.plot_data_road_psi[24] - 0.5 * math.pi))
+
+                self.HCR_plot_handle.setTransformOriginPoint(self.plot_data_road_x[24], self.plot_data_road_y[24])
+                self.HCR_plot_handle.setRotation(math.degrees(self.plot_data_road_psi[24] - 0.5 * math.pi))
+
+                tr = QtGui.QTransform()
+                angle_rot = tr.rotate(vehicle_rotation + (math.degrees(self.plot_data_road_psi[24])))
+                rot_carSymbol = angle_rot.map(self.carSymbol)
+
+                self.car_trace_x.append(vehicle_location.x)
+                self.car_trace_y.append(vehicle_location.y)
+                self.car_trace_psi.append(rot_carSymbol)
+                if len(self.car_trace_x) > self.car_trace_length:
+                    self.car_trace_x.pop(0)
+                    self.car_trace_y.pop(0)
+                    self.car_trace_psi.pop(0)
+
                 self.road_outer_plot_handle.setData(x=self.plot_data_road_x_outer[0:-2], y=self.plot_data_road_y_outer[0:-2])
                 self.road_inner_plot_handle.setData(x=self.plot_data_road_x_inner[0:-2], y=self.plot_data_road_y_inner[0:-2])
                 self.module_dialog.module_widget.top_view_graph.setXRange(min_plotrange_x, max_plotrange_x, padding=0)
                 self.module_dialog.module_widget.top_view_graph.setYRange(min_plotrange_y, max_plotrange_y, padding=0)
+
+
+
 
                 self.plot_data_road_x = []
                 self.plot_data_road_y = []
@@ -253,10 +299,13 @@ class ControllerPlotterAction(JoanModuleAction):
                 self.plot_data_road_psi = []
                 self.plot_data_road_psi_deg = []
                 self.road_lanewidth = []
+                self.converted_y_road_outer = []
+                self.converted_x_road_outer = []
 
+            else:
+                self.module_dialog.module_widget.top_view_graph.clear()
 
-
-
+        self.auto_position_plot_handle.setData(x=self.car_trace_x, y=self.car_trace_y, symbol=self.car_trace_psi, symbolPen=self.car_pens, symbolBrush=self.car_brushes)
 
         # Big Torque vs steering Angle plot
         self.plot_data_torque_x.append(steering_ang)
@@ -340,34 +389,23 @@ class ControllerPlotterAction(JoanModuleAction):
         angle = np.arctan2(arg1, arg2)
         return angle
 
+    def rotate_around_new_origin(self, origin, point, angle):
+        """
+        Rotate a point counterclockwise by a given angle around a given origin.
+
+        The angle should be given in radians.
+        """
+        ox, oy = origin
+        px, py = point
+
+        qx = ox + math.cos(angle) * (px - ox) - math.sin(angle) * (py - oy)
+        qy = oy + math.sin(angle) * (px - ox) + math.cos(angle) * (py - oy)
+        return qx, qy
+
     def initialize(self):
         """
         This function is called before the module is started
         """
-        # self.carla_interface_data = self.read_news(JOANModules.CARLA_INTERFACE)
-        #
-        # if 'waypoints' in self.carla_interface_data:
-        #     self._waypoints = self.carla_interface_data['waypoints']
-        #     self.data_road_x = []
-        #     self.data_road_y = []
-        #
-        #     list_points = []
-        #
-        #     #next 20m
-        #     for a in range(1,len(self._waypoints)):
-        #         list_points.append(self._waypoints[0].next(a))
-        #
-        #     for points in list_points:
-        #
-        #         self.data_road_x.append(points[0].transform.location.x)
-        #         self.data_road_y.append(points[0].transform.location.y)
-        #
-        #
-        #     #
-        #     # self.data_road_x_left = self.data_road_x * 0.99
-        #     # self.data_road_y_left = self.data_road_y * 0.99
-        #
-        #
 
         # Top view graph
         # TODO: Make this depend on the trajectory selected in FDCA controller (read news and then apply that name)
@@ -377,25 +415,55 @@ class ControllerPlotterAction(JoanModuleAction):
         plot_data_HCR_x = HCR_trajectory_data[:, 1]
         plot_data_HCR_y = HCR_trajectory_data[:, 2]
 
-        self.HCR_plot_handle = self.module_dialog.module_widget.top_view_graph.plot(x=plot_data_HCR_x, y=plot_data_HCR_y, pen=pg.mkPen(10, 200, 0, 150, width=1))
+
+        # self.carSymbol= QtGui.QPainterPath()
+        # self.carSymbol.moveTo(0.25, 0.8)
+        # self.carSymbol.lineTo(-0.25, 0.8)
+        # self.carSymbol.lineTo(-0.25, -0.8)
+        # self.carSymbol.lineTo(0.25, -0.8)
+        # self.carSymbol.closeSubpath()
+
+        self.carSymbol = QtGui.QPainterPath()
+        self.carSymbol.addRect(-0.2,-0.4,0.4,0.8)
+
+
+        # self.carSymbol = pg.arrayToQPath(_mos[:, 0], _mos[:, 1], connect='all')
+
+
+
+
+        self.HCR_plot_handle = self.module_dialog.module_widget.top_view_graph.plot(x=plot_data_HCR_x, y=plot_data_HCR_y, pen=pg.mkPen(10, 200, 0, 100, width=18))
+
+
+
+        self.auto_position_plot_handle = self.module_dialog.module_widget.top_view_graph.plot(x=[0], y=[0], symbol= self.carSymbol,
+                                                                                              symbolSize=40, pen=None,
+                                                                                              symbolBrush=pg.mkBrush(200,
+                                                                                                                     0,
+                                                                                                                     0,
+                                                                                                                     255),
+                                                                                              symbolPen=pg.mkPen(
+                                                                                                  (200, 0, 0, 255),
+                                                                                                  width=3))
         self.road_plot_handle = self.module_dialog.module_widget.top_view_graph.plot(x=[0], y=[0], size=2,
-                                                                                   pen=pg.mkPen((0, 0, 0, 200),
-                                                                                                width=1),
-                                                                                   brush='g', symbol=None,
-                                                                                   symbolBrush=self.brushes,
-                                                                                   symbolPen=self.pens, symbolSize=5)
+                                                                                     pen=pg.mkPen((0, 0, 0, 200),
+                                                                                                  width=1),
+                                                                                     brush='g', symbol=None,
+                                                                                     symbolBrush=self.brushes,
+                                                                                     symbolPen=self.pens, symbolSize=5)
         self.road_outer_plot_handle = self.module_dialog.module_widget.top_view_graph.plot(x=[0], y=[0], size=2,
-                                                                                     pen=pg.mkPen((0, 0, 0, 255),
-                                                                                                  width=2),
-                                                                                     brush='g', symbol=None,
-                                                                                     symbolBrush=self.brushes,
-                                                                                     symbolPen=self.pens, symbolSize=5)
+                                                                                           pen=pg.mkPen((0, 0, 0, 255),
+                                                                                                        width=2),
+                                                                                           brush='g', symbol=None,
+                                                                                           symbolBrush=self.brushes,
+                                                                                           symbolPen=self.pens, symbolSize=5)
+
         self.road_inner_plot_handle = self.module_dialog.module_widget.top_view_graph.plot(x=[0], y=[0], size=2,
-                                                                                     pen=pg.mkPen((0, 0, 0, 255),
-                                                                                                  width=2),
-                                                                                     brush='g', symbol=None,
-                                                                                     symbolBrush=self.brushes,
-                                                                                     symbolPen=self.pens, symbolSize=5)
+                                                                                           pen=pg.mkPen((0, 0, 0, 255),
+                                                                                                        width=2),
+                                                                                           brush='g', symbol=None,
+                                                                                           symbolBrush=self.brushes,
+                                                                                           symbolPen=self.pens, symbolSize=5)
         # big torque graph
 
         self.sw_des_point_plot_handle = self.module_dialog.module_widget.torque_graph.plot(x=[0], y=[0], symbol='x',
@@ -413,7 +481,7 @@ class ControllerPlotterAction(JoanModuleAction):
                                                                                      symbolBrush=self.brushes[-1],
                                                                                      symbolPen=self.pens[-1],
                                                                                      symbolSize=10)
-        self.sw_stiffness_plot_handle = self.module_dialog.module_widget.torque_graph.plot( x=[-160, 160], y=[0, 0],
+        self.sw_stiffness_plot_handle = self.module_dialog.module_widget.torque_graph.plot(x=[-160, 160], y=[0, 0],
                                                                                            pen='b',
                                                                                            brush='b', symbol=None,
                                                                                            )
@@ -475,21 +543,33 @@ class ControllerPlotterAction(JoanModuleAction):
 
         # self.loha_plot_handle = self.module_dialog.module_widget.loha_graph.plot()
 
-
         ## Initialize topview Graph
+        self.module_dialog.module_widget.top_view_graph.setXRange(- 15, 15, padding=0)
+        self.module_dialog.module_widget.top_view_graph.setYRange(-25, 25, padding=0)
+        # self.module_dialog.module_widget.top_view_graph.showGrid(True, True, 1)
         self.module_dialog.module_widget.top_view_graph.setTitle('Top View')
         self.module_dialog.module_widget.top_view_graph.setLabel('left', 'Y position [m]',
-                                                               **{'font-size': '12pt'})
+                                                                 **{'font-size': '12pt'})
         self.module_dialog.module_widget.top_view_graph.setLabel('bottom', '<font>&Theta;X position</font> [m]',
-                                                               **{'font-size': '12pt'})
+                                                                 **{'font-size': '12pt'})
         top_view_viewbox = self.module_dialog.module_widget.top_view_graph.getViewBox()
         top_view_viewbox.invertX(False)
         top_view_viewbox.invertY(True)
-        top_view_viewbox.setAspectLocked(True)
-        top_view_viewbox.setBorder(pen = pg.mkPen(0,0,0,255))
+        # top_view_viewbox.setAspectLocked(True)
+        top_view_viewbox.setBorder(pen=pg.mkPen(0, 0, 0, 255))
         top_view_viewbox.setBackgroundColor((255, 255, 255, 200))
+
+
+        xaxis = self.module_dialog.module_widget.top_view_graph.getAxis('bottom')
+        help(self.module_dialog.module_widget.top_view_graph)
+        transformation_matrix = QtGui.QTransform(1.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0)
+        # top_view_viewbox.applyTransform(transformation_matrix)
+
+
+
+
         top_view_legend = pg.LegendItem(offset=None, horSpacing=30, verSpacing=-7,
-                                      pen=pg.mkPen(0, 0, 0, 0), brush=pg.mkBrush(255, 255, 255, 255))
+                                        pen=pg.mkPen(0, 0, 0, 0), brush=pg.mkBrush(255, 255, 255, 255))
         top_view_legend.setParentItem(top_view_viewbox)
         top_view_legend.addItem(self.HCR_plot_handle, name='HCR')
 
@@ -577,6 +657,9 @@ class ControllerPlotterAction(JoanModuleAction):
         # sw_actual_viewbox = self.module_dialog.module_widget.sw_actual_graph.getViewBox()
         # sw_actual_viewbox.setBackgroundColor((255, 255, 255, 200))
 
+
+
+
         self.millis = self.settings.millis
 
         # if (self.state_machine.current_state is State.IDLE):
@@ -595,6 +678,7 @@ class ControllerPlotterAction(JoanModuleAction):
         """stop the module"""
         # Will automatically go to READY as defined above in self.state_machine.set_automatic_transition
         self.state_machine.request_state_change(State.IDLE)
+        self.module_dialog.module_widget.top_view_graph.clear()
         self.module_dialog.module_widget.torque_graph.clear()
         self.module_dialog.module_widget.lat_e_graph.clear()
         self.module_dialog.module_widget.fb_torques_graph.clear()
