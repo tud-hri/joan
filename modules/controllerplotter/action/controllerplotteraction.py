@@ -21,7 +21,6 @@ import pandas as pd
 import numpy as np
 
 
-
 class ControllerPlotterAction(JoanModuleAction):
     """Example JOAN module"""
 
@@ -45,16 +44,17 @@ class ControllerPlotterAction(JoanModuleAction):
         self.time = QtCore.QTime()
         self.plotpoints = []
 
-
         self.amount_of_remaining_points = 50
         self.car_trace_length = 10
         self.history_time = self.amount_of_remaining_points / round(1000 / self._millis)
         self.plot_data_torque_x = []
         self.plot_data_torque_y = []
         self.plot_data_e_lat_y = [0] * self.amount_of_remaining_points
+        self.plot_data_e_psi_y = [0] * self.amount_of_remaining_points
         self.plot_data_fb_torque_y = [0] * self.amount_of_remaining_points
         self.plot_data_ff_torque_y = [0] * self.amount_of_remaining_points
         self.plot_data_loha_torque_y = [0] * self.amount_of_remaining_points
+        self.plot_data_total_torque_y = [0] * self.amount_of_remaining_points
         self.plot_data_loha_y = [0] * self.amount_of_remaining_points
         self.plot_data_sw_des_y = [0] * self.amount_of_remaining_points
         self.plot_data_sw_act_y = [0] * self.amount_of_remaining_points
@@ -115,7 +115,7 @@ class ControllerPlotterAction(JoanModuleAction):
                            k * 25))
             self.car_pens.append(
                 pg.mkPen((round(256 * colors_rgb[k][0]), round(256 * colors_rgb[k][1]), round(256 * colors_rgb[k][2]),
-                         k * 25), width = 3))
+                          k * 25), width=3))
 
         self.double_pens = self.pens + self.pens
         self.double_brushes = self.brushes + self.brushes
@@ -148,19 +148,25 @@ class ControllerPlotterAction(JoanModuleAction):
         # try assigning variables:
         # from hardware manager
         try:
-            ## sensodrive
-            # steering_ang = data_from_hardware_manager['SensoDrive 1']['steering_angle']
-            # req_torque = data_from_hardware_manager['SensoDrive 1']['measured_torque']
-            # sw_actual = data_from_hardware_manager['SensoDrive 1']['steering_angle']
-            # sw_stiffness = math.radians(data_from_hardware_manager['SensoDrive 1']['spring_stiffness'])
+            if 'SensoDrive 1' in data_from_hardware_manager.keys():
+                ## sensodrive
+                steering_ang = math.degrees(data_from_hardware_manager['SensoDrive 1']['steering_angle'])
+                actual_torque = data_from_hardware_manager['SensoDrive 1']['measured_torque']
+                sw_actual = math.degrees(data_from_hardware_manager['SensoDrive 1']['steering_angle'])
+                sw_stiffness = math.radians(data_from_hardware_manager['SensoDrive 1']['spring_stiffness'])
+            elif 'Joystick 1' in data_from_hardware_manager.keys():
+                ## joystick
+                steering_ang = math.degrees(data_from_hardware_manager['Joystick 1']['steering_angle'])
+                sw_actual = math.degrees(data_from_hardware_manager['Joystick 1']['steering_angle'])
+            elif 'Keyboard 1' in data_from_hardware_manager.keys():
+                ## keyboard
+                steering_ang = math.degrees(data_from_hardware_manager['Keyboard 1']['steering_angle'])
+                sw_actual = math.degrees(data_from_hardware_manager['Keyboard 1']['steering_angle'])
+            else:
+                steering_ang = 0
+                sw_actual = 0
+                sw_stiffness = 0
 
-            ## joystick
-            steering_ang = math.degrees(data_from_hardware_manager['Joystick 1']['steering_angle'])
-            sw_actual = math.degrees(data_from_hardware_manager['Joystick 1']['steering_angle'])
-
-            ## keyboard
-            # steering_ang = math.degrees(data_from_hardware_manager['Keyboard 1']['steering_angle'])
-            # sw_actual = math.degrees(data_from_hardware_manager['Keyboard 1']['steering_angle'])
         except KeyError or TypeError:
             steering_ang = 0
             # req_torque = 0
@@ -171,13 +177,13 @@ class ControllerPlotterAction(JoanModuleAction):
         try:
             lat_error = data_from_sw_controller['FDCA 1']['lat_error']
             sw_des = math.degrees(data_from_sw_controller['FDCA 1']['sw_angle_desired_radians'])
-            heading_error = data_from_sw_controller['FDCA 1']['heading_error']
+            heading_error = math.degrees(data_from_sw_controller['FDCA 1']['heading_error'])
             loha = math.radians(data_from_sw_controller['FDCA 1']['loha'])
-            req_torque = data_from_sw_controller['FDCA 1']['sw_torque']
             ff_torque = data_from_sw_controller['FDCA 1']['ff_torque']
             fb_torque = data_from_sw_controller['FDCA 1']['fb_torque']
             loha_torque = data_from_sw_controller['FDCA 1']['loha_torque']
-            sw_stiffness = math.radians(1)
+            req_torque = data_from_sw_controller['FDCA 1']['sw_torque']
+
 
         except KeyError or TypeError:
             lat_error = 0
@@ -188,7 +194,6 @@ class ControllerPlotterAction(JoanModuleAction):
             fb_torque = 0
             ff_torque = 0
             loha_torque = 0
-            sw_stiffness = math.radians(1)
 
         # from carla interface
         try:
@@ -202,12 +207,6 @@ class ControllerPlotterAction(JoanModuleAction):
                 vehicle_location = vehicle_object.spawned_vehicle.get_location()
                 closest_waypoint = data_from_carla_interface['map'].get_waypoint(vehicle_location, project_to_road=True)
                 vehicle_rotation = vehicle_object.spawned_vehicle.get_transform().rotation.yaw
-
-
-
-
-
-
 
                 # previous points
                 previous_waypoints = []
@@ -259,10 +258,10 @@ class ControllerPlotterAction(JoanModuleAction):
                 min_plotrange_y = self.plot_data_road_y[24] - 25
 
                 self.road_outer_plot_handle.setTransformOriginPoint(self.plot_data_road_x[24], self.plot_data_road_y[24])
-                self.road_outer_plot_handle.setRotation(math.degrees(self.plot_data_road_psi[24]-0.5*math.pi))
+                self.road_outer_plot_handle.setRotation(math.degrees(self.plot_data_road_psi[24] - 0.5 * math.pi))
 
                 self.road_inner_plot_handle.setTransformOriginPoint(self.plot_data_road_x[24], self.plot_data_road_y[24])
-                self.road_inner_plot_handle.setRotation(math.degrees(self.plot_data_road_psi[24]-0.5*math.pi))
+                self.road_inner_plot_handle.setRotation(math.degrees(self.plot_data_road_psi[24] - 0.5 * math.pi))
 
                 self.auto_position_plot_handle.setTransformOriginPoint(self.plot_data_road_x[24], self.plot_data_road_y[24])
                 self.auto_position_plot_handle.setRotation(math.degrees(self.plot_data_road_psi[24] - 0.5 * math.pi))
@@ -287,9 +286,6 @@ class ControllerPlotterAction(JoanModuleAction):
                 self.module_dialog.module_widget.top_view_graph.setXRange(min_plotrange_x, max_plotrange_x, padding=0)
                 self.module_dialog.module_widget.top_view_graph.setYRange(min_plotrange_y, max_plotrange_y, padding=0)
 
-
-
-
                 self.plot_data_road_x = []
                 self.plot_data_road_y = []
                 self.plot_data_road_x_outer = []
@@ -309,98 +305,120 @@ class ControllerPlotterAction(JoanModuleAction):
 
         # Big Torque vs steering Angle plot
         self.plot_data_torque_x.append(steering_ang)
-        self.plot_data_torque_y.append(req_torque)
+        if 'SensoDrive 1' in data_from_hardware_manager.keys():
+            self.plot_data_torque_y.append(actual_torque)
+        else:
+            self.plot_data_torque_y.append(req_torque)
         if len(self.plot_data_torque_x) > self.amount_of_remaining_points:
             self.plot_data_torque_y.pop(0)
             self.plot_data_torque_x.pop(0)
             self.torque_plot_handle.setData(x=self.plot_data_torque_x, y=self.plot_data_torque_y, size=10,
                                             pen=pg.mkPen((169, 169, 169, 120)), brush='g', symbol='d',
                                             symbolBrush=self.brushes, symbolPen=self.pens, symbolSize=10)
-        self.sw_des_point_plot_handle.setData(x=[self.plot_data_sw_des_y[-1]], y=[0], symbol='x', symbolSize=10,
-                                              symbolBrush=pg.mkBrush(0, 114, 190, 255),
-                                              symbolPen=pg.mkPen((0, 114, 190, 255), width=3))
+            self.sw_des_point_plot_handle.setData(x=[self.plot_data_sw_des_y[-1]], y=[0], symbol='x', symbolSize=15,
+                                                  symbolBrush=pg.mkBrush(255, 0, 0, 255),
+                                                  symbolPen=pg.mkPen((255, 0, 0, 255), width=3))
 
-        # Lateral Position Plot
-        self.plot_data_e_lat_y.append(lat_error)
-        self.plot_data_e_lat_y.pop(0)
-        self.e_lat_plot_handle.setData(x=self.time_list, y=self.plot_data_e_lat_y, size=2,
-                                       pen=pg.mkPen((0, 0, 0, 200), width=3),
-                                       brush='g', symbol=None, symbolBrush=self.brushes,
-                                       symbolPen=self.pens, symbolSize=5)
         # Steering Wheel stiffness
         self.plot_data_sw_stiffness_y = [sw_stiffness * 160, sw_stiffness * -160]
         self.sw_stiffness_plot_handle.setData(x=self.plot_data_sw_stiffness_x, y=self.plot_data_sw_stiffness_y, size=2,
                                               pen='b',
                                               brush='b', symbol=None,
                                               )
+        # ERROR PLOTS
+        # Lateral Position Plot
+        self.plot_data_e_lat_y.append(lat_error)
+        self.plot_data_e_lat_y.pop(0)
+        if self.module_dialog.module_widget.check_lat_e.isChecked():
+            self.e_lat_plot_handle.setData(x=self.time_list, y=self.plot_data_e_lat_y, size=2,
+                                           pen=pg.mkPen((255, 0, 0, 255), width=3),
+                                           brush='g', symbol=None)
+        else:
+            self.e_lat_plot_handle.setData(pen=pg.mkPen((255, 0, 0, 0)))
+
+        if self.module_dialog.module_widget.check_psi_e.isChecked():
+            self.plot_data_e_psi_y.append(heading_error)
+            self.plot_data_e_psi_y.pop(0)
+            self.head_error_plot_handle.setData(x=self.time_list, y=self.plot_data_e_psi_y, size=2,
+                                                pen=pg.mkPen((0, 0, 255, 255), width=3),
+                                                brush='g', symbol=None)
+        else:
+            self.head_error_plot_handle.setData(pen=pg.mkPen((0, 0, 255, 0)))
 
         # TORQUE PLOTS
         # Feedback torque
-        self.plot_data_fb_torque_y.append(fb_torque)
-        self.plot_data_fb_torque_y.pop(0)
-        self.fb_torque_plot_handle.setData(x=self.time_list, y=self.plot_data_fb_torque_y, size=2,
-                                           pen=pg.mkPen((0, 114, 190, 200), width=3),
-                                           brush='g', symbol=None, symbolBrush=self.brushes,
-                                           symbolPen=self.pens, symbolSize=5)
+        if self.module_dialog.module_widget.check_fb.isChecked():
+            self.plot_data_fb_torque_y.append(fb_torque)
+            self.plot_data_fb_torque_y.pop(0)
+            self.fb_torque_plot_handle.setData(x=self.time_list, y=self.plot_data_fb_torque_y, size=2,
+                                               pen=pg.mkPen((0, 114, 190, 200), width=3),
+                                               brush='g', symbol=None, symbolBrush=self.brushes,
+                                               symbolPen=self.pens, symbolSize=5)
+        else:
+            self.fb_torque_plot_handle.setData(pen=pg.mkPen((0, 114, 190, 0)))
+
         # Feed forward Torque
-        self.plot_data_ff_torque_y.append(ff_torque)
-        self.plot_data_ff_torque_y.pop(0)
-        self.ff_torque_plot_handle.setData(x=self.time_list, y=self.plot_data_ff_torque_y, size=2,
-                                           pen=pg.mkPen((217, 83, 25, 200), width=3),
-                                           brush='g', symbol=None, symbolBrush=self.brushes,
-                                           symbolPen=self.pens, symbolSize=5)
+        if self.module_dialog.module_widget.check_ff.isChecked():
+            self.plot_data_ff_torque_y.append(ff_torque)
+            self.plot_data_ff_torque_y.pop(0)
+            self.ff_torque_plot_handle.setData(x=self.time_list, y=self.plot_data_ff_torque_y, size=2,
+                                               pen=pg.mkPen((217, 83, 25, 200), width=3),
+                                               brush='g', symbol=None, symbolBrush=self.brushes,
+                                               symbolPen=self.pens, symbolSize=5)
+        else:
+            self.ff_torque_plot_handle.setData(pen=pg.mkPen((217, 83, 25, 0)))
 
         # LOHA Torque
-        self.plot_data_loha_torque_y.append(loha_torque)
-        self.plot_data_loha_torque_y.pop(0)
-        self.loha_torque_plot_handle.setData(x=self.time_list, y=self.plot_data_loha_torque_y, size=2,
-                                             pen=pg.mkPen((34, 139, 34), width=3),
-                                             brush='g', symbol=None, symbolBrush=self.brushes,
-                                             symbolPen=self.pens, symbolSize=5)
+        if self.module_dialog.module_widget.check_loha.isChecked():
+            self.plot_data_loha_torque_y.append(loha_torque)
+            self.plot_data_loha_torque_y.pop(0)
+            self.loha_torque_plot_handle.setData(x=self.time_list, y=self.plot_data_loha_torque_y, size=2,
+                                                 pen=pg.mkPen((34, 139, 34, 200), width=3),
+                                                 brush='g', symbol=None, symbolBrush=self.brushes,
+                                                 symbolPen=self.pens, symbolSize=5)
+        else:
+            self.loha_torque_plot_handle.setData(pen=pg.mkPen((34, 139, 34, 0)))
+
+        if self.module_dialog.module_widget.check_total.isChecked():
+            # total Torque
+            self.plot_data_total_torque_y.append(loha_torque + ff_torque + fb_torque)
+            self.plot_data_total_torque_y.pop(0)
+            self.total_torque_plot_handle.setData(x=self.time_list, y=self.plot_data_loha_torque_y, size=2,
+                                                  pen=pg.mkPen((0, 0, 0, 200), width=3),
+                                                  brush='g', symbol=None, symbolBrush=self.brushes,
+                                                  symbolPen=self.pens, symbolSize=5)
+        else:
+            self.total_torque_plot_handle.setData(pen=pg.mkPen((0, 0, 0, 0)))
 
         # SW PLOTS
         # sw desired plot
-        self.plot_data_sw_des_y.append(sw_des)
-        self.plot_data_sw_des_y.pop(0)
-        self.sw_des_plot_handle.setData(x=self.time_list, y=self.plot_data_sw_des_y, size=2,
-                                        pen=pg.mkPen((0, 114, 190, 200), width=3), brush=pg.mkBrush((0, 114, 190, 200)),
-                                        symbol=None,
-                                        symbolBrush=pg.mkBrush((0, 114, 190, 200)),
-                                        symbolPen=pg.mkPen((0, 114, 190, 200)), symbolSize=3)
+        if self.module_dialog.module_widget.check_sw_des.isChecked():
+            self.plot_data_sw_des_y.append(sw_des)
+            self.plot_data_sw_des_y.pop(0)
+            self.sw_des_plot_handle.setData(x=self.time_list, y=self.plot_data_sw_des_y, size=2,
+                                            pen=pg.mkPen((0, 114, 190, 200), width=3), brush=pg.mkBrush((0, 114, 190, 200)),
+                                            symbol=None,
+                                            symbolBrush=pg.mkBrush((0, 114, 190, 200)),
+                                            symbolPen=pg.mkPen((0, 114, 190, 200)), symbolSize=3)
+        else:
+            self.sw_des_plot_handle.setData(pen=pg.mkPen((0, 114, 190, 0)))
 
         # sw actual plot
-        self.plot_data_sw_act_y.append(sw_actual)
-        self.plot_data_sw_act_y.pop(0)
-        self.sw_act_plot_handle.setData(x=self.time_list, y=self.plot_data_sw_act_y, size=5,
-                                        pen=pg.mkPen((217, 83, 25, 200), width=3), brush=pg.mkBrush((217, 83, 25, 200)),
-                                        symbol=None, symbolBrush=pg.mkBrush((217, 83, 25, 200)),
-                                        symbolPen=pg.mkPen((217, 83, 25, 200)), symbolSize=3)
-
-        # # LOHA PLOT (DEPRECATED FOR NOW)
-        # self.plot_data_loha_y.append(loha)
-        # self.plot_data_loha_y.pop(0)
-        # self.loha_plot_handle.setData(x=self.time_list, y=self.plot_data_loha_y, size=5, pen=pg.mkPen((0, 0, 0, 200)),
-        #                               brush='g', symbol='d', symbolBrush=self.brushes,
-        #                               symbolPen=self.pens, symbolSize=5)
+        if self.module_dialog.module_widget.check_sw_act.isChecked():
+            self.plot_data_sw_act_y.append(sw_actual)
+            self.plot_data_sw_act_y.pop(0)
+            self.sw_act_plot_handle.setData(x=self.time_list, y=self.plot_data_sw_act_y, size=5,
+                                            pen=pg.mkPen((217, 83, 25, 200), width=3), brush=pg.mkBrush((217, 83, 25, 200)),
+                                            symbol=None, symbolBrush=pg.mkBrush((217, 83, 25, 200)),
+                                            symbolPen=pg.mkPen((217, 83, 25, 200)), symbolSize=3)
+        else:
+            self.sw_act_plot_handle.setData(pen=pg.mkPen((217, 83, 25, 0)))
 
     def compute_angle(self, v1, v2):
         arg1 = np.cross(v1, v2)
         arg2 = np.dot(v1, v2)
         angle = np.arctan2(arg1, arg2)
         return angle
-
-    def rotate_around_new_origin(self, origin, point, angle):
-        """
-        Rotate a point counterclockwise by a given angle around a given origin.
-
-        The angle should be given in radians.
-        """
-        ox, oy = origin
-        px, py = point
-
-        qx = ox + math.cos(angle) * (px - ox) - math.sin(angle) * (py - oy)
-        qy = oy + math.sin(angle) * (px - ox) + math.cos(angle) * (py - oy)
-        return qx, qy
 
     def initialize(self):
         """
@@ -415,28 +433,12 @@ class ControllerPlotterAction(JoanModuleAction):
         plot_data_HCR_x = HCR_trajectory_data[:, 1]
         plot_data_HCR_y = HCR_trajectory_data[:, 2]
 
-
-        # self.carSymbol= QtGui.QPainterPath()
-        # self.carSymbol.moveTo(0.25, 0.8)
-        # self.carSymbol.lineTo(-0.25, 0.8)
-        # self.carSymbol.lineTo(-0.25, -0.8)
-        # self.carSymbol.lineTo(0.25, -0.8)
-        # self.carSymbol.closeSubpath()
-
         self.carSymbol = QtGui.QPainterPath()
-        self.carSymbol.addRect(-0.2,-0.4,0.4,0.8)
-
-
-        # self.carSymbol = pg.arrayToQPath(_mos[:, 0], _mos[:, 1], connect='all')
-
-
-
+        self.carSymbol.addRect(-0.2, -0.4, 0.4, 0.8)
 
         self.HCR_plot_handle = self.module_dialog.module_widget.top_view_graph.plot(x=plot_data_HCR_x, y=plot_data_HCR_y, pen=pg.mkPen(10, 200, 0, 100, width=18))
 
-
-
-        self.auto_position_plot_handle = self.module_dialog.module_widget.top_view_graph.plot(x=[0], y=[0], symbol= self.carSymbol,
+        self.auto_position_plot_handle = self.module_dialog.module_widget.top_view_graph.plot(x=[0], y=[0], symbol=self.carSymbol,
                                                                                               symbolSize=40, pen=None,
                                                                                               symbolBrush=pg.mkBrush(200,
                                                                                                                      0,
@@ -467,13 +469,13 @@ class ControllerPlotterAction(JoanModuleAction):
         # big torque graph
 
         self.sw_des_point_plot_handle = self.module_dialog.module_widget.torque_graph.plot(x=[0], y=[0], symbol='x',
-                                                                                           symbolSize=10, pen=None,
-                                                                                           symbolBrush=pg.mkBrush(0,
-                                                                                                                  114,
-                                                                                                                  190,
+                                                                                           symbolSize=15, pen=None,
+                                                                                           symbolBrush=pg.mkBrush(255,
+                                                                                                                  0,
+                                                                                                                  0,
                                                                                                                   255),
                                                                                            symbolPen=pg.mkPen(
-                                                                                               (0, 114, 190, 255),
+                                                                                               (255, 0, 0, 255),
                                                                                                width=3))
         self.torque_plot_handle = self.module_dialog.module_widget.torque_graph.plot(x=[0], y=[0], size=10,
                                                                                      pen=pg.mkPen((169, 169, 169, 120)),
@@ -485,15 +487,22 @@ class ControllerPlotterAction(JoanModuleAction):
                                                                                            pen='b',
                                                                                            brush='b', symbol=None,
                                                                                            )
-
+        # error graphs
         # lat pos graph
-        self.e_lat_plot_handle = self.module_dialog.module_widget.lat_e_graph.plot(x=[0], y=[0], size=2,
-                                                                                   pen=pg.mkPen((0, 0, 0, 200),
-                                                                                                width=3),
-                                                                                   brush='g', symbol=None,
-                                                                                   symbolBrush=self.brushes,
-                                                                                   symbolPen=self.pens, symbolSize=5)
+        self.e_lat_plot_handle = self.module_dialog.module_widget.errors_graph.plot(x=[0], y=[0], size=2,
+                                                                                    pen=pg.mkPen((255, 0, 0, 255),
+                                                                                                 width=3),
+                                                                                    brush='g', symbol=None,
+                                                                                    symbolBrush=self.brushes,
+                                                                                    symbolPen=self.pens, symbolSize=5)
 
+        # Heading error graph
+        self.head_error_plot_handle = self.module_dialog.module_widget.errors_graph.plot(x=[0], y=[0], size=2,
+                                                                                         pen=pg.mkPen((0, 0, 255, 255),
+                                                                                                      width=3),
+                                                                                         brush='g', symbol=None,
+                                                                                         symbolBrush=self.brushes,
+                                                                                         symbolPen=self.pens, symbolSize=5)
         # Feedback torques graph
 
         self.fb_torque_plot_handle = self.module_dialog.module_widget.fb_torques_graph.plot(x=[0], y=[0], size=2,
@@ -520,6 +529,14 @@ class ControllerPlotterAction(JoanModuleAction):
                                                                                               symbolBrush=self.brushes,
                                                                                               symbolPen=self.pens,
                                                                                               symbolSize=5)
+        self.total_torque_plot_handle = self.module_dialog.module_widget.fb_torques_graph.plot([0], [0], size=2,
+                                                                                               pen=pg.mkPen(
+                                                                                                   (0, 0, 0),
+                                                                                                   width=3),
+                                                                                               brush='g', symbol=None,
+                                                                                               symbolBrush=self.brushes,
+                                                                                               symbolPen=self.pens,
+                                                                                               symbolSize=5)
 
         # Steering angle graphs:
         self.sw_des_plot_handle = self.module_dialog.module_widget.sw_graph.plot(x=[0],
@@ -549,25 +566,14 @@ class ControllerPlotterAction(JoanModuleAction):
         # self.module_dialog.module_widget.top_view_graph.showGrid(True, True, 1)
         self.module_dialog.module_widget.top_view_graph.setTitle('Top View')
         self.module_dialog.module_widget.top_view_graph.setLabel('left', 'Y position [m]',
-                                                                 **{'font-size': '12pt'})
+                                                                 **{'font-size': '10pt'})
         self.module_dialog.module_widget.top_view_graph.setLabel('bottom', '<font>&Theta;X position</font> [m]',
-                                                                 **{'font-size': '12pt'})
+                                                                 **{'font-size': '10pt'})
         top_view_viewbox = self.module_dialog.module_widget.top_view_graph.getViewBox()
         top_view_viewbox.invertX(False)
         top_view_viewbox.invertY(True)
-        # top_view_viewbox.setAspectLocked(True)
         top_view_viewbox.setBorder(pen=pg.mkPen(0, 0, 0, 255))
         top_view_viewbox.setBackgroundColor((255, 255, 255, 200))
-
-
-        xaxis = self.module_dialog.module_widget.top_view_graph.getAxis('bottom')
-        help(self.module_dialog.module_widget.top_view_graph)
-        transformation_matrix = QtGui.QTransform(1.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0)
-        # top_view_viewbox.applyTransform(transformation_matrix)
-
-
-
-
         top_view_legend = pg.LegendItem(offset=None, horSpacing=30, verSpacing=-7,
                                         pen=pg.mkPen(0, 0, 0, 0), brush=pg.mkBrush(255, 255, 255, 255))
         top_view_legend.setParentItem(top_view_viewbox)
@@ -575,17 +581,17 @@ class ControllerPlotterAction(JoanModuleAction):
 
         ## Initialize Torque Graph
         self.module_dialog.module_widget.torque_graph.setXRange(- 180, 180, padding=0)
-        self.module_dialog.module_widget.torque_graph.setYRange(-15, 15, padding=0)
+        self.module_dialog.module_widget.torque_graph.setYRange(-7.5, 7.5, padding=0)
         self.module_dialog.module_widget.torque_graph.showGrid(True, True, 1)
         self.module_dialog.module_widget.torque_graph.setTitle('Steering Angle vs Torque')
         self.module_dialog.module_widget.torque_graph.setLabel('left', 'Torque [Nm]',
-                                                               **{'font-size': '12pt'})
+                                                               **{'font-size': '10pt'})
         self.module_dialog.module_widget.torque_graph.setLabel('bottom', '<font>&Theta;Steering Wheel</font> [deg]',
-                                                               **{'font-size': '12pt'})
+                                                               **{'font-size': '10pt'})
         self.module_dialog.module_widget.torque_graph.getAxis('bottom').setTickFont(self.labelfont)
-        self.module_dialog.module_widget.torque_graph.getAxis("bottom").setStyle(tickTextOffset=20)
+        self.module_dialog.module_widget.torque_graph.getAxis("bottom").setStyle(tickTextOffset=10)
         self.module_dialog.module_widget.torque_graph.getAxis('left').setTickFont(self.labelfont)
-        self.module_dialog.module_widget.torque_graph.getAxis("left").setStyle(tickTextOffset=20)
+        self.module_dialog.module_widget.torque_graph.getAxis("left").setStyle(tickTextOffset=10)
         torque_viewbox = self.module_dialog.module_widget.torque_graph.getViewBox()
         torque_viewbox.invertX(False)
         torque_viewbox.invertY(True)
@@ -597,27 +603,49 @@ class ControllerPlotterAction(JoanModuleAction):
         torque_legend.addItem(self.sw_des_point_plot_handle, name='Desired Steering Angle')
         torque_legend.addItem(self.sw_stiffness_plot_handle, name='Self Centering Stiffness')
 
-        ## Initialize lat Error Plot
-        self.module_dialog.module_widget.lat_e_graph.setTitle('Lateral position vs Time')
-        self.module_dialog.module_widget.lat_e_graph.setXRange(-self.history_time, self.history_time / 10, padding=0)
-        self.module_dialog.module_widget.lat_e_graph.setYRange(-8, 8, padding=0)
-        self.module_dialog.module_widget.lat_e_graph.showGrid(True, True, 1)
-        self.module_dialog.module_widget.lat_e_graph.setLabel('right', 'Lat Pos [m]', **{'font-size': '14pt'})
-        lat_error_viewbox = self.module_dialog.module_widget.lat_e_graph.getViewBox()
-        lat_error_viewbox.setBackgroundColor((255, 255, 255, 200))
-        lat_error_viewbox.setBackgroundColor((255, 255, 255, 200))
-        lat_error_legend = pg.LegendItem(size=(120, 0), offset=None, horSpacing=30, verSpacing=-7,
-                                         pen=pg.mkPen(0, 0, 0, 255), brush=pg.mkBrush(255, 255, 255, 255))
-        lat_error_legend.setParentItem(lat_error_viewbox)
-        lat_error_legend.addItem(self.e_lat_plot_handle, name='Lateral Position')
+        ## Initialize Errors Plot
+        self.module_dialog.module_widget.errors_graph.setTitle('Lateral position vs Time')
+        self.module_dialog.module_widget.errors_graph.setXRange(-self.history_time, self.history_time / 10, padding=0)
+        self.module_dialog.module_widget.errors_graph.setYRange(-8, 8, padding=0)
+        self.module_dialog.module_widget.errors_graph.setLabel('right', 'Lat Pos [m]', **{'font-size': '12pt'})
+        self.module_dialog.module_widget.errors_graph.setLabel('left', 'Heading Error [deg]', **{'font-size': '12pt'})
+        errors_viewbox = self.module_dialog.module_widget.errors_graph.getViewBox()
+        errors_legend = pg.LegendItem(size=(120, 0), offset=None, horSpacing=30, verSpacing=-7,
+                                      pen=pg.mkPen(0, 0, 0, 255), brush=pg.mkBrush(255, 255, 255, 255))
+        errors_legend.setParentItem(errors_viewbox)
+        errors_legend.addItem(self.e_lat_plot_handle, name='Lateral position Error')
+
+        # viewbox 2 for double axis
+        p2 = pg.ViewBox()
+        p2.setYRange(-90, 90)
+        p2.setXRange(-self.history_time, self.history_time / 10, padding=0)
+        self.module_dialog.module_widget.errors_graph.showGrid(True, True, 0.5)
+        self.module_dialog.module_widget.errors_graph.showAxis('right')
+        self.module_dialog.module_widget.errors_graph.scene().addItem(p2)
+        self.module_dialog.module_widget.errors_graph.getAxis('left').linkToView(p2)
+        p2.setXLink(self.module_dialog.module_widget.errors_graph)
+        p2.addItem(self.head_error_plot_handle)
+        p2.setBackgroundColor((255, 255, 255, 200))
+        self.module_dialog.module_widget.errors_graph.getAxis('left').setPen(pg.mkPen(0, 0, 255, 255))
+        self.module_dialog.module_widget.errors_graph.getAxis('right').setPen(pg.mkPen(255, 0, 0, 255))
+
+        ## Handle view resizing
+        def updateViews():
+            ## view has resized; update auxiliary views to match
+            p2.setGeometry(errors_viewbox.sceneBoundingRect())
+            p2.linkedViewChanged(errors_viewbox, p2.XAxis)
+
+        updateViews()
+        errors_viewbox.sigResized.connect(updateViews)
+        errors_legend.addItem(self.head_error_plot_handle, name='Heading Error')
 
         ## Initialize fb torque Plot
-        self.module_dialog.module_widget.fb_torques_graph.setTitle('Torques vs Time')
+        self.module_dialog.module_widget.fb_torques_graph.setTitle('Feedback Torques vs Time')
         self.module_dialog.module_widget.fb_torques_graph.setXRange(-self.history_time, self.history_time / 10,
                                                                     padding=0)
         self.module_dialog.module_widget.fb_torques_graph.setYRange(-10, 10, padding=0)
         self.module_dialog.module_widget.fb_torques_graph.setLabel('right', 'Torques [Nm]',
-                                                                   **{'font-size': '14pt'})
+                                                                   **{'font-size': '12pt'})
         torques_viewbox = self.module_dialog.module_widget.fb_torques_graph.getViewBox()
         torques_viewbox.setBackgroundColor((255, 255, 255, 200))
         torques_viewbox.invertY(True)
@@ -627,16 +655,17 @@ class ControllerPlotterAction(JoanModuleAction):
         torques_legend.addItem(self.fb_torque_plot_handle, name='Feedback Torque')
         torques_legend.addItem(self.ff_torque_plot_handle, name='Feedforward Torque')
         torques_legend.addItem(self.loha_torque_plot_handle, name='LoHA Torque')
+        torques_legend.addItem(self.total_torque_plot_handle, name='Total Torque')
         self.module_dialog.module_widget.fb_torques_graph.showGrid(True, True, 1)
 
         ## Initialize sw angle Plot
         self.module_dialog.module_widget.sw_graph.setTitle('Steering Angles vs Time')
         self.module_dialog.module_widget.sw_graph.setXRange(-self.history_time, self.history_time / 10, padding=0)
-        self.module_dialog.module_widget.sw_graph.setYRange(-95, 95, padding=0)
+        self.module_dialog.module_widget.sw_graph.setYRange(-185, 185, padding=0)
         self.module_dialog.module_widget.sw_graph.showGrid(True, True, 1)
         self.module_dialog.module_widget.sw_graph.setLabel('right', '<font>&Theta;SW</font>[deg]',
-                                                           **{'font-size': '14pt'})
-        self.module_dialog.module_widget.sw_graph.setLabel('bottom', 'Time[s]', **{'font-size': '14pt'})
+                                                           **{'font-size': '12pt'})
+        self.module_dialog.module_widget.sw_graph.setLabel('bottom', 'Time[s]', **{'font-size': '12pt'})
         sw_des_viewbox = self.module_dialog.module_widget.sw_graph.getViewBox()
         sw_des_viewbox.setBackgroundColor((255, 255, 255, 200))
         sw_legend = pg.LegendItem(size=(120, 0), offset=None, horSpacing=30, verSpacing=-7,
@@ -644,21 +673,6 @@ class ControllerPlotterAction(JoanModuleAction):
         sw_legend.setParentItem(sw_des_viewbox)
         sw_legend.addItem(self.sw_des_plot_handle, name='Desired Steering Angle')
         sw_legend.addItem(self.sw_act_plot_handle, name='Actual Steering Angle')
-
-        # ## Initialize level of haptic authority (LOHA) Plot
-        # self.module_dialog.module_widget.loha_graph.setXRange(-self.history_time, self.history_time / 10, padding=0)
-        # self.module_dialog.module_widget.loha_graph.setYRange(-0.1, 1, padding=0)
-        # self.module_dialog.module_widget.loha_graph.showGrid(True, True, 1)
-        # self.module_dialog.module_widget.loha_graph.setLabel('right', 'LoHA [Nm/deg]', **{'font-size': '14pt'})
-        # self.module_dialog.module_widget.loha_graph.setLabel('bottom', 'Time[s]', **{'font-size': '14pt'})
-        # loha_viewbox = self.module_dialog.module_widget.loha_graph.getViewBox()
-        # loha_viewbox.setBackgroundColor((255, 255, 255, 200))
-
-        # sw_actual_viewbox = self.module_dialog.module_widget.sw_actual_graph.getViewBox()
-        # sw_actual_viewbox.setBackgroundColor((255, 255, 255, 200))
-
-
-
 
         self.millis = self.settings.millis
 
@@ -680,7 +694,7 @@ class ControllerPlotterAction(JoanModuleAction):
         self.state_machine.request_state_change(State.IDLE)
         self.module_dialog.module_widget.top_view_graph.clear()
         self.module_dialog.module_widget.torque_graph.clear()
-        self.module_dialog.module_widget.lat_e_graph.clear()
+        self.module_dialog.module_widget.errors_graph.clear()
         self.module_dialog.module_widget.fb_torques_graph.clear()
         # self.module_dialog.module_widget.loha_graph.clear()
         self.module_dialog.module_widget.sw_graph.clear()
@@ -718,5 +732,3 @@ class ControllerPlotterAction(JoanModuleAction):
     def _execute_on_state_change_in_module_action_2(self):
         # example of adding a method to be executed on a state change request
         pass
-
-

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1138</width>
-    <height>872</height>
+    <width>1153</width>
+    <height>890</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,7 +16,46 @@
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
     <layout class="QGridLayout" name="gridLayout_2">
-     <item row="3" column="1" rowspan="2">
+     <item row="14" column="3">
+      <widget class="QCheckBox" name="check_sw_des">
+       <property name="text">
+        <string>SW Desired</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="12" column="1" rowspan="5">
+      <widget class="PlotWidget" name="sw_graph" native="true">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>280</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="13" column="3">
+      <widget class="QLabel" name="label_3">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Show:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="1" rowspan="6">
       <widget class="PlotWidget" name="fb_torques_graph" native="true">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -38,34 +77,22 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="0" rowspan="3">
-      <widget class="PlotWidget" name="torque_graph" native="true">
-       <property name="minimumSize">
-        <size>
-         <width>420</width>
-         <height>0</height>
-        </size>
+     <item row="15" column="3">
+      <widget class="QCheckBox" name="check_sw_act">
+       <property name="text">
+        <string>SW Actual</string>
        </property>
-       <property name="maximumSize">
-        <size>
-         <width>420</width>
-         <height>16777215</height>
-        </size>
+       <property name="checked">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
-     <item row="0" column="0" rowspan="4">
-      <widget class="PlotWidget" name="top_view_graph" native="true">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
+     <item row="9" column="0" rowspan="8">
+      <widget class="PlotWidget" name="torque_graph" native="true">
        <property name="minimumSize">
         <size>
-         <width>420</width>
-         <height>0</height>
+         <width>480</width>
+         <height>420</height>
         </size>
        </property>
        <property name="maximumSize">
@@ -76,8 +103,99 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="1" rowspan="3">
-      <widget class="PlotWidget" name="lat_e_graph" native="true">
+     <item row="9" column="3">
+      <widget class="QCheckBox" name="check_loha">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>LoHA</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="3">
+      <widget class="QCheckBox" name="check_ff">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Feed Forward</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="3">
+      <widget class="QCheckBox" name="check_total">
+       <property name="text">
+        <string>Total</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="3">
+      <widget class="QCheckBox" name="check_fb">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Feedback</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="3">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Show:</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="3">
+      <widget class="QLabel" name="label">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>8</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Show:</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1" rowspan="6">
+      <widget class="PlotWidget" name="errors_graph" native="true">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
          <horstretch>0</horstretch>
@@ -92,8 +210,40 @@
        </property>
       </widget>
      </item>
-     <item row="5" column="1" rowspan="2">
-      <widget class="PlotWidget" name="sw_graph" native="true">
+     <item row="2" column="3">
+      <widget class="QCheckBox" name="check_lat_e">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Lat Error</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="3">
+      <widget class="QCheckBox" name="check_psi_e">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Psi Error</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0" rowspan="9">
+      <widget class="PlotWidget" name="top_view_graph" native="true">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
          <horstretch>0</horstretch>
@@ -102,9 +252,22 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>0</width>
-         <height>280</height>
+         <width>480</width>
+         <height>0</height>
         </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>420</width>
+         <height>420</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2" rowspan="17">
+      <widget class="Line" name="line">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
        </property>
       </widget>
      </item>
