@@ -465,18 +465,24 @@ class ControllerPlotterAction(JoanModuleAction):
         """
 
         # Top view graph
-        # TODO: Make this depend on the trajectory selected in FDCA controller (read news and then apply that name)
-        trajectory_name = "MiddleRoadTVRecord_filtered_ffswang_heading_2hz.csv"
-        tmp = pd.read_csv(os.path.join('modules/steeringwheelcontrol/action/swcontrollers/trajectories', trajectory_name))
-        HCR_trajectory_data = tmp.values
-        plot_data_HCR_x = HCR_trajectory_data[:, 1]
-        plot_data_HCR_y = HCR_trajectory_data[:, 2]
+        try:
+            # TODO: Make this depend on the trajectory selected in FDCA controller (read news and then apply that name)
+            trajectory_name = "MiddleRoadTVRecord_filtered_ffswang_heading_2hz.csv"
+            tmp = pd.read_csv(os.path.join('modules/steeringwheelcontrol/action/swcontrollers/trajectories', trajectory_name))
+            HCR_trajectory_data = tmp.values
+            plot_data_HCR_x = HCR_trajectory_data[:, 1]
+            plot_data_HCR_y = HCR_trajectory_data[:, 2]
 
+            self.HCR_plot_handle = self.module_dialog.module_widget.top_view_graph.plot(x=plot_data_HCR_x, y=plot_data_HCR_y, shadowPen=pg.mkPen(10, 200, 0, 100, width=18),
+                                                                                    pen=pg.mkPen(0, 102, 0, 255, width=2))
+        except:
+            print('Could not find HCR trajectory, please hardcode a name that is in your sw contorller trajectory list ')
+            self.HCR_plot_handle = self.module_dialog.module_widget.top_view_graph.plot(x=[0], y=[0], shadowPen=pg.mkPen(10, 200, 0, 100, width=18),
+                                                                                    pen=pg.mkPen(0, 102, 0, 255, width=2))
         self.carSymbol = QtGui.QPainterPath()
         self.carSymbol.addRect(-0.2, -0.4, 0.4, 0.8)
 
-        self.HCR_plot_handle = self.module_dialog.module_widget.top_view_graph.plot(x=plot_data_HCR_x, y=plot_data_HCR_y, shadowPen=pg.mkPen(10, 200, 0, 100, width=18),
-                                                                                    pen=pg.mkPen(0, 102, 0, 255, width=2))
+
 
         self.auto_position_plot_handle = self.module_dialog.module_widget.top_view_graph.plot(x=[0], y=[0], symbol=self.carSymbol,
                                                                                               symbolSize=40, pen=None,
