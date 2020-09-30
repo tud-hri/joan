@@ -26,24 +26,14 @@ class ControllerPlotterAction(JoanModuleAction):
 
     def __init__(self, millis=10):
         super().__init__(module=JOANModules.CONTROLLER_PLOTTER, millis=millis)
-
-        # Finally it is also possible to define automatic state changes. If state A is entered and the transition to state B is immediately legal, the state
-        # machine will automatically progress to state B. It is possible to define one automatic state change per state, except for the Error state. It is
-        # illegal to automatically leave the Error state for safety reasons. Not that state A wil not be skipped, but exited automatically. So the state changes
-        # are subject to all normal conditions and entry and exit actions.
-        # Note: This means that a transition condition must be defined!
-
-        # start news for the datarecorder.
-        # here, we are added a variable called 'datawriter output' to this modules News.
-        # You can choose your own variable names and you can add as many vairables to self.data as you want.
         self.data['datawriter output'] = 2020
         self.data['nesting'] = {'example 1': 44, 'example 2': 35}
         self.counter = 0  # see def do(self):
         self.sign = 1  # see def do(self):
         self.write_news(news=self.data)
         self.time = QtCore.QTime()
-        self.plotpoints = []
 
+        #initialize lists and variables for plotting
         self.amount_of_remaining_points = 50
         self.car_trace_length = 10
         self.history_time = self.amount_of_remaining_points / round(1000 / self._millis)
@@ -65,7 +55,6 @@ class ControllerPlotterAction(JoanModuleAction):
         self.plot_data_road_y_outer = []
         self.plot_data_road_y_inner = []
         self.plot_data_road_psi = []
-        self.plot_data_road_psi_deg = []
         self.road_lanewidth = []
         self.car_trace_x = [0] * self.car_trace_length
         self.car_trace_y = [0] * self.car_trace_length
@@ -82,7 +71,7 @@ class ControllerPlotterAction(JoanModuleAction):
         self.plot_data_sw_stiffness_y = [0, 0]
         self.converted_x_road_outer = [] * 50
         self.converted_y_road_outer = [] * 50
-
+        #change labelfont
         self.labelfont = QtGui.QFont()
         self.labelfont.setPixelSize(14)
 
@@ -98,7 +87,6 @@ class ControllerPlotterAction(JoanModuleAction):
         colors_rgb = []
         colors_rgb_car = []
         red = Color("red")
-        blue = Color("blue")
         colors = list(red.range_to(Color("blue"), self.amount_of_remaining_points))
         colors_car = list(red.range_to(Color("blue"), self.car_trace_length))
         for color in colors:
@@ -180,7 +168,6 @@ class ControllerPlotterAction(JoanModuleAction):
 
         except KeyError or TypeError:
             steering_ang = 0
-            # req_torque = 0
             sw_actual = 0
             sw_stiffness = math.radians(1)
 
@@ -189,7 +176,6 @@ class ControllerPlotterAction(JoanModuleAction):
             lat_error = data_from_sw_controller['FDCA 1']['lat_error']
             sw_des = math.degrees(data_from_sw_controller['FDCA 1']['sw_angle_desired_radians'])
             heading_error = math.degrees(data_from_sw_controller['FDCA 1']['heading_error'])
-            loha = math.radians(data_from_sw_controller['FDCA 1']['loha'])
             ff_torque = data_from_sw_controller['FDCA 1']['ff_torque']
             fb_torque = data_from_sw_controller['FDCA 1']['fb_torque']
             loha_torque = data_from_sw_controller['FDCA 1']['loha_torque']
@@ -200,7 +186,6 @@ class ControllerPlotterAction(JoanModuleAction):
             lat_error = 0
             sw_des = 0
             heading_error = 0
-            loha = 0
             req_torque = 0
             fb_torque = 0
             ff_torque = 0
@@ -232,19 +217,14 @@ class ControllerPlotterAction(JoanModuleAction):
                 for waypoints in previous_waypoints:
                     self.plot_data_road_x.append(waypoints[0].transform.location.x)
                     self.plot_data_road_y.append(waypoints[0].transform.location.y)
-                    # self.plot_data_road_psi.append(waypoints[0].transform.rotation.yaw)
                     self.road_lanewidth.append(waypoints[0].lane_width)
 
                 for waypoints in next_waypoints:
                     self.plot_data_road_x.append(waypoints[0].transform.location.x)
                     self.plot_data_road_y.append(waypoints[0].transform.location.y)
-                    # self.plot_data_road_psi.append(waypoints[0].transform.rotation.yaw)
                     self.road_lanewidth.append(waypoints[0].lane_width)
 
-                ## CALCULATE HIER DE PSI VAN DE VECTOREN WANT DAT KUT OPENDRIVE FUCKED HET
-
                 pos_array = np.array([[self.plot_data_road_x], [self.plot_data_road_y]])
-
                 diff = np.transpose(np.diff(pos_array, prepend=pos_array))
 
                 x_unit_vector = np.array([[1], [0]])
@@ -263,11 +243,13 @@ class ControllerPlotterAction(JoanModuleAction):
                     self.plot_data_road_y_inner.append(roadpoint_y + math.cos(self.plot_data_road_psi[iter_y]) * self.road_lanewidth[iter_y] / 2)
                     iter_y = iter_y + 1
 
+                #Set plotranges (KEEP IT SQUARE)
                 max_plotrange_x = self.plot_data_road_x[24] + 20
                 min_plotrange_x = self.plot_data_road_x[24] - 20
                 max_plotrange_y = self.plot_data_road_y[24] + 20
                 min_plotrange_y = self.plot_data_road_y[24] - 20
 
+                #Rotate plots according to the road orientation (makes sure we keep driving 'upwards')
                 self.road_outer_plot_handle.setTransformOriginPoint(self.plot_data_road_x[24], self.plot_data_road_y[24])
                 self.road_outer_plot_handle.setRotation(math.degrees(self.plot_data_road_psi[24] - 0.5 * math.pi))
 
@@ -316,14 +298,11 @@ class ControllerPlotterAction(JoanModuleAction):
                     self.plot_data_heading_error_top_view_y.append(vehicle_location.y + math.sin(math.radians(angle)) * 10)
 
 
-
                 self.plot_data_car_heading_line_x = [vehicle_location.x, vehicle_location.x + math.cos(math.radians(vehicle_rotation)) * 18]
                 self.plot_data_car_heading_line_y = [vehicle_location.y, vehicle_location.y + math.sin(math.radians(vehicle_rotation)) * 18]
 
-                self.plot_data_HCR_heading_line_x = [vehicle_location.x,
-                                                     vehicle_location.x + math.cos(math.radians(vehicle_rotation + heading_error)) * 18]
-                self.plot_data_HCR_heading_line_y = [vehicle_location.y,
-                                                     vehicle_location.y + math.sin(math.radians(vehicle_rotation + heading_error)) * 18]
+                self.plot_data_HCR_heading_line_x = [vehicle_location.x, vehicle_location.x + math.cos(math.radians(vehicle_rotation + heading_error)) * 18]
+                self.plot_data_HCR_heading_line_y = [vehicle_location.y, vehicle_location.y + math.sin(math.radians(vehicle_rotation + heading_error)) * 18]
 
                 if len(self.car_trace_x) > self.car_trace_length:
                     self.car_trace_x.pop(0)
@@ -337,7 +316,7 @@ class ControllerPlotterAction(JoanModuleAction):
                 self.module_dialog.module_widget.top_view_graph.setXRange(min_plotrange_x, max_plotrange_x, padding=0)
                 self.module_dialog.module_widget.top_view_graph.setYRange(min_plotrange_y, max_plotrange_y, padding=0)
 
-
+                #Clear lists so we can append them again for the next loop
                 self.plot_data_road_x = []
                 self.plot_data_road_y = []
                 self.plot_data_heading_error_top_view_x = []
@@ -347,7 +326,6 @@ class ControllerPlotterAction(JoanModuleAction):
                 self.plot_data_road_y_outer = []
                 self.plot_data_road_y_inner = []
                 self.plot_data_road_psi = []
-                self.plot_data_road_psi_deg = []
                 self.road_lanewidth = []
                 self.converted_y_road_outer = []
                 self.converted_x_road_outer = []
@@ -355,6 +333,8 @@ class ControllerPlotterAction(JoanModuleAction):
             else:
                 self.module_dialog.module_widget.top_view_graph.clear()
 
+
+        #set data
         self.auto_position_plot_handle.setData(x=self.car_trace_x, y=self.car_trace_y, symbol=self.car_trace_psi, symbolPen=self.car_pens, symbolBrush=self.car_brushes)
         self.topview_lat_error_plot_handle.setData(x=self.plot_data_lat_error_topview_x, y=self.plot_data_lat_error_topview_y)
         self.topview_heading_line_plot_handle.setData(x=self.plot_data_car_heading_line_x, y=self.plot_data_car_heading_line_y)
@@ -363,6 +343,7 @@ class ControllerPlotterAction(JoanModuleAction):
 
         # Big Torque vs steering Angle plot
         self.plot_data_torque_x.append(steering_ang)
+        #only append the actual measured torque if there is a sensodrive, else plot the requested torque by the controller
         if 'SensoDrive 1' in data_from_hardware_manager.keys():
             self.plot_data_torque_y.append(actual_torque)
         else:
@@ -631,7 +612,6 @@ class ControllerPlotterAction(JoanModuleAction):
         ## Initialize topview Graph
         self.module_dialog.module_widget.top_view_graph.setXRange(- 15, 15, padding=0)
         self.module_dialog.module_widget.top_view_graph.setYRange(-25, 25, padding=0)
-        # self.module_dialog.module_widget.top_view_graph.showGrid(True, True, 1)
         self.module_dialog.module_widget.top_view_graph.setTitle('Top View')
         self.module_dialog.module_widget.top_view_graph.setLabel('left', 'Y position [m]',
                                                                  **{'font-size': '10pt'})
@@ -748,11 +728,8 @@ class ControllerPlotterAction(JoanModuleAction):
         sw_legend.addItem(self.sw_act_plot_handle, name='Actual Steering Angle')
 
         self.millis = self.settings.millis
-
-        # if (self.state_machine.current_state is State.IDLE):
         self.state_machine.request_state_change(State.READY)  # , "You can now start the module")
-        # elif (self.state_machine.current_state is State.ERROR):
-        #    self.state_machine.request_state_change(State.IDLE)
+
 
         return super().initialize()
 
@@ -769,9 +746,7 @@ class ControllerPlotterAction(JoanModuleAction):
         self.module_dialog.module_widget.torque_graph.clear()
         self.module_dialog.module_widget.errors_graph.clear()
         self.module_dialog.module_widget.fb_torques_graph.clear()
-        # self.module_dialog.module_widget.loha_graph.clear()
         self.module_dialog.module_widget.sw_graph.clear()
-        # self.module_dialog.module_widget.sw_actual_graph.clear()
 
         return super().stop()
 
