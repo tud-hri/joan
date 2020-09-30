@@ -121,7 +121,7 @@ class EgoVehicleSettings():
         self.selected_input = 'None'
         self.selected_controller = 'None'
         self.selected_spawnpoint = 0
-        self.selected_car = 'hapticslab.nissangtr'
+        self.selected_car = 'hapticslab.audi'
         self.velocity = 80
         self.set_velocity = False
         self.name = ''

@@ -49,6 +49,7 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
         if self.checkbox_tuning_loha.isChecked():
             self.fdca_controller_settings.loha = float(self.slider_loha.value())
             self.lbl_loha.setText(str(self.fdca_controller_settings.loha))
+            self.lbl_loha_deg.setText(str(round(math.radians(self.fdca_controller_settings.loha), 3)))
 
 
     def accept(self):
@@ -70,9 +71,11 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
         # update the current controller settings
         self.lbl_k_y.setText(str(settings_to_display.k_y))
         self.lbl_k_psi.setText(str(settings_to_display.k_psi))
+        self.lbl_k_psi_deg.setText(str(round(math.radians(settings_to_display.k_psi), 3)))
         self.lbl_lohs.setText(str(settings_to_display.lohs))
         self.lbl_sohf.setText(str(settings_to_display.sohf))
         self.lbl_loha.setText(str(settings_to_display.loha))
+        self.lbl_loha_deg.setText(str(round(math.radians(settings_to_display.loha),3)))
 
         self.edit_k_y.setText(str(settings_to_display.k_y))
         self.edit_k_psi.setText(str(settings_to_display.k_psi))
@@ -151,6 +154,8 @@ class FDCASWController(BaseSWController):
     def initialize(self):
         self.load_trajectory()
 
+
+
     def calculate(self, vehicle_object, hw_data_in):
         """
         In manual, the controller has no additional control. We could add some self-centering torque, if we want.
@@ -162,8 +167,10 @@ class FDCASWController(BaseSWController):
         if vehicle_object.selected_sw_controller == self.controller_list_key:
             try:
                 # make sure this is in [Nm/rad]
-                stiffness = hw_data_in[vehicle_object.selected_input]['spring_stiffness']
-
+                try:
+                    stiffness = hw_data_in[vehicle_object.selected_input]['spring_stiffness']
+                except:
+                    stiffness = 1
                 sw_angle = hw_data_in[vehicle_object.selected_input]['steering_angle']  # [rad]
 
                 # get delta_t (we could also use 'tick_interval_ms' but this is a bit more precise)
@@ -243,7 +250,7 @@ class FDCASWController(BaseSWController):
 
                 # update variables
                 self._error_old = error
-                self._data_out['sw_angle_desired_radians'] = sw_angle_ff_des
+                self._data_out['sw_angle_desired_radians'] = sw_angle_ff_des + sw_angle_fb
                 self._data_out['sw_angle_current_radians'] = sw_angle
                 self._data_out['lat_error'] = error[0]
                 self._data_out['heading_error'] = error[1]
@@ -258,9 +265,13 @@ class FDCASWController(BaseSWController):
                 self._data_out['loha'] = self.settings.loha
                 self._data_out['lohs'] = self.settings.lohs
                 self._data_out['delta_sw'] = delta_sw
+                self._data_out['ff_torque'] = sw_angle_ff * stiffness
+                self._data_out['fb_torque'] = sw_angle_fb * stiffness
+                self._data_out['loha_torque'] = torque_loha
+                self._data_out['trajectory_name'] = self.settings.trajectory_name
 
 
-                # self._data_out['sw_angle_desired_degrees'] = math.degrees(sw_angle_ff_des)
+                # self._data_out['sw_angle_desired_degrees'] = math.radians(sw_angle_ff_des)
 
 
                 return self._data_out
