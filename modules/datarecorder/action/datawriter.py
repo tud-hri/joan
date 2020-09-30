@@ -37,7 +37,7 @@ class DataWriter(threading.Thread):
         pass
         #print('DataWriter runs in a thread:', self.is_alive())
 
-    def recursive_filter_row(self, current_allow, current_data, row_name):
+    def recursive_filter_row(self, current_allow, current_data, row_name, row_names={}):
         """
         Go through the settings and through the news as they use the same keys
         Returns only news that is not 'censored'
@@ -48,18 +48,16 @@ class DataWriter(threading.Thread):
         """
         if isinstance(current_allow, dict):
             for _key, _value in current_allow.items():
-                if isinstance(_value, dict):
-                    row_name = '%s.%s' % (row_name, _key)
-                    return self.recursive_filter_row(current_allow.get(_key), current_data.get(_key), row_name)
+                if _value is True:
+                    row_names['%s.%s' % (row_name, _key)] = current_data.get(_key)
+                    #row_name = row_name.split('.')[:-1]
                 else:
-                    row_names = []
-                    for deepest_key in current_allow.keys():
-                        if current_allow.get(deepest_key) is True:
-                            deepest_row_name = '%s.%s' % (row_name, deepest_key)
-                            row_names.append({deepest_row_name: current_data.get(deepest_key)})
-                    return row_names
-            return ''
-
+                    self.recursive_filter_row(current_allow.get(_key), current_data.get(_key), '%s.%s' % (row_name, _key), row_names)
+            row_names_list = []
+            for _key, _value in row_names.items():
+                row_names_list.append({_key: _value})
+            return row_names_list
+        return ''
 
     def filter_first_row(self):
         """
@@ -68,6 +66,7 @@ class DataWriter(threading.Thread):
         :return: a list of recursively concatenated keys which passes a filter
         """
         row = ['time']
+        header_list = []
         for channel in self.channels:
             latest_news = self.news[channel]
             readable_key = str(JOANModules(channel))
@@ -78,9 +77,9 @@ class DataWriter(threading.Thread):
 
             for news_items in result:
                 for key in news_items.keys():
-                    row.append(key)
-
-        return row
+                    header_list.append(key)
+        header_list = sorted(list(set(header_list)))
+        return row + header_list
 
     def filter_row(self, news=None, channels=[]):
         """
@@ -115,11 +114,11 @@ class DataWriter(threading.Thread):
             if not os.path.exists(filepath):
                 os.mkdir(filepath)
 
-        self.filter_first_row()
+        _fieldnames = self.filter_first_row()
 
         # open file and write the first row
         self.file_handle = open(os.path.join(filepath, filename), 'w', buffering=buffersize, newline='')
-        self.dict_writer = csv.DictWriter(self.file_handle, fieldnames=self.filter_first_row())
+        self.dict_writer = csv.DictWriter(self.file_handle, fieldnames=_fieldnames)
         self.dict_writer.writeheader()
 
     def close(self):
