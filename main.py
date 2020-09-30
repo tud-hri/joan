@@ -24,6 +24,7 @@ if __name__ == '__main__':
     JOANHQACTION.add_module(JOANModules.CARLA_INTERFACE, millis=2)
     # JOANHQACTION.add_module(JOANModules.TEMPLATE)
     JOANHQACTION.add_module(JOANModules.DATA_RECORDER, millis=2)
+    JOANHQACTION.add_module(JOANModules.CONTROLLER_PLOTTER, millis = 50)
     # JOANHQACTION.add_module(JOANModules.SCENARIOS, millis=5)
     # JOANHQACTION.add_module(JOANModules.DATA_PLOTTER, millis=2000)
 

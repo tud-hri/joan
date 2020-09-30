@@ -310,16 +310,6 @@ class JOANSensoDrive(BaseInput):
             self._data['torque_rate'] = self.torque_rate
         """
 
-        # if self.sensodrive_shared_values.sensodrive_motorstate == 0x10:
-        #     self._hardware_input_tab.btn_on.setStyleSheet("background-color: orange")
-        #     self._hardware_input_tab.btn_on.setText('Off')
-        # elif self.sensodrive_shared_values.sensodrive_motorstate == 0x14:
-        #     self._hardware_input_tab.btn_on.setStyleSheet("background-color: lightgreen")
-        #     self._hardware_input_tab.btn_on.setText('On')
-        # elif self.sensodrive_shared_values.sensodrive_motorstate == 0x18:
-        #     self._hardware_input_tab.btn_on.setStyleSheet("background-color: red")
-        #     self._hardware_input_tab.btn_on.setText('Clear Error')
-
         # check whether we have a sw_controller that should be updated
         self._steering_wheel_control_data = self.module_action.read_news(JOANModules.STEERING_WHEEL_CONTROL)
         self._carla_interface_data = self.module_action.read_news(JOANModules.CARLA_INTERFACE)
