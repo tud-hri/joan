@@ -233,7 +233,9 @@ class CarlaInterfaceAction(JoanModuleAction):
                 ## PLEASE CHECK THE FILE SAVING LOCATION!!
                 # print('saving current opendrive trajectory to csv file')
                 # self.save_opendrive_trajectory(world_map)
-
+                self.carla_waypoints = world_map.generate_waypoints(0.5)
+                self.data['waypoints'] = self.carla_waypoints
+                self.data['map'] = world_map
                 print('JOAN connected to CARLA Server!')
                 QApplication.restoreOverrideCursor()
 
@@ -291,7 +293,7 @@ class CarlaInterfaceAction(JoanModuleAction):
         i = 0
         xvec = np.array([-1, 0])
 
-        waypoints = world_map.generate_waypoints(0.2)
+        waypoints = world_map.generate_waypoints(0.5)
         waypoint = waypoints[0]
         while len(self._waypoints) != len(waypoints):
             angle = waypoint.transform.rotation.yaw
@@ -306,7 +308,14 @@ class CarlaInterfaceAction(JoanModuleAction):
             waypoint = temp[0]
             i = i + 1
 
+        print(len(self._waypoints))
+        for waypoint in waypoints:
+            print(waypoint.lane_width)
+
+
         for k in range(0, len(self._waypoints)):
+
+
             first_point = np.array([self._waypoints[k][1], self._waypoints[k][2]])
             if k < len(self._waypoints) - 1:
                 second_point = np.array([self._waypoints[k + 1][1], self._waypoints[k + 1][2]])
@@ -322,8 +331,8 @@ class CarlaInterfaceAction(JoanModuleAction):
                           columns=['Row Name', 'PosX', 'PosY', 'SteeringAngle', 'Throttle', 'Brake', 'Psi', 'Vel'])
         df2 = pd.DataFrame(self._waypoints[0:len(self._waypoints):5],
                            columns=['Row Name', 'PosX', 'PosY', 'SteeringAngle', 'Throttle', 'Brake', 'Psi', 'Vel'])
-        df.to_csv(os.path.join(self.module_path, 'trajectories', 'opendrive_trajectory.csv'), index=False, header=False)
-        df2.to_csv(os.path.join(self.module_path, 'trajectories', 'opendrive_trajectory_VISUAL.csv'), index=False,
+        df.to_csv(os.path.join(self.module_path, 'action/trajectories', 'opendrive_trajectory.csv'), index=False, header=False)
+        df2.to_csv(os.path.join(self.module_path, 'action/trajectories', 'opendrive_trajectory_VISUAL.csv'), index=False,
                    header=True)
 
 

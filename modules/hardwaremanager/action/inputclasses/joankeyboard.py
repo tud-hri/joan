@@ -271,7 +271,6 @@ class JOANKeyboard(BaseInput):
             self._data['brake'] = 1
 
         # Steering:
-        print(self._data['steering_angle'])
         if self._steer_left and self.settings.max_steer >= self._data['steering_angle'] >= self.settings.min_steer:
             self._data['steering_angle'] = self._data['steering_angle'] - (self.settings.steer_sensitivity / 10000)
         elif self._steer_right and self.settings.min_steer <= self._data['steering_angle'] <= self.settings.max_steer:
