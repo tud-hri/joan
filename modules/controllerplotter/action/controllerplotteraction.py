@@ -615,7 +615,7 @@ class ControllerPlotterAction(JoanModuleAction):
         self.module_dialog.module_widget.top_view_graph.setTitle('Top View')
         self.module_dialog.module_widget.top_view_graph.setLabel('left', 'Y position [m]',
                                                                  **{'font-size': '10pt'})
-        self.module_dialog.module_widget.top_view_graph.setLabel('bottom', '<font>&Theta;X position</font> [m]',
+        self.module_dialog.module_widget.top_view_graph.setLabel('bottom', '<font>X position</font> [m]',
                                                                  **{'font-size': '10pt'})
         top_view_viewbox = self.module_dialog.module_widget.top_view_graph.getViewBox()
         top_view_viewbox.invertX(False)
@@ -623,7 +623,7 @@ class ControllerPlotterAction(JoanModuleAction):
         top_view_viewbox.setBorder(pen=pg.mkPen(0, 0, 0, 255))
         top_view_viewbox.setBackgroundColor((255, 255, 255, 200))
         top_view_legend = pg.LegendItem(offset=(10, -10), horSpacing=30, verSpacing=2,
-                                        pen=pg.mkPen(0, 0, 0, 0), brush=pg.mkBrush(255, 255, 255, 255))
+                                        pen=pg.mkPen(0, 0, 0, 0), brush=pg.mkBrush(255, 255, 255, 0))
         top_view_legend.setParentItem(top_view_viewbox)
         top_view_legend.addItem(self.HCR_plot_handle, name='HCR')
         top_view_legend.addItem(self.road_outer_plot_handle, name='Lane/Road Edge')
