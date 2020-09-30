@@ -99,7 +99,7 @@ class ControllerPlotterAction(JoanModuleAction):
         colors_rgb_car = []
         red = Color("red")
         blue = Color("blue")
-        colors = list(red.range_to(Color("green"), self.amount_of_remaining_points))
+        colors = list(red.range_to(Color("blue"), self.amount_of_remaining_points))
         colors_car = list(red.range_to(Color("blue"), self.car_trace_length))
         for color in colors:
             colors_rgb.append(color.rgb)
@@ -112,10 +112,10 @@ class ControllerPlotterAction(JoanModuleAction):
 
         for k in range(self.amount_of_remaining_points):
             self.brushes.append(
-                pg.mkBrush(round(256 * colors_rgb[k][0]), round(256 * colors_rgb[k][1]), round(256 * colors_rgb[k][2]),
+                pg.mkBrush(round(200 * colors_rgb[k][0]), round(200 * colors_rgb[k][1]), round(200 * colors_rgb[k][2]),
                            k * 3))
             self.pens.append(
-                pg.mkPen(round(256 * colors_rgb[k][0]), round(256 * colors_rgb[k][1]), round(256 * colors_rgb[k][2]),
+                pg.mkPen(round(200 * colors_rgb[k][0]), round(200 * colors_rgb[k][1]), round(200 * colors_rgb[k][2]),
                          k * 3))
 
         for k in range(self.car_trace_length):
@@ -441,7 +441,7 @@ class ControllerPlotterAction(JoanModuleAction):
             # total Torque
             self.plot_data_total_torque_y.append(loha_torque + ff_torque + fb_torque)
             self.plot_data_total_torque_y.pop(0)
-            self.total_torque_plot_handle.setData(x=self.time_list, y=self.plot_data_loha_torque_y, size=2,
+            self.total_torque_plot_handle.setData(x=self.time_list, y=self.plot_data_total_torque_y, size=2,
                                                   pen=pg.mkPen((0, 0, 0, 200), width=3),
                                                   brush='g', symbol=None, symbolBrush=self.brushes,
                                                   symbolPen=self.pens, symbolSize=5)
