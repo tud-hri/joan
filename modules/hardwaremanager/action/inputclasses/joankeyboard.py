@@ -4,8 +4,9 @@ import keyboard
 from PyQt5 import QtWidgets, QtGui, uic
 
 from modules.hardwaremanager.action.hardwaremanagersettings import KeyBoardSettings
+from modules.hardwaremanager.action.hwinputtypes import HardwareInputTypes
 from modules.hardwaremanager.action.inputclasses.baseinput import BaseInput
-from modules.hardwaremanager.action.hwinputtypes import  HardwareInputTypes
+
 
 class KeyBoardSettingsDialog(QtWidgets.QDialog):
     """
@@ -259,7 +260,6 @@ class JOANKeyboard(BaseInput):
         elif self._data['throttle'] > 1:
             self._data['throttle'] = 1
 
-
         # Brake:
         if self._brake and self._data['brake'] < 1:
             self._data['brake'] = self._data['brake'] + (0.05 * self.settings.brake_sensitivity / 100)
@@ -280,7 +280,7 @@ class JOANKeyboard(BaseInput):
         elif self._data['steering_angle'] < 0 and self.settings.auto_center:
             self._data['steering_angle'] = self._data['steering_angle'] + (self.settings.steer_sensitivity / 10000)
 
-        if abs(self._data['steering_angle']) < self.settings.steer_sensitivity/10000:
+        if abs(self._data['steering_angle']) < self.settings.steer_sensitivity / 10000:
             self._data['steering_angle'] = 0
 
         # Reverse

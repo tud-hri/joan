@@ -43,10 +43,14 @@ class DataRecorderSettings(JoanModuleSettings):
         Set only the new news-item in the variables_to_save to True 
         Existing news-items will get the existing value
         """
+        print(variables_element)
         if isinstance(element, dict):
             for key, value in element.items():
                 if isinstance(value, dict):
-                    self._set_new_entries_checked(element.get(key), variables_element.get(key))
+                    try:
+                        self._set_new_entries_checked(element.get(key), variables_element.get(key))
+                    except Exception as e:
+                        print(e)
                 else:
                     try:
                         element[key] = variables_element[key]
@@ -59,28 +63,47 @@ class DataRecorderSettings(JoanModuleSettings):
         It also deletes the vehicle_object from the news if they are present.
         """
         news = News()
-        for module in JOANModules:
+        for module in news.all_news_keys:
             self.existing_variables_to_save = copy.deepcopy(existing_variables_to_save)
 
             original_news = news.read_news(module)
-            if 'ego_agents' in original_news:
-                for cars in original_news['ego_agents']:
-                    try:
-                        original_news['ego_agents'][cars].pop('vehicle_object')
-                    except KeyError as inst:
-                        print('Vehicle Object already Deleted', inst)
 
-            if 'traffic_agents' in original_news:
-                for cars in original_news['traffic_agents']:
-                    try:
-                        original_news['traffic_agents'][cars].pop('vehicle_object')
-                    except KeyError as inst:
-                        print('Traffic Vehicle Object already Deleted', inst)
+            self._remove_forbidden_vartypes(original_news)
 
+            # if 'ego_agents' in original_news:
+            #     for cars in original_news['ego_agents']:
+            #         try:
+            #             original_news['ego_agents'][cars].pop('vehicle_object')
+            #         except KeyError as inst:
+            #             print('Vehicle Object already Deleted', inst)
+            #
+            # if 'traffic_agents' in original_news:
+            #     for cars in original_news['traffic_agents']:
+            #         try:
+            #             original_news['traffic_agents'][cars].pop('vehicle_object')
+            #         except KeyError as inst:
+            #             print('Traffic Vehicle Object already Deleted', inst)
             module_news = copy.deepcopy(original_news)
 
             self.variables_to_save[str(module)] = module_news
         self._set_new_entries_checked(self.variables_to_save, self.existing_variables_to_save)
+
+    def _remove_forbidden_vartypes(self, news_dict):
+        """Loop through the news dict, check each entry (recursively) if they are not one of the allowed variable types, and delete them."""
+        keys = list(news_dict.keys())
+
+        for key in keys:
+            value = news_dict.get(key)
+            if not isinstance(value, (int, float, dict, bool, str)):
+                try:
+                    news_dict.pop(key)
+                except KeyError:
+                    pass
+            elif isinstance(value, dict):
+                # recursion
+                self._remove_forbidden_vartypes(value)
+            else:
+                pass  # do nothing
 
     def get_variables_to_save(self):
         return self.variables_to_save
