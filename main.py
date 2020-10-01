@@ -20,8 +20,8 @@ if __name__ == '__main__':
 
     # adding modules (instantiates them too)
     JOANHQACTION.add_module(JOANModules.HARDWARE_MANAGER, millis=5)
-    # JOANHQACTION.add_module(JOANModules.STEERING_WHEEL_CONTROL, millis=5)
-    # JOANHQACTION.add_module(JOANModules.CARLA_INTERFACE, millis=5)
+    JOANHQACTION.add_module(JOANModules.STEERING_WHEEL_CONTROL, millis=5)
+    JOANHQACTION.add_module(JOANModules.CARLA_INTERFACE, millis=5)
     # JOANHQACTION.add_module(JOANModules.TEMPLATE)
     JOANHQACTION.add_module(JOANModules.DATA_RECORDER, millis=2)
     # JOANHQACTION.add_module(JOANModules.CONTROLLER_PLOTTER, millis = 100)

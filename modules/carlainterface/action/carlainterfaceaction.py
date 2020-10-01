@@ -201,7 +201,6 @@ class CarlaInterfaceAction(JoanModuleAction):
         for traffic_vehicle_settings in self.settings.traffic_vehicles:
             self.add_agent(AgentTypes.TRAFFICVEHICLE, traffic_vehicle_settings)
 
-
     def check_connection(self):
         """
         Checks whether JOAN is connected by returning the connected parameter
@@ -276,7 +275,6 @@ class CarlaInterfaceAction(JoanModuleAction):
             self.vehicle_tags.clear()
             self._spawn_points.clear()
 
-
             self.state_machine.request_state_change(State.IDLE, 'Carla Disconnected')
 
             self.module_dialog.module_widget.btn_connect.setEnabled(not self.connected)
@@ -312,9 +310,7 @@ class CarlaInterfaceAction(JoanModuleAction):
         for waypoint in waypoints:
             print(waypoint.lane_width)
 
-
         for k in range(0, len(self._waypoints)):
-
 
             first_point = np.array([self._waypoints[k][1], self._waypoints[k][2]])
             if k < len(self._waypoints) - 1:
@@ -331,12 +327,13 @@ class CarlaInterfaceAction(JoanModuleAction):
                           columns=['Row Name', 'PosX', 'PosY', 'SteeringAngle', 'Throttle', 'Brake', 'Psi', 'Vel'])
         df2 = pd.DataFrame(self._waypoints[0:len(self._waypoints):5],
                            columns=['Row Name', 'PosX', 'PosY', 'SteeringAngle', 'Throttle', 'Brake', 'Psi', 'Vel'])
-        df.to_csv(os.path.join(self.module_path, 'action/trajectories', 'opendrive_trajectory.csv'), index=False, header=False)
-        df2.to_csv(os.path.join(self.module_path, 'action/trajectories', 'opendrive_trajectory_VISUAL.csv'), index=False,
+        df.to_csv(os.path.join(self.module_path, 'action/trajectories', 'opendrive_trajectory.csv'), index=False,
+                  header=False)
+        df2.to_csv(os.path.join(self.module_path, 'action/trajectories', 'opendrive_trajectory_VISUAL.csv'),
+                   index=False,
                    header=True)
 
-
-    def add_agent(self, agent_type, agent_settings = None):
+    def add_agent(self, agent_type, agent_settings=None):
         number_of_agents = sum([bool(agent_type.__str__() in k) for k in self._agents.keys()]) + 1
         agent_name = agent_type.__str__() + ' ' + str(number_of_agents)
 
@@ -348,7 +345,7 @@ class CarlaInterfaceAction(JoanModuleAction):
                 self.settings.traffic_vehicles.append(agent_settings)
 
             self._agents[agent_name] = agent_type.klass(self, agent_name, agent_settings
-                                                    , self.vehicle_tags, self._spawn_points)
+                                                        , self.vehicle_tags, self._spawn_points)
             self._agents[agent_name].get_agent_tab.group_agent.setTitle(agent_name)
             self.module_dialog.module_widget.agent_list_layout.addWidget(self._agents[agent_name].get_agent_tab)
             self._agents[agent_name]._open_settings_dialog_from_button()
@@ -398,7 +395,6 @@ class CarlaInterfaceAction(JoanModuleAction):
         if not self._agents:
             self.stop()
 
-
     def initialize(self):
         """
         This function is called before the module is started
@@ -443,8 +439,6 @@ class CarlaInterfaceAction(JoanModuleAction):
     def remove_all(self):
         for agent in list(self._agents):
             self._agents[agent].remove_agent()
-
-
 
     def spawn_all(self):
         """
