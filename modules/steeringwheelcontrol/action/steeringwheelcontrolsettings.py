@@ -116,10 +116,10 @@ class PDControllerSettings:
 class FDCAControllerSettings:
     def __init__(self):
         self.t_lookahead = 0.0
-        self.k_y = 0.1
-        self.k_psi = 1.5
-        self.lohs = 3.5
-        self.sohf = 1.5
+        self.k_y = 0.15
+        self.k_psi = 2.5
+        self.lohs = 1.0
+        self.sohf = 1.0
         self.loha = 0.0
         self.trajectory_name = "MiddleRoadTVRecord_filtered_ffswang_heading_3hz.csv"
 
