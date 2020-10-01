@@ -46,10 +46,9 @@ class DataRecorderSettings(JoanModuleSettings):
         if isinstance(element, dict):
             for key, value in element.items():
                 if isinstance(value, dict):
-                    # TODO This try/except is a patch, but doesn't tackle the actual problem (variables_element is none).
                     try:
                         self._set_new_entries_checked(element.get(key), variables_element.get(key))
-                    except Exception as e:
+                    except (KeyError, TypeError) as e:
                         print(e)
                 else:
                     try:
@@ -66,26 +65,14 @@ class DataRecorderSettings(JoanModuleSettings):
         for module in news.all_news_keys:
             self.existing_variables_to_save = copy.deepcopy(existing_variables_to_save)
 
-            original_news = news.read_news(module)
+            original_news = copy.deepcopy(news.read_news(module))
 
             self._remove_forbidden_vartypes(original_news)
 
-            # if 'ego_agents' in original_news:
-            #     for cars in original_news['ego_agents']:
-            #         try:
-            #             original_news['ego_agents'][cars].pop('vehicle_object')
-            #         except KeyError as inst:
-            #             print('Vehicle Object already Deleted', inst)
-            #
-            # if 'traffic_agents' in original_news:
-            #     for cars in original_news['traffic_agents']:
-            #         try:
-            #             original_news['traffic_agents'][cars].pop('vehicle_object')
-            #         except KeyError as inst:
-            #             print('Traffic Vehicle Object already Deleted', inst)
             module_news = copy.deepcopy(original_news)
 
             self.variables_to_save[str(module)] = module_news
+
         self._set_new_entries_checked(self.variables_to_save, self.existing_variables_to_save)
 
     def _remove_forbidden_vartypes(self, news_dict):
