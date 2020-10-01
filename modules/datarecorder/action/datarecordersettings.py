@@ -43,10 +43,10 @@ class DataRecorderSettings(JoanModuleSettings):
         Set only the new news-item in the variables_to_save to True 
         Existing news-items will get the existing value
         """
-        print(variables_element)
         if isinstance(element, dict):
             for key, value in element.items():
                 if isinstance(value, dict):
+                    # TODO This try/except is a patch, but doesn't tackle the actual problem (variables_element is none).
                     try:
                         self._set_new_entries_checked(element.get(key), variables_element.get(key))
                     except Exception as e:
