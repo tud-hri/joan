@@ -65,7 +65,7 @@ class DataRecorderSettings(JoanModuleSettings):
         for module in news.all_news_keys:
             self.existing_variables_to_save = copy.deepcopy(existing_variables_to_save)
 
-            original_news = copy.deepcopy(news.read_news(module))
+            original_news = news.read_news(module)
 
             self._remove_forbidden_vartypes(original_news)
 
