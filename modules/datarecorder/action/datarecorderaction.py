@@ -58,6 +58,14 @@ class DataRecorderAction(JoanModuleAction):
         # end settings for this module
 
         self.filename = ''
+        self.directoryname = os.path.join(Path.cwd(), 'datalogs')
+        _path = Path(self.directoryname)
+        if not Path(self.directoryname).exists():
+            try:
+                _path.mkdir(mode=0o777, parents=True)
+            except FileExistsError:
+                pass
+
         self.data_writer = DataWriter(news=self.get_all_news(),
                                       channels=self.get_available_news_channels(),
                                       settings=self.get_module_settings(JOANModules.DATA_RECORDER))
@@ -133,7 +141,7 @@ class DataRecorderAction(JoanModuleAction):
         Opens the datawriter
         """
         self.state_machine.request_state_change(State.RUNNING)
-        self.data_writer.open(filename=self.get_filename(), filepath='datalogs')
+        self.data_writer.open(filename=self.get_filename(), filepath=self.directoryname)
         if self.trajectory_recorder.should_record_trajectory:
             self.trajectory_recorder.initialize_trajectory_recorder_variables()
         super().start()

@@ -88,6 +88,9 @@ class DataRecorderDialog(JoanModuleDialog):
         # set current data file name
         self.module_widget.lbl_data_filename.setText("< none >")
 
+        # set current data directory name
+        self.module_widget.lbl_data_directoryname.setText(self.module_action.directoryname)
+
         # set message text
         self.module_widget.lbl_message_recorder.setText("not recording")
         self.module_widget.lbl_message_recorder.setStyleSheet('color: orange')
@@ -105,6 +108,15 @@ class DataRecorderDialog(JoanModuleDialog):
         self.module_widget.check_trajectory.stateChanged.connect(self.check_trajectory_checkbox)
         self.module_widget.line_trajectory_title.textEdited.connect(self.check_trajectory_filename)
 
+        # Log files
+        self.log_dir_menu = QtWidgets.QMenu('Log files')
+        self.log_dir = QtWidgets.QAction('Select Directory')
+        self.log_dir_menu.addAction(self.log_dir)
+        self.menu_bar.addMenu(self.log_dir_menu)
+        self.log_dir.triggered.connect(self._set_datalog_path)
+        self.log_dir.setEnabled(True)
+        self.module_widget.lbl_data_directoryname.mouseReleaseEvent = self._set_datalog_path
+
     def _load_settings(self):
         """
         Opens dialog to load settings
@@ -119,6 +131,23 @@ class DataRecorderDialog(JoanModuleDialog):
         if settings_file_to_load:
             self.module_action.load_settings(settings_file_to_load)
             self.create_tree_widget()
+
+    def _set_datalog_path(self, event):
+        """
+        Sets the path to datalog and let users create folders
+        When selecting is cancelled, the previous path is used
+        """
+
+        file_path = QtWidgets.QFileDialog.getExistingDirectory(self, 
+                                                               'select directory',
+                                                               self.module_action.directoryname)
+
+        if file_path:
+            self.module_action.directoryname = file_path
+            self.module_widget.lbl_data_directoryname.setText(self.module_action.directoryname)
+
+    def _skip_event(self, event):
+        pass
 
     def handle_click(self, nodes):
         """
@@ -279,6 +308,9 @@ class DataRecorderDialog(JoanModuleDialog):
                 self.save_settings.setEnabled(True)
                 self.state_widget.input_tick_millis.setEnabled(False)
                 self.state_widget.input_tick_millis.setStyleSheet("color: black;  background-color: lightgrey")
+                # select log directory
+                self.log_dir.setEnabled(True)
+                self.module_widget.lbl_data_directoryname.mouseReleaseEvent = self._set_datalog_path
 
             if current_state is State.IDLE:
                 self.state_widget.btn_start.setEnabled(False)
@@ -302,6 +334,13 @@ class DataRecorderDialog(JoanModuleDialog):
                 self.save_settings.setEnabled(False)
                 self.state_widget.input_tick_millis.setEnabled(True)
                 self.state_widget.input_tick_millis.setStyleSheet("color: black;  background-color: white")
+                # select log directory
+                try:
+                    # only try-except by 'IDLE'
+                    self.log_dir.setEnabled(True)
+                    self.module_widget.lbl_data_directoryname.mouseReleaseEvent = self._set_datalog_path
+                except AttributeError:
+                    pass
 
             if current_state is State.RUNNING:
                 self.state_widget.btn_start.setEnabled(False)
@@ -318,6 +357,9 @@ class DataRecorderDialog(JoanModuleDialog):
                 self.save_settings.setEnabled(True)
                 self.state_widget.input_tick_millis.setEnabled(False)
                 self.state_widget.input_tick_millis.setStyleSheet("color: black;  background-color: lightgrey")
+                # select log directory
+                self.log_dir.setEnabled(True)
+                self.module_widget.lbl_data_directoryname.mouseReleaseEvent = self._set_datalog_path
 
             # update the state label
             self.state_widget.lbl_module_state.setText(current_state.__str__())

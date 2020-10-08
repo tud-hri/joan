@@ -7,6 +7,7 @@ import threading
 import io
 import csv
 import os
+from pathlib import Path
 
 from modules.joanmodules import JOANModules
 
@@ -110,9 +111,12 @@ class DataWriter(threading.Thread):
         :param buffersize: is the size of the buffer for writing
         """
         # check if folder exists
-        if not filepath == '.':
-            if not os.path.exists(filepath):
-                os.mkdir(filepath)
+        _path = Path(filepath)
+        if not Path(filepath).exists():
+            try:
+                _path.mkdir(mode=0o777, parents=True)
+            except FileExistsError:
+                pass
 
         _fieldnames = self.filter_first_row()
 
