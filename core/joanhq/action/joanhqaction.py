@@ -1,10 +1,10 @@
 """Action class for JOAN menu"""
 import os
+
 from PyQt5 import QtCore
 
-from modules.joanmodules import JOANModules
-from core import News
 from core import Settings
+from modules.joanmodules import JOANModules
 
 
 class JoanHQAction(QtCore.QObject):
@@ -24,8 +24,7 @@ class JoanHQAction(QtCore.QObject):
         self.singleton_settings = Settings()
 
         # path to modules directory
-        self.path_modules = os.path.normpath(
-            os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../", "modules"))
+        self.path_modules = os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../", "modules"))
 
         # dictionary to keep track of the instantiated modules
         self._instantiated_modules = {}
@@ -35,30 +34,21 @@ class JoanHQAction(QtCore.QObject):
         Initialize modules
         """
         for _, module in self._instantiated_modules.items():
-            try:
-                module.initialize()
-            except AttributeError:  # module has new style TODO: remove_input_device statement above when moving to new style
-                module.initialize()
+            module.initialize()
 
     def start_modules(self):
         """
         Initialize modules
         """
         for _, module in self._instantiated_modules.items():
-            try:
-                module.start()
-            except AttributeError:  # module has new style TODO: remove_input_device statement above when moving to new style
-                module.start()
+            module.start()
 
     def stop_modules(self):
         """
         Stop all modules
         """
         for _, module in self._instantiated_modules.items():
-            try:
-                module.manager.stop()
-            except AttributeError:  # module has new style TODO: remove_input_device statement above when moving to new style
-                module.stop()
+            module.stop()
 
     def add_module(self, module: JOANModules, name='', parent=None, time_step=0.1):
 

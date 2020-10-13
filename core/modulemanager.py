@@ -1,17 +1,11 @@
 import os
 import sys
-import time
 
 from PyQt5 import QtCore
 
-from modules.joanmodules import JOANModules
-from core.joanmodulesignals import JoanModuleSignal
 from core.news import News
-from core.settings import Settings
-from core.signals import Signals
 from core.statemachine import StateMachine
-from core.status import Status
-from tools import AveragedFloat
+from modules.joanmodules import JOANModules
 
 
 class ModuleManager(QtCore.QObject):
@@ -48,13 +42,10 @@ class ModuleManager(QtCore.QObject):
         """
         self._shared_values = self.module.sharedvalues()
 
-        self.singleton_news.write_news(self.module, {'sv': self._shared_values})
-
-        print(self.singleton_news)
-
-        pass
+        self.singleton_news.write_news(self.module, self._shared_values)
 
     def get_ready(self):
+        self._process = self.module.process(self.module, time_step=self._time_step, news=self.singleton_news)
         pass
 
     def start(self):

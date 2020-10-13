@@ -1,6 +1,7 @@
 import multiprocessing as mp
 from ctypes import *
 
+
 class TemplateMPSharedValues:
     def __init__(self):
         self._state = mp.Value(c_int, 0)             # module state [idle, running, error]
