@@ -56,7 +56,7 @@
         <item>
          <layout class="QHBoxLayout" name="h_layout">
           <item>
-           <widget class="QPushButton" name="btn_initialize_all">
+           <widget class="QPushButton" name="btn_initialize">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Maximum">
               <horstretch>0</horstretch>
@@ -70,12 +70,12 @@
              </size>
             </property>
             <property name="text">
-             <string>Initialize all</string>
+             <string>Initialize</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="btn_stop_all">
+           <widget class="QPushButton" name="btn_start">
             <property name="minimumSize">
              <size>
               <width>0</width>
@@ -83,7 +83,20 @@
              </size>
             </property>
             <property name="text">
-             <string>Stop all</string>
+             <string>Start</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btn_stop">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>50</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Stop</string>
             </property>
            </widget>
           </item>

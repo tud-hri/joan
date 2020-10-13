@@ -3,6 +3,7 @@ import os
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 
 from core.joanmoduleaction import JoanModuleAction
+from core.modulemanager import ModuleManager
 from core.status import Status
 
 from .performancemonitordialog import PerformanceMonitorDialog
@@ -10,9 +11,6 @@ from .settingsoverviewdialog import SettingsOverviewDialog
 
 
 class JoanHQWindow(QtWidgets.QMainWindow):
-    """
-
-    """
 
     app_is_quiting = QtCore.pyqtSignal()
 
@@ -36,16 +34,15 @@ class JoanHQWindow(QtWidgets.QMainWindow):
         self.setCentralWidget(self._main_widget)
         self.resize(400, 400)
 
-        self._main_widget.btn_emergency.setIcon(
-            QtGui.QIcon(QtGui.QPixmap(os.path.join(self._path_resources, "stop.png"))))
+        self._main_widget.btn_emergency.setIcon(QtGui.QIcon(QtGui.QPixmap(os.path.join(self._path_resources, "stop.png"))))
         self._main_widget.btn_emergency.clicked.connect(self.emergency)
 
         self._main_widget.btn_quit.setStyleSheet("background-color: darkred")
         self._main_widget.btn_quit.clicked.connect(self.close)
 
-        self._main_widget.btn_initialize_all.clicked.connect(self.initialize_all)
-
-        self._main_widget.btn_stop_all.clicked.connect(self.stop_all)
+        self._main_widget.btn_initialize.clicked.connect(self.initialize)
+        self._main_widget.btn_start.clicked.connect(self.start)
+        self._main_widget.btn_stop.clicked.connect(self.stop)
 
         # dictionary to store all the module widgets
         self._module_cards = {}
@@ -58,54 +55,28 @@ class JoanHQWindow(QtWidgets.QMainWindow):
         self._view_menu.addAction('Show all current settings..', self.show_settings_overview)
         self._view_menu.addAction('Show performance monitor..', self.show_performance_monitor)
 
-    def initialize_all(self):
-        self.action.initialize_all()
+    def initialize(self):
+        self.action.initialize_modules()
         self._main_widget.repaint()  # repaint is essential to show the states
 
-    def stop_all(self):
-        self.action.stop_all()
+    def start(self):
+        self.action.start_modules()
+        self._main_widget.repaint()  # repaint is essential to show the states
+
+    def stop(self):
+        self.action.stop_modules()
         self._main_widget.repaint()  # repaint is essential to show the states
 
     def emergency(self):
         self.action.emergency()
         self._main_widget.repaint()  # repaint is essential to show the states
 
-    '''
-    def emergency(self):
-        """ Needed here to show what is is happening in the Action-part """
-        for module in JOANModules:
-            module_state_machine = self.singleton_status.get_module_state_machine(module)
-            if module_state_machine is not None:
-                module_state_machine.request_state_change(State.IDLE)
-        #self.master_state_handler.request_state_change(self.master_states.EMERGENCY)
-
-    def initialize_all(self):
-        """ Needed here to show what is is happening in the Action-part """
-        for module in JOANModules:
-            module_state_machine = self.singleton_status.get_module_state_machine(module)
-            if module_state_machine is not None:
-                module_state_machine.request_state_change(State.READY)
-        #self.master_state_handler.request_state_change(self.master_states.INITIALIZING)
-
-    def stop_all(self):
-        """ Needed here to show what is is happening in the Action-part """
-        for module in JOANModules:
-            module_state_machine = self.singleton_status.get_module_state_machine(module)
-            if module_state_machine is not None:
-                module_state_machine.request_state_change(State.IDLE)
-        #self.master_state_handler.request_state_change(self.master_states.STOP)
-    '''
-
-    def add_module(self, module_dialog, module_enum):
-        """
-        Add the module tab/UI to the modules list
-        :param module_dialog:  dialog object
-        :param module_enum: dialog name
-        :return:
-        """
+    def add_module(self, module_manager):
 
         # create a widget per module (show & close buttons, state)
-        name = str(module_enum)
+
+        name = str(module_manager.module)
+        module_dialog = module_manager.module_dialog
 
         widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "modulecard.ui"))
         widget.setObjectName(name)
@@ -113,10 +84,8 @@ class JoanHQWindow(QtWidgets.QMainWindow):
 
         widget.btn_showclose.clicked.connect(module_dialog.toggle_show_close)
         widget.btn_showclose.setCheckable(True)
-        widget.btn_showclose.toggled.connect(lambda: self.button_showclose_checked(
-            widget.btn_showclose))  # change text in the button, based toggle status
-        module_dialog.closed.connect(
-            lambda: widget.btn_showclose.setChecked(False))  # if the user closes the dialog, uncheck the button
+        widget.btn_showclose.toggled.connect(lambda: self.button_showclose_checked(widget.btn_showclose))  # change text in the button, based toggle status
+        module_dialog.closed.connect(lambda: widget.btn_showclose.setChecked(False))  # if the user closes the dialog, uncheck the button
 
         # add it to the layout
         self._main_widget.module_list_layout.addWidget(widget)

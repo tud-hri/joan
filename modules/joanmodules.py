@@ -18,7 +18,13 @@ class JOANModules(Enum):
     DATA_PLOTTER = auto()
     SCENARIOS = auto()
     CONTROLLER_PLOTTER = auto()
+    TEMPLATE_MP = auto()
 
+    @property
+    def manager(self):
+        from modules.templatemp.templatempmanager import TemplateMPManager
+
+        return {JOANModules.TEMPLATE_MP: TemplateMPManager}[self]
 
     @property
     def action(self):
@@ -43,7 +49,6 @@ class JOANModules(Enum):
                 JOANModules.CONTROLLER_PLOTTER: ControllerPlotterAction
                 }[self]
 
-
     @property
     def dialog(self):
         from modules.template.dialog.templatedialog import TemplateDialog
@@ -55,6 +60,7 @@ class JOANModules(Enum):
         from modules.experimentmanager.dialog.experimentmanagerdialog import ExperimentManagerDialog
         from modules.scenarios.dialog.scenariosdialog import ScenariosDialog
         from modules.controllerplotter.dialog.controllerplotterdialog import ControllerPlotterDialog
+        from modules.templatemp.templatempdialog import TemplateMPDialog
 
         return {JOANModules.TEMPLATE: TemplateDialog,
                 JOANModules.DATA_RECORDER: DataRecorderDialog,
@@ -64,9 +70,16 @@ class JOANModules(Enum):
                 JOANModules.DATA_PLOTTER: DataplotterDialog,
                 JOANModules.EXPERIMENT_MANAGER: ExperimentManagerDialog,
                 JOANModules.SCENARIOS: ScenariosDialog,
-                JOANModules.CONTROLLER_PLOTTER: ControllerPlotterDialog
+                JOANModules.CONTROLLER_PLOTTER: ControllerPlotterDialog,
+                JOANModules.TEMPLATE_MP: TemplateMPDialog
                 }[self]
 
+    @property
+    def sharedvalues(self):
+        from modules.templatemp.templatempsharedvalues import TemplateMPSharedValues
+
+        return {JOANModules.TEMPLATE_MP: TemplateMPSharedValues
+                }[self]
 
     @property
     def ui_file(self):
@@ -81,9 +94,9 @@ class JOANModules(Enum):
                 JOANModules.EXPERIMENT_MANAGER: os.path.join(path_to_modules,
                                                              "experimentmanager/dialog/experimentmanager_widget.ui"),
                 JOANModules.SCENARIOS: os.path.join(path_to_modules, "scenarios/dialog/scenarios.ui"),
-                JOANModules.CONTROLLER_PLOTTER: os.path.join(path_to_modules, "controllerplotter/dialog/controllerplotter.ui")
+                JOANModules.CONTROLLER_PLOTTER: os.path.join(path_to_modules, "controllerplotter/dialog/controllerplotter.ui"),
+                JOANModules.TEMPLATE_MP: os.path.join(path_to_modules, "templatemp/templatempwidget.ui")
                 }[self]
-
 
     def __str__(self):
         return {JOANModules.TEMPLATE: 'Template',
@@ -94,9 +107,9 @@ class JOANModules(Enum):
                 JOANModules.CARLA_INTERFACE: 'Carla Interface',
                 JOANModules.DATA_PLOTTER: 'Data Plotter',
                 JOANModules.SCENARIOS: 'Scenarios',
-                JOANModules.CONTROLLER_PLOTTER: 'Controller Plotter'
+                JOANModules.CONTROLLER_PLOTTER: 'Controller Plotter',
+                JOANModules.TEMPLATE_MP: 'Template MP'
                 }[self]
-
 
     @staticmethod
     def from_string_representation(string):

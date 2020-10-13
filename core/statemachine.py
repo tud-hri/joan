@@ -19,10 +19,24 @@ class StateMachine:
                     self._transition_conditions[departing_state][target_state] = lambda: True
 
         # declare state changes that are illegal by default
+        self._transition_conditions[State.IDLE][State.READY] = lambda: False  # need to pass PREPARED first
         self._transition_conditions[State.IDLE][State.RUNNING] = lambda: False
+        self._transition_conditions[State.IDLE][State.STOPPED] = lambda: False
+        self._transition_conditions[State.PREPARED][State.IDLE] = lambda: False
+        self._transition_conditions[State.PREPARED][State.RUNNING] = lambda: False
+        self._transition_conditions[State.PREPARED][State.STOPPED] = lambda: False
+        self._transition_conditions[State.READY][State.IDLE] = lambda: False
+        self._transition_conditions[State.READY][State.PREPARED] = lambda: False
+        self._transition_conditions[State.READY][State.STOPPED] = lambda: False
         self._transition_conditions[State.RUNNING][State.READY] = lambda: False
+        self._transition_conditions[State.RUNNING][State.IDLE] = lambda: False
+        self._transition_conditions[State.RUNNING][State.PREPARED] = lambda: False
+
+        # error only to idle
+        self._transition_conditions[State.ERROR][State.PREPARED] = lambda: False
         self._transition_conditions[State.ERROR][State.READY] = lambda: False
         self._transition_conditions[State.ERROR][State.RUNNING] = lambda: False
+        self._transition_conditions[State.ERROR][State.STOPPED] = lambda: False
 
         self._entry_actions = {}
         self._exit_actions = {}
@@ -120,8 +134,7 @@ class StateMachine:
                     self._entry_actions[target_state]()
             else:
                 self.state_message = 'State change from ' + str(self.current_state) + ' to ' + str(
-                    target_state) + ' is illegal for ' + str(
-                    self._module_enum) + ' module. '
+                    target_state) + ' is illegal for ' + str(self._module_enum) + ' module. '
                 if error_message:
                     self.state_message += 'Error: ' + error_message
                 self.current_state = State.ERROR

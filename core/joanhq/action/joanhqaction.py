@@ -30,58 +30,49 @@ class JoanHQAction(QtCore.QObject):
         # dictionary to keep track of the instantiated modules
         self._instantiated_modules = {}
 
-    def initialize_all(self):
+    def initialize_modules(self):
         """
         Initialize modules
         """
         for _, module in self._instantiated_modules.items():
             try:
-                module.action.initialize()
+                module.initialize()
             except AttributeError:  # module has new style TODO: remove_input_device statement above when moving to new style
                 module.initialize()
 
-    def start_all(self):
+    def start_modules(self):
         """
         Initialize modules
         """
         for _, module in self._instantiated_modules.items():
             try:
-                module.action.start()
+                module.start()
             except AttributeError:  # module has new style TODO: remove_input_device statement above when moving to new style
                 module.start()
 
-    def stop_all(self):
+    def stop_modules(self):
         """
         Stop all modules
         """
         for _, module in self._instantiated_modules.items():
             try:
-                module.action.stop()
+                module.manager.stop()
             except AttributeError:  # module has new style TODO: remove_input_device statement above when moving to new style
                 module.stop()
 
-    def add_module(self, module: JOANModules, name='', parent=None, millis=100):
-        """
-        Add a new module
-        :param module: type of module (from enum)
-        :param name: name to assign to the instantiated module
-        :param parent: parent of the module (mainly for the Qt-related functionality
-        :param millis: module step time
-        :return: module action and dialog
-        """
+    def add_module(self, module: JOANModules, name='', parent=None, time_step=0.1):
 
         if not parent:
             parent = self.window
 
-        module_action = module.action(millis=millis)
-        module_dialog = module.dialog(module_action, parent=parent)
+        module_manager = module.manager(time_step=time_step)
 
-        self.window.add_module(module_dialog, module)
+        self.window.add_module(module_manager)
 
         # add instantiated module to dictionary
-        self._instantiated_modules[module] = module_action
+        self._instantiated_modules[module] = module_manager
 
-        return module_dialog, module_action
+        return module_manager
 
     def remove_module(self, module: JOANModules):
         """
@@ -94,13 +85,13 @@ class JoanHQAction(QtCore.QObject):
         """
         Emergency button processing
         """
-        self.stop_all()
+        self.stop_modules()
 
     def quit(self):
         """
         Quit JOAN
         """
-        self.stop_all()
+        self.stop_modules()
 
     @property
     def instantiated_modules(self):

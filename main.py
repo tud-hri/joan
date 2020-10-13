@@ -7,8 +7,8 @@ import sys
 
 from PyQt5 import QtWidgets
 
-from modules.joanmodules import JOANModules
 from core import JoanHQAction, JoanHQWindow
+from modules.joanmodules import JOANModules
 
 if __name__ == '__main__':
     APP = QtWidgets.QApplication(sys.argv)
@@ -19,17 +19,6 @@ if __name__ == '__main__':
     JOANHQWINDOW.show()
 
     # adding modules (instantiates them too)
-    JOANHQACTION.add_module(JOANModules.HARDWARE_MANAGER, millis=10)
-    JOANHQACTION.add_module(JOANModules.STEERING_WHEEL_CONTROL, millis=10)
-    JOANHQACTION.add_module(JOANModules.CARLA_INTERFACE, millis=10)
-    # JOANHQACTION.add_module(JOANModules.TEMPLATE)
-    JOANHQACTION.add_module(JOANModules.DATA_RECORDER, millis=10)
-    # JOANHQACTION.add_module(JOANModules.CONTROLLER_PLOTTER, millis = 100)
-    # JOANHQACTION.add_module(JOANModules.SCENARIOS, millis=5)
-    # JOANHQACTION.add_module(JOANModules.DATA_PLOTTER, millis=2000)
-
-    # add the EXPERIMENT_MANAGER last because this one collects settings from JOAN modules that are already loaded
-    # JOANHQACTION.add_module(JOANModules.EXPERIMENT_MANAGER)
+    JOANHQACTION.add_module(JOANModules.TEMPLATE_MP, time_step=0.1)
 
     APP.exec_()
- 
