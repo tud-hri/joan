@@ -1,4 +1,5 @@
 import multiprocessing as mp
+from ctypes import *
 
 class TemplateMPSharedValues:
     def __init__(self):
