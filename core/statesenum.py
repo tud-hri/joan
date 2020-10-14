@@ -11,8 +11,8 @@ class State(Enum):
 
     def __str__(self):
         return {State.ERROR: 'Error',
-                State.PREPARED: 'Prepared',
                 State.IDLE: 'Idle',
+                State.PREPARED: 'Prepared',
                 State.READY: 'Ready',
                 State.RUNNING: 'Running',
-                State.STOPPED: 'Stopped'}[self]
+                State.STOPPED: 'Clean-up'}[self]

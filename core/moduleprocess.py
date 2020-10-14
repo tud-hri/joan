@@ -16,7 +16,7 @@ class ModuleProcess(mp.Process):
         pass
 
     def run(self):
-        t_start = time.perf_counter_ns()
+        t_start = time.perf_counter_ns() * 1e-9
         t_prev = t_start
 
         running = True
