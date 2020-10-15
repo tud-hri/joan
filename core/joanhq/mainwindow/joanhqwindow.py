@@ -41,6 +41,7 @@ class JoanHQWindow(QtWidgets.QMainWindow):
         self._main_widget.btn_quit.clicked.connect(self.close)
 
         self._main_widget.btn_initialize.clicked.connect(self.initialize)
+        self._main_widget.btn_get_ready.clicked.connect(self.get_ready)
         self._main_widget.btn_start.clicked.connect(self.start)
         self._main_widget.btn_stop.clicked.connect(self.stop)
 
@@ -58,6 +59,10 @@ class JoanHQWindow(QtWidgets.QMainWindow):
     def initialize(self):
         self.action.initialize_modules()
         self._main_widget.repaint()  # repaint is essential to show the states
+
+    def get_ready(self):
+        self.action.get_ready_modules()
+        self._main_widget.repaint()
 
     def start(self):
         self.action.start_modules()

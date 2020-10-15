@@ -36,7 +36,7 @@ class ModuleProcess(mp.Process):
                 t_prev = t
 
             # stop if module STOP
-            if self._sharedvalues_module.state == State.STOP.value:
+            if self._sharedvalues_module.state == State.STOPPED.value:
                 running = False
 
         print("Stopped process:", self.module)

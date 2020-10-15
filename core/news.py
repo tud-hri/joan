@@ -35,6 +35,12 @@ class News:
         except KeyError:
             return {}
 
+    def remove_news(self, module: JOANModules):
+        try:
+            del self._news[module]
+        except KeyError as e:
+            print(e)
+
     @property
     def all_news(self):
         return self._news

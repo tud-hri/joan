@@ -47,7 +47,7 @@ class ModuleDialog(QtWidgets.QDialog):
 
         self.update_timer = QtCore.QTimer()
         self.update_timer.setTimerType(QtCore.Qt.PreciseTimer)
-        self.update_timer.setInterval(100)  # 50 Hz update
+        self.update_timer.setInterval(100)  # 10 Hz update
         self.update_timer.timeout.connect(self.update_dialog)
 
     def update_dialog(self):

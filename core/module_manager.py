@@ -27,11 +27,12 @@ class ModuleManager(QtCore.QObject):
 
         # initialize state machine
         self.state_machine = StateMachine(module)
-        self.state_machine.set_entry_action(State.PREPARED, self.initialize)
+        self.state_machine.set_entry_action(State.IDLE, self.initialize)
         self.state_machine.set_entry_action(State.READY, self.get_ready)
         self.state_machine.set_entry_action(State.RUNNING, self.start)
-        self.state_machine.set_entry_action(State.STOP, self.stop)
-        self.state_machine.set_exit_action(State.STOP, self.cleanup)
+        self.state_machine.set_entry_action(State.STOPPED, self.stop)
+        self.state_machine.set_exit_action(State.STOPPED, self.cleanup)
+        self.state_machine.set_entry_action(State.ERROR, self.stop)
 
         # settings
         self.settings = None
@@ -50,9 +51,11 @@ class ModuleManager(QtCore.QObject):
         self.shared_values = self.module.sharedvalues()
 
         self.singleton_news.write_news(self.module, self.shared_values)
+        print('Shared variables created')
 
     def get_ready(self):
         self._process = self.module.process(self.module, time_step=self._time_step, news=self.singleton_news)
+        print('process created')
 
     def start(self):
         self.module_dialog.start()
@@ -71,7 +74,15 @@ class ModuleManager(QtCore.QObject):
             if self._process.is_alive():
                 self._process.join()
 
+        return True
+
     def cleanup(self):
 
-        # remove shared values
+        # TODO moeten we hier nog checken of shared values nog bestaan?
+        # delete object
         del self.shared_values
+
+        # remove shared values from news
+        self.singleton_news.remove_news(self.module)
+
+
