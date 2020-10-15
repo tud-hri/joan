@@ -15,13 +15,10 @@ class TemplateMPManager(ModuleManager):
         super().__init__(module=JOANModules.TEMPLATE_MP, time_step=time_step, parent=parent)
 
     def initialize(self):
-        print("init")
         return super().initialize()
 
     def start(self):
-        print("start")
         return super().start()
 
     def stop(self):
-        print("stop")
         return super().stop()
