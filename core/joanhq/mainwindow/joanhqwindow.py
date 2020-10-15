@@ -3,7 +3,7 @@ import os
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 
 from core.joanmoduleaction import JoanModuleAction
-from core.modulemanager import ModuleManager
+from core.module_manager import ModuleManager
 from core.status import Status
 
 from .performancemonitordialog import PerformanceMonitorDialog

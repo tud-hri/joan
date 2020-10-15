@@ -22,7 +22,7 @@ class JOANModules(Enum):
 
     @property
     def manager(self):
-        from modules.templatemp.templatempmanager import TemplateMPManager
+        from modules.templatemp.templatemp_manager import TemplateMPManager
 
         return {JOANModules.TEMPLATE_MP: TemplateMPManager}[self]
 
@@ -60,7 +60,7 @@ class JOANModules(Enum):
         from modules.experimentmanager.dialog.experimentmanagerdialog import ExperimentManagerDialog
         from modules.scenarios.dialog.scenariosdialog import ScenariosDialog
         from modules.controllerplotter.dialog.controllerplotterdialog import ControllerPlotterDialog
-        from modules.templatemp.templatempdialog import TemplateMPDialog
+        from modules.templatemp.templatemp_dialog import TemplateMPDialog
 
         return {JOANModules.TEMPLATE: TemplateDialog,
                 JOANModules.DATA_RECORDER: DataRecorderDialog,
@@ -76,10 +76,16 @@ class JOANModules(Enum):
 
     @property
     def sharedvalues(self):
-        from modules.templatemp.templatempsharedvalues import TemplateMPSharedValues
+        from modules.templatemp.templatemp_sharedvalues import TemplateMPSharedValues
 
         return {JOANModules.TEMPLATE_MP: TemplateMPSharedValues
                 }[self]
+
+    @property
+    def process(self):
+        from modules.templatemp.templatemp_process import TemplateMPProcess
+
+        return {JOANModules.TEMPLATE_MP: TemplateMPProcess}[self]
 
     @property
     def ui_file(self):
@@ -95,7 +101,7 @@ class JOANModules(Enum):
                                                              "experimentmanager/dialog/experimentmanager_widget.ui"),
                 JOANModules.SCENARIOS: os.path.join(path_to_modules, "scenarios/dialog/scenarios.ui"),
                 JOANModules.CONTROLLER_PLOTTER: os.path.join(path_to_modules, "controllerplotter/dialog/controllerplotter.ui"),
-                JOANModules.TEMPLATE_MP: os.path.join(path_to_modules, "templatemp/templatempwidget.ui")
+                JOANModules.TEMPLATE_MP: os.path.join(path_to_modules, "templatemp/templatemp_widget.ui")
                 }[self]
 
     def __str__(self):

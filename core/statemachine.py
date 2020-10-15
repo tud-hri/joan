@@ -3,7 +3,7 @@ from .statesenum import State
 
 
 class StateMachine:
-    def __init__(self, module_enum: JOANModules):
+    def __init__(self, module_enum: JOANModules = None):
         self.current_state = State.IDLE
         self.state_message = ''
 
@@ -21,13 +21,13 @@ class StateMachine:
         # declare state changes that are illegal by default
         self._transition_conditions[State.IDLE][State.READY] = lambda: False  # need to pass PREPARED first
         self._transition_conditions[State.IDLE][State.RUNNING] = lambda: False
-        self._transition_conditions[State.IDLE][State.STOPPED] = lambda: False
+        self._transition_conditions[State.IDLE][State.STOP] = lambda: False
         self._transition_conditions[State.PREPARED][State.IDLE] = lambda: False
         self._transition_conditions[State.PREPARED][State.RUNNING] = lambda: False
-        self._transition_conditions[State.PREPARED][State.STOPPED] = lambda: False
+        self._transition_conditions[State.PREPARED][State.STOP] = lambda: False
         self._transition_conditions[State.READY][State.IDLE] = lambda: False
         self._transition_conditions[State.READY][State.PREPARED] = lambda: False
-        self._transition_conditions[State.READY][State.STOPPED] = lambda: False
+        self._transition_conditions[State.READY][State.STOP] = lambda: False
         self._transition_conditions[State.RUNNING][State.READY] = lambda: False
         self._transition_conditions[State.RUNNING][State.IDLE] = lambda: False
         self._transition_conditions[State.RUNNING][State.PREPARED] = lambda: False
@@ -36,7 +36,7 @@ class StateMachine:
         self._transition_conditions[State.ERROR][State.PREPARED] = lambda: False
         self._transition_conditions[State.ERROR][State.READY] = lambda: False
         self._transition_conditions[State.ERROR][State.RUNNING] = lambda: False
-        self._transition_conditions[State.ERROR][State.STOPPED] = lambda: False
+        self._transition_conditions[State.ERROR][State.STOP] = lambda: False
 
         self._entry_actions = {}
         self._exit_actions = {}

@@ -4,6 +4,8 @@ import os
 from PyQt5 import QtCore
 
 from core import Settings
+from core.statemachine import StateMachine
+from core.statesenum import State
 from modules.joanmodules import JOANModules
 
 
@@ -29,33 +31,47 @@ class JoanHQAction(QtCore.QObject):
         # dictionary to keep track of the instantiated modules
         self._instantiated_modules = {}
 
+        # state_machine
+        self.state_machine = StateMachine()
+        self.state_machine.set_entry_action(State.PREPARED, self.initialize_modules)
+
     def initialize_modules(self):
         """
         Initialize modules
         """
         for _, module in self._instantiated_modules.items():
-            module.state_machine.request()
+            module.state_machine.request_state_change(State.PREPARED)
+
+        # TODO remove the following once statemachine here works
+        for _, module in self._instantiated_modules.items():
+            module.state_machine.request_state_change(State.READY)
 
     def start_modules(self):
         """
         Initialize modules
         """
         for _, module in self._instantiated_modules.items():
-            module.start()
+            module.state_machine.request_state_change(State.RUNNING)
 
     def stop_modules(self):
         """
         Stop all modules
         """
         for _, module in self._instantiated_modules.items():
-            module.stop()
+            module.state_machine.request_state_change(State.STOP)
+
+        # TODO remove the following once statemachine here works
+        for _, module in self._instantiated_modules.items():
+            module.state_machine.request_state_change(State.IDLE)
 
     def add_module(self, module: JOANModules, name='', parent=None, time_step=0.1):
 
         if not parent:
             parent = self.window
 
-        module_manager = module.manager(time_step=time_step)
+        module_manager = module.manager(time_step=time_step, parent=parent)
+
+        # module_manager.state_machine.add_state_change_listener(self.handle_module_state_changes)
 
         self.window.add_module(module_manager)
 

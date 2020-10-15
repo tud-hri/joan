@@ -2,7 +2,7 @@ import os
 
 from PyQt5 import QtWidgets, uic, QtCore
 
-from core.modulemanager import ModuleManager
+from core.module_manager import ModuleManager
 from core.statesenum import State
 from modules.joanmodules import JOANModules
 
@@ -44,6 +44,18 @@ class ModuleDialog(QtWidgets.QDialog):
         # setup module-specific widget
         self._module_widget = uic.loadUi(module.ui_file)
         self.layout().addWidget(self._module_widget)
+
+        self.update_timer = QtCore.QTimer()
+        self.update_timer.setTimerType(QtCore.Qt.PreciseTimer)
+        self.update_timer.setInterval(100)  # 50 Hz update
+        self.update_timer.timeout.connect(self.update_dialog)
+
+    def update_dialog(self):
+        pass
+
+    def start(self):
+        if not self.update_timer.isActive():
+            self.update_timer.start()
 
     def _handle_state_change(self):
         """

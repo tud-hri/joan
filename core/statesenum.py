@@ -7,7 +7,7 @@ class State(Enum):
     PREPARED = 1
     READY = 2
     RUNNING = 3
-    STOPPED = 4
+    STOP = 4
 
     def __str__(self):
         return {State.ERROR: 'Error',
@@ -15,4 +15,4 @@ class State(Enum):
                 State.PREPARED: 'Prepared',
                 State.READY: 'Ready',
                 State.RUNNING: 'Running',
-                State.STOPPED: 'Clean-up'}[self]
+                State.STOP: 'Clean-up'}[self]
