@@ -1,6 +1,4 @@
 
-import os
-
 from PyQt5 import QtCore
 
 from modules.joanmodules import JOANModules

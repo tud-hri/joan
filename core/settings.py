@@ -14,11 +14,14 @@ class Settings:
     def __new__(cls):
         if not cls.instance:
             cls.instance = object.__new__(Settings)
+            ''' TODO: Remove this, because apparenlty not used (20201015)
             cls._factory_settings = {}
+            '''
             cls._settings = {}
 
         return cls.instance
 
+    ''' TODO: Remove this, because apparenlty not used (20201015)
     def update_factory_settings(self, module: JOANModules, module_settings):
         """
         Update the default (factory) settings
@@ -27,6 +30,7 @@ class Settings:
         :return:
         """
         self._factory_settings.update({module: module_settings})
+    '''
 
     def update_settings(self, module: JOANModules, module_settings):
         """
@@ -43,11 +47,13 @@ class Settings:
         except KeyError:
             return {}
 
+    ''' TODO: Remove this, because apparenlty not used (20201015)
     def get_factory_settings(self, module: JOANModules):
         try:
             return self._factory_settings[module]
         except KeyError:
             return {}
+    '''
 
     @property
     def all_settings(self):

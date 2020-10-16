@@ -1,10 +1,9 @@
 import enum
 
 from modules.joanmodules import JOANModules
-from core.joanmodulesettings import JoanModuleSettings
+from module_settings import ModuleSettings
 
-
-class TemplateSettings(JoanModuleSettings):
+class TemplateSettings(ModuleSettings):
     def __init__(self, module_enum: JOANModules):
         super().__init__(module_enum)
         self.millis = 100

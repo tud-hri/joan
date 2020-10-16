@@ -159,8 +159,10 @@ class JoanModuleAction(QtCore.QObject):
     def get_module_settings(self, module=''):
         return self.singleton_settings.get_settings(module)
 
+    ''' TODO: Remove this, because apparenlty not used (20201015)
     def get_module_factory_settings(self, module=''):
         return self.singleton_settings.get_factory_settings(module)
+    '''
 
     @property
     def tick_interval_ms(self):

@@ -75,6 +75,14 @@ class JOANModules(Enum):
                 }[self]
 
     @property
+    def settings(self):
+        from modules.templatemp.templatemp_settings import TemplateMPSettings
+
+        return {JOANModules.TEMPLATE_MP: TemplateMPSettings
+                }[self]
+
+
+    @property
     def sharedvalues(self):
         from modules.templatemp.templatemp_sharedvalues import TemplateMPSharedValues
 

@@ -1,5 +1,6 @@
 import os
 import sys
+from pathlib import Path
 
 from PyQt5 import QtCore
 
@@ -33,14 +34,15 @@ class ModuleManager(QtCore.QObject):
         self.state_machine.set_entry_action(State.STOP, self.stop)
         self.state_machine.set_exit_action(State.STOP, self.cleanup)
 
-        # settings
-        self.settings = None
-
         self.shared_values = None
         self._process = None
 
         # create the dialog
         self.module_dialog = module.dialog(self, parent=parent)
+
+        # create settings
+        self.settings_filename = os.path.join(self.module_path, 'default_settings.json')
+        self.module_settings = module.settings(settings_filename=self.settings_filename)
 
     def initialize(self):
         """
