@@ -142,8 +142,8 @@ It turns out that the QTimer object are running in seperate threads but the meth
 
 ## modules
 ### modules.datarecorder.widget.datarecorder.py
-reads the corresponding .ui file and does all the action needed for this widget
-### modules.datarecorder.widget.datarecorder.ui
+reads the corresponding .uis file and does all the action needed for this widget
+### modules.datarecorder.widget.datarecorder.uis
 definition of the gui
 ### modules.datarecorder.action.datarecorder.py
 does all the action to get the datarecorder initializing and working
@@ -153,27 +153,27 @@ actually writes data (from News), every time a pulse calls the do-method in data
 reads and writes settings in json format which items should be recorded (default: all)
 
 ### modules.menu.widget.menu.py
-reads the corresponding .ui file and does all the action needed for this widget
-### modules.menu.widget.menu.ui
+reads the corresponding .uis file and does all the action needed for this widget
+### modules.menu.widget.menu.uis
 definition of the gui
 
 ### modules.carlainterface.widget.interface.py (not used yet)
 Carla interface handles all communication between carla and unreal by making use of the 
 carla PYTHONAPI. Here we have to extract all the info we want to use and can send it 
 over the news channel
-### modules.carlainterface.widget.interface.ui
+### modules.carlainterface.widget.interface.uis
 definition of the gui
 
 ### modules.template.widget.template.py
 Template to create other widgets, has predefined connection with the Control class
-reads the corresponding .ui file and does all the action needed for this widget
-### modules.template.widget.template.ui
+reads the corresponding .uis file and does all the action needed for this widget
+### modules.template.widget.template.uis
 definition of the gui
 
 ### modules.template.widget.steeringcommunication.py
 Widget that handles all communication with the sensodrive wheel, utilizes the PCANBasic
 library made by PEAK-SYSTEMS. Widget also shows current state of the wheel.
-### modules.template.widget.steeringcommunication.ui
+### modules.template.widget.steeringcommunication.uis
 definition of the gui
 
 ### modules.template.widget.feedbackcontroller.py
@@ -183,7 +183,7 @@ Has an empty 'Basecontroller' class of which added arbitratry controllers will i
 This makes sure that we always calculate the selected controller values and send these to 
 steeringcommunication. (for now we also send the steering gain directly to sim to test)
 
-### modules.template.widget.feedbackcontroller.ui
+### modules.template.widget.feedbackcontroller.uis
 definition of the gui
 
 <br>

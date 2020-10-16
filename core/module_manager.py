@@ -46,6 +46,7 @@ class ModuleManager(QtCore.QObject):
         self.module_dialog = module.dialog(self, parent=parent)
 
         self.state_machine.request_state_change(State.STOPPED)
+        self.module_dialog._handle_state_change()
 
     def initialize(self):
         """
@@ -55,15 +56,18 @@ class ModuleManager(QtCore.QObject):
         self.shared_values = self.module.sharedvalues()
 
         self.singleton_news.write_news(self.module, self.shared_values)
+        self.shared_values.state = self.state_machine.current_state.value
 
 
     def get_ready(self):
         self._process = self.module.process(self.module, time_step=self._time_step, news=self.singleton_news)
+        self.shared_values.state = self.state_machine.current_state.value
 
 
 
     def start(self):
         # self.module_dialog.start()
+        self.shared_values.state = self.state_machine.current_state.value
         if self._process and not self._process.is_alive():
             self._process.start()
 
