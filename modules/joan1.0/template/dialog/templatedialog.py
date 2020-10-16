@@ -1,5 +1,3 @@
-from PyQt5 import QtWidgets
-
 from modules.joanmodules import JOANModules
 from core.joanmoduleaction import JoanModuleAction
 from core.joanmoduledialog import JoanModuleDialog

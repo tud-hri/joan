@@ -7,10 +7,6 @@ class TemplateMPSharedValues:
         self._state = mp.Value(c_int, -2)  # module state [idle, running, error]
         self._time = mp.Value(c_float, 0.0)
 
-    def __del__(self):
-        # Dit is niet betrouwbaar blijkkbaar moet je dit nooit doen, __del__ word niet altijd aangeroepen als je del object doet
-        pass
-
     @property
     def state(self):
         return self._state.value

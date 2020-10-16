@@ -1,5 +1,3 @@
-from PyQt5 import QtWidgets
-
 from core.statesenum import State
 from core.joanmoduledialog import JoanModuleDialog
 from modules.joanmodules import JOANModules

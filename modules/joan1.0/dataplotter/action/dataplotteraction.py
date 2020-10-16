@@ -8,7 +8,6 @@ from modules.joanmodules import JOANModules
 
 from core.joanmoduleaction import JoanModuleAction
 from core.statesenum import State
-from core.status import Status
 
 
 class DataplotterAction(JoanModuleAction):

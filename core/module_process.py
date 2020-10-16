@@ -27,10 +27,6 @@ class ModuleProcess(mp.Process):
         self._sharedvalues_module = news.read_news(module)
 
     def get_ready(self):
-        """
-
-        :return:
-        """
         pass
 
     def do_function(self):

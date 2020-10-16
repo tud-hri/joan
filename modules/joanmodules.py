@@ -20,7 +20,6 @@ class JOANModules(Enum):
         return {JOANModules.HARDWARE_MP: HardwareMPManager,
                 JOANModules.TEMPLATE_MP: TemplateMPManager}[self]
 
-
     @property
     def dialog(self):
         from modules.hardwaremp.hardwaremp_dialog import HardwareMPDialog
@@ -30,8 +29,8 @@ class JOANModules(Enum):
                 JOANModules.TEMPLATE_MP: TemplateMPDialog}[self]
 
     @property
-    def sharedvalues(self):
-        from modules.hardwaremp.hardwaremp_sharedvalues import  HardwareMPSharedValues
+    def shared_values(self):
+        from modules.hardwaremp.hardwaremp_sharedvalues import HardwareMPSharedValues
         from modules.templatemp.templatemp_sharedvalues import TemplateMPSharedValues
 
         return {JOANModules.HARDWARE_MP: HardwareMPSharedValues,
@@ -48,8 +47,8 @@ class JOANModules(Enum):
     @property
     def ui_file(self):
         path_to_modules = os.path.dirname(os.path.realpath(__file__))
-        return {JOANModules.HARDWARE_MP: os.path.join(path_to_modules, "hardwaremp/hardwaremp_widget.ui"),
-                JOANModules.TEMPLATE_MP: os.path.join(path_to_modules, "templatemp/templatemp_widget.ui")}[self]
+        return {JOANModules.HARDWARE_MP: os.path.join(path_to_modules, "hardwaremp/hardwaremp_dialog.ui"),
+                JOANModules.TEMPLATE_MP: os.path.join(path_to_modules, "templatemp/templatemp_dialog.ui")}[self]
 
     def __str__(self):
         return {JOANModules.HARDWARE_MP: 'Hardware MP',

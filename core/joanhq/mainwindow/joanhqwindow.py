@@ -2,8 +2,6 @@ import os
 
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 
-from core.joanmoduleaction import JoanModuleAction
-from core.module_manager import ModuleManager
 from core.status import Status
 
 from .performancemonitordialog import PerformanceMonitorDialog
@@ -15,7 +13,7 @@ class JoanHQWindow(QtWidgets.QMainWindow):
 
     app_is_quiting = QtCore.pyqtSignal()
 
-    def __init__(self, action: JoanModuleAction, parent=None):
+    def __init__(self, action, parent=None):
         super().__init__(parent)
 
         self.action = action

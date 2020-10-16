@@ -44,10 +44,10 @@ class BaseInput:
         Processes any input, in this case will just set the shared variables to the defaults:
         :return: current data
         """
-        self.module_manager.sharedvalues.reverse = False
-        self.module_manager.sharedvalues.steering_angle = 0.0
-        self.module_manager.sharedvalues.throttle = 0.0
-        self.module_manager.sharedvalues.brake = 0.0
-        self.module_manager.sharedvalues.reverse = False
-        self.module_manager.sharedvalues.handbrake = False
+        self.module_manager.shared_values.reverse = False
+        self.module_manager.shared_values.steering_angle = 0.0
+        self.module_manager.shared_values.throttle = 0.0
+        self.module_manager.shared_values.brake = 0.0
+        self.module_manager.shared_values.reverse = False
+        self.module_manager.shared_values.handbrake = False
 

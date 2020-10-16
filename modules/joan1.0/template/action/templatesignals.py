@@ -1,7 +1,6 @@
 from PyQt5.QtCore import pyqtSignal
 
 from core.joanmodulesignals import JoanModuleSignal
-from modules.joanmodules import JOANModules
 
 
 class TemplateSignals(JoanModuleSignal):

@@ -53,7 +53,7 @@ class ModuleManager(QtCore.QObject):
         Create shared variables, share through news
         :return:
         """
-        self.shared_values = self.module.sharedvalues()
+        self.shared_values = self.module.shared_values()
 
         self.singleton_news.write_news(self.module, self.shared_values)
         self.shared_values.state = self.state_machine.current_state.value

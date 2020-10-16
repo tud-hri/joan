@@ -12,11 +12,6 @@ class HardwareMPSharedValues:
         self._reverse = mp.Value(c_bool, False)
         self._handbrake = mp.Value(c_bool, False)
 
-
-    def __del__(self):
-        # Dit is niet betrouwbaar blijkkbaar moet je dit nooit doen, __del__ word niet altijd aangeroepen als je del object doet
-        pass
-
     @property
     def state(self):
         return self._state.value

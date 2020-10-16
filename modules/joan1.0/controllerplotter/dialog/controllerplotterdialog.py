@@ -1,11 +1,7 @@
-from PyQt5 import QtWidgets, QtGui
-
 from modules.joanmodules import JOANModules
 from core.joanmoduleaction import JoanModuleAction
 from core.joanmoduledialog import JoanModuleDialog
-from pyqtgraph import PlotWidget
-import pyqtgraph as pg
-import sys
+
 
 class ControllerPlotterDialog(JoanModuleDialog):
     def __init__(self, module_action: JoanModuleAction, parent=None):
