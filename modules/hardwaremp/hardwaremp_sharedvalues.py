@@ -7,6 +7,7 @@ class HardwareMPSharedValues:
         self._state = mp.Value(c_int, -2)  # module state [idle, running, error]
         self._time = mp.Value(c_float, 0.0)
         self._hardware_variable = mp.Value(c_float, 0.0)
+        self._steering_angle = mp.Value(c_float, 0.0)
 
     def __del__(self):
         # Dit is niet betrouwbaar blijkkbaar moet je dit nooit doen, __del__ word niet altijd aangeroepen als je del object doet
