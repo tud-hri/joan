@@ -13,8 +13,8 @@ from core.statesenum import State
 class HardwareMPManager(ModuleManager):
     """Example JOAN module"""
 
-    def __init__(self, time_step=1, parent=None):
-        super().__init__(module=JOANModules.HARDWARE_MP, time_step=time_step, parent=parent)
+    def __init__(self, time_step_in_ms=1, parent=None):
+        super().__init__(module=JOANModules.HARDWARE_MP, time_step_in_ms=time_step_in_ms, parent=parent)
         self._hardware_inputs = {}
         self.settings = HardwareManagerSettings(module_enum=JOANModules.HARDWARE_MP)
 

@@ -12,3 +12,4 @@ pymdown-extensions
 pyqtgraph
 mkdocs
 colour
+wres

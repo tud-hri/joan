@@ -63,12 +63,12 @@ class JoanHQAction(QtCore.QObject):
         for _, module in self._instantiated_modules.items():
             module.state_machine.request_state_change(State.STOPPED)
 
-    def add_module(self, module: JOANModules, name='', parent=None, time_step=0.1):
+    def add_module(self, module: JOANModules, name='', parent=None, time_step_in_ms=100):
 
         if not parent:
             parent = self.window
 
-        module_manager = module.manager(time_step=time_step, parent=parent)
+        module_manager = module.manager(time_step_in_ms=time_step_in_ms, parent=parent)
 
         # module_manager.state_machine.add_state_change_listener(self.handle_module_state_changes)
 

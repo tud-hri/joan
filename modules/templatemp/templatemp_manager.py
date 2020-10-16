@@ -11,8 +11,8 @@ from core.statesenum import State
 class TemplateMPManager(ModuleManager):
     """Example JOAN module"""
 
-    def __init__(self, time_step=1, parent=None):
-        super().__init__(module=JOANModules.TEMPLATE_MP, time_step=time_step, parent=parent)
+    def __init__(self, time_step_in_ms=1, parent=None):
+        super().__init__(module=JOANModules.TEMPLATE_MP, time_step_in_ms=time_step_in_ms, parent=parent)
 
     def initialize(self):
         return super().initialize()
