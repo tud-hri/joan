@@ -23,6 +23,7 @@ class ModuleProcess(mp.Process):
         # prepare for loop: efficiency? Does this pin the CPU?
         t_start = time.perf_counter_ns() * 1e-9
         t_prev = t_start
+        print(self._sharedvalues_module)
 
         running = True
         while running:
@@ -38,6 +39,8 @@ class ModuleProcess(mp.Process):
             # stop if module STOP
             if self._sharedvalues_module.state == State.STOPPED.value:
                 running = False
+
+        print("Stopped process:", self.module)
 
     def write_to_shared_values(self):
         """

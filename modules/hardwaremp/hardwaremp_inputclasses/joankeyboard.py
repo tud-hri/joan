@@ -244,49 +244,50 @@ class JOANKeyboard(BaseInput):
         Processes all the inputs of the keyboard and writes them to self._data which is then written to the news in the
         action class
         :return: self._data a dictionary containing :
-            self._data['brake'] = self.brake
-            self._data['throttle'] = self.throttle
-            self._data['steering_angle'] = self.steer
-            self._data['Handbrake'] = self.handbrake
-            self._data['Reverse'] = self.reverse
+            self.module_manager.sharedvalues.brake = self.brake
+            self.module_manager.sharedvalues.throttle = self.throttle
+            self.module_manager.sharedvalues.steering_angle = self.steer
+            self.module_manager.sharedvalues.handbrake = self.handbrake
+            self.module_manager.sharedvalues.reverse = self.reverse
         """
         # Throttle:
-        if self._throttle and self._data['throttle'] < 1:
-            self._data['throttle'] = self._data['throttle'] + (0.05 * self.settings.throttle_sensitivity / 100)
-        elif self._data['throttle'] > 0 and not self._throttle:
-            self._data['throttle'] = self._data['throttle'] - (0.05 * self.settings.throttle_sensitivity / 100)
-        elif self._data['throttle'] < 0:
-            self._data['throttle'] = 0
-        elif self._data['throttle'] > 1:
-            self._data['throttle'] = 1
+        if self._throttle and self.module_manager.sharedvalues.throttle < 1:
+            self.module_manager.sharedvalues.throttle = self.module_manager.sharedvalues.throttle + (0.05 * self.settings.throttle_sensitivity / 100)
+        elif self.module_manager.sharedvalues.throttle > 0 and not self._throttle:
+            self.module_manager.sharedvalues.throttle = self.module_manager.sharedvalues.throttle - (0.05 * self.settings.throttle_sensitivity / 100)
+        elif self.module_manager.sharedvalues.throttle < 0:
+            self.module_manager.sharedvalues.throttle = 0
+        elif self.module_manager.sharedvalues.throttle > 1:
+            self.module_manager.sharedvalues.throttle = 1
 
         # Brake:
-        if self._brake and self._data['brake'] < 1:
-            self._data['brake'] = self._data['brake'] + (0.05 * self.settings.brake_sensitivity / 100)
-        elif self._data['brake'] > 0 and not self._brake:
-            self._data['brake'] = self._data['brake'] - (0.05 * self.settings.brake_sensitivity / 100)
-        elif self._data['brake'] < 0:
-            self._data['brake'] = 0
-        elif self._data['brake'] > 1:
-            self._data['brake'] = 1
+        if self._brake and self.module_manager.sharedvalues.brake < 1:
+            self.module_manager.sharedvalues.brake = self.module_manager.sharedvalues.brake + (0.05 * self.settings.brake_sensitivity / 100)
+        elif self.module_manager.sharedvalues.brake > 0 and not self._brake:
+            self.module_manager.sharedvalues.brake = self.module_manager.sharedvalues.brake - (0.05 * self.settings.brake_sensitivity / 100)
+        elif self.module_manager.sharedvalues.brake < 0:
+            self.module_manager.sharedvalues.brake = 0
+        elif self.module_manager.sharedvalues.brake > 1:
+            self.module_manager.sharedvalues.brake = 1
 
         # Steering:
-        if self._steer_left and self.settings.max_steer >= self._data['steering_angle'] >= self.settings.min_steer:
-            self._data['steering_angle'] = self._data['steering_angle'] - (self.settings.steer_sensitivity / 10000)
-        elif self._steer_right and self.settings.min_steer <= self._data['steering_angle'] <= self.settings.max_steer:
-            self._data['steering_angle'] = self._data['steering_angle'] + (self.settings.steer_sensitivity / 10000)
-        elif self._data['steering_angle'] > 0 and self.settings.auto_center:
-            self._data['steering_angle'] = self._data['steering_angle'] - (self.settings.steer_sensitivity / 10000)
-        elif self._data['steering_angle'] < 0 and self.settings.auto_center:
-            self._data['steering_angle'] = self._data['steering_angle'] + (self.settings.steer_sensitivity / 10000)
+        if self._steer_left and self.settings.max_steer >= self.module_manager.sharedvalues.steering_angle >= self.settings.min_steer:
+            self.module_manager.sharedvalues.steering_angle = self.module_manager.sharedvalues.steering_angle - (self.settings.steer_sensitivity / 10000)
+        elif self._steer_right and self.settings.min_steer <= self.module_manager.sharedvalues.steering_angle <= self.settings.max_steer:
+            self.module_manager.sharedvalues.steering_angle = self.module_manager.sharedvalues.steering_angle + (self.settings.steer_sensitivity / 10000)
+        elif self.module_manager.sharedvalues.steering_angle > 0 and self.settings.auto_center:
+            self.module_manager.sharedvalues.steering_angle = self.module_manager.sharedvalues.steering_angle - (self.settings.steer_sensitivity / 10000)
+        elif self.module_manager.sharedvalues.steering_angle < 0 and self.settings.auto_center:
+            self.module_manager.sharedvalues.steering_angle = self.module_manager.sharedvalues.steering_angle + (self.settings.steer_sensitivity / 10000)
 
-        if abs(self._data['steering_angle']) < self.settings.steer_sensitivity / 10000:
-            self._data['steering_angle'] = 0
+        if abs(self.module_manager.sharedvalues.steering_angle) < self.settings.steer_sensitivity / 10000:
+            self.module_manager.sharedvalues.steering_angle = 0
 
         # Reverse
-        self._data['Reverse'] = self._reverse
+        self.module_manager.sharedvalues.reverse = self._reverse
+
+
 
         # Handbrake
-        self._data['Handbrake'] = self._handbrake
+        self.module_manager.sharedvalues.handbrake = self._handbrake
 
-        return self._data

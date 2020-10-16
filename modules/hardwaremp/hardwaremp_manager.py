@@ -16,12 +16,15 @@ class HardwareMPManager(ModuleManager):
     def __init__(self, time_step=1, parent=None):
         super().__init__(module=JOANModules.HARDWARE_MP, time_step=time_step, parent=parent)
         self._hardware_inputs = {}
+
         self.settings = HardwareManagerSettings(module_enum=JOANModules.HARDWARE_MP)
 
-
     def initialize(self):
+        self.singleton_news.write_news('joe', self._hardware_inputs)
         return super().initialize()
 
+    def get_ready(self):
+        return super().get_ready()
     def start(self):
         return super().start()
 
@@ -50,6 +53,7 @@ class HardwareMPManager(ModuleManager):
             self.module_dialog.module_widget.hardware_list_layout.addWidget(
                 self._hardware_inputs[hardware_input_name].get_hardware_input_tab)
             self._hardware_inputs[hardware_input_name]._open_settings_dialog()
+
 
         return self._hardware_inputs[hardware_input_name].get_hardware_input_tab
 

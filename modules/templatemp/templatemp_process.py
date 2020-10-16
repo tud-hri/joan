@@ -8,7 +8,7 @@ class TemplateMPProcess(ModuleProcess):
         super().__init__(module, time_step=time_step, news=news)
         self.shared_values_hardware = news.read_news(JOANModules.HARDWARE_MP)
 
+
     def do_function(self):
-        print('This variable is printed from TEMPLATE module and set at HARDWARE module:', self.shared_values_hardware.hardware_variable)
         pass
 

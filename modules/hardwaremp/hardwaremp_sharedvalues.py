@@ -6,8 +6,12 @@ class HardwareMPSharedValues:
     def __init__(self):
         self._state = mp.Value(c_int, -2)  # module state [idle, running, error]
         self._time = mp.Value(c_float, 0.0)
-        self._hardware_variable = mp.Value(c_float, 0.0)
         self._steering_angle = mp.Value(c_float, 0.0)
+        self._throttle = mp.Value(c_float, 0.0)
+        self._brake = mp.Value(c_float, 0.0)
+        self._reverse = mp.Value(c_bool, False)
+        self._handbrake = mp.Value(c_bool, False)
+
 
     def __del__(self):
         # Dit is niet betrouwbaar blijkkbaar moet je dit nooit doen, __del__ word niet altijd aangeroepen als je del object doet
@@ -30,9 +34,41 @@ class HardwareMPSharedValues:
         self._time.value = val
 
     @property
-    def hardware_variable(self):
-        return self._hardware_variable.value
+    def steering_angle(self):
+        return self._steering_angle.value
 
-    @hardware_variable.setter
-    def hardware_variable(self, val):
-        self._hardware_variable.value = val
+    @steering_angle.setter
+    def steering_angle(self, val):
+        self._steering_angle.value = val
+        
+    @property
+    def throttle(self):
+        return self._throttle.value
+
+    @throttle.setter
+    def throttle(self, val):
+        self._throttle.value = val
+    
+    @property
+    def brake(self):
+        return self._brake.value
+
+    @brake.setter
+    def brake(self, val):
+        self._brake.value = val
+        
+    @property
+    def reverse(self):
+        return self._reverse.value
+
+    @reverse.setter
+    def reverse(self, val):
+        self._reverse.value = val
+        
+    @property
+    def handbrake(self):
+        return self._handbrake.value
+
+    @handbrake.setter
+    def handbrake(self, val):
+        self._handbrake.value = val
