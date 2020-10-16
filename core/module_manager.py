@@ -27,6 +27,8 @@ class ModuleManager(QtCore.QObject):
 
         # initialize state machine
         self.state_machine = StateMachine(module)
+        # self.state_machine.request_state_change(State.IDLE)
+
         self.state_machine.set_entry_action(State.IDLE, self.initialize)
         self.state_machine.set_entry_action(State.READY, self.get_ready)
         self.state_machine.set_entry_action(State.RUNNING, self.start)
@@ -43,6 +45,8 @@ class ModuleManager(QtCore.QObject):
         # create the dialog
         self.module_dialog = module.dialog(self, parent=parent)
 
+        self.state_machine.request_state_change(State.STOPPED)
+
     def initialize(self):
         """
         Create shared variables, share through news
@@ -51,19 +55,20 @@ class ModuleManager(QtCore.QObject):
         self.shared_values = self.module.sharedvalues()
 
         self.singleton_news.write_news(self.module, self.shared_values)
-        print('Shared variables created')
+
 
     def get_ready(self):
         self._process = self.module.process(self.module, time_step=self._time_step, news=self.singleton_news)
-        print('process created')
+
+
 
     def start(self):
-        self.module_dialog.start()
-        if self._process:
+        # self.module_dialog.start()
+        if self._process and not self._process.is_alive():
             self._process.start()
 
-    def stop(self):
 
+    def stop(self):
         self.module_dialog.update_timer.stop()
 
         # send stop state to process
@@ -72,17 +77,20 @@ class ModuleManager(QtCore.QObject):
         # wait for the process to stop
         if self._process:
             if self._process.is_alive():
-                self._process.join()
+                self._process.terminate()
 
-        return True
 
     def cleanup(self):
-
         # TODO moeten we hier nog checken of shared values nog bestaan?
         # delete object
-        del self.shared_values
-
         # remove shared values from news
         self.singleton_news.remove_news(self.module)
+
+        if self.shared_values:
+            del self.shared_values
+
+
+
+
 
 

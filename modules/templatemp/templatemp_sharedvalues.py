@@ -8,7 +8,7 @@ class TemplateMPSharedValues:
         self._time = mp.Value(c_float, 0.0)
 
     def __del__(self):
-        print("SharedValues deleted")
+        # Dit is niet betrouwbaar blijkkbaar moet je dit nooit doen, __del__ word niet altijd aangeroepen als je del object doet
         pass
 
     @property

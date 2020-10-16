@@ -9,4 +9,4 @@ class TemplateMPDialog(ModuleDialog):
 
     def update_dialog(self):
         if self._module_manager.shared_values:
-            self._module_widget.lbl_time.setText("Time: " + str(self._module_manager.shared_values.time))
+            self._module_widget.lbl_time.setText("State: " + str(self._module_manager.shared_values.state))

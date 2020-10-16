@@ -39,8 +39,6 @@ class ModuleProcess(mp.Process):
             if self._sharedvalues_module.state == State.STOPPED.value:
                 running = False
 
-        print("Stopped process:", self.module)
-
     def write_to_shared_values(self):
         """
         Write to shared values. This should only happen in this function!

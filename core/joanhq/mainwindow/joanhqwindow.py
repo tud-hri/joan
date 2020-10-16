@@ -8,6 +8,7 @@ from core.status import Status
 
 from .performancemonitordialog import PerformanceMonitorDialog
 from .settingsoverviewdialog import SettingsOverviewDialog
+from core.statesenum import State
 
 
 class JoanHQWindow(QtWidgets.QMainWindow):
@@ -54,7 +55,7 @@ class JoanHQWindow(QtWidgets.QMainWindow):
 
         self._view_menu = self.menuBar().addMenu('View')
         self._view_menu.addAction('Show all current settings..', self.show_settings_overview)
-        self._view_menu.addAction('Show performance monitor..', self.show_performance_monitor)
+        # self._view_menu.addAction('Show performance monitor..', self.show_performance_monitor)
 
     def initialize(self):
         self.action.initialize_modules()
@@ -92,20 +93,50 @@ class JoanHQWindow(QtWidgets.QMainWindow):
         widget.btn_showclose.toggled.connect(lambda: self.button_showclose_checked(widget.btn_showclose))  # change text in the button, based toggle status
         module_dialog.closed.connect(lambda: widget.btn_showclose.setChecked(False))  # if the user closes the dialog, uncheck the button
 
+        # with state_machine
+        try:
+            module_manager.state_machine.add_state_change_listener(lambda: self.handle_state_change(widget, module_manager))
+            self.handle_state_change(widget, module_dialog)
+
+        except AttributeError:  # display nothing if the module has no state machine
+            widget.lbl_state.setText(" - ")
+
         # add it to the layout
         self._main_widget.module_list_layout.addWidget(widget)
         self._main_widget.adjustSize()
         self.adjustSize()
 
-        # with state_machine
-        try:
-            module_dialog.module_action.state_machine.add_state_change_listener(
-                lambda: widget.lbl_state.setText(str(module_dialog.module_action.state_machine.current_state)))
-        except AttributeError:  # display nothing if the module has no state machine
-            widget.lbl_state.setText(" - ")
-
         # and to the list
         self._module_cards[name] = widget
+        self.handle_state_change(widget,module_manager)
+
+    def handle_state_change(self, widget, module_manager):
+        #disable all buttons first then activate the one you can press
+        self.disable_all_buttons()
+        current_state = module_manager.state_machine.current_state
+        widget.lbl_state.setText(str(current_state))
+        if current_state is State.RUNNING:
+            widget.lbl_state.setStyleSheet("background: lightgreen;")
+            self._main_widget.btn_stop.setEnabled(True)
+        elif current_state is State.IDLE:
+            widget.lbl_state.setStyleSheet("background: lightblue;")
+            self._main_widget.btn_get_ready.setEnabled(True)
+        elif current_state is State.READY:
+            widget.lbl_state.setStyleSheet("background: yellow;")
+            self._main_widget.btn_start.setEnabled(True)
+        elif current_state is State.ERROR:  # an Error state
+            widget.lbl_state.setStyleSheet("background: red;")
+            self._main_widget.btn_stop.setEnabled(True)
+        elif current_state is State.STOPPED:
+            widget.lbl_state.setStyleSheet("background: orange;")
+            self._main_widget.btn_initialize.setEnabled(True)
+
+
+    def disable_all_buttons(self):
+        self._main_widget.btn_initialize.setEnabled(False)
+        self._main_widget.btn_get_ready.setEnabled(False)
+        self._main_widget.btn_start.setEnabled(False)
+        self._main_widget.btn_stop.setEnabled(False)
 
     def closeEvent(self, event):
         """
