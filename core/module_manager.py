@@ -11,7 +11,7 @@ from modules.joanmodules import JOANModules
 
 class ModuleManager(QtCore.QObject):
 
-    def __init__(self, module: JOANModules, time_step=0.1, parent=None):
+    def __init__(self, module: JOANModules, time_step_in_ms=100, parent=None):
         super(QtCore.QObject, self).__init__()
 
         self.module = module
@@ -19,7 +19,7 @@ class ModuleManager(QtCore.QObject):
         self.module_path = os.path.dirname(os.path.abspath(sys.modules[self.__class__.__module__].__file__))
 
         # time step
-        self._time_step = time_step
+        self._time_step_in_ms = time_step_in_ms
 
         # self.singleton_status = Status()
         self.singleton_news = News()
@@ -58,19 +58,15 @@ class ModuleManager(QtCore.QObject):
         self.singleton_news.write_news(self.module, self.shared_values)
         self.shared_values.state = self.state_machine.current_state.value
 
-
     def get_ready(self):
-        self._process = self.module.process(self.module, time_step=self._time_step, news=self.singleton_news)
+        self._process = self.module.process(self.module, time_step_in_ms=self._time_step_in_ms, news=self.singleton_news)
         self.shared_values.state = self.state_machine.current_state.value
-
-
 
     def start(self):
         # self.module_dialog.start()
         self.shared_values.state = self.state_machine.current_state.value
         if self._process and not self._process.is_alive():
             self._process.start()
-
 
     def stop(self):
         self.module_dialog.update_timer.stop()
@@ -84,7 +80,6 @@ class ModuleManager(QtCore.QObject):
                 self._process.terminate()
                 print('process terminated')
 
-
     def cleanup(self):
         # TODO moeten we hier nog checken of shared values nog bestaan?
         # delete object
@@ -93,9 +88,3 @@ class ModuleManager(QtCore.QObject):
 
         if self.shared_values:
             del self.shared_values
-
-
-
-
-
-

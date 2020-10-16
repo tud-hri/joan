@@ -1,16 +1,25 @@
+import platform
+
 import multiprocessing as mp
 import time
 
 from core.statesenum import State
 from modules.joanmodules import JOANModules
 
+if platform.system() == 'Windows':
+    import wres
+
 
 class ModuleProcess(mp.Process):
 
-    def __init__(self, module: JOANModules, time_step, news):
+    def __init__(self, module: JOANModules, time_step_in_ms, news):
         super().__init__()
+
+        if time_step_in_ms < 10:
+            raise ValueError('The time step of a JOAN process cannot be smaller then 10 ms (not > 100 Hz). This is not possible on a non real time OS.')
+
         self.module = module
-        self._time_step = time_step
+        self._time_step_in_ns = time_step_in_ms * 1e6
         self._time = 0.0
 
         # print(news.all_news)
@@ -20,27 +29,39 @@ class ModuleProcess(mp.Process):
         pass
 
     def run(self):
-        # prepare for loop: efficiency? Does this pin the CPU?
-        t_start = time.perf_counter_ns() * 1e-9
-        t_prev = t_start
-        print(self._sharedvalues_module)
+        if platform.system() == 'Windows':
+            with wres.set_resolution(10000):
+                self._run_loop()
+        else:
+            self._run_loop()
+
+    def _run_loop(self):
 
         running = True
         while running:
-            t = time.perf_counter_ns() * 1e-9
-            if t - t_prev >= self._time_step:
-                self.do_function()
+            t0 = time.perf_counter_ns()
 
-                self._time = t - t_start
+            self.read_from_shared_values()
 
-                self.write_to_shared_values()
-                t_prev = t
+            self._time = time.time_ns()
+            self.do_function()
 
-            # stop if module STOP
+            self.write_to_shared_values()
+
             if self._sharedvalues_module.state == State.STOPPED.value:
                 running = False
 
-        print("Stopped process:", self.module)
+            execution_time = time.perf_counter_ns() - t0
+
+            time.sleep((self._time_step_in_ns - execution_time) * 1e-9)
+
+    def read_from_shared_values(self):
+        """
+        Read all needed values from shared and copy them to local values here.
+        This should be done here only; before executing the do function
+        :return:
+        """
+        pass
 
     def write_to_shared_values(self):
         """
