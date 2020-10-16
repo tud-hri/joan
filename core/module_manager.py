@@ -1,3 +1,4 @@
+import multiprocessing as mp
 import os
 import sys
 
@@ -41,12 +42,10 @@ class ModuleManager(QtCore.QObject):
 
         self.shared_values = None
         self._process = None
+        self._start_event = mp.Event()
 
         # create the dialog
         self.module_dialog = module.dialog(self, parent=parent)
-
-        self.state_machine.request_state_change(State.STOPPED)
-        self.module_dialog._handle_state_change()
 
     def initialize(self):
         """
@@ -59,14 +58,21 @@ class ModuleManager(QtCore.QObject):
         self.shared_values.state = self.state_machine.current_state.value
 
     def get_ready(self):
-        self._process = self.module.process(self.module, time_step_in_ms=self._time_step_in_ms, news=self.singleton_news)
+
+        self._process = self.module.process(self.module, time_step_in_ms=self._time_step_in_ms, news=self.singleton_news, start_event=self._start_event)
+
+        # Start the process, run() will wait until start_event is set
+        if self._process and not self._process.is_alive():
+            self._process.start()
+
         self.shared_values.state = self.state_machine.current_state.value
 
     def start(self):
-        # self.module_dialog.start()
+        self.module_dialog.start()
+
+        self._start_event.set()
+
         self.shared_values.state = self.state_machine.current_state.value
-        if self._process and not self._process.is_alive():
-            self._process.start()
 
     def stop(self):
         self.module_dialog.update_timer.stop()
@@ -88,3 +94,5 @@ class ModuleManager(QtCore.QObject):
 
         if self.shared_values:
             del self.shared_values
+
+        self._start_event.clear()

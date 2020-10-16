@@ -11,7 +11,7 @@ if platform.system() == 'Windows':
 
 
 class ModuleProcess(mp.Process):
-    def __init__(self, module: JOANModules, time_step_in_ms, news):
+    def __init__(self, module: JOANModules, time_step_in_ms, news, start_event):
         super().__init__()
 
         if time_step_in_ms < 10:
@@ -21,7 +21,7 @@ class ModuleProcess(mp.Process):
         self._time_step_in_ns = time_step_in_ms * 1e6
         self._time = 0.0
 
-        # self._start_event = start_event
+        self._start_event = start_event
 
         # print(news.all_news)
         self._sharedvalues_module = news.read_news(module)
@@ -38,7 +38,9 @@ class ModuleProcess(mp.Process):
         Note: anything you created in __init__ needs to be picklable. If not, create the non-picklable objects in the function get_ready
         :return:
         """
+
         self.get_ready()
+        self._start_event.wait()
 
         # run
         if platform.system() == 'Windows':

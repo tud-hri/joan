@@ -7,8 +7,8 @@ from modules.joanmodules import JOANModules
 
 class HardwareMPProcess(ModuleProcess):
 
-    def __init__(self, module: JOANModules, time_step_in_ms, news):
-        super().__init__(module, time_step_in_ms=time_step_in_ms, news=news)
+    def __init__(self, module: JOANModules, time_step_in_ms, news, start_event):
+        super().__init__(module, time_step_in_ms=time_step_in_ms, news=news, start_event=start_event)
 
         self.shared_values = news.read_news(JOANModules.HARDWARE_MP)
 
