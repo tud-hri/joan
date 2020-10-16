@@ -111,7 +111,6 @@ class JoanHQWindow(QtWidgets.QMainWindow):
         self._module_cards[name] = widget
 
     def handle_state_change(self, widget, module_manager):
-        print('joe')
         current_state = module_manager.state_machine.current_state
         widget.lbl_state.setText(str(current_state))
         if current_state is State.RUNNING:
