@@ -3,37 +3,20 @@ from modules.joanmodules import JOANModules
 import keyboard
 from PyQt5 import QtGui
 
+
 class HardwareMPProcess(ModuleProcess):
 
     def __init__(self, module: JOANModules, time_step, news):
         super().__init__(module, time_step=time_step, news=news)
         self.shared_values = news.read_news(JOANModules.HARDWARE_MP)
-        self._throttle = False
-        self._brake = False
-        self._steer_left = False
-        self._steer_right = False
-        self._handbrake = False
-        self._reverse = False
-
-        # print(self.bleh)
-        # print(self.news)
-        #
-        #
-        # self.keyboard = self.bleh['Keyboard 1']
-        # print(self.keyboard)
-
-
-
-
-
 
 
     def do_function(self):
-        self._brake = True
+        ## DIT MOET DUS NA EEN INIT EVENT GAAN GEBEUREN
+        keyboard.hook(self.key_event, False)
         self.do()
-        print(self.shared_values.brake)
 
-        pass
+
 
     def key_event(self, key):
         """
@@ -41,7 +24,7 @@ class HardwareMPProcess(ModuleProcess):
         :param key:
         :return:
         """
-        print('joe')
+
         boolean_key_press_value = key.event_type == keyboard.KEY_DOWN
         int_key_identifier = QtGui.QKeySequence(key.name)[0]
 
@@ -61,6 +44,8 @@ class HardwareMPProcess(ModuleProcess):
             self._handbrake = boolean_key_press_value
         elif int_key_identifier == 82 and boolean_key_press_value:
             self._reverse = not self._reverse
+
+
 
     def do(self):
         """
