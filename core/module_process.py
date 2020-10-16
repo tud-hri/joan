@@ -11,7 +11,6 @@ if platform.system() == 'Windows':
 
 
 class ModuleProcess(mp.Process):
-
     def __init__(self, module: JOANModules, time_step_in_ms, news):
         super().__init__()
 
@@ -22,13 +21,30 @@ class ModuleProcess(mp.Process):
         self._time_step_in_ns = time_step_in_ms * 1e6
         self._time = 0.0
 
+        # self._start_event = start_event
+
         # print(news.all_news)
         self._sharedvalues_module = news.read_news(module)
+
+    def get_ready(self):
+        """
+
+        :return:
+        """
+        pass
 
     def do_function(self):
         pass
 
     def run(self):
+        """
+        Run function, starts once process.start is called.
+        Note: anything you created in __init__ needs to be picklable. If not, create the non-picklable objects in the function get_ready
+        :return:
+        """
+        self.get_ready()
+
+        # run
         if platform.system() == 'Windows':
             with wres.set_resolution(10000):
                 self._run_loop()
