@@ -8,6 +8,7 @@ from core.status import Status
 
 from .performancemonitordialog import PerformanceMonitorDialog
 from .settingsoverviewdialog import SettingsOverviewDialog
+from core.statesenum import State
 
 
 class JoanHQWindow(QtWidgets.QMainWindow):
@@ -94,7 +95,7 @@ class JoanHQWindow(QtWidgets.QMainWindow):
 
         # with state_machine
         try:
-            module_dialog.module_action.state_machine.add_state_change_listener(lambda: self.handle_state_change(widget, module_dialog))
+            module_manager.state_machine.add_state_change_listener(lambda: self.handle_state_change(widget, module_manager))
             self.handle_state_change(widget, module_dialog)
 
         except AttributeError:  # display nothing if the module has no state machine
@@ -105,15 +106,24 @@ class JoanHQWindow(QtWidgets.QMainWindow):
         self._main_widget.adjustSize()
         self.adjustSize()
 
-        # with state_machine
-        try:
-            module_dialog.module_action.state_machine.add_state_change_listener(
-                lambda: widget.lbl_state.setText(str(module_dialog.module_action.state_machine.current_state)))
-        except AttributeError:  # display nothing if the module has no state machine
-            widget.lbl_state.setText(" - ")
 
         # and to the list
         self._module_cards[name] = widget
+
+    def handle_state_change(self, widget, module_manager):
+        print('joe')
+        current_state = module_manager.state_machine.current_state
+        widget.lbl_state.setText(str(current_state))
+        if current_state is State.RUNNING:
+            widget.lbl_state.setStyleSheet("background: lightgreen;")
+        elif current_state is State.IDLE:
+            widget.lbl_state.setStyleSheet("background: lightblue;")
+        elif current_state is State.READY:
+            widget.lbl_state.setStyleSheet("background: yellow;")
+        elif current_state is State.ERROR:  # an Error state
+            widget.lbl_state.setStyleSheet("background: red;")
+        elif current_state is State.STOPPED:
+            widget.lbl_state.setStyleSheet("background: orange;")
 
     def closeEvent(self, event):
         """
