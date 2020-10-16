@@ -78,6 +78,7 @@ class ModuleManager(QtCore.QObject):
         if self._process:
             if self._process.is_alive():
                 self._process.terminate()
+                print('process terminated')
 
 
     def cleanup(self):
