@@ -56,6 +56,13 @@ class JoanHQAction(QtCore.QObject):
         for _, module in self._instantiated_modules.items():
             module.state_machine.request_state_change(State.STOPPED)
 
+    def emergency_stop(self):
+        """
+        Put all modules into error state (which will terminate everything
+        """
+        for _, module in self._instantiated_modules.items():
+            module.state_machine.request_state_change(State.STOPPED)
+
     def add_module(self, module: JOANModules, name='', parent=None, time_step=0.1):
 
         if not parent:

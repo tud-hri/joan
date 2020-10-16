@@ -36,7 +36,6 @@ class ModuleManager(QtCore.QObject):
         self.state_machine.set_exit_action(State.STOPPED, self.cleanup)
         self.state_machine.set_entry_action(State.ERROR, self.stop)
 
-
         # settings
         self.settings = None
 
@@ -46,7 +45,7 @@ class ModuleManager(QtCore.QObject):
         # create the dialog
         self.module_dialog = module.dialog(self, parent=parent)
 
-        # self.state_machine.request_state_change(State.IDLE)
+        self.state_machine.request_state_change(State.STOPPED)
 
     def initialize(self):
         """
@@ -56,12 +55,10 @@ class ModuleManager(QtCore.QObject):
         self.shared_values = self.module.sharedvalues()
 
         self.singleton_news.write_news(self.module, self.shared_values)
-        print('shared_variables have been written to news', self.shared_values)
 
 
     def get_ready(self):
         self._process = self.module.process(self.module, time_step=self._time_step, news=self.singleton_news)
-        print('process has been created:', self._process)
 
 
 
@@ -69,37 +66,29 @@ class ModuleManager(QtCore.QObject):
         # self.module_dialog.start()
         if self._process and not self._process.is_alive():
             self._process.start()
-            print('process has been started')
 
 
     def stop(self):
         self.module_dialog.update_timer.stop()
 
         # send stop state to process
-        print(self.state_machine.current_state)
         self.shared_values.state = self.state_machine.current_state.value
 
         # wait for the process to stop
         if self._process:
             if self._process.is_alive():
                 self._process.terminate()
-                print('process terminated')
 
 
     def cleanup(self):
-        print('cleaning up', self.state_machine.current_state)
-
-
         # TODO moeten we hier nog checken of shared values nog bestaan?
         # delete object
         # remove shared values from news
         self.singleton_news.remove_news(self.module)
-        print(hasattr(self,'shared_values'))
+
         if self.shared_values:
-            self.shared_values.destroy()
             del self.shared_values
 
-        print(hasattr(self, 'shared_values'))
 
 
 
