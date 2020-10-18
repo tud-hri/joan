@@ -61,7 +61,7 @@ class ModuleManager(QtCore.QObject):
 
     def get_ready(self):
 
-        self._process = self.module.process(self.module, time_step_in_ms=self._time_step_in_ms, news=self.singleton_news, start_event=self._start_event)
+        self._process = self.module.process(self.module, time_step_in_ms=self._time_step_in_ms, news=self.singleton_news, settings=self.module_settings, start_event=self._start_event)
 
         # Start the process, run() will wait until start_event is set
         if self._process and not self._process.is_alive():

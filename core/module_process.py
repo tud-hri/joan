@@ -11,7 +11,7 @@ if platform.system() == 'Windows':
 
 
 class ModuleProcess(mp.Process):
-    def __init__(self, module: JOANModules, time_step_in_ms, news, start_event):
+    def __init__(self, module: JOANModules, time_step_in_ms, news, settings, start_event):
         super().__init__()
 
         if time_step_in_ms < 10:
@@ -21,12 +21,15 @@ class ModuleProcess(mp.Process):
         self._time_step_in_ns = time_step_in_ms * 1e6
         self._time = 0.0
 
+        self._settings = settings
+
         self._start_event = start_event
 
         # print(news.all_news)
         self._sharedvalues_module = news.read_news(module)
 
     def get_ready(self):
+        # apply the settings here (e.g. create the hardware objects, etc, depending on the module's functionality
         pass
 
     def do_function(self):
