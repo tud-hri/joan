@@ -117,7 +117,7 @@ class JoanModuleAction(QtCore.QObject):
     def share_settings(self, module_settings):
         """
         Shares the settings of this module with all other modules through the settings singleton.
-        :param module_settings: a JoanModuleSettings child object containing this modules settings
+        :param module_settings: a ModuleSettings child object containing this modules settings
         """
         self.singleton_settings.update_settings(self.module, module_settings)
 

@@ -31,8 +31,10 @@ class JOANModules(Enum):
     @property
     def settings(self):
         from modules.templatemp.templatemp_settings import TemplateMPSettings
+        from modules.hardwaremp.hardwaremp_settings import HardwareManagerSettings
 
-        return {JOANModules.TEMPLATE_MP: TemplateMPSettings
+        return {JOANModules.TEMPLATE_MP: TemplateMPSettings,
+                JOANModules.HARDWARE_MP: HardwareManagerSettings
                 }[self]
 
 

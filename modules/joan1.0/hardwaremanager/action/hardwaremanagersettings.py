@@ -5,10 +5,10 @@ from enum import Enum
 from PyQt5 import QtGui
 
 from modules.joanmodules import JOANModules
-from core.joanmodulesettings import JoanModuleSettings
+from core.modulesettings import ModuleSettings
 
 
-class HardwareManagerSettings(JoanModuleSettings):
+class HardwareManagerSettings(ModuleSettings):
     def __init__(self, module_enum: JOANModules):
         super().__init__(module_enum)
 

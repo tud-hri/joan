@@ -3,10 +3,10 @@ from pathlib import Path
 from datetime import datetime
 
 from modules.joanmodules import JOANModules
-from core.joanmodulesettings import JoanModuleSettings
+from core.modulesettings import ModuleSettings
 from core.module_manager import ModuleManager
 
-class TemplateMPSettings(JoanModuleSettings):
+class TemplateMPSettings(ModuleSettings):
     def __init__(self, settings_filename='./default_settings.json'):
         super().__init__(JOANModules.TEMPLATE_MP)
 

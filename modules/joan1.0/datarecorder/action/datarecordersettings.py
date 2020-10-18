@@ -1,11 +1,11 @@
 import copy
 
-from core.joanmodulesettings import JoanModuleSettings
+from core.modulesettings import ModuleSettings
 from core.news import News
 from modules.joanmodules import JOANModules
 
 
-class DataRecorderSettings(JoanModuleSettings):
+class DataRecorderSettings(ModuleSettings):
     def __init__(self, module_enum: JOANModules):
         """
         Writes datarecorder settings which consist of news-variables to be written by the datarecorder
