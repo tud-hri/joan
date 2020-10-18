@@ -55,9 +55,10 @@ class ModuleProcess(mp.Process):
         while running:
             t0 = time.perf_counter_ns()
 
+            self._time = time.perf_counter_ns()
+
             self.read_from_shared_values()
 
-            self._time = time.time_ns()
             self.do_function()
 
             self.write_to_shared_values()

@@ -84,7 +84,8 @@ class ModuleManager(QtCore.QObject):
         if self._process:
             if self._process.is_alive():
                 self._process.terminate()
-                print('process terminated')
+                self._process.join()
+                print('Process terminated:', self.module)
 
     def cleanup(self):
         # TODO moeten we hier nog checken of shared values nog bestaan?
