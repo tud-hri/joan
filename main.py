@@ -19,6 +19,8 @@ if __name__ == '__main__':
     JOANHQWINDOW.show()
 
     # adding modules (instantiates them too)
-    JOANHQACTION.add_module(JOANModules.TEMPLATE_MP, time_step=1.0)
+    JOANHQACTION.add_module(JOANModules.TEMPLATE_MP, time_step_in_ms=25)
+    # JOANHQACTION.add_module(JOANModules.TEMPLATE_MP, time_step_in_ms=25)
+    JOANHQACTION.add_module(JOANModules.HARDWARE_MP, time_step_in_ms=50)
 
     APP.exec_()

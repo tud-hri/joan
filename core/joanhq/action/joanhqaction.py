@@ -31,18 +31,14 @@ class JoanHQAction(QtCore.QObject):
         # dictionary to keep track of the instantiated modules
         self._instantiated_modules = {}
 
-        # state_machine
-        self.state_machine = StateMachine()
-        self.state_machine.set_entry_action(State.PREPARED, self.initialize_modules)
-
     def initialize_modules(self):
         """
         Initialize modules
         """
         for _, module in self._instantiated_modules.items():
-            module.state_machine.request_state_change(State.PREPARED)
+            module.state_machine.request_state_change(State.IDLE)
 
-        # TODO remove the following once statemachine here works
+    def get_ready_modules(self):
         for _, module in self._instantiated_modules.items():
             module.state_machine.request_state_change(State.READY)
 
@@ -58,18 +54,21 @@ class JoanHQAction(QtCore.QObject):
         Stop all modules
         """
         for _, module in self._instantiated_modules.items():
-            module.state_machine.request_state_change(State.STOP)
+            module.state_machine.request_state_change(State.STOPPED)
 
-        # TODO remove the following once statemachine here works
+    def emergency_stop(self):
+        """
+        Put all modules into error state (which will terminate everything
+        """
         for _, module in self._instantiated_modules.items():
-            module.state_machine.request_state_change(State.IDLE)
+            module.state_machine.request_state_change(State.STOPPED)
 
-    def add_module(self, module: JOANModules, name='', parent=None, time_step=0.1):
+    def add_module(self, module: JOANModules, name='', parent=None, time_step_in_ms=100):
 
         if not parent:
             parent = self.window
 
-        module_manager = module.manager(time_step=time_step, parent=parent)
+        module_manager = module.manager(time_step_in_ms=time_step_in_ms, parent=parent)
 
         # module_manager.state_machine.add_state_change_listener(self.handle_module_state_changes)
 

@@ -47,7 +47,7 @@ class ModuleDialog(QtWidgets.QDialog):
 
         self.update_timer = QtCore.QTimer()
         self.update_timer.setTimerType(QtCore.Qt.PreciseTimer)
-        self.update_timer.setInterval(100)  # 50 Hz update
+        self.update_timer.setInterval(100)  # 10 Hz update
         self.update_timer.timeout.connect(self.update_dialog)
 
     def update_dialog(self):
@@ -72,13 +72,15 @@ class ModuleDialog(QtWidgets.QDialog):
             self._state_widget.lbl_state_message.setText(message)
 
             if current_state is State.RUNNING:
-                self._state_widget.lbl_module_state.setStyleSheet("background: green;")
+                self._state_widget.lbl_module_state.setStyleSheet("background: lightgreen;")
             elif current_state is State.IDLE:
-                self._state_widget.lbl_module_state.setStyleSheet("background: orange;")
+                self._state_widget.lbl_module_state.setStyleSheet("background: lightblue;")
             elif current_state is State.READY:
                 self._state_widget.lbl_module_state.setStyleSheet("background: yellow;")
             elif current_state is State.ERROR:  # an Error state
                 self._state_widget.lbl_module_state.setStyleSheet("background: red;")
+            elif current_state is State.STOPPED:
+                self._state_widget.lbl_module_state.setStyleSheet("background: orange;")
 
     def _load_settings(self):
         """

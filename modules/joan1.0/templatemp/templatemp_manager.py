@@ -1,4 +1,6 @@
 
+import os
+
 from PyQt5 import QtCore
 
 from modules.joanmodules import JOANModules
@@ -13,10 +15,13 @@ class TemplateMPManager(ModuleManager):
         super().__init__(module=JOANModules.TEMPLATE_MP, time_step_in_ms=time_step_in_ms, parent=parent)
 
     def initialize(self):
+        print("init")
         return super().initialize()
 
     def start(self):
+        print("start")
         return super().start()
 
     def stop(self):
+        print("stop")
         return super().stop()

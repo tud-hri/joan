@@ -1,45 +1,82 @@
+import platform
+
 import multiprocessing as mp
 import time
 
 from core.statesenum import State
 from modules.joanmodules import JOANModules
 
+if platform.system() == 'Windows':
+    import wres
+
 
 class ModuleProcess(mp.Process):
-
-    def __init__(self, module: JOANModules, time_step, news):
+    def __init__(self, module: JOANModules, time_step_in_ms, news, start_event):
         super().__init__()
+
+        if time_step_in_ms < 10:
+            raise ValueError('The time step of a JOAN process cannot be smaller then 10 ms (not > 100 Hz). This is not possible on a non real time OS.')
+
         self.module = module
-        self._time_step = time_step
+        self._time_step_in_ns = time_step_in_ms * 1e6
         self._time = 0.0
+
+        self._start_event = start_event
 
         # print(news.all_news)
         self._sharedvalues_module = news.read_news(module)
+
+    def get_ready(self):
+        pass
 
     def do_function(self):
         pass
 
     def run(self):
-        # prepare for loop: efficiency? Does this pin the CPU?
-        t_start = time.perf_counter_ns() * 1e-9
-        t_prev = t_start
+        """
+        Run function, starts once process.start is called.
+        Note: anything you created in __init__ needs to be picklable. If not, create the non-picklable objects in the function get_ready
+        :return:
+        """
+
+        self.get_ready()
+        self._start_event.wait()
+
+        # run
+        if platform.system() == 'Windows':
+            with wres.set_resolution(10000):
+                self._run_loop()
+        else:
+            self._run_loop()
+
+    def _run_loop(self):
 
         running = True
         while running:
-            t = time.perf_counter_ns() * 1e-9
-            if t - t_prev >= self._time_step:
-                self.do_function()
+            t0 = time.perf_counter_ns()
 
-                self._time = t - t_start
+            self._time = time.perf_counter_ns()
 
-                self.write_to_shared_values()
-                t_prev = t
+            self.read_from_shared_values()
 
-            # stop if module STOP
-            if self._sharedvalues_module.state == State.STOP.value:
+            self.do_function()
+
+            self.write_to_shared_values()
+
+            if self._sharedvalues_module.state == State.STOPPED.value:
                 running = False
 
-        print("Stopped process:", self.module)
+            execution_time = time.perf_counter_ns() - t0
+
+            time.sleep((self._time_step_in_ns - execution_time) * 1e-9)
+
+    def read_from_shared_values(self):
+        """
+        Read all needed values from shared and copy them to local values here.
+        This should be done here only; before executing the do function
+        :return:
+        """
+        pass
 
     def write_to_shared_values(self):
         """
