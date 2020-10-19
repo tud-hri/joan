@@ -19,15 +19,22 @@ class HardwareMPManager(ModuleManager):
         self.settings = HardwareMPSettings()
 
     def initialize(self):
+        self._hardware_input_variables = {}
+        self.module_settings = self.settings
+        total_amount_of_keyboards = len(self.settings.key_boards)
+        for i in range(0,total_amount_of_keyboards):
+            self._hardware_input_variables['Keyboard '+str(i)] = HardwareInputTypes.KEYBOARD.shared_values
+
+        self.singleton_news.write_news('Inputs', self._hardware_input_variables)
         return super().initialize()
 
     def get_ready(self):
-        self.module_settings = self.settings
         return super().get_ready()
     def start(self):
         return super().start()
 
     def stop(self):
+        del self._hardware_input_variables
         return super().stop()
 
     def add_hardware_input(self, hardware_input_type, hardware_input_settings=None):

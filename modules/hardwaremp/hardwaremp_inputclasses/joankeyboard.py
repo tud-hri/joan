@@ -204,6 +204,8 @@ class JOANKeyboardMP():
         self.settings_dialog = None
         self.shared_values = shared_values
 
+        print(self.shared_values)
+
         # Initialize needed variables:
         self._throttle = False
         self._brake = False
@@ -211,6 +213,7 @@ class JOANKeyboardMP():
         self._steer_right = False
         self._handbrake = False
         self._reverse = False
+        self._data = {}
 
         keyboard.hook(self.key_event, False)
 
@@ -289,3 +292,5 @@ class JOANKeyboardMP():
 
         # Handbrake
         self.shared_values.handbrake = self._handbrake
+
+

@@ -23,6 +23,12 @@ class HardwareInputTypes(enum.Enum):
         return {HardwareInputTypes.KEYBOARD: JOANKeyboardMP}[self]
 
     @property
+    def shared_values(self):
+        from modules.hardwaremp.hardwaremp_sharedvalues import HardwareMPSharedValues
+
+        return {HardwareInputTypes.KEYBOARD: HardwareMPSharedValues()}[self]
+
+    @property
     def settings_ui_file(self):
         path_to_uis = os.path.join(os.path.dirname(os.path.realpath(__file__)), "hardwaremp_inputclasses/uis/")
         return {HardwareInputTypes.KEYBOARD: os.path.join(path_to_uis, "keyboard_settings_ui.ui")

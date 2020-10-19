@@ -12,6 +12,7 @@ class HardwareMPSharedValues:
         self._reverse = mp.Value(c_bool, False)
         self._handbrake = mp.Value(c_bool, False)
 
+
     @property
     def state(self):
         return self._state.value
@@ -67,3 +68,7 @@ class HardwareMPSharedValues:
     @handbrake.setter
     def handbrake(self, val):
         self._handbrake.value = val
+
+class KeyboardSharedValues(HardwareMPSharedValues):
+    def __init__(self):
+        super().init()
