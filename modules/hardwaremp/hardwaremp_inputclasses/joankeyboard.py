@@ -168,26 +168,6 @@ class JOANKeyboard(BaseInput):
     def get_hardware_input_list_key(self):
         return self.hardware_input_list_key
 
-    def disable_remove_button(self):
-        """
-        Disables the remove_input_device keybaord button (useful for example when you dont want to be able to remove_input_device an input when the
-        simulator is running)
-                :return:
-        """
-        if self._hardware_input_tab.btn_remove_hardware.isEnabled() is True:
-            self._hardware_input_tab.btn_remove_hardware.setEnabled(False)
-        else:
-            pass
-
-    def enable_remove_button(self):
-        """
-        Enables the remove_input_device keyboardinput button
-        :return:
-        """
-        if self._hardware_input_tab.btn_remove_hardware.isEnabled() is False:
-            self._hardware_input_tab.btn_remove_hardware.setEnabled(True)
-        else:
-            pass
 
     def _open_settings_dialog_from_button(self):
         """
