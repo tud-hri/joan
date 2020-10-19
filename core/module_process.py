@@ -1,10 +1,12 @@
 import platform
+import sys
 
 import multiprocessing as mp
 import time
 
 from core.statesenum import State
 from modules.joanmodules import JOANModules
+from core.exceptionhook import exception_log_and_kill_hook
 
 if platform.system() == 'Windows':
     import wres
@@ -38,16 +40,19 @@ class ModuleProcess(mp.Process):
         Note: anything you created in __init__ needs to be picklable. If not, create the non-picklable objects in the function get_ready
         :return:
         """
+        try:
+            self.get_ready()
+            self._start_event.wait()
 
-        self.get_ready()
-        self._start_event.wait()
-
-        # run
-        if platform.system() == 'Windows':
-            with wres.set_resolution(10000):
+            # run
+            if platform.system() == 'Windows':
+                with wres.set_resolution(10000):
+                    self._run_loop()
+            else:
                 self._run_loop()
-        else:
-            self._run_loop()
+        except:
+            # sys.excepthook is not called from within processes so can't be overridden. instead, catch all exceptions here and call the new excepthook manually
+            exception_log_and_kill_hook(*sys.exc_info(), self.module)
 
     def _run_loop(self):
 
