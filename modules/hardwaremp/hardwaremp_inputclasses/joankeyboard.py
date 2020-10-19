@@ -3,16 +3,16 @@ import os
 import keyboard
 from PyQt5 import QtWidgets, QtGui, uic
 
-from modules.hardwaremp.hardwaremp_settings import KeyBoardSettings
-from modules.hardwaremp.hardwaremp_inputtypes import HardwareInputTypes
 from modules.hardwaremp.hardwaremp_inputclasses.baseinput import BaseInput
+from modules.hardwaremp.hardwaremp_inputtypes import HardwareInputTypes
+from modules.hardwaremp.hardwaremp_settings import KeyBoardSettings
 
 
 class KeyBoardSettingsDialog(QtWidgets.QDialog):
     """
-      Class for the settings Dialog of a keyboardinput, this class should pop up whenever it is asked by the user or when
-      creating the joystick class for the first time. NOTE: it should not show whenever settings are loaded by .json file.
-      """
+    Class for the settings Dialog of a keyboardinput, this class should pop up whenever it is asked by the user or when
+    creating the joystick class for the first time. NOTE: it should not show whenever settings are loaded by .json file.
+    """
 
     def __init__(self, keyboard_settings, parent=None):
         """
@@ -22,14 +22,11 @@ class KeyBoardSettingsDialog(QtWidgets.QDialog):
         """
         super().__init__(parent)
         self.keyboard_settings = keyboard_settings
-        uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "uis/keyboard_settings_ui.ui"), self)
+        uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/keyboard_settings_ui.ui"), self)
 
-        self.slider_steer_sensitivity.valueChanged.connect(
-            lambda new_value: self.label_steer_sensitivity.setText(str(new_value)))
-        self.slider_throttle_sensitivity.valueChanged.connect(
-            lambda new_value: self.label_throttle_sensitivity.setText(str(new_value)))
-        self.slider_brake_sensitivity.valueChanged.connect(
-            lambda new_value: self.label_brake_sensitivity.setText(str(new_value)))
+        self.slider_steer_sensitivity.valueChanged.connect(lambda new_value: self.label_steer_sensitivity.setText(str(new_value)))
+        self.slider_throttle_sensitivity.valueChanged.connect(lambda new_value: self.label_throttle_sensitivity.setText(str(new_value)))
+        self.slider_brake_sensitivity.valueChanged.connect(lambda new_value: self.label_brake_sensitivity.setText(str(new_value)))
 
         self._set_key_counter = 0
 
@@ -147,7 +144,7 @@ class JOANKeyboard(BaseInput):
     """
 
     def __init__(self, module_manager, hardware_input_list_key, settings):
-        super().__init__(hardware_input_type=HardwareInputTypes.KEYBOARD, module_manager = module_manager)
+        super().__init__(hardware_input_type=HardwareInputTypes.KEYBOARD, module_manager=module_manager)
         """
         Initializes the class
         :param hardware_manager_action:
@@ -168,7 +165,6 @@ class JOANKeyboard(BaseInput):
     def get_hardware_input_list_key(self):
         return self.hardware_input_list_key
 
-
     def _open_settings_dialog_from_button(self):
         """
         Opens and shows the settings dialog from the button on the tab
@@ -186,25 +182,17 @@ class JOANKeyboard(BaseInput):
         self.settings_dialog = KeyBoardSettingsDialog(self.settings)
 
 
-class JOANKeyboardMP():
+class JOANKeyboardMP:
     """
     Main class for the Keyboard input in a seperate multiprocess, this will loop!. Make sure that the things you do in this class are serializable, else
     it will fail.
     """
 
     def __init__(self, settings, shared_values):
-        """
-        Initializes the class
-        :param hardware_manager_action:
-        :param keyboard_tab:
-        :param settings:
-        """
         self.settings = settings
 
         self.settings_dialog = None
         self.shared_values = shared_values
-
-        print(self.shared_values)
 
         # Initialize needed variables:
         self._throttle = False
@@ -292,5 +280,3 @@ class JOANKeyboardMP():
 
         # Handbrake
         self.shared_values.handbrake = self._handbrake
-
-

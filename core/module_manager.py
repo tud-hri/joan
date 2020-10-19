@@ -57,8 +57,6 @@ class ModuleManager(QtCore.QObject):
 
         self.shared_values = self.module.shared_values()
 
-        # create dynamic-settings-sv
-
         self.singleton_news.write_news(self.module, self.shared_values)
 
         self.shared_values.state = self.state_machine.current_state.value

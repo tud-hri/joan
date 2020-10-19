@@ -3,11 +3,9 @@ import os
 
 from .hardwaremp_settings import KeyBoardSettings
 
+
 class HardwareInputTypes(enum.Enum):
-    """
-    Enum to represent all available steering wheel controllers.
-    """
-    KEYBOARD= 0
+    KEYBOARD = 0
 
     @property
     def klass(self):
@@ -30,13 +28,13 @@ class HardwareInputTypes(enum.Enum):
 
     @property
     def settings_ui_file(self):
-        path_to_uis = os.path.join(os.path.dirname(os.path.realpath(__file__)), "hardwaremp_inputclasses/uis/")
+        path_to_uis = os.path.join(os.path.dirname(os.path.realpath(__file__)), "hardwaremp_inputclasses/ui/")
         return {HardwareInputTypes.KEYBOARD: os.path.join(path_to_uis, "keyboard_settings_ui.ui")
                 }[self]
 
     @property
     def hardware_tab_ui_file(self):
-        path_to_uis = os.path.join(os.path.dirname(os.path.realpath(__file__)), "hardwaremp_inputclasses/uis/")
+        path_to_uis = os.path.join(os.path.dirname(os.path.realpath(__file__)), "hardwaremp_inputclasses/ui/")
         return {HardwareInputTypes.KEYBOARD: os.path.join(path_to_uis, "hardware_tab.ui")
                 }[self]
 
@@ -47,4 +45,4 @@ class HardwareInputTypes(enum.Enum):
 
     def __str__(self):
         return {HardwareInputTypes.KEYBOARD: 'Keyboard',
-               }[self]
+                }[self]

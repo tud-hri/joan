@@ -1,35 +1,45 @@
-
-import os
-
-from PyQt5 import QtCore
-
-from modules.joanmodules import JOANModules
 from core.module_manager import ModuleManager
+from modules.joanmodules import JOANModules
 from .hardwaremp_inputtypes import HardwareInputTypes
 from .hardwaremp_settings import HardwareMPSettings
-from core.statesenum import State
+from .hardwaremp_sharedvalues import KeyboardSharedValues
 
 
 class HardwareMPManager(ModuleManager):
     """Example JOAN module"""
 
-    def __init__(self, time_step_in_ms=1, parent=None):
+    def __init__(self, time_step_in_ms=10, parent=None):
         super().__init__(module=JOANModules.HARDWARE_MP, time_step_in_ms=time_step_in_ms, parent=parent)
         self._hardware_inputs = {}
         self.settings = HardwareMPSettings()
+        self._hardware_input_variables = {}
 
     def initialize(self):
+        super().initialize()
+
         self._hardware_input_variables = {}
         self.module_settings = self.settings
         total_amount_of_keyboards = len(self.settings.key_boards)
-        for i in range(0,total_amount_of_keyboards):
-            self._hardware_input_variables['Keyboard '+str(i)] = HardwareInputTypes.KEYBOARD.shared_values
+        for i in range(0, total_amount_of_keyboards):
+            self._hardware_input_variables['Keyboard ' + str(i)] = HardwareInputTypes.KEYBOARD.shared_values
 
         self.singleton_news.write_news('Inputs', self._hardware_input_variables)
-        return super().initialize()
+
+
+
+        # TODO test, adding properties (shared values) dynamically to the module shared_values
+        # add a property dynamically to an object
+        # https://stackoverflow.com/questions/1325673/how-to-add-property-to-a-class-dynamically
+        # je kan dus zo een property dynamisch toevoegen
+        self.shared_values.keyboardtest = KeyboardSharedValues()
+        # of, als je de propertynaam als string wil zetten:
+        setattr(self.shared_values, 'keyboardtest2', KeyboardSharedValues())
+
+        # optie
 
     def get_ready(self):
         return super().get_ready()
+
     def start(self):
         return super().start()
 
@@ -46,22 +56,14 @@ class HardwareMPManager(ModuleManager):
             if hardware_input_type == HardwareInputTypes.KEYBOARD:
                 self.settings.key_boards.append(hardware_input_settings)
 
-            self._hardware_inputs[hardware_input_name] = hardware_input_type.klass(self, hardware_input_name, hardware_input_settings)
-            self._hardware_inputs[hardware_input_name].get_hardware_input_tab.groupBox.setTitle(hardware_input_name)
-            self.module_dialog._module_widget.hardware_list_layout.addWidget(self._hardware_inputs[hardware_input_name].get_hardware_input_tab)
+        self._hardware_inputs[hardware_input_name] = hardware_input_type.klass(self, hardware_input_name, hardware_input_settings)
+        hardware_tab = self._hardware_inputs[hardware_input_name].get_hardware_input_tab
+        hardware_tab.groupBox.setTitle(hardware_input_name)
+        self.module_dialog.module_widget.hardware_list_layout.addWidget(hardware_tab)
 
-            self._hardware_inputs[hardware_input_name]._open_settings_dialog_from_button()
+        # self._hardware_inputs[hardware_input_name]._open_settings_dialog()
 
-        else:
-            self._hardware_inputs[hardware_input_name] = hardware_input_type.klass(self, hardware_input_name,
-                                                                                   hardware_input_settings)
-            self._hardware_inputs[hardware_input_name].get_hardware_input_tab.groupBox.setTitle(hardware_input_name)
-            self.module_dialog.module_widget.hardware_list_layout.addWidget(
-                self._hardware_inputs[hardware_input_name].get_hardware_input_tab)
-            self._hardware_inputs[hardware_input_name]._open_settings_dialog()
-
-
-        return self._hardware_inputs[hardware_input_name].get_hardware_input_tab
+        return hardware_tab
 
     def remove_hardware_input_device(self, hardware_input):
         try:
@@ -75,4 +77,3 @@ class HardwareMPManager(ModuleManager):
 
         # delete object
         del self._hardware_inputs[hardware_input.get_hardware_input_list_key]
-

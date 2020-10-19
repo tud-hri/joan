@@ -1,6 +1,5 @@
-import platform
-
 import multiprocessing as mp
+import platform
 import time
 
 from core.statesenum import State
