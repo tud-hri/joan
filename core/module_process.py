@@ -21,7 +21,7 @@ class ModuleProcess(mp.Process):
         self._time_step_in_ns = time_step_in_ms * 1e6
         self._time = 0.0
 
-        self._settings = settings
+        self._settings = settings.as_dict()
 
         self._start_event = start_event
 
