@@ -9,7 +9,7 @@ from core.modulesettings import ModuleSettings
 from modules.joanmodules import JOANModules
 
 
-class HardwareManagerSettings(ModuleSettings):
+class HardwareMPSettings(ModuleSettings):
     def __init__(self, settings_filename='./default_setting.json'):
         super().__init__(JOANModules.HARDWARE_MP)
 
