@@ -1,6 +1,6 @@
 from core.module_process import ModuleProcess
 from modules.joanmodules import JOANModules
-from modules.hardwaremp.hardwaremp_inputclasses.keyboardinput.joankeyboardMP import JOANKeyboardMP
+from modules.hardwaremp.hardwaremp_inputclasses.joankeyboard import JOANKeyboardMP
 
 
 class HardwareMPProcess(ModuleProcess):
