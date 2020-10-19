@@ -1,20 +1,26 @@
 import inspect
 import math
 from enum import Enum
+from pathlib import Path
 
 from PyQt5 import QtGui
 
-from modules.joanmodules import JOANModules
 from core.modulesettings import ModuleSettings
+from modules.joanmodules import JOANModules
 
 
 class HardwareManagerSettings(ModuleSettings):
-    def __init__(self, module_enum: JOANModules):
-        super().__init__(module_enum)
+    def __init__(self, settings_filename='./default_setting.json'):
+        super().__init__(JOANModules.HARDWARE_MP)
 
         self.key_boards = []
         self.joy_sticks = []
         self.sensodrives = []
+
+        if Path(settings_filename).is_file():
+            self.load_from_file(settings_filename)
+        else:
+            self.save_to_file(settings_filename)
 
     def load_from_dict(self, loaded_dict):
         """
@@ -115,8 +121,6 @@ class HardwareManagerSettings(ModuleSettings):
             self.sensodrives.remove(setting)
 
 
-
-
 class KeyBoardSettings:
     """
     Default keyboard settings that will load whenever a keyboard class is created.
@@ -140,8 +144,8 @@ class KeyBoardSettings:
 
         # Sensitivities
         self.steer_sensitivity = float(50.0)
-        self.throttle_sensitivity =  float(50.0)
-        self.brake_sensitivity =  float(50.0)
+        self.throttle_sensitivity = float(50.0)
+        self.brake_sensitivity = float(50.0)
 
     def as_dict(self):
         return self.__dict__
@@ -220,13 +224,13 @@ class SensoDriveSettings:
     """
 
     def __init__(self):
-        self.endstops = math.radians(360.0)         # rad
-        self.torque_limit_between_endstops = 200    # percent
-        self.torque_limit_beyond_endstops = 200     # percent
-        self.friction = 0                           # Nm
-        self.damping = 0.1                            # Nm * s / rad
-        self.spring_stiffness = 1                   # Nm / rad
-        self.torque = 0                             # Nm
+        self.endstops = math.radians(360.0)  # rad
+        self.torque_limit_between_endstops = 200  # percent
+        self.torque_limit_beyond_endstops = 200  # percent
+        self.friction = 0  # Nm
+        self.damping = 0.1  # Nm * s / rad
+        self.spring_stiffness = 1  # Nm / rad
+        self.torque = 0  # Nm
 
     def as_dict(self):
         return self.__dict__

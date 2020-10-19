@@ -9,5 +9,6 @@ class TemplateMPProcess(ModuleProcess):
 
         self.shared_values_hardware = news.read_news(JOANModules.HARDWARE_MP)
 
+
     def do_function(self):
         pass
