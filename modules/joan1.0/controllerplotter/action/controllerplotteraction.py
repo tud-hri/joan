@@ -157,7 +157,7 @@ class ControllerPlotterAction(JoanModuleAction):
                 sw_actual = math.degrees(data_from_hardware_manager['Joystick 1']['steering_angle'])
                 sw_stiffness = math.radians(1)
             elif 'Keyboard 1' in data_from_hardware_manager.keys():
-                ## keyboard
+                ## keyboardinput
                 steering_ang = math.degrees(data_from_hardware_manager['Keyboard 1']['steering_angle'])
                 sw_actual = math.degrees(data_from_hardware_manager['Keyboard 1']['steering_angle'])
                 sw_stiffness = math.radians(1)

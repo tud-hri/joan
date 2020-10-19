@@ -3,7 +3,8 @@ from PyQt5 import QtWidgets, QtGui, uic
 
 class JOANKeyboardMP():
     """
-    Main class for the Keyboard input, inherits from BaseInput (as it should!)
+    Main class for the Keyboard input in a seperate multiprocess, this will loop!. Make sure that the things you do in this class are serializable, else
+    it will fail.
     """
 
     def __init__(self, settings, shared_values):
@@ -57,7 +58,7 @@ class JOANKeyboardMP():
 
     def do(self):
         """
-        Processes all the inputs of the keyboard and writes them to self._data which is then written to the news in the
+        Processes all the inputs of the keyboardinput and writes them to self._data which is then written to the news in the
         action class
         :return: self._data a dictionary containing :
             self.shared_values.brake = self.brake

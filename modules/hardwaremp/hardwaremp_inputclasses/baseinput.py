@@ -5,8 +5,7 @@ from modules.joanmodules import JOANModules
 
 class BaseInput:
     """
-    This class is the base class of any (new) input that is implemented. Any implemented input class should inherit from
-    this class.
+    This class acts as an administrative tool to geht the right ui files for any added inputs.
     """
 
     def __init__(self, hardware_input_type: HardwareInputTypes,  module_manager: JOANModules):
@@ -38,16 +37,4 @@ class BaseInput:
     def remove_hardware_input(self):
         """Remove the connected tab widget (and tab widget only)"""
         self.module_manager.remove_hardware_input_device(self)
-
-    def do(self):
-        """
-        Processes any input, in this case will just set the shared variables to the defaults:
-        :return: current data
-        """
-        self.module_manager.shared_values.reverse = False
-        self.module_manager.shared_values.steering_angle = 0.0
-        self.module_manager.shared_values.throttle = 0.0
-        self.module_manager.shared_values.brake = 0.0
-        self.module_manager.shared_values.reverse = False
-        self.module_manager.shared_values.handbrake = False
 

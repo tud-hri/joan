@@ -119,7 +119,7 @@ class HardwareManagerSettings(ModuleSettings):
 
 class KeyBoardSettings:
     """
-    Default keyboard settings that will load whenever a keyboard class is created.
+    Default keyboardinput settings that will load whenever a keyboardinput class is created.
     """
 
     def __init__(self):
@@ -153,7 +153,7 @@ class KeyBoardSettings:
 
 class JoyStickSettings:
     """
-    Default joystick settings that will load whenever a keyboard class is created.
+    Default joystick settings that will load whenever a keyboardinput class is created.
     """
 
     def __init__(self):
@@ -216,7 +216,7 @@ class JoyStickSettings:
 
 class SensoDriveSettings:
     """
-    Default sensodrive settings that will load whenever a keyboard class is created.
+    Default sensodrive settings that will load whenever a keyboardinput class is created.
     """
 
     def __init__(self):

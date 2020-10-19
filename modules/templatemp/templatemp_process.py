@@ -11,4 +11,4 @@ class TemplateMPProcess(ModuleProcess):
 
 
     def do_function(self):
-        pass
+        print('Throttle from hardware, printed in template module = ', self.shared_values_hardware.throttle)

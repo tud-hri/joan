@@ -1,10 +1,6 @@
-import keyboard
-from PyQt5 import QtGui
-
 from core.module_process import ModuleProcess
 from modules.joanmodules import JOANModules
-from modules.hardwaremp.hardwaremp_inputtypes import HardwareInputTypes
-from modules.hardwaremp.hardwaremp_inputclasses.joankeyboardMP import JOANKeyboardMP
+from modules.hardwaremp.hardwaremp_inputclasses.keyboardinput.joankeyboardMP import JOANKeyboardMP
 
 
 class HardwareMPProcess(ModuleProcess):
@@ -19,15 +15,14 @@ class HardwareMPProcess(ModuleProcess):
     def get_ready(self):
         ## Create the class here
         for items in self.settings['Hardware MP']['key_boards']:
-            print(items)
             self.Keyboard1 = JOANKeyboardMP(items, self.shared_values)
 
 
-        # keyboard.hook(self.key_event, False)
+        # keyboardinput.hook(self.key_event, False)
 
     def do_function(self):
         if hasattr(self, 'Keyboard1'):
             self.Keyboard1.do()
-            print('brake = ', self.shared_values.brake, 'throttle = ', self.shared_values.throttle)
+
 
 

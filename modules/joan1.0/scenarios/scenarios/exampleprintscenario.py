@@ -13,7 +13,7 @@ class ExamplePrintScenario(Scenario):
         if not self.keyboard_message_send:
             for hardware_name in scenarios_action.read_news(JOANModules.HARDWARE_MANAGER).keys():
                 if 'Keyboard' in hardware_name:
-                    print('A keyboard is active')
+                    print('A keyboardinput is active')
                     self.keyboard_message_send = True
 
 
