@@ -17,6 +17,12 @@ class HardwareInputTypes(enum.Enum):
                 }[self]
 
     @property
+    def MPklass(self):
+        from modules.hardwaremp.hardwaremp_inputclasses.joankeyboard import JOANKeyboardMP
+
+        return {HardwareInputTypes.KEYBOARD: JOANKeyboardMP}[self]
+
+    @property
     def settings_ui_file(self):
         path_to_uis = os.path.join(os.path.dirname(os.path.realpath(__file__)), "hardwaremp_inputclasses/uis/")
         return {HardwareInputTypes.KEYBOARD: os.path.join(path_to_uis, "keyboard_settings_ui.ui")

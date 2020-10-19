@@ -1,6 +1,6 @@
 from core.module_process import ModuleProcess
 from modules.joanmodules import JOANModules
-from modules.hardwaremp.hardwaremp_inputclasses.joankeyboard import JOANKeyboardMP
+from modules.hardwaremp.hardwaremp_inputtypes import HardwareInputTypes
 
 
 class HardwareMPProcess(ModuleProcess):
@@ -15,7 +15,7 @@ class HardwareMPProcess(ModuleProcess):
     def get_ready(self):
         ## Create the class here
         for items in self.settings['Hardware MP']['key_boards']:
-            self.Keyboard1 = JOANKeyboardMP(items, self.shared_values)
+            self.Keyboard1 = HardwareInputTypes.KEYBOARD.MPklass(items, self.shared_values)
 
 
         # keyboardinput.hook(self.key_event, False)
