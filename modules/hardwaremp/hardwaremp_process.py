@@ -16,21 +16,24 @@ class HardwareMPProcess(ModuleProcess):
         # of, als derde optie zouden we ook via een dict kunnen doen:
         print("of met een dict:", self._sharedvalues_module.keyboards["keyboard3"].brake)
 
-        self.inputs = news.read_news('Inputs')
         self.settings = settings.as_dict()
         self.input_classes = {}
 
     def get_ready(self):
         ## Create the classes here
+        # i = 0
+        # for items in self.inputs:
+        #     if 'Keyboard' in items:
+        #         self.input_classes[items] = HardwareInputTypes.KEYBOARD.MPklass(settings=self.settings['Hardware MP']['key_boards'][i],
+        #                                                                         shared_values=self.inputs[items])
+        #         i += 1
         i = 0
-        for items in self.inputs:
-            if 'Keyboard' in items:
-                self.input_classes[items] = HardwareInputTypes.KEYBOARD.MPklass(settings=self.settings['Hardware MP']['key_boards'][i],
-                                                                                shared_values=self.inputs[items])
-                i += 1
+        for items in self._sharedvalues_module.keyboards:
+            self.input_classes[items] = HardwareInputTypes.KEYBOARD.mpklass(settings = self.settings['Hardware MP']['key_boards'][i], shared_values = self._sharedvalues_module.keyboards[items])
+            i+= 1
 
         # keyboardinput.hook(self.key_event, False)
 
     def do_function(self):
-        for items in self.input_classes:
-            self.input_classes[items].do()
+        for inputs in self.input_classes:
+            self.input_classes[inputs].do()

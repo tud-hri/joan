@@ -15,16 +15,16 @@ class HardwareInputTypes(enum.Enum):
                 }[self]
 
     @property
-    def MPklass(self):
+    def mpklass(self):
         from modules.hardwaremp.hardwaremp_inputclasses.joankeyboard import JOANKeyboardMP
 
         return {HardwareInputTypes.KEYBOARD: JOANKeyboardMP}[self]
 
     @property
     def shared_values(self):
-        from modules.hardwaremp.hardwaremp_sharedvalues import HardwareMPSharedValues
+        from modules.hardwaremp.hardwaremp_sharedvalues import KeyboardSharedValues
 
-        return {HardwareInputTypes.KEYBOARD: HardwareMPSharedValues()}[self]
+        return {HardwareInputTypes.KEYBOARD: KeyboardSharedValues()}[self]
 
     @property
     def settings_ui_file(self):

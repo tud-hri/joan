@@ -59,7 +59,8 @@ class HardwareMPManager(ModuleManager):
         self._hardware_inputs[hardware_input_name] = hardware_input_type.klass(self, hardware_input_name, hardware_input_settings)
         hardware_tab = self._hardware_inputs[hardware_input_name].get_hardware_input_tab
         hardware_tab.groupBox.setTitle(hardware_input_name)
-        self.module_dialog.module_widget.hardware_list_layout.addWidget(hardware_tab)
+
+        self.module_dialog._module_widget.hardware_list_layout.addWidget(hardware_tab)
 
         # self._hardware_inputs[hardware_input_name]._open_settings_dialog()
 

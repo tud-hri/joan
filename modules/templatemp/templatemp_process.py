@@ -7,14 +7,16 @@ class TemplateMPProcess(ModuleProcess):
     def __init__(self, module: JOANModules, time_step_in_ms, news, settings, start_event):
         super().__init__(module, time_step_in_ms=time_step_in_ms, news=news, settings = settings, start_event=start_event)
 
-        self.shared_values_hardware = news.read_news('Inputs')
+        self.shared_values_hardware = news.read_news(JOANModules.HARDWARE_MP)
 
 
 
 
 
     def do_function(self):
+        print(self.shared_values_hardware.keyboards['keyboard3'].brake)
         try:
-            print(self.shared_values_hardware['Keyboard 0'].throttle, self.shared_values_hardware['Keyboard 1'].throttle)
+            print(self.shared_values_hardware.keyboardtest.brake)
+
         except:
             pass
