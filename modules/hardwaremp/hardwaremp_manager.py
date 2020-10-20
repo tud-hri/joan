@@ -23,6 +23,7 @@ class HardwareMPManager(ModuleManager):
 
     def get_ready(self):
         return super().get_ready()
+        
     def start(self):
         return super().start()
 

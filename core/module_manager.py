@@ -49,6 +49,21 @@ class ModuleManager(QtCore.QObject):
         self.settings_filename = os.path.join(self.module_path, 'default_settings.json')
         self.module_settings = module.settings(settings_filename=self.settings_filename)
 
+        # create runtime settings (e.g. keyboard or joystick)
+        # runtime_settings is a dictionary. Each entry has its own settings-object 
+        self.runtime_settings = {}
+
+    def set_runtime_settings(self, **kwargs):
+        """
+        settings for keyboard or joystick or whatever, will be present in the self.runtime_settings
+        these settings are prepared in the <module>_process.py get_ready() method
+        the users selects certain inputdevices with their own properties
+        :param kwargs: contains settings that are set after starting the program,
+                       but before using the running in multiprocessesor-mode.
+        """
+        for key, value in kwargs.items():
+            self.runtime_settings[key] = value
+
     def initialize(self):
         """
         Create shared variables, share through news
@@ -67,7 +82,8 @@ class ModuleManager(QtCore.QObject):
 
         # Start the process, run() will wait until start_event is set
         if self._process and not self._process.is_alive():
-            self._process.start()
+            if self._process.get_ready(self.runtime_settings):
+                self._process.start()
 
         self.shared_values.state = self.state_machine.current_state.value
 

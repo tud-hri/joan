@@ -1,17 +1,17 @@
 import enum
 import os
 
-from .hardwaremp_settings import KeyBoardSettings
+from modules.hardwaremp.hardwaremp_settings import KeyBoardSettings
 
 class HardwareInputTypes(enum.Enum):
     """
     Enum to represent all available steering wheel controllers.
     """
-    KEYBOARD= 0
+    KEYBOARD = 0
 
     @property
     def klass(self):
-        from .hardwaremp_inputclasses.joankeyboard import JOANKeyboard
+        from modules.hardwaremp.hardwaremp_inputclasses.joankeyboard import JOANKeyboard
 
         return {HardwareInputTypes.KEYBOARD: JOANKeyboard
                 }[self]

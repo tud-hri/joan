@@ -2,7 +2,7 @@ from core.module_dialog import ModuleDialog
 from core.module_manager import ModuleManager
 from core.statesenum import State
 from modules.joanmodules import JOANModules
-from .hardwaremp_inputtypes import HardwareInputTypes
+from modules.hardwaremp.hardwaremp_inputtypes import HardwareInputTypes
 from PyQt5 import uic
 
 
@@ -41,8 +41,8 @@ class HardwareMPDialog(ModuleDialog):
 
     def add_selected_hardware_input(self):
         chosen_hardware_input = self._input_type_dialog.combo_hardware_inputtype.itemData(self._input_type_dialog.combo_hardware_inputtype.currentIndex())
-        self._module_manager.add_hardware_input(chosen_hardware_input)
-
+        #self._module_manager.add_hardware_input(chosen_hardware_input)
+        self._module_manager.set_runtime_settings(**{str(chosen_hardware_input): self._input_type_dialog.combo_hardware_inputtype})
 
 
 

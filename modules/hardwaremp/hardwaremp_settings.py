@@ -5,7 +5,7 @@ from pathlib import Path
 
 from PyQt5 import QtGui
 
-from core.modulesettings import ModuleSettings
+from core.module_settings import ModuleSettings
 from modules.joanmodules import JOANModules
 
 
@@ -68,6 +68,8 @@ class HardwareManagerSettings(ModuleSettings):
         # done loading settings, emit signal
         self.load_settings_done.emit()
 
+    '''
+    TODO: remove this
     @staticmethod
     def _copy_dict(source, destination):
         for key, value in source.items():
@@ -109,6 +111,37 @@ class HardwareManagerSettings(ModuleSettings):
             else:
                 output_list.append(item)
         return output_list
+    '''
+    def is_empty(self):
+        """
+        Used from hardwaremp_process.py when selecting an inputdevice at runtime
+        TODO: check if this is want we want
+        """
+        count = 0
+        for element in self.key_boards:
+            if isinstance(element, KeyBoardSettings):
+                count += 1
+        for element in self.joy_sticks:
+            if isinstance(element, JoyStickSettings):
+                count += 1
+        for element in self.sensodrives:
+            if isinstance(element, SensoDriveSettings):
+                count += 1
+        return count == 0
+
+    def append_hardware_input_device(self, setting):
+        """
+        Used from hardwaremp_process.py when selecting an inputdevice at runtime
+        TODO: check if this is want we want
+        """
+        if isinstance(setting, KeyBoardSettings):
+            self.key_boards.append(setting)
+
+        if isinstance(setting, JoyStickSettings):
+            self.joy_sticks.append(setting)
+
+        if isinstance(setting, SensoDriveSettings):
+            self.sensodrives.append(setting)
 
     def remove_hardware_input_device(self, setting):
         if isinstance(setting, KeyBoardSettings):

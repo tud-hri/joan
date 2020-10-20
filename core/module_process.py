@@ -1,5 +1,5 @@
 import platform
-
+import json
 import multiprocessing as mp
 import time
 
@@ -28,9 +28,16 @@ class ModuleProcess(mp.Process):
         # print(news.all_news)
         self._sharedvalues_module = news.read_news(module)
 
-    def get_ready(self):
-        # apply the settings here (e.g. create the hardware objects, etc, depending on the module's functionality
+    def get_ready(self, runtime_settings):
+        """
+        Settings that are only available during runtime (e.g. keyboard, joystick) are
+        added to the already existing settings that were created in the <module>_settings.py
+        Example: The module templatemp has a templatemp_settings.py with module-specific settings
+        :param runtime_settings: a dictionary with settings
+        to be overidden by the child method
+        """
         pass
+
 
     def do_function(self):
         pass
@@ -42,7 +49,7 @@ class ModuleProcess(mp.Process):
         :return:
         """
 
-        self.get_ready()
+        #self.get_ready()
         self._start_event.wait()
 
         # run
