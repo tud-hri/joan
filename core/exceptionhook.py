@@ -3,11 +3,11 @@ import sys
 import time
 import traceback
 
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtCore
 
 
 def exception_log_and_kill_hook(exctype, value, tb, joan_module):
-    print('exception occurred in ' + str(joan_module))
+    print('exception occurred in run process of the %s module' % str(joan_module))
     traceback.print_exception(exctype, value, tb)
 
     dialog_message = "An error occurred in the % s module. A log has been saved." % str(joan_module)
@@ -25,7 +25,11 @@ def exception_log_and_kill_hook(exctype, value, tb, joan_module):
             joan_module)
 
     try:
-        QtWidgets.QMessageBox.critical(None, 'An error occurred', dialog_message)  # todo: this does not work, fix it
+        app = QtWidgets.QApplication(sys.argv)
+        message_box = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Critical, 'An error occurred', dialog_message)
+        message_box.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
+        message_box.show()
+        app.exec_()
     except:  # again, if this fails at this point; just print and be done with it
         print(dialog_message)
 
