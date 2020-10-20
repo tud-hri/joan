@@ -14,7 +14,7 @@ class TemplateMPProcess(ModuleProcess):
 
 
     def do_function(self):
-        print(self.shared_values_hardware.keyboards['keyboard3'].brake)
+        print(self.shared_values_hardware.keyboards)
         # try:
         #     print(self.shared_values_hardware.keyboardtest.brake)
         # except:

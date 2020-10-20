@@ -12,31 +12,13 @@ class HardwareMPManager(ModuleManager):
         super().__init__(module=JOANModules.HARDWARE_MP, time_step_in_ms=time_step_in_ms, parent=parent)
         self._hardware_inputs = {}
         self.settings = HardwareMPSettings()
-        self._hardware_input_variables = {}
 
     def initialize(self):
         super().initialize()
-
-        self._hardware_input_variables = {}
         self.module_settings = self.settings
         total_amount_of_keyboards = len(self.settings.key_boards)
         for i in range(0, total_amount_of_keyboards):
-            self._hardware_input_variables['Keyboard ' + str(i)] = HardwareInputTypes.KEYBOARD.shared_values
-
-        self.singleton_news.write_news('Inputs', self._hardware_input_variables)
-
-
-
-        # TODO test, adding properties (shared values) dynamically to the module shared_values
-        # add a property dynamically to an object
-        # https://stackoverflow.com/questions/1325673/how-to-add-property-to-a-class-dynamically
-        # je kan dus zo een property dynamisch toevoegen
-        self.shared_values.keyboardtest = KeyboardSharedValues()
-        # of, als je de propertynaam als string wil zetten:
-        setattr(self.shared_values, 'keyboardtest2', KeyboardSharedValues())
-
-        # optie 2
-        self.shared_values.keyboards.update({"keyboard3": KeyboardSharedValues()})
+            self.shared_values.keyboards.update({'Keyboard ' + str(i): KeyboardSharedValues()})
 
     def get_ready(self):
         return super().get_ready()
@@ -45,7 +27,6 @@ class HardwareMPManager(ModuleManager):
         return super().start()
 
     def stop(self):
-        del self._hardware_input_variables
         return super().stop()
 
     def add_hardware_input(self, hardware_input_type, hardware_input_settings=None):
@@ -62,8 +43,6 @@ class HardwareMPManager(ModuleManager):
         hardware_tab.groupBox.setTitle(hardware_input_name)
 
         self.module_dialog._module_widget.hardware_list_layout.addWidget(hardware_tab)
-
-        # self._hardware_inputs[hardware_input_name]._open_settings_dialog()
 
         return hardware_tab
 

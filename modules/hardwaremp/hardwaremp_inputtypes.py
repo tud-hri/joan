@@ -15,7 +15,7 @@ class HardwareInputTypes(enum.Enum):
                 }[self]
 
     @property
-    def mpklass(self):
+    def klass_mp(self):
         from modules.hardwaremp.hardwaremp_inputclasses.joankeyboard import JOANKeyboardMP
 
         return {HardwareInputTypes.KEYBOARD: JOANKeyboardMP}[self]
