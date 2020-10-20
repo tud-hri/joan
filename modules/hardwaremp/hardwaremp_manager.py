@@ -35,7 +35,8 @@ class HardwareMPManager(ModuleManager):
         # of, als je de propertynaam als string wil zetten:
         setattr(self.shared_values, 'keyboardtest2', KeyboardSharedValues())
 
-        # optie
+        # optie 2
+        self.shared_values.keyboards.update({"keyboard3": KeyboardSharedValues()})
 
     def get_ready(self):
         return super().get_ready()

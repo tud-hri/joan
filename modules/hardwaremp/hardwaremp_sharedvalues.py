@@ -8,7 +8,7 @@ class HardwareMPSharedValues:
         self._time = mp.Value(c_float, 0.0)
 
         # for testing purposes
-        self.keyboards = {"keyboard3": KeyboardSharedValues()}
+        self.keyboards = {}  # {"keyboard3": KeyboardSharedValues()}
 
     @property
     def state(self):
