@@ -336,12 +336,10 @@ class JOANJoystickMP:
         """
         if self._joystick_open:
             joystick_data = self._joystick.read(self.settings['degrees_of_freedom'], 1)
-            print(joystick_data)
         else:
             joystick_data = False
 
         if joystick_data:
-            # print(joystick_data)
             if self.settings['use_separate_brake_channel']:
                 self.throttle = ((joystick_data[self.settings['gas_channel']]) / 255)
                 self.brake = - ((joystick_data[self.settings['brake_channel']]) / 255)
