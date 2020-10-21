@@ -23,7 +23,7 @@ class HardwareMPManager(ModuleManager):
             self.shared_values.keyboards.update({'Keyboard ' + str(i): KeyboardSharedValues()})
 
         for j in range(0, total_amount_of_joysticks):
-            self.shared_values.joysticks.update({'Joystick' + str(j): JoystickSharedValues()})
+            self.shared_values.joysticks.update({'Joystick ' + str(j): JoystickSharedValues()})
 
 
 
