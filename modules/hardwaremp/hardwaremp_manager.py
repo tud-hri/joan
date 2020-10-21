@@ -2,7 +2,7 @@ from core.module_manager import ModuleManager
 from modules.joanmodules import JOANModules
 from .hardwaremp_inputtypes import HardwareInputTypes
 from .hardwaremp_settings import HardwareMPSettings
-from .hardwaremp_sharedvalues import KeyboardSharedValues, JoystickSharedValues
+from .hardwaremp_sharedvalues import KeyboardSharedValues, JoystickSharedValues, SensoDriveSharedValues
 
 
 class HardwareMPManager(ModuleManager):
@@ -18,12 +18,16 @@ class HardwareMPManager(ModuleManager):
         self.module_settings = self.settings
         total_amount_of_keyboards = len(self.settings.key_boards)
         total_amount_of_joysticks = len(self.settings.joy_sticks)
+        total_amount_of_sensodrives = len(self.settings.sensodrives)
 
         for i in range(0, total_amount_of_keyboards):
             self.shared_values.keyboards.update({'Keyboard ' + str(i): KeyboardSharedValues()})
 
         for j in range(0, total_amount_of_joysticks):
             self.shared_values.joysticks.update({'Joystick ' + str(j): JoystickSharedValues()})
+
+        for k in range(0, total_amount_of_sensodrives):
+            self.shared_values.sensodrives.update({'SensoDrive ' + str(k): SensoDriveSharedValues()})
 
 
 
@@ -46,6 +50,9 @@ class HardwareMPManager(ModuleManager):
                 self.settings.key_boards.append(hardware_input_settings)
             if hardware_input_type == HardwareInputTypes.JOYSTICK:
                 self.settings.joy_sticks.append(hardware_input_settings)
+            if hardware_input_type == HardwareInputTypes.SENSODRIVE:
+                self.settings.sensodrives.append(hardware_input_settings)
+
 
         self._hardware_inputs[hardware_input_name] = hardware_input_type.klass(self, hardware_input_name, hardware_input_settings)
         hardware_tab = self._hardware_inputs[hardware_input_name].get_hardware_input_tab
