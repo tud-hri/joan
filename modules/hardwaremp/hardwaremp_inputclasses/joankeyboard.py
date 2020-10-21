@@ -5,7 +5,7 @@ from PyQt5 import QtWidgets, QtGui, uic
 
 from modules.hardwaremp.hardwaremp_inputclasses.baseinput import BaseInput
 from modules.hardwaremp.hardwaremp_inputtypes import HardwareInputTypes
-from modules.hardwaremp.hardwaremp_settings import KeyBoardSettings
+
 
 
 class KeyBoardSettingsDialog(QtWidgets.QDialog):
@@ -102,7 +102,7 @@ class KeyBoardSettingsDialog(QtWidgets.QDialog):
         Sets the settings as they are described in 'hardwarempSettings => KeyboardSettings)
         :return:
         """
-        self._display_values(KeyBoardSettings())
+        self._display_values(HardwareInputTypes.KEYBOARD.settings())
 
     def _start_key_setting_sequence(self):
         """

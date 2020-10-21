@@ -14,7 +14,8 @@ class TemplateMPProcess(ModuleProcess):
 
 
     def do_function(self):
-        print(self.shared_values_hardware.keyboards)
+        # print(self.shared_values_hardware.joysticks['Joystick0'].throttle)
+        pass
         # try:
         #     print(self.shared_values_hardware.keyboardtest.brake)
         # except:

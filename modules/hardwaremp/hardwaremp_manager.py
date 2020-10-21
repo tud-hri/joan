@@ -2,7 +2,7 @@ from core.module_manager import ModuleManager
 from modules.joanmodules import JOANModules
 from .hardwaremp_inputtypes import HardwareInputTypes
 from .hardwaremp_settings import HardwareMPSettings
-from .hardwaremp_sharedvalues import KeyboardSharedValues
+from .hardwaremp_sharedvalues import KeyboardSharedValues, JoystickSharedValues
 
 
 class HardwareMPManager(ModuleManager):
@@ -17,8 +17,15 @@ class HardwareMPManager(ModuleManager):
         super().initialize()
         self.module_settings = self.settings
         total_amount_of_keyboards = len(self.settings.key_boards)
+        total_amount_of_joysticks = len(self.settings.joy_sticks)
+
         for i in range(0, total_amount_of_keyboards):
             self.shared_values.keyboards.update({'Keyboard ' + str(i): KeyboardSharedValues()})
+
+        for j in range(0, total_amount_of_joysticks):
+            self.shared_values.joysticks.update({'Joystick' + str(j): JoystickSharedValues()})
+
+
 
     def get_ready(self):
         return super().get_ready()
@@ -37,6 +44,8 @@ class HardwareMPManager(ModuleManager):
             hardware_input_settings = hardware_input_type.settings
             if hardware_input_type == HardwareInputTypes.KEYBOARD:
                 self.settings.key_boards.append(hardware_input_settings)
+            if hardware_input_type == HardwareInputTypes.JOYSTICK:
+                self.settings.joy_sticks.append(hardware_input_settings)
 
         self._hardware_inputs[hardware_input_name] = hardware_input_type.klass(self, hardware_input_name, hardware_input_settings)
         hardware_tab = self._hardware_inputs[hardware_input_name].get_hardware_input_tab

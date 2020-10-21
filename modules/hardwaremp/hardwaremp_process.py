@@ -13,11 +13,13 @@ class HardwareMPProcess(ModuleProcess):
     def get_ready(self):
         #Create appropriate classes here
         i = 0
-        for items in self._sharedvalues_module.keyboards:
-            self.input_classes[items] = HardwareInputTypes.KEYBOARD.klass_mp(settings = self.settings['Hardware MP']['key_boards'][i], shared_values = self._sharedvalues_module.keyboards[items])
-            i+= 1
+        for keyboards in self._sharedvalues_module.keyboards:
+            self.input_classes[keyboards] = HardwareInputTypes.KEYBOARD.klass_mp(settings = self.settings['Hardware MP']['key_boards'][i], shared_values = self._sharedvalues_module.keyboards[keyboards])
+            i += 1
+        for joysticks in self._sharedvalues_module.joysticks:
+            self.input_classes[joysticks] = HardwareInputTypes.JOYSTICK.klass_mp(settings = self.settings['Hardware MP']['joy_sticks'][i], shared_values = self._sharedvalues_module.joysticks[joysticks])
+            i += 1
 
-        # keyboardinput.hook(self.key_event, False)
 
     def do_function(self):
         for inputs in self.input_classes:
