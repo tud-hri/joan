@@ -31,7 +31,7 @@ class SteeringWheelControlDialog(JoanModuleDialog):
     def handle_state_change(self):
         """
         This function is called upon whenever the change of the module changes it checks whether its allowed to add
-        hardware (only possible in ready or idle states
+        hardware (only possible in ready or initialized states
 
         """
         super().handle_state_change()

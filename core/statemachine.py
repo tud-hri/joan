@@ -20,11 +20,11 @@ class StateMachine:
 
         # declare state changes that are illegal by default
 
-        #volgorde = stopped, idle, ready, running de rest is illegal
+        #volgorde = stopped, initialized, ready, running de rest is illegal
         self._transition_conditions[State.STOPPED][State.READY] = lambda: False
         self._transition_conditions[State.STOPPED][State.RUNNING] = lambda: False
 
-        self._transition_conditions[State.IDLE][State.RUNNING] = lambda: False
+        self._transition_conditions[State.INITIALIZED][State.RUNNING] = lambda: False
 
         self._transition_conditions[State.READY][State.INITIALIZED] = lambda: False
 

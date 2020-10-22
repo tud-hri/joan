@@ -110,7 +110,7 @@ class SteeringWheelControlAction(JoanModuleAction):
         self.initialize()
 
     def add_controller(self, controller_type, controller_settings=None):
-        # set the module to idle because we need to reinitialize our controllers!
+        # set the module to initialized because we need to reinitialize our controllers!
         self.state_machine.request_state_change(State.INITIALIZED, 'You can now add more and reinitialize controllers')
         number_of_controllers = sum([bool(controller_type.__str__() in k) for k in self._controllers.keys()]) + 1
         controller_name = controller_type.__str__() + ' ' + str(number_of_controllers)

@@ -161,22 +161,22 @@ class ExperimentManagerDialog(JoanModuleDialog):
 
     def _update_run_buttons_enabled(self):
         if self.module_action.current_experiment:
-            all_idle = bool(len(self.module_action.current_experiment.modules_included))
+            all_initialized = bool(len(self.module_action.current_experiment.modules_included))
             all_running = bool(len(self.module_action.current_experiment.modules_included))
             all_ready = bool(len(self.module_action.current_experiment.modules_included))
 
             for module in self.module_action.current_experiment.modules_included:
                 current_state = self.module_action.singleton_status.get_module_current_state(module)
 
-                all_idle &= current_state is State.INITIALIZED
+                all_initialized &= current_state is State.INITIALIZED
                 all_running &= current_state is State.RUNNING
                 all_ready &= current_state is State.READY
 
             self.module_widget.startAllPushButton.setEnabled(all_ready)
             self.module_widget.stopAllPushButton.setEnabled(all_running)
-            self.module_widget.initializeAllPushButton.setEnabled(all_idle)
+            self.module_widget.initializeAllPushButton.setEnabled(all_initialized)
 
-            if not all_idle or all_ready:
+            if not all_initialized or all_ready:
                 self.module_widget.activateConditionPushButton.setEnabled(False)
                 self.module_widget.transitionToNextConditionPushButton.setEnabled(False)
             else:

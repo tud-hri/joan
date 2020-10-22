@@ -4,7 +4,7 @@ from ctypes import *
 
 class TemplateMPSharedValues:
     def __init__(self):
-        self._state = mp.Value(c_int, -2)  # module state [idle, running, error]
+        self._state = mp.Value(c_int, -2)  # module state [initialized, running, error]
         self._time = mp.Value(c_float, 0.0)
 
     def __del__(self):
