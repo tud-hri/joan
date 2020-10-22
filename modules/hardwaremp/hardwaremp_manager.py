@@ -13,7 +13,7 @@ class HardwareMPManager(ModuleManager):
         self.hardware_input_type = None
         self.hardware_input_settings = None
 
-        self._hardware_input_settings_dict = {}  # TODO: Wat is deze?
+        self._hardware_input_settings_dict = {}  # TODO: Wat is deze? Deze is nu nodig om de individuele settings bij te houden, maar is een extra lijst (dezelfde lijst zit ook al in self.module_settings. Wordt gebruikt in regel 52. Maar, we kunnen settings ook removen op input naam of identifier. Kan deze dict weg.
         self._hardware_input_settingdialogs_dict = {}
 
         self.settings = self.module_settings
