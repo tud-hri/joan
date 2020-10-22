@@ -1,5 +1,5 @@
 from modules.joanmodules import JOANModules
-from core.modulesettings import ModuleSettings
+from core.module_settings import ModuleSettings
 
 from core.news import News
 import copy

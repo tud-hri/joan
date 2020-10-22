@@ -5,7 +5,7 @@ from pathlib import Path
 
 from PyQt5 import QtGui
 
-from core.modulesettings import ModuleSettings
+from core.module_settings import ModuleSettings
 from modules.joanmodules import JOANModules
 
 

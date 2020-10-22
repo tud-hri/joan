@@ -5,7 +5,7 @@ from enum import Enum
 from PyQt5 import QtGui
 
 from modules.joanmodules import JOANModules
-from core.modulesettings import ModuleSettings
+from core.module_settings import ModuleSettings
 
 
 class HardwareManagerSettings(ModuleSettings):
