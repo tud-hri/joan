@@ -1,7 +1,7 @@
 import enum
 
 from modules.joanmodules import JOANModules
-from core.modulesettings import ModuleSettings
+from core.module_settings import ModuleSettings
 
 
 class ControllerPlotterSettings(ModuleSettings):

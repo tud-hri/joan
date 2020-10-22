@@ -1,4 +1,4 @@
-from core.modulesettings import ModuleSettings
+from core.module_settings import ModuleSettings
 from modules.joanmodules import JOANModules
 from modules.scenarios.scenarios.scenarioslist import ScenariosList
 

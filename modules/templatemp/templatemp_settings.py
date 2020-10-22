@@ -3,7 +3,7 @@ from pathlib import Path
 from datetime import datetime
 
 from modules.joanmodules import JOANModules
-from core.modulesettings import ModuleSettings
+from core.module_settings import ModuleSettings
 from core.module_manager import ModuleManager
 
 class TemplateMPSettings(ModuleSettings):
