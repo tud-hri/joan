@@ -2,8 +2,6 @@ import os
 
 import keyboard
 from PyQt5 import QtWidgets, QtGui, uic
-
-from modules.hardwaremp.hardwaremp_inputclasses.baseinput import BaseInput
 from modules.hardwaremp.hardwaremp_inputtypes import HardwareInputTypes
 
 
@@ -135,51 +133,6 @@ class KeyBoardSettingsDialog(QtWidgets.QDialog):
                 self._set_key_counter = 0
                 self.button_box_settings.setEnabled(True)
                 self.btn_set_keys.setEnabled(True)
-
-
-class JOANKeyboard(BaseInput):
-    """
-    Main administrative class for Keyboard input (this is only to keep track of what is available in our main programme so this does not loop
-    at the set frequency in main.
-    """
-
-    def __init__(self, module_manager, hardware_input_list_key, settings):
-        super().__init__(hardware_input_type=HardwareInputTypes.KEYBOARD, module_manager=module_manager)
-        """
-        Initializes the class
-        :param hardware_manager_action:
-        :param keyboard_tab:
-        :param settings:
-        """
-        self.hardware_input_list_key = hardware_input_list_key
-        self.settings = settings
-        self.settings_dialog = None
-
-        self._hardware_input_tab.btn_settings.clicked.connect(self._open_settings_dialog)
-        self._hardware_input_tab.btn_settings.clicked.connect(self._open_settings_dialog_from_button)
-        self._hardware_input_tab.btn_visualization.setEnabled(False)
-
-        self._open_settings_dialog()
-
-    @property
-    def get_hardware_input_list_key(self):
-        return self.hardware_input_list_key
-
-    def _open_settings_dialog_from_button(self):
-        """
-        Opens and shows the settings dialog from the button on the tab
-        :return:
-        """
-        self._open_settings_dialog()
-        if self.settings_dialog:
-            self.settings_dialog.show()
-
-    def _open_settings_dialog(self):
-        """
-        Sets the appropriate values for settings but does not actually show the dialog
-        :return:
-        """
-        self.settings_dialog = KeyBoardSettingsDialog(self.settings)
 
 
 class JOANKeyboardMP:
