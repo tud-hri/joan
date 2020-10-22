@@ -10,17 +10,6 @@ class HardwareInputTypes(enum.Enum):
     SENSODRIVE = 2
 
     @property
-    def klass(self):
-        from modules.hardwaremp.hardwaremp_inputclasses.joankeyboard import JOANKeyboard
-        from modules.hardwaremp.hardwaremp_inputclasses.joanjoystick import JOANJoystick
-        from modules.hardwaremp.hardwaremp_inputclasses.joansensodrive import JOANSensoDrive
-
-        return {HardwareInputTypes.KEYBOARD: JOANKeyboard,
-                HardwareInputTypes.JOYSTICK: JOANJoystick,
-                HardwareInputTypes.SENSODRIVE: JOANSensoDrive
-                }[self]
-
-    @property
     def klass_mp(self):
         from modules.hardwaremp.hardwaremp_inputclasses.joankeyboard import JOANKeyboardMP
         from modules.hardwaremp.hardwaremp_inputclasses.joanjoystick import JOANJoystickMP
@@ -29,6 +18,17 @@ class HardwareInputTypes(enum.Enum):
         return {HardwareInputTypes.KEYBOARD: JOANKeyboardMP,
                 HardwareInputTypes.JOYSTICK: JOANJoystickMP,
                 HardwareInputTypes.SENSODRIVE: JOANSensoDriveMP
+                }[self]
+
+    @property
+    def klass_dialog(self):
+        from modules.hardwaremp.hardwaremp_inputclasses.joankeyboard import KeyBoardSettingsDialog
+        from modules.hardwaremp.hardwaremp_inputclasses.joanjoystick import JoystickSettingsDialog
+        from modules.hardwaremp.hardwaremp_inputclasses.joansensodrive import SensoDriveSettingsDialog
+
+        return {HardwareInputTypes.KEYBOARD: KeyBoardSettingsDialog,
+                HardwareInputTypes.JOYSTICK: JoystickSettingsDialog,
+                HardwareInputTypes.SENSODRIVE: SensoDriveSettingsDialog
                 }[self]
 
     @property

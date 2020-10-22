@@ -28,10 +28,10 @@ class HardwareMPDialog(ModuleDialog):
         super()._handle_state_change()
         if self._module_manager.state_machine.current_state != State.STOPPED:
             self._module_widget.btn_add_hardware.setEnabled(False)
-            # self._module_widget.hardware_groupbox.setEnabled(False)
+            self._module_widget.hardware_groupbox.setEnabled(False)
         else:
             self._module_widget.btn_add_hardware.setEnabled(True)
-            # self._module_widget.hardware_groupbox.setEnabled(True)
+            self._module_widget.hardware_groupbox.setEnabled(True)
 
     def _hardware_input_selection(self):
         self._input_type_dialog.combo_hardware_inputtype.clear()
