@@ -1,6 +1,7 @@
 from core.module_process import ModuleProcess
 from modules.hardwaremp.hardwaremp_inputtypes import HardwareInputTypes
 from modules.joanmodules import JOANModules
+from modules.hardwaremp.hardwaremp_settings import HardwareMPSettings
 
 
 class HardwareMPProcess(ModuleProcess):
@@ -11,6 +12,11 @@ class HardwareMPProcess(ModuleProcess):
         self.input_classes = {}
 
     def get_ready(self):
+        #Create empty settings object in which we will reconstruct our settings dictionary
+        settings = HardwareMPSettings()
+        mp_settings = settings.loadfrom_dict(self.settings)
+        print(mp_settings)
+
         #Create appropriate classes here (note that when a sensodrive is created it will start its own process, whereas the keyboards and joysticks do not)
         i = 0
         j = 0
