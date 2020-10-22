@@ -22,7 +22,8 @@ class ModuleProcess(mp.Process):
         self._time_step_in_ns = time_step_in_ms * 1e6
         self._time = 0.0
 
-        self._settings = settings.as_dict()
+        self._settings_as_dict = settings.as_dict()
+        self._settings_as_object = None
 
         self._start_event = start_event
 
@@ -30,8 +31,10 @@ class ModuleProcess(mp.Process):
         self._sharedvalues_module = news.read_news(module)
 
     def get_ready(self):
-        # apply the settings here (e.g. create the hardware objects, etc, depending on the module's functionality
-        pass
+        # settings dict back to settings object
+        self._settings_as_object = self.module.settings()  # create empty settings object
+        self._settings_as_object.load_from_dict(self._settings_as_dict)  # settings as object
+        print(self._settings_as_object)
 
     def do_function(self):
         pass
@@ -43,7 +46,7 @@ class ModuleProcess(mp.Process):
         :return:
         """
 
-        #self.get_ready()
+        self.get_ready()
         self._start_event.wait()
 
         # run

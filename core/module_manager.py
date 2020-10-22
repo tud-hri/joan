@@ -70,8 +70,7 @@ class ModuleManager(QtCore.QObject):
         
         # Start the process, run() will wait until start_event is set
         if self._process and not self._process.is_alive():
-            if self._process.get_ready():
-                self._process.start()
+            self._process.start()
 
         self.shared_values.state = self.state_machine.current_state.value
 
