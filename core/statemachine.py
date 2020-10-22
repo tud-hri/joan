@@ -119,7 +119,7 @@ class StateMachine:
                 state_change_is_legal, error_message = condition_evaluation
             else:
                 raise RuntimeError(
-                    "A transition condition function should return a boolean indicating if a transition is legal. Or a tuple conataining a "
+                    "A transition condition function should return a boolean indicating if a transition is legal. Or a tuple containing a "
                     "boolean and a (error) message to display. Received object was of type: " + str(type(condition_evaluation)))
 
             # TODO check if the exit and entry actions are successful, else move to error?
