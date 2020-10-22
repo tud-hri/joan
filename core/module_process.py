@@ -13,7 +13,7 @@ if platform.system() == 'Windows':
 
 
 class ModuleProcess(mp.Process):
-    def __init__(self, module: JOANModules, time_step_in_ms, news, start_event):
+    def __init__(self, module: JOANModules, time_step_in_ms, news, start_event, exception_event):
         super().__init__()
 
         if time_step_in_ms < 10:
@@ -24,6 +24,7 @@ class ModuleProcess(mp.Process):
         self._time = 0.0
 
         self._start_event = start_event
+        self._exception_event = exception_event
 
         # print(news.all_news)
         self._sharedvalues_module = news.read_news(module)
@@ -52,7 +53,7 @@ class ModuleProcess(mp.Process):
                 self._run_loop()
         except:
             # sys.excepthook is not called from within processes so can't be overridden. instead, catch all exceptions here and call the new excepthook manually
-            exception_log_and_kill_hook(*sys.exc_info(), self.module)
+            exception_log_and_kill_hook(*sys.exc_info(), self.module, self._exception_event)
 
     def _run_loop(self):
 

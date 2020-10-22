@@ -7,8 +7,8 @@ from modules.joanmodules import JOANModules
 
 class HardwareMPProcess(ModuleProcess):
 
-    def __init__(self, module: JOANModules, time_step_in_ms, news, start_event):
-        super().__init__(module, time_step_in_ms=time_step_in_ms, news=news, start_event=start_event)
+    def __init__(self, module: JOANModules, time_step_in_ms, news, start_event, exception_event):
+        super().__init__(module, time_step_in_ms=time_step_in_ms, news=news, start_event=start_event, exception_event=exception_event)
 
         self.shared_values = news.read_news(JOANModules.HARDWARE_MP)
 
@@ -24,7 +24,6 @@ class HardwareMPProcess(ModuleProcess):
         :param key:
         :return:
         """
-        boolean_key_press_value = key.event_type == keyboard.KEY_DOWN
         int_key_identifier = QtGui.QKeySequence(key.name)[0]
 
         # if int_key_identifier == 87:
