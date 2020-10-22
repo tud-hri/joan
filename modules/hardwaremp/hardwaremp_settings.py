@@ -35,16 +35,17 @@ class HardwareMPSettings(ModuleSettings):
         module_settings_to_load = loaded_dict[str(self._module_enum)]
 
         # clean up existing settings
-        while self.key_boards:
-            device = self.key_boards.pop()  # TODO: wat is deze?
-            del device
-        while self.joy_sticks:
-            device = self.joy_sticks.pop()
-            del device
-        while self.sensodrives:
-            device = self.sensodrives.pop()
-            del device
+        # while self.key_boards:
+        #     device = self.key_boards.pop()  # TODO: comment uit en maybe is het nodig maybe not
+        #     del device
+        # while self.joy_sticks:
+        #     device = self.joy_sticks.pop()
+        #     del device
+        # while self.sensodrives:
+        #     device = self.sensodrives.pop()
+        #     del device
 
+        #TODO Maak hier van de lists -> dicts
         self.key_boards = []
         for keyboard_settings_dict in module_settings_to_load['key_boards']:
             keyboard_settings = KeyBoardSettings()
@@ -64,6 +65,7 @@ class HardwareMPSettings(ModuleSettings):
             self.sensodrives.append(sensodrive_settings)
 
     def remove_hardware_input_device(self, setting):
+        #TODO dit ook naar dict
         if isinstance(setting, KeyBoardSettings):
             self.key_boards.remove(setting)
 
@@ -79,14 +81,14 @@ class KeyBoardSettings:
     Default keyboardinput settings that will load whenever a keyboardinput class is created.
     """
 
-    def __init__(self):
+    def __init__(self): #TODO Use identifier integer
         self.steer_left_key = QtGui.QKeySequence('a')[0]
         self.steer_right_key = QtGui.QKeySequence('d')[0]
         self.throttle_key = QtGui.QKeySequence('w')[0]
         self.brake_key = QtGui.QKeySequence('s')[0]
         self.reverse_key = QtGui.QKeySequence('r')[0]
         self.handbrake_key = QtGui.QKeySequence('space')[0]
-        self.name = "Keyboard"
+        # self.identifier = identifier
 
         # Steering Range
         self.min_steer = - 0.5 * math.pi

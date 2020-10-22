@@ -22,11 +22,11 @@ class HardwareMPManager(ModuleManager):
         super().initialize()
         self.module_settings = self.settings
         for idx, _ in enumerate(self.settings.key_boards):
-            self.shared_values.keyboards.update({'Keyboard ' + str(idx): KeyboardSharedValues()})
+            self.shared_values.keyboards['Keyboard ' + str(idx)] = KeyboardSharedValues()
         for idx, _ in enumerate(self.settings.joy_sticks):
-            self.shared_values.joysticks.update({'Joystick ' + str(idx): JoystickSharedValues()})
+            self.shared_values.joysticks['Joystick ' + str(idx)] = JoystickSharedValues()
         for idx, _ in enumerate(self.settings.sensodrives):
-            self.shared_values.sensodrives.update({'SensoDrive ' + str(idx): SensoDriveSharedValues()})
+            self.shared_values.sensodrives['SensoDrive ' + str(idx)] = SensoDriveSharedValues()
 
 
     def add_hardware_input(self, hardware_input_type, hardware_input_name, hardware_input_settings=None):

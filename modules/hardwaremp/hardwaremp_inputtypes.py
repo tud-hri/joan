@@ -76,3 +76,4 @@ class HardwareInputTypes(enum.Enum):
                 HardwareInputTypes.JOYSTICK: 'Joystick',
                 HardwareInputTypes.SENSODRIVE: 'SensoDrive'
                 }[self]
+
