@@ -7,6 +7,14 @@ from PyQt5 import QtWidgets, QtCore
 
 
 def exception_log_and_kill_hook(exctype, value, tb, joan_module):
+    """
+    Logs exception and kills the process
+    :param exctype: Exception type from from exc_info() in process
+    :param value: from exc_info() in process
+    :param tb: traceback from exc_info() in process
+    :param joan_module: module that had an exception, needed for log
+    :return:
+    """
     print('exception occurred in run process of the %s module' % str(joan_module))
     traceback.print_exception(exctype, value, tb)
 
