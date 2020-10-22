@@ -16,8 +16,6 @@ class HardwareMPProcess(ModuleProcess):
         settings = HardwareMPSettings()
         settings.load_from_dict(self.settings)
 
-        print(settings.key_boards)
-
         #Create appropriate classes here (note that when a sensodrive is created it will start its own process, whereas the keyboards and joysticks do not)
         for idx, keyboards in enumerate(self._sharedvalues_module.keyboards):
             self.input_classes[keyboards] = HardwareInputTypes.KEYBOARD.klass_mp(settings = settings.key_boards[idx],
