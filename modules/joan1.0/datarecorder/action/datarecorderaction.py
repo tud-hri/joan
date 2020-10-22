@@ -134,7 +134,7 @@ class DataRecorderAction(JoanModuleAction):
         """
         super().stop()
         self.data_writer.close()
-        self.state_machine.request_state_change(State.IDLE)
+        self.state_machine.request_state_change(State.INITIALIZED)
 
     def start(self):
         """

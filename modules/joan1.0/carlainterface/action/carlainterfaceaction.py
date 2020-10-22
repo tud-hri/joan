@@ -93,7 +93,7 @@ class CarlaInterfaceAction(JoanModuleAction):
         self.msg = QMessageBox()
 
         # state handling
-        self.state_machine.set_transition_condition(State.IDLE, State.READY, self._init_condition)
+        self.state_machine.set_transition_condition(State.INITIALIZED, State.READY, self._init_condition)
         self.state_machine.set_transition_condition(State.READY, State.RUNNING, self._starting_condition)
         self.state_machine.set_transition_condition(State.RUNNING, State.READY, self._stopping_condition)
 
@@ -275,7 +275,7 @@ class CarlaInterfaceAction(JoanModuleAction):
             self.vehicle_tags.clear()
             self._spawn_points.clear()
 
-            self.state_machine.request_state_change(State.IDLE, 'Carla Disconnected')
+            self.state_machine.request_state_change(State.INITIALIZED, 'Carla Disconnected')
 
             self.module_dialog.module_widget.btn_connect.setEnabled(not self.connected)
             self.module_dialog.module_widget.btn_disconnect.setEnabled(self.connected)
@@ -403,10 +403,10 @@ class CarlaInterfaceAction(JoanModuleAction):
             self.state_machine.request_state_change(State.ERROR,
                                                     "carla module is NOT imported, make sure the API is available and restart the program")
 
-        if self.state_machine.current_state is State.IDLE:
+        if self.state_machine.current_state is State.INITIALIZED:
             self.state_machine.request_state_change(State.READY, "You can now add vehicles and start module")
         elif self.state_machine.current_state is State.ERROR and 'carla' in sys.modules.keys():
-            self.state_machine.request_state_change(State.IDLE)
+            self.state_machine.request_state_change(State.INITIALIZED)
         return super().initialize()
 
     def start(self):

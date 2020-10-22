@@ -23,5 +23,5 @@ class ScenariosAction(JoanModuleAction):
         super().start()
 
     def stop(self):
-        self.state_machine.request_state_change(State.IDLE)
+        self.state_machine.request_state_change(State.INITIALIZED)
         super().stop()

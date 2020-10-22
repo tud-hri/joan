@@ -168,7 +168,7 @@ class ExperimentManagerDialog(JoanModuleDialog):
             for module in self.module_action.current_experiment.modules_included:
                 current_state = self.module_action.singleton_status.get_module_current_state(module)
 
-                all_idle &= current_state is State.IDLE
+                all_idle &= current_state is State.INITIALIZED
                 all_running &= current_state is State.RUNNING
                 all_ready &= current_state is State.READY
 

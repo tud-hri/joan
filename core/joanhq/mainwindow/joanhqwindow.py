@@ -116,7 +116,7 @@ class JoanHQWindow(QtWidgets.QMainWindow):
         if current_state is State.RUNNING:
             widget.lbl_state.setStyleSheet("background: lightgreen;")
             self._main_widget.btn_stop.setEnabled(True)
-        elif current_state is State.IDLE:
+        elif current_state is State.INITIALIZED:
             widget.lbl_state.setStyleSheet("background: lightblue;")
             self._main_widget.btn_get_ready.setEnabled(True)
         elif current_state is State.READY:

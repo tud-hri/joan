@@ -28,9 +28,9 @@ class ModuleManager(QtCore.QObject):
 
         # initialize state machine
         self.state_machine = StateMachine(module)
-        # self.state_machine.request_state_change(State.IDLE)
+        # self.state_machine.request_state_change(State.INITIALIZED)
 
-        self.state_machine.set_entry_action(State.IDLE, self.initialize)
+        self.state_machine.set_entry_action(State.INITIALIZED, self.initialize)
         self.state_machine.set_entry_action(State.READY, self.get_ready)
         self.state_machine.set_entry_action(State.RUNNING, self.start)
         self.state_machine.set_entry_action(State.STOPPED, self.stop)

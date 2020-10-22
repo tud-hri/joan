@@ -193,7 +193,7 @@ class DataplotterDialog(JoanModuleDialog):
                 self.state_widget.input_tick_millis.setEnabled(False)
                 self.state_widget.input_tick_millis.setStyleSheet("color: black;  background-color: lightgrey")
 
-            if current_state is State.IDLE:
+            if current_state is State.INITIALIZED:
                 self.state_widget.btn_start.setEnabled(False)
                 self.state_widget.btn_stop.setEnabled(False)
                 # load/save file

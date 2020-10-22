@@ -36,7 +36,7 @@ class JoanHQAction(QtCore.QObject):
         Initialize modules
         """
         for _, module in self._instantiated_modules.items():
-            module.state_machine.request_state_change(State.IDLE)
+            module.state_machine.request_state_change(State.INITIALIZED)
 
     def get_ready_modules(self):
         for _, module in self._instantiated_modules.items():

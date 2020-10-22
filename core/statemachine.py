@@ -24,17 +24,17 @@ class StateMachine:
         self._transition_conditions[State.STOPPED][State.READY] = lambda: False
         self._transition_conditions[State.STOPPED][State.RUNNING] = lambda: False
 
-        self._transition_conditions[State.IDLE][State.STOPPED] = lambda: False
-        self._transition_conditions[State.IDLE][State.RUNNING] = lambda: False
+        self._transition_conditions[State.INITIALIZED][State.STOPPED] = lambda: False
+        self._transition_conditions[State.INITIALIZED][State.RUNNING] = lambda: False
 
         self._transition_conditions[State.READY][State.STOPPED] = lambda: False
-        self._transition_conditions[State.READY][State.IDLE] = lambda: False
+        self._transition_conditions[State.READY][State.INITIALIZED] = lambda: False
 
         self._transition_conditions[State.RUNNING][State.READY] = lambda: False
-        self._transition_conditions[State.RUNNING][State.IDLE] = lambda: False
+        self._transition_conditions[State.RUNNING][State.INITIALIZED] = lambda: False
 
         # error only to stopped
-        self._transition_conditions[State.ERROR][State.IDLE] = lambda: False
+        self._transition_conditions[State.ERROR][State.INITIALIZED] = lambda: False
         self._transition_conditions[State.ERROR][State.READY] = lambda: False
         self._transition_conditions[State.ERROR][State.RUNNING] = lambda: False
 

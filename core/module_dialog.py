@@ -73,7 +73,7 @@ class ModuleDialog(QtWidgets.QDialog):
 
             if current_state is State.RUNNING:
                 self._state_widget.lbl_module_state.setStyleSheet("background: lightgreen;")
-            elif current_state is State.IDLE:
+            elif current_state is State.INITIALIZED:
                 self._state_widget.lbl_module_state.setStyleSheet("background: lightblue;")
             elif current_state is State.READY:
                 self._state_widget.lbl_module_state.setStyleSheet("background: yellow;")

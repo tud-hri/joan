@@ -44,14 +44,14 @@ class HardwareManagerDialog(JoanModuleDialog):
         super().handle_state_change()
 
         current_state = self.module_action.state_machine.current_state
-        if current_state == State.READY or current_state == State.IDLE:
+        if current_state == State.READY or current_state == State.INITIALIZED:
             self.module_widget.btn_add_hardware.setEnabled(True)
         else:
             self.module_widget.btn_add_hardware.setEnabled(False)
 
     def _hardware_input_selection(self):
-        # request state change to IDLE
-        self.module_action.state_machine.request_state_change(State.IDLE, '')
+        # request state change to INITIALIZED
+        self.module_action.state_machine.request_state_change(State.INITIALIZED, '')
 
         self._input_type_dialog.combo_hardware_inputtype.clear()
         for hardware_inputs in HardwareInputTypes:

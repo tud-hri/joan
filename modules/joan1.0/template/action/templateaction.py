@@ -31,7 +31,7 @@ class TemplateAction(JoanModuleAction):
         # transition conditions are called when transitioning and can impose simple or more complex rules to check is a state transition is legal.
         # If a state change is illegal it is also possible to add an error message explaining why the state change is illegal
         # what follows are an example of a simple en more complex condition:
-        self.state_machine.set_transition_condition(State.IDLE, State.READY, lambda: self.millis > 10)
+        self.state_machine.set_transition_condition(State.INITIALIZED, State.READY, lambda: self.millis > 10)
         self.state_machine.set_transition_condition(State.READY, State.RUNNING, self._starting_condition)
 
         # another possibility is to add entry and exit actions for states. This actions are executed when a state is entered or exited for example
@@ -131,10 +131,10 @@ class TemplateAction(JoanModuleAction):
         
         self.millis = self.settings.millis
 
-        # if (self.state_machine.current_state is State.IDLE):
+        # if (self.state_machine.current_state is State.INITIALIZED):
         self.state_machine.request_state_change(State.READY)  # , "You can now start the module")
         # elif (self.state_machine.current_state is State.ERROR):
-        #    self.state_machine.request_state_change(State.IDLE)
+        #    self.state_machine.request_state_change(State.INITIALIZED)
         return super().initialize()
 
     def start(self):
@@ -145,7 +145,7 @@ class TemplateAction(JoanModuleAction):
     def stop(self):
         """stop the module"""
         # Will automatically go to READY as defined above in self.state_machine.set_automatic_transition
-        self.state_machine.request_state_change(State.IDLE)
+        self.state_machine.request_state_change(State.INITIALIZED)
 
         return super().stop()
 

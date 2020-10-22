@@ -747,7 +747,7 @@ class ControllerPlotterAction(JoanModuleAction):
     def stop(self):
         """stop the module"""
         # Will automatically go to READY as defined above in self.state_machine.set_automatic_transition
-        self.state_machine.request_state_change(State.IDLE)
+        self.state_machine.request_state_change(State.INITIALIZED)
         self.module_dialog.module_widget.top_view_graph.clear()
         self.module_dialog.module_widget.torque_graph.clear()
         self.module_dialog.module_widget.errors_graph.clear()
