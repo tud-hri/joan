@@ -167,21 +167,21 @@ class JOANKeyboardMP:
         boolean_key_press_value = key.event_type == keyboard.KEY_DOWN
         int_key_identifier = QtGui.QKeySequence(key.name)[0]
 
-        if int_key_identifier == self.settings['throttle_key']:
+        if int_key_identifier == self.settings.throttle_key:
             self._throttle = boolean_key_press_value
-        elif int_key_identifier == self.settings['brake_key']:
+        elif int_key_identifier == self.settings.brake_key:
             self._brake = boolean_key_press_value
-        elif int_key_identifier == self.settings['steer_left_key']:
+        elif int_key_identifier == self.settings.steer_left_key:
             self._steer_left = boolean_key_press_value
             if boolean_key_press_value:
                 self._steer_right = False
-        elif int_key_identifier == self.settings['steer_right_key']:
+        elif int_key_identifier == self.settings.steer_right_key:
             self._steer_right = boolean_key_press_value
             if boolean_key_press_value:
                 self._steer_left = False
-        elif int_key_identifier == self.settings['handbrake_key']:
+        elif int_key_identifier == self.settings.handbrake_key:
             self._handbrake = boolean_key_press_value
-        elif int_key_identifier == self.settings['reverse_key'] and boolean_key_press_value:
+        elif int_key_identifier == self.settings.reverse_key and boolean_key_press_value:
             self._reverse = not self._reverse
 
     def do(self):
@@ -195,41 +195,53 @@ class JOANKeyboardMP:
             self.shared_values.handbrake = self.handbrake
             self.shared_values.reverse = self.reverse
         """
+
+        brake_temp = self.shared_values.read_from_shared_values(brake)
+        throttle_temp = self.shared_values.throttle
+        steer_temp = self.shared_values.steering_angle
+        handbrake_temp = self.shared_values.handbrake
+        reverse_temp = self.shared_values.reverse
+
         # Throttle:
-        if self._throttle and self.shared_values.throttle < 1:
-            self.shared_values.throttle = self.shared_values.throttle + (0.05 * self.settings['throttle_sensitivity'] / 100)
-        elif self.shared_values.throttle > 0 and not self._throttle:
-            self.shared_values.throttle = self.shared_values.throttle - (0.05 * self.settings['throttle_sensitivity'] / 100)
-        elif self.shared_values.throttle < 0:
-            self.shared_values.throttle = 0
-        elif self.shared_values.throttle > 1:
-            self.shared_values.throttle = 1
+        if self._throttle and throttle_temp < 1:
+            throttle_temp = throttle_temp + (0.05 * self.settings.throttle_sensitivity / 100)
+        elif throttle_temp > 0 and not self._throttle:
+            throttle_temp = throttle_temp - (0.05 * self.settings.throttle_sensitivity / 100)
+        elif throttle_temp < 0:
+            throttle_temp = 0
+        elif throttle_temp > 1:
+            throttle_temp = 1
 
         # Brake:
-        if self._brake and self.shared_values.brake < 1:
-            self.shared_values.brake = self.shared_values.brake + (0.05 * self.settings['brake_sensitivity'] / 100)
-        elif self.shared_values.brake > 0 and not self._brake:
-            self.shared_values.brake = self.shared_values.brake - (0.05 * self.settings['brake_sensitivity'] / 100)
-        elif self.shared_values.brake < 0:
-            self.shared_values.brake = 0
-        elif self.shared_values.brake > 1:
-            self.shared_values.brake = 1
+        if self._brake and brake_temp < 1:
+            brake_temp = brake_temp + (0.05 * self.settings.brake_sensitivity / 100)
+        elif brake_temp > 0 and not self._brake:
+            brake_temp = brake_temp - (0.05 * self.settings.brake_sensitivity / 100)
+        elif brake_temp < 0:
+            brake_temp = 0
+        elif brake_temp > 1:
+            brake_temp = 1
 
         # Steering:
-        if self._steer_left and self.settings['max_steer'] >= self.shared_values.steering_angle >= self.settings['min_steer']:
-            self.shared_values.steering_angle = self.shared_values.steering_angle - (self.settings['steer_sensitivity'] / 10000)
-        elif self._steer_right and self.settings['min_steer'] <= self.shared_values.steering_angle <= self.settings['max_steer']:
-            self.shared_values.steering_angle = self.shared_values.steering_angle + (self.settings['steer_sensitivity'] / 10000)
-        elif self.shared_values.steering_angle > 0 and self.settings.auto_center:
-            self.shared_values.steering_angle = self.shared_values.steering_angle - (self.settings['steer_sensitivity'] / 10000)
-        elif self.shared_values.steering_angle < 0 and self.settings.auto_center:
-            self.shared_values.steering_angle = self.shared_values.steering_angle + (self.settings['steer_sensitivity'] / 10000)
+        if self._steer_left and self.settings.max_steer >= steer_temp >= self.settings.min_steer:
+            steer_temp = steer_temp - (self.settings.steer_sensitivity / 10000)
+        elif self._steer_right and self.settings.min_steer <= steer_temp <= self.settings.max_steer:
+            steer_temp = steer_temp + (self.settings.steer_sensitivity / 10000)
+        elif steer_temp > 0 and self.settings.auto_center:
+            steer_temp = steer_temp - (self.settings.steer_sensitivity / 10000)
+        elif steer_temp < 0 and self.settings.auto_center:
+            steer_temp = steer_temp + (self.settings.steer_sensitivity / 10000)
 
-        if abs(self.shared_values.steering_angle) < self.settings['steer_sensitivity'] / 10000:
-            self.shared_values.steering_angle = 0
+        if abs(steer_temp) < self.settings.steer_sensitivity / 10000:
+            steer_temp = 0
 
         # Reverse
-        self.shared_values.reverse = self._reverse
+        reverse_temp = self._reverse
+        handbrake_temp = self._handbrake
 
-        # Handbrake
-        self.shared_values.handbrake = self._handbrake
+        # Set the shared variables again:
+        self.shared_values.brake = brake_temp
+        self.shared_values.throttle = throttle_temp
+        self.shared_values.steering_angle = steer_temp
+        self.shared_values.handbrake = handbrake_temp
+        self.shared_values.reverse = reverse_temp

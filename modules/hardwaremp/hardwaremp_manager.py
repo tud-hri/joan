@@ -1,7 +1,6 @@
 from core.module_manager import ModuleManager
 from modules.joanmodules import JOANModules
 from .hardwaremp_inputtypes import HardwareInputTypes
-from .hardwaremp_settings import HardwareMPSettings
 from .hardwaremp_sharedvalues import KeyboardSharedValues, JoystickSharedValues, SensoDriveSharedValues
 from PyQt5 import uic
 
@@ -18,23 +17,18 @@ class HardwareMPManager(ModuleManager):
         self._hardware_input_settings_dict = {}
         self._hardware_input_settingdialogs_dict = {}
 
-        self.settings = HardwareMPSettings()
+        self.settings = self.module_settings
 
     def initialize(self):
         super().initialize()
         self.module_settings = self.settings
-        total_amount_of_keyboards = len(self.settings.key_boards)
-        total_amount_of_joysticks = len(self.settings.joy_sticks)
-        total_amount_of_sensodrives = len(self.settings.sensodrives)
+        for idx, _ in enumerate(self.settings.key_boards):
+            self.shared_values.keyboards.update({'Keyboard ' + str(idx): KeyboardSharedValues()})
+        for idx, _ in enumerate(self.settings.joy_sticks):
+            self.shared_values.joysticks.update({'Joystick ' + str(idx): JoystickSharedValues()})
+        for idx, _ in enumerate(self.settings.sensodrives):
+            self.shared_values.sensodrives.update({'SensoDrive ' + str(idx): SensoDriveSharedValues()})
 
-        for i in range(0, total_amount_of_keyboards):
-            self.shared_values.keyboards.update({'Keyboard ' + str(i): KeyboardSharedValues()})
-
-        for j in range(0, total_amount_of_joysticks):
-            self.shared_values.joysticks.update({'Joystick ' + str(j): JoystickSharedValues()})
-
-        for k in range(0, total_amount_of_sensodrives):
-            self.shared_values.sensodrives.update({'SensoDrive ' + str(k): SensoDriveSharedValues()})
 
     def add_hardware_input(self, hardware_input_type, hardware_input_name, hardware_input_settings=None):
         " Here we just add the settings and settings dialog functionality"
