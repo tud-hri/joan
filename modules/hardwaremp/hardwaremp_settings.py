@@ -31,14 +31,12 @@ class HardwareMPSettings(ModuleSettings):
         :param loaded_dict: (dict) dictionary containing the settings to load
         :return: None
         """
-        # prepare the module for the new settings
-        # self.before_load_settings.emit()
 
         module_settings_to_load = loaded_dict[str(self._module_enum)]
 
         # clean up existing settings
         while self.key_boards:
-            device = self.key_boards.pop()
+            device = self.key_boards.pop()  # TODO: wat is deze?
             del device
         while self.joy_sticks:
             device = self.joy_sticks.pop()
@@ -64,51 +62,6 @@ class HardwareMPSettings(ModuleSettings):
             sensodrive_settings = SensoDriveSettings()
             sensodrive_settings.set_from_loaded_dict(sensodrive)
             self.sensodrives.append(sensodrive_settings)
-
-        # done loading settings, emit signal
-        # self.load_settings_done.emit()
-
-    # @staticmethod
-    # def _copy_dict(source, destination):
-    #     for key, value in source.items():
-    #         if isinstance(value, list):
-    #             destination[key] = HardwareManagerSettings._copy_list(value)
-    #         elif isinstance(value, dict):
-    #             try:
-    #                 destination[key]  # make sure that the destination dict has an entry at key
-    #             except KeyError:
-    #                 destination[key] = dict()
-    #             HardwareManagerSettings._copy_dict(value, destination[key])
-    #         elif hasattr(value, '__dict__') and not isinstance(value, Enum) and not inspect.isclass(value):
-    #             # recognize custom class object by checking if these have a __dict__, Enums and static classes should be copied as a whole
-    #             # convert custom classes to dictionaries
-    #             try:
-    #                 # make use of the as_dict function is it exists
-    #                 destination[key] = value.as_dict()
-    #             except NotImplementedError:
-    #                 destination[key] = dict()
-    #                 HardwareManagerSettings._copy_dict(value.__dict__, destination[key])
-    #         else:
-    #             destination[key] = source[key]
-    #
-    # @staticmethod
-    # def _copy_list(source):
-    #     output_list = []
-    #     for index, item in enumerate(source):
-    #         if isinstance(item, list):
-    #             output_list.append(HardwareManagerSettings._copy_list(item))
-    #         elif hasattr(item, '__dict__') and not isinstance(item, Enum) and not inspect.isclass(item):
-    #             # recognize custom class object by checking if these have a __dict__, Enums and static classes should be copied as a whole
-    #             # convert custom classes to dictionaries
-    #             try:
-    #                 # make use of the as_dict function is it exists
-    #                 output_list.append(item.as_dict())
-    #             except NotImplementedError:
-    #                 output_list.append(dict())
-    #                 HardwareManagerSettings._copy_dict(item.__dict__, output_list[index])
-    #         else:
-    #             output_list.append(item)
-    #     return output_list
 
     def remove_hardware_input_device(self, setting):
         if isinstance(setting, KeyBoardSettings):
