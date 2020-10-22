@@ -6,6 +6,7 @@ from PyQt5 import QtCore
 from core import Settings
 from core.statemachine import StateMachine
 from core.statesenum import State
+from core.joanhq.action.centralstatemonitor import CentralStateMonitor
 from modules.joanmodules import JOANModules
 
 
@@ -21,6 +22,8 @@ class JoanHQAction(QtCore.QObject):
         super(QtCore.QObject, self).__init__()
 
         self.window = None
+
+        self.central_state_monitor = CentralStateMonitor()
 
         # settings
         self.singleton_settings = Settings()
@@ -70,7 +73,7 @@ class JoanHQAction(QtCore.QObject):
 
         module_manager = module.manager(time_step_in_ms=time_step_in_ms, parent=parent)
 
-        # module_manager.state_machine.add_state_change_listener(self.handle_module_state_changes)
+        self.central_state_monitor.register_state_machine(module, module_manager.state_machine)
 
         self.window.add_module(module_manager)
 

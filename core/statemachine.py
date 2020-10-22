@@ -24,10 +24,8 @@ class StateMachine:
         self._transition_conditions[State.STOPPED][State.READY] = lambda: False
         self._transition_conditions[State.STOPPED][State.RUNNING] = lambda: False
 
-        self._transition_conditions[State.INITIALIZED][State.STOPPED] = lambda: False
-        self._transition_conditions[State.INITIALIZED][State.RUNNING] = lambda: False
+        self._transition_conditions[State.IDLE][State.RUNNING] = lambda: False
 
-        self._transition_conditions[State.READY][State.STOPPED] = lambda: False
         self._transition_conditions[State.READY][State.INITIALIZED] = lambda: False
 
         self._transition_conditions[State.RUNNING][State.READY] = lambda: False
@@ -119,7 +117,7 @@ class StateMachine:
                 state_change_is_legal, error_message = condition_evaluation
             else:
                 raise RuntimeError(
-                    "A transition condition function should return a boolean indicating if a transition is legal. Or a tuple conataining a "
+                    "A transition condition function should return a boolean indicating if a transition is legal. Or a tuple containing a "
                     "boolean and a (error) message to display. Received object was of type: " + str(type(condition_evaluation)))
 
             # TODO check if the exit and entry actions are successful, else move to error?
