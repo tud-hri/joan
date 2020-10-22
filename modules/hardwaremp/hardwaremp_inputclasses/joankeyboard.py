@@ -196,11 +196,9 @@ class JOANKeyboardMP:
             self.shared_values.reverse = self.reverse
         """
 
-        brake_temp = self.shared_values.read_from_shared_values(brake)
+        brake_temp = self.shared_values.brake
         throttle_temp = self.shared_values.throttle
         steer_temp = self.shared_values.steering_angle
-        handbrake_temp = self.shared_values.handbrake
-        reverse_temp = self.shared_values.reverse
 
         # Throttle:
         if self._throttle and throttle_temp < 1:
