@@ -37,16 +37,6 @@ class HardwareMPManager(ModuleManager):
         for k in range(0, total_amount_of_sensodrives):
             self.shared_values.sensodrives.update({'SensoDrive ' + str(k): SensoDriveSharedValues()})
 
-
-    # def get_ready(self):
-    #     return super().get_ready()
-    #
-    # def start(self):
-    #     return super().start()
-    #
-    # def stop(self):
-    #     return super().stop()
-
     def add_hardware_input(self, hardware_input_type, hardware_input_settings=None):
         number_of_inputs = sum([bool(hardware_input_type.__str__() in k) for k in self._hardware_input_tabs_dict.keys()]) + 1
         hardware_input_name = hardware_input_type.__str__() + ' ' + str(number_of_inputs)
