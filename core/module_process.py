@@ -5,6 +5,7 @@ import time
 
 from core.statesenum import State
 from modules.joanmodules import JOANModules
+from core.module_settings import ModuleSettings
 
 if platform.system() == 'Windows':
     import wres
@@ -21,23 +22,16 @@ class ModuleProcess(mp.Process):
         self._time_step_in_ns = time_step_in_ms * 1e6
         self._time = 0.0
 
-        self._settings = settings
+        self._settings = settings.as_dict()
 
         self._start_event = start_event
 
         # print(news.all_news)
         self._sharedvalues_module = news.read_news(module)
 
-    def get_ready(self, runtime_settings):
-        """
-        Settings that are only available during runtime (e.g. keyboard, joystick) are
-        added to the already existing settings that were created in the <module>_settings.py
-        Example: The module templatemp has a templatemp_settings.py with module-specific settings
-        :param runtime_settings: a dictionary with settings
-        to be overidden by the child method
-        """
+    def get_ready(self):
+        # apply the settings here (e.g. create the hardware objects, etc, depending on the module's functionality
         pass
-
 
     def do_function(self):
         pass

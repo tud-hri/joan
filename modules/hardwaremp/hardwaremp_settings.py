@@ -9,7 +9,7 @@ from core.module_settings import ModuleSettings
 from modules.joanmodules import JOANModules
 
 
-class HardwareManagerSettings(ModuleSettings):
+class HardwareMPSettings(ModuleSettings):
     def __init__(self, settings_filename='./default_setting.json'):
         super().__init__(JOANModules.HARDWARE_MP)
 
@@ -31,8 +31,6 @@ class HardwareManagerSettings(ModuleSettings):
         :param loaded_dict: (dict) dictionary containing the settings to load
         :return: None
         """
-        # prepare the module for the new settings
-        self.before_load_settings.emit()
 
         module_settings_to_load = loaded_dict[str(self._module_enum)]
 
@@ -65,84 +63,6 @@ class HardwareManagerSettings(ModuleSettings):
             sensodrive_settings.set_from_loaded_dict(sensodrive)
             self.sensodrives.append(sensodrive_settings)
 
-        # done loading settings, emit signal
-        self.load_settings_done.emit()
-
-    '''
-    TODO: remove this
-    @staticmethod
-    def _copy_dict(source, destination):
-        for key, value in source.items():
-            if isinstance(value, list):
-                destination[key] = HardwareManagerSettings._copy_list(value)
-            elif isinstance(value, dict):
-                try:
-                    destination[key]  # make sure that the destination dict has an entry at key
-                except KeyError:
-                    destination[key] = dict()
-                HardwareManagerSettings._copy_dict(value, destination[key])
-            elif hasattr(value, '__dict__') and not isinstance(value, Enum) and not inspect.isclass(value):
-                # recognize custom class object by checking if these have a __dict__, Enums and static classes should be copied as a whole
-                # convert custom classes to dictionaries
-                try:
-                    # make use of the as_dict function is it exists
-                    destination[key] = value.as_dict()
-                except NotImplementedError:
-                    destination[key] = dict()
-                    HardwareManagerSettings._copy_dict(value.__dict__, destination[key])
-            else:
-                destination[key] = source[key]
-
-    @staticmethod
-    def _copy_list(source):
-        output_list = []
-        for index, item in enumerate(source):
-            if isinstance(item, list):
-                output_list.append(HardwareManagerSettings._copy_list(item))
-            elif hasattr(item, '__dict__') and not isinstance(item, Enum) and not inspect.isclass(item):
-                # recognize custom class object by checking if these have a __dict__, Enums and static classes should be copied as a whole
-                # convert custom classes to dictionaries
-                try:
-                    # make use of the as_dict function is it exists
-                    output_list.append(item.as_dict())
-                except NotImplementedError:
-                    output_list.append(dict())
-                    HardwareManagerSettings._copy_dict(item.__dict__, output_list[index])
-            else:
-                output_list.append(item)
-        return output_list
-    '''
-    def is_empty(self):
-        """
-        Used from hardwaremp_process.py when selecting an inputdevice at runtime
-        TODO: check if this is want we want
-        """
-        count = 0
-        for element in self.key_boards:
-            if isinstance(element, KeyBoardSettings):
-                count += 1
-        for element in self.joy_sticks:
-            if isinstance(element, JoyStickSettings):
-                count += 1
-        for element in self.sensodrives:
-            if isinstance(element, SensoDriveSettings):
-                count += 1
-        return count == 0
-
-    def append_hardware_input_device(self, setting):
-        """
-        Used from hardwaremp_process.py when selecting an inputdevice at runtime
-        TODO: check if this is want we want
-        """
-        if isinstance(setting, KeyBoardSettings):
-            self.key_boards.append(setting)
-
-        if isinstance(setting, JoyStickSettings):
-            self.joy_sticks.append(setting)
-
-        if isinstance(setting, SensoDriveSettings):
-            self.sensodrives.append(setting)
-
     def remove_hardware_input_device(self, setting):
         if isinstance(setting, KeyBoardSettings):
             self.key_boards.remove(setting)
@@ -156,7 +76,7 @@ class HardwareManagerSettings(ModuleSettings):
 
 class KeyBoardSettings:
     """
-    Default keyboard settings that will load whenever a keyboard class is created.
+    Default keyboardinput settings that will load whenever a keyboardinput class is created.
     """
 
     def __init__(self):
@@ -190,7 +110,7 @@ class KeyBoardSettings:
 
 class JoyStickSettings:
     """
-    Default joystick settings that will load whenever a keyboard class is created.
+    Default joystick settings that will load whenever a keyboardinput class is created.
     """
 
     def __init__(self):
@@ -253,7 +173,7 @@ class JoyStickSettings:
 
 class SensoDriveSettings:
     """
-    Default sensodrive settings that will load whenever a keyboard class is created.
+    Default sensodrive settings that will load whenever a keyboardinput class is created.
     """
 
     def __init__(self):

@@ -44,7 +44,14 @@
       <string>hardware_name</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
-      <item row="0" column="4" rowspan="2">
+      <item row="0" column="1" rowspan="2">
+       <widget class="Line" name="line_3">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2" rowspan="2">
        <widget class="QPushButton" name="btn_remove_hardware">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -63,21 +70,7 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="3" rowspan="2">
-       <widget class="Line" name="line_3">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1" rowspan="2">
-       <widget class="Line" name="line_2">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="2" rowspan="2">
+      <item row="0" column="0" rowspan="2">
        <widget class="QPushButton" name="btn_settings">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -93,25 +86,6 @@
         </property>
         <property name="text">
          <string>Settings</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0" rowspan="2">
-       <widget class="QPushButton" name="btn_visualization">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="font">
-         <font>
-          <weight>50</weight>
-          <bold>false</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>Visualization</string>
         </property>
        </widget>
       </item>
