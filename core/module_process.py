@@ -1,18 +1,21 @@
+import multiprocessing as mp
 import platform
 import sys
-
-import multiprocessing as mp
 import time
 
+from core.exceptionhook import exception_log_and_kill_hook
 from core.statesenum import State
 from modules.joanmodules import JOANModules
-from core.exceptionhook import exception_log_and_kill_hook
 
 if platform.system() == 'Windows':
     import wres
 
 
 class ModuleProcess(mp.Process):
+    """
+    Base class for the module process.
+    """
+
     def __init__(self, module: JOANModules, time_step_in_ms, news, start_event, exception_event):
         super().__init__()
 
@@ -23,22 +26,33 @@ class ModuleProcess(mp.Process):
         self._time_step_in_ns = time_step_in_ms * 1e6
         self._time = 0.0
 
+        # extract shared variables from news
+        self._module_shared_variables = news.read_news(module)
+
+        # mp.Events
         self._start_event = start_event
         self._exception_event = exception_event
 
-        # print(news.all_news)
-        self._sharedvalues_module = news.read_news(module)
-
     def get_ready(self):
+        """
+        get_ready is called when the module goes to READY state. This function is called from the new process (in run()).
+        :return:
+        """
         pass
 
     def do_function(self):
+        """
+        User-defined function, in which the user's desired operations occur every loop cycle.
+        :return:
+        """
         pass
 
     def run(self):
         """
-        Run function, starts once process.start is called.
-        Note: anything you created in __init__ needs to be picklable. If not, create the non-picklable objects in the function get_ready
+        Run function, starts once start() is called.
+        Note: anything you created in __init__ and you want to use in run() needs to be picklable. Failing the 'picklable' requirement will result in errors.
+        If you need to use an object from __init__ that is not picklable, see if you can translate your object into something
+        picklable (lists, dicts, primitives etc) and create a new object in here. Example: settings in get_ready.
         :return:
         """
         try:
@@ -56,7 +70,12 @@ class ModuleProcess(mp.Process):
             exception_log_and_kill_hook(*sys.exc_info(), self.module, self._exception_event)
 
     def _run_loop(self):
-
+        """
+        The run loop, which attempts to run at a desired frequency (through time.sleep).
+        Keeps track of time.
+        Shared variables should only be read or written to once per loop tick (e.g. read shared variables, store in local variables, and write to sv
+        :return:
+        """
         running = True
         while running:
             t0 = time.perf_counter_ns()
@@ -69,7 +88,7 @@ class ModuleProcess(mp.Process):
 
             self.write_to_shared_values()
 
-            if self._sharedvalues_module.state == State.STOPPED.value:
+            if self._module_shared_variables.state == State.STOPPED.value:
                 running = False
 
             execution_time = time.perf_counter_ns() - t0
@@ -78,7 +97,7 @@ class ModuleProcess(mp.Process):
 
     def read_from_shared_values(self):
         """
-        Read all needed values from shared and copy them to local values here.
+        Read all needed values from shared and copy them to local variables.
         This should be done here only; before executing the do function
         :return:
         """
@@ -86,7 +105,7 @@ class ModuleProcess(mp.Process):
 
     def write_to_shared_values(self):
         """
-        Write to shared values. This should only happen in this function!
+        Write to shared values from your local variables. This should only happen in this function!
         :return:
         """
-        self._sharedvalues_module.time = self._time
+        self._module_shared_variables.time = self._time
