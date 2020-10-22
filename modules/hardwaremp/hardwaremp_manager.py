@@ -2,7 +2,6 @@ from core.module_manager import ModuleManager
 from modules.joanmodules import JOANModules
 from .hardwaremp_inputtypes import HardwareInputTypes
 from .hardwaremp_sharedvalues import KeyboardSharedValues, JoystickSharedValues, SensoDriveSharedValues
-from PyQt5 import uic
 
 
 class HardwareMPManager(ModuleManager):
@@ -14,7 +13,7 @@ class HardwareMPManager(ModuleManager):
         self.hardware_input_type = None
         self.hardware_input_settings = None
 
-        self._hardware_input_settings_dict = {}
+        self._hardware_input_settings_dict = {}  # TODO: Wat is deze?
         self._hardware_input_settingdialogs_dict = {}
 
         self.settings = self.module_settings

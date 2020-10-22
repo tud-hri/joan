@@ -1,14 +1,12 @@
+import math
 import multiprocessing as mp
 import os
 import time
-import math
-from ctypes import *
+
 from PyQt5 import uic, QtWidgets
 
-from modules.hardwaremp.hardwaremp_settings import SensoDriveSettings
-from modules.hardwaremp.hardwaremp_inputtypes import HardwareInputTypes
-from modules.joanmodules import JOANModules
 from modules.hardwaremp.hardwaremp_inputclasses.PCANBasic import *
+from modules.hardwaremp.hardwaremp_settings import SensoDriveSettings
 
 """
 These global parameters are used to make the message ID's more identifiable than just the hex nr.
@@ -25,7 +23,8 @@ PEDAL_MESSAGE_SEND_ID = 0x20C
 PEDAL_MESSAGE_RECEIVE_ID = 0x21C
 PEDAL_MESSAGE_LENGTH = 2
 
-class SensoDriveSettingsDialog(QtWidgets.QDialog):
+
+class SensoDriveSettingsDialog(QtWidgets.QDialog):  # TODO aparte files voor classes maken
     """
     Class for the settings Dialog of a SensoDrive, this class should pop up whenever it is asked by the user or when
     creating the joystick class for the first time. NOTE: it should not show whenever settings are loaded by .json file.
@@ -91,7 +90,8 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
         """
         self._display_values(SensoDriveSettings())
 
-#
+
+#  TODO: wat is deze?
 # class JOANSensoDrive(BaseInput):
 #     """
 #     Main class for the SensoDrive input, inherits from BaseInput (as it should!)
@@ -381,7 +381,8 @@ class JOANSensoDriveMP:
         self.settings_dialog = None
         self.shared_values = shared_values
 
-class SensoDriveComm(mp.Process):
+
+class SensoDriveComm(mp.Process):  # TODO: hoe zit dit met een process in een process?
     def __init__(self, shared_values, init_event, turn_on_event, turn_off_event, clear_error_event, close_event, update_event):
         super().__init__()
         self.init_event = init_event
@@ -436,8 +437,10 @@ class SensoDriveComm(mp.Process):
 
         # Convert our shared settings to bytes
         endstops_bytes = int.to_bytes(int(math.degrees(self.sensodrive_communication_values.endstops)), 2, byteorder='little', signed=True)
-        torque_limit_between_endstops_bytes = int.to_bytes(self.sensodrive_communication_values.torque_limit_between_endstops, 1, byteorder='little', signed=False)
-        torque_limit_beyond_endstops_bytes = int.to_bytes(self.sensodrive_communication_values.torque_limit_beyond_endstops, 1, byteorder='little', signed=False)
+        torque_limit_between_endstops_bytes = int.to_bytes(self.sensodrive_communication_values.torque_limit_between_endstops, 1, byteorder='little',
+                                                           signed=False)
+        torque_limit_beyond_endstops_bytes = int.to_bytes(self.sensodrive_communication_values.torque_limit_beyond_endstops, 1, byteorder='little',
+                                                          signed=False)
 
         # We need to have our init message here as well
         self.sensodrive_initialization_message.ID = INITIALIZATION_MESSAGE_ID
@@ -485,8 +488,10 @@ class SensoDriveComm(mp.Process):
 
     def update_settings(self):
         endstops_bytes = int.to_bytes(int(math.degrees(self.sensodrive_communication_values.endstops)), 2, byteorder='little', signed=True)
-        torque_limit_between_endstops_bytes = int.to_bytes(self.sensodrive_communication_values.torque_limit_between_endstops, 1, byteorder='little', signed=False)
-        torque_limit_beyond_endstops_bytes = int.to_bytes(self.sensodrive_communication_values.torque_limit_beyond_endstops, 1, byteorder='little', signed=False)
+        torque_limit_between_endstops_bytes = int.to_bytes(self.sensodrive_communication_values.torque_limit_between_endstops, 1, byteorder='little',
+                                                           signed=False)
+        torque_limit_beyond_endstops_bytes = int.to_bytes(self.sensodrive_communication_values.torque_limit_beyond_endstops, 1, byteorder='little',
+                                                          signed=False)
 
         # We need to have our init message here as well
         self.sensodrive_initialization_message.ID = INITIALIZATION_MESSAGE_ID
@@ -513,6 +518,7 @@ class SensoDriveComm(mp.Process):
 
         self._current_state_hex = response[1].DATA[0]
         self.sensodrive_communication_values.sensodrive_motorstate = self._current_state_hex
+
     def _map_si_to_sensodrive(self, shared_values):
         # convert SI units to Sensowheel units
 
@@ -561,7 +567,7 @@ class SensoDriveComm(mp.Process):
                 self.turn_off_event.clear()
 
             # Get latest parameters
-            time.sleep(0.00001)
+            time.sleep(0.00001)  # TODO: wat is hier het idee? dit kan nogal wat vertraging veroorzaken. In windows is dit een sleep van +- 15 ms
 
             # convert SI units to Sensowheel units
             self.steering_wheel_parameters = self._map_si_to_sensodrive(self.sensodrive_communication_values)
@@ -682,9 +688,6 @@ class SensoDriveComm(mp.Process):
         time.sleep(0.002)
         self.sensodrive_communication_values.sensodrive_motorstate = self._current_state_hex
 
-
-
-
     def on_to_off(self, message):
         """
         If a PCAN dongle is connected and working will try to move the state of the sensodrive from on to off.
@@ -720,6 +723,7 @@ class SensoDriveComm(mp.Process):
         time.sleep(0.002)
         self.sensodrive_communication_values.sensodrive_motorstate = self._current_state_hex
 
+
 class SensoDriveCommunicationValues:
     """"
     This class contains all the variables that are shared between the seperate hardware communication core and the
@@ -728,29 +732,29 @@ class SensoDriveCommunicationValues:
 
     def __init__(self):
         # Encoder Values
-        self._steering_angle = mp.Value(c_float, 0.0)             # [rad]
-        self._throttle = mp.Value(c_float, 0.0)                   # [-] 0 - 1
-        self._brake = mp.Value(c_float, 0.0)                      # [-] 0 - 1
+        self._steering_angle = mp.Value(c_float, 0.0)  # [rad]
+        self._throttle = mp.Value(c_float, 0.0)  # [-] 0 - 1
+        self._brake = mp.Value(c_float, 0.0)  # [-] 0 - 1
 
-        self._steering_rate = mp.Value(c_float, 0.0)          # [rad/s]
+        self._steering_rate = mp.Value(c_float, 0.0)  # [rad/s]
 
         # Steering Parameter Values
-        self._friction = mp.Value(c_float, 0.0)                     # [Nm]
-        self._damping = mp.Value(c_float, 0.0)                      # [Nm s / rad]
-        self._spring_stiffness = mp.Value(c_float, 0.0)             # [Nm / rad]
-        self._torque = mp.Value(c_float, 0.0)                       # [Nm]
+        self._friction = mp.Value(c_float, 0.0)  # [Nm]
+        self._damping = mp.Value(c_float, 0.0)  # [Nm s / rad]
+        self._spring_stiffness = mp.Value(c_float, 0.0)  # [Nm / rad]
+        self._torque = mp.Value(c_float, 0.0)  # [Nm]
 
         # Extra Info Parameters
-        self._measured_torque = mp.Value(c_float, 0.0)              # [Nm]
-        self._sensodrive_motorstate = mp.Value(c_int, 0)        # [-]
+        self._measured_torque = mp.Value(c_float, 0.0)  # [Nm]
+        self._sensodrive_motorstate = mp.Value(c_int, 0)  # [-]
 
         # SensoDrive Settings (torque limits, endstops etc)
-        self._endstops = mp.Value(c_float, 0.0)                     # [rad]
-        self._torque_limit_between_endstops = mp.Value(c_int, 0) # [%]
+        self._endstops = mp.Value(c_float, 0.0)  # [rad]
+        self._torque_limit_between_endstops = mp.Value(c_int, 0)  # [%]
         self._torque_limit_beyond_endstops = mp.Value(c_int, 0)  # [%]
 
         # SensoDrive (ID) or number of sensodrives
-        self._sensodrive_ID = mp.Value(c_int, 0)                # [-]
+        self._sensodrive_ID = mp.Value(c_int, 0)  # [-]
 
     @property
     def steering_angle(self):

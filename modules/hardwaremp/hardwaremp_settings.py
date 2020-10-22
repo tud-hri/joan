@@ -36,7 +36,7 @@ class HardwareMPSettings(ModuleSettings):
 
         # clean up existing settings
         while self.key_boards:
-            device = self.key_boards.pop()
+            device = self.key_boards.pop()  # TODO: wat is deze?
             del device
         while self.joy_sticks:
             device = self.joy_sticks.pop()
