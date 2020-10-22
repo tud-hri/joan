@@ -165,7 +165,7 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
         Sets the settings as they are described in 'HardwaremanagerSettings => JoystickSettings)
         :return:
         """
-        self._display_settings(HardwareInputTypes.JOYSTICK.settings())
+        self._display_settings(HardwareInputTypes.JOYSTICK.settings)
 
     def _update_brake_channel_enabled(self, value):
         """

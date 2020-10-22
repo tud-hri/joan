@@ -100,7 +100,7 @@ class KeyBoardSettingsDialog(QtWidgets.QDialog):
         Sets the settings as they are described in 'hardwarempSettings => KeyboardSettings)
         :return:
         """
-        self._display_values(HardwareInputTypes.KEYBOARD.settings())
+        self._display_values(HardwareInputTypes.KEYBOARD.settings)
 
     def _start_key_setting_sequence(self):
         """
