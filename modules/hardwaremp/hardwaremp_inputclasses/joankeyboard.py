@@ -2,11 +2,11 @@ import os
 
 import keyboard
 from PyQt5 import QtWidgets, QtGui, uic
+
 from modules.hardwaremp.hardwaremp_inputtypes import HardwareInputTypes
 
 
-
-class KeyBoardSettingsDialog(QtWidgets.QDialog):
+class KeyBoardSettingsDialog(QtWidgets.QDialog):  # TODO: aparte files voor classes maken
     """
     Class for the settings Dialog of a keyboardinput, this class should pop up whenever it is asked by the user or when
     creating the joystick class for the first time. NOTE: it should not show whenever settings are loaded by .json file.

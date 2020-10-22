@@ -36,7 +36,7 @@ class HardwareMPSharedValues:
         self._time.value = val
 
 
-class KeyboardSharedValues:
+class KeyboardSharedValues:  # TODO: deze drie zijn excact hetzelfde, gaan we hier ooit not onderscheid in maken? Anders samenvoegen tot 1
     def __init__(self):
         self._steering_angle = mp.Value(c_float, 0.0)
         self._throttle = mp.Value(c_float, 0.0)
@@ -134,19 +134,18 @@ class JoystickSharedValues:
         self._handbrake.value = val
 
 
-
 class SensoDriveSharedValues:
     """"
     This class contains all the variables that are shared between the seperate hardware communication core and the
     main JOAN core.
     """
+
     def __init__(self):
         self._steering_angle = mp.Value(c_float, 0.0)
         self._throttle = mp.Value(c_float, 0.0)
         self._brake = mp.Value(c_float, -9.9)
         self._reverse = mp.Value(c_bool, False)
         self._handbrake = mp.Value(c_bool, False)
-
 
     @property
     def steering_angle(self):
