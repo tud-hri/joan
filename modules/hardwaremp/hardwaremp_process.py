@@ -15,7 +15,7 @@ class HardwareMPProcess(ModuleProcess):
     def get_ready(self):
         keyboard.hook(self.key_event, False)
 
-    def do_function(self):
+    def do(self):
         self.do()
 
     def key_event(self, key):

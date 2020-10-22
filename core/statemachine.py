@@ -19,15 +19,12 @@ class StateMachine:
                     self._transition_conditions[departing_state][target_state] = lambda: True
 
         # declare state changes that are illegal by default
-
-        #volgorde = stopped, initialized, ready, running de rest is illegal
+        # allowed state order: STOPPED -> INITIALIZED -> READY -> RUNNING -> STOPPED
+        # from any state, allow transition to STOPPED
         self._transition_conditions[State.STOPPED][State.READY] = lambda: False
         self._transition_conditions[State.STOPPED][State.RUNNING] = lambda: False
-
         self._transition_conditions[State.INITIALIZED][State.RUNNING] = lambda: False
-
         self._transition_conditions[State.READY][State.INITIALIZED] = lambda: False
-
         self._transition_conditions[State.RUNNING][State.READY] = lambda: False
         self._transition_conditions[State.RUNNING][State.INITIALIZED] = lambda: False
 
@@ -107,6 +104,12 @@ class StateMachine:
         self._entry_actions[state] = action
 
     def request_state_change(self, target_state, state_message_on_success=''):
+        """
+        Request a state change, check if allowed, and execute the registered exit/entry/transition functions
+        :param target_state: target state
+        :param state_message_on_success: optional message
+        :return:
+        """
         if target_state is not self.current_state:
             condition_evaluation = self._transition_conditions[self.current_state][target_state]()
 

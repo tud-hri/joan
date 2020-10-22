@@ -2,6 +2,7 @@ import multiprocessing as mp
 import platform
 import sys
 import time
+import abc
 
 from core.exceptionhook import exception_log_and_kill_hook
 from core.statesenum import State
@@ -33,6 +34,7 @@ class ModuleProcess(mp.Process):
         self._start_event = start_event
         self._exception_event = exception_event
 
+    @abc.abstractmethod
     def get_ready(self):
         """
         get_ready is called when the module goes to READY state. This function is called from the new process (in run()).
@@ -40,7 +42,8 @@ class ModuleProcess(mp.Process):
         """
         pass
 
-    def do_function(self):
+    @abc.abstractmethod
+    def do(self):
         """
         User-defined function, in which the user's desired operations occur every loop cycle.
         :return:
@@ -82,17 +85,22 @@ class ModuleProcess(mp.Process):
 
             self._time = time.perf_counter_ns()
 
+            # read shared values here, store in local variables
             self.read_from_shared_values()
 
-            self.do_function()
+            # do!
+            self.do()
 
+            # write local variables to shared values
             self.write_to_shared_values()
 
+            # check if state is stopped; if so, stop!
             if self._module_shared_variables.state == State.STOPPED.value:
                 running = False
 
             execution_time = time.perf_counter_ns() - t0
 
+            # sleep for time step, taking the execution time into account
             time.sleep((self._time_step_in_ns - execution_time) * 1e-9)
 
     def read_from_shared_values(self):

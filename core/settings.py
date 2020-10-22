@@ -1,12 +1,9 @@
-import json
-from json import JSONDecodeError
-import copy
 from modules.joanmodules import JOANModules
 
 
 class Settings:
     """
-    The Settings class is a singleton that holds settings of module, 
+    The Settings class is a singleton that holds settings of all modules,
     so they can be used from Experiment classes, using the module_key
     """
     instance = None

@@ -48,7 +48,7 @@ class JoanModuleDialog(QtWidgets.QDialog):
 
             # setup state widget
             self.state_widget = uic.loadUi(
-                os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../resources/statewidget.ui"))
+                os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../resources/state_widget.ui"))
             self.layout().addWidget(self.state_widget)
             self.state_widget.btn_start.clicked.connect(self._button_start_clicked)
             self.state_widget.btn_stop.clicked.connect(self._button_stop_clicked)
