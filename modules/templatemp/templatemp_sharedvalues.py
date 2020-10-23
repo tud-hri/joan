@@ -26,8 +26,8 @@ class TemplateMPSharedValues:
 
     @property
     def overwrite_with_current_time(self):
-        return self._overwrite_with_current_time.value
+        return str(self._overwrite_with_current_time.value, encoding='utf-8')
 
     @overwrite_with_current_time.setter
     def overwrite_with_current_time(self, val):
-        self._overwrite_with_current_time.value = val
+        self._overwrite_with_current_time.value = bytes(val, 'utf-8')

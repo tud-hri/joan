@@ -141,11 +141,11 @@ class JOANKeyboardMP:
     it will fail.
     """
 
-    def __init__(self, settings, shared_values):
+    def __init__(self, settings, shared_variables):
         self.settings = settings
 
         self.settings_dialog = None
-        self.shared_values = shared_values
+        self.shared_variables = shared_variables
 
         # Initialize needed variables:
         self._throttle = False
@@ -189,16 +189,16 @@ class JOANKeyboardMP:
         Processes all the inputs of the keyboardinput and writes them to self._data which is then written to the news in the
         action class
         :return: self._data a dictionary containing :
-            self.shared_values.brake = self.brake
-            self.shared_values.throttle = self.throttle
-            self.shared_values.steering_angle = self.steer
-            self.shared_values.handbrake = self.handbrake
-            self.shared_values.reverse = self.reverse
+            self.shared_variables.brake = self.brake
+            self.shared_variables.throttle = self.throttle
+            self.shared_variables.steering_angle = self.steer
+            self.shared_variables.handbrake = self.handbrake
+            self.shared_variables.reverse = self.reverse
         """
 
-        brake_temp = self.shared_values.brake
-        throttle_temp = self.shared_values.throttle
-        steer_temp = self.shared_values.steering_angle
+        brake_temp = self.shared_variables.brake
+        throttle_temp = self.shared_variables.throttle
+        steer_temp = self.shared_variables.steering_angle
 
         # Throttle:
         if self._throttle and throttle_temp < 1:
@@ -238,8 +238,8 @@ class JOANKeyboardMP:
         handbrake_temp = self._handbrake
 
         # Set the shared variables again:
-        self.shared_values.brake = brake_temp
-        self.shared_values.throttle = throttle_temp
-        self.shared_values.steering_angle = steer_temp
-        self.shared_values.handbrake = handbrake_temp
-        self.shared_values.reverse = reverse_temp
+        self.shared_variables.brake = brake_temp
+        self.shared_variables.throttle = throttle_temp
+        self.shared_variables.steering_angle = steer_temp
+        self.shared_variables.handbrake = handbrake_temp
+        self.shared_variables.reverse = reverse_temp

@@ -10,7 +10,7 @@ class HardwareMPSharedValues:
         self.init_event = mp.Event()
         self.close_event = mp.Event()
         self.turn_on_event = mp.Event()
-        self.update_shared_values_from_settings_event = mp.Event()
+        self.update_shared_variables_from_settings_event = mp.Event()
         self.turn_off_event = mp.Event()
         self.clear_error_event = mp.Event()
 

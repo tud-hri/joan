@@ -27,8 +27,7 @@ class ModuleProcess(mp.Process):
 
         self._start_event = start_event
 
-        # print(news.all_news)
-        self._sharedvalues_module = news.read_news(module)
+        self._module_shared_variables = news.read_news(module)
 
     def get_ready(self):
         # settings dict back to settings object
@@ -63,20 +62,20 @@ class ModuleProcess(mp.Process):
 
             self._time = time.perf_counter_ns()
 
-            self.read_from_shared_values()
+            self.read_from_shared_variables()
 
             self.do_function()
 
-            self.write_to_shared_values()
+            self.write_to_shared_variables()
 
-            if self._sharedvalues_module.state == State.STOPPED.value:
+            if self._module_shared_variables.state == State.STOPPED.value:
                 running = False
 
             execution_time = time.perf_counter_ns() - t0
 
             time.sleep((self._time_step_in_ns - execution_time) * 1e-9)
 
-    def read_from_shared_values(self):
+    def read_from_shared_variables(self):
         """
         Read all needed values from shared and copy them to local values here.
         This should be done here only; before executing the do function
@@ -84,9 +83,9 @@ class ModuleProcess(mp.Process):
         """
         pass
 
-    def write_to_shared_values(self):
+    def write_to_shared_variables(self):
         """
         Write to shared values. This should only happen in this function!
         :return:
         """
-        self._sharedvalues_module.time = self._time
+        self._module_shared_variables.time = self._time

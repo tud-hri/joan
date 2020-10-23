@@ -139,10 +139,10 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
 #         #
 #         #
 #         # # create SensoDriveComm object
-#         # # self.sensodrive_communication_process = SensoDriveComm(self.sensodrive_communication_values, self.module_manager.shared_values.init_event,
-#         # #                                                        self.module_manager.shared_values.turn_on_event, self.module_manager.shared_values.turn_off_event,
-#         # #                                                        self.module_manager.shared_values.clear_error_event, self.module_manager.shared_values.close_event,
-#         # #                                                        self.module_manager.shared_values.update_shared_values_from_settings_event)
+#         # # self.sensodrive_communication_process = SensoDriveComm(self.sensodrive_communication_values, self.module_manager.shared_variables.init_event,
+#         # #                                                        self.module_manager.shared_variables.turn_on_event, self.module_manager.shared_variables.turn_off_event,
+#         # #                                                        self.module_manager.shared_variables.clear_error_event, self.module_manager.shared_variables.close_event,
+#         # #                                                        self.module_manager.shared_variables.update_shared_variables_from_settings_event)
 #         self._hardware_input_tab.btn_settings.clicked.connect(self._open_settings_dialog)
 #         self._hardware_input_tab.btn_settings.clicked.connect(self._open_settings_dialog_from_button)
 #         self._hardware_input_tab.btn_remove_hardware.clicked.connect(self.remove_hardware_input)
@@ -157,7 +157,7 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
 #         self._open_settings_dialog()
 #
 #         # if not self.sensodrive_communication_process.is_alive():
-#         #     self.module_manager.shared_values.init_event.set()
+#         #     self.module_manager.shared_variables.init_event.set()
 #         #     self.sensodrive_communication_process.start()
 #         #     self.counter = 0
 #         # self._hardware_input_tab.btn_on.setEnabled(True)
@@ -170,7 +170,7 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
 #     def state_change_listener(self):
 #         self.lbl_state_update()
 #
-#     def update_shared_values_from_settings(self):
+#     def update_shared_variables_from_settings(self):
 #         """
 #         Updates the settings that are saved internally. NOTE: this is different than with other input modules because
 #         we want to be ablte to set friction, damping and spring stiffnes parameters without closing the dialog window.
@@ -184,7 +184,7 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
 #         self.sensodrive_communication_values.damping = self.settings.damping
 #         self.sensodrive_communication_values.spring_stiffness = self.settings.spring_stiffness
 #
-#         self.module_manager.shared_values.update_shared_values_from_settings_event.set()
+#         self.module_manager.shared_variables.update_shared_variables_from_settings_event.set()
 #
 #
 #     def initialize(self):
@@ -208,7 +208,7 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
 #         Not used for this input
 #         """
 #         self.settings_dialog = SensoDriveSettingsDialog(self.settings)
-#         self.settings_dialog.btn_apply.clicked.connect(self.update_shared_values_from_settings)
+#         self.settings_dialog.btn_apply.clicked.connect(self.update_shared_variables_from_settings)
 #
 #     def remove_hardware_input(self):
 #         """
@@ -217,8 +217,8 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
 #         actually disappear from the module.
 #         :return:
 #         """
-#         self.module_manager.shared_values.close_event.set()
-#         while self.module_manager.shared_values.close_event.is_set():
+#         self.module_manager.shared_variables.close_event.set()
+#         while self.module_manager.shared_variables.close_event.is_set():
 #             pass
 #         self.sensodrive_communication_process.terminate()
 #
@@ -263,18 +263,18 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
 #         self._hardware_input_tab.repaint()
 #
 #     def turn_motor_sensodrive_on(self):
-#         self.module_manager.shared_values.turn_on_event.set()
+#         self.module_manager.shared_variables.turn_on_event.set()
 #         time.sleep(0.05)
 #         self.lbl_state_update()
 #
 #     def turn_motor_sensodrive_off(self):
-#         self.module_manager.shared_values.turn_off_event.set()
+#         self.module_manager.shared_variables.turn_off_event.set()
 #         time.sleep(0.05)
 #         self.lbl_state_update()
 #
 #
 #     def clear_error(self):
-#         self.module_manager.shared_values.clear_error_event.set()
+#         self.module_manager.shared_variables.clear_error_event.set()
 #         time.sleep(0.05)
 #         self.lbl_state_update()
 #
@@ -375,14 +375,14 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
 #         return [checked_torque, torque_rate]
 
 class JOANSensoDriveMP:
-    def __init__(self, settings, shared_values):
+    def __init__(self, settings, shared_variables):
         self.settings = settings
 
         self.settings_dialog = None
-        self.shared_values = shared_values
+        self.shared_variables = shared_variables
 
 class SensoDriveComm(mp.Process):
-    def __init__(self, shared_values, init_event, turn_on_event, turn_off_event, clear_error_event, close_event, update_event):
+    def __init__(self, shared_variables, init_event, turn_on_event, turn_off_event, clear_error_event, close_event, update_event):
         super().__init__()
         self.init_event = init_event
         self.turn_on_event = turn_on_event
@@ -396,7 +396,7 @@ class SensoDriveComm(mp.Process):
         self.pcan_initialization_result = None
 
         # shared values class to exchange data between this process and others
-        self.sensodrive_communication_values = shared_values
+        self.sensodrive_communication_values = shared_variables
 
         # if connecting more Sensowheels, different USB/PCAN bus
         if self.sensodrive_communication_values.sensodrive_ID == 0:
@@ -513,14 +513,14 @@ class SensoDriveComm(mp.Process):
 
         self._current_state_hex = response[1].DATA[0]
         self.sensodrive_communication_values.sensodrive_motorstate = self._current_state_hex
-    def _map_si_to_sensodrive(self, shared_values):
+    def _map_si_to_sensodrive(self, shared_variables):
         # convert SI units to Sensowheel units
 
         out = {
-            'torque': int(shared_values.torque * 1000.0),
-            'friction': int(shared_values.friction * 1000.0),
-            'damping': int(shared_values.damping * 1000.0 * (2.0 * math.pi) / 60.0),
-            'spring_stiffness': int(shared_values.spring_stiffness * 1000.0 / (180.0 / math.pi))
+            'torque': int(shared_variables.torque * 1000.0),
+            'friction': int(shared_variables.friction * 1000.0),
+            'damping': int(shared_variables.damping * 1000.0 * (2.0 * math.pi) / 60.0),
+            'spring_stiffness': int(shared_variables.spring_stiffness * 1000.0 / (180.0 / math.pi))
         }
 
         return out

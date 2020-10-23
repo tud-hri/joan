@@ -39,7 +39,7 @@ class JOANModules(Enum):
 
 
     @property
-    def shared_values(self):
+    def shared_variables(self):
         from modules.hardwaremp.hardwaremp_sharedvalues import HardwareMPSharedValues
         from modules.templatemp.templatemp_sharedvalues import TemplateMPSharedValues
 
