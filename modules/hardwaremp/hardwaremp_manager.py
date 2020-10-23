@@ -28,22 +28,6 @@ class HardwareMPManager(ModuleManager):
         for sensodrive in self.settings.sensodrives:
             self.shared_values.sensodrives['SensoDrive' + str(sensodrive.identifier)] = SensoDriveSharedValues()
 
-
-    def add_hardware_input_1(self, hardware_input_type, hardware_input_name, hardware_input_settings=None):
-        " Here we just add the settings and settings dialog functionality"
-        if not hardware_input_settings:
-            hardware_input_settings = hardware_input_type.settings
-            if hardware_input_type == HardwareInputTypes.KEYBOARD:
-                self.settings.key_boards.append(hardware_input_settings)
-            if hardware_input_type == HardwareInputTypes.JOYSTICK:
-                self.settings.joy_sticks.append(hardware_input_settings)
-            if hardware_input_type == HardwareInputTypes.SENSODRIVE:
-                self.settings.sensodrives.append(hardware_input_settings)
-
-        self._hardware_input_settings_dict[hardware_input_name] = hardware_input_settings
-        self._hardware_input_settingdialogs_dict[hardware_input_name] = hardware_input_type.klass_dialog(hardware_input_settings)
-
-
     def _add_hardware_input(self, hardware_input_type, hardware_input_settings = None):
         " Here we just add the settings and settings dialog functionality"
         if not hardware_input_settings:
