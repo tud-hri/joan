@@ -7,7 +7,7 @@ from PyQt5 import QtGui
 
 from core.module_settings import ModuleSettings
 from modules.joanmodules import JOANModules
-
+import multiprocessing as mp
 
 class HardwareMPSettings(ModuleSettings):
     def __init__(self, settings_filename='./default_setting.json'):
@@ -187,6 +187,7 @@ class SensoDriveSettings:
         self.spring_stiffness = 1  # Nm / rad
         self.torque = 0  # Nm
         self.identifier = identifier
+        self.init_event = mp.Event()
 
     def as_dict(self):
         return self.__dict__

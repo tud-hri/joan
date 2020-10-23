@@ -28,6 +28,7 @@ class HardwareMPManager(ModuleManager):
         for sensodrive in self.settings.sensodrives:
             self.shared_values.sensodrives['SensoDrive' + str(sensodrive.identifier)] = SensoDriveSharedValues()
 
+
     def _add_hardware_input(self, hardware_input_type, hardware_input_settings = None):
         " Here we just add the settings and settings dialog functionality"
         if not hardware_input_settings:
@@ -110,5 +111,15 @@ class HardwareMPManager(ModuleManager):
         # Remove settings dialog
         self._hardware_input_settingdialogs_dict[hardware_input_name].setParent(None)
         del self._hardware_input_settingdialogs_dict[hardware_input_name]
+
+
+    def _turn_on(self, hardware_input_name):
+        identifier_str = hardware_input_name.replace('SensoDrive', '')
+        identifier = int(identifier_str)
+        for sensodrives in self.settings.sensodrives:
+            if sensodrives.identifier == identifier:
+                settings_object = sensodrives
+
+        settings_object.init_event.set()
 
 

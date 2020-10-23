@@ -378,12 +378,28 @@ class JOANSensoDriveMP:
     def __init__(self, settings, shared_values):
         self.settings = settings
 
+
         self.settings_dialog = None
         self.shared_values = shared_values
 
+        comm = SensoDriveComm1(self.settings.init_event, self.settings.identifier)
+        print('jeuj')
+        comm.run()
+
+class SensoDriveComm1(mp.Process):
+    def __init__(self, init_event, identifier):
+        super().__init__()
+        self.init_event = init_event
+        self.identifier = identifier
+
+    def run(self):
+        self.init_event.wait()
+        while True:
+            print(self.identifier)
+
 
 class SensoDriveComm(mp.Process):  # TODO: hoe zit dit met een process in een process?
-    def __init__(self, shared_values, init_event, turn_on_event, turn_off_event, clear_error_event, close_event, update_event):
+    def __init__(self, shared_values, init_event, turn_on_event, turn_off_event, clear_error_event, close_event, update_event, conn = mp.Pipe()):
         super().__init__()
         self.init_event = init_event
         self.turn_on_event = turn_on_event

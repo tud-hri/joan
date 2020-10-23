@@ -144,6 +144,7 @@ class JOANKeyboardMP:
     def __init__(self, settings, shared_values):
         self.settings = settings
 
+
         self.settings_dialog = None
         self.shared_values = shared_values
 

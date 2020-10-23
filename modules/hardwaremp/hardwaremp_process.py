@@ -15,7 +15,6 @@ class HardwareMPProcess(ModuleProcess):
         # Create empty settings object in which we will reconstruct our settings dictionary
         settings = HardwareMPSettings()
         settings.load_from_dict(self.settings)
-
         # Create appropriate classes here (note that when a sensodrive is created it will start its own process, whereas the keyboards and joysticks do not)
         for idx, keyboards in enumerate(self._sharedvalues_module.keyboards):
             self.input_objects[keyboards] = HardwareInputTypes.KEYBOARD.klass_mp(settings=settings.key_boards[idx],
@@ -24,6 +23,10 @@ class HardwareMPProcess(ModuleProcess):
         for idx, joysticks in enumerate(self._sharedvalues_module.joysticks):
             self.input_objects[joysticks] = HardwareInputTypes.JOYSTICK.klass_mp(settings=settings.joy_sticks[idx],
                                                                                  shared_values=self._sharedvalues_module.joysticks[joysticks])
+
+        for idx, sensodrives in enumerate(self._sharedvalues_module.sensodrives):
+            self.input_objects[sensodrives] = HardwareInputTypes.SENSODRIVE.klass_mp(settings=settings.sensodrives[idx],
+                                                                                 shared_values=self._sharedvalues_module.sensodrives[sensodrives])
 
     def do_function(self):
         for inputs in self.input_objects:
