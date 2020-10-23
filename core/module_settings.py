@@ -11,7 +11,7 @@ class ModuleSettings:
     def __init__(self, module: JOANModules):
         """
         Initialize
-        :param module_enum: module type
+        :param module: module type
         """
         self.module = module
 

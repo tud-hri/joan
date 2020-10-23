@@ -1,5 +1,6 @@
 import multiprocessing as mp
 from ctypes import *
+from dataclasses import dataclass
 
 
 class HardwareMPSharedValues:
@@ -18,6 +19,8 @@ class HardwareMPSharedValues:
         self.keyboards = {}  # {"keyboard3": KeyboardSharedValues()}
         self.joysticks = {}
         self.sensodrives = {}
+
+
 
     @property
     def state(self):

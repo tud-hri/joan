@@ -17,16 +17,13 @@ class HardwareMPManager(ModuleManager):
         self._hardware_input_settings_dict = {}
         self._hardware_input_settingdialogs_dict = {}
 
-        self.settings = self.module_settings
-
     def initialize(self):
         super().initialize()
-        self.module_settings = self.settings
-        for idx, _ in enumerate(self.settings.keyboards):
+        for idx, _ in enumerate(self.module_settings.keyboards):
             self.shared_variables.keyboards.update({'Keyboard ' + str(idx): KeyboardSharedValues()})
-        for idx, _ in enumerate(self.settings.joysticks):
+        for idx, _ in enumerate(self.module_settings.joysticks):
             self.shared_variables.joysticks.update({'Joystick ' + str(idx): JoystickSharedValues()})
-        for idx, _ in enumerate(self.settings.sensodrives):
+        for idx, _ in enumerate(self.module_settings.sensodrives):
             self.shared_variables.sensodrives.update({'SensoDrive ' + str(idx): SensoDriveSharedValues()})
 
     def add_hardware_input(self, hardware_input_type, hardware_input_name, hardware_input_settings=None):
@@ -34,11 +31,11 @@ class HardwareMPManager(ModuleManager):
         if not hardware_input_settings:
             hardware_input_settings = hardware_input_type.settings
             if hardware_input_type == HardwareInputTypes.KEYBOARD:
-                self.settings.keyboards.append(hardware_input_settings)
+                self.module_settings.keyboards.append(hardware_input_settings)
             if hardware_input_type == HardwareInputTypes.JOYSTICK:
-                self.settings.joysticks.append(hardware_input_settings)
+                self.module_settings.joysticks.append(hardware_input_settings)
             if hardware_input_type == HardwareInputTypes.SENSODRIVE:
-                self.settings.sensodrives.append(hardware_input_settings)
+                self.module_settings.sensodrives.append(hardware_input_settings)
 
         self._hardware_input_settings_dict[hardware_input_name] = hardware_input_settings
         self._hardware_input_settingdialogs_dict[hardware_input_name] = hardware_input_type.klass_dialog(hardware_input_settings)
@@ -49,7 +46,7 @@ class HardwareMPManager(ModuleManager):
 
     def _remove_hardware_input_device(self, hardware_input_name):
         # Remove settings if they are available
-        self.settings.remove_hardware_input_device(self._hardware_input_settings_dict[hardware_input_name])
+        self.module_settings.remove_hardware_input_device(self._hardware_input_settings_dict[hardware_input_name])
 
         # Remove settings dialog
         self._hardware_input_settingdialogs_dict[hardware_input_name].setParent(None)
