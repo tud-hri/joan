@@ -188,8 +188,9 @@ class SensoDriveSettings:
         self.torque = 0  # Nm
         self.identifier = identifier
         self.init_event = mp.Event()
+        self.close_event = mp.Event()
 
-        self.probeersel = [self.endstops,  # rad
+        self.settings_list = [self.endstops,  # rad
                            self.torque_limit_between_endstops,  # percent
                            self.torque_limit_beyond_endstops, # percent
                            self.friction, # Nm

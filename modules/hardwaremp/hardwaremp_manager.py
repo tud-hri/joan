@@ -122,4 +122,11 @@ class HardwareMPManager(ModuleManager):
 
         settings_object.init_event.set()
 
+    def _turn_off(self, hardware_input_name):
+        identifier_str = hardware_input_name.replace('SensoDrive', '')
+        identifier = int(identifier_str)
+        for sensodrives in self.settings.sensodrives:
+            if sensodrives.identifier == identifier:
+                settings_object = sensodrives
 
+        settings_object.close_event.set()

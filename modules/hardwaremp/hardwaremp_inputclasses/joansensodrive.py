@@ -384,33 +384,39 @@ class JOANSensoDriveMP():
         self.shared_values = shared_values
 
         self.parent_pipe, child_pipe = mp.Pipe()
-        comm = SensoDriveComm1(self.settings.init_event,  child_pipe)
+        comm = SensoDriveComm1(self.settings.init_event, self.settings.close_event, child_pipe)
         mooie_variable = self.settings.identifier
         self.parent_pipe.send(mooie_variable)
 
         comm.start()
 
     def do(self):
-        joe = self.settings.probeersel[1]
-        self.parent_pipe.send(self.settings.probeersel)
+        self.parent_pipe.send(self.settings.settings_list)
 
 class SensoDriveComm1(mp.Process):
-    def __init__(self, init_event,  child_pipe):
+    def __init__(self, init_event, close_event,  child_pipe):
         super().__init__()
         self.init_event = init_event
         self.child_pipe = child_pipe
         self.should_read = False
+        self.close_event = close_event
 
 
     def run(self):
         self.init_event.wait()
         print(self.child_pipe.recv())
         while True:
-            joe = self.child_pipe.poll()
+            data_available = self.child_pipe.poll()
 
-            if joe == True:
-                dus = self.child_pipe.recv()
-                print(dus)
+            if data_available == True:
+                settings = self.child_pipe.recv()
+                print(settings)
+
+            if self.close_event.is_set():
+                self.close_event.clear()
+                break
+
+
 
 
 
