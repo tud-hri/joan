@@ -2,12 +2,12 @@ import inspect
 from enum import Enum
 
 from modules.joanmodules import JOANModules
-from core.joanmodulesettings import JoanModuleSettings
+from core.modulesettings import ModuleSettings
 
 
-class CarlaInterfaceSettings(JoanModuleSettings):
+class CarlaInterfaceSettings(ModuleSettings):
     """
-    Class containing the different settings for multiple agents, inherits from JoanModuleSettings
+    Class containing the different settings for multiple agents, inherits from ModuleSettings
     """
 
     def __init__(self, module_enum: JOANModules):

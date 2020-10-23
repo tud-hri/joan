@@ -29,7 +29,17 @@ class JOANModules(Enum):
                 JOANModules.TEMPLATE_MP: TemplateMPDialog}[self]
 
     @property
-    def shared_values(self):
+    def settings(self):
+        from modules.templatemp.templatemp_settings import TemplateMPSettings
+        from modules.hardwaremp.hardwaremp_settings import HardwareMPSettings
+
+        return {JOANModules.TEMPLATE_MP: TemplateMPSettings,
+                JOANModules.HARDWARE_MP: HardwareMPSettings
+                }[self]
+
+
+    @property
+    def shared_variables(self):
         from modules.hardwaremp.hardwaremp_sharedvalues import HardwareMPSharedValues
         from modules.templatemp.templatemp_sharedvalues import TemplateMPSharedValues
 

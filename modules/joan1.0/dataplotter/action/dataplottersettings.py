@@ -1,5 +1,5 @@
 from modules.joanmodules import JOANModules
-from core.joanmodulesettings import JoanModuleSettings
+from core.modulesettings import ModuleSettings
 
 from core.news import News
 import copy
@@ -91,7 +91,7 @@ class LineColors(Enum):
                 }[self]
 
 
-class DataPlotterSettings(JoanModuleSettings):
+class DataPlotterSettings(ModuleSettings):
     def __init__(self, module_enum: JOANModules):
         """
         Writes dataplotter settings which consist of news-variables and item-properties 

@@ -38,10 +38,7 @@ class ModuleManager(QtCore.QObject):
         self.state_machine.set_entry_action(State.STOPPED, self.stop)
         self.state_machine.set_exit_action(State.STOPPED, self.cleanup)
 
-        # settings
-        self.settings = None
-
-        self.shared_values = None
+        self.shared_variables = None
         self._process = None
         self._start_event = mp.Event()
         self._exception_event = mp.Event()
@@ -51,38 +48,52 @@ class ModuleManager(QtCore.QObject):
         # create the dialog
         self.module_dialog = module.dialog(self, parent=parent)
 
+        # create settings
+        self.settings_filename = os.path.join(self.module_path, 'default_settings.json')
+        self.module_settings = module.settings(settings_filename=self.settings_filename)
+
     def initialize(self):
         """
         Create shared variables, share through news
+        The shared variable object can contain an 'adjustable setting'; which is a variable in settings that the user wants to change during RUNNING
+        To make sure that the variable value is correct in shared variables, the user needs to update that variable value in shared variables after initialize()
         :return:
         """
-        self.shared_values = self.module.shared_values()
+        self.shared_variables = self.module.shared_variables()
+        self.singleton_news.write_news(self.module, self.shared_variables)
 
-        self.singleton_news.write_news(self.module, self.shared_values)
-        self.shared_values.state = self.state_machine.current_state.value
+        # update state in shared variables
+        self.shared_variables.state = self.state_machine.current_state.value
 
     def get_ready(self):
-        self._process = self.module.process(self.module, time_step_in_ms=self._time_step_in_ms, news=self.singleton_news, start_event=self._start_event,
+        self._process = self.module.process(self.module,
+                                            time_step_in_ms=self._time_step_in_ms,
+                                            news=self.singleton_news,
+                                            settings=self.module_settings,
+                                            start_event=self._start_event,
                                             exception_event=self._exception_event)
 
         # Start the process, run() will wait until start_event is set
         if self._process and not self._process.is_alive():
             self._process.start()
 
-        self.shared_values.state = self.state_machine.current_state.value
+        self.shared_variables.state = self.state_machine.current_state.value
 
     def start(self):
         self.module_dialog.start()
 
         self._start_event.set()
 
-        self.shared_values.state = self.state_machine.current_state.value
+        self.shared_variables.state = self.state_machine.current_state.value
 
     def stop(self):
         # send stop state to process and wait for the process to stop
+        self.stop_dialog_timer()
+
+        # wait for the process to stop
         if self._process:
             if self._process.is_alive():
-                self.shared_values.state = self.state_machine.current_state.value
+                self.shared_variables.state = self.state_machine.current_state.value
                 self._process.join()
 
         print('Process terminated:', self.module)
@@ -96,7 +107,7 @@ class ModuleManager(QtCore.QObject):
         # remove shared values from news
         self.singleton_news.remove_news(self.module)
 
-        if self.shared_values:
-            del self.shared_values
+        if self.shared_variables:
+            del self.shared_variables
 
         self._start_event.clear()

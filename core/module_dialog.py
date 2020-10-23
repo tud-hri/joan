@@ -106,7 +106,7 @@ class ModuleDialog(QtWidgets.QDialog):
                                                                          os.path.join(self._module_manager.module_path),
                                                                          filter='*.json')
         if settings_file_to_load:
-            self._module_manager.load_settings_from_file(settings_file_to_load)
+            self._module_manager.module_settings.load_from_file(settings_file_to_load)
 
     def _save_settings(self):
         """
@@ -114,10 +114,10 @@ class ModuleDialog(QtWidgets.QDialog):
         :return:
         """
         file_to_save_in, _ = QtWidgets.QFileDialog.getSaveFileName(self, 'save settings',
-                                                                   os.path.join(self._module_manager.module_path, 'default_settings.json'),
+                                                                   self._module_manager.settings_filename,
                                                                    filter='*.json')
         if file_to_save_in:
-            self._module_manager.save_settings_to_file(file_to_save_in)
+            self._module_manager.module_settings.save_to_file(file_to_save_in)
 
     def toggle_show_close(self):
         if self.isVisible():

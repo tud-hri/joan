@@ -117,7 +117,7 @@ class JoanModuleAction(QtCore.QObject):
     def share_settings(self, module_settings):
         """
         Shares the settings of this module with all other modules through the settings singleton.
-        :param module_settings: a JoanModuleSettings child object containing this modules settings
+        :param module_settings: a ModuleSettings child object containing this modules settings
         """
         self.singleton_settings.update_settings(self.module, module_settings)
 
@@ -159,8 +159,10 @@ class JoanModuleAction(QtCore.QObject):
     def get_module_settings(self, module=''):
         return self.singleton_settings.get_settings(module)
 
+    ''' TODO: Remove this, because apparenlty not used (20201015)
     def get_module_factory_settings(self, module=''):
         return self.singleton_settings.get_factory_settings(module)
+    '''
 
     @property
     def tick_interval_ms(self):

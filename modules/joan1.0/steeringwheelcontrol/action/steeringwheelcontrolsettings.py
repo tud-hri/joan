@@ -2,10 +2,10 @@ import inspect
 from enum import Enum
 
 from modules.joanmodules import JOANModules
-from core.joanmodulesettings import JoanModuleSettings
+from core.modulesettings import ModuleSettings
 
 
-class SteeringWheelControlSettings(JoanModuleSettings):
+class SteeringWheelControlSettings(ModuleSettings):
     def __init__(self, module_enum: JOANModules):
         super().__init__(module_enum)
 

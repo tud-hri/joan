@@ -8,7 +8,7 @@ from PyQt5.QtCore import pyqtSignal
 from modules.joanmodules import JOANModules
 
 
-class JoanModuleSettings(QtCore.QObject):
+class ModuleSettings(QtCore.QObject):
     # signal when new settings are loaded. Action and Dialog can connect to this signal to apply the new settings
     before_load_settings = pyqtSignal()
     load_settings_done = pyqtSignal()
@@ -73,7 +73,7 @@ class JoanModuleSettings(QtCore.QObject):
 
         # omit attributes of the ABC from the source dict since they are not of interest when displaying the settings as a dict
         source_dict = {key: item for key, item in self.__dict__.items() if
-                       key not in JoanModuleSettings(None).__dict__.keys()}
+                       key not in ModuleSettings(None).__dict__.keys()}
 
         self._copy_dict_to_dict(source_dict, output_dict[str(self._module_enum)])
         return output_dict
@@ -109,13 +109,13 @@ class JoanModuleSettings(QtCore.QObject):
         """
         for key, value in source.items():
             if isinstance(value, list):
-                destination[key] = JoanModuleSettings._copy_list_to_list(value)
+                destination[key] = ModuleSettings._copy_list_to_list(value)
             elif isinstance(value, dict):
                 try:
                     destination[key]  # make sure that the destination dict has an entry at key
                 except KeyError:
                     destination[key] = dict()
-                JoanModuleSettings._copy_dict_to_dict(value, destination[key])
+                ModuleSettings._copy_dict_to_dict(value, destination[key])
             elif isinstance(value, Enum):
                 destination[key] = value.value
             elif hasattr(value, '__dict__') and not inspect.isclass(value):
@@ -126,7 +126,7 @@ class JoanModuleSettings(QtCore.QObject):
                     destination[key] = value.as_dict()
                 except AttributeError:
                     destination[key] = dict()
-                    JoanModuleSettings._copy_dict_to_dict(value.__dict__, destination[key])
+                    ModuleSettings._copy_dict_to_dict(value.__dict__, destination[key])
             else:
                 destination[key] = source[key]
 
@@ -140,7 +140,7 @@ class JoanModuleSettings(QtCore.QObject):
         output_list = []
         for index, item in enumerate(source):
             if isinstance(item, list):
-                output_list.append(JoanModuleSettings._copy_list_to_list(item))
+                output_list.append(ModuleSettings._copy_list_to_list(item))
             elif isinstance(item, Enum):
                 print(
                     'WARNING: JOAN settings cannot reconstruct enums embedded in lists from saved files, only the value of the enum will be saved')
@@ -153,7 +153,7 @@ class JoanModuleSettings(QtCore.QObject):
                     output_list.append(item.as_dict())
                 except AttributeError:
                     output_list.append(dict())
-                    JoanModuleSettings._copy_dict_to_dict(item.__dict__, output_list[index])
+                    ModuleSettings._copy_dict_to_dict(item.__dict__, output_list[index])
             else:
                 output_list.append(item)
         return output_list

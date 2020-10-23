@@ -1,3 +1,5 @@
+import platform
+import json
 import multiprocessing as mp
 import platform
 import sys
@@ -7,6 +9,7 @@ import abc
 from core.exceptionhook import exception_log_and_kill_hook
 from core.statesenum import State
 from modules.joanmodules import JOANModules
+from core.module_settings import ModuleSettings
 
 if platform.system() == 'Windows':
     import wres
@@ -17,7 +20,7 @@ class ModuleProcess(mp.Process):
     Base class for the module process.
     """
 
-    def __init__(self, module: JOANModules, time_step_in_ms, news, start_event, exception_event):
+    def __init__(self, module: JOANModules, time_step_in_ms, news, settings, start_event, exception_event):
         super().__init__()
 
         if time_step_in_ms < 10:
@@ -27,6 +30,9 @@ class ModuleProcess(mp.Process):
         self._time_step_in_ns = time_step_in_ms * 1e6
         self._time = 0.0
 
+        self._settings_as_dict = settings.as_dict()
+        self._settings_as_object = None
+
         # extract shared variables from news
         self._module_shared_variables = news.read_news(module)
 
@@ -34,13 +40,17 @@ class ModuleProcess(mp.Process):
         self._start_event = start_event
         self._exception_event = exception_event
 
+
+
     @abc.abstractmethod
     def get_ready(self):
         """
         get_ready is called when the module goes to READY state. This function is called from the new process (in run()).
         :return:
         """
-        pass
+        # settings dict back to settings object
+        self._settings_as_object = self.module.settings()  # create empty settings object
+        self._settings_as_object.load_from_dict(self._settings_as_dict)  # settings as object
 
     @abc.abstractmethod
     def do(self):
@@ -86,13 +96,13 @@ class ModuleProcess(mp.Process):
             self._time = time.perf_counter_ns()
 
             # read shared values here, store in local variables
-            self.read_from_shared_values()
+            self.read_from_shared_variables()
 
             # do!
             self.do()
 
             # write local variables to shared values
-            self.write_to_shared_values()
+            self.write_to_shared_variables()
 
             # check if state is stopped; if so, stop!
             if self._module_shared_variables.state == State.STOPPED.value:
@@ -103,7 +113,7 @@ class ModuleProcess(mp.Process):
             # sleep for time step, taking the execution time into account
             time.sleep((self._time_step_in_ns - execution_time) * 1e-9)
 
-    def read_from_shared_values(self):
+    def read_from_shared_variables(self):
         """
         Read all needed values from shared and copy them to local variables.
         This should be done here only; before executing the do function
@@ -111,7 +121,7 @@ class ModuleProcess(mp.Process):
         """
         pass
 
-    def write_to_shared_values(self):
+    def write_to_shared_variables(self):
         """
         Write to shared values from your local variables. This should only happen in this function!
         :return:

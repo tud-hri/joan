@@ -8,5 +8,5 @@ class TemplateMPDialog(ModuleDialog):
         super().__init__(module=JOANModules.TEMPLATE_MP, module_manager=module_manager, parent=parent)
 
     def update_dialog(self):
-        if self._module_manager.shared_values:
-            self._module_widget.lbl_time.setText("Time: " + str(self._module_manager.shared_values.time))
+        if self._module_manager.shared_variables:
+            self._module_widget.lbl_time.setText("Time: " + str(self._module_manager.shared_variables.time))

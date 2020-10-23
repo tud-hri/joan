@@ -1,20 +1,26 @@
 import inspect
 import math
 from enum import Enum
+from pathlib import Path
 
 from PyQt5 import QtGui
 
+from core.module_settings import ModuleSettings
 from modules.joanmodules import JOANModules
-from core.joanmodulesettings import JoanModuleSettings
 
 
-class HardwareManagerSettings(JoanModuleSettings):
-    def __init__(self, module_enum: JOANModules):
-        super().__init__(module_enum)
+class HardwareMPSettings(ModuleSettings):
+    def __init__(self, settings_filename='./default_setting.json'):
+        super().__init__(JOANModules.HARDWARE_MP)
 
         self.key_boards = []
         self.joy_sticks = []
         self.sensodrives = []
+
+        if Path(settings_filename).is_file():
+            self.load_from_file(settings_filename)
+        else:
+            self.save_to_file(settings_filename)
 
     def load_from_dict(self, loaded_dict):
         """
@@ -25,8 +31,6 @@ class HardwareManagerSettings(JoanModuleSettings):
         :param loaded_dict: (dict) dictionary containing the settings to load
         :return: None
         """
-        # prepare the module for the new settings
-        self.before_load_settings.emit()
 
         module_settings_to_load = loaded_dict[str(self._module_enum)]
 
@@ -59,51 +63,6 @@ class HardwareManagerSettings(JoanModuleSettings):
             sensodrive_settings.set_from_loaded_dict(sensodrive)
             self.sensodrives.append(sensodrive_settings)
 
-        # done loading settings, emit signal
-        self.load_settings_done.emit()
-
-    @staticmethod
-    def _copy_dict(source, destination):
-        for key, value in source.items():
-            if isinstance(value, list):
-                destination[key] = HardwareManagerSettings._copy_list(value)
-            elif isinstance(value, dict):
-                try:
-                    destination[key]  # make sure that the destination dict has an entry at key
-                except KeyError:
-                    destination[key] = dict()
-                HardwareManagerSettings._copy_dict(value, destination[key])
-            elif hasattr(value, '__dict__') and not isinstance(value, Enum) and not inspect.isclass(value):
-                # recognize custom class object by checking if these have a __dict__, Enums and static classes should be copied as a whole
-                # convert custom classes to dictionaries
-                try:
-                    # make use of the as_dict function is it exists
-                    destination[key] = value.as_dict()
-                except NotImplementedError:
-                    destination[key] = dict()
-                    HardwareManagerSettings._copy_dict(value.__dict__, destination[key])
-            else:
-                destination[key] = source[key]
-
-    @staticmethod
-    def _copy_list(source):
-        output_list = []
-        for index, item in enumerate(source):
-            if isinstance(item, list):
-                output_list.append(HardwareManagerSettings._copy_list(item))
-            elif hasattr(item, '__dict__') and not isinstance(item, Enum) and not inspect.isclass(item):
-                # recognize custom class object by checking if these have a __dict__, Enums and static classes should be copied as a whole
-                # convert custom classes to dictionaries
-                try:
-                    # make use of the as_dict function is it exists
-                    output_list.append(item.as_dict())
-                except NotImplementedError:
-                    output_list.append(dict())
-                    HardwareManagerSettings._copy_dict(item.__dict__, output_list[index])
-            else:
-                output_list.append(item)
-        return output_list
-
     def remove_hardware_input_device(self, setting):
         if isinstance(setting, KeyBoardSettings):
             self.key_boards.remove(setting)
@@ -115,11 +74,9 @@ class HardwareManagerSettings(JoanModuleSettings):
             self.sensodrives.remove(setting)
 
 
-
-
 class KeyBoardSettings:
     """
-    Default keyboard settings that will load whenever a keyboard class is created.
+    Default keyboardinput settings that will load whenever a keyboardinput class is created.
     """
 
     def __init__(self):
@@ -140,8 +97,8 @@ class KeyBoardSettings:
 
         # Sensitivities
         self.steer_sensitivity = float(50.0)
-        self.throttle_sensitivity =  float(50.0)
-        self.brake_sensitivity =  float(50.0)
+        self.throttle_sensitivity = float(50.0)
+        self.brake_sensitivity = float(50.0)
 
     def as_dict(self):
         return self.__dict__
@@ -153,7 +110,7 @@ class KeyBoardSettings:
 
 class JoyStickSettings:
     """
-    Default joystick settings that will load whenever a keyboard class is created.
+    Default joystick settings that will load whenever a keyboardinput class is created.
     """
 
     def __init__(self):
@@ -216,17 +173,17 @@ class JoyStickSettings:
 
 class SensoDriveSettings:
     """
-    Default sensodrive settings that will load whenever a keyboard class is created.
+    Default sensodrive settings that will load whenever a keyboardinput class is created.
     """
 
     def __init__(self):
-        self.endstops = math.radians(360.0)         # rad
-        self.torque_limit_between_endstops = 200    # percent
-        self.torque_limit_beyond_endstops = 200     # percent
-        self.friction = 0                           # Nm
-        self.damping = 0.1                            # Nm * s / rad
-        self.spring_stiffness = 1                   # Nm / rad
-        self.torque = 0                             # Nm
+        self.endstops = math.radians(360.0)  # rad
+        self.torque_limit_between_endstops = 200  # percent
+        self.torque_limit_beyond_endstops = 200  # percent
+        self.friction = 0  # Nm
+        self.damping = 0.1  # Nm * s / rad
+        self.spring_stiffness = 1  # Nm / rad
+        self.torque = 0  # Nm
 
     def as_dict(self):
         return self.__dict__

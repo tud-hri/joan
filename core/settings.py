@@ -1,4 +1,7 @@
 from modules.joanmodules import JOANModules
+"""
+Holds settings of every module to be used by the experimentmanager
+"""
 
 
 class Settings:
@@ -11,19 +14,9 @@ class Settings:
     def __new__(cls):
         if not cls.instance:
             cls.instance = object.__new__(Settings)
-            cls._factory_settings = {}
             cls._settings = {}
 
         return cls.instance
-
-    def update_factory_settings(self, module: JOANModules, module_settings):
-        """
-        Update the default (factory) settings
-        :param module: module to update factory settings for
-        :param module_settings: new default settings for the module
-        :return:
-        """
-        self._factory_settings.update({module: module_settings})
 
     def update_settings(self, module: JOANModules, module_settings):
         """
@@ -37,12 +30,6 @@ class Settings:
     def get_settings(self, module: JOANModules):
         try:
             return self._settings[module]
-        except KeyError:
-            return {}
-
-    def get_factory_settings(self, module: JOANModules):
-        try:
-            return self._factory_settings[module]
         except KeyError:
             return {}
 

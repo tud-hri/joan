@@ -1,9 +1,9 @@
-from core.joanmodulesettings import JoanModuleSettings
+from core.modulesettings import ModuleSettings
 from modules.joanmodules import JOANModules
 from modules.scenarios.scenarios.scenarioslist import ScenariosList
 
 
-class ScenarioSettings(JoanModuleSettings):
+class ScenarioSettings(ModuleSettings):
     def __init__(self):
         super().__init__(JOANModules.SCENARIOS)
 

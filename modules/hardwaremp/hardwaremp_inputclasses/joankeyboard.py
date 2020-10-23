@@ -2,34 +2,29 @@ import os
 
 import keyboard
 from PyQt5 import QtWidgets, QtGui, uic
-
-from modules.hardwaremp.hardwaremp_settings import KeyBoardSettings
 from modules.hardwaremp.hardwaremp_inputtypes import HardwareInputTypes
-from modules.hardwaremp.hardwaremp_inputclasses.baseinput import BaseInput
+
 
 
 class KeyBoardSettingsDialog(QtWidgets.QDialog):
     """
-      Class for the settings Dialog of a keyboard, this class should pop up whenever it is asked by the user or when
-      creating the joystick class for the first time. NOTE: it should not show whenever settings are loaded by .json file.
-      """
+    Class for the settings Dialog of a keyboardinput, this class should pop up whenever it is asked by the user or when
+    creating the joystick class for the first time. NOTE: it should not show whenever settings are loaded by .json file.
+    """
 
     def __init__(self, keyboard_settings, parent=None):
         """
-        Initializes the settings dialog with the appropriate keyboard settings
+        Initializes the settings dialog with the appropriate keyboardinput settings
         :param keyboard_settings:
         :param parent:
         """
         super().__init__(parent)
         self.keyboard_settings = keyboard_settings
-        uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "uis/keyboard_settings_ui.ui"), self)
+        uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/keyboard_settings_ui.ui"), self)
 
-        self.slider_steer_sensitivity.valueChanged.connect(
-            lambda new_value: self.label_steer_sensitivity.setText(str(new_value)))
-        self.slider_throttle_sensitivity.valueChanged.connect(
-            lambda new_value: self.label_throttle_sensitivity.setText(str(new_value)))
-        self.slider_brake_sensitivity.valueChanged.connect(
-            lambda new_value: self.label_brake_sensitivity.setText(str(new_value)))
+        self.slider_steer_sensitivity.valueChanged.connect(lambda new_value: self.label_steer_sensitivity.setText(str(new_value)))
+        self.slider_throttle_sensitivity.valueChanged.connect(lambda new_value: self.label_throttle_sensitivity.setText(str(new_value)))
+        self.slider_brake_sensitivity.valueChanged.connect(lambda new_value: self.label_brake_sensitivity.setText(str(new_value)))
 
         self._set_key_counter = 0
 
@@ -105,7 +100,7 @@ class KeyBoardSettingsDialog(QtWidgets.QDialog):
         Sets the settings as they are described in 'hardwarempSettings => KeyboardSettings)
         :return:
         """
-        self._display_values(KeyBoardSettings())
+        self._display_values(HardwareInputTypes.KEYBOARD.settings)
 
     def _start_key_setting_sequence(self):
         """
@@ -140,22 +135,17 @@ class KeyBoardSettingsDialog(QtWidgets.QDialog):
                 self.btn_set_keys.setEnabled(True)
 
 
-class JOANKeyboard(BaseInput):
+class JOANKeyboardMP:
     """
-    Main class for the Keyboard input, inherits from BaseInput (as it should!)
+    Main class for the Keyboard input in a seperate multiprocess, this will loop!. Make sure that the things you do in this class are serializable, else
+    it will fail.
     """
 
-    def __init__(self, module_manager, hardware_input_list_key, settings):
-        super().__init__(hardware_input_type=HardwareInputTypes.KEYBOARD, module_manager = module_manager)
-        """
-        Initializes the class
-        :param hardware_manager_action:
-        :param keyboard_tab:
-        :param settings:
-        """
-        self.hardware_input_list_key = hardware_input_list_key
+    def __init__(self, settings, shared_variables):
         self.settings = settings
+
         self.settings_dialog = None
+        self.shared_variables = shared_variables
 
         # Initialize needed variables:
         self._throttle = False
@@ -164,54 +154,9 @@ class JOANKeyboard(BaseInput):
         self._steer_right = False
         self._handbrake = False
         self._reverse = False
-
-        self._hardware_input_tab.btn_settings.clicked.connect(self._open_settings_dialog)
-        self._hardware_input_tab.btn_settings.clicked.connect(self._open_settings_dialog_from_button)
-        self._hardware_input_tab.btn_visualization.setEnabled(False)
+        self._data = {}
 
         keyboard.hook(self.key_event, False)
-        self._open_settings_dialog()
-
-    @property
-    def get_hardware_input_list_key(self):
-        return self.hardware_input_list_key
-
-    def disable_remove_button(self):
-        """
-        Disables the remove_input_device keybaord button (useful for example when you dont want to be able to remove_input_device an input when the
-        simulator is running)
-                :return:
-        """
-        if self._hardware_input_tab.btn_remove_hardware.isEnabled() is True:
-            self._hardware_input_tab.btn_remove_hardware.setEnabled(False)
-        else:
-            pass
-
-    def enable_remove_button(self):
-        """
-        Enables the remove_input_device keyboard button
-        :return:
-        """
-        if self._hardware_input_tab.btn_remove_hardware.isEnabled() is False:
-            self._hardware_input_tab.btn_remove_hardware.setEnabled(True)
-        else:
-            pass
-
-    def _open_settings_dialog_from_button(self):
-        """
-        Opens and shows the settings dialog from the button on the tab
-        :return:
-        """
-        self._open_settings_dialog()
-        if self.settings_dialog:
-            self.settings_dialog.show()
-
-    def _open_settings_dialog(self):
-        """
-        Sets the appropriate values for settings but does not actually show the dialog
-        :return:
-        """
-        self.settings_dialog = KeyBoardSettingsDialog(self.settings)
 
     def key_event(self, key):
         """
@@ -241,53 +186,60 @@ class JOANKeyboard(BaseInput):
 
     def do(self):
         """
-        Processes all the inputs of the keyboard and writes them to self._data which is then written to the news in the
+        Processes all the inputs of the keyboardinput and writes them to self._data which is then written to the news in the
         action class
         :return: self._data a dictionary containing :
-            self.module_manager.shared_values.brake = self.brake
-            self.module_manager.shared_values.throttle = self.throttle
-            self.module_manager.shared_values.steering_angle = self.steer
-            self.module_manager.shared_values.handbrake = self.handbrake
-            self.module_manager.shared_values.reverse = self.reverse
+            self.shared_variables.brake = self.brake
+            self.shared_variables.throttle = self.throttle
+            self.shared_variables.steering_angle = self.steer
+            self.shared_variables.handbrake = self.handbrake
+            self.shared_variables.reverse = self.reverse
         """
+
+        brake_temp = self.shared_variables.brake
+        throttle_temp = self.shared_variables.throttle
+        steer_temp = self.shared_variables.steering_angle
+
         # Throttle:
-        if self._throttle and self.module_manager.shared_values.throttle < 1:
-            self.module_manager.shared_values.throttle = self.module_manager.shared_values.throttle + (0.05 * self.settings.throttle_sensitivity / 100)
-        elif self.module_manager.shared_values.throttle > 0 and not self._throttle:
-            self.module_manager.shared_values.throttle = self.module_manager.shared_values.throttle - (0.05 * self.settings.throttle_sensitivity / 100)
-        elif self.module_manager.shared_values.throttle < 0:
-            self.module_manager.shared_values.throttle = 0
-        elif self.module_manager.shared_values.throttle > 1:
-            self.module_manager.shared_values.throttle = 1
+        if self._throttle and throttle_temp < 1:
+            throttle_temp = throttle_temp + (0.05 * self.settings.throttle_sensitivity / 100)
+        elif throttle_temp > 0 and not self._throttle:
+            throttle_temp = throttle_temp - (0.05 * self.settings.throttle_sensitivity / 100)
+        elif throttle_temp < 0:
+            throttle_temp = 0
+        elif throttle_temp > 1:
+            throttle_temp = 1
 
         # Brake:
-        if self._brake and self.module_manager.shared_values.brake < 1:
-            self.module_manager.shared_values.brake = self.module_manager.shared_values.brake + (0.05 * self.settings.brake_sensitivity / 100)
-        elif self.module_manager.shared_values.brake > 0 and not self._brake:
-            self.module_manager.shared_values.brake = self.module_manager.shared_values.brake - (0.05 * self.settings.brake_sensitivity / 100)
-        elif self.module_manager.shared_values.brake < 0:
-            self.module_manager.shared_values.brake = 0
-        elif self.module_manager.shared_values.brake > 1:
-            self.module_manager.shared_values.brake = 1
+        if self._brake and brake_temp < 1:
+            brake_temp = brake_temp + (0.05 * self.settings.brake_sensitivity / 100)
+        elif brake_temp > 0 and not self._brake:
+            brake_temp = brake_temp - (0.05 * self.settings.brake_sensitivity / 100)
+        elif brake_temp < 0:
+            brake_temp = 0
+        elif brake_temp > 1:
+            brake_temp = 1
 
         # Steering:
-        if self._steer_left and self.settings.max_steer >= self.module_manager.shared_values.steering_angle >= self.settings.min_steer:
-            self.module_manager.shared_values.steering_angle = self.module_manager.shared_values.steering_angle - (self.settings.steer_sensitivity / 10000)
-        elif self._steer_right and self.settings.min_steer <= self.module_manager.shared_values.steering_angle <= self.settings.max_steer:
-            self.module_manager.shared_values.steering_angle = self.module_manager.shared_values.steering_angle + (self.settings.steer_sensitivity / 10000)
-        elif self.module_manager.shared_values.steering_angle > 0 and self.settings.auto_center:
-            self.module_manager.shared_values.steering_angle = self.module_manager.shared_values.steering_angle - (self.settings.steer_sensitivity / 10000)
-        elif self.module_manager.shared_values.steering_angle < 0 and self.settings.auto_center:
-            self.module_manager.shared_values.steering_angle = self.module_manager.shared_values.steering_angle + (self.settings.steer_sensitivity / 10000)
+        if self._steer_left and self.settings.max_steer >= steer_temp >= self.settings.min_steer:
+            steer_temp = steer_temp - (self.settings.steer_sensitivity / 10000)
+        elif self._steer_right and self.settings.min_steer <= steer_temp <= self.settings.max_steer:
+            steer_temp = steer_temp + (self.settings.steer_sensitivity / 10000)
+        elif steer_temp > 0 and self.settings.auto_center:
+            steer_temp = steer_temp - (self.settings.steer_sensitivity / 10000)
+        elif steer_temp < 0 and self.settings.auto_center:
+            steer_temp = steer_temp + (self.settings.steer_sensitivity / 10000)
 
-        if abs(self.module_manager.shared_values.steering_angle) < self.settings.steer_sensitivity / 10000:
-            self.module_manager.shared_values.steering_angle = 0
+        if abs(steer_temp) < self.settings.steer_sensitivity / 10000:
+            steer_temp = 0
 
         # Reverse
-        self.module_manager.shared_values.reverse = self._reverse
+        reverse_temp = self._reverse
+        handbrake_temp = self._handbrake
 
-
-
-        # Handbrake
-        self.module_manager.shared_values.handbrake = self._handbrake
-
+        # Set the shared variables again:
+        self.shared_variables.brake = brake_temp
+        self.shared_variables.throttle = throttle_temp
+        self.shared_variables.steering_angle = steer_temp
+        self.shared_variables.handbrake = handbrake_temp
+        self.shared_variables.reverse = reverse_temp
