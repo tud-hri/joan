@@ -8,5 +8,9 @@ class TemplateMPDialog(ModuleDialog):
         super().__init__(module=JOANModules.TEMPLATE_MP, module_manager=module_manager, parent=parent)
 
     def update_dialog(self):
+        """
+        Update the dialog based on a variable in the shared values
+        :return:
+        """
         if self._module_manager.shared_values:
             self._module_widget.lbl_time.setText("State: " + str(self._module_manager.shared_values.state))

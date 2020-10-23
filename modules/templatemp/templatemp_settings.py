@@ -1,22 +1,23 @@
 import enum
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
-from modules.joanmodules import JOANModules
 from core.module_settings import ModuleSettings
-from core.module_manager import ModuleManager
+from modules.joanmodules import JOANModules
+
 
 class TemplateMPSettings(ModuleSettings):
     def __init__(self, settings_filename='./default_settings.json'):
         super().__init__(JOANModules.TEMPLATE_MP)
 
         self.time_step = 100
-        
         self.int_setting = 1
         self.float_setting = 1.5
         self.string_setting = 'Hello World'
         self.overwrite_with_current_time = 'to be overwritten when instantiated'
         self.enum_setting = CustomEnumSetting.BLUE
+
+        # settings can also be nested with 'sub' setting objects
         self.custom_class_setting = CustomClassSetting()
 
         if Path(settings_filename).is_file():

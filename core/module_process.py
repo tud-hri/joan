@@ -34,7 +34,6 @@ class ModuleProcess(mp.Process):
         # settings dict back to settings object
         self._settings_as_object = self.module.settings()  # create empty settings object
         self._settings_as_object.load_from_dict(self._settings_as_dict)  # settings as object
-        print(self._settings_as_object)
 
     def do_function(self):
         pass

@@ -30,4 +30,4 @@ class TemplateMPSharedValues:
 
     @overwrite_with_current_time.setter
     def overwrite_with_current_time(self, val):
-        self._overwrite_with_current_time .value = val
+        self._overwrite_with_current_time.value = val

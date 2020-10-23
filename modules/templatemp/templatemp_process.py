@@ -10,15 +10,13 @@ class TemplateMPProcess(ModuleProcess):
         self.shared_values = news.read_news(JOANModules.TEMPLATE_MP)
 
         # it is possible to read from other modules
-        # do NOT WRITE to other modules' news to prevent spagetti-code
+        # do NOT WRITE to other modules' news to prevent spaghetti-code
         self.shared_values_hardware = news.read_news(JOANModules.HARDWARE_MP)
 
     def get_ready(self):
         """
         When instantiating the ModuleProcess, the settings ar converted to type dict
-        The super().get_ready() method converts the module_settings back to object
-        You can change values for this module (in this case: TemplateMPSettings)
-        and write to shared memory, using the settings-key as news-key, so data can be recorded/plotted
+        The super().get_ready() method converts the module_settings back to the appropriate settings object
         """
         super().get_ready()
         now = datetime.now()
