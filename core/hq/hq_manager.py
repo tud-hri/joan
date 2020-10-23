@@ -113,6 +113,7 @@ class HQManager(QtCore.QObject):
         Quit JOAN
         """
         self.stop_modules()
+        QtCore.QCoreApplication.quit()
 
     @property
     def instantiated_modules(self):
