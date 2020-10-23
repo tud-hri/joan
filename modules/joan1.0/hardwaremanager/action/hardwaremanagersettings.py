@@ -42,13 +42,13 @@ class HardwareManagerSettings(ModuleSettings):
             del device
 
         self.key_boards = []
-        for keyboard_settings_dict in module_settings_to_load['key_boards']:
+        for keyboard_settings_dict in module_settings_to_load['keyboards']:
             keyboard_settings = KeyBoardSettings()
             keyboard_settings.set_from_loaded_dict(keyboard_settings_dict)
             self.key_boards.append(keyboard_settings)
 
         self.joy_sticks = []
-        for joystick_settings_dict in module_settings_to_load['joy_sticks']:
+        for joystick_settings_dict in module_settings_to_load['joysticks']:
             joystick_settings = JoyStickSettings()
             joystick_settings.set_from_loaded_dict(joystick_settings_dict)
             self.joy_sticks.append(joystick_settings)

@@ -1,6 +1,4 @@
-import inspect
 import math
-from enum import Enum
 from pathlib import Path
 
 from PyQt5 import QtGui
@@ -13,8 +11,8 @@ class HardwareMPSettings(ModuleSettings):
     def __init__(self, settings_filename='./default_setting.json'):
         super().__init__(JOANModules.HARDWARE_MP)
 
-        self.key_boards = []
-        self.joy_sticks = []
+        self.keyboards = []
+        self.joysticks = []
         self.sensodrives = []
 
         if Path(settings_filename).is_file():
@@ -32,30 +30,30 @@ class HardwareMPSettings(ModuleSettings):
         :return: None
         """
 
-        module_settings_to_load = loaded_dict[str(self._module_enum)]
+        module_settings_to_load = loaded_dict[str(self.module)]
 
         # clean up existing settings
-        while self.key_boards:
-            device = self.key_boards.pop()
+        while self.keyboards:
+            device = self.keyboards.pop()
             del device
-        while self.joy_sticks:
-            device = self.joy_sticks.pop()
+        while self.joysticks:
+            device = self.joysticks.pop()
             del device
         while self.sensodrives:
             device = self.sensodrives.pop()
             del device
 
-        self.key_boards = []
-        for keyboard_settings_dict in module_settings_to_load['key_boards']:
+        self.keyboards = []
+        for keyboard_settings_dict in module_settings_to_load['keyboards']:
             keyboard_settings = KeyBoardSettings()
             keyboard_settings.set_from_loaded_dict(keyboard_settings_dict)
-            self.key_boards.append(keyboard_settings)
+            self.keyboards.append(keyboard_settings)
 
-        self.joy_sticks = []
-        for joystick_settings_dict in module_settings_to_load['joy_sticks']:
+        self.joysticks = []
+        for joystick_settings_dict in module_settings_to_load['joysticks']:
             joystick_settings = JoyStickSettings()
             joystick_settings.set_from_loaded_dict(joystick_settings_dict)
-            self.joy_sticks.append(joystick_settings)
+            self.joysticks.append(joystick_settings)
 
         self.sensodrives = []
         for sensodrive in module_settings_to_load['sensodrives']:
@@ -65,10 +63,10 @@ class HardwareMPSettings(ModuleSettings):
 
     def remove_hardware_input_device(self, setting):
         if isinstance(setting, KeyBoardSettings):
-            self.key_boards.remove(setting)
+            self.keyboards.remove(setting)
 
         if isinstance(setting, JoyStickSettings):
-            self.joy_sticks.remove(setting)
+            self.joysticks.remove(setting)
 
         if isinstance(setting, SensoDriveSettings):
             self.sensodrives.remove(setting)

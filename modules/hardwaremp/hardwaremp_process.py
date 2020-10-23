@@ -14,11 +14,11 @@ class HardwareMPProcess(ModuleProcess):
 
         # Create appropriate classes here (note that when a sensodrive is created it will start its own process, whereas the keyboards and joysticks do_while_running not)
         for idx, keyboards in enumerate(self._module_shared_variables.keyboards):
-            self.input_classes[keyboards] = HardwareInputTypes.KEYBOARD.klass_mp(settings=self._settings_as_object.key_boards[idx],
+            self.input_classes[keyboards] = HardwareInputTypes.KEYBOARD.klass_mp(settings=self._settings_as_object.keyboards[idx],
                                                                                  shared_variables=self._module_shared_variables.keyboards[keyboards])
 
         for idx, joysticks in enumerate(self._module_shared_variables.joysticks):
-            self.input_classes[joysticks] = HardwareInputTypes.JOYSTICK.klass_mp(settings=self._settings_as_object.joy_sticks[idx],
+            self.input_classes[joysticks] = HardwareInputTypes.JOYSTICK.klass_mp(settings=self._settings_as_object.joysticks[idx],
                                                                                  shared_variables=self._module_shared_variables.joysticks[joysticks])
 
     def get_ready(self):

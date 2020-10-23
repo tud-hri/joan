@@ -22,9 +22,9 @@ class HardwareMPManager(ModuleManager):
     def initialize(self):
         super().initialize()
         self.module_settings = self.settings
-        for idx, _ in enumerate(self.settings.key_boards):
+        for idx, _ in enumerate(self.settings.keyboards):
             self.shared_variables.keyboards.update({'Keyboard ' + str(idx): KeyboardSharedValues()})
-        for idx, _ in enumerate(self.settings.joy_sticks):
+        for idx, _ in enumerate(self.settings.joysticks):
             self.shared_variables.joysticks.update({'Joystick ' + str(idx): JoystickSharedValues()})
         for idx, _ in enumerate(self.settings.sensodrives):
             self.shared_variables.sensodrives.update({'SensoDrive ' + str(idx): SensoDriveSharedValues()})
@@ -34,9 +34,9 @@ class HardwareMPManager(ModuleManager):
         if not hardware_input_settings:
             hardware_input_settings = hardware_input_type.settings
             if hardware_input_type == HardwareInputTypes.KEYBOARD:
-                self.settings.key_boards.append(hardware_input_settings)
+                self.settings.keyboards.append(hardware_input_settings)
             if hardware_input_type == HardwareInputTypes.JOYSTICK:
-                self.settings.joy_sticks.append(hardware_input_settings)
+                self.settings.joysticks.append(hardware_input_settings)
             if hardware_input_type == HardwareInputTypes.SENSODRIVE:
                 self.settings.sensodrives.append(hardware_input_settings)
 
