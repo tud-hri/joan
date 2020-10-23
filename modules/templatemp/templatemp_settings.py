@@ -12,7 +12,7 @@ class TemplateMPSettings(ModuleSettings):
         self.int_setting = 1
         self.float_setting = 1.5
         self.string_setting = 'Hello World'
-        self.overwrite_with_current_time = 'to be overwritten when instantiated'
+        self.overwrite_with_current_time = 'current time'
         self.enum_setting = CustomEnumSetting.BLUE
 
         # settings can also be nested with 'sub' setting objects

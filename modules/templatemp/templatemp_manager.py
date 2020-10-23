@@ -21,4 +21,4 @@ class TemplateMPManager(ModuleManager):
         super().initialize()
 
         # update value in self.shared_variables with the value in settings
-        # self.shared_variables.overwrite_with_current_time = self.module_settings.overwrite_with_current_time
+        self.shared_variables.overwrite_with_current_time = self.module_settings.overwrite_with_current_time
