@@ -11,11 +11,12 @@ class ModuleExceptionMonitor(QtCore.QThread):
     Exception monitor that transitions modules to ERROR state when uncaught exception occurs (in process).
     Creates a threads which blocks until an exception event is set.
     """
+
     def __init__(self, exception_event: mp.Event, state_machine: StateMachine):
         """
         init
-        :param exception_event: event from process that exception occured
-        :param state_machine: module statemachine
+        :param exception_event: event from process that exception occurred
+        :param state_machine: module state machine
         """
         super().__init__()
 
@@ -26,7 +27,7 @@ class ModuleExceptionMonitor(QtCore.QThread):
 
     def run(self):
         """
-        Thread's run function, blocks, waits for exception event, sets statemachine to ERROR, clears the event and keeps monitoring.
+        Thread's run function, blocks, waits for exception event, sets state machine to ERROR, clears the event and keeps monitoring.
         :return:
         """
         while True:
