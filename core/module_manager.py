@@ -65,6 +65,13 @@ class ModuleManager(QtCore.QObject):
         # update state in shared variables
         self.shared_variables.state = self.state_machine.current_state.value
 
+        self.update_shared_variables_adjustable_settings()
+
+    def update_shared_variables_adjustable_settings(self):
+        """
+        Update the adjustable settings in self.shared_variables with the current setting values
+        """
+
     def get_ready(self):
         self._process = self.module.process(self.module,
                                             time_step_in_ms=self._time_step_in_ms,
