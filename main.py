@@ -23,4 +23,5 @@ if __name__ == '__main__':
     # JOANHQACTION.add_module(JOANModules.TEMPLATE_MP, time_step_in_ms=25)
     JOANHQACTION.add_module(JOANModules.HARDWARE_MP, time_step_in_ms=10)
 
+
     APP.exec_()

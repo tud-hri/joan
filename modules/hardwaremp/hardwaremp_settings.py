@@ -189,6 +189,15 @@ class SensoDriveSettings:
         self.identifier = identifier
         self.init_event = mp.Event()
 
+        self.probeersel = [self.endstops,  # rad
+                           self.torque_limit_between_endstops,  # percent
+                           self.torque_limit_beyond_endstops, # percent
+                           self.friction, # Nm
+                           self.damping,  # Nm * s / rad
+                           self.spring_stiffness, # Nm / rad
+                           self.torque, # Nm
+                           self.identifier]
+
     def as_dict(self):
         return self.__dict__
 
