@@ -1,5 +1,4 @@
 import math
-from pathlib import Path
 
 from PyQt5 import QtGui
 
@@ -8,17 +7,12 @@ from modules.joanmodules import JOANModules
 
 
 class HardwareMPSettings(ModuleSettings):
-    def __init__(self, settings_filename='./default_setting.json'):
+    def __init__(self):
         super().__init__(JOANModules.HARDWARE_MP)
 
         self.keyboards = []
         self.joysticks = []
         self.sensodrives = []
-
-        if Path(settings_filename).is_file():
-            self.load_from_file(settings_filename)
-        else:
-            self.save_to_file(settings_filename)
 
     def load_from_dict(self, loaded_dict):
         """

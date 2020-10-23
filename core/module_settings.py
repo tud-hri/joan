@@ -5,7 +5,7 @@ from enum import Enum
 from modules.joanmodules import JOANModules
 
 
-class ModuleSettings():
+class ModuleSettings:
     # signal when new settings are loaded. Action and Dialog can connect to this signal to apply the new settings
 
     def __init__(self, module: JOANModules):
@@ -13,7 +13,6 @@ class ModuleSettings():
         Initialize
         :param module_enum: module type
         """
-
         self.module = module
 
     def save_to_file(self, file_path, keys_to_omit=()):

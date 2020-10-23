@@ -21,9 +21,6 @@ class HardwareMPProcess(ModuleProcess):
             self.input_classes[joysticks] = HardwareInputTypes.JOYSTICK.klass_mp(settings=self._settings_as_object.joysticks[idx],
                                                                                  shared_variables=self._module_shared_variables.joysticks[joysticks])
 
-    def get_ready(self):
-        super().get_ready()
-
     def do_while_running(self):
         for inputs in self.input_classes:
             # will perform the mp input class for each available input
