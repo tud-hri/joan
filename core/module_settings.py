@@ -2,25 +2,19 @@ import inspect
 import json
 from enum import Enum
 
-from PyQt5 import QtCore
-from PyQt5.QtCore import pyqtSignal
-
 from modules.joanmodules import JOANModules
 
 
-class ModuleSettings(QtCore.QObject):
+class ModuleSettings():
     # signal when new settings are loaded. Action and Dialog can connect to this signal to apply the new settings
-    before_load_settings = pyqtSignal()
-    load_settings_done = pyqtSignal()
 
-    def __init__(self, module_enum: JOANModules):
+    def __init__(self, module: JOANModules):
         """
         Initialize
         :param module_enum: module type
         """
-        super(QtCore.QObject, self).__init__()
 
-        self._module_enum = module_enum
+        self.module = module
 
     def save_to_file(self, file_path, keys_to_omit=()):
         """
@@ -57,25 +51,23 @@ class ModuleSettings(QtCore.QObject):
         :return:
         """
         try:
-            self.before_load_settings.emit()
-            self._copy_dict_to_class_dict(loaded_dict[str(self._module_enum)], self.__dict__)
-            self.load_settings_done.emit()  # to let others know new settings are available
+            self._copy_dict_to_class_dict(loaded_dict[str(self.module)], self.__dict__)
         except KeyError:
-            warning_message = "WARNING: loading settings for the " + str(self._module_enum) + \
+            warning_message = "WARNING: loading settings for the " + str(self.module) + \
                               " module from a dictionary failed. The loaded dictionary did not contain " + \
-                              str(self._module_enum) + " settings." + \
+                              str(self.module) + " settings." + \
                               (" It did contain settings for: " +
                                ", ".join(loaded_dict.keys()) if loaded_dict.keys() else "")
             print(warning_message)
 
     def as_dict(self):
-        output_dict = {str(self._module_enum): {}}
+        output_dict = {str(self.module): {}}
 
         # omit attributes of the ABC from the source dict since they are not of interest when displaying the settings as a dict
         source_dict = {key: item for key, item in self.__dict__.items() if
                        key not in ModuleSettings(None).__dict__.keys()}
 
-        self._copy_dict_to_dict(source_dict, output_dict[str(self._module_enum)])
+        self._copy_dict_to_dict(source_dict, output_dict[str(self.module)])
         return output_dict
 
     def _copy_dict_to_class_dict(self, source, destination):
@@ -96,7 +88,7 @@ class ModuleSettings(QtCore.QObject):
                     destination[key] = value
             except KeyError:
                 print("WARNING: a saved setting called " + key + " was found to restore in " + str(
-                    self._module_enum) + " settings, but this setting did not exist. It was created.")
+                    self.module) + " settings, but this setting did not exist. It was created.")
                 destination[key] = value
 
     @staticmethod
