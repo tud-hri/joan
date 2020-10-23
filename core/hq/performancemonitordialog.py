@@ -6,7 +6,7 @@ from PyQt5 import QtWidgets, QtCore, QtGui, uic
 class PerformanceMonitorDialog(QtWidgets.QDialog):
     def __init__(self, all_instantiated_modules, parent=None):
         super().__init__(parent)
-        uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "performancemonitordialog.ui"), self)
+        uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/performancemonitor_dialog.ui"), self)
 
         self.all_instantiated_modules = all_instantiated_modules
         row = 0

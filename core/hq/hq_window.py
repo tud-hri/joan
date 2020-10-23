@@ -2,33 +2,38 @@ import os
 
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 
+from core.statesenum import State
 from core.status import Status
-
 from .performancemonitordialog import PerformanceMonitorDialog
 from .settingsoverviewdialog import SettingsOverviewDialog
-from core.statesenum import State
 
 
-class JoanHQWindow(QtWidgets.QMainWindow):
+def button_show_close_checked(button):
+    if button.isChecked():
+        button.setText("Close")
+    else:
+        button.setText("Show")
 
+
+class HQWindow(QtWidgets.QMainWindow):
     app_is_quiting = QtCore.pyqtSignal()
 
-    def __init__(self, action, parent=None):
+    def __init__(self, manager, parent=None):
         super().__init__(parent)
 
-        self.action = action
+        self.manager = manager
 
-        # state, statehandlers
+        # state, state handlers
         self.singleton_status = Status()
 
         # path to resources folder
         self._path_resources = os.path.normpath(
-            os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../", "resources"))
-        self._path_modules = self.action.path_modules
+            os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../", "resources"))
+        self._path_modules = self.manager.path_modules
 
         # setup
         self.setWindowTitle('JOAN HQ')
-        self._main_widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "joanhq.ui"))
+        self._main_widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/hq_window.ui"))
 
         self.setCentralWidget(self._main_widget)
         self.resize(400, 400)
@@ -49,46 +54,54 @@ class JoanHQWindow(QtWidgets.QMainWindow):
 
         # add file menu
         self._file_menu = self.menuBar().addMenu('File')
-        self._file_menu.addAction('Quit', self.action.quit)
+        self._file_menu.addAction('Quit', self.manager.quit)
 
         self._view_menu = self.menuBar().addMenu('View')
         self._view_menu.addAction('Show all current settings..', self.show_settings_overview)
+
+        # TODO performance monitor needs to be connected to new module structure
         # self._view_menu.addAction('Show performance monitor..', self.show_performance_monitor)
 
     def initialize(self):
-        self.action.initialize_modules()
+        self.manager.initialize_modules()
         self._main_widget.repaint()  # repaint is essential to show the states
 
     def get_ready(self):
-        self.action.get_ready_modules()
+        self.manager.get_ready_modules()
         self._main_widget.repaint()
 
     def start(self):
-        self.action.start_modules()
+        self.manager.start_modules()
         self._main_widget.repaint()  # repaint is essential to show the states
 
     def stop(self):
-        self.action.stop_modules()
+        self.manager.stop_modules()
         self._main_widget.repaint()  # repaint is essential to show the states
 
     def emergency(self):
-        self.action.emergency()
+        self.manager.emergency()
         self._main_widget.repaint()  # repaint is essential to show the states
 
-    def add_module(self, module_manager):
-
+    def add_module(self, module_manager, name=''):
+        """
+        Add a module (in the HQ window and other widgets)
+        :param module_manager: manager object
+        :param name: optional
+        :return:
+        """
         # create a widget per module (show & close buttons, state)
+        if name == '':
+            name = str(module_manager.module)
 
-        name = str(module_manager.module)
         module_dialog = module_manager.module_dialog
 
-        widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "modulecard.ui"))
+        widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/module_card.ui"))
         widget.setObjectName(name)
         widget.grpbox.setTitle(name)
 
         widget.btn_showclose.clicked.connect(module_dialog.toggle_show_close)
         widget.btn_showclose.setCheckable(True)
-        widget.btn_showclose.toggled.connect(lambda: self.button_showclose_checked(widget.btn_showclose))  # change text in the button, based toggle status
+        widget.btn_showclose.toggled.connect(lambda: button_show_close_checked(widget.btn_showclose))  # change text in the button, based toggle status
         module_dialog.closed.connect(lambda: widget.btn_showclose.setChecked(False))  # if the user closes the dialog, uncheck the button
 
         # with state_machine
@@ -106,10 +119,10 @@ class JoanHQWindow(QtWidgets.QMainWindow):
 
         # and to the list
         self._module_cards[name] = widget
-        self.handle_state_change(widget,module_manager)
+        self.handle_state_change(widget, module_manager)
 
     def handle_state_change(self, widget, module_manager):
-        #disable all buttons first then activate the one you can press
+        # disable all buttons first then activate the one you can press
         self.disable_all_buttons()
         current_state = module_manager.state_machine.current_state
         widget.lbl_state.setText(str(current_state))
@@ -129,7 +142,6 @@ class JoanHQWindow(QtWidgets.QMainWindow):
             widget.lbl_state.setStyleSheet("background: orange;")
             self._main_widget.btn_initialize.setEnabled(True)
 
-
     def disable_all_buttons(self):
         self._main_widget.btn_initialize.setEnabled(False)
         self._main_widget.btn_get_ready.setEnabled(False)
@@ -138,11 +150,10 @@ class JoanHQWindow(QtWidgets.QMainWindow):
 
     def closeEvent(self, event):
         """
-        redefine QT's closeEvent to prompt a 'Are you sure?' message box
+        Redefine QT's closeEvent to prompt a 'Are you sure?' message box
         :param event:
         :return:
         """
-
         reply = QtWidgets.QMessageBox.question(
             self, 'Quit JOAN', 'Are you sure?',
             QtWidgets.QMessageBox.Yes, QtWidgets.QMessageBox.No
@@ -150,7 +161,7 @@ class JoanHQWindow(QtWidgets.QMainWindow):
 
         if reply == QtWidgets.QMessageBox.Yes:
             # call our quit function
-            self.action.quit()
+            self.manager.quit()
             event.accept()
         else:
             # if we end up here, it means we didn't want to quit
@@ -158,13 +169,7 @@ class JoanHQWindow(QtWidgets.QMainWindow):
             event.ignore()
 
     def show_settings_overview(self):
-        SettingsOverviewDialog(self.action.singleton_settings.all_settings, parent=self)
+        SettingsOverviewDialog(self.manager.singleton_settings.all_settings, parent=self)
 
     def show_performance_monitor(self):
-        PerformanceMonitorDialog(self.action._instantiated_modules, parent=self)
-
-    def button_showclose_checked(self, button):
-        if button.isChecked():
-            button.setText("Close")
-        else:
-            button.setText("Show")
+        PerformanceMonitorDialog(self.manager.instantiated_modules, parent=self)
