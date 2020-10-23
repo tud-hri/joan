@@ -66,8 +66,8 @@ class HardwareInputTypes(enum.Enum):
         from modules.hardwaremp.hardwaremp_settings import JoyStickSettings
         from modules.hardwaremp.hardwaremp_settings import SensoDriveSettings
 
-        return {HardwareInputTypes.KEYBOARD: KeyBoardSettings(),
-                HardwareInputTypes.JOYSTICK: JoyStickSettings(),
+        return {HardwareInputTypes.KEYBOARD: KeyBoardSettings,
+                HardwareInputTypes.JOYSTICK: JoyStickSettings,
                 HardwareInputTypes.SENSODRIVE: SensoDriveSettings()
                 }[self]
 

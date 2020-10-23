@@ -117,19 +117,19 @@ class HardwareManagerSettings(ModuleSettings):
 
 
 
-class KeyBoardSettings:
+class KeyBoardSettings():
     """
     Default keyboardinput settings that will load whenever a keyboardinput class is created.
     """
 
-    def __init__(self):
+    def __init__(self, identifier):
         self.steer_left_key = QtGui.QKeySequence('a')[0]
         self.steer_right_key = QtGui.QKeySequence('d')[0]
         self.throttle_key = QtGui.QKeySequence('w')[0]
         self.brake_key = QtGui.QKeySequence('s')[0]
         self.reverse_key = QtGui.QKeySequence('r')[0]
         self.handbrake_key = QtGui.QKeySequence('space')[0]
-        self.name = "Keyboard"
+        self.identifier = identifier
 
         # Steering Range
         self.min_steer = - 0.5 * math.pi

@@ -29,7 +29,7 @@ class HardwareMPManager(ModuleManager):
             self.shared_values.sensodrives['SensoDrive ' + str(idx)] = SensoDriveSharedValues()
 
 
-    def add_hardware_input(self, hardware_input_type, hardware_input_name, hardware_input_settings=None):
+    def add_hardware_input_1(self, hardware_input_type, hardware_input_name, hardware_input_settings=None):
         " Here we just add the settings and settings dialog functionality"
         if not hardware_input_settings:
             hardware_input_settings = hardware_input_type.settings
@@ -43,13 +43,85 @@ class HardwareMPManager(ModuleManager):
         self._hardware_input_settings_dict[hardware_input_name] = hardware_input_settings
         self._hardware_input_settingdialogs_dict[hardware_input_name] = hardware_input_type.klass_dialog(hardware_input_settings)
 
+
+    def _add_hardware_input(self, hardware_input_type, hardware_input_settings = None):
+        " Here we just add the settings and settings dialog functionality"
+        if not hardware_input_settings:
+            hardware_input_settings = hardware_input_type.settings()
+            #Keyboard (make sure we have unique identifiers)
+            if hardware_input_type == HardwareInputTypes.KEYBOARD:
+                keyboard_amount = len(self.settings.key_boards)
+                if keyboard_amount == 0:
+                    self.settings.key_boards.append(hardware_input_settings)
+                else:
+                    for keyboard_settings in self.settings.key_boards:
+                        if keyboard_settings.identifier == keyboard_amount:
+                            keyboard_identifier = keyboard_settings.identifier + 1
+                        else:
+                            keyboard_identifier = keyboard_amount
+                    hardware_input_settings = hardware_input_type.settings(keyboard_identifier)
+                    self.settings.key_boards.append(hardware_input_settings)
+
+            #Joystick
+            if hardware_input_type == HardwareInputTypes.JOYSTICK:
+                joystick_amount = len(self.settings.joy_sticks)
+                if joystick_amount == 0:
+                    self.settings.joy_sticks.append(hardware_input_settings)
+                else:
+                    for joystick_settings in self.settings.joy_sticks:
+                        if joystick_settings.identifier == joystick_amount:
+                            joystick_identifier = joystick_settings.identifier + 1
+                        else:
+                            joystick_identifier = joystick_amount
+                    hardware_input_settings = hardware_input_type.settings(joystick_identifier)
+                    self.settings.joy_sticks.append(hardware_input_settings)
+
+            if hardware_input_type == HardwareInputTypes.SENSODRIVE:
+                sensodrive_amount = len(self.settings.sensodrives)
+                if sensodrive_amount == 0:
+                    self.settings.sensodrives.append(hardware_input_settings)
+                else:
+                    for sensodrive_settings in self.settings.sensodrives:
+                        if sensodrive_settings.identifier == sensodrive_amount:
+                            sensodrive_identifier = sensodrive_settings.identifier + 1
+                        else:
+                            sensodrive_identifier = sensodrive_amount
+                    hardware_input_settings = hardware_input_type.settings(sensodrive_identifier)
+                    self.settings.sensodrives.append(hardware_input_settings)
+
+        # self._hardware_input_settings_dict[hardware_input_name] = hardware_input_settings
+        hardware_input_name = hardware_input_type.__str__() + str(hardware_input_settings.identifier)
+        self._hardware_input_settingdialogs_dict[hardware_input_name] = hardware_input_type.klass_dialog(hardware_input_settings)
+        return hardware_input_name
+
     def _open_settings_dialog(self, hardware_input_name):
         self._hardware_input_settingdialogs_dict[hardware_input_name].show()
 
 
     def _remove_hardware_input_device(self, hardware_input_name):
         # Remove settings if they are available
-        self.settings.remove_hardware_input_device(self._hardware_input_settings_dict[hardware_input_name])
+        if 'Keyboard' in hardware_input_name:
+            identifier_str = hardware_input_name.replace('Keyboard', '')
+            identifier = int(identifier_str)
+            for keyboards in self.settings.key_boards:
+                if keyboards.identifier == identifier:
+                    settings_object = keyboards
+
+        if 'Joystick' in hardware_input_name:
+            identifier_str = hardware_input_name.replace('Joystick', '')
+            identifier = int(identifier_str)
+            for joysticks in self.settings.joy_sticks:
+                if joysticks.identifier == identifier:
+                    settings_object = joysticks
+
+        if 'SensoDrive' in hardware_input_name:
+            identifier_str = hardware_input_name.replace('SensoDrive', '')
+            identifier = int(identifier_str)
+            for sensodrives in self.settings.sensodrives:
+                if sensodrives.identifier == identifier:
+                    settings_object = sensodrives
+
+        self.settings.remove_hardware_input_device(settings_object)
 
         # Remove settings dialog
         self._hardware_input_settingdialogs_dict[hardware_input_name].setParent(None)

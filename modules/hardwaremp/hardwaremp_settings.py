@@ -81,14 +81,14 @@ class KeyBoardSettings:
     Default keyboardinput settings that will load whenever a keyboardinput class is created.
     """
 
-    def __init__(self): #TODO Use identifier integer
+    def __init__(self, identifier = 0): #TODO Use identifier integer
         self.steer_left_key = QtGui.QKeySequence('a')[0]
         self.steer_right_key = QtGui.QKeySequence('d')[0]
         self.throttle_key = QtGui.QKeySequence('w')[0]
         self.brake_key = QtGui.QKeySequence('s')[0]
         self.reverse_key = QtGui.QKeySequence('r')[0]
         self.handbrake_key = QtGui.QKeySequence('space')[0]
-        # self.identifier = identifier
+        self.identifier = identifier
 
         # Steering Range
         self.min_steer = - 0.5 * math.pi
@@ -115,12 +115,12 @@ class JoyStickSettings:
     Default joystick settings that will load whenever a keyboardinput class is created.
     """
 
-    def __init__(self):
+    def __init__(self, identifier = 0):
         self.min_steer = -0.5 * math.pi
         self.max_steer = 0.5 * math.pi
         self.device_vendor_id = 0
         self.device_product_id = 0
-        self.name = "Joystick"
+        self.identifier = identifier
 
         self.degrees_of_freedom = 12
         self.gas_channel = 9
