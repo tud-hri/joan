@@ -1,7 +1,6 @@
 import multiprocessing as mp
 import os
 import sys
-from pathlib import Path
 
 from PyQt5 import QtCore
 

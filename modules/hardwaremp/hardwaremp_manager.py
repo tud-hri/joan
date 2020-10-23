@@ -54,3 +54,6 @@ class HardwareMPManager(ModuleManager):
         # Remove settings dialog
         self._hardware_input_settingdialogs_dict[hardware_input_name].setParent(None)
         del self._hardware_input_settingdialogs_dict[hardware_input_name]
+
+        self.module_dialog.repaint()
+

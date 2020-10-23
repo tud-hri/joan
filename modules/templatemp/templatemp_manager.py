@@ -1,22 +1,18 @@
 
 from PyQt5 import QtCore
-
-from modules.joanmodules import JOANModules
 from core.module_manager import ModuleManager
-from core.statesenum import State
+from modules.joanmodules import JOANModules
 
 
 class TemplateMPManager(ModuleManager):
     """Example JOAN module"""
 
-    def __init__(self, time_step_in_ms=1, parent=None):
+    def __init__(self, time_step_in_ms=10, parent=None):
         super().__init__(module=JOANModules.TEMPLATE_MP, time_step_in_ms=time_step_in_ms, parent=parent)
 
+        self.settings = self.module_settings
+
     def initialize(self):
-        return super().initialize()
+        super().initialize()
+        
 
-    def start(self):
-        return super().start()
-
-    def stop(self):
-        return super().stop()

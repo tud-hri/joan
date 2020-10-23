@@ -15,14 +15,14 @@ class TemplateMPSettings(ModuleSettings):
         self.int_setting = 1
         self.float_setting = 1.5
         self.string_setting = 'Hello World'
-        self.overwrite_when_instantiated = 'to be overwritten'
+        self.overwrite_with_current_time = 'to be overwritten when instantiated'
         self.enum_setting = CustomEnumSetting.BLUE
         self.custom_class_setting = CustomClassSetting()
 
         if Path(settings_filename).is_file():
             self.load_from_file(settings_filename)
             now = datetime.now()
-            self.overwrite_when_instantiated = now.strftime("%Y-%m-%d %H:%M:%S")
+            self.overwrite_with_current_time = now.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
         else:
             self.time_step = 100  # set default if self.time_step does not exist
             self.save_to_file(settings_filename)
