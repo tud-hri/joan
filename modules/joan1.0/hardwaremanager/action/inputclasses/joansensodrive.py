@@ -206,7 +206,7 @@ class JOANSensoDrive(BaseInput):
     def remove_hardware_input(self):
         """
         Removes the sensodrive from the widget and settings
-        NOTE: calls 'self.remove_tab' which is a function of the BaseInput class, if you do not do this the tab will not
+        NOTE: calls 'self.remove_tab' which is a function of the BaseInput class, if you do_while_running not do_while_running this the tab will not
         actually disappear from the module.
         :return:
         """
@@ -300,9 +300,9 @@ class JOANSensoDrive(BaseInput):
         ON 1 SIDE!! Do not overwrite variables, if you want to send signals for events to the seperate core please use
         the multiprocessing.Events structure.
         :return: self._data a dictionary containing :
-            self._data['steering_angle'] = self.sensodrive_shared_values.steering_angle
-            self._data['brake'] = self.sensodrive_shared_values.brake
-            self._data['throttle'] = self.sensodrive_shared_values.throttle
+            self._data['steering_angle'] = self.sensodrive_shared_variables.steering_angle
+            self._data['brake'] = self.sensodrive_shared_variables.brake
+            self._data['throttle'] = self.sensodrive_shared_variables.throttle
             self._data['Handbrake'] = 0
             self._data['Reverse'] = 0
             self._data['requested_torque'] = requested_torque_by_controller
@@ -335,30 +335,30 @@ class JOANSensoDrive(BaseInput):
         self._data['requested_torque'] = requested_torque_by_controller
         self._data['checked_torque'] = self.safety_checked_torque
         self._data['torque_rate'] = self.torque_rate
-        self._data['measured_torque'] = self.sensodrive_shared_values.measured_torque
+        self._data['measured_torque'] = self.sensodrive_shared_variables.measured_torque
 
         # Handle all shared parameters with the seperate sensodrive communication core
         # Get parameters
-        self._data['steering_angle'] = self.sensodrive_shared_values.steering_angle
-        self._data['steering_rate'] = self.sensodrive_shared_values.steering_rate
-        self._data['brake'] = self.sensodrive_shared_values.brake
-        self._data['throttle'] = self.sensodrive_shared_values.throttle
+        self._data['steering_angle'] = self.sensodrive_shared_variables.steering_angle
+        self._data['steering_rate'] = self.sensodrive_shared_variables.steering_rate
+        self._data['brake'] = self.sensodrive_shared_variables.brake
+        self._data['throttle'] = self.sensodrive_shared_variables.throttle
         self._data['Handbrake'] = 0
         self._data['Reverse'] = 0
 
         # print(extra_endstop)
         #print('req:= ', requested_torque_by_controller, 'safe = ', self.safety_checked_torque)
-        self.sensodrive_shared_values.torque = self.safety_checked_torque
-        self.sensodrive_shared_values.friction = self.settings.friction
-        self.sensodrive_shared_values.damping = self.settings.damping
+        self.sensodrive_shared_variables.torque = self.safety_checked_torque
+        self.sensodrive_shared_variables.friction = self.settings.friction
+        self.sensodrive_shared_variables.damping = self.settings.damping
 
-        self.sensodrive_shared_values.endstops = self.settings.endstops
-        self.sensodrive_shared_values.torque_limit_between_endstops = self.settings.torque_limit_between_endstops
-        self.sensodrive_shared_values.torque_limit_beyond_endstops = self.settings.torque_limit_beyond_endstops
-        self.sensodrive_shared_values.spring_stiffness = self.settings.spring_stiffness
+        self.sensodrive_shared_variables.endstops = self.settings.endstops
+        self.sensodrive_shared_variables.torque_limit_between_endstops = self.settings.torque_limit_between_endstops
+        self.sensodrive_shared_variables.torque_limit_beyond_endstops = self.settings.torque_limit_beyond_endstops
+        self.sensodrive_shared_variables.spring_stiffness = self.settings.spring_stiffness
 
         # Lastly we also need to write the spring stiffness in data for controller purposes
-        self._data['spring_stiffness'] = self.sensodrive_shared_values.spring_stiffness
+        self._data['spring_stiffness'] = self.sensodrive_shared_variables.spring_stiffness
 
         return self._data
 

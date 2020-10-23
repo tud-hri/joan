@@ -28,8 +28,8 @@ class ControllerPlotterAction(JoanModuleAction):
         super().__init__(module=JOANModules.CONTROLLER_PLOTTER, millis=millis)
         self.data['datawriter output'] = 2020
         self.data['nesting'] = {'example 1': 44, 'example 2': 35}
-        self.counter = 0  # see def do(self):
-        self.sign = 1  # see def do(self):
+        self.counter = 0  # see def do_while_running(self):
+        self.sign = 1  # see def do_while_running(self):
         self.write_news(news=self.data)
         self.time = QtCore.QTime()
 
@@ -772,11 +772,11 @@ class ControllerPlotterAction(JoanModuleAction):
     def _clean_up_after_run(self):
         """
         This is an example of an exit action for a state, if the running state is exited, this function is executed. This can be used to clean up connections,
-        close files or do other final actions. Also check the setting of this action in the constructor of this class. Please note that this action is always
+        close files or do_while_running other final actions. Also check the setting of this action in the constructor of this class. Please note that this action is always
         called, no matter the target state after the state change. It can be compared with the finally statement in exeption handling.
         :return: None
         """
-        # do some interesting multi line cleaning up of the mess I made during execution.
+        # do_while_running some interesting multi line cleaning up of the mess I made during execution.
         pass
 
     def _execute_on_state_change_in_module_action_1(self):

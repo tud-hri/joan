@@ -9,7 +9,7 @@ class TemplateMPProcess(ModuleProcess):
         super().__init__(module, time_step_in_ms=time_step_in_ms, news=news, settings=settings, start_event=start_event, exception_event=exception_event)
 
         # it is possible to read from other modules
-        # do NOT WRITE to other modules' news to prevent spaghetti-code
+        # do_while_running NOT WRITE to other modules' news to prevent spaghetti-code
         self.shared_variables_hardware = news.read_news(JOANModules.HARDWARE_MP)
 
     def get_ready(self):
@@ -29,9 +29,9 @@ class TemplateMPProcess(ModuleProcess):
         # show current shared_variables for another module
         print(self.shared_variables_hardware.__dict__)
 
-    def do(self):
+    def do_while_running(self):
         """
-        do something and write the result in a shared_variable
+        do_while_running something and write the result in a shared_variable
         """
         now = datetime.now()
         self._module_shared_variables.overwrite_with_current_time = now.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]

@@ -136,7 +136,7 @@ holds the class MasterStates and an __init__ method that handles the (attribute)
 
 * pulsar.py <br>
 purpose is to use 2 threads, beside the main core.<br>
-It turns out that the QTimer object are running in seperate threads but the methods (acting as 'pyqSlots') that should do something (depending on the widget), are part of the main thread. This is something to look at if this is turns out to be a problem.
+It turns out that the QTimer object are running in seperate threads but the methods (acting as 'pyqSlots') that should do_while_running something (depending on the widget), are part of the main thread. This is something to look at if this is turns out to be a problem.
 1. communication with input devices (Sensodrive Steering wheel through PCAN) (as fast as possible, hopefully 1 msec)
 2. spread data around to whatever module want to listen; datarecorder, plotter, GUI (200msec or so)
 
@@ -148,7 +148,7 @@ definition of the gui
 ### modules.datarecorder.action.datarecorder.py
 does all the action to get the datarecorder initializing and working
 ### modules.datarecorder.action.datawriter.py
-actually writes data (from News), every time a pulse calls the do-method in datarecorderWidget
+actually writes data (from News), every time a pulse calls the do_while_running-method in datarecorderWidget
 ### modules.datarecorder.action.datarecordersettings.py
 reads and writes settings in json format which items should be recorded (default: all)
 

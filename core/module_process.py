@@ -1,15 +1,12 @@
-import platform
-import json
+import abc
 import multiprocessing as mp
 import platform
 import sys
 import time
-import abc
 
 from core.exceptionhook import exception_log_and_kill_hook
 from core.statesenum import State
 from modules.joanmodules import JOANModules
-from core.module_settings import ModuleSettings
 
 if platform.system() == 'Windows':
     import wres
@@ -40,8 +37,6 @@ class ModuleProcess(mp.Process):
         self._start_event = start_event
         self._exception_event = exception_event
 
-
-
     @abc.abstractmethod
     def get_ready(self):
         """
@@ -53,7 +48,7 @@ class ModuleProcess(mp.Process):
         self._settings_as_object.load_from_dict(self._settings_as_dict)  # settings as object
 
     @abc.abstractmethod
-    def do(self):
+    def do_while_running(self):
         """
         User-defined function, in which the user's desired operations occur every loop cycle.
         :return:
@@ -98,8 +93,8 @@ class ModuleProcess(mp.Process):
             # read shared values here, store in local variables
             self.read_from_shared_variables()
 
-            # do!
-            self.do()
+            # do_while_running!
+            self.do_while_running()
 
             # write local variables to shared values
             self.write_to_shared_variables()
@@ -116,7 +111,7 @@ class ModuleProcess(mp.Process):
     def read_from_shared_variables(self):
         """
         Read all needed values from shared and copy them to local variables.
-        This should be done here only; before executing the do function
+        This should be done here only; before executing the do_while_running function
         :return:
         """
         pass

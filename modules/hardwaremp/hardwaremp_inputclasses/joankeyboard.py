@@ -137,7 +137,7 @@ class KeyBoardSettingsDialog(QtWidgets.QDialog):
 
 class JOANKeyboardMP:
     """
-    Main class for the Keyboard input in a seperate multiprocess, this will loop!. Make sure that the things you do in this class are serializable, else
+    Main class for the Keyboard input in a seperate multiprocess, this will loop!. Make sure that the things you do_while_running in this class are serializable, else
     it will fail.
     """
 

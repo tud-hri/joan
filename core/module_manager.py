@@ -36,7 +36,7 @@ class ModuleManager(QtCore.QObject):
         self.state_machine.set_entry_action(State.RUNNING, self.start)
         self.state_machine.set_exit_action(State.RUNNING, self.stop_dialog_timer)
         self.state_machine.set_entry_action(State.STOPPED, self.stop)
-        self.state_machine.set_exit_action(State.STOPPED, self.cleanup)
+        self.state_machine.set_exit_action(State.STOPPED, self.clean_up)
 
         self.shared_variables = None
         self._process = None
@@ -101,8 +101,8 @@ class ModuleManager(QtCore.QObject):
     def stop_dialog_timer(self):
         self.module_dialog.update_timer.stop()
 
-    def cleanup(self):
-        # TODO moeten we hier nog checken of shared values nog bestaan?
+    def clean_up(self):
+
         # delete object
         # remove shared values from news
         self.singleton_news.remove_news(self.module)

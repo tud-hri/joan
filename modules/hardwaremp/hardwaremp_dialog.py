@@ -61,7 +61,7 @@ class HardwareMPDialog(ModuleDialog):
         self._module_widget.hardware_list_layout.addWidget(self._hardware_input_tabs_dict[hardware_input_name])
         self._hardware_input_tabs_dict[hardware_input_name].btn_remove_hardware.clicked.connect(lambda: self._remove_hardware_input_device(hardware_input_name))
 
-        #also add settings fucntionality, we do this in the module manager class
+        #also add settings fucntionality, we do_while_running this in the module manager class
         self._module_manager.add_hardware_input(chosen_hardware_input, hardware_input_name)
         self._hardware_input_tabs_dict[hardware_input_name].btn_settings.clicked.connect(lambda: self._module_manager._open_settings_dialog(hardware_input_name))
 

@@ -13,7 +13,7 @@ class ScenariosAction(JoanModuleAction):
 
     def do(self):
         if self.settings.current_scenario is not None:
-            self.settings.current_scenario.do(self)
+            self.settings.current_scenario.do_while_running(self)
 
     def initialize(self):
         self.state_machine.request_state_change(State.READY)

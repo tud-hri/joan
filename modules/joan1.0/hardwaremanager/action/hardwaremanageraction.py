@@ -37,7 +37,7 @@ class HardwareManagerAction(JoanModuleAction):
         :return:
         """
         for hardware_input in self._hardware_inputs:
-            self.data[hardware_input] = self._hardware_inputs[hardware_input].do()
+            self.data[hardware_input] = self._hardware_inputs[hardware_input].do_while_running()
 
         for hardware_input in self._hardware_inputs:
             if self.state_machine.current_state == State.READY or self.state_machine.current_state == State.INITIALIZED:
@@ -59,7 +59,7 @@ class HardwareManagerAction(JoanModuleAction):
         self.sw_controller_data = self.read_news(JOANModules.STEERING_WHEEL_CONTROL)
 
         for hardware_input in self._hardware_inputs:
-            self.data[hardware_input] = self._hardware_inputs[hardware_input].do()
+            self.data[hardware_input] = self._hardware_inputs[hardware_input].do_while_running()
 
         self.write_news(self.data)
 
@@ -74,7 +74,7 @@ class HardwareManagerAction(JoanModuleAction):
                         self._hardware_inputs[input_device].initialize()
                         self.state_machine.request_state_change(State.READY, '')
                         for inputs in self._hardware_inputs:
-                            self.data[inputs] = self._hardware_inputs[inputs].do()
+                            self.data[inputs] = self._hardware_inputs[inputs].do_while_running()
                 else:
                     self.state_machine.request_state_change(State.ERROR, 'No hardware to Initialize')
             elif self.state_machine.current_state == State.ERROR:

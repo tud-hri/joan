@@ -24,5 +24,5 @@ The experiments are stored in a `json` file, which you can open in any text edit
 
 ---
 
-## How do I use the experiment manager?
+## How do_while_running I use the experiment manager?
 

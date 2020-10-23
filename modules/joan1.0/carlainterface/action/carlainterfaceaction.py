@@ -175,7 +175,7 @@ class CarlaInterfaceAction(JoanModuleAction):
             try:
                 for agent in self._agents:
                     if self._agents[agent].spawned:
-                        self._agents[agent].do(self._data_from_hardware)
+                        self._agents[agent].do_while_running(self._data_from_hardware)
             except Exception as inst:
                 print('Could not apply control', inst)
         else:

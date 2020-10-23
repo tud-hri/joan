@@ -90,7 +90,7 @@ class DataRecorderSettings(ModuleSettings):
                 # recursion
                 self._remove_forbidden_vartypes(value)
             else:
-                pass  # do nothing
+                pass  # do_while_running nothing
 
     def get_variables_to_save(self):
         return self.variables_to_save

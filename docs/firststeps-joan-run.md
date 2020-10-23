@@ -41,7 +41,7 @@ We need to establish a connection with CARLA before we can receive data from CAR
 
 ### 4. Create an ego vehicle and start CARLA interface
 
-To drive a car in CARLA, you need to create an 'ego vehicle'. You can do this in CARLA Interface.
+To drive a car in CARLA, you need to create an 'ego vehicle'. You can do_while_running this in CARLA Interface.
 
 - Click 'Add vehicle' and select 'ego vehicle' from the drop down list.
 

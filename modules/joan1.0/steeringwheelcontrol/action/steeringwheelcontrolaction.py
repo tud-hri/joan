@@ -61,9 +61,9 @@ class SteeringWheelControlAction(JoanModuleAction):
         # for controller in self._controllers:
         #     if sim_data_in['vehicles'] is not None:
         #         for vehicle_object in sim_data_in['vehicles']:
-        #             self.data[controller] = self._controllers[controller].do(vehicle_object, hw_data_in)
+        #             self.data[controller] = self._controllers[controller].do_while_running(vehicle_object, hw_data_in)
         #     else:
-        #         self.data[controller] = self._controllers[controller].do(None, hw_data_in)
+        #         self.data[controller] = self._controllers[controller].do_while_running(None, hw_data_in)
         # print(self.data)
 
         self.write_news(news=self.data)

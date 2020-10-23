@@ -213,7 +213,7 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
 #     def remove_hardware_input(self):
 #         """
 #         Removes the sensodrive from the widget and settings
-#         NOTE: calls 'self.remove_tab' which is a function of the BaseInput class, if you do not do this the tab will not
+#         NOTE: calls 'self.remove_tab' which is a function of the BaseInput class, if you do_while_running not do_while_running this the tab will not
 #         actually disappear from the module.
 #         :return:
 #         """
@@ -279,7 +279,7 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
 #         self.lbl_state_update()
 #
 #
-#     def do(self):
+#     def do_while_running(self):
 #         """
 #         Basically acts as a portal of variables to the seperate sensodrive communication core. You can send info to this
 #         core using the shared variables in 'SensoDriveSharedValues' Class. NOTE THAT YOU SHOULD ONLY SET VARIABLES
@@ -462,14 +462,14 @@ class SensoDriveComm(mp.Process):
         time.sleep(0.002)
         self.pcan_object.Read(self._pcan_channel)
 
-        # do not switch mode
+        # do_while_running not switch mode
         self.state_message = self.sensodrive_initialization_message
         self.state_message.DATA[0] = 0x11
 
         # Set the data structure for the steeringwheel message with the just applied values
         self.steering_wheel_parameters = self._map_si_to_sensodrive(self.sensodrive_communication_values)
 
-        # TODO Do we need to do this twice?
+        # TODO Do we need to do_while_running this twice?
         self.pcan_object.Write(self._pcan_channel, self.sensodrive_initialization_message)
         time.sleep(0.02)
         response = self.pcan_object.Read(self._pcan_channel)

@@ -101,14 +101,14 @@ class SensoDriveComm(mp.Process):
         time.sleep(0.002)
         self.pcan_object.Read(self._pcan_channel)
 
-        # do not switch mode
+        # do_while_running not switch mode
         self.state_message = self.sensodrive_initialization_message
         self.state_message.DATA[0] = 0x11
 
         # Set the data structure for the steeringwheel message with the just applied values
         self.steering_wheel_parameters = self._map_si_to_sensodrive(self.sensodrive_shared_variables)
 
-        # TODO Do we need to do this twice?
+        # TODO Do we need to do_while_running this twice?
         self.pcan_object.Write(self._pcan_channel, self.sensodrive_initialization_message)
         time.sleep(0.02)
         response = self.pcan_object.Read(self._pcan_channel)
@@ -212,7 +212,7 @@ class SensoDriveComm(mp.Process):
             received = self.pcan_object.Read(self._pcan_channel)
 
             # request state data
-            endstops_bytes = int.to_bytes(int(math.degrees(self.sensodrive_shared_values.endstops)), 2, byteorder='little', signed=True)
+            endstops_bytes = int.to_bytes(int(math.degrees(self.sensodrive_shared_variables.endstops)), 2, byteorder='little', signed=True)
             self.state_message.DATA[2] = endstops_bytes[0]
             self.state_message.DATA[3] = endstops_bytes[1]
 
@@ -230,7 +230,7 @@ class SensoDriveComm(mp.Process):
 
                 self._sensodrive_data_to_si(received3)
 
-            self.sensodrive_shared_values.sensodrive_motorstate = self._current_state_hex
+            self.sensodrive_shared_variables.sensodrive_motorstate = self._current_state_hex
 
             if self.turn_on_event.is_set():
                 self.off_to_on(self.state_message)
@@ -334,7 +334,7 @@ class SensoDriveComm(mp.Process):
         self._current_state_hex = response[1].DATA[0]
         # print(hex(self._current_state_hex))
         time.sleep(0.002)
-        self.sensodrive_shared_values.sensodrive_motorstate = self._current_state_hex
+        self.sensodrive_shared_variables.sensodrive_motorstate = self._current_state_hex
 
 
 
@@ -356,7 +356,7 @@ class SensoDriveComm(mp.Process):
         self._current_state_hex = response[1].DATA[0]
         # print(hex(self._current_state_hex))
         time.sleep(0.002)
-        self.sensodrive_shared_values.sensodrive_motorstate = self._current_state_hex
+        self.sensodrive_shared_variables.sensodrive_motorstate = self._current_state_hex
 
     def clear_error(self, message):
         """
@@ -372,4 +372,4 @@ class SensoDriveComm(mp.Process):
         self._current_state_hex = response[1].DATA[0]
         print(hex(self._current_state_hex))
         time.sleep(0.002)
-        self.sensodrive_shared_values.sensodrive_motorstate = self._current_state_hex
+        self.sensodrive_shared_variables.sensodrive_motorstate = self._current_state_hex
