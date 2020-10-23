@@ -68,7 +68,7 @@ class HardwareInputTypes(enum.Enum):
 
         return {HardwareInputTypes.KEYBOARD: KeyBoardSettings,
                 HardwareInputTypes.JOYSTICK: JoyStickSettings,
-                HardwareInputTypes.SENSODRIVE: SensoDriveSettings()
+                HardwareInputTypes.SENSODRIVE: SensoDriveSettings
                 }[self]
 
     def __str__(self):

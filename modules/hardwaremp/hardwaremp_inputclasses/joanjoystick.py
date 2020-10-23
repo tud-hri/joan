@@ -165,7 +165,8 @@ class JoystickSettingsDialog(QtWidgets.QDialog):  # TODO: losse files maken voor
         Sets the settings as they are described in 'HardwaremanagerSettings => JoystickSettings)
         :return:
         """
-        self._display_settings(HardwareInputTypes.JOYSTICK.settings)
+        self._display_settings(HardwareInputTypes.JOYSTICK.settings(self.joystick_settings.identifier))
+        print(self.joystick_settings.identifier)
 
     def _update_brake_channel_enabled(self, value):
         """
