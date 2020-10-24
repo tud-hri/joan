@@ -1,12 +1,13 @@
 from core.module_process import ModuleProcess
 from modules.hardwaremp.hardwaremp_inputtypes import HardwareInputTypes
 from modules.joanmodules import JOANModules
-
+import time
 
 class HardwareMPProcess(ModuleProcess):
 
-    def __init__(self, module: JOANModules, time_step_in_ms, news, settings, start_event, exception_event):
-        super().__init__(module, time_step_in_ms=time_step_in_ms, news=news, settings=settings, start_event=start_event, exception_event=exception_event)
+    def __init__(self, module: JOANModules, time_step_in_ms, news, settings, start_event, exception_event, process_is_ready_event):
+        super().__init__(module, time_step_in_ms=time_step_in_ms, news=news, settings=settings,
+                         start_event=start_event, exception_event=exception_event, process_is_ready_event=process_is_ready_event)
         self.input_classes = {}
 
     def get_ready(self):

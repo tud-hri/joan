@@ -5,8 +5,9 @@ from datetime import datetime
 
 class TemplateProcess(ModuleProcess):
 
-    def __init__(self, module: JOANModules, time_step_in_ms, news, settings, start_event, exception_event):
-        super().__init__(module, time_step_in_ms=time_step_in_ms, news=news, settings=settings, start_event=start_event, exception_event=exception_event)
+    def __init__(self, module: JOANModules, time_step_in_ms, news, settings, start_event, exception_event, process_is_ready_event):
+        super().__init__(module, time_step_in_ms=time_step_in_ms, news=news, settings=settings,
+                         start_event=start_event, exception_event=exception_event, process_is_ready_event=process_is_ready_event)
 
         # it is possible to read from other modules
         # do_while_running NOT WRITE to other modules' news to prevent spaghetti-code

@@ -17,7 +17,7 @@ class ModuleProcess(mp.Process):
     Base class for the module process.
     """
 
-    def __init__(self, module: JOANModules, time_step_in_ms, news, settings, start_event, exception_event):
+    def __init__(self, module: JOANModules, time_step_in_ms, news, settings, start_event, exception_event, process_is_ready_event):
         super().__init__()
 
         if time_step_in_ms < 10:
@@ -36,6 +36,17 @@ class ModuleProcess(mp.Process):
         # mp.Events
         self._start_event = start_event
         self._exception_event = exception_event
+        self._process_is_ready_event = process_is_ready_event
+
+    def _get_ready(self):
+        # settings dict back to settings object
+        self._settings_as_object = self.module.settings()  # create empty settings object
+        self._settings_as_object.load_from_dict(self._settings_as_dict)  # settings as object
+
+        # get_ready to
+        self.get_ready()
+
+        self._process_is_ready_event.set()
 
     @abc.abstractmethod
     def get_ready(self):
@@ -43,9 +54,7 @@ class ModuleProcess(mp.Process):
         get_ready is called when the module goes to READY state. This function is called from the new process (in run()).
         :return:
         """
-        # settings dict back to settings object
-        self._settings_as_object = self.module.settings()  # create empty settings object
-        self._settings_as_object.load_from_dict(self._settings_as_dict)  # settings as object
+
 
     @abc.abstractmethod
     def do_while_running(self):
@@ -64,7 +73,7 @@ class ModuleProcess(mp.Process):
         :return:
         """
         try:
-            self.get_ready()
+            self._get_ready()
             self._start_event.wait()
 
             # run

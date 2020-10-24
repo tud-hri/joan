@@ -42,6 +42,7 @@ class ModuleManager(QtCore.QObject):
         self._process = None
         self._start_event = mp.Event()
         self._exception_event = mp.Event()
+        self._process_is_ready_event = mp.Event()
 
         self._exception_monitor = ModuleExceptionMonitor(self._exception_event, self.state_machine)
 
@@ -78,11 +79,14 @@ class ModuleManager(QtCore.QObject):
                                             news=self.singleton_news,
                                             settings=self.module_settings,
                                             start_event=self._start_event,
-                                            exception_event=self._exception_event)
+                                            exception_event=self._exception_event,
+                                            process_is_ready_event=self._process_is_ready_event)
 
         # Start the process, run() will wait until start_event is set
         if self._process and not self._process.is_alive():
             self._process.start()
+
+        self._process_is_ready_event.wait()
 
         self.shared_variables.state = self.state_machine.current_state.value
 
