@@ -379,7 +379,6 @@ class JOANSensoDriveMP():
         super().__init__()
         self.settings = settings
 
-
         self.settings_dialog = None
         self.shared_variables = shared_variables
 
@@ -393,14 +392,14 @@ class JOANSensoDriveMP():
     def do(self):
         self.parent_pipe.send(self.settings.settings_list)
 
+
 class SensoDriveComm1(mp.Process):
-    def __init__(self, init_event, close_event,  child_pipe):
+    def __init__(self, init_event, close_event, child_pipe):
         super().__init__()
         self.init_event = init_event
         self.child_pipe = child_pipe
         self.should_read = False
         self.close_event = close_event
-
 
     def run(self):
         self.init_event.wait()
@@ -417,11 +416,8 @@ class SensoDriveComm1(mp.Process):
                 break
 
 
-
-
-
 class SensoDriveComm(mp.Process):  # TODO: hoe zit dit met een process in een process?
-    def __init__(self, shared_variables, init_event, turn_on_event, turn_off_event, clear_error_event, close_event, update_event, conn = mp.Pipe()):
+    def __init__(self, shared_variables, init_event, turn_on_event, turn_off_event, clear_error_event, close_event, update_event, conn=mp.Pipe()):
         super().__init__()
         self.init_event = init_event
         self.turn_on_event = turn_on_event

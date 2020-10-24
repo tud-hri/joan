@@ -1,10 +1,10 @@
 import math
 import multiprocessing as mp
-from pathlib import Path
 
 from PyQt5 import QtGui
 
 from core.module_settings import ModuleSettings
+from modules.hardwaremp.hardwaremp_inputtypes import HardwareInputTypes
 from modules.joanmodules import JOANModules
 
 
@@ -47,22 +47,22 @@ class HardwareMPSettings(ModuleSettings):
 
         # TODO Maak hier van de lists -> dicts; eerste stap gezet, moet gechecked worden
         self.keyboards = {}
-        for keyboard_settings_dict in module_settings_to_load['keyboards']:
+        for identifier, settings_dict in module_settings_to_load['keyboards'].items():
             keyboard_settings = KeyBoardSettings()
-            keyboard_settings.set_from_loaded_dict(keyboard_settings_dict)
-            self.keyboards.update({keyboard_settings.identifier: keyboard_settings})
+            keyboard_settings.set_from_loaded_dict(settings_dict)
+            self.keyboards.update({identifier: keyboard_settings})
 
         self.joysticks = {}
-        for joystick_settings_dict in module_settings_to_load['joysticks']:
+        for identifier, settings_dict in module_settings_to_load['joysticks'].items():
             joystick_settings = JoyStickSettings()
-            joystick_settings.set_from_loaded_dict(joystick_settings_dict)
-            self.joysticks.update({joystick_settings.identifier: joystick_settings})
+            joystick_settings.set_from_loaded_dict(settings_dict)
+            self.joysticks.update({identifier: joystick_settings})
 
         self.sensodrives = {}
-        for sensodrive in module_settings_to_load['sensodrives']:
+        for identifier, settings_dict in module_settings_to_load['sensodrives'].items():
             sensodrive_settings = SensoDriveSettings()
-            sensodrive_settings.set_from_loaded_dict(sensodrive)
-            self.sensodrives.update({sensodrive_settings.identifier: sensodrive_settings})
+            sensodrive_settings.set_from_loaded_dict(settings_dict)
+            self.sensodrives.update({identifier: sensodrive_settings})
 
     def remove_hardware_input_device(self, setting):
         # TODO dit ook naar dict; eerste stap gemaakt, moet gechecked worden
@@ -81,7 +81,7 @@ class KeyBoardSettings:
     Default keyboardinput settings that will load whenever a keyboardinput class is created.
     """
 
-    def __init__(self, identifier=0):  # TODO Use identifier integer
+    def __init__(self, input_type: HardwareInputTypes = HardwareInputTypes.KEYBOARD, identifier = 0):  # TODO Use identifier integer
         self.steer_left_key = QtGui.QKeySequence('a')[0]
         self.steer_right_key = QtGui.QKeySequence('d')[0]
         self.throttle_key = QtGui.QKeySequence('w')[0]
@@ -89,6 +89,7 @@ class KeyBoardSettings:
         self.reverse_key = QtGui.QKeySequence('r')[0]
         self.handbrake_key = QtGui.QKeySequence('space')[0]
         self.identifier = identifier
+        self.input_type = input_type
 
         # Steering Range
         self.min_steer = - 0.5 * math.pi
@@ -115,12 +116,13 @@ class JoyStickSettings:
     Default joystick settings that will load whenever a keyboardinput class is created.
     """
 
-    def __init__(self, identifier=0):
+    def __init__(self, input_type: HardwareInputTypes = HardwareInputTypes.JOYSTICK, identifier = 0):
         self.min_steer = -0.5 * math.pi
         self.max_steer = 0.5 * math.pi
         self.device_vendor_id = 0
         self.device_product_id = 0
         self.identifier = identifier
+        self.input_type = input_type
 
         self.degrees_of_freedom = 12
         self.gas_channel = 9
@@ -178,7 +180,7 @@ class SensoDriveSettings:
     Default sensodrive settings that will load whenever a keyboardinput class is created.
     """
 
-    def __init__(self, identifier=0):
+    def __init__(self, input_type: HardwareInputTypes = HardwareInputTypes.SENSODRIVE, identifier = 0):
         self.endstops = math.radians(360.0)  # rad
         self.torque_limit_between_endstops = 200  # percent
         self.torque_limit_beyond_endstops = 200  # percent
@@ -189,6 +191,8 @@ class SensoDriveSettings:
         self.identifier = identifier
         self.init_event = mp.Event()
         self.close_event = mp.Event()
+
+        self.input_type = input_type
 
         self.settings_list = [self.endstops,  # rad
                               self.torque_limit_between_endstops,  # percent

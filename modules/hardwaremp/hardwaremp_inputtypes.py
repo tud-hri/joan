@@ -1,8 +1,6 @@
 import enum
 import os
 
-from .hardwaremp_settings import KeyBoardSettings
-
 
 class HardwareInputTypes(enum.Enum):
     KEYBOARD = 0
@@ -48,7 +46,7 @@ class HardwareInputTypes(enum.Enum):
 
         return {HardwareInputTypes.KEYBOARD: os.path.join(path_to_uis, "keyboard_settings_ui.ui"),
                 HardwareInputTypes.JOYSTICK: os.path.join(path_to_uis, "joystick_settings_ui.ui"),
-                HardwareInputTypes.SENSODRIVE:  os.path.join(path_to_uis, "sensodrive_settings_ui.ui")
+                HardwareInputTypes.SENSODRIVE: os.path.join(path_to_uis, "sensodrive_settings_ui.ui")
                 }[self]
 
     @property
@@ -76,4 +74,3 @@ class HardwareInputTypes(enum.Enum):
                 HardwareInputTypes.JOYSTICK: 'Joystick',
                 HardwareInputTypes.SENSODRIVE: 'SensoDrive'
                 }[self]
-

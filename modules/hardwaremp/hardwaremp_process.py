@@ -13,6 +13,8 @@ class HardwareMPProcess(ModuleProcess):
         # Create empty settings object in which we will reconstruct our settings dictionary
         super().get_ready()
 
+        print(self._settings_as_object.keyboards)
+
         # Create the object that are in the settings here
         for key, value in self._settings_as_object.keyboards.items():
             self.input_objects[key] = HardwareInputTypes.KEYBOARD.klass_mp(settings=value, shared_variables=self._module_shared_variables.keyboards[key])
