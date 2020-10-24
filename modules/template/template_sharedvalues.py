@@ -2,7 +2,7 @@ import multiprocessing as mp
 from ctypes import *
 
 
-class TemplateMPSharedValues:
+class TemplateSharedValues:
     def __init__(self):
         self._state = mp.Value(c_int, -2)  # module state [initialized, running, error]
         self._time = mp.Value(c_float, 0.0)

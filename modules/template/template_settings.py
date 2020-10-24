@@ -4,9 +4,9 @@ from core.module_settings import ModuleSettings
 from modules.joanmodules import JOANModules
 
 
-class TemplateMPSettings(ModuleSettings):
+class TemplateSettings(ModuleSettings):
     def __init__(self):
-        super().__init__(JOANModules.TEMPLATE_MP)
+        super().__init__(JOANModules.TEMPLATE)
 
         self.time_step = 100
         self.int_setting = 1

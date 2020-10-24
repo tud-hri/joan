@@ -3,7 +3,7 @@ from modules.joanmodules import JOANModules
 from datetime import datetime
 
 
-class TemplateMPProcess(ModuleProcess):
+class TemplateProcess(ModuleProcess):
 
     def __init__(self, module: JOANModules, time_step_in_ms, news, settings, start_event, exception_event):
         super().__init__(module, time_step_in_ms=time_step_in_ms, news=news, settings=settings, start_event=start_event, exception_event=exception_event)

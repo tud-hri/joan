@@ -9,31 +9,31 @@ class JOANModules(Enum):
     classes.
     """
 
-    TEMPLATE_MP = auto()
+    TEMPLATE = auto()
     HARDWARE_MP = auto()
 
     @property
     def manager(self):
         from modules.hardwaremp.hardwaremp_manager import HardwareMPManager
-        from modules.templatemp.templatemp_manager import TemplateMPManager
+        from modules.template.template_manager import TemplateManager
 
         return {JOANModules.HARDWARE_MP: HardwareMPManager,
-                JOANModules.TEMPLATE_MP: TemplateMPManager}[self]
+                JOANModules.TEMPLATE: TemplateManager}[self]
 
     @property
     def dialog(self):
         from modules.hardwaremp.hardwaremp_dialog import HardwareMPDialog
-        from modules.templatemp.templatemp_dialog import TemplateMPDialog
+        from modules.template.template_dialog import TemplateDialog
 
         return {JOANModules.HARDWARE_MP: HardwareMPDialog,
-                JOANModules.TEMPLATE_MP: TemplateMPDialog}[self]
+                JOANModules.TEMPLATE: TemplateDialog}[self]
 
     @property
     def settings(self):
-        from modules.templatemp.templatemp_settings import TemplateMPSettings
+        from modules.template.template_settings import TemplateSettings
         from modules.hardwaremp.hardwaremp_settings import HardwareMPSettings
 
-        return {JOANModules.TEMPLATE_MP: TemplateMPSettings,
+        return {JOANModules.TEMPLATE: TemplateSettings,
                 JOANModules.HARDWARE_MP: HardwareMPSettings
                 }[self]
 
@@ -41,28 +41,28 @@ class JOANModules(Enum):
     @property
     def shared_variables(self):
         from modules.hardwaremp.hardwaremp_sharedvalues import HardwareMPSharedValues
-        from modules.templatemp.templatemp_sharedvalues import TemplateMPSharedValues
+        from modules.template.template_sharedvalues import TemplateSharedValues
 
         return {JOANModules.HARDWARE_MP: HardwareMPSharedValues,
-                JOANModules.TEMPLATE_MP: TemplateMPSharedValues}[self]
+                JOANModules.TEMPLATE: TemplateSharedValues}[self]
 
     @property
     def process(self):
         from modules.hardwaremp.hardwaremp_process import HardwareMPProcess
-        from modules.templatemp.templatemp_process import TemplateMPProcess
+        from modules.template.template_process import TemplateProcess
 
         return {JOANModules.HARDWARE_MP: HardwareMPProcess,
-                JOANModules.TEMPLATE_MP: TemplateMPProcess}[self]
+                JOANModules.TEMPLATE: TemplateProcess}[self]
 
     @property
     def ui_file(self):
         path_to_modules = os.path.dirname(os.path.realpath(__file__))
         return {JOANModules.HARDWARE_MP: os.path.join(path_to_modules, "hardwaremp/hardwaremp_dialog.ui"),
-                JOANModules.TEMPLATE_MP: os.path.join(path_to_modules, "templatemp/templatemp_dialog.ui")}[self]
+                JOANModules.TEMPLATE: os.path.join(path_to_modules, "template/template_dialog.ui")}[self]
 
     def __str__(self):
         return {JOANModules.HARDWARE_MP: 'Hardware MP',
-                JOANModules.TEMPLATE_MP: 'Template MP'}[self]
+                JOANModules.TEMPLATE: 'Template'}[self]
 
     @staticmethod
     def from_string_representation(string):

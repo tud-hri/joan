@@ -22,9 +22,9 @@ class JOANModules(Enum):
 
     @property
     def manager(self):
-        from modules.templatemp.templatemp_manager import TemplateMPManager
+        from modules.template.template_manager import TemplateManager
 
-        return {JOANModules.TEMPLATE_MP: TemplateMPManager}[self]
+        return {JOANModules.TEMPLATE_MP: TemplateManager}[self]
 
     @property
     def action(self):
@@ -60,7 +60,7 @@ class JOANModules(Enum):
         from modules.experimentmanager.dialog.experimentmanagerdialog import ExperimentManagerDialog
         from modules.scenarios.dialog.scenariosdialog import ScenariosDialog
         from modules.controllerplotter.dialog.controllerplotterdialog import ControllerPlotterDialog
-        from modules.templatemp.templatemp_dialog import TemplateMPDialog
+        from modules.template.template_dialog import TemplateDialog
 
         return {JOANModules.TEMPLATE: TemplateDialog,
                 JOANModules.DATA_RECORDER: DataRecorderDialog,
@@ -71,21 +71,21 @@ class JOANModules(Enum):
                 JOANModules.EXPERIMENT_MANAGER: ExperimentManagerDialog,
                 JOANModules.SCENARIOS: ScenariosDialog,
                 JOANModules.CONTROLLER_PLOTTER: ControllerPlotterDialog,
-                JOANModules.TEMPLATE_MP: TemplateMPDialog
+                JOANModules.TEMPLATE_MP: TemplateDialog
                 }[self]
 
     @property
     def sharedvalues(self):
-        from modules.templatemp.templatemp_sharedvalues import TemplateMPSharedValues
+        from modules.template.template_sharedvalues import TemplateSharedValues
 
-        return {JOANModules.TEMPLATE_MP: TemplateMPSharedValues
+        return {JOANModules.TEMPLATE_MP: TemplateSharedValues
                 }[self]
 
     @property
     def process(self):
-        from modules.templatemp.templatemp_process import TemplateMPProcess
+        from modules.template.template_process import TemplateProcess
 
-        return {JOANModules.TEMPLATE_MP: TemplateMPProcess}[self]
+        return {JOANModules.TEMPLATE_MP: TemplateProcess}[self]
 
     @property
     def ui_file(self):

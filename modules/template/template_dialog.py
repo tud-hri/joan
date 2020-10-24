@@ -3,9 +3,9 @@ from core.module_manager import ModuleManager
 from modules.joanmodules import JOANModules
 
 
-class TemplateMPDialog(ModuleDialog):
+class TemplateDialog(ModuleDialog):
     def __init__(self, module_manager: ModuleManager, parent=None):
-        super().__init__(module=JOANModules.TEMPLATE_MP, module_manager=module_manager, parent=parent)
+        super().__init__(module=JOANModules.TEMPLATE, module_manager=module_manager, parent=parent)
 
     def update_dialog(self):
         """
