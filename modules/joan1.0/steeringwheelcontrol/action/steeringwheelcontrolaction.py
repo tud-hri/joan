@@ -61,9 +61,9 @@ class SteeringWheelControlAction(JoanModuleAction):
         # for controller in self._controllers:
         #     if sim_data_in['vehicles'] is not None:
         #         for vehicle_object in sim_data_in['vehicles']:
-        #             self.data[controller] = self._controllers[controller].do(vehicle_object, hw_data_in)
+        #             self.data[controller] = self._controllers[controller].do_while_running(vehicle_object, hw_data_in)
         #     else:
-        #         self.data[controller] = self._controllers[controller].do(None, hw_data_in)
+        #         self.data[controller] = self._controllers[controller].do_while_running(None, hw_data_in)
         # print(self.data)
 
         self.write_news(news=self.data)
@@ -73,7 +73,7 @@ class SteeringWheelControlAction(JoanModuleAction):
         This function is called before the module is started
         """
         try:
-            if self.state_machine.current_state == State.IDLE:
+            if self.state_machine.current_state == State.INITIALIZED:
                 if len(self._controllers) != 0:
                     for controllers in self._controllers:
                         self._controllers[controllers].initialize()
@@ -81,7 +81,7 @@ class SteeringWheelControlAction(JoanModuleAction):
                 else:
                     self.state_machine.request_state_change(State.ERROR, 'No controllers to initialize')
             elif self.state_machine.current_state == State.ERROR:
-                self.state_machine.request_state_change(State.IDLE)
+                self.state_machine.request_state_change(State.INITIALIZED)
 
         except RuntimeError:
             return False
@@ -110,8 +110,8 @@ class SteeringWheelControlAction(JoanModuleAction):
         self.initialize()
 
     def add_controller(self, controller_type, controller_settings=None):
-        # set the module to idle because we need to reinitialize our controllers!
-        self.state_machine.request_state_change(State.IDLE, 'You can now add more and reinitialize controllers')
+        # set the module to initialized because we need to reinitialize our controllers!
+        self.state_machine.request_state_change(State.INITIALIZED, 'You can now add more and reinitialize controllers')
         number_of_controllers = sum([bool(controller_type.__str__() in k) for k in self._controllers.keys()]) + 1
         controller_name = controller_type.__str__() + ' ' + str(number_of_controllers)
 
@@ -188,7 +188,7 @@ class SteeringWheelControlAction(JoanModuleAction):
     def stop(self):
         try:
             try:
-                self.state_machine.request_state_change(State.IDLE)
+                self.state_machine.request_state_change(State.INITIALIZED)
                 if len(self._controllers) != 0:
                     self.state_machine.request_state_change(State.READY)
             except RuntimeError:

@@ -1,7 +1,7 @@
 from core.module_manager import ModuleManager
 from modules.joanmodules import JOANModules
 from .hardwaremp_inputtypes import HardwareInputTypes
-from .hardwaremp_sharedvalues import KeyboardSharedValues, JoystickSharedValues, SensoDriveSharedValues
+from .hardwaremp_sharedvalues import KeyboardSharedVariables, JoystickSharedVariables, SensoDriveSharedVariables
 
 
 class HardwareMPManager(ModuleManager):
@@ -16,24 +16,22 @@ class HardwareMPManager(ModuleManager):
         self._hardware_input_settings_dict = {}  # TODO: Wat is deze? Deze is nu nodig om de individuele settings bij te houden, maar is een extra lijst (dezelfde lijst zit ook al in self.module_settings. Wordt gebruikt in regel 52. Maar, we kunnen settings ook removen op input naam of identifier. Kan deze dict weg.
         self._hardware_input_settingdialogs_dict = {}
 
-        self.settings = self.module_settings
-
     def initialize(self):
         super().initialize()
-        self.module_settings = self.settings
-        for keyboard in self.settings.keyboards:
-            self.shared_values.keyboards['Keyboard' + str(keyboard.identifier)] = KeyboardSharedValues()
-        for joystick in self.settings.joysticks:
-            self.shared_values.joysticks['Joystick' + str(joystick.identifier)] = JoystickSharedValues()
-        for sensodrive in self.settings.sensodrives:
-            self.shared_values.sensodrives['SensoDrive' + str(sensodrive.identifier)] = SensoDriveSharedValues()
+        for keyboard in self.module_settings.keyboards:
+            self.shared_variables.keyboards['Keyboard' + str(keyboard.identifier)] = KeyboardSharedVariables()
+        for joystick in self.module_settings.joysticks:
+            self.shared_variables.joysticks['Joystick' + str(joystick.identifier)] = JoystickSharedVariables()
+        for sensodrive in self.module_settings.sensodrives:
+            self.shared_variables.sensodrives['SensoDrive' + str(sensodrive.identifier)] = SensoDriveSharedVariables()
 
-
-    def _add_hardware_input(self, hardware_input_type, hardware_input_settings = None):
+    def _add_hardware_input(self, hardware_input_type, hardware_input_settings=None):
         " Here we just add the settings and settings dialog functionality"
         if not hardware_input_settings:
             hardware_input_settings = hardware_input_type.settings()
-            #Keyboard (make sure we have unique identifiers)
+
+            # TODO veel herhalende code, kan dit korter?
+            # Keyboard (make sure we have unique identifiers)
             if hardware_input_type == HardwareInputTypes.KEYBOARD:
                 keyboard_amount = len(self.settings.keyboards)
                 if keyboard_amount == 0:
@@ -47,7 +45,7 @@ class HardwareMPManager(ModuleManager):
                     hardware_input_settings = hardware_input_type.settings(keyboard_identifier)
                     self.settings.keyboards.append(hardware_input_settings)
 
-            #Joystick
+            # Joystick
             if hardware_input_type == HardwareInputTypes.JOYSTICK:
                 joystick_amount = len(self.settings.joysticks)
                 if joystick_amount == 0:
@@ -82,7 +80,6 @@ class HardwareMPManager(ModuleManager):
     def _open_settings_dialog(self, hardware_input_name):
         self._hardware_input_settingdialogs_dict[hardware_input_name].show()
 
-
     def _remove_hardware_input_device(self, hardware_input_name):
         # Remove settings if they are available
         if 'Keyboard' in hardware_input_name:
@@ -111,7 +108,6 @@ class HardwareMPManager(ModuleManager):
         # Remove settings dialog
         self._hardware_input_settingdialogs_dict[hardware_input_name].setParent(None)
         del self._hardware_input_settingdialogs_dict[hardware_input_name]
-
 
     def _turn_on(self, hardware_input_name):
         identifier_str = hardware_input_name.replace('SensoDrive', '')

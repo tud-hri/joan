@@ -97,7 +97,7 @@ class DataplotterAction(JoanModuleAction):
         """
         super().stop()
         # TODO: make plot class: self.data_plotter.close()
-        self.state_machine.request_state_change(State.IDLE)
+        self.state_machine.request_state_change(State.INITIALIZED)
 
     def start(self):
         """

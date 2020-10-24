@@ -31,7 +31,7 @@ class TemplateAction(JoanModuleAction):
         # transition conditions are called when transitioning and can impose simple or more complex rules to check is a state transition is legal.
         # If a state change is illegal it is also possible to add an error message explaining why the state change is illegal
         # what follows are an example of a simple en more complex condition:
-        self.state_machine.set_transition_condition(State.IDLE, State.READY, lambda: self.millis > 10)
+        self.state_machine.set_transition_condition(State.INITIALIZED, State.READY, lambda: self.millis > 10)
         self.state_machine.set_transition_condition(State.READY, State.RUNNING, self._starting_condition)
 
         # another possibility is to add entry and exit actions for states. This actions are executed when a state is entered or exited for example
@@ -55,8 +55,8 @@ class TemplateAction(JoanModuleAction):
         # You can choose your own variable names and you can add as many vairables to self.data as you want.
         self.data['datawriter output'] = 2020
         self.data['nesting'] = {'example 1': 44, 'example 2': 35}
-        self.counter = 0  # see def do(self):
-        self.sign = 1     # see def do(self):
+        self.counter = 0  # see def do_while_running(self):
+        self.sign = 1     # see def do_while_running(self):
         self.write_news(news=self.data)
         self.time = QtCore.QTime()
         # end news for the datarecorder
@@ -123,7 +123,7 @@ class TemplateAction(JoanModuleAction):
         """
         This function is called before the module is started
         """
-        # This is de place to do all initialization needed. In the example here, the necessary settings are copied from the settings object.
+        # This is de place to do_while_running all initialization needed. In the example here, the necessary settings are copied from the settings object.
         # This is done during the initialization to prevent settings from changing while the module is running. This does mean that the module needs to be
         # reinitialised every time the settings are changed.
         self.data['counter'] = self.counter
@@ -131,10 +131,10 @@ class TemplateAction(JoanModuleAction):
         
         self.millis = self.settings.millis
 
-        # if (self.state_machine.current_state is State.IDLE):
+        # if (self.state_machine.current_state is State.INITIALIZED):
         self.state_machine.request_state_change(State.READY)  # , "You can now start the module")
         # elif (self.state_machine.current_state is State.ERROR):
-        #    self.state_machine.request_state_change(State.IDLE)
+        #    self.state_machine.request_state_change(State.INITIALIZED)
         return super().initialize()
 
     def start(self):
@@ -145,7 +145,7 @@ class TemplateAction(JoanModuleAction):
     def stop(self):
         """stop the module"""
         # Will automatically go to READY as defined above in self.state_machine.set_automatic_transition
-        self.state_machine.request_state_change(State.IDLE)
+        self.state_machine.request_state_change(State.INITIALIZED)
 
         return super().stop()
 
@@ -166,11 +166,11 @@ class TemplateAction(JoanModuleAction):
     def _clean_up_after_run(self):
         """
         This is an example of an exit action for a state, if the running state is exited, this function is executed. This can be used to clean up connections,
-        close files or do other final actions. Also check the setting of this action in the constructor of this class. Please note that this action is always
+        close files or do_while_running other final actions. Also check the setting of this action in the constructor of this class. Please note that this action is always
         called, no matter the target state after the state change. It can be compared with the finally statement in exeption handling.
         :return: None
         """
-        # do some interesting multi line cleaning up of the mess I made during execution.
+        # do_while_running some interesting multi line cleaning up of the mess I made during execution.
         pass
 
     def _execute_on_state_change_in_module_action_1(self):

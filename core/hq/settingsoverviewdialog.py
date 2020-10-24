@@ -6,7 +6,7 @@ from PyQt5 import QtWidgets, uic
 class SettingsOverviewDialog(QtWidgets.QDialog):
     def __init__(self, all_settings, parent=None):
         super().__init__(parent)
-        uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "settingsoverviewdialog.ui"), self)
+        uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/settingsoverview_dialog.ui"), self)
 
         for module_key, settings_object in all_settings.items():
             try:

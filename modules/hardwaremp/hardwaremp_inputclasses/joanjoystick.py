@@ -249,7 +249,7 @@ class JoystickSettingsDialog(QtWidgets.QDialog):  # TODO: losse files maken voor
 
 
 class JOANJoystickMP:
-    def __init__(self, settings, shared_values):
+    def __init__(self, settings, shared_variables):
         # Initialize Variables
         self.brake = 0
         self.steer = 0
@@ -258,7 +258,7 @@ class JOANJoystickMP:
         self.reverse = False
 
         self.settings = settings
-        self.shared_values = shared_values
+        self.shared_variables = shared_variables
 
         self.settings_dialog = None
         self._joystick_open = False
@@ -322,8 +322,8 @@ class JOANJoystickMP:
                 self.steer = ((joystick_data[self.settings.first_steer_channel]) / 255) * (
                         self.settings.max_steer - self.settings.min_steer) - self.settings.max_steer
 
-        self.shared_values.brake = self.brake
-        self.shared_values.throttle = self.throttle
-        self.shared_values.steering_angle = self.steer
-        self.shared_values.handbrake = self.handbrake
-        self.shared_values.reverse = self.reverse
+        self.shared_variables.brake = self.brake
+        self.shared_variables.throttle = self.throttle
+        self.shared_variables.steering_angle = self.steer
+        self.shared_variables.handbrake = self.handbrake
+        self.shared_variables.reverse = self.reverse

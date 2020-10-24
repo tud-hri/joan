@@ -37,8 +37,8 @@ class TemplateProcess(ModuleProcess):
         self._module_shared_variables.overwrite_with_current_time = now.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
 
         # show current time
-        print(self._module_shared_variables.overwrite_with_current_time)
+        # print(self._module_shared_variables.overwrite_with_current_time)
 
         # try the brake-key (the default key for brake is 's')
-        for _, value in self.shared_variables_hardware.keyboards.items():
-            print("brake %s" % value.brake)
+        # for _, value in self.shared_variables_hardware.keyboards.items():
+        #     print("brake %s" % value.brake)

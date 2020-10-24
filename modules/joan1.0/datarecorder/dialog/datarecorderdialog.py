@@ -312,7 +312,7 @@ class DataRecorderDialog(JoanModuleDialog):
                 self.log_dir.setEnabled(True)
                 self.module_widget.lbl_data_directoryname.mouseReleaseEvent = self._set_datalog_path
 
-            if current_state is State.IDLE:
+            if current_state is State.INITIALIZED:
                 self.state_widget.btn_start.setEnabled(False)
                 self.state_widget.btn_stop.setEnabled(False)
 
@@ -336,7 +336,7 @@ class DataRecorderDialog(JoanModuleDialog):
                 self.state_widget.input_tick_millis.setStyleSheet("color: black;  background-color: white")
                 # select log directory
                 try:
-                    # only try-except by 'IDLE'
+                    # only try-except by 'INITIALIZED'
                     self.log_dir.setEnabled(True)
                     self.module_widget.lbl_data_directoryname.mouseReleaseEvent = self._set_datalog_path
                 except AttributeError:

@@ -31,7 +31,7 @@ class HardwareMPSettings(ModuleSettings):
         :return: None
         """
 
-        module_settings_to_load = loaded_dict[str(self._module_enum)]
+        module_settings_to_load = loaded_dict[str(self.module)]
 
         # clean up existing settings
         # while self.keyboards:

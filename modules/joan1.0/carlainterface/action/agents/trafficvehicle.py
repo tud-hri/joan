@@ -207,7 +207,7 @@ class TrafficVehicle(Basevehicle):
         try:
             tmp = pd.read_csv(os.path.join(self._path_trajectory_directory, self.settings.trajectory_name))
             self.trajectory = tmp.values
-            # TODO We might want to do some checks on the trajectory here.
+            # TODO We might want to do_while_running some checks on the trajectory here.
             # self.trajectory_name = fname
         except OSError as err:
                 print('Error loading HCR trajectory file: ', err)

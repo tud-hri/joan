@@ -48,7 +48,7 @@ class JoanModuleDialog(QtWidgets.QDialog):
 
             # setup state widget
             self.state_widget = uic.loadUi(
-                os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../resources/statewidget.ui"))
+                os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../resources/state_widget.ui"))
             self.layout().addWidget(self.state_widget)
             self.state_widget.btn_start.clicked.connect(self._button_start_clicked)
             self.state_widget.btn_stop.clicked.connect(self._button_stop_clicked)
@@ -125,7 +125,7 @@ class JoanModuleDialog(QtWidgets.QDialog):
 
             if current_state is State.RUNNING:
                 self.state_widget.lbl_module_state.setStyleSheet("background: green;")
-            elif current_state is State.IDLE:
+            elif current_state is State.INITIALIZED:
                 self.state_widget.lbl_module_state.setStyleSheet("background: orange;")
             elif current_state is State.READY:
                 self.state_widget.lbl_module_state.setStyleSheet("background: yellow;")
@@ -140,7 +140,7 @@ class JoanModuleDialog(QtWidgets.QDialog):
             else:
                 self.state_widget.btn_start.setEnabled(False)
 
-            if current_state == State.IDLE or current_state == State.ERROR:
+            if current_state == State.INITIALIZED or current_state == State.ERROR:
                 self.state_widget.btn_initialize.setEnabled(True)
             else:
                 self.state_widget.btn_initialize.setEnabled(False)
@@ -154,7 +154,7 @@ class JoanModuleDialog(QtWidgets.QDialog):
             else:
                 self.state_widget.btn_stop.setEnabled(False)
 
-            if current_state == State.IDLE:
+            if current_state == State.INITIALIZED:
                 self.state_widget.input_tick_millis.setEnabled(True)
                 self.state_widget.input_tick_millis.clear()
                 self.state_widget.input_tick_millis.setPlaceholderText(str(self.module_action.tick_interval_ms))

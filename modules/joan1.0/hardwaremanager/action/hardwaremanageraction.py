@@ -37,10 +37,10 @@ class HardwareManagerAction(JoanModuleAction):
         :return:
         """
         for hardware_input in self._hardware_inputs:
-            self.data[hardware_input] = self._hardware_inputs[hardware_input].do()
+            self.data[hardware_input] = self._hardware_inputs[hardware_input].do_while_running()
 
         for hardware_input in self._hardware_inputs:
-            if self.state_machine.current_state == State.READY or self.state_machine.current_state == State.IDLE:
+            if self.state_machine.current_state == State.READY or self.state_machine.current_state == State.INITIALIZED:
                 self._hardware_inputs[hardware_input].enable_remove_button()
             else:
                 self._hardware_inputs[hardware_input].disable_remove_button()
@@ -59,7 +59,7 @@ class HardwareManagerAction(JoanModuleAction):
         self.sw_controller_data = self.read_news(JOANModules.STEERING_WHEEL_CONTROL)
 
         for hardware_input in self._hardware_inputs:
-            self.data[hardware_input] = self._hardware_inputs[hardware_input].do()
+            self.data[hardware_input] = self._hardware_inputs[hardware_input].do_while_running()
 
         self.write_news(self.data)
 
@@ -68,17 +68,17 @@ class HardwareManagerAction(JoanModuleAction):
         This function is called before the module is started and will try to initialize any added hardware inputs
         """
         try:
-            if self.state_machine.current_state == State.IDLE:
+            if self.state_machine.current_state == State.INITIALIZED:
                 if len(self._hardware_inputs) != 0:
                     for input_device in self._hardware_inputs:
                         self._hardware_inputs[input_device].initialize()
                         self.state_machine.request_state_change(State.READY, '')
                         for inputs in self._hardware_inputs:
-                            self.data[inputs] = self._hardware_inputs[inputs].do()
+                            self.data[inputs] = self._hardware_inputs[inputs].do_while_running()
                 else:
                     self.state_machine.request_state_change(State.ERROR, 'No hardware to Initialize')
             elif self.state_machine.current_state == State.ERROR:
-                self.state_machine.request_state_change(State.IDLE)
+                self.state_machine.request_state_change(State.INITIALIZED)
 
         except RuntimeError:
             return False
@@ -113,7 +113,7 @@ class HardwareManagerAction(JoanModuleAction):
                 self._hardware_inputs[hardware_input].turn_motor_sensodrive_off()
 
         try:
-            self.state_machine.request_state_change(State.IDLE)
+            self.state_machine.request_state_change(State.INITIALIZED)
             if len(self._hardware_inputs) != 0:
                 self.state_machine.request_state_change(State.READY)
         except RuntimeError:
@@ -122,9 +122,9 @@ class HardwareManagerAction(JoanModuleAction):
 
     def load_settings_from_file(self, settings_file_path):
 
-        self.state_machine.request_state_change(State.IDLE)
+        self.state_machine.request_state_change(State.INITIALIZED)
 
-        if self.state_machine.current_state == State.IDLE:
+        if self.state_machine.current_state == State.INITIALIZED:
             self.settings.load_from_file(settings_file_path)
             self.share_settings(self.settings)
 

@@ -4,12 +4,13 @@ import os
 from PyQt5 import QtCore
 
 from core import Settings
-from core.statemachine import StateMachine
+from core.hq.centralstatemonitor import CentralStateMonitor
+from core.hq.hq_window import HQWindow
 from core.statesenum import State
 from modules.joanmodules import JOANModules
 
 
-class JoanHQAction(QtCore.QObject):
+class HQManager(QtCore.QObject):
     """
     Action class for JoanHQ
     """
@@ -20,25 +21,33 @@ class JoanHQAction(QtCore.QObject):
         """
         super(QtCore.QObject, self).__init__()
 
-        self.window = None
+        self.central_state_monitor = CentralStateMonitor()
 
         # settings
         self.singleton_settings = Settings()
 
         # path to modules directory
-        self.path_modules = os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../", "modules"))
+        self.path_modules = os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../", "modules"))
 
         # dictionary to keep track of the instantiated modules
         self._instantiated_modules = {}
+
+        # create window, show it
+        self.window = HQWindow(self)
+        self.window.show()
 
     def initialize_modules(self):
         """
         Initialize modules
         """
         for _, module in self._instantiated_modules.items():
-            module.state_machine.request_state_change(State.IDLE)
+            module.state_machine.request_state_change(State.INITIALIZED)
 
     def get_ready_modules(self):
+        """
+        Get all modules ready
+        :return:
+        """
         for _, module in self._instantiated_modules.items():
             module.state_machine.request_state_change(State.READY)
 
@@ -64,13 +73,20 @@ class JoanHQAction(QtCore.QObject):
             module.state_machine.request_state_change(State.STOPPED)
 
     def add_module(self, module: JOANModules, name='', parent=None, time_step_in_ms=100):
-
+        """
+        Add a module
+        :param module: module type, from JOANModules enum
+        :param name: optional
+        :param parent: optional, if None, then self.window
+        :param time_step_in_ms: self-explanatory
+        :return:
+        """
         if not parent:
             parent = self.window
 
         module_manager = module.manager(time_step_in_ms=time_step_in_ms, parent=parent)
 
-        # module_manager.state_machine.add_state_change_listener(self.handle_module_state_changes)
+        self.central_state_monitor.register_state_machine(module, module_manager.state_machine)
 
         self.window.add_module(module_manager)
 
@@ -97,6 +113,7 @@ class JoanHQAction(QtCore.QObject):
         Quit JOAN
         """
         self.stop_modules()
+        QtCore.QCoreApplication.quit()
 
     @property
     def instantiated_modules(self):

@@ -26,4 +26,4 @@ class ScenariosDialog(JoanModuleDialog):
 
     def _state_changed(self):
         new_state = self.module_action.state_machine.current_state
-        self.module_widget.scenariosComboBox.setEnabled(new_state is State.IDLE or new_state is State.READY)
+        self.module_widget.scenariosComboBox.setEnabled(new_state is State.INITIALIZED or new_state is State.READY)

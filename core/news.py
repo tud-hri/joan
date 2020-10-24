@@ -3,9 +3,7 @@ from modules.joanmodules import JOANModules
 
 class News:
     """
-    The News class is a singleton that holds all most recent news data
-    Every class has its own writing area; the key of the class
-    All other classes may read the value
+    The News class is a singleton that holds all the shared variables that contain the latest data
     """
     instance = None
 
@@ -36,6 +34,11 @@ class News:
             return {}
 
     def remove_news(self, module: JOANModules):
+        """
+        Remove module shared variable from News
+        :param module: module enum
+        :return:
+        """
         try:
             del self._news[module]
         except KeyError as e:

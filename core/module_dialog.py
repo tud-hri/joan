@@ -8,6 +8,9 @@ from modules.joanmodules import JOANModules
 
 
 class ModuleDialog(QtWidgets.QDialog):
+    """
+    Base class for module dialogs, inherits from QDialog
+    """
     # signal when dialog is closed
     closed = QtCore.pyqtSignal()
 
@@ -19,6 +22,14 @@ class ModuleDialog(QtWidgets.QDialog):
 
         self.setLayout(QtWidgets.QVBoxLayout(self))
         self.setWindowTitle(str(module))
+
+        # state widget
+        self._state_widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../resources/state_widget.ui"))
+        self.layout().addWidget(self._state_widget)
+
+        # setup module-specific widget
+        self._module_widget = uic.loadUi(module.ui_file)
+        self.layout().addWidget(self._module_widget)
 
         # menu bar
         self.menu_bar = QtWidgets.QMenuBar(self)
@@ -36,24 +47,28 @@ class ModuleDialog(QtWidgets.QDialog):
         self.settings_menu.addAction(self.save_settings)
         self.menu_bar.addMenu(self.settings_menu)
 
+        # connect to module manager's state machine
         self._module_manager.state_machine.add_state_change_listener(self._handle_state_change)
 
-        self._state_widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../resources/statewidget.ui"))
-        self.layout().addWidget(self._state_widget)
-
-        # setup module-specific widget
-        self._module_widget = uic.loadUi(module.ui_file)
-        self.layout().addWidget(self._module_widget)
-
+        # update timer
         self.update_timer = QtCore.QTimer()
         self.update_timer.setTimerType(QtCore.Qt.PreciseTimer)
         self.update_timer.setInterval(100)  # 10 Hz update
         self.update_timer.timeout.connect(self.update_dialog)
 
     def update_dialog(self):
+        """
+        Called by the update timer.
+        Use to update the module dialog
+        :return:
+        """
         pass
 
     def start(self):
+        """
+        Start timer
+        :return:
+        """
         if not self.update_timer.isActive():
             self.update_timer.start()
 
@@ -73,7 +88,7 @@ class ModuleDialog(QtWidgets.QDialog):
 
             if current_state is State.RUNNING:
                 self._state_widget.lbl_module_state.setStyleSheet("background: lightgreen;")
-            elif current_state is State.IDLE:
+            elif current_state is State.INITIALIZED:
                 self._state_widget.lbl_module_state.setStyleSheet("background: lightblue;")
             elif current_state is State.READY:
                 self._state_widget.lbl_module_state.setStyleSheet("background: yellow;")
@@ -88,7 +103,7 @@ class ModuleDialog(QtWidgets.QDialog):
         :return:
         """
         settings_file_to_load, _ = QtWidgets.QFileDialog.getOpenFileName(self, 'load settings',
-                                                                         self._module_manager.settings_filename,
+                                                                         os.path.join(self._module_manager.module_path),
                                                                          filter='*.json')
         if settings_file_to_load:
             self._module_manager.module_settings.load_from_file(settings_file_to_load)
@@ -105,13 +120,11 @@ class ModuleDialog(QtWidgets.QDialog):
             self._module_manager.module_settings.save_to_file(file_to_save_in)
 
     def toggle_show_close(self):
-        """Toggle visibility of this dialog"""
         if self.isVisible():
             self.close()
         else:
             self.show()
 
     def closeEvent(self, event):
-        """Override QtDialog's closeEvent, add closed signal"""
         self.closed.emit()
         super().closeEvent(event)
