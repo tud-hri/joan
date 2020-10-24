@@ -7,7 +7,7 @@ class HardwareMPProcess(ModuleProcess):
 
     def __init__(self, module: JOANModules, time_step_in_ms, news, settings, events):
         super().__init__(module, time_step_in_ms=time_step_in_ms, news=news, settings=settings, events=events)
-        self.input_classes = {}
+        self.input_objects = {}
 
     def get_ready(self):
         # Create the object that are in the settings here
