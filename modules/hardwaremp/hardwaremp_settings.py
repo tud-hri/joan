@@ -16,6 +16,7 @@ class HardwareMPSettings(ModuleSettings):
         self.joysticks = []
         self.sensodrives = []
 
+        # TODO: autoloading of settings need to be fixed, but not here in the settings object; it screws up the settings translation in process.
         # if Path(settings_filename).is_file():
         #     self.load_from_file(settings_filename)
         # else:
