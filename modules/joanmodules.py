@@ -40,7 +40,7 @@ class JOANModules(Enum):
 
     @property
     def shared_variables(self):
-        from modules.hardwaremp.hardwaremp_sharedvalues import HardwareSharedVariables
+        from modules.hardwaremp.hardwaremp_sharedvariables import HardwareSharedVariables
         from modules.template.template_sharedvalues import TemplateSharedVariables
 
         return {JOANModules.HARDWARE_MP: HardwareSharedVariables,

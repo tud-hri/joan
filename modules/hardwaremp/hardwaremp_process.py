@@ -13,6 +13,8 @@ class HardwareMPProcess(ModuleProcess):
         # Create empty settings object in which we will reconstruct our settings dictionary
         super().get_ready()
 
+        print(self._settings_as_dict)
+
         # TODO, change using sharedvalues_module to settings
         # Create the object that are in the settings here
         for idx, keyboards in enumerate(self._module_shared_variables.keyboards):

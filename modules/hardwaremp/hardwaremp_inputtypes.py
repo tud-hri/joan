@@ -33,9 +33,9 @@ class HardwareInputTypes(enum.Enum):
 
     @property
     def shared_variables(self):
-        from modules.hardwaremp.hardwaremp_sharedvalues import KeyboardSharedVariables
-        from modules.hardwaremp.hardwaremp_sharedvalues import JoystickSharedVariables
-        from modules.hardwaremp.hardwaremp_sharedvalues import SensoDriveSharedVariables
+        from modules.hardwaremp.hardwaremp_sharedvariables import KeyboardSharedVariables
+        from modules.hardwaremp.hardwaremp_sharedvariables import JoystickSharedVariables
+        from modules.hardwaremp.hardwaremp_sharedvariables import SensoDriveSharedVariables
 
         return {HardwareInputTypes.KEYBOARD: KeyboardSharedVariables,
                 HardwareInputTypes.JOYSTICK: JoystickSharedVariables,
