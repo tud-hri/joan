@@ -165,7 +165,8 @@ class JoystickSettingsDialog(QtWidgets.QDialog):  # TODO: losse files maken voor
         Sets the settings as they are described in 'HardwaremanagerSettings => JoystickSettings)
         :return:
         """
-        self._display_settings(HardwareInputTypes.JOYSTICK.settings)
+        self._display_settings(HardwareInputTypes.JOYSTICK.settings(self.joystick_settings.identifier))
+        print(self.joystick_settings.identifier)
 
     def _update_brake_channel_enabled(self, value):
         """
@@ -293,7 +294,7 @@ class JOANJoystickMP:
             joystick_data = False
 
         if joystick_data:
-            if self.settings.use_seperate_brake_channel:
+            if self.settings.use_separate_brake_channel:
                 self.throttle = ((joystick_data[self.settings.gas_channel]) / 255)
                 self.brake = - ((joystick_data[self.settings.brake_channel]) / 255)
             else:

@@ -29,10 +29,10 @@ class HardwareMPDialog(ModuleDialog):
         super()._handle_state_change()
         if self._module_manager.state_machine.current_state != State.STOPPED:
             self._module_widget.btn_add_hardware.setEnabled(False)
-            self._module_widget.hardware_groupbox.setEnabled(False)
+            #self._module_widget.hardware_groupbox.setEnabled(False)
         else:
             self._module_widget.btn_add_hardware.setEnabled(True)
-            self._module_widget.hardware_groupbox.setEnabled(True)
+            #self._module_widget.hardware_groupbox.setEnabled(True)
 
     def _hardware_input_selection(self):
         self._input_type_dialog.combo_hardware_inputtype.clear()
@@ -42,21 +42,23 @@ class HardwareMPDialog(ModuleDialog):
 
     def add_selected_hardware_input(self):
         " Here we add the hardware input tabs "
-        # Giving our input an appropriate name/tag
+        # First we create the settings in the module manager (this will include an identifier which is used in the hardware name)
         chosen_hardware_input = self._input_type_dialog.combo_hardware_inputtype.itemData(self._input_type_dialog.combo_hardware_inputtype.currentIndex())
-        number_of_inputs = sum([bool(chosen_hardware_input.__str__() in k) for k in self._hardware_input_tabs_dict.keys()]) + 1
-        hardware_input_name = chosen_hardware_input.__str__() + ' ' + str(number_of_inputs)
+        hardware_input_name = self._module_manager._add_hardware_input(chosen_hardware_input)
 
-        # Dialog related stuff
+
+        # Adding tab
         self._hardware_input_tabs_dict[hardware_input_name] = uic.loadUi(chosen_hardware_input.hardware_tab_ui_file)
         self._hardware_input_tabs_dict[hardware_input_name].groupBox.setTitle(hardware_input_name)
         self._module_widget.hardware_list_layout.addWidget(self._hardware_input_tabs_dict[hardware_input_name])
+
+        #Connecting buttons
+        self._hardware_input_tabs_dict[hardware_input_name].btn_settings.clicked.connect(lambda: self._module_manager._open_settings_dialog(hardware_input_name))
         self._hardware_input_tabs_dict[hardware_input_name].btn_remove_hardware.clicked.connect(lambda: self._remove_hardware_input_device(hardware_input_name))
 
-        # also add settings fucntionality, we do this in the module manager class
-        self._module_manager.add_hardware_input(chosen_hardware_input, hardware_input_name)
-        self._hardware_input_tabs_dict[hardware_input_name].btn_settings.clicked.connect(
-            lambda: self._module_manager._open_settings_dialog(hardware_input_name))
+        if 'SensoDrive' in hardware_input_name:
+            self._hardware_input_tabs_dict[hardware_input_name].btn_on.clicked.connect(lambda: self._module_manager._turn_on(hardware_input_name))
+            self._hardware_input_tabs_dict[hardware_input_name].btn_off.clicked.connect(lambda: self._module_manager._turn_off(hardware_input_name))
 
     def _remove_hardware_input_device(self, hardware_input_name):
         # Remove dialog

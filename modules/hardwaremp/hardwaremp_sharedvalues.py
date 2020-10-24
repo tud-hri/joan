@@ -93,6 +93,7 @@ class JoystickSharedValues:
         self._reverse = mp.Value(c_bool, False)
         self._handbrake = mp.Value(c_bool, False)
 
+
     @property
     def steering_angle(self):
         return self._steering_angle.value
@@ -146,6 +147,8 @@ class SensoDriveSharedValues:
         self._brake = mp.Value(c_float, -9.9)
         self._reverse = mp.Value(c_bool, False)
         self._handbrake = mp.Value(c_bool, False)
+
+        self._init_event = mp.Event()
 
     @property
     def steering_angle(self):

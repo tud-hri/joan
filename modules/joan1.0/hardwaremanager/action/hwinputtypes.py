@@ -37,7 +37,7 @@ class HardwareInputTypes(enum.Enum):
 
     @property
     def settings(self):
-        return {HardwareInputTypes.KEYBOARD: KeyBoardSettings(),
+        return {HardwareInputTypes.KEYBOARD: KeyBoardSettings,
                 HardwareInputTypes.JOYSTICK: JoyStickSettings(),
                 HardwareInputTypes.SENSODRIVE: SensoDriveSettings()}[self]
 

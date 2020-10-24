@@ -374,16 +374,54 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):  # TODO aparte files voor cla
 #
 #         return [checked_torque, torque_rate]
 
-class JOANSensoDriveMP:
+class JOANSensoDriveMP():
     def __init__(self, settings, shared_values):
+        super().__init__()
         self.settings = settings
+
 
         self.settings_dialog = None
         self.shared_values = shared_values
 
+        self.parent_pipe, child_pipe = mp.Pipe()
+        comm = SensoDriveComm1(self.settings.init_event, self.settings.close_event, child_pipe)
+        mooie_variable = self.settings.identifier
+        self.parent_pipe.send(mooie_variable)
+
+        comm.start()
+
+    def do(self):
+        self.parent_pipe.send(self.settings.settings_list)
+
+class SensoDriveComm1(mp.Process):
+    def __init__(self, init_event, close_event,  child_pipe):
+        super().__init__()
+        self.init_event = init_event
+        self.child_pipe = child_pipe
+        self.should_read = False
+        self.close_event = close_event
+
+
+    def run(self):
+        self.init_event.wait()
+        print(self.child_pipe.recv())
+        while True:
+            data_available = self.child_pipe.poll()
+
+            if data_available == True:
+                settings = self.child_pipe.recv()
+                print(settings)
+
+            if self.close_event.is_set():
+                self.close_event.clear()
+                break
+
+
+
+
 
 class SensoDriveComm(mp.Process):  # TODO: hoe zit dit met een process in een process?
-    def __init__(self, shared_values, init_event, turn_on_event, turn_off_event, clear_error_event, close_event, update_event):
+    def __init__(self, shared_values, init_event, turn_on_event, turn_off_event, clear_error_event, close_event, update_event, conn = mp.Pipe()):
         super().__init__()
         self.init_event = init_event
         self.turn_on_event = turn_on_event
