@@ -5,16 +5,11 @@ from modules.joanmodules import JOANModules
 
 class HardwareMPProcess(ModuleProcess):
 
-    def __init__(self, module: JOANModules, time_step_in_ms, news, settings, start_event, exception_event):
-        super().__init__(module, time_step_in_ms=time_step_in_ms, news=news, settings=settings, start_event=start_event, exception_event=exception_event)
-        self.input_objects = {}
+    def __init__(self, module: JOANModules, time_step_in_ms, news, settings, events):
+        super().__init__(module, time_step_in_ms=time_step_in_ms, news=news, settings=settings, events=events)
+        self.input_classes = {}
 
     def get_ready(self):
-        # Create empty settings object in which we will reconstruct our settings dictionary
-        super().get_ready()
-
-        print(self._settings_as_object.keyboards)
-
         # Create the object that are in the settings here
         for key, value in self._settings_as_object.keyboards.items():
             self.input_objects[key] = HardwareInputTypes.KEYBOARD.klass_mp(settings=value, shared_variables=self._module_shared_variables.keyboards[key])

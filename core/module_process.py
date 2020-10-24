@@ -3,6 +3,7 @@ import multiprocessing as mp
 import platform
 import sys
 import time
+from dataclasses import dataclass
 
 from core.exceptionhook import exception_log_and_kill_hook
 from core.statesenum import State
@@ -12,12 +13,22 @@ if platform.system() == 'Windows':
     import wres
 
 
+class ProcessEvents:
+    """
+    Class containing all events for communication between module_process and module_manager
+    """
+    def __init__(self):
+        self.start = mp.Event()
+        self.exception = mp.Event()
+        self.process_is_ready = mp.Event()
+
+
 class ModuleProcess(mp.Process):
     """
     Base class for the module process.
     """
 
-    def __init__(self, module: JOANModules, time_step_in_ms, news, settings, start_event, exception_event):
+    def __init__(self, module: JOANModules, time_step_in_ms, news, settings, events: ProcessEvents):
         super().__init__()
 
         if time_step_in_ms < 10:
@@ -34,8 +45,20 @@ class ModuleProcess(mp.Process):
         self._module_shared_variables = news.read_news(module)
 
         # mp.Events
-        self._start_event = start_event
-        self._exception_event = exception_event
+        self._events = events
+        # self._start_event = start_event
+        # self._exception_event = exception_event
+        # self._process_is_ready_event = process_is_ready_event
+
+    def _get_ready(self):
+        # settings dict back to settings object
+        self._settings_as_object = self.module.settings()  # create empty settings object
+        self._settings_as_object.load_from_dict(self._settings_as_dict)  # settings as object
+
+        # get_ready to
+        self.get_ready()
+
+        self._events.process_is_ready.set()
 
     @abc.abstractmethod
     def get_ready(self):
@@ -43,9 +66,6 @@ class ModuleProcess(mp.Process):
         get_ready is called when the module goes to READY state. This function is called from the new process (in run()).
         :return:
         """
-        # settings dict back to settings object
-        self._settings_as_object = self.module.settings()  # create empty settings object
-        self._settings_as_object.load_from_dict(self._settings_as_dict)  # settings as object
 
     @abc.abstractmethod
     def do_while_running(self):
@@ -64,8 +84,8 @@ class ModuleProcess(mp.Process):
         :return:
         """
         try:
-            self.get_ready()
-            self._start_event.wait()
+            self._get_ready()
+            self._events.start.wait()
 
             # run
             if platform.system() == 'Windows':
@@ -75,7 +95,7 @@ class ModuleProcess(mp.Process):
                 self._run_loop()
         except:
             # sys.excepthook is not called from within processes so can't be overridden. instead, catch all exceptions here and call the new excepthook manually
-            exception_log_and_kill_hook(*sys.exc_info(), self.module, self._exception_event)
+            exception_log_and_kill_hook(*sys.exc_info(), self.module, self._events.exception)
 
     def _run_loop(self):
         """

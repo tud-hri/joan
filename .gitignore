@@ -46,10 +46,13 @@ pip-delete-this-directory.txt
 .idea
 
 # ignore data files
-*.csv
+/data_logs/*.csv
 
 # except for the trajectory csv files
 !modules/steeringwheelcontrol/action/swcontrollers/hcr_trajectories/*.csv
 
 # ignore settings files
 *.json
+
+# ignore crash logs
+/crash_logs/*.txt

@@ -8,6 +8,7 @@ from core.moduleexceptionmonitor import ModuleExceptionMonitor
 from core.news import News
 from core.statemachine import StateMachine
 from core.statesenum import State
+from core.module_process import ProcessEvents
 from modules.joanmodules import JOANModules
 
 
@@ -40,10 +41,12 @@ class ModuleManager(QtCore.QObject):
 
         self.shared_variables = None
         self._process = None
-        self._start_event = mp.Event()
-        self._exception_event = mp.Event()
+        self._events = ProcessEvents()
+        # self._start_event = mp.Event()
+        # self._exception_event = mp.Event()
+        # self._process_is_ready_event = mp.Event()
 
-        self._exception_monitor = ModuleExceptionMonitor(self._exception_event, self.state_machine)
+        self._exception_monitor = ModuleExceptionMonitor(self._events.exception, self.state_machine)
 
         # create the dialog
         self.module_dialog = module.dialog(self, parent=parent)
@@ -78,19 +81,20 @@ class ModuleManager(QtCore.QObject):
                                             time_step_in_ms=self._time_step_in_ms,
                                             news=self.singleton_news,
                                             settings=self.module_settings,
-                                            start_event=self._start_event,
-                                            exception_event=self._exception_event)
+                                            events=self._events)
 
         # Start the process, run() will wait until start_event is set
         if self._process and not self._process.is_alive():
             self._process.start()
+
+        self._events.process_is_ready.wait()
 
         self.shared_variables.state = self.state_machine.current_state.value
 
     def start(self):
         self.module_dialog.start()
 
-        self._start_event.set()
+        self._events.start.set()
 
         self.shared_variables.state = self.state_machine.current_state.value
 
@@ -118,4 +122,6 @@ class ModuleManager(QtCore.QObject):
         if self.shared_variables:
             del self.shared_variables
 
-        self._start_event.clear()
+        self._events.start.clear()
+        self._events.process_is_ready.clear()
+

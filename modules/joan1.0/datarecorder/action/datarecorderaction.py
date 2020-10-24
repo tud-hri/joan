@@ -58,7 +58,7 @@ class DataRecorderAction(JoanModuleAction):
         # end settings for this module
 
         self.filename = ''
-        self.directoryname = os.path.join(Path.cwd(), 'datalogs')
+        self.directoryname = os.path.join(Path.cwd(), 'data_logs')
         _path = Path(self.directoryname)
         if not Path(self.directoryname).exists():
             try:
