@@ -12,9 +12,9 @@ class HardwareMPSettings(ModuleSettings):
     def __init__(self):
         super().__init__(JOANModules.HARDWARE_MP)
 
-        self.keyboards = []
-        self.joysticks = []
-        self.sensodrives = []
+        self.keyboards = {}
+        self.joysticks = {}
+        self.sensodrives = {}
 
         # TODO: autoloading of settings need to be fixed, but not here in the settings object; it screws up the settings translation in process.
         # if Path(settings_filename).is_file():
