@@ -47,7 +47,7 @@ class ModuleManager(QtCore.QObject):
 
         # create settings
         self.settings_filename = os.path.join(self.module_path, 'default_settings.json')
-        self.module_settings = module.settings(settings_filename=self.settings_filename)
+        self.module_settings = module.settings()
 
     def initialize(self):
         """

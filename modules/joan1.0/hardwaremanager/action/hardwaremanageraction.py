@@ -142,10 +142,10 @@ class HardwareManagerAction(JoanModuleAction):
         Create hardware inputs based on the loaded settings
         :return:
         """
-        for keyboard_settings in self.settings.key_boards:
+        for keyboard_settings in self.settings.keyboards:
             self.add_hardware_input(HardwareInputTypes.KEYBOARD, keyboard_settings)
 
-        for joystick_settings in self.settings.joy_sticks:
+        for joystick_settings in self.settings.joysticks:
             self.add_hardware_input(HardwareInputTypes.JOYSTICK, joystick_settings)
 
         for sensodrive_settings in self.settings.sensodrives:
@@ -160,9 +160,9 @@ class HardwareManagerAction(JoanModuleAction):
         if not hardware_input_settings:
             hardware_input_settings = hardware_input_type.settings
             if hardware_input_type == HardwareInputTypes.KEYBOARD:
-                self.settings.key_boards.append(hardware_input_settings)
+                self.settings.keyboards.append(hardware_input_settings)
             if hardware_input_type == HardwareInputTypes.JOYSTICK:
-                self.settings.joy_sticks.append(hardware_input_settings)
+                self.settings.joysticks.append(hardware_input_settings)
             if hardware_input_type == HardwareInputTypes.SENSODRIVE:
                 self.settings.sensodrives.append(hardware_input_settings)
 

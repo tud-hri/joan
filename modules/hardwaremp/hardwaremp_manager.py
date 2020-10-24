@@ -21,9 +21,9 @@ class HardwareMPManager(ModuleManager):
     def initialize(self):
         super().initialize()
         self.module_settings = self.settings
-        for keyboard in self.settings.key_boards:
+        for keyboard in self.settings.keyboards:
             self.shared_values.keyboards['Keyboard' + str(keyboard.identifier)] = KeyboardSharedValues()
-        for joystick in self.settings.joy_sticks:
+        for joystick in self.settings.joysticks:
             self.shared_values.joysticks['Joystick' + str(joystick.identifier)] = JoystickSharedValues()
         for sensodrive in self.settings.sensodrives:
             self.shared_values.sensodrives['SensoDrive' + str(sensodrive.identifier)] = SensoDriveSharedValues()
@@ -35,31 +35,31 @@ class HardwareMPManager(ModuleManager):
             hardware_input_settings = hardware_input_type.settings()
             #Keyboard (make sure we have unique identifiers)
             if hardware_input_type == HardwareInputTypes.KEYBOARD:
-                keyboard_amount = len(self.settings.key_boards)
+                keyboard_amount = len(self.settings.keyboards)
                 if keyboard_amount == 0:
-                    self.settings.key_boards.append(hardware_input_settings)
+                    self.settings.keyboards.append(hardware_input_settings)
                 else:
-                    for keyboard_settings in self.settings.key_boards:
+                    for keyboard_settings in self.settings.keyboards:
                         if keyboard_settings.identifier == keyboard_amount:
                             keyboard_identifier = keyboard_settings.identifier + 1
                         else:
                             keyboard_identifier = keyboard_amount
                     hardware_input_settings = hardware_input_type.settings(keyboard_identifier)
-                    self.settings.key_boards.append(hardware_input_settings)
+                    self.settings.keyboards.append(hardware_input_settings)
 
             #Joystick
             if hardware_input_type == HardwareInputTypes.JOYSTICK:
-                joystick_amount = len(self.settings.joy_sticks)
+                joystick_amount = len(self.settings.joysticks)
                 if joystick_amount == 0:
-                    self.settings.joy_sticks.append(hardware_input_settings)
+                    self.settings.joysticks.append(hardware_input_settings)
                 else:
-                    for joystick_settings in self.settings.joy_sticks:
+                    for joystick_settings in self.settings.joysticks:
                         if joystick_settings.identifier == joystick_amount:
                             joystick_identifier = joystick_settings.identifier + 1
                         else:
                             joystick_identifier = joystick_amount
                     hardware_input_settings = hardware_input_type.settings(joystick_identifier)
-                    self.settings.joy_sticks.append(hardware_input_settings)
+                    self.settings.joysticks.append(hardware_input_settings)
 
             if hardware_input_type == HardwareInputTypes.SENSODRIVE:
                 sensodrive_amount = len(self.settings.sensodrives)
@@ -88,14 +88,14 @@ class HardwareMPManager(ModuleManager):
         if 'Keyboard' in hardware_input_name:
             identifier_str = hardware_input_name.replace('Keyboard', '')
             identifier = int(identifier_str)
-            for keyboards in self.settings.key_boards:
+            for keyboards in self.settings.keyboards:
                 if keyboards.identifier == identifier:
                     settings_object = keyboards
 
         if 'Joystick' in hardware_input_name:
             identifier_str = hardware_input_name.replace('Joystick', '')
             identifier = int(identifier_str)
-            for joysticks in self.settings.joy_sticks:
+            for joysticks in self.settings.joysticks:
                 if joysticks.identifier == identifier:
                     settings_object = joysticks
 

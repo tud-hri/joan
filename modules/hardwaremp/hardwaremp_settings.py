@@ -1,26 +1,25 @@
-import inspect
 import math
-from enum import Enum
+import multiprocessing as mp
 from pathlib import Path
 
 from PyQt5 import QtGui
 
 from core.module_settings import ModuleSettings
 from modules.joanmodules import JOANModules
-import multiprocessing as mp
+
 
 class HardwareMPSettings(ModuleSettings):
-    def __init__(self, settings_filename='./default_setting.json'):
+    def __init__(self):
         super().__init__(JOANModules.HARDWARE_MP)
 
-        self.key_boards = []
-        self.joy_sticks = []
+        self.keyboards = []
+        self.joysticks = []
         self.sensodrives = []
 
-        if Path(settings_filename).is_file():
-            self.load_from_file(settings_filename)
-        else:
-            self.save_to_file(settings_filename)
+        # if Path(settings_filename).is_file():
+        #     self.load_from_file(settings_filename)
+        # else:
+        #     self.save_to_file(settings_filename)
 
     def load_from_dict(self, loaded_dict):
         """
@@ -35,28 +34,28 @@ class HardwareMPSettings(ModuleSettings):
         module_settings_to_load = loaded_dict[str(self._module_enum)]
 
         # clean up existing settings
-        # while self.key_boards:
-        #     device = self.key_boards.pop()  # TODO: comment uit en maybe is het nodig maybe not
+        # while self.keyboards:
+        #     device = self.keyboards.pop()  # TODO: comment uit en maybe is het nodig maybe not
         #     del device
-        # while self.joy_sticks:
-        #     device = self.joy_sticks.pop()
+        # while self.joysticks:
+        #     device = self.joysticks.pop()
         #     del device
         # while self.sensodrives:
         #     device = self.sensodrives.pop()
         #     del device
 
-        #TODO Maak hier van de lists -> dicts
-        self.key_boards = []
-        for keyboard_settings_dict in module_settings_to_load['key_boards']:
+        # TODO Maak hier van de lists -> dicts
+        self.keyboards = []
+        for keyboard_settings_dict in module_settings_to_load['keyboards']:
             keyboard_settings = KeyBoardSettings()
             keyboard_settings.set_from_loaded_dict(keyboard_settings_dict)
-            self.key_boards.append(keyboard_settings)
+            self.keyboards.append(keyboard_settings)
 
-        self.joy_sticks = []
-        for joystick_settings_dict in module_settings_to_load['joy_sticks']:
+        self.joysticks = []
+        for joystick_settings_dict in module_settings_to_load['joysticks']:
             joystick_settings = JoyStickSettings()
             joystick_settings.set_from_loaded_dict(joystick_settings_dict)
-            self.joy_sticks.append(joystick_settings)
+            self.joysticks.append(joystick_settings)
 
         self.sensodrives = []
         for sensodrive in module_settings_to_load['sensodrives']:
@@ -65,12 +64,12 @@ class HardwareMPSettings(ModuleSettings):
             self.sensodrives.append(sensodrive_settings)
 
     def remove_hardware_input_device(self, setting):
-        #TODO dit ook naar dict
+        # TODO dit ook naar dict
         if isinstance(setting, KeyBoardSettings):
-            self.key_boards.remove(setting)
+            self.keyboards.remove(setting)
 
         if isinstance(setting, JoyStickSettings):
-            self.joy_sticks.remove(setting)
+            self.joysticks.remove(setting)
 
         if isinstance(setting, SensoDriveSettings):
             self.sensodrives.remove(setting)
@@ -81,7 +80,7 @@ class KeyBoardSettings:
     Default keyboardinput settings that will load whenever a keyboardinput class is created.
     """
 
-    def __init__(self, identifier = 0): #TODO Use identifier integer
+    def __init__(self, identifier=0):  # TODO Use identifier integer
         self.steer_left_key = QtGui.QKeySequence('a')[0]
         self.steer_right_key = QtGui.QKeySequence('d')[0]
         self.throttle_key = QtGui.QKeySequence('w')[0]
@@ -115,7 +114,7 @@ class JoyStickSettings:
     Default joystick settings that will load whenever a keyboardinput class is created.
     """
 
-    def __init__(self, identifier = 0):
+    def __init__(self, identifier=0):
         self.min_steer = -0.5 * math.pi
         self.max_steer = 0.5 * math.pi
         self.device_vendor_id = 0
@@ -178,7 +177,7 @@ class SensoDriveSettings:
     Default sensodrive settings that will load whenever a keyboardinput class is created.
     """
 
-    def __init__(self, identifier = 0):
+    def __init__(self, identifier=0):
         self.endstops = math.radians(360.0)  # rad
         self.torque_limit_between_endstops = 200  # percent
         self.torque_limit_beyond_endstops = 200  # percent
@@ -191,13 +190,13 @@ class SensoDriveSettings:
         self.close_event = mp.Event()
 
         self.settings_list = [self.endstops,  # rad
-                           self.torque_limit_between_endstops,  # percent
-                           self.torque_limit_beyond_endstops, # percent
-                           self.friction, # Nm
-                           self.damping,  # Nm * s / rad
-                           self.spring_stiffness, # Nm / rad
-                           self.torque, # Nm
-                           self.identifier]
+                              self.torque_limit_between_endstops,  # percent
+                              self.torque_limit_beyond_endstops,  # percent
+                              self.friction,  # Nm
+                              self.damping,  # Nm * s / rad
+                              self.spring_stiffness,  # Nm / rad
+                              self.torque,  # Nm
+                              self.identifier]
 
     def as_dict(self):
         return self.__dict__
