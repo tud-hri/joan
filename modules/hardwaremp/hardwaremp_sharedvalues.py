@@ -1,6 +1,5 @@
 import multiprocessing as mp
 from ctypes import *
-from dataclasses import dataclass
 
 
 class HardwareMPSharedValues:
@@ -16,11 +15,9 @@ class HardwareMPSharedValues:
         self.clear_error_event = mp.Event()
 
         # for testing purposes
-        self.keyboards = {}  # {"keyboard3": KeyboardSharedValues()}
+        self.keyboards = {}
         self.joysticks = {}
         self.sensodrives = {}
-
-
 
     @property
     def state(self):
@@ -136,18 +133,19 @@ class JoystickSharedValues:
     def handbrake(self, val):
         self._handbrake.value = val
 
+
 class SensoDriveSharedValues:
     """"
     This class contains all the variables that are shared between the seperate hardware communication core and the
     main JOAN core.
     """
+
     def __init__(self):
         self._steering_angle = mp.Value(c_float, 0.0)
         self._throttle = mp.Value(c_float, 0.0)
         self._brake = mp.Value(c_float, -9.9)
         self._reverse = mp.Value(c_bool, False)
         self._handbrake = mp.Value(c_bool, False)
-
 
     @property
     def steering_angle(self):
