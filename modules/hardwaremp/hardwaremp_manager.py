@@ -18,12 +18,13 @@ class HardwareMPManager(ModuleManager):
 
     def initialize(self):
         super().initialize()
+
         for keyboard in self.module_settings.keyboards:
-            self.shared_variables.keyboards['Keyboard' + str(keyboard.identifier)] = KeyboardSharedVariables()
+            self.shared_variables.keyboards[keyboard.identifier] = KeyboardSharedVariables()
         for joystick in self.module_settings.joysticks:
-            self.shared_variables.joysticks['Joystick' + str(joystick.identifier)] = JoystickSharedVariables()
+            self.shared_variables.joysticks[joystick.identifier] = JoystickSharedVariables()
         for sensodrive in self.module_settings.sensodrives:
-            self.shared_variables.sensodrives['SensoDrive' + str(sensodrive.identifier)] = SensoDriveSharedVariables()
+            self.shared_variables.sensodrives[sensodrive.identifier] = SensoDriveSharedVariables()
 
     def _add_hardware_input(self, hardware_input_type, hardware_input_settings=None):
         " Here we just add the settings and settings dialog functionality"

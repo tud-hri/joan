@@ -44,35 +44,35 @@ class HardwareMPSettings(ModuleSettings):
         #     device = self.sensodrives.pop()
         #     del device
 
-        # TODO Maak hier van de lists -> dicts
-        self.keyboards = []
+        # TODO Maak hier van de lists -> dicts; eerste stap gezet, moet gechecked worden
+        self.keyboards = {}
         for keyboard_settings_dict in module_settings_to_load['keyboards']:
             keyboard_settings = KeyBoardSettings()
             keyboard_settings.set_from_loaded_dict(keyboard_settings_dict)
-            self.keyboards.append(keyboard_settings)
+            self.keyboards.update({keyboard_settings.identifier: keyboard_settings})
 
-        self.joysticks = []
+        self.joysticks = {}
         for joystick_settings_dict in module_settings_to_load['joysticks']:
             joystick_settings = JoyStickSettings()
             joystick_settings.set_from_loaded_dict(joystick_settings_dict)
-            self.joysticks.append(joystick_settings)
+            self.joysticks.update({joystick_settings.identifier: joystick_settings})
 
-        self.sensodrives = []
+        self.sensodrives = {}
         for sensodrive in module_settings_to_load['sensodrives']:
             sensodrive_settings = SensoDriveSettings()
             sensodrive_settings.set_from_loaded_dict(sensodrive)
-            self.sensodrives.append(sensodrive_settings)
+            self.sensodrives.update({sensodrive_settings.identifier: sensodrive_settings})
 
     def remove_hardware_input_device(self, setting):
-        # TODO dit ook naar dict
+        # TODO dit ook naar dict; eerste stap gemaakt, moet gechecked worden
         if isinstance(setting, KeyBoardSettings):
-            self.keyboards.remove(setting)
+            self.keyboards.pop(setting.identifier)
 
         if isinstance(setting, JoyStickSettings):
-            self.joysticks.remove(setting)
+            self.joysticks.pop(setting.identifier)
 
         if isinstance(setting, SensoDriveSettings):
-            self.sensodrives.remove(setting)
+            self.sensodrives.pop(setting.identifier)
 
 
 class KeyBoardSettings:
