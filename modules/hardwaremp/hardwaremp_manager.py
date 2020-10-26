@@ -25,6 +25,11 @@ class HardwareMPManager(ModuleManager):
         for sensodrive in self.module_settings.sensodrives.values():
             self.shared_variables.sensodrives[sensodrive.identifier] = sensodrive.input_type.shared_variables()
 
+    def start(self):
+        super().start()
+        for sensodrives in self.module_settings.sensodrives.values():
+            sensodrives.turn_on_event.set()
+
     def stop(self):
         for sensodrives in self.module_settings.sensodrives.values():
             sensodrives.turn_off_event.set()

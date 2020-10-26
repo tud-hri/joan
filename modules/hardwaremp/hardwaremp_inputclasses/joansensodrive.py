@@ -207,6 +207,7 @@ class SensoDriveComm1(mp.Process):
                 self.turn_off_event.clear()
 
             if self.turn_on_event.is_set():
+                print('hai')
                 self.off_to_on(self.state_message)
                 self.turn_on_event.clear()
 
