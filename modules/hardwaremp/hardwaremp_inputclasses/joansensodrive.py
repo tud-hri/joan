@@ -103,14 +103,10 @@ class JOANSensoDriveMP():
         #Initialize communication pipe between seperate sensodrive process
         self.parent_pipe, child_pipe = mp.Pipe(duplex= True)
 
-
-
-
         #Create the sensodrive communication object with needed events and pipe
         comm = SensoDriveComm1(turn_on_event=settings.turn_on_event, turn_off_event=settings.turn_off_event,
                                close_event=settings.close_event, clear_error_event=settings.clear_error_event,
                                child_pipe=child_pipe)
-
 
         #Start the communication process when it is created
         comm.start()
@@ -218,6 +214,7 @@ class SensoDriveComm1(mp.Process):
                 self.clear_error(self.state_message)
                 self.clear_error_event.clear()
 
+            # TODO: Have to fix this stuff when we have the variable settings
             # if self.update_settings_event.is_set():
             #     self.update_settings()
             #     self.update_settings_event.clear()
