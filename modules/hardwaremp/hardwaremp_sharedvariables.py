@@ -147,6 +147,9 @@ class SensoDriveSharedVariables:
         self._reverse = mp.Value(c_bool, False)
         self._handbrake = mp.Value(c_bool, False)
 
+        self._measured_torque = mp.Value(c_float, 0.0)
+        self._steering_rate = mp.Value(c_float, 0.0)
+
         self._init_event = mp.Event()
 
     @property
@@ -156,6 +159,14 @@ class SensoDriveSharedVariables:
     @steering_angle.setter
     def steering_angle(self, val):
         self._steering_angle.value = val
+
+    @property
+    def steering_rate(self):
+        return self._steering_rate.value
+
+    @steering_rate.setter
+    def steering_rate(self, var):
+        self._steering_rate.value = var
 
     @property
     def throttle(self):
@@ -188,3 +199,11 @@ class SensoDriveSharedVariables:
     @handbrake.setter
     def handbrake(self, val):
         self._handbrake.value = val
+
+    @property
+    def measured_torque(self):
+        return self._measured_torque.value
+
+    @measured_torque.setter
+    def measured_torque(self, var):
+        self._measured_torque.value = var

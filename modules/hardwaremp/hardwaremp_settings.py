@@ -189,19 +189,15 @@ class SensoDriveSettings:
         self.spring_stiffness = 1  # Nm / rad
         self.torque = 0  # Nm
         self.identifier = identifier
-        self.init_event = mp.Event()
+        self.turn_on_event = mp.Event()
+        self.turn_off_event = mp.Event()
+        self.clear_error_event = mp.Event()
         self.close_event = mp.Event()
+
 
         self.input_type = input_type
 
-        self.settings_list = [self.endstops,  # rad
-                              self.torque_limit_between_endstops,  # percent
-                              self.torque_limit_beyond_endstops,  # percent
-                              self.friction,  # Nm
-                              self.damping,  # Nm * s / rad
-                              self.spring_stiffness,  # Nm / rad
-                              self.torque,  # Nm
-                              self.identifier]
+        self.settings_dict = {}
 
     def as_dict(self):
         return self.__dict__
@@ -209,3 +205,16 @@ class SensoDriveSettings:
     def set_from_loaded_dict(self, loaded_dict):
         for key, value in loaded_dict.items():
             self.__setattr__(key, value)
+
+    def settings_dict_for_pipe(self):
+        self.settings_dict = {'endstops': self.endstops, # rad
+                              'torque_limit_between_endstops': self.torque_limit_between_endstops,  # percent
+                              'torque_limit_beyond_endstops': self.torque_limit_beyond_endstops,    # percent
+                              'friction': self.friction,                                            # Nm
+                              'damping': self.damping,                                              # Nm * s / rad
+                              'spring_stiffness': self.spring_stiffness,                            # Nm / rad
+                              'torque': self.torque,                                                # Nm
+                              'identifier': self.identifier}
+
+        return self.settings_dict
+

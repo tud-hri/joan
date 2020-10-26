@@ -27,8 +27,8 @@ class HardwareMPManager(ModuleManager):
 
     def stop(self):
         for sensodrives in self.module_settings.sensodrives.values():
+            sensodrives.turn_off_event.set()
             sensodrives.close_event.set()
-
         super().stop()
 
     def _add_hardware_input(self, input_type, input_settings=None):
@@ -66,6 +66,7 @@ class HardwareMPManager(ModuleManager):
         elif input_type == HardwareInputTypes.SENSODRIVE:
             if input_settings not in self.module_settings.sensodrives.values():
                 self.module_settings.sensodrives[input_settings.identifier] =  input_settings
+
 
         # create dialog thing
         input_name = '{0!s} {1!s}'.format(input_type, str(input_settings.identifier))
@@ -109,10 +110,15 @@ class HardwareMPManager(ModuleManager):
     def _turn_on(self, hardware_input_name):
         identifier_str = hardware_input_name.replace('SensoDrive', '')
         identifier = int(identifier_str)
-        self.module_settings.sensodrives[identifier].init_event.set()
+        self.module_settings.sensodrives[identifier].turn_on_event.set()
 
 
     def _turn_off(self, hardware_input_name):
         identifier_str = hardware_input_name.replace('SensoDrive', '')
         identifier = int(identifier_str)
-        self.module_settings.sensodrives[identifier].close_event.set()
+        self.module_settings.sensodrives[identifier].turn_off_event.set()
+
+    def _clear_error(self, hardware_input_name):
+        identifier_str = hardware_input_name.replace('SensoDrive', '')
+        identifier = int(identifier_str)
+        self.module_settings.sensodrives[identifier].clear_error_event.set()
