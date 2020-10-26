@@ -1,14 +1,13 @@
-import multiprocessing as mp
 import os
 import sys
 
 from PyQt5 import QtCore
 
 from core.module_exceptionmonitor import ModuleExceptionMonitor
+from core.module_process import ProcessEvents
 from core.news import News
 from core.statemachine import StateMachine
 from core.statesenum import State
-from core.module_process import ProcessEvents
 from modules.joanmodules import JOANModules
 
 
@@ -52,8 +51,12 @@ class ModuleManager(QtCore.QObject):
         self.module_dialog = module.dialog(self, parent=parent)
 
         # create settings
-        self.settings_filename = os.path.join(self.module_path, 'default_settings.json')
         self.module_settings = module.settings()
+
+        # try to load new
+        settings_filename = os.path.join(self.module_path, 'default_settings.json')
+        if os.path.exists(settings_filename):
+            self.module_settings.load_from_file(settings_filename)
 
     def initialize(self):
         """
@@ -123,4 +126,3 @@ class ModuleManager(QtCore.QObject):
 
         self._events.start.clear()
         self._events.process_is_ready.clear()
-
