@@ -4,7 +4,7 @@ import sys
 
 from PyQt5 import QtCore
 
-from core.moduleexceptionmonitor import ModuleExceptionMonitor
+from core.module_exceptionmonitor import ModuleExceptionMonitor
 from core.news import News
 from core.statemachine import StateMachine
 from core.statesenum import State
