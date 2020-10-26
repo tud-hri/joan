@@ -57,6 +57,7 @@ class HardwareMPDialog(ModuleDialog):
         self._hardware_input_tabs_dict[hardware_input_name].btn_remove_hardware.clicked.connect(lambda: self._remove_hardware_input_device(hardware_input_name))
 
         if 'SensoDrive' in hardware_input_name:
+            print(hardware_input_name)
             self._hardware_input_tabs_dict[hardware_input_name].btn_on.clicked.connect(lambda: self.module_manager._turn_on(hardware_input_name))
             self._hardware_input_tabs_dict[hardware_input_name].btn_off.clicked.connect(lambda: self.module_manager._turn_off(hardware_input_name))
 

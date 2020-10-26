@@ -24,3 +24,4 @@ class HardwareMPProcess(ModuleProcess):
         for inputs in self.input_objects:
             # will perform the mp input class for eaach available input
             self.input_objects[inputs].do()
+

@@ -402,7 +402,7 @@ class SensoDriveComm1(mp.Process):
         self.close_event = close_event
 
     def run(self):
-        self.init_event.wait()
+        # self.init_event.wait()
         print(self.child_pipe.recv())
         while True:
             data_available = self.child_pipe.poll()

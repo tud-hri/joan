@@ -25,6 +25,12 @@ class HardwareMPManager(ModuleManager):
         for sensodrive in self.module_settings.sensodrives.values():
             self.shared_variables.sensodrives[sensodrive.identifier] = sensodrive.input_type.shared_variables()
 
+    def stop(self):
+        for sensodrives in self.module_settings.sensodrives.values():
+            sensodrives.close_event.set()
+
+        super().stop()
+
     def _add_hardware_input(self, input_type, input_settings=None):
         """
         Add hardware input
@@ -53,13 +59,13 @@ class HardwareMPManager(ModuleManager):
         # check if settings do not already exist
         if input_type == HardwareInputTypes.KEYBOARD:
             if input_settings not in self.module_settings.keyboards.values():
-                self.module_settings.keyboards.update({input_settings.identifier: input_settings})
+                self.module_settings.keyboards[input_settings.identifier] =  input_settings
         elif input_type == HardwareInputTypes.JOYSTICK:
             if input_settings not in self.module_settings.joysticks.values():
-                self.module_settings.joysticks.update({input_settings.identifier: input_settings})
+                self.module_settings.joysticks[input_settings.identifier] =  input_settings
         elif input_type == HardwareInputTypes.SENSODRIVE:
             if input_settings not in self.module_settings.sensodrives.values():
-                self.module_settings.sensodrived.update({input_settings.identifier: input_settings})
+                self.module_settings.sensodrives[input_settings.identifier] =  input_settings
 
         # create dialog thing
         input_name = '{0!s} {1!s}'.format(input_type, str(input_settings.identifier))
@@ -103,17 +109,10 @@ class HardwareMPManager(ModuleManager):
     def _turn_on(self, hardware_input_name):
         identifier_str = hardware_input_name.replace('SensoDrive', '')
         identifier = int(identifier_str)
-        for sensodrives in self.module_settings.sensodrives:
-            if sensodrives.identifier == identifier:
-                settings_object = sensodrives
+        self.module_settings.sensodrives[identifier].init_event.set()
 
-        settings_object.init_event.set()
 
     def _turn_off(self, hardware_input_name):
         identifier_str = hardware_input_name.replace('SensoDrive', '')
         identifier = int(identifier_str)
-        for sensodrives in self.module_settings.sensodrives:
-            if sensodrives.identifier == identifier:
-                settings_object = sensodrives
-
-        settings_object.close_event.set()
+        self.module_settings.sensodrives[identifier].close_event.set()
