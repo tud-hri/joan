@@ -112,6 +112,9 @@
          </property>
          <item row="2" column="0">
           <widget class="QPushButton" name="btn_on">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
              <horstretch>0</horstretch>
@@ -131,6 +134,9 @@
          </item>
          <item row="4" column="0">
           <widget class="QPushButton" name="btn_clear_error">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="font">
             <font>
              <weight>50</weight>
@@ -144,6 +150,9 @@
          </item>
          <item row="3" column="0">
           <widget class="QPushButton" name="btn_off">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="font">
             <font>
              <weight>50</weight>

@@ -27,12 +27,46 @@ class HardwareMPDialog(ModuleDialog):
         for this module. We should however not forget also calling the super()._handle_state_change() method.
         """
         super()._handle_state_change()
+        #joysticks and keyboards
         if self.module_manager.state_machine.current_state != State.STOPPED:
             self._module_widget.btn_add_hardware.setEnabled(False)
+            for hardware_tabs in self._hardware_input_tabs_dict:
+                self._hardware_input_tabs_dict[hardware_tabs].btn_remove_hardware.setEnabled(False)
+                self._hardware_input_tabs_dict[hardware_tabs].btn_remove_hardware.blockSignals(True)
+                if 'SensoDrive' not in hardware_tabs:
+                    self._hardware_input_tabs_dict[hardware_tabs].setEnabled(False)
+                    self._hardware_input_tabs_dict[hardware_tabs].blockSignals(True)
             # self._module_widget.hardware_groupbox.setEnabled(False)
         else:
             self._module_widget.btn_add_hardware.setEnabled(True)
-            # self._module_widget.hardware_groupbox.setEnabled(True)
+            for hardware_tabs in self._hardware_input_tabs_dict:
+                self._hardware_input_tabs_dict[hardware_tabs].btn_remove_hardware.setEnabled(True)
+                self._hardware_input_tabs_dict[hardware_tabs].btn_remove_hardware.blockSignals(False)
+                if 'SensoDrive' not in hardware_tabs:
+                    self._hardware_input_tabs_dict[hardware_tabs].setEnabled(True)
+                    self._hardware_input_tabs_dict[hardware_tabs].blockSignals(False)
+
+        #sensodrive specific
+        if self.module_manager.state_machine.current_state == State.READY or self.module_manager.state_machine.current_state == State.RUNNING:
+            for hardware_tabs in self._hardware_input_tabs_dict:
+                if 'SensoDrive' in hardware_tabs:
+                    self._hardware_input_tabs_dict[hardware_tabs].btn_on.setEnabled(True)
+                    self._hardware_input_tabs_dict[hardware_tabs].btn_on.blockSignals(False)
+                    self._hardware_input_tabs_dict[hardware_tabs].btn_off.setEnabled(True)
+                    self._hardware_input_tabs_dict[hardware_tabs].btn_off.blockSignals(False)
+                    self._hardware_input_tabs_dict[hardware_tabs].btn_clear_error.setEnabled(True)
+                    self._hardware_input_tabs_dict[hardware_tabs].btn_clear_error.blockSignals(False)
+        else:
+            for hardware_tabs in self._hardware_input_tabs_dict:
+                if 'SensoDrive' in hardware_tabs:
+                    self._hardware_input_tabs_dict[hardware_tabs].btn_on.setEnabled(False)
+                    self._hardware_input_tabs_dict[hardware_tabs].btn_on.blockSignals(True)
+                    self._hardware_input_tabs_dict[hardware_tabs].btn_off.setEnabled(False)
+                    self._hardware_input_tabs_dict[hardware_tabs].btn_off.blockSignals(True)
+                    self._hardware_input_tabs_dict[hardware_tabs].btn_clear_error.setEnabled(False)
+                    self._hardware_input_tabs_dict[hardware_tabs].btn_clear_error.blockSignals(True)
+
+
 
     def _hardware_input_selection(self):
         self._input_type_dialog.combo_hardware_inputtype.clear()

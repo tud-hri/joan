@@ -55,6 +55,8 @@ class ModuleManager(QtCore.QObject):
         self.settings_filename = os.path.join(self.module_path, 'default_settings.json')
         self.module_settings = module.settings()
 
+        self.module_dialog._handle_state_change()
+
     def initialize(self):
         """
         Create shared variables, share through news

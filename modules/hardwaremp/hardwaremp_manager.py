@@ -1,6 +1,7 @@
 from core.module_manager import ModuleManager
 from modules.joanmodules import JOANModules
 from .hardwaremp_inputtypes import HardwareInputTypes
+from core.statesenum import State
 
 
 class HardwareMPManager(ModuleManager):
@@ -13,6 +14,7 @@ class HardwareMPManager(ModuleManager):
         self.hardware_input_settings = None
 
         self._hardware_input_settingdialogs_dict = {}
+
 
     def initialize(self):
         super().initialize()
