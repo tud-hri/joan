@@ -76,7 +76,6 @@ class HardwareMPDialog(ModuleDialog):
                 sensodrives.current_state = sensodrives.state_queue.get(timeout = 0)
             except queue.Empty:
                 pass
-            print(hex(sensodrives.current_state))
             hardware_tab_identifier = str("SensoDrive " + str(sensodrives.identifier))
             if self.module_manager.state_machine.current_state == State.READY or self.module_manager.state_machine.current_state == State.RUNNING:
                 if sensodrives.current_state == 0x10:
@@ -109,8 +108,6 @@ class HardwareMPDialog(ModuleDialog):
                     self._hardware_input_tabs_dict[hardware_tab_identifier].btn_clear_error.blockSignals(False)
                     self._hardware_input_tabs_dict[hardware_tab_identifier].lbl_sensodrive_state.setStyleSheet("background-color: red")
                     self._hardware_input_tabs_dict[hardware_tab_identifier].lbl_sensodrive_state.setText('Error')
-
-
 
     def _hardware_input_selection(self):
         self._input_type_dialog.combo_hardware_inputtype.clear()

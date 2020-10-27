@@ -172,7 +172,7 @@ class SensoDriveComm1(mp.Process):
                 # Turn off SensoDrive immediately (only when torque limits are breached)
 
             # Get latest parameters
-            time.sleep(0.0002)  # TODO: wat is hier het idee? dit kan nogal wat vertraging veroorzaken. In windows is dit een sleep van +- 15 ms
+            time.sleep(0.0002)  # TODO: wat is hier het idee? dit kan nogal wat vertraging veroorzaken. In windows is dit een sleep van +- 15 ms not sure yet
             # convert SI units to Sensowheel units
             self.steering_wheel_parameters = self._map_si_to_sensodrive(self.settings_dict)
 
@@ -237,7 +237,6 @@ class SensoDriveComm1(mp.Process):
         except queue.Empty:
             pass
 
-
     def write_message_steering_wheel(self, pcan_object, pcanmessage, data):
         """
         Writes a CAN message to the sensodrive containing information regarding torque, friction and damping. Also
@@ -297,12 +296,6 @@ class SensoDriveComm1(mp.Process):
 
         message.DATA[0] = 0x14
         self.pcan_object.Write(self._pcan_channel, message)
-        time.sleep(0.002)
-        response = self.pcan_object.Read(self._pcan_channel)
-
-        self._current_state_hex = response[1].DATA[0]
-        # time.sleep(0.002)
-        # self.values_from_sensodrive['sensodrive_motorstate'] = self._current_state_hex
 
     def on_to_off(self, message):
         """
@@ -314,12 +307,6 @@ class SensoDriveComm1(mp.Process):
         time.sleep(0.002)
         message.DATA[0] = 0x10
         self.pcan_object.Write(self._pcan_channel, message)
-        time.sleep(0.002)
-        response = self.pcan_object.Read(self._pcan_channel)
-
-        # self._current_state_hex = response[1].DATA[0]
-        time.sleep(0.002)
-        # self.values_from_sensodrive['sensodrive_motorstate'] = self._current_state_hex
 
     def clear_error(self, message):
         """
@@ -328,12 +315,6 @@ class SensoDriveComm1(mp.Process):
         """
         message.DATA[0] = 0x1F
         self.pcan_object.Write(self._pcan_channel, message)
-        time.sleep(0.002)
-        response = self.pcan_object.Read(self._pcan_channel)
-
-        # self._current_state_hex = response[1].DATA[0]
-        # time.sleep(0.002)
-        # self.values_from_sensodrive['sensodrive_motorstate'] = self._current_state_hex
 
     def initialize(self):
         self.pcan_object = PCANBasic()
@@ -377,7 +358,6 @@ class SensoDriveComm1(mp.Process):
         # Set the data structure for the steeringwheel message with the just applied values
         self.steering_wheel_parameters = self._map_si_to_sensodrive(self.settings_dict)
 
-        # TODO Do we need to do this twice?
         self.pcan_object.Write(self._pcan_channel, self.sensodrive_initialization_message)
         time.sleep(0.02)
         response = self.pcan_object.Read(self._pcan_channel)
@@ -386,7 +366,6 @@ class SensoDriveComm1(mp.Process):
 
         self.state_message = self.sensodrive_initialization_message
         self.state_message.DATA[0] = 0x11
-        # self.values_from_sensodrive['sensodrive_motorstate'] = self._current_state_hex
 
     def _map_si_to_sensodrive(self, settings):
         # convert SI units to Sensowheel units
@@ -453,7 +432,7 @@ class SensoDriveComm1(mp.Process):
         self.sensodrive_initialization_message.DATA[7] = torque_limit_beyond_endstops_bytes[0]
 
         self.pcan_object.Write(self._pcan_channel, self.sensodrive_initialization_message)
-        # time.sleep(0.002)
+        time.sleep(0.002)
         response = self.pcan_object.Read(self._pcan_channel)
 
         self._current_state_hex = response[1].DATA[0]

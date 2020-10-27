@@ -35,7 +35,7 @@ class TemplateProcess(ModuleProcess):
         now = datetime.now()
         self._module_shared_variables.overwrite_with_current_time = now.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
 
-        # print(self.shared_variables_hardware.sensodrives[1].throttle)
+        print(self.shared_variables_hardware.sensodrives[1].steering_angle)
 
         # show current time
         # print(self._module_shared_variables.overwrite_with_current_time)
