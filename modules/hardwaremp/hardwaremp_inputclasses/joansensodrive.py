@@ -330,9 +330,7 @@ class SensoDriveComm1(mp.Process):
 
     def initialize(self):
         self.pcan_object = PCANBasic()
-        # if self.pcan_initialization_result is None:
         self.pcan_initialization_result = self.pcan_object.Initialize(self._pcan_channel, PCAN_BAUD_1M)
-        # self.pcan_object.SetValue(self._pcan_channel, PCAN_INTERFRAME_DELAY, 20000)
 
         # Convert our shared settings to bytes
         endstops_bytes = int.to_bytes(int(math.degrees(self.settings_dict['endstops'])), 2, byteorder='little', signed=True)
