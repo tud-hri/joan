@@ -105,7 +105,7 @@ class JOANSensoDriveMP():
         self.parent_pipe, child_pipe = mp.Pipe(duplex= True)
 
         #Create the sensodrive communication object with needed events and pipe
-        comm = SensoDriveComm1(turn_on_event=settings.turn_on_event, turn_off_event=settings.turn_off_event,
+        comm = SensoDriveComm(turn_on_event=settings.turn_on_event, turn_off_event=settings.turn_off_event,
                                close_event=settings.close_event, clear_error_event=settings.clear_error_event,
                                child_pipe=child_pipe, state_queue= settings.state_queue)
 
@@ -122,7 +122,7 @@ class JOANSensoDriveMP():
         self.shared_variables.brake = values_from_sensodrive['brake']
         self.shared_variables.steering_rate = values_from_sensodrive['steering_rate']
 
-class SensoDriveComm1(mp.Process):
+class SensoDriveComm(mp.Process):
     def __init__(self, turn_on_event, turn_off_event, close_event, clear_error_event, child_pipe , state_queue):
         super().__init__()
         self.turn_on_event = turn_on_event
@@ -131,10 +131,6 @@ class SensoDriveComm1(mp.Process):
         self.state_queue = state_queue
         self.clear_error_event = clear_error_event
         self.close_event = close_event
-        if self.settings_dict.identifier == 1:
-            self._pcan_channel = PCAN_USBBUS1
-        else:
-            self._pcan_channel = PCAN_USBBUS2
         self.values_from_sensodrive = {}
 
         # Create steering wheel parameters data structure
@@ -164,6 +160,10 @@ class SensoDriveComm1(mp.Process):
 
     def run(self):
         self.settings_dict = self.child_pipe.recv()
+        if self.settings_dict['identifier'] == 1:
+            self._pcan_channel = PCAN_USBBUS1
+        else:
+            self._pcan_channel = PCAN_USBBUS2
         self._time_step_in_ns = 10000000
         # Here we can initialize our PCAN Communication (WE HAVE TO DO THIS HERE ELSE WE WONT HAVE THE PCAN OBJECT IN OUR DESIRED PROCESS
         self.initialize()
@@ -171,17 +171,12 @@ class SensoDriveComm1(mp.Process):
 
         while True:
             t0 = time.perf_counter_ns()
-
             self._time = time.perf_counter_ns()
 
             data_available = self.child_pipe.poll()
             if data_available is True:
                 self.settings_dict = self.child_pipe.recv()
                 self.child_pipe.send(self.values_from_sensodrive)
-                # Turn off SensoDrive immediately (only when torque limits are breached)
-
-            # Get latest parameters
-            # #time.sleep(0.0002)  # TODO: wat is hier het idee? dit kan nogal wat vertraging veroorzaken. In windows is dit een sleep van +- 15 ms not sure yet
 
             # convert SI units to Sensowheel units
             self.steering_wheel_parameters = self._map_si_to_sensodrive(self.settings_dict)

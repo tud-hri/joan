@@ -35,7 +35,10 @@ class TemplateProcess(ModuleProcess):
         now = datetime.now()
         self._module_shared_variables.overwrite_with_current_time = now.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
 
-        print(self.shared_variables_hardware.sensodrives[1].steering_angle)
+        try:
+            print("Sensodrive 1 = ", self.shared_variables_hardware.sensodrives[1].steering_angle, "Sensodrive 2 = ", self.shared_variables_hardware.sensodrives[2].steering_angle)
+        except KeyError:
+            pass
 
         # show current time
         # print(self._module_shared_variables.overwrite_with_current_time)

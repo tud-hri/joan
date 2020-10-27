@@ -4,13 +4,15 @@ from modules.joanmodules import JOANModules
 
 
 class HardwareMPProcess(ModuleProcess):
-
+    """
+    Overall process that inherits from ModuleProcess (will loop at the desired frequency)
+    """
     def __init__(self, module: JOANModules, time_step_in_ms, news, settings, events):
         super().__init__(module, time_step_in_ms=time_step_in_ms, news=news, settings=settings, events=events)
         self.input_objects = {}
 
     def get_ready(self):
-        # Create the object that are in the settings here
+        # Create the objects that are in the settings here
         for key, value in self._settings_as_object.keyboards.items():
             self.input_objects[key] = HardwareInputTypes.KEYBOARD.klass_mp(settings=value, shared_variables=self._module_shared_variables.keyboards[key])
 

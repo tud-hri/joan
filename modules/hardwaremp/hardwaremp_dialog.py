@@ -8,7 +8,7 @@ from core.statesenum import State
 from modules.joanmodules import JOANModules
 from .hardwaremp_inputtypes import HardwareInputTypes
 import queue
-from PyQt5.QtWidgets import QMessageBox, QApplication
+from PyQt5.QtWidgets import QMessageBox
 
 
 msg_box = QMessageBox()
@@ -125,14 +125,14 @@ class HardwareMPDialog(ModuleDialog):
         # First we create the settings in the module manager (this will include an identifier which is used in the hardware name)
         chosen_hardware_input = self._input_type_dialog.combo_hardware_inputtype.itemData(self._input_type_dialog.combo_hardware_inputtype.currentIndex())
         #hardcode maximum nr of sensodrives
-        if chosen_hardware_input == HardwareInputTypes.SENSODRIVE and (len(self.module_manager.module_settings.sensodrives) < 2):
-            hardware_input_name = self.module_manager._add_hardware_input(chosen_hardware_input)
-        else:
+        if chosen_hardware_input == HardwareInputTypes.SENSODRIVE and (len(self.module_manager.module_settings.sensodrives) == 2):
             msg_box.setText("""
-                            <h3> Number of sensodrives is limited to 2 for now! </h3>
-                        """)
+                                        <h3> Number of sensodrives is limited to 2 for now! </h3>
+                                    """)
             msg_box.exec()
             return
+        else:
+            hardware_input_name = self.module_manager._add_hardware_input(chosen_hardware_input)
 
         # Adding tab
         self._hardware_input_tabs_dict[hardware_input_name] = uic.loadUi(chosen_hardware_input.hardware_tab_ui_file)

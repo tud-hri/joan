@@ -5,8 +5,9 @@ from core.statesenum import State
 import queue
 import time
 
+
 class HardwareMPManager(ModuleManager):
-    """Example JOAN module"""
+    """Hardwaremanager keeps track of which inputs are being used with what settings. """
 
     def __init__(self, time_step_in_ms=10, parent=None):
         super().__init__(module=JOANModules.HARDWARE_MP, time_step_in_ms=time_step_in_ms, parent=parent)
@@ -14,11 +15,7 @@ class HardwareMPManager(ModuleManager):
         self.hardware_input_type = None
         self.hardware_input_settings = None
 
-
-
         self._hardware_input_settingdialogs_dict = {}
-
-
 
     def get_ready(self):
         if len(self.module_settings.sensodrives) != 0:
@@ -77,27 +74,24 @@ class HardwareMPManager(ModuleManager):
         # check if settings do not already exist
         if input_type == HardwareInputTypes.KEYBOARD:
             if input_settings not in self.module_settings.keyboards.values():
-                self.module_settings.keyboards[input_settings.identifier] =  input_settings
+                self.module_settings.keyboards[input_settings.identifier] = input_settings
         elif input_type == HardwareInputTypes.JOYSTICK:
             if input_settings not in self.module_settings.joysticks.values():
-                self.module_settings.joysticks[input_settings.identifier] =  input_settings
+                self.module_settings.joysticks[input_settings.identifier] = input_settings
         elif input_type == HardwareInputTypes.SENSODRIVE:
             if input_settings not in self.module_settings.sensodrives.values():
-                self.module_settings.sensodrives[input_settings.identifier] =  input_settings
-
+                self.module_settings.sensodrives[input_settings.identifier] = input_settings
 
         # create dialog thing
         input_name = '{0!s} {1!s}'.format(input_type, str(input_settings.identifier))
         self._hardware_input_settingdialogs_dict[input_name] = input_type.klass_dialog(input_settings)
         return input_name
 
-    def _find_unique_input_identifier(self):
-        pass
-
     def _open_settings_dialog(self, input_name):
         self._hardware_input_settingdialogs_dict[input_name].show()
 
     def _remove_hardware_input_device(self, input_name):
+
         # Remove settings if they are available
         settings_object = None
 
@@ -130,16 +124,12 @@ class HardwareMPManager(ModuleManager):
         identifier = int(identifier_str)
         self.module_settings.sensodrives[identifier].turn_on_event.set()
 
-
-
     def _turn_off(self, hardware_input_name):
         identifier_str = hardware_input_name.replace('SensoDrive', '')
         identifier = int(identifier_str)
         self.module_settings.sensodrives[identifier].turn_off_event.set()
 
-
     def _clear_error(self, hardware_input_name):
         identifier_str = hardware_input_name.replace('SensoDrive', '')
         identifier = int(identifier_str)
         self.module_settings.sensodrives[identifier].clear_error_event.set()
-

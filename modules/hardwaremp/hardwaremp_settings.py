@@ -9,18 +9,15 @@ from modules.joanmodules import JOANModules
 import queue
 
 class HardwareMPSettings(ModuleSettings):
+    """
+    Contains the settings of the seperate hardware input types of the hardware manager module.
+    """
     def __init__(self):
         super().__init__(JOANModules.HARDWARE_MP)
 
         self.keyboards = {}
         self.joysticks = {}
         self.sensodrives = {}
-
-        # TODO: autoloading of settings need to be fixed, but not here in the settings object; it screws up the settings translation in process.
-        # if Path(settings_filename).is_file():
-        #     self.load_from_file(settings_filename)
-        # else:
-        #     self.save_to_file(settings_filename)
 
     def load_from_dict(self, loaded_dict):
         """
@@ -34,18 +31,6 @@ class HardwareMPSettings(ModuleSettings):
 
         module_settings_to_load = loaded_dict[str(self.module)]
 
-        # clean up existing settings
-        # while self.keyboards:
-        #     device = self.keyboards.pop()  # TODO: comment uit en maybe is het nodig maybe not
-        #     del device
-        # while self.joysticks:
-        #     device = self.joysticks.pop()
-        #     del device
-        # while self.sensodrives:
-        #     device = self.sensodrives.pop()
-        #     del device
-
-        # TODO Maak hier van de lists -> dicts; eerste stap gezet, moet gechecked worden
         self.keyboards = {}
         for identifier, settings_dict in module_settings_to_load['keyboards'].items():
             keyboard_settings = KeyBoardSettings()
@@ -65,7 +50,6 @@ class HardwareMPSettings(ModuleSettings):
             self.sensodrives.update({identifier: sensodrive_settings})
 
     def remove_hardware_input_device(self, setting):
-        # TODO dit ook naar dict; eerste stap gemaakt, moet gechecked worden
         if isinstance(setting, KeyBoardSettings):
             self.keyboards.pop(setting.identifier)
 

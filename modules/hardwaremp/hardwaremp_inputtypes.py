@@ -3,6 +3,18 @@ import os
 
 
 class HardwareInputTypes(enum.Enum):
+    """
+    Enumeration class for all the different hardware types available. Contains:
+    klass_mp: the class that runs in a seperate multiprocess which loops
+    klass_dialog: the settings dialog of the input type
+    shared_variables: the variables that need to be shared from the hardwareinpute type with the manager
+    settings_ui_file: ui file of the settings dialog
+    hardware_tab_uifile: ui file of the widget added in the module dialog
+    settings: specific settings of the hardware input type
+    __str__: the string represntation of the hardware input type
+
+    """
+
     KEYBOARD = 0
     JOYSTICK = 1
     SENSODRIVE = 2

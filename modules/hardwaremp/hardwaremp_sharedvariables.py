@@ -4,6 +4,10 @@ from ctypes import *
 
 class HardwareSharedVariables:
     def __init__(self):
+        """"
+        This class contains all the variables that are shared between the seperate hardware communication core and the
+        main JOAN core.
+        """
         self._state = mp.Value(c_int, -2)  # module state [initialized, running, error]
         self._time = mp.Value(c_float, 0.0)
 
@@ -14,7 +18,6 @@ class HardwareSharedVariables:
         self.turn_off_event = mp.Event()
         self.clear_error_event = mp.Event()
 
-        # for testing purposes
         self.keyboards = {}
         self.joysticks = {}
         self.sensodrives = {}
@@ -36,7 +39,11 @@ class HardwareSharedVariables:
         self._time.value = val
 
 
-class KeyboardSharedVariables:  # TODO: deze drie zijn excact hetzelfde, gaan we hier ooit not onderscheid in maken? Anders samenvoegen tot 1
+class KeyboardSharedVariables:
+    """"
+    This class contains all the variables that are shared between the seperate hardware communication core and the
+    main JOAN core.
+    """
     def __init__(self):
         self._steering_angle = mp.Value(c_float, 0.0)
         self._throttle = mp.Value(c_float, 0.0)
@@ -86,6 +93,10 @@ class KeyboardSharedVariables:  # TODO: deze drie zijn excact hetzelfde, gaan we
 
 
 class JoystickSharedVariables:
+    """"
+    This class contains all the variables that are shared between the seperate hardware communication core and the
+    main JOAN core.
+    """
     def __init__(self):
         self._steering_angle = mp.Value(c_float, 0.0)
         self._throttle = mp.Value(c_float, 0.0)
