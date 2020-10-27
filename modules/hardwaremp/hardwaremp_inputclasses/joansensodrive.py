@@ -123,7 +123,21 @@ class JOANSensoDriveMP():
         self.shared_variables.steering_rate = values_from_sensodrive['steering_rate']
 
 class SensoDriveComm(mp.Process):
+    """
+    This class is a seperate mp.Process which will start when it is created. It loops at approximately 10ms to keep the sensodrive from shutting off due to
+    the watchdog.
+    """
     def __init__(self, turn_on_event, turn_off_event, close_event, clear_error_event, child_pipe , state_queue):
+        """
+        Initialize the class with events and communication parameters: child_pipe and state_queue
+
+        :param turn_on_event: signals sensodrive to turn on
+        :param turn_off_event: signals sensodrive to turn off
+        :param close_event:  closes down the communication and breaks out of loop
+        :param clear_error_event: clears error state of sensodrive
+        :param child_pipe: pipe to send values back to mp process
+        :param state_queue: queue to send state to the rest of JOAN
+        """
         super().__init__()
         self.turn_on_event = turn_on_event
         self.child_pipe = child_pipe
