@@ -161,10 +161,16 @@ class SensoDriveComm1(mp.Process):
 
     def run(self):
         self.settings_dict = self.child_pipe.recv()
+        self._time_step_in_ns = 10000000
         # Here we can initialize our PCAN Communication (WE HAVE TO DO THIS HERE ELSE WE WONT HAVE THE PCAN OBJECT IN OUR DESIRED PROCESS
         self.initialize()
 
+
         while True:
+            t0 = time.perf_counter_ns()
+
+            self._time = time.perf_counter_ns()
+
             data_available = self.child_pipe.poll()
             if data_available is True:
                 self.settings_dict = self.child_pipe.recv()
@@ -172,7 +178,8 @@ class SensoDriveComm1(mp.Process):
                 # Turn off SensoDrive immediately (only when torque limits are breached)
 
             # Get latest parameters
-            time.sleep(0.0002)  # TODO: wat is hier het idee? dit kan nogal wat vertraging veroorzaken. In windows is dit een sleep van +- 15 ms not sure yet
+            # #time.sleep(0.0002)  # TODO: wat is hier het idee? dit kan nogal wat vertraging veroorzaken. In windows is dit een sleep van +- 15 ms not sure yet
+
             # convert SI units to Sensowheel units
             self.steering_wheel_parameters = self._map_si_to_sensodrive(self.settings_dict)
 
@@ -229,6 +236,11 @@ class SensoDriveComm1(mp.Process):
             self.clear_queue(self.state_queue)
             self.state_queue.put(self._current_state_hex)
             pass
+
+            execution_time = time.perf_counter_ns() - t0
+
+            # sleep for time step, taking the execution time into account
+            time.sleep((self._time_step_in_ns - execution_time) * 1e-9)
 
     def clear_queue(self, q):
         try:
@@ -288,11 +300,11 @@ class SensoDriveComm1(mp.Process):
         """
         message.DATA[0] = 0x10
         self.pcan_object.Write(self._pcan_channel, message)
-        time.sleep(0.002)
+        time.sleep(0.00001)
 
         message.DATA[0] = 0x12
         self.pcan_object.Write(self._pcan_channel, message)
-        time.sleep(0.002)
+        time.sleep(0.00001)
 
         message.DATA[0] = 0x14
         self.pcan_object.Write(self._pcan_channel, message)
@@ -304,7 +316,7 @@ class SensoDriveComm1(mp.Process):
         """
         message.DATA[0] = 0x12
         self.pcan_object.Write(self._pcan_channel, message)
-        time.sleep(0.002)
+        time.sleep(0.00001)
         message.DATA[0] = 0x10
         self.pcan_object.Write(self._pcan_channel, message)
 
@@ -320,6 +332,7 @@ class SensoDriveComm1(mp.Process):
         self.pcan_object = PCANBasic()
         # if self.pcan_initialization_result is None:
         self.pcan_initialization_result = self.pcan_object.Initialize(self._pcan_channel, PCAN_BAUD_1M)
+        # self.pcan_object.SetValue(self._pcan_channel, PCAN_INTERFRAME_DELAY, 20000)
 
         # Convert our shared settings to bytes
         endstops_bytes = int.to_bytes(int(math.degrees(self.settings_dict['endstops'])), 2, byteorder='little', signed=True)
@@ -348,7 +361,7 @@ class SensoDriveComm1(mp.Process):
         self.sensodrive_initialization_message.DATA[7] = torque_limit_beyond_endstops_bytes[0]
 
         self.pcan_object.Write(self._pcan_channel, self.sensodrive_initialization_message)
-        time.sleep(0.002)
+        #time.sleep(0.002)
         self.pcan_object.Read(self._pcan_channel)
 
         # do not switch mode
@@ -359,7 +372,7 @@ class SensoDriveComm1(mp.Process):
         self.steering_wheel_parameters = self._map_si_to_sensodrive(self.settings_dict)
 
         self.pcan_object.Write(self._pcan_channel, self.sensodrive_initialization_message)
-        time.sleep(0.02)
+        #time.sleep(0.02)
         response = self.pcan_object.Read(self._pcan_channel)
 
         self._current_state_hex = response[1].DATA[0]
@@ -432,7 +445,7 @@ class SensoDriveComm1(mp.Process):
         self.sensodrive_initialization_message.DATA[7] = torque_limit_beyond_endstops_bytes[0]
 
         self.pcan_object.Write(self._pcan_channel, self.sensodrive_initialization_message)
-        time.sleep(0.002)
+        #time.sleep(0.002)
         response = self.pcan_object.Read(self._pcan_channel)
 
         self._current_state_hex = response[1].DATA[0]
