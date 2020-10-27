@@ -1,6 +1,6 @@
 import os
 
-from PyQt5 import uic
+from PyQt5 import uic, QtCore
 
 from core.module_dialog import ModuleDialog
 from core.module_manager import ModuleManager
@@ -8,6 +8,11 @@ from core.statesenum import State
 from modules.joanmodules import JOANModules
 from .hardwaremp_inputtypes import HardwareInputTypes
 import queue
+from PyQt5.QtWidgets import QMessageBox, QApplication
+
+
+msg_box = QMessageBox()
+msg_box.setTextFormat(QtCore.Qt.RichText)
 
 class HardwareMPDialog(ModuleDialog):
     def __init__(self, module_manager: ModuleManager, parent=None):
@@ -119,7 +124,15 @@ class HardwareMPDialog(ModuleDialog):
         " Here we add the hardware input tabs "
         # First we create the settings in the module manager (this will include an identifier which is used in the hardware name)
         chosen_hardware_input = self._input_type_dialog.combo_hardware_inputtype.itemData(self._input_type_dialog.combo_hardware_inputtype.currentIndex())
-        hardware_input_name = self.module_manager._add_hardware_input(chosen_hardware_input)
+        #hardcode maximum nr of sensodrives
+        if chosen_hardware_input == HardwareInputTypes.SENSODRIVE and (len(self.module_manager.module_settings.sensodrives) < 2):
+            hardware_input_name = self.module_manager._add_hardware_input(chosen_hardware_input)
+        else:
+            msg_box.setText("""
+                            <h3> Number of sensodrives is limited to 2 for now! </h3>
+                        """)
+            msg_box.exec()
+            return
 
         # Adding tab
         self._hardware_input_tabs_dict[hardware_input_name] = uic.loadUi(chosen_hardware_input.hardware_tab_ui_file)

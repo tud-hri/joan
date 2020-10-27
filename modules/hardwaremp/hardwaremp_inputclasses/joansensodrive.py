@@ -131,7 +131,10 @@ class SensoDriveComm1(mp.Process):
         self.state_queue = state_queue
         self.clear_error_event = clear_error_event
         self.close_event = close_event
-        self._pcan_channel = PCAN_USBBUS1
+        if self.settings_dict.identifier == 1:
+            self._pcan_channel = PCAN_USBBUS1
+        else:
+            self._pcan_channel = PCAN_USBBUS2
         self.values_from_sensodrive = {}
 
         # Create steering wheel parameters data structure
