@@ -7,7 +7,7 @@ from core.module_manager import ModuleManager
 from core.statesenum import State
 from modules.joanmodules import JOANModules
 from .hardwaremp_inputtypes import HardwareInputTypes
-
+import queue
 
 class HardwareMPDialog(ModuleDialog):
     def __init__(self, module_manager: ModuleManager, parent=None):
@@ -65,6 +65,50 @@ class HardwareMPDialog(ModuleDialog):
                     self._hardware_input_tabs_dict[hardware_tabs].btn_off.blockSignals(True)
                     self._hardware_input_tabs_dict[hardware_tabs].btn_clear_error.setEnabled(False)
                     self._hardware_input_tabs_dict[hardware_tabs].btn_clear_error.blockSignals(True)
+                    self._hardware_input_tabs_dict[hardware_tabs].lbl_sensodrive_state.setStyleSheet("background-color: orange")
+                    self._hardware_input_tabs_dict[hardware_tabs].lbl_sensodrive_state.setText('Off')
+
+
+
+    def _update_sensodrive_state(self):
+        for sensodrives in self.module_manager.module_settings.sensodrives.values():
+            try:
+                sensodrives.current_state = sensodrives.state_queue.get(timeout = 0)
+            except queue.Empty:
+                pass
+            print(hex(sensodrives.current_state))
+            hardware_tab_identifier = str("SensoDrive " + str(sensodrives.identifier))
+            if self.module_manager.state_machine.current_state == State.READY or self.module_manager.state_machine.current_state == State.RUNNING:
+                if sensodrives.current_state == 0x10:
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].btn_on.setEnabled(True)
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].btn_on.blockSignals(False)
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].btn_off.setEnabled(False)
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].btn_off.setStyleSheet(None)
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].btn_off.blockSignals(True)
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].btn_clear_error.setEnabled(False)
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].btn_clear_error.blockSignals(True)
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].btn_clear_error.blockSignals(True)
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].lbl_sensodrive_state.setStyleSheet("background-color: orange")
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].lbl_sensodrive_state.setText('Off')
+                elif sensodrives.current_state == 0x14:
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].btn_on.setEnabled(False)
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].btn_on.setStyleSheet(None)
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].btn_on.blockSignals(True)
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].btn_off.setEnabled(True)
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].btn_off.blockSignals(False)
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].btn_clear_error.setEnabled(False)
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].btn_clear_error.blockSignals(True)
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].lbl_sensodrive_state.setStyleSheet("background-color: lightgreen")
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].lbl_sensodrive_state.setText('On')
+                elif sensodrives.current_state == 0x18:
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].btn_on.setEnabled(False)
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].btn_on.blockSignals(True)
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].btn_off.setEnabled(False)
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].btn_off.blockSignals(True)
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].btn_clear_error.setEnabled(True)
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].btn_clear_error.blockSignals(False)
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].lbl_sensodrive_state.setStyleSheet("background-color: red")
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].lbl_sensodrive_state.setText('Error')
 
 
 

@@ -2,6 +2,7 @@ import math
 import multiprocessing as mp
 import os
 import time
+import queue
 
 from PyQt5 import uic, QtWidgets
 
@@ -106,7 +107,7 @@ class JOANSensoDriveMP():
         #Create the sensodrive communication object with needed events and pipe
         comm = SensoDriveComm1(turn_on_event=settings.turn_on_event, turn_off_event=settings.turn_off_event,
                                close_event=settings.close_event, clear_error_event=settings.clear_error_event,
-                               child_pipe=child_pipe)
+                               child_pipe=child_pipe, state_queue= settings.state_queue)
 
         #Start the communication process when it is created
         comm.start()
@@ -122,11 +123,12 @@ class JOANSensoDriveMP():
         self.shared_variables.steering_rate = values_from_sensodrive['steering_rate']
 
 class SensoDriveComm1(mp.Process):
-    def __init__(self, turn_on_event, turn_off_event, close_event, clear_error_event, child_pipe):
+    def __init__(self, turn_on_event, turn_off_event, close_event, clear_error_event, child_pipe , state_queue):
         super().__init__()
         self.turn_on_event = turn_on_event
         self.child_pipe = child_pipe
         self.turn_off_event = turn_off_event
+        self.state_queue = state_queue
         self.clear_error_event = clear_error_event
         self.close_event = close_event
         self._pcan_channel = PCAN_USBBUS1
@@ -170,7 +172,7 @@ class SensoDriveComm1(mp.Process):
                 # Turn off SensoDrive immediately (only when torque limits are breached)
 
             # Get latest parameters
-            time.sleep(0.00001)  # TODO: wat is hier het idee? dit kan nogal wat vertraging veroorzaken. In windows is dit een sleep van +- 15 ms
+            time.sleep(0.0002)  # TODO: wat is hier het idee? dit kan nogal wat vertraging veroorzaken. In windows is dit een sleep van +- 15 ms
             # convert SI units to Sensowheel units
             self.steering_wheel_parameters = self._map_si_to_sensodrive(self.settings_dict)
 
@@ -192,22 +194,18 @@ class SensoDriveComm1(mp.Process):
             self.write_message_pedals(self.pcan_object, self.pedal_message)
             received3 = self.pcan_object.Read(self._pcan_channel)
 
-            # if received[0] or received2[0] or received3[0] == PCAN_ERROR_OK:
-            if received2[0] == PCAN_ERROR_OK:
+            if received[0] or received2[0] or received3[0] == PCAN_ERROR_OK:
                 self._sensodrive_data_to_si(received)
 
                 self._sensodrive_data_to_si(received2)
 
                 self._sensodrive_data_to_si(received3)
 
-            self.values_from_sensodrive['sensodrive_motorstate'] = self._current_state_hex
-
             if self.turn_off_event.is_set():
                 self.on_to_off(self.state_message)
                 self.turn_off_event.clear()
 
             if self.turn_on_event.is_set():
-                print('hai')
                 self.off_to_on(self.state_message)
                 self.turn_on_event.clear()
 
@@ -223,12 +221,22 @@ class SensoDriveComm1(mp.Process):
             # properly uninitialize the pcan dongle if sensodrive is removed
             if self.close_event.is_set():
                 self.close_event.clear()
-                print('Uninitialized pcan_object')
                 #send last known values over the pipe
                 self.child_pipe.send(self.values_from_sensodrive)
                 self.pcan_object.Uninitialize(self._pcan_channel)
                 break
+
+            self.clear_queue(self.state_queue)
+            self.state_queue.put(self._current_state_hex)
             pass
+
+    def clear_queue(self, q):
+        try:
+            while True:
+                q.get_nowait()
+        except queue.Empty:
+            pass
+
 
     def write_message_steering_wheel(self, pcan_object, pcanmessage, data):
         """
@@ -279,7 +287,6 @@ class SensoDriveComm1(mp.Process):
         If a PCAN dongle is connected and working will try to move the state of the sensodrive from off to on.
         :return:
         """
-        print('off to on')
         message.DATA[0] = 0x10
         self.pcan_object.Write(self._pcan_channel, message)
         time.sleep(0.002)
@@ -294,16 +301,14 @@ class SensoDriveComm1(mp.Process):
         response = self.pcan_object.Read(self._pcan_channel)
 
         self._current_state_hex = response[1].DATA[0]
-        # print(hex(self._current_state_hex))
-        time.sleep(0.002)
-        self.values_from_sensodrive['sensodrive_motorstate'] = self._current_state_hex
+        # time.sleep(0.002)
+        # self.values_from_sensodrive['sensodrive_motorstate'] = self._current_state_hex
 
     def on_to_off(self, message):
         """
         If a PCAN dongle is connected and working will try to move the state of the sensodrive from on to off.
         :return:
         """
-        print('on to off')
         message.DATA[0] = 0x12
         self.pcan_object.Write(self._pcan_channel, message)
         time.sleep(0.002)
@@ -312,31 +317,27 @@ class SensoDriveComm1(mp.Process):
         time.sleep(0.002)
         response = self.pcan_object.Read(self._pcan_channel)
 
-        self._current_state_hex = response[1].DATA[0]
-        # print(hex(self._current_state_hex))
+        # self._current_state_hex = response[1].DATA[0]
         time.sleep(0.002)
-        self.values_from_sensodrive['sensodrive_motorstate'] = self._current_state_hex
+        # self.values_from_sensodrive['sensodrive_motorstate'] = self._current_state_hex
 
     def clear_error(self, message):
         """
         If a PCAN dongle is connected and working will try to move the state of the sensodrive from error to off.
         :return:
         """
-        print('clear error')
         message.DATA[0] = 0x1F
         self.pcan_object.Write(self._pcan_channel, message)
-        # time.sleep(0.002)
+        time.sleep(0.002)
         response = self.pcan_object.Read(self._pcan_channel)
 
-        self._current_state_hex = response[1].DATA[0]
-        print(hex(self._current_state_hex))
+        # self._current_state_hex = response[1].DATA[0]
         # time.sleep(0.002)
-        self.values_from_sensodrive['sensodrive_motorstate'] = self._current_state_hex
+        # self.values_from_sensodrive['sensodrive_motorstate'] = self._current_state_hex
 
     def initialize(self):
         self.pcan_object = PCANBasic()
         # if self.pcan_initialization_result is None:
-        self.pcan_object.SetValue(PCAN_USBBUS1, PCAN_INTERFRAME_DELAY, 50)
         self.pcan_initialization_result = self.pcan_object.Initialize(self._pcan_channel, PCAN_BAUD_1M)
 
         # Convert our shared settings to bytes
@@ -366,7 +367,7 @@ class SensoDriveComm1(mp.Process):
         self.sensodrive_initialization_message.DATA[7] = torque_limit_beyond_endstops_bytes[0]
 
         self.pcan_object.Write(self._pcan_channel, self.sensodrive_initialization_message)
-        # time.sleep(0.002)
+        time.sleep(0.002)
         self.pcan_object.Read(self._pcan_channel)
 
         # do not switch mode
@@ -378,15 +379,14 @@ class SensoDriveComm1(mp.Process):
 
         # TODO Do we need to do this twice?
         self.pcan_object.Write(self._pcan_channel, self.sensodrive_initialization_message)
-        # time.sleep(0.02)
+        time.sleep(0.02)
         response = self.pcan_object.Read(self._pcan_channel)
 
         self._current_state_hex = response[1].DATA[0]
 
         self.state_message = self.sensodrive_initialization_message
         self.state_message.DATA[0] = 0x11
-        print(hex(self._current_state_hex))
-        self.values_from_sensodrive['sensodrive_motorstate'] = self._current_state_hex
+        # self.values_from_sensodrive['sensodrive_motorstate'] = self._current_state_hex
 
     def _map_si_to_sensodrive(self, settings):
         # convert SI units to Sensowheel units
@@ -423,6 +423,7 @@ class SensoDriveComm1(mp.Process):
 
         elif received[1].ID == STATE_MESSAGE_RECEIVE_ID:
             #
+            self._current_state_hex = received[1].DATA[0]
             self.values_from_sensodrive['sensodrive_motorstate'] = received[1].DATA[0]
 
     def update_settings(self):

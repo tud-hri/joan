@@ -2,7 +2,8 @@ from core.module_manager import ModuleManager
 from modules.joanmodules import JOANModules
 from .hardwaremp_inputtypes import HardwareInputTypes
 from core.statesenum import State
-
+import queue
+import time
 
 class HardwareMPManager(ModuleManager):
     """Example JOAN module"""
@@ -13,8 +14,17 @@ class HardwareMPManager(ModuleManager):
         self.hardware_input_type = None
         self.hardware_input_settings = None
 
+
+
         self._hardware_input_settingdialogs_dict = {}
 
+
+
+    def get_ready(self):
+        if len(self.module_settings.sensodrives) != 0:
+            self.module_dialog.update_timer.timeout.connect(self.module_dialog._update_sensodrive_state)
+            self.module_dialog.update_timer.start()
+        super().get_ready()
 
     def initialize(self):
         super().initialize()
@@ -30,7 +40,8 @@ class HardwareMPManager(ModuleManager):
     def start(self):
         super().start()
         for sensodrives in self.module_settings.sensodrives.values():
-            sensodrives.turn_on_event.set()
+            if sensodrives.current_state != 0x14:
+                sensodrives.turn_on_event.set()
 
     def stop(self):
         for sensodrives in self.module_settings.sensodrives.values():
@@ -120,12 +131,15 @@ class HardwareMPManager(ModuleManager):
         self.module_settings.sensodrives[identifier].turn_on_event.set()
 
 
+
     def _turn_off(self, hardware_input_name):
         identifier_str = hardware_input_name.replace('SensoDrive', '')
         identifier = int(identifier_str)
         self.module_settings.sensodrives[identifier].turn_off_event.set()
 
+
     def _clear_error(self, hardware_input_name):
         identifier_str = hardware_input_name.replace('SensoDrive', '')
         identifier = int(identifier_str)
         self.module_settings.sensodrives[identifier].clear_error_event.set()
+

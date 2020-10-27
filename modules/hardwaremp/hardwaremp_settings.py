@@ -6,7 +6,7 @@ from PyQt5 import QtGui
 from core.module_settings import ModuleSettings
 from modules.hardwaremp.hardwaremp_inputtypes import HardwareInputTypes
 from modules.joanmodules import JOANModules
-
+import queue
 
 class HardwareMPSettings(ModuleSettings):
     def __init__(self):
@@ -189,15 +189,21 @@ class SensoDriveSettings:
         self.spring_stiffness = 1  # Nm / rad
         self.torque = 0  # Nm
         self.identifier = identifier
+
+
         self.turn_on_event = mp.Event()
         self.turn_off_event = mp.Event()
         self.clear_error_event = mp.Event()
         self.close_event = mp.Event()
 
-
+        self.state_queue = mp.Queue()
         self.input_type = input_type
 
+        self.current_state = 0x00
+
         self.settings_dict = {}
+
+
 
     def as_dict(self):
         return self.__dict__
@@ -217,4 +223,5 @@ class SensoDriveSettings:
                               'identifier': self.identifier}
 
         return self.settings_dict
+
 
