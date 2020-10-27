@@ -22,14 +22,14 @@ class SWControllerTypes(enum.Enum):
     @property
     def tuning_ui_file(self):
         path_to_uis = os.path.join(os.path.dirname(os.path.realpath(__file__)), "swcontrollers/ui/")
-        return {SWControllerTypes.PD_SWCONTROLLER: os.path.join(path_to_uis, "pd_settings_ui.uis"),
-                SWControllerTypes.FDCA_SWCONTROLLER: os.path.join(path_to_uis, "fdca_settings_ui.uis")}[self]
+        return {SWControllerTypes.PD_SWCONTROLLER: os.path.join(path_to_uis, "pd_settings_ui.ui"),
+                SWControllerTypes.FDCA_SWCONTROLLER: os.path.join(path_to_uis, "fdca_settings_ui.ui")}[self]
 
     @property
     def controller_tab_ui_file(self):
         path_to_uis = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../dialog/")
-        return {SWControllerTypes.PD_SWCONTROLLER: os.path.join(path_to_uis, "sw_controller_tab.uis"),
-                SWControllerTypes.FDCA_SWCONTROLLER: os.path.join(path_to_uis, "sw_controller_tab.uis")}[self]
+        return {SWControllerTypes.PD_SWCONTROLLER: os.path.join(path_to_uis, "sw_controller_tab.ui"),
+                SWControllerTypes.FDCA_SWCONTROLLER: os.path.join(path_to_uis, "sw_controller_tab.ui")}[self]
 
     @property
     def settings(self):

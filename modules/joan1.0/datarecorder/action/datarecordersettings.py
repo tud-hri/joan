@@ -1,6 +1,6 @@
 import copy
 
-from core.modulesettings import ModuleSettings
+from core.module_settings import ModuleSettings
 from core.news import News
 from modules.joanmodules import JOANModules
 

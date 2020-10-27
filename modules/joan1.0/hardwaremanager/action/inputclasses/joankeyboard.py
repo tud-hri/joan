@@ -10,13 +10,13 @@ from modules.hardwaremanager.action.inputclasses.baseinput import BaseInput
 
 class KeyBoardSettingsDialog(QtWidgets.QDialog):
     """
-      Class for the settings Dialog of a keyboard, this class should pop up whenever it is asked by the user or when
+      Class for the settings Dialog of a keyboardinput, this class should pop up whenever it is asked by the user or when
       creating the joystick class for the first time. NOTE: it should not show whenever settings are loaded by .json file.
       """
 
     def __init__(self, keyboard_settings, parent=None):
         """
-        Initializes the settings dialog with the appropriate keyboard settings
+        Initializes the settings dialog with the appropriate keyboardinput settings
         :param keyboard_settings:
         :param parent:
         """
@@ -189,7 +189,7 @@ class JOANKeyboard(BaseInput):
 
     def enable_remove_button(self):
         """
-        Enables the remove_input_device keyboard button
+        Enables the remove_input_device keyboardinput button
         :return:
         """
         if self._hardware_input_tab.btn_remove_hardware.isEnabled() is False:
@@ -241,7 +241,7 @@ class JOANKeyboard(BaseInput):
 
     def do(self):
         """
-        Processes all the inputs of the keyboard and writes them to self._data which is then written to the news in the
+        Processes all the inputs of the keyboardinput and writes them to self._data which is then written to the news in the
         action class
         :return: self._data a dictionary containing :
             self._data['brake'] = self.brake

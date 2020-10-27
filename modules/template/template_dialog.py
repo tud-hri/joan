@@ -12,5 +12,5 @@ class TemplateDialog(ModuleDialog):
         Update the dialog based on a variable in the shared values
         :return:
         """
-        if self._module_manager.shared_variables:
-            self._module_widget.lbl_time.setText("State: " + str(self._module_manager.shared_variables.state))
+        if self.module_manager.shared_variables:
+            self._module_widget.lbl_time.setText("State: " + str(self.module_manager.shared_variables.state))

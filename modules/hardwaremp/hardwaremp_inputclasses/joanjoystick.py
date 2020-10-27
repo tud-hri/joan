@@ -1,11 +1,12 @@
 import os
 
 import hid
-from PyQt5 import QtWidgets, QtGui, uic, QtCore
+from PyQt5 import QtWidgets, uic, QtCore
 
 from modules.hardwaremp.hardwaremp_inputtypes import HardwareInputTypes
 
-class JoystickSettingsDialog(QtWidgets.QDialog):
+
+class JoystickSettingsDialog(QtWidgets.QDialog):  # TODO: losse files maken voor alle classes
     """
     Class for the settings Dialog of a joystick, this class should pop up whenever it is asked by the user or when
     creating the joystick class for the first time. NOTE: it should not show whenever settings are loaded by .json file.
@@ -59,7 +60,6 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
         self.value_preview_check_boxes = []
 
         self._display_settings()
-
 
     def preview_joystick_values(self):
         """
@@ -165,7 +165,7 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
         Sets the settings as they are described in 'HardwaremanagerSettings => JoystickSettings)
         :return:
         """
-        self._display_settings(HardwareInputTypes.JOYSTICK.settings)
+        self._display_settings(HardwareInputTypes.JOYSTICK.settings(identifier=self.joystick_settings.identifier))
 
     def _update_brake_channel_enabled(self, value):
         """
@@ -247,7 +247,6 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
             self.value_preview_check_boxes.append(check_box)
 
 
-
 class JOANJoystickMP:
     def __init__(self, settings, shared_variables):
         # Initialize Variables
@@ -264,7 +263,6 @@ class JOANJoystickMP:
         self._joystick_open = False
         self._joystick = hid.device()
 
-
         self._open_connection_to_device()
 
     def _open_connection_to_device(self):
@@ -278,7 +276,6 @@ class JOANJoystickMP:
         except OSError:
             print('Connection to USB Joystick failed')  # TODO: move to messagebox
             self._joystick_open = False
-
 
     def do(self):
         """
@@ -296,7 +293,7 @@ class JOANJoystickMP:
             joystick_data = False
 
         if joystick_data:
-            if self.settings.use_seperate_brake_channel:
+            if self.settings.use_separate_brake_channel:
                 self.throttle = ((joystick_data[self.settings.gas_channel]) / 255)
                 self.brake = - ((joystick_data[self.settings.brake_channel]) / 255)
             else:
@@ -318,15 +315,14 @@ class JOANJoystickMP:
 
             if self.settings.use_double_steering_resolution:
                 self.steer = (((joystick_data[self.settings.first_steer_channel]) + (
-                        joystick_data[self.settings.second_steer_channel]) * 256) / (256 * 256)) * (
-                            self.settings.max_steer - self.settings.min_steer) - self.settings.max_steer
+                    joystick_data[self.settings.second_steer_channel]) * 256) / (256 * 256)) * (
+                                     self.settings.max_steer - self.settings.min_steer) - self.settings.max_steer
             else:
                 self.steer = ((joystick_data[self.settings.first_steer_channel]) / 255) * (
-                            self.settings.max_steer - self.settings.min_steer) - self.settings.max_steer
+                        self.settings.max_steer - self.settings.min_steer) - self.settings.max_steer
 
         self.shared_variables.brake = self.brake
         self.shared_variables.throttle = self.throttle
         self.shared_variables.steering_angle = self.steer
         self.shared_variables.handbrake = self.handbrake
         self.shared_variables.reverse = self.reverse
-

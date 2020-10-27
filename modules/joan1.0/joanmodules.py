@@ -76,9 +76,9 @@ class JOANModules(Enum):
 
     @property
     def sharedvalues(self):
-        from modules.template.template_sharedvalues import TemplateSharedValues
+        from modules.template.template_sharedvalues import TemplateSharedVariables
 
-        return {JOANModules.TEMPLATE_MP: TemplateSharedValues
+        return {JOANModules.TEMPLATE_MP: TemplateSharedVariables
                 }[self]
 
     @property

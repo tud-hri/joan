@@ -1,12 +1,13 @@
 from core.module_manager import ModuleManager
 from modules.joanmodules import JOANModules
-from modules.hardwaremp.hardwaremp_inputtypes import HardwareInputTypes
-from modules.hardwaremp.hardwaremp_sharedvalues import KeyboardSharedValues, JoystickSharedValues, SensoDriveSharedValues
-from PyQt5 import uic
+from .hardwaremp_inputtypes import HardwareInputTypes
+from core.statesenum import State
+import queue
+import time
 
 
 class HardwareMPManager(ModuleManager):
-    """Example JOAN module"""
+    """Hardwaremanager keeps track of which inputs are being used with what settings. """
 
     def __init__(self, time_step_in_ms=10, parent=None):
         super().__init__(module=JOANModules.HARDWARE_MP, time_step_in_ms=time_step_in_ms, parent=parent)
@@ -14,43 +15,121 @@ class HardwareMPManager(ModuleManager):
         self.hardware_input_type = None
         self.hardware_input_settings = None
 
-        self._hardware_input_settings_dict = {}
         self._hardware_input_settingdialogs_dict = {}
+
+    def get_ready(self):
+        if len(self.module_settings.sensodrives) != 0:
+            self.module_dialog.update_timer.timeout.connect(self.module_dialog._update_sensodrive_state)
+            self.module_dialog.update_timer.start()
+        super().get_ready()
 
     def initialize(self):
         super().initialize()
-        for idx, _ in enumerate(self.module_settings.keyboards):
-            self.shared_variables.keyboards.update({'Keyboard ' + str(idx): KeyboardSharedValues()})
-        for idx, _ in enumerate(self.module_settings.joysticks):
-            self.shared_variables.joysticks.update({'Joystick ' + str(idx): JoystickSharedValues()})
-        for idx, _ in enumerate(self.module_settings.sensodrives):
-            self.shared_variables.sensodrives.update({'SensoDrive ' + str(idx): SensoDriveSharedValues()})
 
-    def add_hardware_input(self, hardware_input_type, hardware_input_name, hardware_input_settings=None):
-        " Here we just add the settings and settings dialog functionality"
-        if not hardware_input_settings:
-            hardware_input_settings = hardware_input_type.settings
-            if hardware_input_type == HardwareInputTypes.KEYBOARD:
-                self.module_settings.keyboards.append(hardware_input_settings)
-            if hardware_input_type == HardwareInputTypes.JOYSTICK:
-                self.module_settings.joysticks.append(hardware_input_settings)
-            if hardware_input_type == HardwareInputTypes.SENSODRIVE:
-                self.module_settings.sensodrives.append(hardware_input_settings)
+        # create shared variables for all inputs in the settings
+        for keyboard in self.module_settings.keyboards.values():
+            self.shared_variables.keyboards[keyboard.identifier] = keyboard.input_type.shared_variables()
+        for joystick in self.module_settings.joysticks.values():
+            self.shared_variables.joysticks[joystick.identifier] = joystick.input_type.shared_variables()
+        for sensodrive in self.module_settings.sensodrives.values():
+            self.shared_variables.sensodrives[sensodrive.identifier] = sensodrive.input_type.shared_variables()
 
-        self._hardware_input_settings_dict[hardware_input_name] = hardware_input_settings
-        self._hardware_input_settingdialogs_dict[hardware_input_name] = hardware_input_type.klass_dialog(hardware_input_settings)
+    def start(self):
+        super().start()
+        for sensodrives in self.module_settings.sensodrives.values():
+            if sensodrives.current_state != 0x14:
+                sensodrives.turn_on_event.set()
 
-    def _open_settings_dialog(self, hardware_input_name):
-        self._hardware_input_settingdialogs_dict[hardware_input_name].show()
+    def stop(self):
+        for sensodrives in self.module_settings.sensodrives.values():
+            sensodrives.turn_off_event.set()
+            sensodrives.close_event.set()
+        super().stop()
 
+    def _add_hardware_input(self, input_type, input_settings=None):
+        """
+        Add hardware input
+        :param input_type:
+        :param input_settings:
+        :return:
+        """
+        if not input_settings:
+            input_settings = input_type.settings(input_type)
 
-    def _remove_hardware_input_device(self, hardware_input_name):
+            # find unique identifier
+            type_dict = None
+            if input_type == HardwareInputTypes.KEYBOARD:
+                type_dict = self.module_settings.keyboards
+            elif input_type == HardwareInputTypes.JOYSTICK:
+                type_dict = self.module_settings.joysticks
+            elif input_type == HardwareInputTypes.SENSODRIVE:
+                type_dict = self.module_settings.sensodrives
+
+            identifier = 0
+            for v in type_dict.values():
+                if v.identifier > identifier:
+                    identifier = v.identifier
+            input_settings.identifier = identifier + 1
+
+        # check if settings do not already exist
+        if input_type == HardwareInputTypes.KEYBOARD:
+            if input_settings not in self.module_settings.keyboards.values():
+                self.module_settings.keyboards[input_settings.identifier] = input_settings
+        elif input_type == HardwareInputTypes.JOYSTICK:
+            if input_settings not in self.module_settings.joysticks.values():
+                self.module_settings.joysticks[input_settings.identifier] = input_settings
+        elif input_type == HardwareInputTypes.SENSODRIVE:
+            if input_settings not in self.module_settings.sensodrives.values():
+                self.module_settings.sensodrives[input_settings.identifier] = input_settings
+
+        # create dialog thing
+        input_name = '{0!s} {1!s}'.format(input_type, str(input_settings.identifier))
+        self._hardware_input_settingdialogs_dict[input_name] = input_type.klass_dialog(input_settings)
+        return input_name
+
+    def _open_settings_dialog(self, input_name):
+        self._hardware_input_settingdialogs_dict[input_name].show()
+
+    def _remove_hardware_input_device(self, input_name):
+
         # Remove settings if they are available
-        self.module_settings.remove_hardware_input_device(self._hardware_input_settings_dict[hardware_input_name])
+        settings_object = None
+
+        if 'Keyboard' in input_name:
+            identifier = int(input_name.replace('Keyboard', ''))
+            for keyboard in self.module_settings.keyboards.values():
+                if keyboard.identifier == identifier:
+                    settings_object = keyboard
+
+        if 'Joystick' in input_name:
+            identifier = int(input_name.replace('Joystick', ''))
+            for joystick in self.module_settings.joysticks.values():
+                if joystick.identifier == identifier:
+                    settings_object = joystick
+
+        if 'SensoDrive' in input_name:
+            identifier = int(input_name.replace('SensoDrive', ''))
+            for sensodrive in self.module_settings.sensodrives.values():
+                if sensodrive.identifier == identifier:
+                    settings_object = sensodrive
+
+        self.module_settings.remove_hardware_input_device(settings_object)
 
         # Remove settings dialog
-        self._hardware_input_settingdialogs_dict[hardware_input_name].setParent(None)
-        del self._hardware_input_settingdialogs_dict[hardware_input_name]
+        self._hardware_input_settingdialogs_dict[input_name].setParent(None)
+        del self._hardware_input_settingdialogs_dict[input_name]
 
-        self.module_dialog.repaint()
+    def _turn_on(self, hardware_input_name):
+        identifier_str = hardware_input_name.replace('SensoDrive', '')
+        identifier = int(identifier_str)
+        self.module_settings.sensodrives[identifier].turn_on_event.set()
 
+    def _turn_off(self, hardware_input_name):
+        identifier_str = hardware_input_name.replace('SensoDrive', '')
+        identifier = int(identifier_str)
+        self.module_settings.sensodrives[identifier].turn_off_event.set()
+
+    def _clear_error(self, hardware_input_name):
+        identifier_str = hardware_input_name.replace('SensoDrive', '')
+        identifier = int(identifier_str)
+        self.module_settings.sensodrives[identifier].clear_error_event.set()

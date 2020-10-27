@@ -1,18 +1,23 @@
 import math
+import multiprocessing as mp
 
 from PyQt5 import QtGui
 
 from core.module_settings import ModuleSettings
+from modules.hardwaremp.hardwaremp_inputtypes import HardwareInputTypes
 from modules.joanmodules import JOANModules
-
+import queue
 
 class HardwareMPSettings(ModuleSettings):
+    """
+    Contains the settings of the seperate hardware input types of the hardware manager module.
+    """
     def __init__(self):
         super().__init__(JOANModules.HARDWARE_MP)
 
-        self.keyboards = []
-        self.joysticks = []
-        self.sensodrives = []
+        self.keyboards = {}
+        self.joysticks = {}
+        self.sensodrives = {}
 
     def load_from_dict(self, loaded_dict):
         """
@@ -26,44 +31,33 @@ class HardwareMPSettings(ModuleSettings):
 
         module_settings_to_load = loaded_dict[str(self.module)]
 
-        # clean up existing settings
-        while self.keyboards:
-            device = self.keyboards.pop()
-            del device
-        while self.joysticks:
-            device = self.joysticks.pop()
-            del device
-        while self.sensodrives:
-            device = self.sensodrives.pop()
-            del device
-
-        self.keyboards = []
-        for keyboard_settings_dict in module_settings_to_load['keyboards']:
+        self.keyboards = {}
+        for identifier, settings_dict in module_settings_to_load['keyboards'].items():
             keyboard_settings = KeyBoardSettings()
-            keyboard_settings.set_from_loaded_dict(keyboard_settings_dict)
-            self.keyboards.append(keyboard_settings)
+            keyboard_settings.set_from_loaded_dict(settings_dict)
+            self.keyboards.update({identifier: keyboard_settings})
 
-        self.joysticks = []
-        for joystick_settings_dict in module_settings_to_load['joysticks']:
+        self.joysticks = {}
+        for identifier, settings_dict in module_settings_to_load['joysticks'].items():
             joystick_settings = JoyStickSettings()
-            joystick_settings.set_from_loaded_dict(joystick_settings_dict)
-            self.joysticks.append(joystick_settings)
+            joystick_settings.set_from_loaded_dict(settings_dict)
+            self.joysticks.update({identifier: joystick_settings})
 
-        self.sensodrives = []
-        for sensodrive in module_settings_to_load['sensodrives']:
+        self.sensodrives = {}
+        for identifier, settings_dict in module_settings_to_load['sensodrives'].items():
             sensodrive_settings = SensoDriveSettings()
-            sensodrive_settings.set_from_loaded_dict(sensodrive)
-            self.sensodrives.append(sensodrive_settings)
+            sensodrive_settings.set_from_loaded_dict(settings_dict)
+            self.sensodrives.update({identifier: sensodrive_settings})
 
     def remove_hardware_input_device(self, setting):
         if isinstance(setting, KeyBoardSettings):
-            self.keyboards.remove(setting)
+            self.keyboards.pop(setting.identifier)
 
         if isinstance(setting, JoyStickSettings):
-            self.joysticks.remove(setting)
+            self.joysticks.pop(setting.identifier)
 
         if isinstance(setting, SensoDriveSettings):
-            self.sensodrives.remove(setting)
+            self.sensodrives.pop(setting.identifier)
 
 
 class KeyBoardSettings:
@@ -71,14 +65,15 @@ class KeyBoardSettings:
     Default keyboardinput settings that will load whenever a keyboardinput class is created.
     """
 
-    def __init__(self):
+    def __init__(self, input_type: HardwareInputTypes = HardwareInputTypes.KEYBOARD, identifier = 0):  # TODO Use identifier integer
         self.steer_left_key = QtGui.QKeySequence('a')[0]
         self.steer_right_key = QtGui.QKeySequence('d')[0]
         self.throttle_key = QtGui.QKeySequence('w')[0]
         self.brake_key = QtGui.QKeySequence('s')[0]
         self.reverse_key = QtGui.QKeySequence('r')[0]
         self.handbrake_key = QtGui.QKeySequence('space')[0]
-        self.name = "Keyboard"
+        self.identifier = identifier
+        self.input_type = input_type
 
         # Steering Range
         self.min_steer = - 0.5 * math.pi
@@ -105,12 +100,13 @@ class JoyStickSettings:
     Default joystick settings that will load whenever a keyboardinput class is created.
     """
 
-    def __init__(self):
+    def __init__(self, input_type: HardwareInputTypes = HardwareInputTypes.JOYSTICK, identifier = 0):
         self.min_steer = -0.5 * math.pi
         self.max_steer = 0.5 * math.pi
         self.device_vendor_id = 0
         self.device_product_id = 0
-        self.name = "Joystick"
+        self.identifier = identifier
+        self.input_type = input_type
 
         self.degrees_of_freedom = 12
         self.gas_channel = 9
@@ -168,7 +164,7 @@ class SensoDriveSettings:
     Default sensodrive settings that will load whenever a keyboardinput class is created.
     """
 
-    def __init__(self):
+    def __init__(self, input_type: HardwareInputTypes = HardwareInputTypes.SENSODRIVE, identifier = 0):
         self.endstops = math.radians(360.0)  # rad
         self.torque_limit_between_endstops = 200  # percent
         self.torque_limit_beyond_endstops = 200  # percent
@@ -176,6 +172,22 @@ class SensoDriveSettings:
         self.damping = 0.1  # Nm * s / rad
         self.spring_stiffness = 1  # Nm / rad
         self.torque = 0  # Nm
+        self.identifier = identifier
+
+
+        self.turn_on_event = mp.Event()
+        self.turn_off_event = mp.Event()
+        self.clear_error_event = mp.Event()
+        self.close_event = mp.Event()
+
+        self.state_queue = mp.Queue()
+        self.input_type = input_type
+
+        self.current_state = 0x00
+
+        self.settings_dict = {}
+
+
 
     def as_dict(self):
         return self.__dict__
@@ -183,3 +195,17 @@ class SensoDriveSettings:
     def set_from_loaded_dict(self, loaded_dict):
         for key, value in loaded_dict.items():
             self.__setattr__(key, value)
+
+    def settings_dict_for_pipe(self):
+        self.settings_dict = {'endstops': self.endstops, # rad
+                              'torque_limit_between_endstops': self.torque_limit_between_endstops,  # percent
+                              'torque_limit_beyond_endstops': self.torque_limit_beyond_endstops,    # percent
+                              'friction': self.friction,                                            # Nm
+                              'damping': self.damping,                                              # Nm * s / rad
+                              'spring_stiffness': self.spring_stiffness,                            # Nm / rad
+                              'torque': self.torque,                                                # Nm
+                              'identifier': self.identifier}
+
+        return self.settings_dict
+
+

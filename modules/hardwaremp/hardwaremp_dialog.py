@@ -1,21 +1,18 @@
 import os
 
-from PyQt5 import uic
-
-from core.module_dialog import ModuleDialog
-from core.module_manager import ModuleManager
-from core.statesenum import State
-from modules.joanmodules import JOANModules
-from modules.hardwaremp.hardwaremp_inputtypes import HardwareInputTypes
-from PyQt5 import uic
-
+from PyQt5 import uic, QtCore
 
 from core.module_dialog import ModuleDialog
 from core.module_manager import ModuleManager
 from core.statesenum import State
 from modules.joanmodules import JOANModules
 from .hardwaremp_inputtypes import HardwareInputTypes
+import queue
+from PyQt5.QtWidgets import QMessageBox
 
+
+msg_box = QMessageBox()
+msg_box.setTextFormat(QtCore.Qt.RichText)
 
 class HardwareMPDialog(ModuleDialog):
     def __init__(self, module_manager: ModuleManager, parent=None):
@@ -35,12 +32,87 @@ class HardwareMPDialog(ModuleDialog):
         for this module. We should however not forget also calling the super()._handle_state_change() method.
         """
         super()._handle_state_change()
-        if self._module_manager.state_machine.current_state != State.STOPPED:
+        #joysticks and keyboards
+        if self.module_manager.state_machine.current_state != State.STOPPED:
             self._module_widget.btn_add_hardware.setEnabled(False)
-            self._module_widget.hardware_groupbox.setEnabled(False)
+            for hardware_tabs in self._hardware_input_tabs_dict:
+                self._hardware_input_tabs_dict[hardware_tabs].btn_remove_hardware.setEnabled(False)
+                self._hardware_input_tabs_dict[hardware_tabs].btn_remove_hardware.blockSignals(True)
+                if 'SensoDrive' not in hardware_tabs:
+                    self._hardware_input_tabs_dict[hardware_tabs].setEnabled(False)
+                    self._hardware_input_tabs_dict[hardware_tabs].blockSignals(True)
+            # self._module_widget.hardware_groupbox.setEnabled(False)
         else:
             self._module_widget.btn_add_hardware.setEnabled(True)
-            self._module_widget.hardware_groupbox.setEnabled(True)
+            for hardware_tabs in self._hardware_input_tabs_dict:
+                self._hardware_input_tabs_dict[hardware_tabs].btn_remove_hardware.setEnabled(True)
+                self._hardware_input_tabs_dict[hardware_tabs].btn_remove_hardware.blockSignals(False)
+                if 'SensoDrive' not in hardware_tabs:
+                    self._hardware_input_tabs_dict[hardware_tabs].setEnabled(True)
+                    self._hardware_input_tabs_dict[hardware_tabs].blockSignals(False)
+
+        #sensodrive specific
+        if self.module_manager.state_machine.current_state == State.READY or self.module_manager.state_machine.current_state == State.RUNNING:
+            for hardware_tabs in self._hardware_input_tabs_dict:
+                if 'SensoDrive' in hardware_tabs:
+                    self._hardware_input_tabs_dict[hardware_tabs].btn_on.setEnabled(True)
+                    self._hardware_input_tabs_dict[hardware_tabs].btn_on.blockSignals(False)
+                    self._hardware_input_tabs_dict[hardware_tabs].btn_off.setEnabled(True)
+                    self._hardware_input_tabs_dict[hardware_tabs].btn_off.blockSignals(False)
+                    self._hardware_input_tabs_dict[hardware_tabs].btn_clear_error.setEnabled(True)
+                    self._hardware_input_tabs_dict[hardware_tabs].btn_clear_error.blockSignals(False)
+        else:
+            for hardware_tabs in self._hardware_input_tabs_dict:
+                if 'SensoDrive' in hardware_tabs:
+                    self._hardware_input_tabs_dict[hardware_tabs].btn_on.setEnabled(False)
+                    self._hardware_input_tabs_dict[hardware_tabs].btn_on.blockSignals(True)
+                    self._hardware_input_tabs_dict[hardware_tabs].btn_off.setEnabled(False)
+                    self._hardware_input_tabs_dict[hardware_tabs].btn_off.blockSignals(True)
+                    self._hardware_input_tabs_dict[hardware_tabs].btn_clear_error.setEnabled(False)
+                    self._hardware_input_tabs_dict[hardware_tabs].btn_clear_error.blockSignals(True)
+                    self._hardware_input_tabs_dict[hardware_tabs].lbl_sensodrive_state.setStyleSheet("background-color: orange")
+                    self._hardware_input_tabs_dict[hardware_tabs].lbl_sensodrive_state.setText('Off')
+
+
+
+    def _update_sensodrive_state(self):
+        for sensodrives in self.module_manager.module_settings.sensodrives.values():
+            try:
+                sensodrives.current_state = sensodrives.state_queue.get(timeout = 0)
+            except queue.Empty:
+                pass
+            hardware_tab_identifier = str("SensoDrive " + str(sensodrives.identifier))
+            if self.module_manager.state_machine.current_state == State.READY or self.module_manager.state_machine.current_state == State.RUNNING:
+                if sensodrives.current_state == 0x10:
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].btn_on.setEnabled(True)
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].btn_on.blockSignals(False)
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].btn_off.setEnabled(False)
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].btn_off.setStyleSheet(None)
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].btn_off.blockSignals(True)
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].btn_clear_error.setEnabled(False)
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].btn_clear_error.blockSignals(True)
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].btn_clear_error.blockSignals(True)
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].lbl_sensodrive_state.setStyleSheet("background-color: orange")
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].lbl_sensodrive_state.setText('Off')
+                elif sensodrives.current_state == 0x14:
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].btn_on.setEnabled(False)
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].btn_on.setStyleSheet(None)
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].btn_on.blockSignals(True)
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].btn_off.setEnabled(True)
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].btn_off.blockSignals(False)
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].btn_clear_error.setEnabled(False)
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].btn_clear_error.blockSignals(True)
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].lbl_sensodrive_state.setStyleSheet("background-color: lightgreen")
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].lbl_sensodrive_state.setText('On')
+                elif sensodrives.current_state == 0x18:
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].btn_on.setEnabled(False)
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].btn_on.blockSignals(True)
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].btn_off.setEnabled(False)
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].btn_off.blockSignals(True)
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].btn_clear_error.setEnabled(True)
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].btn_clear_error.blockSignals(False)
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].lbl_sensodrive_state.setStyleSheet("background-color: red")
+                    self._hardware_input_tabs_dict[hardware_tab_identifier].lbl_sensodrive_state.setText('Error')
 
     def _hardware_input_selection(self):
         self._input_type_dialog.combo_hardware_inputtype.clear()
@@ -50,27 +122,37 @@ class HardwareMPDialog(ModuleDialog):
 
     def add_selected_hardware_input(self):
         " Here we add the hardware input tabs "
-        #Giving our input an appropriate name/tag
+        # First we create the settings in the module manager (this will include an identifier which is used in the hardware name)
         chosen_hardware_input = self._input_type_dialog.combo_hardware_inputtype.itemData(self._input_type_dialog.combo_hardware_inputtype.currentIndex())
-        number_of_inputs = sum([bool(chosen_hardware_input.__str__() in k) for k in self._hardware_input_tabs_dict.keys()]) + 1
-        hardware_input_name = chosen_hardware_input.__str__() + ' ' + str(number_of_inputs)
+        #hardcode maximum nr of sensodrives
+        if chosen_hardware_input == HardwareInputTypes.SENSODRIVE and (len(self.module_manager.module_settings.sensodrives) == 2):
+            msg_box.setText("""
+                                        <h3> Number of sensodrives is limited to 2 for now! </h3>
+                                    """)
+            msg_box.exec()
+            return
+        else:
+            hardware_input_name = self.module_manager._add_hardware_input(chosen_hardware_input)
 
-        #Dialog related stuff
+        # Adding tab
         self._hardware_input_tabs_dict[hardware_input_name] = uic.loadUi(chosen_hardware_input.hardware_tab_ui_file)
         self._hardware_input_tabs_dict[hardware_input_name].groupBox.setTitle(hardware_input_name)
         self._module_widget.hardware_list_layout.addWidget(self._hardware_input_tabs_dict[hardware_input_name])
+
+        # Connecting buttons
+        self._hardware_input_tabs_dict[hardware_input_name].btn_settings.clicked.connect(
+            lambda: self.module_manager._open_settings_dialog(hardware_input_name))
         self._hardware_input_tabs_dict[hardware_input_name].btn_remove_hardware.clicked.connect(lambda: self._remove_hardware_input_device(hardware_input_name))
 
-        #also add settings fucntionality, we do_while_running this in the module manager class
-        self._module_manager.add_hardware_input(chosen_hardware_input, hardware_input_name)
-        self._hardware_input_tabs_dict[hardware_input_name].btn_settings.clicked.connect(lambda: self._module_manager._open_settings_dialog(hardware_input_name))
+        if 'SensoDrive' in hardware_input_name:
+            self._hardware_input_tabs_dict[hardware_input_name].btn_on.clicked.connect(lambda: self.module_manager._turn_on(hardware_input_name))
+            self._hardware_input_tabs_dict[hardware_input_name].btn_off.clicked.connect(lambda: self.module_manager._turn_off(hardware_input_name))
+            self._hardware_input_tabs_dict[hardware_input_name].btn_clear_error.clicked.connect(lambda: self.module_manager._clear_error(hardware_input_name))
 
     def _remove_hardware_input_device(self, hardware_input_name):
         # Remove dialog
         self._hardware_input_tabs_dict[hardware_input_name].setParent(None)
         del self._hardware_input_tabs_dict[hardware_input_name]
 
-        #We remove the settings dialog and settings object in the module_manager class
-        self._module_manager._remove_hardware_input_device(hardware_input_name)
-
-
+        # We remove the settings dialog and settings object in the module_manager class
+        self.module_manager._remove_hardware_input_device(hardware_input_name)

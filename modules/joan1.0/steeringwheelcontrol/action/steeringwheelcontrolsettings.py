@@ -2,7 +2,7 @@ import inspect
 from enum import Enum
 
 from modules.joanmodules import JOANModules
-from core.modulesettings import ModuleSettings
+from core.module_settings import ModuleSettings
 
 
 class SteeringWheelControlSettings(ModuleSettings):

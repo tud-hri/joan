@@ -18,7 +18,7 @@ class ModuleDialog(QtWidgets.QDialog):
         super().__init__(parent=parent)
 
         # reference to the manager class of this module
-        self._module_manager = module_manager
+        self.module_manager = module_manager
 
         self.setLayout(QtWidgets.QVBoxLayout(self))
         self.setWindowTitle(str(module))
@@ -48,7 +48,7 @@ class ModuleDialog(QtWidgets.QDialog):
         self.menu_bar.addMenu(self.settings_menu)
 
         # connect to module manager's state machine
-        self._module_manager.state_machine.add_state_change_listener(self._handle_state_change)
+        self.module_manager.state_machine.add_state_change_listener(self._handle_state_change)
 
         # update timer
         self.update_timer = QtCore.QTimer()
@@ -79,8 +79,8 @@ class ModuleDialog(QtWidgets.QDialog):
         """
 
         if hasattr(self, '_state_widget'):
-            current_state = self._module_manager.state_machine.current_state
-            message = self._module_manager.state_machine.state_message
+            current_state = self.module_manager.state_machine.current_state
+            message = self.module_manager.state_machine.state_message
 
             # update the state label
             self._state_widget.lbl_module_state.setText(str(current_state))
@@ -103,10 +103,10 @@ class ModuleDialog(QtWidgets.QDialog):
         :return:
         """
         settings_file_to_load, _ = QtWidgets.QFileDialog.getOpenFileName(self, 'load settings',
-                                                                         os.path.join(self._module_manager.module_path),
+                                                                         os.path.join(self.module_manager.module_path),
                                                                          filter='*.json')
         if settings_file_to_load:
-            self._module_manager.module_settings.load_from_file(settings_file_to_load)
+            self.module_manager.module_settings.load_from_file(settings_file_to_load)
 
     def _save_settings(self):
         """
@@ -114,10 +114,10 @@ class ModuleDialog(QtWidgets.QDialog):
         :return:
         """
         file_to_save_in, _ = QtWidgets.QFileDialog.getSaveFileName(self, 'save settings',
-                                                                   self._module_manager.settings_filename,
+                                                                   self.module_manager.settings_filename,
                                                                    filter='*.json')
         if file_to_save_in:
-            self._module_manager.module_settings.save_to_file(file_to_save_in)
+            self.module_manager.module_settings.save_to_file(file_to_save_in)
 
     def toggle_show_close(self):
         if self.isVisible():

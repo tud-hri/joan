@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading uis file 'newexperimentdialog.uis'
+# Form implementation generated from reading ui file 'newexperimentdialog.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.0
 #

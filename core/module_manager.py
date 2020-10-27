@@ -1,3 +1,4 @@
+import multiprocessing as mp
 import os
 import sys
 
@@ -58,6 +59,8 @@ class ModuleManager(QtCore.QObject):
         if os.path.exists(settings_filename):
             self.module_settings.load_from_file(settings_filename)
 
+        self.module_dialog._handle_state_change()
+
     def initialize(self):
         """
         Create shared variables, share through news
@@ -77,6 +80,7 @@ class ModuleManager(QtCore.QObject):
         """
         Update the adjustable settings in self.shared_variables with the current setting values
         """
+        pass
 
     def get_ready(self):
         self._process = self.module.process(self.module,

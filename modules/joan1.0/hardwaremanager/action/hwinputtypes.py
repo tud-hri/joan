@@ -24,20 +24,20 @@ class HardwareInputTypes(enum.Enum):
     @property
     def settings_ui_file(self):
         path_to_uis = os.path.join(os.path.dirname(os.path.realpath(__file__)), "inputclasses/ui/")
-        return {HardwareInputTypes.KEYBOARD: os.path.join(path_to_uis, "keyboard_settings_ui.uis"),
-                HardwareInputTypes.JOYSTICK: os.path.join(path_to_uis, "joystick_settings_ui.uis"),
-                HardwareInputTypes.SENSODRIVE: os.path.join(path_to_uis, "sensodrive_settings_ui.uis")}[self]
+        return {HardwareInputTypes.KEYBOARD: os.path.join(path_to_uis, "keyboard_settings_ui.ui"),
+                HardwareInputTypes.JOYSTICK: os.path.join(path_to_uis, "joystick_settings_ui.ui"),
+                HardwareInputTypes.SENSODRIVE: os.path.join(path_to_uis, "sensodrive_settings_ui.ui")}[self]
 
     @property
     def hardware_tab_ui_file(self):
         path_to_uis = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../dialog/ui/")
-        return {HardwareInputTypes.KEYBOARD: os.path.join(path_to_uis, "hardware_tab.uis"),
-                HardwareInputTypes.JOYSTICK: os.path.join(path_to_uis, "hardware_tab.uis"),
-                HardwareInputTypes.SENSODRIVE: os.path.join(path_to_uis, "hardware_tab_sensodrive.uis") }[self]
+        return {HardwareInputTypes.KEYBOARD: os.path.join(path_to_uis, "hardware_tab.ui"),
+                HardwareInputTypes.JOYSTICK: os.path.join(path_to_uis, "hardware_tab.ui"),
+                HardwareInputTypes.SENSODRIVE: os.path.join(path_to_uis, "hardware_tab_sensodrive.ui") }[self]
 
     @property
     def settings(self):
-        return {HardwareInputTypes.KEYBOARD: KeyBoardSettings(),
+        return {HardwareInputTypes.KEYBOARD: KeyBoardSettings,
                 HardwareInputTypes.JOYSTICK: JoyStickSettings(),
                 HardwareInputTypes.SENSODRIVE: SensoDriveSettings()}[self]
 

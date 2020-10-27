@@ -2,11 +2,11 @@ import os
 
 import keyboard
 from PyQt5 import QtWidgets, QtGui, uic
+
 from modules.hardwaremp.hardwaremp_inputtypes import HardwareInputTypes
 
 
-
-class KeyBoardSettingsDialog(QtWidgets.QDialog):
+class KeyBoardSettingsDialog(QtWidgets.QDialog):  # TODO: aparte files voor classes maken
     """
     Class for the settings Dialog of a keyboardinput, this class should pop up whenever it is asked by the user or when
     creating the joystick class for the first time. NOTE: it should not show whenever settings are loaded by .json file.
@@ -100,7 +100,7 @@ class KeyBoardSettingsDialog(QtWidgets.QDialog):
         Sets the settings as they are described in 'hardwarempSettings => KeyboardSettings)
         :return:
         """
-        self._display_values(HardwareInputTypes.KEYBOARD.settings)
+        self._display_values(HardwareInputTypes.KEYBOARD.settings(self.keyboard_settings.identifier))
 
     def _start_key_setting_sequence(self):
         """
@@ -137,12 +137,13 @@ class KeyBoardSettingsDialog(QtWidgets.QDialog):
 
 class JOANKeyboardMP:
     """
-    Main class for the Keyboard input in a seperate multiprocess, this will loop!. Make sure that the things you do_while_running in this class are serializable, else
+    Main class for the Keyboard input in a seperate multiprocess, this will loop!. Make sure that the things you do in this class are serializable, else
     it will fail.
     """
 
     def __init__(self, settings, shared_variables):
         self.settings = settings
+
 
         self.settings_dialog = None
         self.shared_variables = shared_variables

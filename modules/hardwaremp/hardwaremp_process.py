@@ -1,25 +1,29 @@
 from core.module_process import ModuleProcess
 from modules.hardwaremp.hardwaremp_inputtypes import HardwareInputTypes
 from modules.joanmodules import JOANModules
-import time
+
 
 class HardwareMPProcess(ModuleProcess):
-
+    """
+    Overall process that inherits from ModuleProcess (will loop at the desired frequency)
+    """
     def __init__(self, module: JOANModules, time_step_in_ms, news, settings, events):
         super().__init__(module, time_step_in_ms=time_step_in_ms, news=news, settings=settings, events=events)
-        self.input_classes = {}
+        self.input_objects = {}
 
     def get_ready(self):
-        # Create appropriate classes here (note that when a sensodrive is created it will start its own process, whereas the keyboards and joysticks do_while_running not)
-        for idx, keyboards in enumerate(self._module_shared_variables.keyboards):
-            self.input_classes[keyboards] = HardwareInputTypes.KEYBOARD.klass_mp(settings=self._settings_as_object.keyboards[idx],
-                                                                                 shared_variables=self._module_shared_variables.keyboards[keyboards])
+        # Create the objects that are in the settings here
+        for key, value in self._settings_as_object.keyboards.items():
+            self.input_objects[key] = HardwareInputTypes.KEYBOARD.klass_mp(settings=value, shared_variables=self._module_shared_variables.keyboards[key])
 
-        for idx, joysticks in enumerate(self._module_shared_variables.joysticks):
-            self.input_classes[joysticks] = HardwareInputTypes.JOYSTICK.klass_mp(settings=self._settings_as_object.joysticks[idx],
-                                                                                 shared_variables=self._module_shared_variables.joysticks[joysticks])
+        for key, value in self._settings_as_object.joysticks.items():
+            self.input_objects[key] = HardwareInputTypes.JOYSTICK.klass_mp(settings=value, shared_variables=self._module_shared_variables.joysticks[key])
+
+        for key, value in self._settings_as_object.sensodrives.items():
+            self.input_objects[key] = HardwareInputTypes.SENSODRIVE.klass_mp(settings=value, shared_variables=self._module_shared_variables.sensodrives[key])
 
     def do_while_running(self):
-        for inputs in self.input_classes:
-            # will perform the mp input class for each available input
-            self.input_classes[inputs].do_while_running()
+        for inputs in self.input_objects:
+            # will perform the mp input class for eaach available input
+            self.input_objects[inputs].do()
+

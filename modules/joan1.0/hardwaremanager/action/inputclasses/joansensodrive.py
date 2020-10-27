@@ -296,7 +296,7 @@ class JOANSensoDrive(BaseInput):
     def do(self):
         """
         Basically acts as a portal of variables to the seperate sensodrive communication core. You can send info to this
-        core using the shared variables in 'SensoDriveSharedValues' Class. NOTE THAT YOU SHOULD ONLY SET VARIABLES
+        core using the shared variables in 'SensoDriveSharedVariables' Class. NOTE THAT YOU SHOULD ONLY SET VARIABLES
         ON 1 SIDE!! Do not overwrite variables, if you want to send signals for events to the seperate core please use
         the multiprocessing.Events structure.
         :return: self._data a dictionary containing :
