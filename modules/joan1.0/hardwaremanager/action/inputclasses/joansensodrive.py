@@ -215,7 +215,7 @@ class JOANSensoDrive(BaseInput):
             pass
         self.sensodrive_communication_process.terminate()
 
-        self.module_action.remove_hardware_input_device(self)
+        self.module_action.remove_hardware_input(self)
 
     def disable_remove_button(self):
         """
