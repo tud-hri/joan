@@ -7,26 +7,29 @@ from modules.joanmodules import JOANModules
 class CarlaInterfaceSettings(ModuleSettings):
     def __init__(self):
         super().__init__(JOANModules.CARLA_INTERFACE)
-
-        self.time_step = 100
-        self.int_setting = 1
-        self.float_setting = 1.5
-        self.string_setting = 'Hello World'
-        self.overwrite_with_current_time = 'current time'
-        self.enum_setting = CustomEnumSetting.BLUE
-
-        # settings can also be nested with 'sub' setting objects
-        self.custom_class_setting = CustomClassSetting()
+        self.temp = 0
 
 
-class CustomClassSetting:
+class EgoVehicleSettings:
+    """
+    Class containing the default settings for an egovehicle
+    """
+
     def __init__(self):
-        self.nested_int_setting = 4
-        self.nested_float_setting = 5.7
-        self.nested_string_setting = 'Hello Again'
+        """
+        Initializes the class with default variables
+        """
+        self.selected_input = 'None'
+        self.selected_controller = 'None'
+        self.selected_spawnpoint = 0
+        self.selected_car = 'hapticslab.audi'
+        self.velocity = 80
+        self.set_velocity = False
+        self.name = ''
 
+    def as_dict(self):
+        return self.__dict__
 
-class CustomEnumSetting(enum.Enum):
-    RED = 0xFF0000
-    GREEN = 0x00FF00
-    BLUE = 0x0000FF
+    def set_from_loaded_dict(self, loaded_dict):
+        for key, value in loaded_dict.items():
+            self.__setattr__(key, value)

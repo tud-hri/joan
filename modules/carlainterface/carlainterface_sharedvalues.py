@@ -31,3 +31,15 @@ class CarlaInterfaceSharedVariables:
     @overwrite_with_current_time.setter
     def overwrite_with_current_time(self, val):
         self._overwrite_with_current_time.value = bytes(val, 'utf-8')
+
+class EgoVehicleSharedVariables:
+    def __init__(self):
+        self._temp = mp.Value(c_float, 0.0)
+
+    @property
+    def temp(self):
+        return self._temp.value
+
+    @state.setter
+    def temp(self, val):
+        self._temp.value = val
