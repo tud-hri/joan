@@ -34,19 +34,19 @@ class HardwareMPSettings(ModuleSettings):
 
         self.keyboards = {}
         for identifier, settings_dict in module_settings_to_load['keyboards'].items():
-            keyboard_settings = KeyBoardSettings()
+            keyboard_settings = HardwareInputTypes.KEYBOARD.settings()
             keyboard_settings.set_from_loaded_dict(settings_dict)
             self.keyboards.update({identifier: keyboard_settings})
 
         self.joysticks = {}
         for identifier, settings_dict in module_settings_to_load['joysticks'].items():
-            joystick_settings = JoyStickSettings()
+            joystick_settings = HardwareInputTypes.JOYSTICK.settings()
             joystick_settings.set_from_loaded_dict(settings_dict)
             self.joysticks.update({identifier: joystick_settings})
 
         self.sensodrives = {}
         for identifier, settings_dict in module_settings_to_load['sensodrives'].items():
-            sensodrive_settings = SensoDriveSettings()
+            sensodrive_settings = HardwareInputTypes.SENSODRIVE.settings()
             sensodrive_settings.set_from_loaded_dict(settings_dict)
             self.sensodrives.update({identifier: sensodrive_settings})
 

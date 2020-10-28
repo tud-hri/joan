@@ -57,7 +57,7 @@ class ModuleManager(QtCore.QObject):
         # try to load new
         self.settings_filename = os.path.join(self.module_path, 'default_settings.json')
         if os.path.exists(self.settings_filename):
-            self.module_settings.load_from_file(self.settings_filename)
+            self.load_from_file(self.settings_filename)
 
         self.module_dialog._handle_state_change()
 
@@ -130,3 +130,8 @@ class ModuleManager(QtCore.QObject):
 
         self._events.start.clear()
         self._events.process_is_ready.clear()
+
+    def load_from_file(self, settings_file_to_load):
+
+        self.module_settings.load_from_file(settings_file_to_load)
+        print(self.module_settings.as_dict())
