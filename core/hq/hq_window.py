@@ -96,6 +96,10 @@ class HQWindow(QtWidgets.QMainWindow):
         module_dialog = module_manager.module_dialog
 
         widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/module_card.ui"))
+        if name == 'Carla Interface':
+            widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/module_card_carla_interface.ui"))
+        else:
+            widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/module_card.ui"))
         widget.setObjectName(name)
         widget.grpbox.setTitle(name)
 
