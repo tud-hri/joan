@@ -15,6 +15,8 @@ class HardwareMPManager(ModuleManager):
         self.hardware_input_type = None
         self.hardware_input_settings = None
 
+        self.settings_filename = 'HardwareMPSettings'
+
         self._hardware_input_settingdialogs_dict = {}
 
     def get_ready(self):

@@ -51,7 +51,6 @@ class JOANModules(Enum):
 
     @property
     def dialog(self):
-        from modules.template.dialog.templatedialog import TemplateDialog
         from modules.datarecorder.dialog.datarecorderdialog import DataRecorderDialog
         from modules.steeringwheelcontrol.dialog.steeringwheelcontroldialog import SteeringWheelControlDialog
         from modules.hardwaremanager.dialog.hardwaremanagerdialog import HardwareManagerDialog
@@ -60,7 +59,7 @@ class JOANModules(Enum):
         from modules.experimentmanager.dialog.experimentmanagerdialog import ExperimentManagerDialog
         from modules.scenarios.dialog.scenariosdialog import ScenariosDialog
         from modules.controllerplotter.dialog.controllerplotterdialog import ControllerPlotterDialog
-        from modules.template.template_dialog import TemplateDialog
+        from modules.carlainterface.carlainterface_dialog import TemplateDialog
 
         return {JOANModules.TEMPLATE: TemplateDialog,
                 JOANModules.DATA_RECORDER: DataRecorderDialog,

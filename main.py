@@ -18,5 +18,6 @@ if __name__ == '__main__':
     # adding modules (instantiates them too)
     JOANHQACTION.add_module(JOANModules.TEMPLATE, time_step_in_ms=20)
     JOANHQACTION.add_module(JOANModules.HARDWARE_MP, time_step_in_ms=50)
+    JOANHQACTION.add_module(JOANModules.CARLA_INTERFACE, time_step_in_ms= 10)
 
     APP.exec_()
