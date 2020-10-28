@@ -34,7 +34,7 @@ class HardwareMPDialog(ModuleDialog):
         super()._handle_state_change()
 
         state = self.module_manager.state_machine.current_state
-
+        
         # joysticks and keyboards
         if state != State.STOPPED:
             self._module_widget.btn_add_hardware.setEnabled(False)
@@ -127,37 +127,36 @@ class HardwareMPDialog(ModuleDialog):
         " Here we add the hardware input tabs "
         # First we create the settings in the module manager (this will include an identifier which is used in the hardware name)
 
-        chosen_hardware_input = self._input_type_dialog.combo_hardware_inputtype.itemData(self._input_type_dialog.combo_hardware_inputtype.currentIndex())
+        selected_hardware_input = self._input_type_dialog.combo_hardware_inputtype.itemData(self._input_type_dialog.combo_hardware_inputtype.currentIndex())
 
         # hardcode maximum nr of sensodrives
-        if chosen_hardware_input == HardwareInputTypes.SENSODRIVE and (len(self.module_manager.module_settings.sensodrives) == 2):
+        if selected_hardware_input == HardwareInputTypes.SENSODRIVE and (len(self.module_manager.module_settings.sensodrives) == 2):
             msg_box.setText("""
                                         <h3> Number of sensodrives is limited to 2 for now! </h3>
                                     """)
             msg_box.exec()
             return
 
-        self.module_manager.add_hardware_input(chosen_hardware_input)
+        # module_manager manages adding a new hardware input
+        self.module_manager.add_hardware_input(selected_hardware_input)
 
     def add_hardware_input(self, settings):
         # Adding tab
-        self._hardware_input_tabs_dict[settings.input_name] = uic.loadUi(HardwareInputTypes(settings.input_type).hardware_tab_ui_file)
-        self._hardware_input_tabs_dict[settings.input_name].groupBox.setTitle(settings.input_name)
-        self._module_widget.hardware_list_layout.addWidget(self._hardware_input_tabs_dict[settings.input_name])
+        input_tab = uic.loadUi(HardwareInputTypes(settings.input_type).hardware_tab_ui_file)
+        input_tab.groupBox.setTitle(settings.input_name)
 
         # Connecting buttons
-        self._hardware_input_tabs_dict[settings.input_name].btn_settings.clicked.connect(
-            lambda: self._hardware_input_tabs_dict[settings.input_name].show())
-        self._hardware_input_tabs_dict[settings.input_name].btn_remove_hardware.clicked.connect(
-            lambda: self.module_manager.remove_hardware_input(settings.input_name))
+        input_tab.btn_settings.clicked.connect(lambda: input_tab.show())
+        input_tab.btn_remove_hardware.clicked.connect(lambda: self.module_manager.remove_hardware_input(settings.input_name))
 
         if 'SensoDrive' in settings.input_name:
-            self._hardware_input_tabs_dict[settings.input_name].btn_on.clicked.connect(
-                lambda: self.module_manager.turn_on_sensodrive(settings.input_name))
-            self._hardware_input_tabs_dict[settings.input_name].btn_off.clicked.connect(
-                lambda: self.module_manager.turn_off_sensodrive(settings.input_name))
-            self._hardware_input_tabs_dict[settings.input_name].btn_clear_error.clicked.connect(
-                lambda: self.module_manager.clear_error_sensodrive(settings.input_name))
+            input_tab.btn_on.clicked.connect(lambda: self.module_manager.turn_on_sensodrive(settings.input_name))
+            input_tab.btn_off.clicked.connect(lambda: self.module_manager.turn_off_sensodrive(settings.input_name))
+            input_tab.btn_clear_error.clicked.connect(lambda: self.module_manager.clear_error_sensodrive(settings.input_name))
+
+        # add to module_dialog widget
+        self._hardware_input_tabs_dict[settings.input_name] = input_tab
+        self._module_widget.hardware_list_layout.addWidget(input_tab)
 
     def remove_hardware_input(self, input_name):
         # remove dialog
