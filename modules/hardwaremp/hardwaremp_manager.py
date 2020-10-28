@@ -19,7 +19,7 @@ class HardwareMPManager(ModuleManager):
 
     def get_ready(self):
         if len(self.module_settings.sensodrives) != 0:
-            self.module_dialog.update_timer.timeout.connect(self.module_dialog._update_sensodrive_state)
+            self.module_dialog.update_timer.timeout.connect(self.module_dialog.update_sensodrive_state)
             self.module_dialog.update_timer.start()
         super().get_ready()
 
@@ -28,11 +28,11 @@ class HardwareMPManager(ModuleManager):
 
         # create shared variables for all inputs in the settings
         for keyboard in self.module_settings.keyboards.values():
-            self.shared_variables.keyboards[keyboard.identifier] = keyboard.input_type.shared_variables()
+            self.shared_variables.keyboards[keyboard.identifier] = HardwareInputTypes(keyboard.input_type).shared_variables()
         for joystick in self.module_settings.joysticks.values():
-            self.shared_variables.joysticks[joystick.identifier] = joystick.input_type.shared_variables()
+            self.shared_variables.joysticks[joystick.identifier] = HardwareInputTypes(joystick.input_type).shared_variables()
         for sensodrive in self.module_settings.sensodrives.values():
-            self.shared_variables.sensodrives[sensodrive.identifier] = sensodrive.input_type.shared_variables()
+            self.shared_variables.sensodrives[sensodrive.identifier] = HardwareInputTypes(sensodrive.input_type).shared_variables()
 
     def start(self):
         super().start()
@@ -46,7 +46,7 @@ class HardwareMPManager(ModuleManager):
             sensodrives.close_event.set()
         super().stop()
 
-    def _add_hardware_input(self, input_type, input_settings=None):
+    def add_hardware_input(self, input_type, input_settings=None):
         """
         Add hardware input
         :param input_type:
@@ -54,7 +54,7 @@ class HardwareMPManager(ModuleManager):
         :return:
         """
         if not input_settings:
-            input_settings = input_type.settings(input_type)
+            input_settings = input_type.settings()
 
             # find unique identifier
             type_dict = None
@@ -87,7 +87,7 @@ class HardwareMPManager(ModuleManager):
         self._hardware_input_settingdialogs_dict[input_name] = input_type.klass_dialog(input_settings)
         return input_name
 
-    def _open_settings_dialog(self, input_name):
+    def open_settings_dialog(self, input_name):
         self._hardware_input_settingdialogs_dict[input_name].show()
 
     def _remove_hardware_input_device(self, input_name):

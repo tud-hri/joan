@@ -6,12 +6,13 @@ from PyQt5 import QtGui
 from core.module_settings import ModuleSettings
 from modules.hardwaremp.hardwaremp_inputtypes import HardwareInputTypes
 from modules.joanmodules import JOANModules
-import queue
+
 
 class HardwareMPSettings(ModuleSettings):
     """
     Contains the settings of the seperate hardware input types of the hardware manager module.
     """
+
     def __init__(self):
         super().__init__(JOANModules.HARDWARE_MP)
 
@@ -65,7 +66,7 @@ class KeyBoardSettings:
     Default keyboardinput settings that will load whenever a keyboardinput class is created.
     """
 
-    def __init__(self, input_type: HardwareInputTypes = HardwareInputTypes.KEYBOARD, identifier = 0):  # TODO Use identifier integer
+    def __init__(self, identifier: int = 0):  # TODO Use identifier integer
         self.steer_left_key = QtGui.QKeySequence('a')[0]
         self.steer_right_key = QtGui.QKeySequence('d')[0]
         self.throttle_key = QtGui.QKeySequence('w')[0]
@@ -73,7 +74,7 @@ class KeyBoardSettings:
         self.reverse_key = QtGui.QKeySequence('r')[0]
         self.handbrake_key = QtGui.QKeySequence('space')[0]
         self.identifier = identifier
-        self.input_type = input_type
+        self.input_type = HardwareInputTypes.KEYBOARD.value
 
         # Steering Range
         self.min_steer = - 0.5 * math.pi
@@ -100,13 +101,13 @@ class JoyStickSettings:
     Default joystick settings that will load whenever a keyboardinput class is created.
     """
 
-    def __init__(self, input_type: HardwareInputTypes = HardwareInputTypes.JOYSTICK, identifier = 0):
+    def __init__(self, identifier=0):
         self.min_steer = -0.5 * math.pi
         self.max_steer = 0.5 * math.pi
         self.device_vendor_id = 0
         self.device_product_id = 0
         self.identifier = identifier
-        self.input_type = input_type
+        self.input_type = HardwareInputTypes.JOYSTICK.value
 
         self.degrees_of_freedom = 12
         self.gas_channel = 9
@@ -164,7 +165,7 @@ class SensoDriveSettings:
     Default sensodrive settings that will load whenever a keyboardinput class is created.
     """
 
-    def __init__(self, input_type: HardwareInputTypes = HardwareInputTypes.SENSODRIVE, identifier = 0):
+    def __init__(self, identifier=0):
         self.endstops = math.radians(360.0)  # rad
         self.torque_limit_between_endstops = 200  # percent
         self.torque_limit_beyond_endstops = 200  # percent
@@ -174,20 +175,17 @@ class SensoDriveSettings:
         self.torque = 0  # Nm
         self.identifier = identifier
 
-
         self.turn_on_event = mp.Event()
         self.turn_off_event = mp.Event()
         self.clear_error_event = mp.Event()
         self.close_event = mp.Event()
 
         self.state_queue = mp.Queue()
-        self.input_type = input_type
+        self.input_type = HardwareInputTypes.SENSODRIVE.value
 
         self.current_state = 0x00
 
         self.settings_dict = {}
-
-
 
     def as_dict(self):
         return self.__dict__
@@ -197,15 +195,13 @@ class SensoDriveSettings:
             self.__setattr__(key, value)
 
     def settings_dict_for_pipe(self):
-        self.settings_dict = {'endstops': self.endstops, # rad
+        self.settings_dict = {'endstops': self.endstops,  # rad
                               'torque_limit_between_endstops': self.torque_limit_between_endstops,  # percent
-                              'torque_limit_beyond_endstops': self.torque_limit_beyond_endstops,    # percent
-                              'friction': self.friction,                                            # Nm
-                              'damping': self.damping,                                              # Nm * s / rad
-                              'spring_stiffness': self.spring_stiffness,                            # Nm / rad
-                              'torque': self.torque,                                                # Nm
+                              'torque_limit_beyond_endstops': self.torque_limit_beyond_endstops,  # percent
+                              'friction': self.friction,  # Nm
+                              'damping': self.damping,  # Nm * s / rad
+                              'spring_stiffness': self.spring_stiffness,  # Nm / rad
+                              'torque': self.torque,  # Nm
                               'identifier': self.identifier}
 
         return self.settings_dict
-
-

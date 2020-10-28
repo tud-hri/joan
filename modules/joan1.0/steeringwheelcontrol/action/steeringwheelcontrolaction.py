@@ -137,7 +137,7 @@ class SteeringWheelControlAction(JoanModuleAction):
             self._controllers[controller_name].update_trajectory_list()
             self.module_dialog.module_widget.sw_controller_list_layout.addWidget(
                 self._controllers[controller_name].get_controller_tab)
-            self._controllers[controller_name]._open_settings_dialog()
+            self._controllers[controller_name].open_settings_dialog()
 
         self._state_change_listener()
 

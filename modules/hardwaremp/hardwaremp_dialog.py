@@ -1,18 +1,18 @@
 import os
+import queue
 
 from PyQt5 import uic, QtCore
+from PyQt5.QtWidgets import QMessageBox
 
 from core.module_dialog import ModuleDialog
 from core.module_manager import ModuleManager
 from core.statesenum import State
 from modules.joanmodules import JOANModules
 from .hardwaremp_inputtypes import HardwareInputTypes
-import queue
-from PyQt5.QtWidgets import QMessageBox
-
 
 msg_box = QMessageBox()
 msg_box.setTextFormat(QtCore.Qt.RichText)
+
 
 class HardwareMPDialog(ModuleDialog):
     def __init__(self, module_manager: ModuleManager, parent=None):
@@ -32,7 +32,8 @@ class HardwareMPDialog(ModuleDialog):
         for this module. We should however not forget also calling the super()._handle_state_change() method.
         """
         super()._handle_state_change()
-        #joysticks and keyboards
+
+        # joysticks and keyboards
         if self.module_manager.state_machine.current_state != State.STOPPED:
             self._module_widget.btn_add_hardware.setEnabled(False)
             for hardware_tabs in self._hardware_input_tabs_dict:
@@ -41,7 +42,6 @@ class HardwareMPDialog(ModuleDialog):
                 if 'SensoDrive' not in hardware_tabs:
                     self._hardware_input_tabs_dict[hardware_tabs].setEnabled(False)
                     self._hardware_input_tabs_dict[hardware_tabs].blockSignals(True)
-            # self._module_widget.hardware_groupbox.setEnabled(False)
         else:
             self._module_widget.btn_add_hardware.setEnabled(True)
             for hardware_tabs in self._hardware_input_tabs_dict:
@@ -51,7 +51,7 @@ class HardwareMPDialog(ModuleDialog):
                     self._hardware_input_tabs_dict[hardware_tabs].setEnabled(True)
                     self._hardware_input_tabs_dict[hardware_tabs].blockSignals(False)
 
-        #sensodrive specific
+        # sensodrive specific
         if self.module_manager.state_machine.current_state == State.READY or self.module_manager.state_machine.current_state == State.RUNNING:
             for hardware_tabs in self._hardware_input_tabs_dict:
                 if 'SensoDrive' in hardware_tabs:
@@ -73,12 +73,10 @@ class HardwareMPDialog(ModuleDialog):
                     self._hardware_input_tabs_dict[hardware_tabs].lbl_sensodrive_state.setStyleSheet("background-color: orange")
                     self._hardware_input_tabs_dict[hardware_tabs].lbl_sensodrive_state.setText('Off')
 
-
-
-    def _update_sensodrive_state(self):
+    def update_sensodrive_state(self):
         for sensodrives in self.module_manager.module_settings.sensodrives.values():
             try:
-                sensodrives.current_state = sensodrives.state_queue.get(timeout = 0)
+                sensodrives.current_state = sensodrives.state_queue.get(timeout=0)
             except queue.Empty:
                 pass
             hardware_tab_identifier = str("SensoDrive " + str(sensodrives.identifier))
@@ -124,7 +122,7 @@ class HardwareMPDialog(ModuleDialog):
         " Here we add the hardware input tabs "
         # First we create the settings in the module manager (this will include an identifier which is used in the hardware name)
         chosen_hardware_input = self._input_type_dialog.combo_hardware_inputtype.itemData(self._input_type_dialog.combo_hardware_inputtype.currentIndex())
-        #hardcode maximum nr of sensodrives
+        # hardcode maximum nr of sensodrives
         if chosen_hardware_input == HardwareInputTypes.SENSODRIVE and (len(self.module_manager.module_settings.sensodrives) == 2):
             msg_box.setText("""
                                         <h3> Number of sensodrives is limited to 2 for now! </h3>
@@ -132,7 +130,7 @@ class HardwareMPDialog(ModuleDialog):
             msg_box.exec()
             return
         else:
-            hardware_input_name = self.module_manager._add_hardware_input(chosen_hardware_input)
+            hardware_input_name = self.module_manager.add_hardware_input(chosen_hardware_input)
 
         # Adding tab
         self._hardware_input_tabs_dict[hardware_input_name] = uic.loadUi(chosen_hardware_input.hardware_tab_ui_file)
