@@ -12,14 +12,14 @@ class KeyBoardSettingsDialog(QtWidgets.QDialog):  # TODO: aparte files voor clas
     creating the joystick class for the first time. NOTE: it should not show whenever settings are loaded by .json file.
     """
 
-    def __init__(self, keyboard_settings, parent=None):
+    def __init__(self, settings=None, parent=None):
         """
         Initializes the settings dialog with the appropriate keyboardinput settings
         :param keyboard_settings:
         :param parent:
         """
         super().__init__(parent)
-        self.keyboard_settings = keyboard_settings
+        self.keyboard_settings = settings
         uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/keyboard_settings_ui.ui"), self)
 
         self.slider_steer_sensitivity.valueChanged.connect(lambda new_value: self.label_steer_sensitivity.setText(str(new_value)))
@@ -37,7 +37,7 @@ class KeyBoardSettingsDialog(QtWidgets.QDialog):  # TODO: aparte files voor clas
                                         self.label_handbrake]
 
         self._display_values()
-        # self.show()
+        self.show()
 
     def accept(self):
         """
@@ -144,7 +144,6 @@ class JOANKeyboardMP:
     def __init__(self, settings, shared_variables):
         self.settings = settings
 
-        self.settings_dialog = None
         self.shared_variables = shared_variables
 
         # Initialize needed variables:

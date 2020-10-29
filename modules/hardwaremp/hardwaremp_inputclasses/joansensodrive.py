@@ -31,9 +31,9 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):  # TODO aparte files voor cla
     creating the joystick class for the first time. NOTE: it should not show whenever settings are loaded by .json file.
     """
 
-    def __init__(self, sensodrive_settings, parent=None):
+    def __init__(self, settings=None, parent=None):
         super().__init__(parent)
-        self.sensodrive_settings = sensodrive_settings
+        self.sensodrive_settings = settings
         uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/sensodrive_settings_ui.ui"), self)
 
         self.button_box_settings.button(self.button_box_settings.RestoreDefaults).clicked.connect(

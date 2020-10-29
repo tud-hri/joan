@@ -12,14 +12,14 @@ class JoystickSettingsDialog(QtWidgets.QDialog):  # TODO: losse files maken voor
     creating the joystick class for the first time. NOTE: it should not show whenever settings are loaded by .json file.
     """
 
-    def __init__(self, joystick_settings, parent=None):
+    def __init__(self, settings=None, parent=None):
         """
         Initializes the joystick class with the proper settings.
         :param joystick_settings:
         :param parent:
         """
         super().__init__(parent)
-        self.joystick_settings = joystick_settings
+        self.joystick_settings = settings
         uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/joystick_settings_ui.ui"), self)
 
         self.button_box_settings.button(self.button_box_settings.RestoreDefaults).clicked.connect(
@@ -60,6 +60,7 @@ class JoystickSettingsDialog(QtWidgets.QDialog):  # TODO: losse files maken voor
         self.value_preview_check_boxes = []
 
         self._display_settings()
+        self.show()
 
     def preview_joystick_values(self):
         """
@@ -259,7 +260,6 @@ class JOANJoystickMP:
         self.settings = settings
         self.shared_variables = shared_variables
 
-        self.settings_dialog = None
         self._joystick_open = False
         self._joystick = hid.device()
 

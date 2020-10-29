@@ -19,11 +19,11 @@ class HardwareMPDialog(ModuleDialog):
         super().__init__(module=JOANModules.HARDWARE_MP, module_manager=module_manager, parent=parent)
 
         # Loading the inputtype dialog (in which we will be able to add hardwareclasses dynamically)
-        self._input_type_dialog = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "inputtype.ui"))
-        self._input_type_dialog.btns_hardware_inputtype.accepted.connect(self.add_selected_hardware_input)
+        self._input_type_dialog = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "select_input_type.ui"))
+        self._input_type_dialog.btns_hardware_inputtype.accepted.connect(self._hardware_input_selected)
 
         # Connect the add hardware button to showing our just created inputtype dialog
-        self._module_widget.btn_add_hardware.clicked.connect(self._hardware_input_selection)
+        self._module_widget.btn_add_hardware.clicked.connect(self._select_hardware_input_type)
         self._hardware_input_tabs_dict = {}
 
     def _handle_state_change(self):
@@ -117,16 +117,13 @@ class HardwareMPDialog(ModuleDialog):
                     tab_sensodrive.lbl_sensodrive_state.setStyleSheet("background-color: red")
                     tab_sensodrive.lbl_sensodrive_state.setText('Error')
 
-    def _hardware_input_selection(self):
+    def _select_hardware_input_type(self):
         self._input_type_dialog.combo_hardware_inputtype.clear()
         for hardware_inputs in HardwareInputTypes:
             self._input_type_dialog.combo_hardware_inputtype.addItem(hardware_inputs.__str__(), userData=hardware_inputs)
         self._input_type_dialog.show()
 
-    def add_selected_hardware_input(self):
-        " Here we add the hardware input tabs "
-        # First we create the settings in the module manager (this will include an identifier which is used in the hardware name)
-
+    def _hardware_input_selected(self):
         selected_hardware_input = self._input_type_dialog.combo_hardware_inputtype.itemData(self._input_type_dialog.combo_hardware_inputtype.currentIndex())
 
         # hardcode maximum nr of sensodrives
@@ -141,12 +138,14 @@ class HardwareMPDialog(ModuleDialog):
         self.module_manager.add_hardware_input(selected_hardware_input)
 
     def add_hardware_input(self, settings):
+        input_type = HardwareInputTypes(settings.input_type)
+
         # Adding tab
-        input_tab = uic.loadUi(HardwareInputTypes(settings.input_type).hardware_tab_ui_file)
+        input_tab = uic.loadUi(input_type.hardware_tab_ui_file)
         input_tab.groupBox.setTitle(settings.input_name)
 
         # Connecting buttons
-        input_tab.btn_settings.clicked.connect(lambda: input_tab.show())
+        input_tab.btn_settings.clicked.connect(lambda: input_type.settings_dialog(settings=settings))
         input_tab.btn_remove_hardware.clicked.connect(lambda: self.module_manager.remove_hardware_input(settings.input_name))
 
         if 'SensoDrive' in settings.input_name:
