@@ -51,37 +51,37 @@ class HardwareMPSettings(ModuleSettings):
             sensodrive_settings.set_from_loaded_dict(settings_dict)
             self.sensodrives.update({identifier: sensodrive_settings})
 
+    def all_inputs(self):
+        return {**self.keyboards, **self.joysticks, **self.sensodrives}
+
     def add_hardware_input(self, input_type, input_settings=None):
 
+        # select the dict corresponding to the input_type
+        input_type_dict = None
+        if input_type == HardwareInputTypes.KEYBOARD:
+            input_type_dict = self.keyboards
+        elif input_type == HardwareInputTypes.JOYSTICK:
+            input_type_dict = self.joysticks
+        elif input_type == HardwareInputTypes.SENSODRIVE:
+            input_type_dict = self.sensodrives
+        else:
+            # HardwareInputTypes unknown, return empty handed
+            return None
+
+        # create empty settings object
         if not input_settings:
             input_settings = input_type.settings()
 
-            # find unique identifier
-            type_dict = None
-            if input_type == HardwareInputTypes.KEYBOARD:
-                type_dict = self.keyboards
-            elif input_type == HardwareInputTypes.JOYSTICK:
-                type_dict = self.joysticks
-            elif input_type == HardwareInputTypes.SENSODRIVE:
-                type_dict = self.sensodrives
-
             identifier = 0
-            for v in type_dict.values():
+            for v in input_type_dict.values():
                 if v.identifier > identifier:
                     identifier = v.identifier
             input_settings.identifier = identifier + 1
             input_settings.input_name = '{0!s} {1!s}'.format(input_type, str(input_settings.identifier))
 
-        # check if settings do not already exist
-        if input_type == HardwareInputTypes.KEYBOARD:
-            if input_settings not in self.keyboards.values():
-                self.keyboards[input_settings.identifier] = input_settings
-        elif input_type == HardwareInputTypes.JOYSTICK:
-            if input_settings not in self.joysticks.values():
-                self.joysticks[input_settings.identifier] = input_settings
-        elif input_type == HardwareInputTypes.SENSODRIVE:
-            if input_settings not in self.sensodrives.values():
-                self.sensodrives[input_settings.identifier] = input_settings
+        # add settings to dict, check if settings do not already exist
+        if input_settings not in input_type_dict.values():
+            input_type_dict[input_settings.identifier] = input_settings
 
         return input_settings
 

@@ -55,8 +55,7 @@ class ModuleSettings:
             warning_message = "WARNING: loading settings for the " + str(self.module) + \
                               " module from a dictionary failed. The loaded dictionary did not contain " + \
                               str(self.module) + " settings." + \
-                              (" It did contain settings for: " +
-                               ", ".join(loaded_dict.keys()) if loaded_dict.keys() else "")
+                              (" It did contain settings for: " + ", ".join(loaded_dict.keys()) if loaded_dict.keys() else "")
             print(warning_message)
 
     def as_dict(self):

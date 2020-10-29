@@ -46,12 +46,15 @@ class HardwareMPManager(ModuleManager):
     def load_from_file(self, settings_file_to_load):
 
         # remove all settings from the dialog
-        self.module_dialog.remove_all_hardware_input()
+        for hardware_input in self.module_settings.all_inputs().values():
+            self.remove_hardware_input(hardware_input.input_name)
 
         # load settings from file into module_settings object
         self.module_settings.load_from_file(settings_file_to_load)
 
         # add all settings tp module_dialog
+        for hardware_input_settings in self.module_settings.all_inputs().values():
+            self.add_hardware_input(HardwareInputTypes(hardware_input_settings.input_type), hardware_input_settings)
 
     def add_hardware_input(self, input_type, input_settings=None):
         # add to module_settings
