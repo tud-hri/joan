@@ -138,7 +138,7 @@ class SensoDriveComm(mp.Process):
         :param child_pipe: pipe to send values back to mp process
         :param state_queue: queue to send state to the rest of JOAN
         """
-        super().__init__()
+        super().__init__(daemon = True)
         self.turn_on_event = turn_on_event
         self.child_pipe = child_pipe
         self.turn_off_event = turn_off_event

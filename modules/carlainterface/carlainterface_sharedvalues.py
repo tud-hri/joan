@@ -40,6 +40,6 @@ class EgoVehicleSharedVariables:
     def temp(self):
         return self._temp.value
 
-    @state.setter
+    @temp.setter
     def temp(self, val):
         self._temp.value = val

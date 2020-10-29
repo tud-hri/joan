@@ -7,9 +7,9 @@ class EgoVehicle():
         self.vehicle_type = vehicle_type
 
 class EgoVehicleSettingsDialog(QtWidgets.QDialog):
-    def __init__(self, agenttype, parent = None):
+    def __init__(self, ego_vehicle_settings, parent = None):
         super().__init__(parent)
-        self.settings = agenttype.settings()
+        self.settings = ego_vehicle_settings
         uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/ego_vehicle_settings_ui.ui"), self)
 
         self.button_box_egovehicle_settings.button(self.button_box_egovehicle_settings.RestoreDefaults).clicked.connect(

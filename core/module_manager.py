@@ -11,6 +11,7 @@ from core.statemachine import StateMachine
 from core.statesenum import State
 from core.settings import Settings
 from modules.joanmodules import JOANModules
+from core.settings import Settings
 
 
 class ModuleManager(QtCore.QObject):
