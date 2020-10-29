@@ -70,30 +70,30 @@ class KeyBoardSettingsDialog(QtWidgets.QDialog):  # TODO: aparte files voor clas
         self.keyboard_settings.handbrake_key = QtGui.QKeySequence(self.label_handbrake.text())[0]
         super().accept()
 
-    def _display_values(self, settings_to_display=None):
+    def _display_values(self, settings=None):
         """
         Displays the settings that are currently being used (internally)
-        :param settings_to_display:
+        :param settings:
         :return:
         """
-        if not settings_to_display:
-            settings_to_display = self.keyboard_settings
+        if not settings:
+            settings = self.keyboard_settings
 
-        self.label_steer_left.setText(QtGui.QKeySequence(settings_to_display.steer_left_key).toString())
-        self.label_steer_right.setText(QtGui.QKeySequence(settings_to_display.steer_right_key).toString())
-        self.label_throttle.setText(QtGui.QKeySequence(settings_to_display.throttle_key).toString())
-        self.label_brake.setText(QtGui.QKeySequence(settings_to_display.brake_key).toString())
-        self.label_reverse.setText(QtGui.QKeySequence(settings_to_display.reverse_key).toString())
-        self.label_handbrake.setText(QtGui.QKeySequence(settings_to_display.handbrake_key).toString())
+        self.label_steer_left.setText(QtGui.QKeySequence(settings.steer_left_key).toString())
+        self.label_steer_right.setText(QtGui.QKeySequence(settings.steer_right_key).toString())
+        self.label_throttle.setText(QtGui.QKeySequence(settings.throttle_key).toString())
+        self.label_brake.setText(QtGui.QKeySequence(settings.brake_key).toString())
+        self.label_reverse.setText(QtGui.QKeySequence(settings.reverse_key).toString())
+        self.label_handbrake.setText(QtGui.QKeySequence(settings.handbrake_key).toString())
 
-        self.spin_box_min_steer.setValue(settings_to_display.min_steer)
-        self.spin_box_max_steer.setValue(settings_to_display.max_steer)
+        self.spin_box_min_steer.setValue(settings.min_steer)
+        self.spin_box_max_steer.setValue(settings.max_steer)
 
-        self.checkbox_autocenter.setChecked(settings_to_display.auto_center)
+        self.checkbox_autocenter.setChecked(settings.auto_center)
 
-        self.slider_steer_sensitivity.setValue(settings_to_display.steer_sensitivity)
-        self.slider_throttle_sensitivity.setValue(settings_to_display.throttle_sensitivity)
-        self.slider_brake_sensitivity.setValue(settings_to_display.brake_sensitivity)
+        self.slider_steer_sensitivity.setValue(settings.steer_sensitivity)
+        self.slider_throttle_sensitivity.setValue(settings.throttle_sensitivity)
+        self.slider_brake_sensitivity.setValue(settings.brake_sensitivity)
 
     def _set_default_values(self):
         """

@@ -30,7 +30,6 @@ class ModuleManager(QtCore.QObject):
 
         # initialize state machine
         self.state_machine = StateMachine(module)
-        # self.state_machine.request_state_change(State.INITIALIZED)
 
         self.state_machine.set_entry_action(State.INITIALIZED, self.initialize)
         self.state_machine.set_entry_action(State.READY, self.get_ready)
@@ -42,9 +41,6 @@ class ModuleManager(QtCore.QObject):
         self.shared_variables = None
         self._process = None
         self._events = ProcessEvents()
-        # self._start_event = mp.Event()
-        # self._exception_event = mp.Event()
-        # self._process_is_ready_event = mp.Event()
 
         self._exception_monitor = ModuleExceptionMonitor(self._events.exception, self.state_machine)
 

@@ -1,5 +1,3 @@
-import re
-
 from core.module_manager import ModuleManager
 from modules.joanmodules import JOANModules
 from .hardwaremp_inputtypes import HardwareInputTypes
@@ -44,10 +42,9 @@ class HardwareMPManager(ModuleManager):
         super().stop()
 
     def load_from_file(self, settings_file_to_load):
-
         # remove all settings from the dialog
         for hardware_input in self.module_settings.all_inputs().values():
-            self.remove_hardware_input(hardware_input.input_name)
+            self.remove_hardware_input(hardware_input.identifier)
 
         # load settings from file into module_settings object
         self.module_settings.load_from_file(settings_file_to_load)
@@ -63,22 +60,18 @@ class HardwareMPManager(ModuleManager):
         # add to module_dialog
         self.module_dialog.add_hardware_input(input_settings)
 
-    def remove_hardware_input(self, input_name: str):
+    def remove_hardware_input(self, identifier):
         # remove from settings
-        self.module_settings.remove_hardware_input(input_name)
+        self.module_settings.remove_hardware_input(identifier)
 
         # remove settings from dialog
-        self.module_dialog.remove_hardware_input(input_name)
+        self.module_dialog.remove_hardware_input(identifier)
 
-    def turn_on_sensodrive(self, input_name: str):
-        # Find the identifier in input_name. Assumption: the identifier is the first number
-        identifier = [int(s) for s in re.findall(r'-?\d+\.?\d*', input_name)][0]
+    def turn_on_sensodrive(self, identifier):
         self.module_settings.sensodrives[identifier].turn_on_event.set()
 
-    def turn_off_sensodrive(self, input_name: str):
-        identifier = [int(s) for s in re.findall(r'-?\d+\.?\d*', input_name)][0]
+    def turn_off_sensodrive(self, identifier):
         self.module_settings.sensodrives[identifier].turn_off_event.set()
 
-    def clear_error_sensodrive(self, input_name: str):
-        identifier = [int(s) for s in re.findall(r'-?\d+\.?\d*', input_name)][0]
+    def clear_error_sensodrive(self, identifier):
         self.module_settings.sensodrives[identifier].clear_error_event.set()

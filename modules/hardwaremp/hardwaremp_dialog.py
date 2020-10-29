@@ -41,7 +41,7 @@ class HardwareMPDialog(ModuleDialog):
             for hardware_tabs in self._hardware_input_tabs_dict:
                 self._hardware_input_tabs_dict[hardware_tabs].btn_remove_hardware.setEnabled(False)
                 self._hardware_input_tabs_dict[hardware_tabs].btn_remove_hardware.blockSignals(True)
-                if 'SensoDrive' not in hardware_tabs:
+                if str(HardwareInputTypes.SENSODRIVE) not in hardware_tabs:
                     self._hardware_input_tabs_dict[hardware_tabs].setEnabled(False)
                     self._hardware_input_tabs_dict[hardware_tabs].blockSignals(True)
         else:
@@ -49,14 +49,14 @@ class HardwareMPDialog(ModuleDialog):
             for hardware_tabs in self._hardware_input_tabs_dict:
                 self._hardware_input_tabs_dict[hardware_tabs].btn_remove_hardware.setEnabled(True)
                 self._hardware_input_tabs_dict[hardware_tabs].btn_remove_hardware.blockSignals(False)
-                if 'SensoDrive' not in hardware_tabs:
+                if str(HardwareInputTypes.SENSODRIVE) not in hardware_tabs:
                     self._hardware_input_tabs_dict[hardware_tabs].setEnabled(True)
                     self._hardware_input_tabs_dict[hardware_tabs].blockSignals(False)
 
         # sensodrive specific
         if state == State.READY or state == State.RUNNING:
             for hardware_tabs in self._hardware_input_tabs_dict:
-                if 'SensoDrive' in hardware_tabs:
+                if str(HardwareInputTypes.SENSODRIVE) in hardware_tabs:
                     self._hardware_input_tabs_dict[hardware_tabs].btn_on.setEnabled(True)
                     self._hardware_input_tabs_dict[hardware_tabs].btn_on.blockSignals(False)
                     self._hardware_input_tabs_dict[hardware_tabs].btn_off.setEnabled(True)
@@ -65,7 +65,7 @@ class HardwareMPDialog(ModuleDialog):
                     self._hardware_input_tabs_dict[hardware_tabs].btn_clear_error.blockSignals(False)
         else:
             for hardware_tabs in self._hardware_input_tabs_dict:
-                if 'SensoDrive' in hardware_tabs:
+                if str(HardwareInputTypes.SENSODRIVE) in hardware_tabs:
                     self._hardware_input_tabs_dict[hardware_tabs].btn_on.setEnabled(False)
                     self._hardware_input_tabs_dict[hardware_tabs].btn_on.blockSignals(True)
                     self._hardware_input_tabs_dict[hardware_tabs].btn_off.setEnabled(False)
@@ -83,7 +83,7 @@ class HardwareMPDialog(ModuleDialog):
                 pass
 
             state = self.module_manager.state_machine.current_state
-            tab_sensodrive = self._hardware_input_tabs_dict[sensodrive.input_name]
+            tab_sensodrive = self._hardware_input_tabs_dict[sensodrive.identifier]
 
             if state == State.READY or state == State.RUNNING:
                 if sensodrive.current_state == 0x10:
@@ -142,22 +142,22 @@ class HardwareMPDialog(ModuleDialog):
 
         # Adding tab
         input_tab = uic.loadUi(input_type.hardware_tab_ui_file)
-        input_tab.groupBox.setTitle(settings.input_name)
+        input_tab.groupBox.setTitle(settings.identifier)
 
         # Connecting buttons
-        input_tab.btn_settings.clicked.connect(lambda: input_type.settings_dialog(settings=settings))
-        input_tab.btn_remove_hardware.clicked.connect(lambda: self.module_manager.remove_hardware_input(settings.input_name))
+        input_tab.btn_settings.clicked.connect(lambda: input_type.settings_dialog(settings=settings, parent=self))
+        input_tab.btn_remove_hardware.clicked.connect(lambda: self.module_manager.remove_hardware_input(settings.identifier))
 
-        if 'SensoDrive' in settings.input_name:
-            input_tab.btn_on.clicked.connect(lambda: self.module_manager.turn_on_sensodrive(settings.input_name))
-            input_tab.btn_off.clicked.connect(lambda: self.module_manager.turn_off_sensodrive(settings.input_name))
-            input_tab.btn_clear_error.clicked.connect(lambda: self.module_manager.clear_error_sensodrive(settings.input_name))
+        if str(HardwareInputTypes.SENSODRIVE) in settings.identifier:
+            input_tab.btn_on.clicked.connect(lambda: self.module_manager.turn_on_sensodrive(settings.identifier))
+            input_tab.btn_off.clicked.connect(lambda: self.module_manager.turn_off_sensodrive(settings.identifier))
+            input_tab.btn_clear_error.clicked.connect(lambda: self.module_manager.clear_error_sensodrive(settings.identifier))
 
         # add to module_dialog widget
-        self._hardware_input_tabs_dict[settings.input_name] = input_tab
+        self._hardware_input_tabs_dict[settings.identifier] = input_tab
         self._module_widget.hardware_list_layout.addWidget(input_tab)
 
-    def remove_hardware_input(self, input_name):
+    def remove_hardware_input(self, identifier):
         # remove input tab
-        self._hardware_input_tabs_dict[input_name].setParent(None)
-        del self._hardware_input_tabs_dict[input_name]
+        self._hardware_input_tabs_dict[identifier].setParent(None)
+        del self._hardware_input_tabs_dict[identifier]

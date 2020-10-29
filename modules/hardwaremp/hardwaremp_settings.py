@@ -1,6 +1,5 @@
 import math
 import multiprocessing as mp
-import re
 
 from PyQt5 import QtGui
 
@@ -72,12 +71,13 @@ class HardwareMPSettings(ModuleSettings):
         if not input_settings:
             input_settings = input_type.settings()
 
-            identifier = 0
-            for v in input_type_dict.values():
-                if v.identifier > identifier:
-                    identifier = v.identifier
-            input_settings.identifier = identifier + 1
-            input_settings.input_name = '{0!s} {1!s}'.format(input_type, str(input_settings.identifier))
+            nr = 1
+            name = '{0!s}_{1}'.format(input_type, nr)
+            while name in input_type_dict.keys():
+                nr += 1
+                name = '{0!s}_{1}'.format(input_type, nr)
+
+            input_settings.identifier = name
 
         # add settings to dict, check if settings do not already exist
         if input_settings not in input_type_dict.values():
@@ -85,19 +85,16 @@ class HardwareMPSettings(ModuleSettings):
 
         return input_settings
 
-    def remove_hardware_input(self, input_name: str):
-        # Find the identifier in input_name. Assumption: the identifier is the first number
-        identifier = [int(s) for s in re.findall(r'-?\d+\.?\d*', input_name)][0]
-
-        if 'Keyboard' in input_name:
+    def remove_hardware_input(self, identifier):
+        if str(HardwareInputTypes.KEYBOARD) in identifier:
             key, _ = find_settings_by_identifier(self.keyboards, identifier)
             self.keyboards.pop(key)
 
-        if 'Joystick' in input_name:
+        if str(HardwareInputTypes.JOYSTICK) in identifier:
             key, _ = find_settings_by_identifier(self.joysticks, identifier)
             self.joysticks.pop(key)
 
-        if 'SensoDrive' in input_name:
+        if str(HardwareInputTypes.SENSODRIVE) in identifier:
             key, _ = find_settings_by_identifier(self.sensodrives, identifier)
             self.sensodrives.pop(key)
 
@@ -107,7 +104,7 @@ class KeyBoardSettings:
     Default keyboardinput settings that will load whenever a keyboardinput class is created.
     """
 
-    def __init__(self, identifier: int = 0):  # TODO Use identifier integer
+    def __init__(self, identifier=''):
         self.steer_left_key = QtGui.QKeySequence('a')[0]
         self.steer_right_key = QtGui.QKeySequence('d')[0]
         self.throttle_key = QtGui.QKeySequence('w')[0]
@@ -116,7 +113,7 @@ class KeyBoardSettings:
         self.handbrake_key = QtGui.QKeySequence('space')[0]
         self.identifier = identifier
         self.input_type = HardwareInputTypes.KEYBOARD.value
-        self.input_name = '{0!s} {1!s}'.format(HardwareInputTypes.KEYBOARD, str(self.identifier))
+        # self.input_name = '{0!s} {1!s}'.format(HardwareInputTypes.KEYBOARD, str(self.identifier))
 
         # Steering Range
         self.min_steer = - 0.5 * math.pi
@@ -143,14 +140,14 @@ class JoyStickSettings:
     Default joystick settings that will load whenever a keyboardinput class is created.
     """
 
-    def __init__(self, identifier=0):
+    def __init__(self, identifier=''):
         self.min_steer = -0.5 * math.pi
         self.max_steer = 0.5 * math.pi
         self.device_vendor_id = 0
         self.device_product_id = 0
         self.identifier = identifier
         self.input_type = HardwareInputTypes.JOYSTICK.value
-        self.input_name = '{0!s} {1!s}'.format(HardwareInputTypes.JOYSTICK, str(self.identifier))
+        # self.input_name = '{0!s} {1!s}'.format(HardwareInputTypes.JOYSTICK, str(self.identifier))
 
         self.degrees_of_freedom = 12
         self.gas_channel = 9
@@ -208,7 +205,7 @@ class SensoDriveSettings:
     Default sensodrive settings that will load whenever a keyboardinput class is created.
     """
 
-    def __init__(self, identifier=0):
+    def __init__(self, identifier=''):
         self.endstops = math.radians(360.0)  # rad
         self.torque_limit_between_endstops = 200  # percent
         self.torque_limit_beyond_endstops = 200  # percent
@@ -218,7 +215,7 @@ class SensoDriveSettings:
         self.torque = 0  # Nm
         self.identifier = identifier
         self.input_type = HardwareInputTypes.SENSODRIVE.value
-        self.input_name = '{0!s} {1!s}'.format(HardwareInputTypes.SENSODRIVE, str(self.identifier))
+        # self.input_name = '{0!s} {1!s}'.format(HardwareInputTypes.SENSODRIVE, str(self.identifier))
 
         self.turn_on_event = mp.Event()
         self.turn_off_event = mp.Event()

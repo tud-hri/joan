@@ -42,6 +42,7 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):  # TODO aparte files voor cla
         self.btn_apply.clicked.connect(self.update_parameters)
 
         self._display_values()
+        self.show()
 
     def update_parameters(self):
         """
