@@ -9,6 +9,7 @@ from core.module_process import ProcessEvents
 from core.news import News
 from core.statemachine import StateMachine
 from core.statesenum import State
+from core.settings import Settings
 from modules.joanmodules import JOANModules
 
 
@@ -26,7 +27,7 @@ class ModuleManager(QtCore.QObject):
 
         # self.singleton_status = Status()
         self.singleton_news = News()
-        # self.singleton_settings = Settings()
+        self.singleton_settings = Settings()
 
         # initialize state machine
         self.state_machine = StateMachine(module)
@@ -58,6 +59,8 @@ class ModuleManager(QtCore.QObject):
         settings_filename = os.path.join(self.module_path, 'default_settings.json')
         if os.path.exists(settings_filename):
             self.module_settings.load_from_file(settings_filename)
+
+        self.singleton_settings.update_settings(self.module, self.module_settings)
 
         self.module_dialog._handle_state_change()
 
