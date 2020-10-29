@@ -10,6 +10,7 @@ from core.news import News
 from core.statemachine import StateMachine
 from core.statesenum import State
 from modules.joanmodules import JOANModules
+from core.settings import Settings
 
 
 class ModuleManager(QtCore.QObject):
@@ -26,7 +27,7 @@ class ModuleManager(QtCore.QObject):
 
         # self.singleton_status = Status()
         self.singleton_news = News()
-        # self.singleton_settings = Settings()
+        self.singleton_settings = Settings()
 
         # initialize state machine
         self.state_machine = StateMachine(module)

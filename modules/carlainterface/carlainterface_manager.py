@@ -1,7 +1,7 @@
 from core.module_manager import ModuleManager
 from modules.joanmodules import JOANModules
 from modules.carlainterface.carlainterface_agenttypes import AgentTypes
-from core.hq.hq_manager import HQManager
+from core.settings import Settings
 
 class CarlaInterfaceManager(ModuleManager):
     """
@@ -64,4 +64,6 @@ class CarlaInterfaceManager(ModuleManager):
         del self._agent_settingdialogs_dict[agent_name]
 
     def _get_update_from_other_modules(self):
-        print(self.module.dialog.parent())
+        for module in JOANModules:
+            joe = Settings.get_settings(module)
+            print(joe)
