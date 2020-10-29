@@ -95,21 +95,21 @@ class JOANSensoDriveMP():
     def __init__(self, settings, shared_variables):
         super().__init__()
 
-        #We define our settings list which contains only picklable objects
+        # We define our settings list which contains only picklable objects
         self.settings_dict = settings.settings_dict_for_pipe()
 
-        #we will write all the output of the sensodrive to these variables so that we have it in our main joan program
+        # We will write all the output of the sensodrive to these variables so that we have it in our main joan program
         self.shared_variables = shared_variables
 
-        #Initialize communication pipe between seperate sensodrive process
+        # Initialize communication pipe between seperate sensodrive process
         self.parent_pipe, child_pipe = mp.Pipe(duplex= True)
 
-        #Create the sensodrive communication object with needed events and pipe
+        # Create the sensodrive communication object with needed events and pipe
         comm = SensoDriveComm(turn_on_event=settings.turn_on_event, turn_off_event=settings.turn_off_event,
                                close_event=settings.close_event, clear_error_event=settings.clear_error_event,
                                child_pipe=child_pipe, state_queue= settings.state_queue)
 
-        #Start the communication process when it is created
+        # Start the communication process when it is created
         comm.start()
         self.parent_pipe.send(self.settings_dict)
 
@@ -121,6 +121,15 @@ class JOANSensoDriveMP():
         self.shared_variables.throttle = values_from_sensodrive['throttle']
         self.shared_variables.brake = values_from_sensodrive['brake']
         self.shared_variables.steering_rate = values_from_sensodrive['steering_rate']
+
+
+def clear_queue(q):
+    try:
+        while True:
+            q.get_nowait()
+    except queue.Empty:
+        pass
+
 
 class SensoDriveComm(mp.Process):
     """
@@ -240,12 +249,12 @@ class SensoDriveComm(mp.Process):
             # properly uninitialize the pcan dongle if sensodrive is removed
             if self.close_event.is_set():
                 self.close_event.clear()
-                #send last known values over the pipe
+                # send last known values over the pipe
                 self.child_pipe.send(self.values_from_sensodrive)
                 self.pcan_object.Uninitialize(self._pcan_channel)
                 break
 
-            self.clear_queue(self.state_queue)
+            clear_queue(self.state_queue)
             self.state_queue.put(self._current_state_hex)
             pass
 
@@ -253,13 +262,6 @@ class SensoDriveComm(mp.Process):
 
             # sleep for time step, taking the execution time into account
             time.sleep((self._time_step_in_ns - execution_time) * 1e-9)
-
-    def clear_queue(self, q):
-        try:
-            while True:
-                q.get_nowait()
-        except queue.Empty:
-            pass
 
     def write_message_steering_wheel(self, pcan_object, pcanmessage, data):
         """

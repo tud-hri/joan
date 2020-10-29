@@ -34,7 +34,7 @@ class HardwareMPDialog(ModuleDialog):
         super()._handle_state_change()
 
         state = self.module_manager.state_machine.current_state
-        
+
         # joysticks and keyboards
         if state != State.STOPPED:
             self._module_widget.btn_add_hardware.setEnabled(False)
@@ -162,3 +162,7 @@ class HardwareMPDialog(ModuleDialog):
         # remove dialog
         self._hardware_input_tabs_dict[input_name].setParent(None)
         del self._hardware_input_tabs_dict[input_name]
+
+    def remove_all_hardware_input(self):
+        for k in self._hardware_input_tabs_dict.keys():
+            self.remove_hardware_input(k)

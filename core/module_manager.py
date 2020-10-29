@@ -132,6 +132,4 @@ class ModuleManager(QtCore.QObject):
         self._events.process_is_ready.clear()
 
     def load_from_file(self, settings_file_to_load):
-
         self.module_settings.load_from_file(settings_file_to_load)
-        print(self.module_settings.as_dict())

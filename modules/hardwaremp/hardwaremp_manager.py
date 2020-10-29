@@ -43,6 +43,16 @@ class HardwareMPManager(ModuleManager):
             sensodrives.close_event.set()
         super().stop()
 
+    def load_from_file(self, settings_file_to_load):
+
+        # remove all settings from the dialog
+        self.module_dialog.remove_all_hardware_input()
+
+        # load settings from file into module_settings object
+        self.module_settings.load_from_file(settings_file_to_load)
+
+        # add all settings tp module_dialog
+
     def add_hardware_input(self, input_type, input_settings=None):
         # add to module_settings
         input_settings = self.module_settings.add_hardware_input(input_type, input_settings)
