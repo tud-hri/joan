@@ -1,7 +1,7 @@
 from core.module_manager import ModuleManager
 from modules.joanmodules import JOANModules
 from modules.carlainterface.carlainterface_agenttypes import AgentTypes
-
+from core.hq.hq_manager import HQManager
 
 class CarlaInterfaceManager(ModuleManager):
     """
@@ -12,10 +12,6 @@ class CarlaInterfaceManager(ModuleManager):
     def __init__(self, time_step_in_ms=10, parent=None):
         super().__init__(module=JOANModules.CARLA_INTERFACE, time_step_in_ms=time_step_in_ms, parent=parent)
         self._agent_settingdialogs_dict = {}
-
-    def update_shared_variables_adjustable_settings(self):
-        # update value in self.shared_variables with the value in settings
-        self.shared_variables.overwrite_with_current_time = self.module_settings.overwrite_with_current_time
 
     def _open_settings_dialog(self, input_name):
         self._agent_settingdialogs_dict[input_name].show()
@@ -66,3 +62,6 @@ class CarlaInterfaceManager(ModuleManager):
         # Remove settings dialog
         self._agent_settingdialogs_dict[agent_name].setParent(None)
         del self._agent_settingdialogs_dict[agent_name]
+
+    def _get_update_from_other_modules(self):
+        print(self.module.dialog.parent())

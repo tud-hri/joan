@@ -17,23 +17,23 @@ class CarlaInterfaceProcess(ModuleProcess):
         When instantiating the ModuleProcess, the settings ar converted to type dict
         The super().get_ready() method converts the module_settings back to the appropriate settings object
         """
-        now = datetime.now()
-
-        # the settings-key 'overwrite_with_current_time' will be used as key
-        self._module_shared_variables.overwrite_with_current_time = now.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
-
-        # show current shared values for this module
-        print(self._module_shared_variables.__dict__)
-
-        # show current shared_variables for another module
-        print(self.shared_variables_hardware.__dict__)
+        # now = datetime.now()
+        #
+        # # the settings-key 'overwrite_with_current_time' will be used as key
+        # self._module_shared_variables.overwrite_with_current_time = now.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
+        #
+        # # show current shared values for this module
+        # print(self._module_shared_variables.__dict__)
+        #
+        # # show current shared_variables for another module
+        # print(self.shared_variables_hardware.__dict__)
 
     def do_while_running(self):
         """
         do_while_running something and write the result in a shared_variable
         """
-        now = datetime.now()
-        self._module_shared_variables.overwrite_with_current_time = now.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
+        # now = datetime.now()
+        # self._module_shared_variables.overwrite_with_current_time = now.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
 
         try:
             print("Sensodrive 1 = ", self.shared_variables_hardware.sensodrives[1].steering_angle, "Sensodrive 2 = ", self.shared_variables_hardware.sensodrives[2].steering_angle)

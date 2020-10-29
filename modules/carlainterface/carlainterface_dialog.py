@@ -18,7 +18,7 @@ class CarlaInterfaceDialog(ModuleDialog):
         self.old_nr_cars = 0
         self.i = 1
         self._agent_tabs_dict = {}
-        # self._module_widget.btn_spawn_all.clicked.connect(self.module_manager.spawn_all)
+        self._module_widget.btn_update.clicked.connect(self.module_manager._get_update_from_other_modules)
         # self._module_widget.btn_destroy_all.clicked.connect(self.module_manager.destroy_all)
         # self._module_widget.btn_remove_all.clicked.connect(self.module_manager.remove_all)
         #
