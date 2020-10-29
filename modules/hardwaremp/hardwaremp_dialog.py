@@ -159,10 +159,6 @@ class HardwareMPDialog(ModuleDialog):
         self._module_widget.hardware_list_layout.addWidget(input_tab)
 
     def remove_hardware_input(self, input_name):
-        # remove dialog
+        # remove input tab
         self._hardware_input_tabs_dict[input_name].setParent(None)
         del self._hardware_input_tabs_dict[input_name]
-
-    def remove_all_hardware_input(self):
-        for k in self._hardware_input_tabs_dict.keys():
-            self.remove_hardware_input(k)

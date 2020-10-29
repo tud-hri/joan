@@ -56,29 +56,29 @@ class HardwareMPManager(ModuleManager):
         for hardware_input_settings in self.module_settings.all_inputs().values():
             self.add_hardware_input(HardwareInputTypes(hardware_input_settings.input_type), hardware_input_settings)
 
-    def add_hardware_input(self, input_type, input_settings=None):
+    def add_hardware_input(self, input_type: HardwareInputTypes, input_settings=None):
         # add to module_settings
         input_settings = self.module_settings.add_hardware_input(input_type, input_settings)
 
         # add to module_dialog
         self.module_dialog.add_hardware_input(input_settings)
 
-    def remove_hardware_input(self, input_name):
+    def remove_hardware_input(self, input_name: str):
         # remove from settings
         self.module_settings.remove_hardware_input(input_name)
 
         # remove settings from dialog
         self.module_dialog.remove_hardware_input(input_name)
 
-    def turn_on_sensodrive(self, input_name):
+    def turn_on_sensodrive(self, input_name: str):
         # Find the identifier in input_name. Assumption: the identifier is the first number
         identifier = [int(s) for s in re.findall(r'-?\d+\.?\d*', input_name)][0]
         self.module_settings.sensodrives[identifier].turn_on_event.set()
 
-    def turn_off_sensodrive(self, input_name):
+    def turn_off_sensodrive(self, input_name: str):
         identifier = [int(s) for s in re.findall(r'-?\d+\.?\d*', input_name)][0]
         self.module_settings.sensodrives[identifier].turn_off_event.set()
 
-    def clear_error_sensodrive(self, input_name):
+    def clear_error_sensodrive(self, input_name: str):
         identifier = [int(s) for s in re.findall(r'-?\d+\.?\d*', input_name)][0]
         self.module_settings.sensodrives[identifier].clear_error_event.set()

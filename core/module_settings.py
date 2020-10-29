@@ -5,6 +5,13 @@ from enum import Enum
 from modules.joanmodules import JOANModules
 
 
+def find_settings_by_identifier(search_dict: dict, identifier: int):
+    for key, value in search_dict.items():
+        if value.identifier == identifier:
+            return key, value
+    return None, None
+
+
 class ModuleSettings:
     # signal when new settings are loaded. Action and Dialog can connect to this signal to apply the new settings
 

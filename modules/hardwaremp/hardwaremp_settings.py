@@ -4,7 +4,7 @@ import re
 
 from PyQt5 import QtGui
 
-from core.module_settings import ModuleSettings
+from core.module_settings import ModuleSettings, find_settings_by_identifier
 from modules.hardwaremp.hardwaremp_inputtypes import HardwareInputTypes
 from modules.joanmodules import JOANModules
 
@@ -85,28 +85,21 @@ class HardwareMPSettings(ModuleSettings):
 
         return input_settings
 
-    def remove_hardware_input(self, input_name):
+    def remove_hardware_input(self, input_name: str):
         # Find the identifier in input_name. Assumption: the identifier is the first number
         identifier = [int(s) for s in re.findall(r'-?\d+\.?\d*', input_name)][0]
 
         if 'Keyboard' in input_name:
-            key, _ = self.find_settings_by_identifier(self.keyboards, identifier)
+            key, _ = find_settings_by_identifier(self.keyboards, identifier)
             self.keyboards.pop(key)
 
         if 'Joystick' in input_name:
-            key, _ = self.find_settings_by_identifier(self.joysticks, identifier)
+            key, _ = find_settings_by_identifier(self.joysticks, identifier)
             self.joysticks.pop(key)
 
         if 'SensoDrive' in input_name:
-            key, _ = self.find_settings_by_identifier(self.sensodrives, identifier)
+            key, _ = find_settings_by_identifier(self.sensodrives, identifier)
             self.sensodrives.pop(key)
-
-    @staticmethod
-    def find_settings_by_identifier(search_dict, identifier):
-        for key, value in search_dict.items():
-            if value.identifier == identifier:
-                return key, value
-        return None, None
 
 
 class KeyBoardSettings:
