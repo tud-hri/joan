@@ -17,6 +17,7 @@ class CarlaInterfaceDialog(ModuleDialog):
         self.connected_carla = False
         self.old_nr_cars = 0
         self.i = 1
+        self._agent_tabs_dict = {}
         # self._module_widget.btn_spawn_all.clicked.connect(self.module_manager.spawn_all)
         # self._module_widget.btn_destroy_all.clicked.connect(self.module_manager.destroy_all)
         # self._module_widget.btn_remove_all.clicked.connect(self.module_manager.remove_all)
@@ -83,7 +84,25 @@ class CarlaInterfaceDialog(ModuleDialog):
     def add_selected_agent(self):
         chosen_agent = self._agent_type_dialog.combo_agent_type.itemData(
             self._agent_type_dialog.combo_agent_type.currentIndex())
-        self.module_manager.add_agent(chosen_agent)
+        agent_name = self.module_manager._add_agent(chosen_agent)
+
+        # Adding tab
+        self._agent_tabs_dict[agent_name] = uic.loadUi(chosen_agent.hardware_tab_ui_file)
+        self._agent_tabs_dict[agent_name].group_agent.setTitle(agent_name)
+        self._module_widget.agent_list_layout.addWidget(self._agent_tabs_dict[agent_name])
+
+        # Connecting buttons
+        self._agent_tabs_dict[agent_name].btn_settings.clicked.connect(
+            lambda: self.module_manager._open_settings_dialog(agent_name))
+        self._agent_tabs_dict[agent_name].btn_remove_agent.clicked.connect(lambda: self._remove_agent(agent_name))
+
+    def _remove_agent(self, agent_name):
+        # Remove dialog
+        self._agent_tabs_dict[agent_name].setParent(None)
+        del self._agent_tabs_dict[agent_name]
+
+        # We remove the settings dialog and settings object in the module_manager class
+        self.module_manager._remove_agent(agent_name)
 
     def disconnect_carla(self, connected):
         """
