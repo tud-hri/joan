@@ -3,7 +3,7 @@ import os
 import hid
 from PyQt5 import QtWidgets, uic, QtCore
 
-from modules.hardwaremp.hardwaremp_inputtypes import HardwareInputTypes
+from modules.hardwaremanager.hardwaremanager_inputtypes import HardwareInputTypes
 
 
 class JoystickSettingsDialog(QtWidgets.QDialog):  # TODO: losse files maken voor alle classes
@@ -248,7 +248,7 @@ class JoystickSettingsDialog(QtWidgets.QDialog):  # TODO: losse files maken voor
             self.value_preview_check_boxes.append(check_box)
 
 
-class JOANJoystickMP:
+class JOANJoystickProcess:
     def __init__(self, settings, shared_variables):
         # Initialize Variables
         self.brake = 0

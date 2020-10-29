@@ -4,7 +4,7 @@ import multiprocessing as mp
 from PyQt5 import QtGui
 
 from core.module_settings import ModuleSettings, find_settings_by_identifier
-from modules.hardwaremp.hardwaremp_inputtypes import HardwareInputTypes
+from modules.hardwaremanager.hardwaremanager_inputtypes import HardwareInputTypes
 from modules.joanmodules import JOANModules
 
 

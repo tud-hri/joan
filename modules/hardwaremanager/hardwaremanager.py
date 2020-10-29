@@ -1,9 +1,9 @@
 from core.module_manager import ModuleManager
 from modules.joanmodules import JOANModules
-from .hardwaremp_inputtypes import HardwareInputTypes
+from .hardwaremanager_inputtypes import HardwareInputTypes
 
 
-class HardwareMPManager(ModuleManager):
+class HardwareManager(ModuleManager):
     """Hardwaremanager keeps track of which inputs are being used with what settings. """
 
     def __init__(self, time_step_in_ms=10, parent=None):

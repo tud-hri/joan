@@ -14,24 +14,24 @@ class JOANModules(Enum):
 
     @property
     def manager(self):
-        from modules.hardwaremp.hardwaremp_manager import HardwareMPManager
+        from modules.hardwaremanager.hardwaremanager import HardwareManager
         from modules.template.template_manager import TemplateManager
 
-        return {JOANModules.HARDWARE_MP: HardwareMPManager,
+        return {JOANModules.HARDWARE_MP: HardwareManager,
                 JOANModules.TEMPLATE: TemplateManager}[self]
 
     @property
     def dialog(self):
-        from modules.hardwaremp.hardwaremp_dialog import HardwareMPDialog
+        from modules.hardwaremanager.hardwaremanager_dialog import HardwareManagerDialog
         from modules.template.template_dialog import TemplateDialog
 
-        return {JOANModules.HARDWARE_MP: HardwareMPDialog,
+        return {JOANModules.HARDWARE_MP: HardwareManagerDialog,
                 JOANModules.TEMPLATE: TemplateDialog}[self]
 
     @property
     def settings(self):
         from modules.template.template_settings import TemplateSettings
-        from modules.hardwaremp.hardwaremp_settings import HardwareMPSettings
+        from modules.hardwaremanager.hardwaremanager_settings import HardwareMPSettings
 
         return {JOANModules.TEMPLATE: TemplateSettings,
                 JOANModules.HARDWARE_MP: HardwareMPSettings
@@ -40,7 +40,7 @@ class JOANModules(Enum):
 
     @property
     def shared_variables(self):
-        from modules.hardwaremp.hardwaremp_sharedvariables import HardwareSharedVariables
+        from modules.hardwaremanager.hardwaremanager_sharedvariables import HardwareSharedVariables
         from modules.template.template_sharedvalues import TemplateSharedVariables
 
         return {JOANModules.HARDWARE_MP: HardwareSharedVariables,
@@ -48,16 +48,16 @@ class JOANModules(Enum):
 
     @property
     def process(self):
-        from modules.hardwaremp.hardwaremp_process import HardwareMPProcess
+        from modules.hardwaremanager.hardwaremanager_process import HardwareManagerProcess
         from modules.template.template_process import TemplateProcess
 
-        return {JOANModules.HARDWARE_MP: HardwareMPProcess,
+        return {JOANModules.HARDWARE_MP: HardwareManagerProcess,
                 JOANModules.TEMPLATE: TemplateProcess}[self]
 
     @property
     def ui_file(self):
         path_to_modules = os.path.dirname(os.path.realpath(__file__))
-        return {JOANModules.HARDWARE_MP: os.path.join(path_to_modules, "hardwaremp/hardwaremp_dialog.ui"),
+        return {JOANModules.HARDWARE_MP: os.path.join(path_to_modules, "hardwaremanager/hardwaremanager_dialog.ui"),
                 JOANModules.TEMPLATE: os.path.join(path_to_modules, "template/template_dialog.ui")}[self]
 
     def __str__(self):

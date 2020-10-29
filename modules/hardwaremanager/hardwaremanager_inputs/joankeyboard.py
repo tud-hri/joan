@@ -3,7 +3,7 @@ import os
 import keyboard
 from PyQt5 import QtWidgets, QtGui, uic
 
-from modules.hardwaremp.hardwaremp_inputtypes import HardwareInputTypes
+from modules.hardwaremanager.hardwaremanager_inputtypes import HardwareInputTypes
 
 
 class KeyBoardSettingsDialog(QtWidgets.QDialog):  # TODO: aparte files voor classes maken
@@ -135,7 +135,7 @@ class KeyBoardSettingsDialog(QtWidgets.QDialog):  # TODO: aparte files voor clas
                 self.btn_set_keys.setEnabled(True)
 
 
-class JOANKeyboardMP:
+class JOANKeyboardProcess:
     """
     Main class for the Keyboard input in a seperate multiprocess, this will loop!. Make sure that the things you do in this class are serializable, else
     it will fail.

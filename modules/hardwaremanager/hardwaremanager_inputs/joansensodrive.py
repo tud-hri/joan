@@ -1,13 +1,13 @@
 import math
 import multiprocessing as mp
 import os
-import time
 import queue
+import time
 
 from PyQt5 import uic, QtWidgets
 
-from modules.hardwaremp.hardwaremp_inputclasses.PCANBasic import *
-from modules.hardwaremp.hardwaremp_settings import SensoDriveSettings
+from modules.hardwaremanager.hardwaremanager_inputs.PCANBasic import *
+from modules.hardwaremanager.hardwaremanager_settings import SensoDriveSettings
 
 """
 These global parameters are used to make the message ID's more identifiable than just the hex nr.
@@ -92,7 +92,8 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):  # TODO aparte files voor cla
         """
         self._display_values(SensoDriveSettings())
 
-class JOANSensoDriveMP():
+
+class JOANSensoDriveProcess:
     def __init__(self, settings, shared_variables):
         super().__init__()
 
@@ -103,12 +104,12 @@ class JOANSensoDriveMP():
         self.shared_variables = shared_variables
 
         # Initialize communication pipe between seperate sensodrive process
-        self.parent_pipe, child_pipe = mp.Pipe(duplex= True)
+        self.parent_pipe, child_pipe = mp.Pipe(duplex=True)
 
         # Create the sensodrive communication object with needed events and pipe
         comm = SensoDriveComm(turn_on_event=settings.turn_on_event, turn_off_event=settings.turn_off_event,
-                               close_event=settings.close_event, clear_error_event=settings.clear_error_event,
-                               child_pipe=child_pipe, state_queue= settings.state_queue)
+                              close_event=settings.close_event, clear_error_event=settings.clear_error_event,
+                              child_pipe=child_pipe, state_queue=settings.state_queue)
 
         # Start the communication process when it is created
         comm.start()
@@ -137,7 +138,8 @@ class SensoDriveComm(mp.Process):
     This class is a seperate mp.Process which will start when it is created. It loops at approximately 10ms to keep the sensodrive from shutting off due to
     the watchdog.
     """
-    def __init__(self, turn_on_event, turn_off_event, close_event, clear_error_event, child_pipe , state_queue):
+
+    def __init__(self, turn_on_event, turn_off_event, close_event, clear_error_event, child_pipe, state_queue):
         """
         Initialize the class with events and communication parameters: child_pipe and state_queue
 
@@ -191,7 +193,6 @@ class SensoDriveComm(mp.Process):
         self._time_step_in_ns = 10000000
         # Here we can initialize our PCAN Communication (WE HAVE TO DO THIS HERE ELSE WE WONT HAVE THE PCAN OBJECT IN OUR DESIRED PROCESS
         self.initialize()
-
 
         while True:
             t0 = time.perf_counter_ns()
@@ -374,7 +375,7 @@ class SensoDriveComm(mp.Process):
         self.sensodrive_initialization_message.DATA[7] = torque_limit_beyond_endstops_bytes[0]
 
         self.pcan_object.Write(self._pcan_channel, self.sensodrive_initialization_message)
-        #time.sleep(0.002)
+        # time.sleep(0.002)
         self.pcan_object.Read(self._pcan_channel)
 
         # do not switch mode
@@ -385,7 +386,7 @@ class SensoDriveComm(mp.Process):
         self.steering_wheel_parameters = self._map_si_to_sensodrive(self.settings_dict)
 
         self.pcan_object.Write(self._pcan_channel, self.sensodrive_initialization_message)
-        #time.sleep(0.02)
+        # time.sleep(0.02)
         response = self.pcan_object.Read(self._pcan_channel)
 
         self._current_state_hex = response[1].DATA[0]
@@ -458,9 +459,7 @@ class SensoDriveComm(mp.Process):
         self.sensodrive_initialization_message.DATA[7] = torque_limit_beyond_endstops_bytes[0]
 
         self.pcan_object.Write(self._pcan_channel, self.sensodrive_initialization_message)
-        #time.sleep(0.002)
+        # time.sleep(0.002)
         response = self.pcan_object.Read(self._pcan_channel)
 
         self._current_state_hex = response[1].DATA[0]
-
-

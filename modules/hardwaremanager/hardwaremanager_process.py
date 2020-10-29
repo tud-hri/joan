@@ -1,9 +1,9 @@
 from core.module_process import ModuleProcess
-from modules.hardwaremp.hardwaremp_inputtypes import HardwareInputTypes
+from modules.hardwaremanager.hardwaremanager_inputtypes import HardwareInputTypes
 from modules.joanmodules import JOANModules
 
 
-class HardwareMPProcess(ModuleProcess):
+class HardwareManagerProcess(ModuleProcess):
     """
     Overall process that inherits from ModuleProcess (will loop at the desired frequency)
     """

@@ -8,13 +8,13 @@ from core.module_dialog import ModuleDialog
 from core.module_manager import ModuleManager
 from core.statesenum import State
 from modules.joanmodules import JOANModules
-from .hardwaremp_inputtypes import HardwareInputTypes
+from .hardwaremanager_inputtypes import HardwareInputTypes
 
 msg_box = QMessageBox()
 msg_box.setTextFormat(QtCore.Qt.RichText)
 
 
-class HardwareMPDialog(ModuleDialog):
+class HardwareManagerDialog(ModuleDialog):
     def __init__(self, module_manager: ModuleManager, parent=None):
         super().__init__(module=JOANModules.HARDWARE_MP, module_manager=module_manager, parent=parent)
 

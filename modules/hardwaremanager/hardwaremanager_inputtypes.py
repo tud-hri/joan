@@ -21,20 +21,20 @@ class HardwareInputTypes(enum.Enum):
 
     @property
     def klass_mp(self):
-        from modules.hardwaremp.hardwaremp_inputclasses.joankeyboard import JOANKeyboardMP
-        from modules.hardwaremp.hardwaremp_inputclasses.joanjoystick import JOANJoystickMP
-        from modules.hardwaremp.hardwaremp_inputclasses.joansensodrive import JOANSensoDriveMP
+        from modules.hardwaremanager.hardwaremanager_inputs.joankeyboard import JOANKeyboardProcess
+        from modules.hardwaremanager.hardwaremanager_inputs.joanjoystick import JOANJoystickProcess
+        from modules.hardwaremanager.hardwaremanager_inputs.joansensodrive import JOANSensoDriveProcess
 
-        return {HardwareInputTypes.KEYBOARD: JOANKeyboardMP,
-                HardwareInputTypes.JOYSTICK: JOANJoystickMP,
-                HardwareInputTypes.SENSODRIVE: JOANSensoDriveMP
+        return {HardwareInputTypes.KEYBOARD: JOANKeyboardProcess,
+                HardwareInputTypes.JOYSTICK: JOANJoystickProcess,
+                HardwareInputTypes.SENSODRIVE: JOANSensoDriveProcess
                 }[self]
 
     @property
     def settings_dialog(self):
-        from modules.hardwaremp.hardwaremp_inputclasses.joankeyboard import KeyBoardSettingsDialog
-        from modules.hardwaremp.hardwaremp_inputclasses.joanjoystick import JoystickSettingsDialog
-        from modules.hardwaremp.hardwaremp_inputclasses.joansensodrive import SensoDriveSettingsDialog
+        from modules.hardwaremanager.hardwaremanager_inputs.joankeyboard import KeyBoardSettingsDialog
+        from modules.hardwaremanager.hardwaremanager_inputs.joanjoystick import JoystickSettingsDialog
+        from modules.hardwaremanager.hardwaremanager_inputs.joansensodrive import SensoDriveSettingsDialog
 
         return {HardwareInputTypes.KEYBOARD: KeyBoardSettingsDialog,
                 HardwareInputTypes.JOYSTICK: JoystickSettingsDialog,
@@ -43,9 +43,9 @@ class HardwareInputTypes(enum.Enum):
 
     @property
     def shared_variables(self):
-        from modules.hardwaremp.hardwaremp_sharedvariables import KeyboardSharedVariables
-        from modules.hardwaremp.hardwaremp_sharedvariables import JoystickSharedVariables
-        from modules.hardwaremp.hardwaremp_sharedvariables import SensoDriveSharedVariables
+        from modules.hardwaremanager.hardwaremanager_sharedvariables import KeyboardSharedVariables
+        from modules.hardwaremanager.hardwaremanager_sharedvariables import JoystickSharedVariables
+        from modules.hardwaremanager.hardwaremanager_sharedvariables import SensoDriveSharedVariables
 
         return {HardwareInputTypes.KEYBOARD: KeyboardSharedVariables,
                 HardwareInputTypes.JOYSTICK: JoystickSharedVariables,
@@ -54,7 +54,7 @@ class HardwareInputTypes(enum.Enum):
 
     @property
     def hardware_tab_ui_file(self):
-        path_to_uis = os.path.join(os.path.dirname(os.path.realpath(__file__)), "hardwaremp_inputclasses/ui/")
+        path_to_uis = os.path.join(os.path.dirname(os.path.realpath(__file__)), "hardwaremanager_inputs/ui/")
 
         return {HardwareInputTypes.KEYBOARD: os.path.join(path_to_uis, "hardware_tab.ui"),
                 HardwareInputTypes.JOYSTICK: os.path.join(path_to_uis, "hardware_tab.ui"),
@@ -63,9 +63,9 @@ class HardwareInputTypes(enum.Enum):
 
     @property
     def settings(self):
-        from modules.hardwaremp.hardwaremp_settings import KeyBoardSettings
-        from modules.hardwaremp.hardwaremp_settings import JoyStickSettings
-        from modules.hardwaremp.hardwaremp_settings import SensoDriveSettings
+        from modules.hardwaremanager.hardwaremanager_settings import KeyBoardSettings
+        from modules.hardwaremanager.hardwaremanager_settings import JoyStickSettings
+        from modules.hardwaremanager.hardwaremanager_settings import SensoDriveSettings
 
         return {HardwareInputTypes.KEYBOARD: KeyBoardSettings,
                 HardwareInputTypes.JOYSTICK: JoyStickSettings,
