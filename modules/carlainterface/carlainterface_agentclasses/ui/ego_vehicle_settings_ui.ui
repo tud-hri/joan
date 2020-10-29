@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>221</width>
-    <height>332</height>
+    <width>393</width>
+    <height>427</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,43 +20,10 @@
       <string>Ego Vehicle Parameters</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
-      <item row="0" column="0">
-       <widget class="QLabel" name="lblInput">
-        <property name="font">
-         <font>
-          <pointsize>8</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Input:</string>
-        </property>
-       </widget>
+      <item row="10" column="0">
+       <widget class="QSpinBox" name="spin_velocity"/>
       </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="label_2">
-        <property name="font">
-         <font>
-          <pointsize>8</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>SW Controller:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="0">
-       <widget class="QLabel" name="label">
-        <property name="font">
-         <font>
-          <pointsize>8</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>CarType:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0">
+      <item row="5" column="0">
        <widget class="QLabel" name="lblSpawnpoints">
         <property name="font">
          <font>
@@ -71,23 +38,39 @@
        </widget>
       </item>
       <item row="9" column="0">
-       <widget class="QSpinBox" name="spin_velocity"/>
-      </item>
-      <item row="8" column="0">
        <widget class="QCheckBox" name="check_box_set_vel">
         <property name="text">
          <string>Cruise Control:</string>
         </property>
        </widget>
       </item>
-      <item row="9" column="1">
+      <item row="7" column="0">
+       <widget class="QLabel" name="label">
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>CarType:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="10" column="1">
        <widget class="QLabel" name="label_3">
         <property name="text">
          <string>km/h</string>
         </property>
        </widget>
       </item>
-      <item row="7" column="0" colspan="2">
+      <item row="11" column="0" colspan="2">
+       <widget class="QPushButton" name="btn_apply_parameters">
+        <property name="text">
+         <string>Apply changes without closing dialog</string>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="0" colspan="2">
        <widget class="QComboBox" name="combo_car_type">
         <property name="font">
          <font>
@@ -96,16 +79,21 @@
         </property>
        </widget>
       </item>
-      <item row="5" column="0" colspan="2">
-       <widget class="QSpinBox" name="spin_spawn_points">
+      <item row="2" column="0" colspan="2">
+       <widget class="QComboBox" name="combo_input">
         <property name="font">
          <font>
           <pointsize>8</pointsize>
          </font>
         </property>
+        <item>
+         <property name="text">
+          <string>None</string>
+         </property>
+        </item>
        </widget>
       </item>
-      <item row="3" column="0" colspan="2">
+      <item row="4" column="0" colspan="2">
        <widget class="QComboBox" name="combo_sw_controller">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -125,11 +113,48 @@
         </item>
        </widget>
       </item>
-      <item row="1" column="0" colspan="2">
-       <widget class="QComboBox" name="combo_input">
+      <item row="0" column="0" colspan="2">
+       <widget class="QPushButton" name="btn_update">
         <property name="font">
          <font>
           <pointsize>8</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Update Settings from other modules</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>SW Controller:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="lblInput">
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Input:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0" colspan="2">
+       <widget class="QComboBox" name="combo_spawn_points">
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <kerning>true</kerning>
          </font>
         </property>
         <item>
@@ -137,13 +162,6 @@
           <string>None</string>
          </property>
         </item>
-       </widget>
-      </item>
-      <item row="10" column="0" colspan="2">
-       <widget class="QPushButton" name="btn_apply_parameters">
-        <property name="text">
-         <string>Apply changes without closing dialog</string>
-        </property>
        </widget>
       </item>
      </layout>

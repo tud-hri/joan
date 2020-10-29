@@ -6,7 +6,7 @@ from core.statesenum import State
 from core.status import Status
 from .performancemonitordialog import PerformanceMonitorDialog
 from .settingsoverviewdialog import SettingsOverviewDialog
-
+from modules.joanmodules import JOANModules
 
 def button_show_close_checked(button):
     if button.isChecked():
@@ -95,7 +95,10 @@ class HQWindow(QtWidgets.QMainWindow):
 
         module_dialog = module_manager.module_dialog
 
-        widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/module_card.ui"))
+        if module_manager.module == JOANModules.CARLA_INTERFACE:
+            widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/module_card_carlainterface.ui"))
+        else:
+            widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/module_card.ui"))
 
         widget.setObjectName(name)
         widget.grpbox.setTitle(name)

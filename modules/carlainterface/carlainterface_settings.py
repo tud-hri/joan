@@ -25,7 +25,7 @@ class EgoVehicleSettings:
         """
         self.selected_input = 'None'
         self.selected_controller = 'None'
-        self.selected_spawnpoint = 0
+        self.selected_spawnpoint = 'None'
         self.selected_car = 'hapticslab.audi'
         self.velocity = 80
         self.set_velocity = False

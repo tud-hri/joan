@@ -1,7 +1,32 @@
 from core.module_manager import ModuleManager
 from modules.joanmodules import JOANModules
 from modules.carlainterface.carlainterface_agenttypes import AgentTypes
-from core.settings import Settings
+from PyQt5 import QtCore
+from PyQt5.QtWidgets import QMessageBox, QApplication
+from PyQt5.QtCore import Qt
+
+import sys, os, glob
+import time
+
+msg_box = QMessageBox()
+msg_box.setTextFormat(QtCore.Qt.RichText)
+
+try:
+    sys.path.append(glob.glob('carla_pythonapi/carla-*%d.%d-%s.egg' % (
+        sys.version_info.major,
+        sys.version_info.minor,
+        'win-amd64' if os.name == 'nt' else 'linux-x86_64'))[0])
+    import carla
+
+except IndexError:
+    msg_box.setText("""
+                <h3> Could not find the carla python API! </h3>
+                <h3> Check whether you copied the egg file correctly, reference:
+            <a href=\"https://joan.readthedocs.io/en/latest/setup-run-joan/#getting-necessary-python3-libraries-to-run-joan\">https://joan.readthedocs.io/en/latest/setup-run-joan/#getting-necessary-python3-libraries-to-run-joan</a>
+            </h3>
+            """)
+    msg_box.exec()
+    pass
 
 class CarlaInterfaceManager(ModuleManager):
     """
@@ -12,11 +37,58 @@ class CarlaInterfaceManager(ModuleManager):
     def __init__(self, time_step_in_ms=10, parent=None):
         super().__init__(module=JOANModules.CARLA_INTERFACE, time_step_in_ms=time_step_in_ms, parent=parent)
         self._agent_settingdialogs_dict = {}
+        # CARLA connection variables:
+        self.host = 'localhost'
+        self.port = 2000
+        self._world = None
+        self.connected = False
+        self.vehicle_tags = []
+        self.spawn_points = []
 
-        print(self.singleton_settings.all_settings)
+        self.connected = self.connect_carla()
+    def connect_carla(self):
+        """
+        This function will try and connect to carla server if it is running in unreal
+        If not a message box will pop up and the module will transition to error state.
+        """
+        if not self.connected:
+            try:
+                QApplication.setOverrideCursor(Qt.WaitCursor)
+                self.client = carla.Client(self.host, self.port)  # connecting to server
+                self.client.set_timeout(2.0)
+                time.sleep(2)
+                self._world = self.client.get_world()  # get world object (contains everything)
+                blueprint_library = self._world.get_blueprint_library()
+                self._vehicle_bp_library = blueprint_library.filter('vehicle.*')
+                for items in self._vehicle_bp_library:
+                    self.vehicle_tags.append(items.id[8:])
+                world_map = self._world.get_map()
+                self.spawn_points = world_map.get_spawn_points()
+                self.carla_waypoints = world_map.generate_waypoints(0.5)
+                print('JOAN connected to CARLA Server!')
+                QApplication.restoreOverrideCursor()
+                self.connected = True
 
-    def _open_settings_dialog(self, input_name):
-        self._agent_settingdialogs_dict[input_name].show()
+                # # TODO: untested, settings are only able to be applied after connecting to CARLA
+                # self.apply_loaded_settings()
+
+            except RuntimeError as inst:
+                QApplication.restoreOverrideCursor()
+                self.msg.setText('Could not connect check if CARLA is running in Unreal')
+                self.msg.exec()
+                self.connected = False
+                QApplication.restoreOverrideCursor()
+
+        else:
+            self.msg.setText('Already Connected')
+            self.msg.exec()
+
+        return self.connected
+
+
+    def _open_settings_dialog(self, agent_name):
+        self._agent_settingdialogs_dict[agent_name].show()
+        self._get_update_from_other_modules(agent_name)
 
     def _add_agent(self, agent_type, agent_settings=None):
         """
@@ -46,7 +118,10 @@ class CarlaInterfaceManager(ModuleManager):
 
         # create dialog thing
         agent_name = '{0!s} {1!s}'.format(agent_type, str(agent_settings.identifier))
+
+        # link buttons within settings dialog:
         self._agent_settingdialogs_dict[agent_name] = agent_type.klass_dialog(agent_settings)
+        self._agent_settingdialogs_dict[agent_name].btn_update.clicked.connect(lambda: self._get_update_from_other_modules(agent_name))
         return agent_name
 
     def _remove_agent(self, agent_name):
@@ -65,7 +140,24 @@ class CarlaInterfaceManager(ModuleManager):
         self._agent_settingdialogs_dict[agent_name].setParent(None)
         del self._agent_settingdialogs_dict[agent_name]
 
-    def _get_update_from_other_modules(self):
-        for module in JOANModules:
-            joe = Settings.get_settings(module)
-            print(joe)
+    def _get_update_from_other_modules(self, agent_name):
+        ## Update ego vehicle inputs
+        if AgentTypes.EGO_VEHICLE.__str__() in agent_name:
+            # Update hardware inputs according to current settings:
+            HardwareMPSettings = self.singleton_settings.get_settings(JOANModules.HARDWARE_MP)
+            for keyboards in HardwareMPSettings.keyboards.values():
+                self._agent_settingdialogs_dict[agent_name].combo_input.addItem("Keyboard " + str(keyboards.identifier))
+            for joysticks in HardwareMPSettings.joysticks.values():
+                self._agent_settingdialogs_dict[agent_name].combo_input.addItem("Joystick " + str(joysticks.identifier))
+            for sensodrives in HardwareMPSettings.sensodrives.values():
+                self._agent_settingdialogs_dict[agent_name].combo_input.addItem("SensoDrive " + str(sensodrives.identifier))
+
+            # update available vehicles
+            for vehicle_tag in self.vehicle_tags:
+                self._agent_settingdialogs_dict[agent_name].combo_car_type.addItem(vehicle_tag)
+
+            # update available spawn_points:
+            for spawn_point in self.spawn_points:
+                self._agent_settingdialogs_dict[agent_name].combo_spawn_points.addItem("Spawnpoint " + str(spawn_point))
+
+

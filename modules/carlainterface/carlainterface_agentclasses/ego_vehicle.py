@@ -1,10 +1,13 @@
 from PyQt5 import uic, QtWidgets
 import os
 from modules.carlainterface.carlainterface_agenttypes import AgentTypes
+from modules.joanmodules import JOANModules
 
 class EgoVehicle():
-    def __init__(self,vehicle_type):
+    def __init__(self, vehicle_type, module_manager):
         self.vehicle_type = vehicle_type
+        self.module_manager = module_manager
+        print('dikke kak')
 
 class EgoVehicleSettingsDialog(QtWidgets.QDialog):
     def __init__(self, ego_vehicle_settings, parent = None):
@@ -22,7 +25,7 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
         self.settings.selected_input = self.combo_input.currentText()
         self.settings.selected_controller = self.combo_sw_controller.currentText()
         self.settings.selected_car = self.combo_car_type.currentText()
-        self.settings.selected_spawnpoint = self.spin_spawn_points.value()
+        self.settings.selected_spawnpoint = self.combo_spawn_points.currentText()
         self.settings.set_velocity = self.check_box_set_vel.isChecked()
         self.display_values()
 
@@ -31,9 +34,9 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
         self.settings.selected_input = self.combo_input.currentText()
         self.settings.selected_controller = self.combo_sw_controller.currentText()
         self.settings.selected_car = self.combo_car_type.currentText()
-        self.settings.selected_spawnpoint = self.spin_spawn_points.value()
+        self.settings.selected_spawnpoint = self.combo_spawn_points.currentText()
         self.settings.set_velocity = self.check_box_set_vel.isChecked()
-
+        print(self.settings.selected_spawnpoint)
         super().accept()
 
     def display_values(self, settings_to_display=None):
@@ -49,10 +52,11 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
         idx_car = self.combo_car_type.findText(settings_to_display.selected_car)
         self.combo_car_type.setCurrentIndex(idx_car)
 
-        self.spin_spawn_points.setValue(settings_to_display.selected_spawnpoint)
+        self.combo_spawn_points.setCurrentText(settings_to_display.selected_spawnpoint)
 
         self.spin_velocity.setValue(settings_to_display.velocity)
         self.check_box_set_vel.setChecked(settings_to_display.set_velocity)
 
     def _set_default_values(self):
         self.display_values(AgentTypes.EGO_VEHICLE.settings())
+
