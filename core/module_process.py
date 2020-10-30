@@ -127,7 +127,11 @@ class ModuleProcess(mp.Process):
             execution_time = time.perf_counter_ns() - t0
 
             # sleep for time step, taking the execution time into account
-            time.sleep((self._time_step_in_ns - execution_time) * 1e-9)
+            if (self._time_step_in_ns - execution_time) * 1e-9 > 0:
+                time.sleep((self._time_step_in_ns - execution_time) * 1e-9)
+
+    def close_down(self):
+        pass
 
     def read_from_shared_variables(self):
         """

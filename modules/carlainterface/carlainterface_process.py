@@ -3,6 +3,7 @@ from modules.joanmodules import JOANModules
 from datetime import datetime
 from modules.carlainterface.carlainterface_agenttypes import AgentTypes
 import sys, glob, os
+from core.statesenum import State
 #TODO Maybe check this again, however it should not even start when it cant find the library the first time
 import time
 sys.path.append(glob.glob('carla_pythonapi/carla-*%d.%d-%s.egg' % (
@@ -46,6 +47,14 @@ class CarlaInterfaceProcess(ModuleProcess):
         for agents in self.agent_objects:
             # will perform the mp input class for eaach available input
             self.agent_objects[agents].do()
+
+        if self._module_shared_variables.state == State.STOPPED.value:
+            for agents in self.agent_objects:
+                # will perform the mp input class for eaach available input
+                self.agent_objects[agents].destroy()
+
+
+
 
     def connect_carla(self, host, port):
         "We also want a connection to carla in our multiprocess therefore we need this function here"

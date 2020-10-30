@@ -38,7 +38,6 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
         self.settings.selected_car = self.combo_car_type.currentText()
         self.settings.selected_spawnpoint = self.combo_spawnpoints.currentText()
         self.settings.set_velocity = self.check_box_set_vel.isChecked()
-        print(self.settings.selected_spawnpoint)
         super().accept()
 
     def display_values(self, settings_to_display=None):
@@ -110,9 +109,18 @@ class EgoVehicleMP:
             self._control.hand_brake = self.carlainterface_mp.shared_variables_hardware.joysticks[identifier].handbrake
             self._control.brake = self.carlainterface_mp.shared_variables_hardware.joysticks[identifier].brake
             self._control.throttle = self.carlainterface_mp.shared_variables_hardware.joysticks[identifier].throttle
+        if 'SensoDrive' in self.settings.selected_input:
+            identifier = int(self.settings.selected_input.replace('SensoDrive ', ''))
+            self._control.steer = self.carlainterface_mp.shared_variables_hardware.sensodrives[identifier].steering_angle /math.radians(450)
+            self._control.reverse = self.carlainterface_mp.shared_variables_hardware.sensodrives[identifier].reverse
+            self._control.hand_brake = self.carlainterface_mp.shared_variables_hardware.sensodrives[identifier].handbrake
+            self._control.brake = self.carlainterface_mp.shared_variables_hardware.sensodrives[identifier].brake
+            self._control.throttle = self.carlainterface_mp.shared_variables_hardware.sensodrives[identifier].throttle
 
 
         self.spawned_vehicle.apply_control(self._control)
 
 
 
+    def destroy(self):
+        self.spawned_vehicle.destroy()
