@@ -4,6 +4,7 @@ from modules.joanmodules import JOANModules
 import os
 from PyQt5 import uic
 from modules.carlainterface.carlainterface_agenttypes import AgentTypes
+from core.statesenum import State
 
 class CarlaInterfaceDialog(ModuleDialog):
     def __init__(self, module_manager: ModuleManager, parent=None):
@@ -18,17 +19,6 @@ class CarlaInterfaceDialog(ModuleDialog):
         self.old_nr_cars = 0
         self.i = 1
         self._agent_tabs_dict = {}
-        # self._module_widget.btn_destroy_all.clicked.connect(self.module_manager.destroy_all)
-        # self._module_widget.btn_remove_all.clicked.connect(self.module_manager.remove_all)
-        #
-        # self._module_widget.btn_disconnect.clicked.connect(self.module_manager.disconnect_carla)
-        # self._module_widget.btn_connect.clicked.connect(self.module_manager.connect_carla)
-        # self._module_widget.groupVehicles.setEnabled(False)
-        # self._module_widget.btn_add_agent.setEnabled(False)
-        # self._module_widget.btn_disconnect.setEnabled(False)
-        # self._module_widget.btn_spawn_all.setEnabled(False)
-        # self._module_widget.btn_destroy_all.setEnabled(False)
-        # self._module_widget.btn_remove_all.setEnabled(False)
 
         # setup dialogs
         self._agent_type_dialog = uic.loadUi(
@@ -38,40 +28,15 @@ class CarlaInterfaceDialog(ModuleDialog):
         # connect buttons
         self._module_widget.btn_add_agent.clicked.connect(self._agent_selection)
 
-    def handle_state_change(self):
+    def _handle_state_change(self):
         """"
         This function handles the enabling and disabling of the carla interface change
         """
-        super().handle_state_change()
-
-        self.connected_carla = self.module_manager.check_connection()
-        # make sure you can only disconnect in the ready state
-        if self.module_manager.state_machine.current_state == State.READY:
-            self.load_settings.setEnabled(self.connected_carla)
-            self._module_widget.groupVehicles.setEnabled(self.connected_carla)
-            self._module_widget.btn_add_agent.setEnabled(self.connected_carla)
-            self._module_widget.btn_spawn_all.setEnabled(self.connected_carla)
-            self._module_widget.btn_destroy_all.setEnabled(self.connected_carla)
-            self._module_widget.btn_remove_all.setEnabled(self.connected_carla)
-        elif self.module_manager.state_machine.current_state == State.RUNNING:
-            self.load_settings.setEnabled(False)
-            self._module_widget.btn_add_agent.setEnabled(False)
-            self._module_widget.btn_spawn_all.setEnabled(False)
-            self._module_widget.btn_destroy_all.setEnabled(False)
-            self._module_widget.btn_remove_all.setEnabled(False)
-        elif self.module_manager.state_machine.current_state == State.ERROR:
-            self.load_settings.setEnabled(False)
-            self._module_widget.btn_add_agent.setEnabled(False)
-            self._module_widget.btn_spawn_all.setEnabled(False)
-            self._module_widget.btn_destroy_all.setEnabled(False)
-            self._module_widget.btn_remove_all.setEnabled(False)
+        super()._handle_state_change()
+        if self.module_manager.state_machine.current_state == State.STOPPED:
+            self._module_widget.groupbox_agents.setEnabled(True)
         else:
-            self.load_settings.setEnabled(False)
-            # self._module_widget.groupVehicles.setEnabled(False)
-            self._module_widget.btn_add_agent.setEnabled(False)
-            self._module_widget.btn_spawn_all.setEnabled(False)
-            self._module_widget.btn_destroy_all.setEnabled(False)
-            self._module_widget.btn_remove_all.setEnabled(False)
+            self._module_widget.groupbox_agents.setEnabled(False)
 
     def _agent_selection(self):
         self._agent_type_dialog.combo_agent_type.clear()

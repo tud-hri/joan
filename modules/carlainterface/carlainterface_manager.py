@@ -45,7 +45,14 @@ class CarlaInterfaceManager(ModuleManager):
         self.vehicle_tags = []
         self.spawn_points = []
 
+
         self.connected = self.connect_carla()
+
+    def initialize(self):
+        super().initialize()
+        for egovehicle in self.module_settings.ego_vehicles.values():
+            self.shared_variables.ego_vehicles[egovehicle.identifier] = egovehicle.input_type.shared_variables()
+
     def connect_carla(self):
         """
         This function will try and connect to carla server if it is running in unreal
@@ -53,6 +60,7 @@ class CarlaInterfaceManager(ModuleManager):
         """
         if not self.connected:
             try:
+                self.spawn_points.clear()
                 QApplication.setOverrideCursor(Qt.WaitCursor)
                 self.client = carla.Client(self.host, self.port)  # connecting to server
                 self.client.set_timeout(2.0)
@@ -63,7 +71,9 @@ class CarlaInterfaceManager(ModuleManager):
                 for items in self._vehicle_bp_library:
                     self.vehicle_tags.append(items.id[8:])
                 world_map = self._world.get_map()
-                self.spawn_points = world_map.get_spawn_points()
+                spawn_point_objects = world_map.get_spawn_points()
+                for item in spawn_point_objects:
+                    self.spawn_points.append("Spawnpoint " + str(spawn_point_objects.index(item)))
                 self.carla_waypoints = world_map.generate_waypoints(0.5)
                 print('JOAN connected to CARLA Server!')
                 QApplication.restoreOverrideCursor()
@@ -74,8 +84,8 @@ class CarlaInterfaceManager(ModuleManager):
 
             except RuntimeError as inst:
                 QApplication.restoreOverrideCursor()
-                self.msg.setText('Could not connect check if CARLA is running in Unreal')
-                self.msg.exec()
+                msg_box.setText('Could not connect check if CARLA is running in Unreal')
+                msg_box.exec()
                 self.connected = False
                 QApplication.restoreOverrideCursor()
 
@@ -140,24 +150,43 @@ class CarlaInterfaceManager(ModuleManager):
         self._agent_settingdialogs_dict[agent_name].setParent(None)
         del self._agent_settingdialogs_dict[agent_name]
 
+    # Made this a seperate function because it will be easier to add your own function for different vehiclewithout making
+    # a big mess
     def _get_update_from_other_modules(self, agent_name):
-        ## Update ego vehicle inputs
+        #update ego_vehicle settings
+        self.update_ego_vehicle_settings(agent_name)
+
+    def update_ego_vehicle_settings(self, agent_name):
         if AgentTypes.EGO_VEHICLE.__str__() in agent_name:
+            ego_vehicle_identifier = int(agent_name.replace('Ego Vehicle', ''))
             # Update hardware inputs according to current settings:
+            self._agent_settingdialogs_dict[agent_name].combo_input.clear()
+            self._agent_settingdialogs_dict[agent_name].combo_input.addItem('None')
             HardwareMPSettings = self.singleton_settings.get_settings(JOANModules.HARDWARE_MP)
             for keyboards in HardwareMPSettings.keyboards.values():
-                self._agent_settingdialogs_dict[agent_name].combo_input.addItem("Keyboard " + str(keyboards.identifier))
+                self._agent_settingdialogs_dict[agent_name].combo_input.addItem(str(keyboards))
             for joysticks in HardwareMPSettings.joysticks.values():
-                self._agent_settingdialogs_dict[agent_name].combo_input.addItem("Joystick " + str(joysticks.identifier))
+                self._agent_settingdialogs_dict[agent_name].combo_input.addItem(str(joysticks))
             for sensodrives in HardwareMPSettings.sensodrives.values():
-                self._agent_settingdialogs_dict[agent_name].combo_input.addItem("SensoDrive " + str(sensodrives.identifier))
+                self._agent_settingdialogs_dict[agent_name].combo_input.addItem(str(sensodrives))
+            idx = self._agent_settingdialogs_dict[agent_name].combo_input.findText(
+                self.module_settings.ego_vehicles[ego_vehicle_identifier].selected_input)
+            if idx != -1:
+                self._agent_settingdialogs_dict[agent_name].combo_input.setCurrentIndex(idx)
 
             # update available vehicles
-            for vehicle_tag in self.vehicle_tags:
-                self._agent_settingdialogs_dict[agent_name].combo_car_type.addItem(vehicle_tag)
+            self._agent_settingdialogs_dict[agent_name].combo_car_type.clear()
+            self._agent_settingdialogs_dict[agent_name].combo_car_type.addItem('None')
+            self._agent_settingdialogs_dict[agent_name].combo_car_type.addItems(self.vehicle_tags)
+            idx = self._agent_settingdialogs_dict[agent_name].combo_car_type.findText(self.module_settings.ego_vehicles[ego_vehicle_identifier].selected_car)
+            if idx != -1:
+                self._agent_settingdialogs_dict[agent_name].combo_car_type.setCurrentIndex(idx)
 
             # update available spawn_points:
-            for spawn_point in self.spawn_points:
-                self._agent_settingdialogs_dict[agent_name].combo_spawn_points.addItem("Spawnpoint " + str(spawn_point))
-
-
+            self._agent_settingdialogs_dict[agent_name].combo_spawnpoints.clear()
+            self._agent_settingdialogs_dict[agent_name].combo_spawnpoints.addItem('None')
+            self._agent_settingdialogs_dict[agent_name].combo_spawnpoints.addItems(self.spawn_points)
+            idx = self._agent_settingdialogs_dict[agent_name].combo_spawnpoints.findText(
+                self.module_settings.ego_vehicles[ego_vehicle_identifier].selected_spawnpoint)
+            if idx != -1:
+                self._agent_settingdialogs_dict[agent_name].combo_spawnpoints.setCurrentIndex(idx)

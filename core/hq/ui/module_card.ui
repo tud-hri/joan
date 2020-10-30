@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>648</width>
-    <height>84</height>
+    <height>62</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -33,7 +33,6 @@
     <widget class="QGroupBox" name="grpbox">
      <property name="font">
       <font>
-       <pointsize>11</pointsize>
        <weight>50</weight>
        <bold>false</bold>
       </font>
@@ -44,8 +43,8 @@
      <property name="checkable">
       <bool>false</bool>
      </property>
-     <layout class="QGridLayout" name="gridLayout_2">
-      <item row="0" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
        <widget class="QPushButton" name="btn_showclose">
         <property name="maximumSize">
          <size>
@@ -58,7 +57,7 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
+      <item>
        <spacer name="horizontalSpacer">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -74,14 +73,14 @@
         </property>
        </spacer>
       </item>
-      <item row="0" column="2">
+      <item>
        <widget class="QLabel" name="label_2">
         <property name="text">
          <string>State:</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="3">
+      <item>
        <widget class="QLabel" name="lbl_state">
         <property name="minimumSize">
          <size>
@@ -94,7 +93,7 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="4">
+      <item>
        <spacer name="horizontalSpacer_3">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>

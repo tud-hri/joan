@@ -132,7 +132,9 @@ class HardwareMPDialog(ModuleDialog):
             msg_box.exec()
             return
         else:
-            hardware_input_name = self.module_manager._add_hardware_input(chosen_hardware_input)
+            [hardware_input_name, identifier] = self.module_manager._add_hardware_input(chosen_hardware_input)
+
+        print(identifier)
 
         # Adding tab
         self._hardware_input_tabs_dict[hardware_input_name] = uic.loadUi(chosen_hardware_input.hardware_tab_ui_file)
@@ -145,9 +147,9 @@ class HardwareMPDialog(ModuleDialog):
         self._hardware_input_tabs_dict[hardware_input_name].btn_remove_hardware.clicked.connect(lambda: self._remove_hardware_input_device(hardware_input_name))
 
         if 'SensoDrive' in hardware_input_name:
-            self._hardware_input_tabs_dict[hardware_input_name].btn_on.clicked.connect(lambda: self.module_manager._turn_on(hardware_input_name))
-            self._hardware_input_tabs_dict[hardware_input_name].btn_off.clicked.connect(lambda: self.module_manager._turn_off(hardware_input_name))
-            self._hardware_input_tabs_dict[hardware_input_name].btn_clear_error.clicked.connect(lambda: self.module_manager._clear_error(hardware_input_name))
+            self._hardware_input_tabs_dict[hardware_input_name].btn_on.clicked.connect(lambda: self.module_manager._turn_on(identifier))
+            self._hardware_input_tabs_dict[hardware_input_name].btn_off.clicked.connect(lambda: self.module_manager._turn_off(identifier))
+            self._hardware_input_tabs_dict[hardware_input_name].btn_clear_error.clicked.connect(lambda: self.module_manager._clear_error(identifier))
 
     def _remove_hardware_input_device(self, hardware_input_name):
         # Remove dialog

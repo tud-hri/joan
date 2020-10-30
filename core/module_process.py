@@ -103,6 +103,7 @@ class ModuleProcess(mp.Process):
         Keeps track of time.
         Shared variables should only be read or written to once per loop tick (e.g. read shared variables, store in local variables, and write to sv
         :return:
+        :return:
         """
         running = True
         while running:

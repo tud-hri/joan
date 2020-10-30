@@ -19,10 +19,10 @@ class AgentTypes(enum.Enum):
 
     @property
     def klass_mp(self):
-        from modules.carlainterface.carlainterface_agentclasses.ego_vehicle import EgoVehicle
+        from modules.carlainterface.carlainterface_agentclasses.ego_vehicle import EgoVehicleMP
 
 
-        return {AgentTypes.EGO_VEHICLE: EgoVehicle
+        return {AgentTypes.EGO_VEHICLE: EgoVehicleMP
                 }[self]
 
     @property

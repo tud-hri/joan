@@ -73,6 +73,7 @@ class KeyBoardSettings:
         self.reverse_key = QtGui.QKeySequence('r')[0]
         self.handbrake_key = QtGui.QKeySequence('space')[0]
         self.identifier = identifier
+
         self.input_type = input_type
 
         # Steering Range
@@ -86,6 +87,9 @@ class KeyBoardSettings:
         self.steer_sensitivity = float(50.0)
         self.throttle_sensitivity = float(50.0)
         self.brake_sensitivity = float(50.0)
+
+    def __str__(self):
+        return "Keyboard " + str(self.identifier)
 
     def as_dict(self):
         return self.__dict__
@@ -119,6 +123,9 @@ class JoyStickSettings:
         self.hand_brake_value = 2
         self.reverse_channel = 10
         self.reverse_value = 8
+
+    def __str__(self):
+        return "Joystick " + str(self.identifier)
 
     def as_dict(self):
         return self.__dict__
@@ -175,6 +182,7 @@ class SensoDriveSettings:
         self.identifier = identifier
 
 
+
         self.turn_on_event = mp.Event()
         self.turn_off_event = mp.Event()
         self.clear_error_event = mp.Event()
@@ -187,6 +195,8 @@ class SensoDriveSettings:
 
         self.settings_dict = {}
 
+    def __str__(self):
+        return "SensoDrive " + str(self.identifier)
 
 
     def as_dict(self):

@@ -14,6 +14,25 @@ class CarlaInterfaceSettings(ModuleSettings):
         if isinstance(setting, EgoVehicleSettings):
             self.ego_vehicles.pop(setting.identifier)
 
+    def load_from_dict(self, loaded_dict):
+        """
+        This method overrides the base implementation of loading settings from dicts. This is done because hardware manager has the unique property that
+        multiple custom settings classes are combined in a list. This behavior is not supported by the normal joan module settings, so it an specific solution
+        to loading is implemented here.
+
+        :param loaded_dict: (dict) dictionary containing the settings to load
+        :return: None
+        """
+
+        module_settings_to_load = loaded_dict[str(self.module)]
+
+        self.ego_vehicles = {}
+        for identifier, settings_dict in module_settings_to_load['ego_vehicles'].items():
+            ego_vehicle_settings = EgoVehicleSettings()
+            ego_vehicle_settings.set_from_loaded_dict(settings_dict)
+            self.ego_vehicles.update({identifier: ego_vehicle_settings})
+
+
 class EgoVehicleSettings:
     """
     Class containing the default settings for an egovehicle
@@ -25,7 +44,7 @@ class EgoVehicleSettings:
         """
         self.selected_input = 'None'
         self.selected_controller = 'None'
-        self.selected_spawnpoint = 'None'
+        self.selected_spawnpoint = 'Spawnpoint 0'
         self.selected_car = 'hapticslab.audi'
         self.velocity = 80
         self.set_velocity = False

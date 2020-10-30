@@ -1,13 +1,15 @@
 from PyQt5 import uic, QtWidgets
 import os
 from modules.carlainterface.carlainterface_agenttypes import AgentTypes
-from modules.joanmodules import JOANModules
-
-class EgoVehicle():
-    def __init__(self, vehicle_type, module_manager):
-        self.vehicle_type = vehicle_type
-        self.module_manager = module_manager
-        print('dikke kak')
+import random, os, sys, glob
+import math
+#TODO Maybe check this again, however it should not even start when it cant find the library the first time
+import time
+sys.path.append(glob.glob('carla_pythonapi/carla-*%d.%d-%s.egg' % (
+        sys.version_info.major,
+        sys.version_info.minor,
+        'win-amd64' if os.name == 'nt' else 'linux-x86_64'))[0])
+import carla
 
 class EgoVehicleSettingsDialog(QtWidgets.QDialog):
     def __init__(self, ego_vehicle_settings, parent = None):
@@ -25,7 +27,7 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
         self.settings.selected_input = self.combo_input.currentText()
         self.settings.selected_controller = self.combo_sw_controller.currentText()
         self.settings.selected_car = self.combo_car_type.currentText()
-        self.settings.selected_spawnpoint = self.combo_spawn_points.currentText()
+        self.settings.selected_spawnpoint = self.combo_spawnpoints.currentText()
         self.settings.set_velocity = self.check_box_set_vel.isChecked()
         self.display_values()
 
@@ -34,7 +36,7 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
         self.settings.selected_input = self.combo_input.currentText()
         self.settings.selected_controller = self.combo_sw_controller.currentText()
         self.settings.selected_car = self.combo_car_type.currentText()
-        self.settings.selected_spawnpoint = self.combo_spawn_points.currentText()
+        self.settings.selected_spawnpoint = self.combo_spawnpoints.currentText()
         self.settings.set_velocity = self.check_box_set_vel.isChecked()
         print(self.settings.selected_spawnpoint)
         super().accept()
@@ -52,11 +54,65 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
         idx_car = self.combo_car_type.findText(settings_to_display.selected_car)
         self.combo_car_type.setCurrentIndex(idx_car)
 
-        self.combo_spawn_points.setCurrentText(settings_to_display.selected_spawnpoint)
+        self.combo_spawnpoints.setCurrentText(settings_to_display.selected_spawnpoint)
 
         self.spin_velocity.setValue(settings_to_display.velocity)
         self.check_box_set_vel.setChecked(settings_to_display.set_velocity)
 
     def _set_default_values(self):
         self.display_values(AgentTypes.EGO_VEHICLE.settings())
+
+class EgoVehicleMP:
+    def __init__(self, carla_mp, settings, shared_variables,):
+        self.settings = settings
+        self.shared_variables = shared_variables
+        self.carlainterface_mp = carla_mp
+
+        self._control = carla.VehicleControl()
+        self._BP = random.choice(self.carlainterface_mp.vehicle_blueprint_library.filter("vehicle." + self.settings.selected_car))
+        self._control = carla.VehicleControl()
+        torque_curve = []
+        gears = []
+
+        torque_curve.append(carla.Vector2D(x=0, y=600))
+        torque_curve.append(carla.Vector2D(x=14000, y=600))
+        gears.append(carla.GearPhysicsControl(ratio=7.73, down_ratio=0.5, up_ratio=1))
+
+        self.spawned_vehicle = self.carlainterface_mp.world.spawn_actor(self._BP, self.carlainterface_mp.spawn_point_objects[
+            self.carlainterface_mp.spawn_points.index(self.settings.selected_spawnpoint)])
+        physics = self.spawned_vehicle.get_physics_control()
+        physics.torque_curve = torque_curve
+        physics.max_rpm = 14000
+        physics.moi = 1.5
+        physics.final_ratio = 1
+        physics.clutch_strength = 1000  # very big no clutch
+        physics.final_ratio = 1  # ratio from transmission to wheels
+        physics.forward_gears = gears
+        physics.mass = 2316
+        physics.drag_coefficient = 0.24
+        physics.gear_switch_time = 0
+        self.spawned_vehicle.apply_physics_control(physics)
+
+
+    def do(self):
+        # self._control.steer = self.carlainterface_mp.shared_variables_hardware
+        if 'Keyboard' in self.settings.selected_input:
+            identifier = int(self.settings.selected_input.replace('Keyboard ', ''))
+            self._control.steer = self.carlainterface_mp.shared_variables_hardware.keyboards[identifier].steering_angle /math.radians(450)
+            self._control.reverse = self.carlainterface_mp.shared_variables_hardware.keyboards[identifier].reverse
+            self._control.hand_brake = self.carlainterface_mp.shared_variables_hardware.keyboards[identifier].handbrake
+            self._control.brake = self.carlainterface_mp.shared_variables_hardware.keyboards[identifier].brake
+            self._control.throttle = self.carlainterface_mp.shared_variables_hardware.keyboards[identifier].throttle
+        if 'Joystick' in self.settings.selected_input:
+            identifier = int(self.settings.selected_input.replace('Joystick ', ''))
+            self._control.steer = self.carlainterface_mp.shared_variables_hardware.joysticks[identifier].steering_angle /math.radians(450)
+            self._control.reverse = self.carlainterface_mp.shared_variables_hardware.joysticks[identifier].reverse
+            self._control.hand_brake = self.carlainterface_mp.shared_variables_hardware.joysticks[identifier].handbrake
+            self._control.brake = self.carlainterface_mp.shared_variables_hardware.joysticks[identifier].brake
+            self._control.throttle = self.carlainterface_mp.shared_variables_hardware.joysticks[identifier].throttle
+
+
+        self.spawned_vehicle.apply_control(self._control)
+
+
 

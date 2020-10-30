@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>647</width>
-    <height>134</height>
+    <height>125</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -47,6 +47,11 @@
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="1" column="0">
        <widget class="QPushButton" name="pushButton_2">
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+         </font>
+        </property>
         <property name="text">
          <string>Connect</string>
         </property>
@@ -60,6 +65,11 @@
           <height>16777215</height>
          </size>
         </property>
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+         </font>
+        </property>
         <property name="text">
          <string>Show</string>
         </property>
@@ -67,6 +77,11 @@
       </item>
       <item row="3" column="0">
        <widget class="QPushButton" name="pushButton">
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+         </font>
+        </property>
         <property name="text">
          <string>Disconnect</string>
         </property>
@@ -74,6 +89,11 @@
       </item>
       <item row="2" column="2">
        <widget class="QLabel" name="label_2">
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+         </font>
+        </property>
         <property name="text">
          <string>State:</string>
         </property>
@@ -102,6 +122,11 @@
           <width>100</width>
           <height>0</height>
          </size>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+         </font>
         </property>
         <property name="text">
          <string>&lt;state&gt;</string>

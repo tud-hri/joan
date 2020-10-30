@@ -87,7 +87,7 @@ class HardwareMPManager(ModuleManager):
         # create dialog thing
         input_name = '{0!s} {1!s}'.format(input_type, str(input_settings.identifier))
         self._hardware_input_settingdialogs_dict[input_name] = input_type.klass_dialog(input_settings)
-        return input_name
+        return input_name, input_settings.identifier
 
     def _open_settings_dialog(self, input_name):
         self._hardware_input_settingdialogs_dict[input_name].show()
@@ -96,7 +96,7 @@ class HardwareMPManager(ModuleManager):
 
         # Remove settings if they are available
         settings_object = None
-
+        #TODO Check if we can do this with the identifier only instead of the string mess
         if 'Keyboard' in input_name:
             identifier = int(input_name.replace('Keyboard', ''))
             for keyboard in self.module_settings.keyboards.values():
@@ -121,17 +121,11 @@ class HardwareMPManager(ModuleManager):
         self._hardware_input_settingdialogs_dict[input_name].setParent(None)
         del self._hardware_input_settingdialogs_dict[input_name]
 
-    def _turn_on(self, hardware_input_name):
-        identifier_str = hardware_input_name.replace('SensoDrive', '')
-        identifier = int(identifier_str)
+    def _turn_on(self, identifier):
         self.module_settings.sensodrives[identifier].turn_on_event.set()
 
-    def _turn_off(self, hardware_input_name):
-        identifier_str = hardware_input_name.replace('SensoDrive', '')
-        identifier = int(identifier_str)
+    def _turn_off(self, identifier):
         self.module_settings.sensodrives[identifier].turn_off_event.set()
 
-    def _clear_error(self, hardware_input_name):
-        identifier_str = hardware_input_name.replace('SensoDrive', '')
-        identifier = int(identifier_str)
+    def _clear_error(self, identifier):
         self.module_settings.sensodrives[identifier].clear_error_event.set()
