@@ -32,13 +32,9 @@ class CarlaInterfaceProcess(ModuleProcess):
         host = 'localhost'
         port = 2000
         [self.vehicle_blueprint_library, self.spawn_point_objects, self.world, self.spawn_points] = self.connect_carla(host = host, port = port)
-
         # Now we create our agents and directly spawn them
         for key, value in self._settings_as_object.ego_vehicles.items():
             self.agent_objects[key] = AgentTypes.EGO_VEHICLE.klass_mp(self, settings=value, shared_variables=self._module_shared_variables.ego_vehicles[key])
-
-
-        pass
 
     def do_while_running(self):
         """
@@ -50,11 +46,7 @@ class CarlaInterfaceProcess(ModuleProcess):
 
         if self._module_shared_variables.state == State.STOPPED.value:
             for agents in self.agent_objects:
-                # will perform the mp input class for eaach available input
                 self.agent_objects[agents].destroy()
-
-
-
 
     def connect_carla(self, host, port):
         "We also want a connection to carla in our multiprocess therefore we need this function here"

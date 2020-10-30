@@ -26,6 +26,7 @@ class CarlaInterfaceDialog(ModuleDialog):
         self._agent_type_dialog.btns_agent_type_select.accepted.connect(self.add_selected_agent)
 
         # connect buttons
+        # TODO have to add the connect and disconnect button of main to the connect function
         self._module_widget.btn_add_agent.clicked.connect(self._agent_selection)
 
     def _handle_state_change(self):
@@ -67,13 +68,3 @@ class CarlaInterfaceDialog(ModuleDialog):
 
         # We remove the settings dialog and settings object in the module_manager class
         self.module_manager._remove_agent(agent_name)
-
-    def disconnect_carla(self, connected):
-        """
-        This function disconnects from carla, when it does it will also automatically destroy any cars that were spawned
-        in the simulation.
-        """
-        self.connected_carla = connected
-        self._module_widget.groupVehicles.setEnabled(self.connected_carla)
-        self._module_widget.btn_add_agent.setEnabled(self.connected_carla)
-        self._module_widget.btn_disconnect.setEnabled(self.connected_carla)
