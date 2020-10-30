@@ -5,7 +5,7 @@ import os
 class HardwareInputTypes(enum.Enum):
     """
     Enumeration class for all the different hardware types available. Contains:
-    klass_mp: the class that runs in a seperate multiprocess which loops
+    process: the class that runs in a seperate multiprocess which loops
     settings_dialog: the settings dialog of the input type
     shared_variables: the variables that need to be shared from the hardwareinpute type with the manager
     settings_ui_file: ui file of the settings dialog
@@ -20,7 +20,7 @@ class HardwareInputTypes(enum.Enum):
     SENSODRIVE = 2
 
     @property
-    def klass_mp(self):
+    def process(self):
         from modules.hardwaremanager.hardwaremanager_inputs.joankeyboard import JOANKeyboardProcess
         from modules.hardwaremanager.hardwaremanager_inputs.joanjoystick import JOANJoystickProcess
         from modules.hardwaremanager.hardwaremanager_inputs.joansensodrive import JOANSensoDriveProcess
@@ -63,9 +63,9 @@ class HardwareInputTypes(enum.Enum):
 
     @property
     def settings(self):
-        from modules.hardwaremanager.hardwaremanager_settings import KeyBoardSettings
-        from modules.hardwaremanager.hardwaremanager_settings import JoyStickSettings
-        from modules.hardwaremanager.hardwaremanager_settings import SensoDriveSettings
+        from modules.hardwaremanager.hardwaremanager_inputs.joankeyboard import KeyBoardSettings
+        from modules.hardwaremanager.hardwaremanager_inputs.joanjoystick import JoyStickSettings
+        from modules.hardwaremanager.hardwaremanager_inputs.joansensodrive import SensoDriveSettings
 
         return {HardwareInputTypes.KEYBOARD: KeyBoardSettings,
                 HardwareInputTypes.JOYSTICK: JoyStickSettings,

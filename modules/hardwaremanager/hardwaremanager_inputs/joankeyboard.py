@@ -1,9 +1,155 @@
+import math
 import os
 
 import keyboard
 from PyQt5 import QtWidgets, QtGui, uic
 
 from modules.hardwaremanager.hardwaremanager_inputtypes import HardwareInputTypes
+
+
+class JOANKeyboardProcess:
+    """
+    Main class for the Keyboard input in a seperate multiprocess, this will loop!. Make sure that the things you do in this class are serializable, else
+    it will fail.
+    """
+
+    def __init__(self, settings, shared_variables):
+        self.settings = settings
+
+        self.shared_variables = shared_variables
+
+        # Initialize needed variables:
+        self._throttle = False
+        self._brake = False
+        self._steer_left = False
+        self._steer_right = False
+        self._handbrake = False
+        self._reverse = False
+        self._data = {}
+
+        keyboard.hook(self.key_event, False)
+
+    def key_event(self, key):
+        """
+        Distinguishes which key (that has been set before) is pressed and sets a boolean for the appropriate action.
+        :param key:
+        :return:
+        """
+        boolean_key_press_value = key.event_type == keyboard.KEY_DOWN
+        int_key_identifier = QtGui.QKeySequence(key.name)[0]
+
+        if int_key_identifier == self.settings.throttle_key:
+            self._throttle = boolean_key_press_value
+        elif int_key_identifier == self.settings.brake_key:
+            self._brake = boolean_key_press_value
+        elif int_key_identifier == self.settings.steer_left_key:
+            self._steer_left = boolean_key_press_value
+            if boolean_key_press_value:
+                self._steer_right = False
+        elif int_key_identifier == self.settings.steer_right_key:
+            self._steer_right = boolean_key_press_value
+            if boolean_key_press_value:
+                self._steer_left = False
+        elif int_key_identifier == self.settings.handbrake_key:
+            self._handbrake = boolean_key_press_value
+        elif int_key_identifier == self.settings.reverse_key and boolean_key_press_value:
+            self._reverse = not self._reverse
+
+    def do(self):
+        """
+        Processes all the inputs of the keyboardinput and writes them to self._data which is then written to the news in the
+        action class
+        :return: self._data a dictionary containing :
+            self.shared_variables.brake = self.brake
+            self.shared_variables.throttle = self.throttle
+            self.shared_variables.steering_angle = self.steer
+            self.shared_variables.handbrake = self.handbrake
+            self.shared_variables.reverse = self.reverse
+        """
+
+        brake_temp = self.shared_variables.brake
+        throttle_temp = self.shared_variables.throttle
+        steer_temp = self.shared_variables.steering_angle
+
+        # Throttle:
+        if self._throttle and throttle_temp < 1:
+            throttle_temp = throttle_temp + (0.05 * self.settings.throttle_sensitivity / 100)
+        elif throttle_temp > 0 and not self._throttle:
+            throttle_temp = throttle_temp - (0.05 * self.settings.throttle_sensitivity / 100)
+        elif throttle_temp < 0:
+            throttle_temp = 0
+        elif throttle_temp > 1:
+            throttle_temp = 1
+
+        # Brake:
+        if self._brake and brake_temp < 1:
+            brake_temp = brake_temp + (0.05 * self.settings.brake_sensitivity / 100)
+        elif brake_temp > 0 and not self._brake:
+            brake_temp = brake_temp - (0.05 * self.settings.brake_sensitivity / 100)
+        elif brake_temp < 0:
+            brake_temp = 0
+        elif brake_temp > 1:
+            brake_temp = 1
+
+        # Steering:
+        if self._steer_left and self.settings.max_steer >= steer_temp >= self.settings.min_steer:
+            steer_temp = steer_temp - (self.settings.steer_sensitivity / 10000)
+        elif self._steer_right and self.settings.min_steer <= steer_temp <= self.settings.max_steer:
+            steer_temp = steer_temp + (self.settings.steer_sensitivity / 10000)
+        elif steer_temp > 0 and self.settings.auto_center:
+            steer_temp = steer_temp - (self.settings.steer_sensitivity / 10000)
+        elif steer_temp < 0 and self.settings.auto_center:
+            steer_temp = steer_temp + (self.settings.steer_sensitivity / 10000)
+
+        if abs(steer_temp) < self.settings.steer_sensitivity / 10000:
+            steer_temp = 0
+
+        # Reverse
+        reverse_temp = self._reverse
+        handbrake_temp = self._handbrake
+
+        # Set the shared variables again:
+        self.shared_variables.brake = brake_temp
+        self.shared_variables.throttle = throttle_temp
+        self.shared_variables.steering_angle = steer_temp
+        self.shared_variables.handbrake = handbrake_temp
+        self.shared_variables.reverse = reverse_temp
+
+
+class KeyBoardSettings:
+    """
+    Default keyboardinput settings that will load whenever a keyboardinput class is created.
+    """
+
+    def __init__(self, identifier=''):
+        self.steer_left_key = QtGui.QKeySequence('a')[0]
+        self.steer_right_key = QtGui.QKeySequence('d')[0]
+        self.throttle_key = QtGui.QKeySequence('w')[0]
+        self.brake_key = QtGui.QKeySequence('s')[0]
+        self.reverse_key = QtGui.QKeySequence('r')[0]
+        self.handbrake_key = QtGui.QKeySequence('space')[0]
+        self.identifier = identifier
+        self.input_type = HardwareInputTypes.KEYBOARD.value
+        # self.input_name = '{0!s} {1!s}'.format(HardwareInputTypes.KEYBOARD, str(self.identifier))
+
+        # Steering Range
+        self.min_steer = - 0.5 * math.pi
+        self.max_steer = 0.5 * math.pi
+
+        # Check auto center
+        self.auto_center = True
+
+        # Sensitivities
+        self.steer_sensitivity = float(50.0)
+        self.throttle_sensitivity = float(50.0)
+        self.brake_sensitivity = float(50.0)
+
+    def as_dict(self):
+        return self.__dict__
+
+    def set_from_loaded_dict(self, loaded_dict):
+        for key, value in loaded_dict.items():
+            self.__setattr__(key, value)
 
 
 class KeyBoardSettingsDialog(QtWidgets.QDialog):  # TODO: aparte files voor classes maken
@@ -133,112 +279,3 @@ class KeyBoardSettingsDialog(QtWidgets.QDialog):  # TODO: aparte files voor clas
                 self._set_key_counter = 0
                 self.button_box_settings.setEnabled(True)
                 self.btn_set_keys.setEnabled(True)
-
-
-class JOANKeyboardProcess:
-    """
-    Main class for the Keyboard input in a seperate multiprocess, this will loop!. Make sure that the things you do in this class are serializable, else
-    it will fail.
-    """
-
-    def __init__(self, settings, shared_variables):
-        self.settings = settings
-
-        self.shared_variables = shared_variables
-
-        # Initialize needed variables:
-        self._throttle = False
-        self._brake = False
-        self._steer_left = False
-        self._steer_right = False
-        self._handbrake = False
-        self._reverse = False
-        self._data = {}
-
-        keyboard.hook(self.key_event, False)
-
-    def key_event(self, key):
-        """
-        Distinguishes which key (that has been set before) is pressed and sets a boolean for the appropriate action.
-        :param key:
-        :return:
-        """
-        boolean_key_press_value = key.event_type == keyboard.KEY_DOWN
-        int_key_identifier = QtGui.QKeySequence(key.name)[0]
-
-        if int_key_identifier == self.settings.throttle_key:
-            self._throttle = boolean_key_press_value
-        elif int_key_identifier == self.settings.brake_key:
-            self._brake = boolean_key_press_value
-        elif int_key_identifier == self.settings.steer_left_key:
-            self._steer_left = boolean_key_press_value
-            if boolean_key_press_value:
-                self._steer_right = False
-        elif int_key_identifier == self.settings.steer_right_key:
-            self._steer_right = boolean_key_press_value
-            if boolean_key_press_value:
-                self._steer_left = False
-        elif int_key_identifier == self.settings.handbrake_key:
-            self._handbrake = boolean_key_press_value
-        elif int_key_identifier == self.settings.reverse_key and boolean_key_press_value:
-            self._reverse = not self._reverse
-
-    def do(self):
-        """
-        Processes all the inputs of the keyboardinput and writes them to self._data which is then written to the news in the
-        action class
-        :return: self._data a dictionary containing :
-            self.shared_variables.brake = self.brake
-            self.shared_variables.throttle = self.throttle
-            self.shared_variables.steering_angle = self.steer
-            self.shared_variables.handbrake = self.handbrake
-            self.shared_variables.reverse = self.reverse
-        """
-
-        brake_temp = self.shared_variables.brake
-        throttle_temp = self.shared_variables.throttle
-        steer_temp = self.shared_variables.steering_angle
-
-        # Throttle:
-        if self._throttle and throttle_temp < 1:
-            throttle_temp = throttle_temp + (0.05 * self.settings.throttle_sensitivity / 100)
-        elif throttle_temp > 0 and not self._throttle:
-            throttle_temp = throttle_temp - (0.05 * self.settings.throttle_sensitivity / 100)
-        elif throttle_temp < 0:
-            throttle_temp = 0
-        elif throttle_temp > 1:
-            throttle_temp = 1
-
-        # Brake:
-        if self._brake and brake_temp < 1:
-            brake_temp = brake_temp + (0.05 * self.settings.brake_sensitivity / 100)
-        elif brake_temp > 0 and not self._brake:
-            brake_temp = brake_temp - (0.05 * self.settings.brake_sensitivity / 100)
-        elif brake_temp < 0:
-            brake_temp = 0
-        elif brake_temp > 1:
-            brake_temp = 1
-
-        # Steering:
-        if self._steer_left and self.settings.max_steer >= steer_temp >= self.settings.min_steer:
-            steer_temp = steer_temp - (self.settings.steer_sensitivity / 10000)
-        elif self._steer_right and self.settings.min_steer <= steer_temp <= self.settings.max_steer:
-            steer_temp = steer_temp + (self.settings.steer_sensitivity / 10000)
-        elif steer_temp > 0 and self.settings.auto_center:
-            steer_temp = steer_temp - (self.settings.steer_sensitivity / 10000)
-        elif steer_temp < 0 and self.settings.auto_center:
-            steer_temp = steer_temp + (self.settings.steer_sensitivity / 10000)
-
-        if abs(steer_temp) < self.settings.steer_sensitivity / 10000:
-            steer_temp = 0
-
-        # Reverse
-        reverse_temp = self._reverse
-        handbrake_temp = self._handbrake
-
-        # Set the shared variables again:
-        self.shared_variables.brake = brake_temp
-        self.shared_variables.throttle = throttle_temp
-        self.shared_variables.steering_angle = steer_temp
-        self.shared_variables.handbrake = handbrake_temp
-        self.shared_variables.reverse = reverse_temp

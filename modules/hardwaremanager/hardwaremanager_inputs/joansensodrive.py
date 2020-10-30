@@ -7,7 +7,7 @@ import time
 from PyQt5 import uic, QtWidgets
 
 from modules.hardwaremanager.hardwaremanager_inputs.PCANBasic import *
-from modules.hardwaremanager.hardwaremanager_settings import SensoDriveSettings
+from modules.hardwaremanager.hardwaremanager_inputtypes import HardwareInputTypes
 
 """
 These global parameters are used to make the message ID's more identifiable than just the hex nr.
@@ -23,6 +23,86 @@ STEERINGWHEEL_MESSAGE_LENGTH = 8
 PEDAL_MESSAGE_SEND_ID = 0x20C
 PEDAL_MESSAGE_RECEIVE_ID = 0x21C
 PEDAL_MESSAGE_LENGTH = 2
+
+
+class JOANSensoDriveProcess:
+    def __init__(self, settings, shared_variables):
+        super().__init__()
+
+        # We define our settings list which contains only picklable objects
+        self.settings_dict = settings.settings_dict_for_pipe()
+
+        # We will write all the output of the sensodrive to these variables so that we have it in our main joan program
+        self.shared_variables = shared_variables
+
+        # Initialize communication pipe between seperate sensodrive process
+        self.parent_pipe, child_pipe = mp.Pipe(duplex=True)
+
+        # Create the sensodrive communication object with needed events and pipe
+        comm = SensoDriveComm(turn_on_event=settings.turn_on_event, turn_off_event=settings.turn_off_event,
+                              close_event=settings.close_event, clear_error_event=settings.clear_error_event,
+                              child_pipe=child_pipe, state_queue=settings.state_queue)
+
+        # Start the communication process when it is created
+        comm.start()
+        self.parent_pipe.send(self.settings_dict)
+
+    def do(self):
+        self.parent_pipe.send(self.settings_dict)
+        values_from_sensodrive = self.parent_pipe.recv()
+
+        self.shared_variables.steering_angle = values_from_sensodrive['steering_angle']
+        self.shared_variables.throttle = values_from_sensodrive['throttle']
+        self.shared_variables.brake = values_from_sensodrive['brake']
+        self.shared_variables.steering_rate = values_from_sensodrive['steering_rate']
+
+
+class SensoDriveSettings:
+    """
+    Default sensodrive settings that will load whenever a keyboardinput class is created.
+    """
+
+    def __init__(self, identifier=''):
+        self.endstops = math.radians(360.0)  # rad
+        self.torque_limit_between_endstops = 200  # percent
+        self.torque_limit_beyond_endstops = 200  # percent
+        self.friction = 0  # Nm
+        self.damping = 0.1  # Nm * s / rad
+        self.spring_stiffness = 1  # Nm / rad
+        self.torque = 0  # Nm
+        self.identifier = identifier
+        self.input_type = HardwareInputTypes.SENSODRIVE.value
+        # self.input_name = '{0!s} {1!s}'.format(HardwareInputTypes.SENSODRIVE, str(self.identifier))
+
+        self.turn_on_event = mp.Event()
+        self.turn_off_event = mp.Event()
+        self.clear_error_event = mp.Event()
+        self.close_event = mp.Event()
+
+        self.state_queue = mp.Queue()
+
+        self.current_state = 0x00
+
+        self.settings_dict = {}
+
+    def as_dict(self):
+        return self.__dict__
+
+    def set_from_loaded_dict(self, loaded_dict):
+        for key, value in loaded_dict.items():
+            self.__setattr__(key, value)
+
+    def settings_dict_for_pipe(self):
+        self.settings_dict = {'endstops': self.endstops,  # rad
+                              'torque_limit_between_endstops': self.torque_limit_between_endstops,  # percent
+                              'torque_limit_beyond_endstops': self.torque_limit_beyond_endstops,  # percent
+                              'friction': self.friction,  # Nm
+                              'damping': self.damping,  # Nm * s / rad
+                              'spring_stiffness': self.spring_stiffness,  # Nm / rad
+                              'torque': self.torque,  # Nm
+                              'identifier': self.identifier}
+
+        return self.settings_dict
 
 
 class SensoDriveSettingsDialog(QtWidgets.QDialog):  # TODO aparte files voor classes maken
@@ -91,38 +171,6 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):  # TODO aparte files voor cla
         :return:
         """
         self._display_values(SensoDriveSettings())
-
-
-class JOANSensoDriveProcess:
-    def __init__(self, settings, shared_variables):
-        super().__init__()
-
-        # We define our settings list which contains only picklable objects
-        self.settings_dict = settings.settings_dict_for_pipe()
-
-        # We will write all the output of the sensodrive to these variables so that we have it in our main joan program
-        self.shared_variables = shared_variables
-
-        # Initialize communication pipe between seperate sensodrive process
-        self.parent_pipe, child_pipe = mp.Pipe(duplex=True)
-
-        # Create the sensodrive communication object with needed events and pipe
-        comm = SensoDriveComm(turn_on_event=settings.turn_on_event, turn_off_event=settings.turn_off_event,
-                              close_event=settings.close_event, clear_error_event=settings.clear_error_event,
-                              child_pipe=child_pipe, state_queue=settings.state_queue)
-
-        # Start the communication process when it is created
-        comm.start()
-        self.parent_pipe.send(self.settings_dict)
-
-    def do(self):
-        self.parent_pipe.send(self.settings_dict)
-        values_from_sensodrive = self.parent_pipe.recv()
-
-        self.shared_variables.steering_angle = values_from_sensodrive['steering_angle']
-        self.shared_variables.throttle = values_from_sensodrive['throttle']
-        self.shared_variables.brake = values_from_sensodrive['brake']
-        self.shared_variables.steering_rate = values_from_sensodrive['steering_rate']
 
 
 def clear_queue(q):
@@ -263,7 +311,7 @@ class SensoDriveComm(mp.Process):
             execution_time = time.perf_counter_ns() - t0
 
             # sleep for time step, taking the execution time into account
-            time.sleep((self._time_step_in_ns - execution_time) * 1e-9)
+            time.sleep(max(0.0, (self._time_step_in_ns - execution_time) * 1e-9))
 
     def write_message_steering_wheel(self, pcan_object, pcanmessage, data):
         """
