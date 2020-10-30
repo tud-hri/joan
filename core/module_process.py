@@ -102,7 +102,17 @@ class ModuleProcess(mp.Process):
         :return:
         """
         running = True
+
+        # check if state is stopped; if so, stop!
+        if self._module_shared_variables.state == State.STOPPED.value:
+            running = False
+
         while running:
+
+            # check if state is stopped; if so, stop!
+            if self._module_shared_variables.state == State.STOPPED.value:
+                running = False
+
             t0 = time.perf_counter_ns()
 
             self._time = time.perf_counter_ns()

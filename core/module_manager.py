@@ -1,4 +1,3 @@
-import multiprocessing as mp
 import os
 import sys
 
@@ -101,13 +100,16 @@ class ModuleManager(QtCore.QObject):
         self.shared_variables.state = self.state_machine.current_state.value
 
     def stop(self):
+        self.shared_variables.state = self.state_machine.current_state.value
+
         # send stop state to process and wait for the process to stop
         self.stop_dialog_timer()
 
         # wait for the process to stop
         if self._process:
             if self._process.is_alive():
-                self.shared_variables.state = self.state_machine.current_state.value
+                if not self._events.start.is_set():
+                    self._events.start.set()
                 self._process.join()
 
         print('Process terminated:', self.module)
