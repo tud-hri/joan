@@ -15,7 +15,7 @@ class JOANModules(Enum):
     @property
     def manager(self):
         from modules.hardwaremanager.hardwaremanager import HardwareManager
-        from modules.template.template_manager import TemplateManager
+        from modules.template.template import TemplateManager
 
         return {JOANModules.HARDWARE_MP: HardwareManager,
                 JOANModules.TEMPLATE: TemplateManager}[self]

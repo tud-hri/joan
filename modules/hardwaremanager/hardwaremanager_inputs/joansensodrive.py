@@ -27,25 +27,27 @@ PEDAL_MESSAGE_LENGTH = 2
 
 class JOANSensoDriveProcess:
     def __init__(self, settings, shared_variables):
-        super().__init__()
 
-        # We define our settings list which contains only picklable objects
-        self.settings_dict = settings.settings_dict_for_pipe()
+        def __init__(self, settings, shared_variables):
+            super().__init__()
 
-        # We will write all the output of the sensodrive to these variables so that we have it in our main joan program
-        self.shared_variables = shared_variables
+            # We define our settings list which contains only picklable objects
+            self.settings_dict = settings.settings_dict_for_pipe()
 
-        # Initialize communication pipe between seperate sensodrive process
-        self.parent_pipe, child_pipe = mp.Pipe(duplex=True)
+            # We will write all the output of the sensodrive to these variables so that we have it in our main joan program
+            self.shared_variables = shared_variables
 
-        # Create the sensodrive communication object with needed events and pipe
-        comm = SensoDriveComm(turn_on_event=settings.turn_on_event, turn_off_event=settings.turn_off_event,
-                              close_event=settings.close_event, clear_error_event=settings.clear_error_event,
-                              child_pipe=child_pipe, state_queue=settings.state_queue)
+            # Initialize communication pipe between seperate sensodrive process
+            self.parent_pipe, child_pipe = mp.Pipe(duplex=True)
 
-        # Start the communication process when it is created
-        comm.start()
-        self.parent_pipe.send(self.settings_dict)
+            # Create the sensodrive communication object with needed events and pipe
+            comm = SensoDriveComm(turn_on_event=settings.turn_on_event, turn_off_event=settings.turn_off_event,
+                                  close_event=settings.close_event, clear_error_event=settings.clear_error_event,
+                                  child_pipe=child_pipe, state_queue=settings.state_queue)
+
+            # Start the communication process when it is created
+            comm.start()
+            self.parent_pipe.send(self.settings_dict)
 
     def do(self):
         self.parent_pipe.send(self.settings_dict)
@@ -105,7 +107,7 @@ class SensoDriveSettings:
         return self.settings_dict
 
 
-class SensoDriveSettingsDialog(QtWidgets.QDialog):  # TODO aparte files voor classes maken
+class SensoDriveSettingsDialog(QtWidgets.QDialog):
     """
     Class for the settings Dialog of a SensoDrive, this class should pop up whenever it is asked by the user or when
     creating the joystick class for the first time. NOTE: it should not show whenever settings are loaded by .json file.

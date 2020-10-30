@@ -152,7 +152,7 @@ class KeyBoardSettings:
             self.__setattr__(key, value)
 
 
-class KeyBoardSettingsDialog(QtWidgets.QDialog):  # TODO: aparte files voor classes maken
+class KeyBoardSettingsDialog(QtWidgets.QDialog):
     """
     Class for the settings Dialog of a keyboardinput, this class should pop up whenever it is asked by the user or when
     creating the joystick class for the first time. NOTE: it should not show whenever settings are loaded by .json file.
