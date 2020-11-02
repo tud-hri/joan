@@ -77,6 +77,17 @@ class ModuleDialog(QtWidgets.QDialog):
         Handle state change, registered in the module manager's state machine
         :return:
         """
+        # make sure we can only load and save settings in the stopped state:
+        if self.module_manager.state_machine.current_state == State.STOPPED:
+            self.load_settings.setEnabled(True)
+            self.load_settings.blockSignals(False)
+            self.save_settings.setEnabled(True)
+            self.save_settings.blockSignals(True)
+        else:
+            self.load_settings.setEnabled(False)
+            self.load_settings.blockSignals(True)
+            self.save_settings.setEnabled(False)
+            self.save_settings.blockSignals(True)
 
         if hasattr(self, '_state_widget'):
             current_state = self.module_manager.state_machine.current_state
@@ -85,6 +96,7 @@ class ModuleDialog(QtWidgets.QDialog):
             # update the state label
             self._state_widget.lbl_module_state.setText(str(current_state))
             self._state_widget.lbl_state_message.setText(message)
+
 
             if current_state is State.RUNNING:
                 self._state_widget.lbl_module_state.setStyleSheet("background: lightgreen;")
