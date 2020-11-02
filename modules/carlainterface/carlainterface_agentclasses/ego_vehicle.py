@@ -94,7 +94,6 @@ class EgoVehicleMP:
 
 
     def do(self):
-        # TODO have to fix this with the proper identifier
         # self._control.steer = self.carlainterface_mp.shared_variables_hardware
         if 'Keyboard' in self.settings.selected_input:
             identifier = int(self.settings.selected_input.replace('Keyboard ', ''))
@@ -103,6 +102,7 @@ class EgoVehicleMP:
             self._control.hand_brake = self.carlainterface_mp.shared_variables_hardware.keyboards[identifier].handbrake
             self._control.brake = self.carlainterface_mp.shared_variables_hardware.keyboards[identifier].brake
             self._control.throttle = self.carlainterface_mp.shared_variables_hardware.keyboards[identifier].throttle
+            print(self._control.steer)
         if 'Joystick' in self.settings.selected_input:
             identifier = int(self.settings.selected_input.replace('Joystick ', ''))
             self._control.steer = self.carlainterface_mp.shared_variables_hardware.joysticks[identifier].steering_angle /math.radians(450)
@@ -117,6 +117,7 @@ class EgoVehicleMP:
             self._control.hand_brake = self.carlainterface_mp.shared_variables_hardware.sensodrives[identifier].handbrake
             self._control.brake = self.carlainterface_mp.shared_variables_hardware.sensodrives[identifier].brake
             self._control.throttle = self.carlainterface_mp.shared_variables_hardware.sensodrives[identifier].throttle
+            print(self._control.steer)
 
 
         self.spawned_vehicle.apply_control(self._control)

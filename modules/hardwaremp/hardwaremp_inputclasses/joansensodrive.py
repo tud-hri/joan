@@ -116,6 +116,7 @@ class JOANSensoDriveMP():
     def do(self):
         self.parent_pipe.send(self.settings_dict)
         values_from_sensodrive = self.parent_pipe.recv()
+        print(values_from_sensodrive)
 
         self.shared_variables.steering_angle = values_from_sensodrive['steering_angle']
         self.shared_variables.throttle = values_from_sensodrive['throttle']
@@ -243,6 +244,7 @@ class SensoDriveComm(mp.Process):
                 #send last known values over the pipe
                 self.child_pipe.send(self.values_from_sensodrive)
                 self.pcan_object.Uninitialize(self._pcan_channel)
+                self.child_pipe.close()
                 break
 
             self.clear_queue(self.state_queue)
