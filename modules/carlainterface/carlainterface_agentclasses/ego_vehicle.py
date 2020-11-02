@@ -43,6 +43,8 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
                     self.settings.selected_spawnpoint = 'None'
                 else:
                     self.settings.selected_spawnpoint = self.combo_spawnpoints.currentText()
+            else:
+                self.settings.selected_input = self.combo_spawnpoints.currentText()
         self.settings.set_velocity = self.check_box_set_vel.isChecked()
         self.display_values()
 
@@ -60,6 +62,8 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
                     self.settings.selected_spawnpoint = 'None'
                 else:
                     self.settings.selected_spawnpoint = self.combo_spawnpoints.currentText()
+            else:
+                self.settings.selected_input = self.combo_spawnpoints.currentText()
         self.settings.set_velocity = self.check_box_set_vel.isChecked()
         super().accept()
 
@@ -85,10 +89,13 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
         self.display_values(AgentTypes.EGO_VEHICLE.settings())
 
 class EgoVehicleMP:
-    def __init__(self, carla_mp, settings, shared_variables,):
+    def __init__(self, carla_mp, settings, shared_variables):
+        print('hai')
         self.settings = settings
         self.shared_variables = shared_variables
         self.carlainterface_mp = carla_mp
+
+        print('joe')
 
         self._control = carla.VehicleControl()
         self._BP = random.choice(self.carlainterface_mp.vehicle_blueprint_library.filter("vehicle." + self.settings.selected_car))
