@@ -1,25 +1,171 @@
+import math
 import os
 
 import hid
 from PyQt5 import QtWidgets, uic, QtCore
 
-from modules.hardwaremp.hardwaremp_inputtypes import HardwareInputTypes
+from modules.hardwaremanager.hardwaremanager_inputtypes import HardwareInputTypes
 
 
-class JoystickSettingsDialog(QtWidgets.QDialog):  # TODO: losse files maken voor alle classes
+class JOANJoystickProcess:
+    def __init__(self, settings, shared_variables):
+        # Initialize Variables
+        self.brake = 0
+        self.steer = 0
+        self.throttle = 0
+        self.handbrake = False
+        self.reverse = False
+
+        self.settings = settings
+        self.shared_variables = shared_variables
+
+        self._joystick_open = False
+        self._joystick = hid.device()
+
+        self._open_connection_to_device()
+
+    def _open_connection_to_device(self):
+        """
+        Starts the connection to a joystick device, sets the boolean 'self._joystick_open' to true if it succeds
+        and to false if it fails
+        """
+        try:
+            self._joystick.open(self.settings.device_vendor_id, self.settings.device_product_id)
+            self._joystick_open = True
+        except OSError:
+            print('Connection to USB Joystick failed')  # TODO: move to messagebox
+            self._joystick_open = False
+
+    def do(self):
+        """
+        Processes all the inputs of the joystick and writes them to self._data which is then written to the news in the
+        action class
+        :return: self._data a dictionary containing :self._data['brake'] = self.brake
+            self._data['throttle'] = self.throttle
+            self._data['steering_angle'] = self.steer
+            self._data['Handbrake'] = self.handbrake
+            self._data['Reverse'] = self.reverse
+        """
+        if self._joystick_open:
+            joystick_data = self._joystick.read(self.settings.degrees_of_freedom, 1)
+        else:
+            joystick_data = False
+
+        if joystick_data:
+            if self.settings.use_separate_brake_channel:
+                self.throttle = ((joystick_data[self.settings.gas_channel]) / 255)
+                self.brake = - ((joystick_data[self.settings.brake_channel]) / 255)
+            else:
+                input_value = 1 - ((joystick_data[self.settings.gas_channel]) / 128)
+                if input_value > 0:
+                    self.throttle = input_value
+                    self.brake = 0
+                elif input_value < 0:
+                    self.throttle = 0
+                    self.brake = -input_value
+
+            if joystick_data[self.settings.hand_brake_channel] == self.settings.hand_brake_value:
+                self.handbrake = True
+            elif joystick_data[self.settings.reverse_channel] == self.settings.reverse_value:
+                self.reverse = True
+            else:
+                self.handbrake = False
+                self.reverse = False
+
+            if self.settings.use_double_steering_resolution:
+                self.steer = (((joystick_data[self.settings.first_steer_channel]) + (
+                    joystick_data[self.settings.second_steer_channel]) * 256) / (256 * 256)) * (
+                                     self.settings.max_steer - self.settings.min_steer) - self.settings.max_steer
+            else:
+                self.steer = ((joystick_data[self.settings.first_steer_channel]) / 255) * (
+                        self.settings.max_steer - self.settings.min_steer) - self.settings.max_steer
+
+        self.shared_variables.brake = self.brake
+        self.shared_variables.throttle = self.throttle
+        self.shared_variables.steering_angle = self.steer
+        self.shared_variables.handbrake = self.handbrake
+        self.shared_variables.reverse = self.reverse
+
+
+class JoyStickSettings:
+    """
+    Default joystick settings that will load whenever a keyboardinput class is created.
+    """
+
+    def __init__(self, identifier=''):
+        self.min_steer = -0.5 * math.pi
+        self.max_steer = 0.5 * math.pi
+        self.device_vendor_id = 0
+        self.device_product_id = 0
+        self.identifier = identifier
+        self.input_type = HardwareInputTypes.JOYSTICK.value
+        # self.input_name = '{0!s} {1!s}'.format(HardwareInputTypes.JOYSTICK, str(self.identifier))
+
+        self.degrees_of_freedom = 12
+        self.gas_channel = 9
+        self.use_separate_brake_channel = False
+        self.brake_channel = -1
+        self.first_steer_channel = 0
+        self.use_double_steering_resolution = True
+        self.second_steer_channel = 1
+        self.hand_brake_channel = 10
+        self.hand_brake_value = 2
+        self.reverse_channel = 10
+        self.reverse_value = 8
+
+    def as_dict(self):
+        return self.__dict__
+
+    def set_from_loaded_dict(self, loaded_dict):
+        for key, value in loaded_dict.items():
+            self.__setattr__(key, value)
+
+    @staticmethod
+    def get_preset_settings(device='default'):
+        settings_to_return = JoyStickSettings()
+
+        if device == 'xbox':
+            settings_to_return.degrees_of_freedom = 12
+            settings_to_return.gas_channel = 9
+            settings_to_return.use_separate_brake_channel = False
+            settings_to_return.brake_channel = -1
+            settings_to_return.first_steer_channel = 0
+            settings_to_return.use_double_steering_resolution = True
+            settings_to_return.second_steer_channel = 1
+            settings_to_return.hand_brake_channel = 10
+            settings_to_return.hand_brake_value = 2
+            settings_to_return.reverse_channel = 10
+            settings_to_return.reverse_value = 8
+        elif device == 'playstation':
+            settings_to_return.degrees_of_freedom = 12
+            settings_to_return.gas_channel = 9
+            settings_to_return.use_separate_brake_channel = True
+            settings_to_return.brake_channel = 8
+            settings_to_return.first_steer_channel = 1
+            settings_to_return.use_double_steering_resolution = False
+            settings_to_return.second_steer_channel = -1
+            settings_to_return.hand_brake_channel = 5
+            settings_to_return.hand_brake_value = 40
+            settings_to_return.reverse_channel = 6
+            settings_to_return.reverse_value = 10
+
+        return settings_to_return
+
+
+class JoystickSettingsDialog(QtWidgets.QDialog):
     """
     Class for the settings Dialog of a joystick, this class should pop up whenever it is asked by the user or when
     creating the joystick class for the first time. NOTE: it should not show whenever settings are loaded by .json file.
     """
 
-    def __init__(self, joystick_settings, parent=None):
+    def __init__(self, settings=None, parent=None):
         """
         Initializes the joystick class with the proper settings.
         :param joystick_settings:
         :param parent:
         """
         super().__init__(parent)
-        self.joystick_settings = joystick_settings
+        self.joystick_settings = settings
         uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/joystick_settings_ui.ui"), self)
 
         self.button_box_settings.button(self.button_box_settings.RestoreDefaults).clicked.connect(
@@ -60,6 +206,7 @@ class JoystickSettingsDialog(QtWidgets.QDialog):  # TODO: losse files maken voor
         self.value_preview_check_boxes = []
 
         self._display_settings()
+        self.show()
 
     def preview_joystick_values(self):
         """
@@ -245,84 +392,3 @@ class JoystickSettingsDialog(QtWidgets.QDialog):  # TODO: losse files maken voor
 
             self.value_preview_labels.append(display_label)
             self.value_preview_check_boxes.append(check_box)
-
-
-class JOANJoystickMP:
-    def __init__(self, settings, shared_variables):
-        # Initialize Variables
-        self.brake = 0
-        self.steer = 0
-        self.throttle = 0
-        self.handbrake = False
-        self.reverse = False
-
-        self.settings = settings
-        self.shared_variables = shared_variables
-
-        self.settings_dialog = None
-        self._joystick_open = False
-        self._joystick = hid.device()
-
-        self._open_connection_to_device()
-
-    def _open_connection_to_device(self):
-        """
-        Starts the connection to a joystick device, sets the boolean 'self._joystick_open' to true if it succeds
-        and to false if it fails
-        """
-        try:
-            self._joystick.open(self.settings.device_vendor_id, self.settings.device_product_id)
-            self._joystick_open = True
-        except OSError:
-            print('Connection to USB Joystick failed')  # TODO: move to messagebox
-            self._joystick_open = False
-
-    def do(self):
-        """
-        Processes all the inputs of the joystick and writes them to self._data which is then written to the news in the
-        action class
-        :return: self._data a dictionary containing :self._data['brake'] = self.brake
-            self._data['throttle'] = self.throttle
-            self._data['steering_angle'] = self.steer
-            self._data['Handbrake'] = self.handbrake
-            self._data['Reverse'] = self.reverse
-        """
-        if self._joystick_open:
-            joystick_data = self._joystick.read(self.settings.degrees_of_freedom, 1)
-        else:
-            joystick_data = False
-
-        if joystick_data:
-            if self.settings.use_separate_brake_channel:
-                self.throttle = ((joystick_data[self.settings.gas_channel]) / 255)
-                self.brake = - ((joystick_data[self.settings.brake_channel]) / 255)
-            else:
-                input_value = 1 - ((joystick_data[self.settings.gas_channel]) / 128)
-                if input_value > 0:
-                    self.throttle = input_value
-                    self.brake = 0
-                elif input_value < 0:
-                    self.throttle = 0
-                    self.brake = -input_value
-
-            if joystick_data[self.settings.hand_brake_channel] == self.settings.hand_brake_value:
-                self.handbrake = True
-            elif joystick_data[self.settings.reverse_channel] == self.settings.reverse_value:
-                self.reverse = True
-            else:
-                self.handbrake = False
-                self.reverse = False
-
-            if self.settings.use_double_steering_resolution:
-                self.steer = (((joystick_data[self.settings.first_steer_channel]) + (
-                    joystick_data[self.settings.second_steer_channel]) * 256) / (256 * 256)) * (
-                                     self.settings.max_steer - self.settings.min_steer) - self.settings.max_steer
-            else:
-                self.steer = ((joystick_data[self.settings.first_steer_channel]) / 255) * (
-                        self.settings.max_steer - self.settings.min_steer) - self.settings.max_steer
-
-        self.shared_variables.brake = self.brake
-        self.shared_variables.throttle = self.throttle
-        self.shared_variables.steering_angle = self.steer
-        self.shared_variables.handbrake = self.handbrake
-        self.shared_variables.reverse = self.reverse

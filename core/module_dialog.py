@@ -106,7 +106,7 @@ class ModuleDialog(QtWidgets.QDialog):
                                                                          os.path.join(self.module_manager.module_path),
                                                                          filter='*.json')
         if settings_file_to_load:
-            self.module_manager.module_settings.load_from_file(settings_file_to_load)
+            self.module_manager.load_from_file(settings_file_to_load)
 
     def _save_settings(self):
         """

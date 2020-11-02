@@ -1,9 +1,9 @@
 from core.module_process import ModuleProcess
-from modules.hardwaremp.hardwaremp_inputtypes import HardwareInputTypes
+from modules.hardwaremanager.hardwaremanager_inputtypes import HardwareInputTypes
 from modules.joanmodules import JOANModules
 
 
-class HardwareMPProcess(ModuleProcess):
+class HardwareManagerProcess(ModuleProcess):
     """
     Overall process that inherits from ModuleProcess (will loop at the desired frequency)
     """
@@ -14,13 +14,13 @@ class HardwareMPProcess(ModuleProcess):
     def get_ready(self):
         # Create the objects that are in the settings here
         for key, value in self._settings_as_object.keyboards.items():
-            self.input_objects[key] = HardwareInputTypes.KEYBOARD.klass_mp(settings=value, shared_variables=self._module_shared_variables.keyboards[key])
+            self.input_objects[key] = HardwareInputTypes.KEYBOARD.process(settings=value, shared_variables=self._module_shared_variables.keyboards[key])
 
         for key, value in self._settings_as_object.joysticks.items():
-            self.input_objects[key] = HardwareInputTypes.JOYSTICK.klass_mp(settings=value, shared_variables=self._module_shared_variables.joysticks[key])
+            self.input_objects[key] = HardwareInputTypes.JOYSTICK.process(settings=value, shared_variables=self._module_shared_variables.joysticks[key])
 
         for key, value in self._settings_as_object.sensodrives.items():
-            self.input_objects[key] = HardwareInputTypes.SENSODRIVE.klass_mp(settings=value, shared_variables=self._module_shared_variables.sensodrives[key])
+            self.input_objects[key] = HardwareInputTypes.SENSODRIVE.process(settings=value, shared_variables=self._module_shared_variables.sensodrives[key])
 
     def do_while_running(self):
         for inputs in self.input_objects:

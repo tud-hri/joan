@@ -5,6 +5,13 @@ from enum import Enum
 from modules.joanmodules import JOANModules
 
 
+def find_settings_by_identifier(search_dict: dict, identifier: int):
+    for key, value in search_dict.items():
+        if value.identifier == identifier:
+            return key, value
+    return None, None
+
+
 class ModuleSettings:
     # signal when new settings are loaded. Action and Dialog can connect to this signal to apply the new settings
 
@@ -55,8 +62,7 @@ class ModuleSettings:
             warning_message = "WARNING: loading settings for the " + str(self.module) + \
                               " module from a dictionary failed. The loaded dictionary did not contain " + \
                               str(self.module) + " settings." + \
-                              (" It did contain settings for: " +
-                               ", ".join(loaded_dict.keys()) if loaded_dict.keys() else "")
+                              (" It did contain settings for: " + ", ".join(loaded_dict.keys()) if loaded_dict.keys() else "")
             print(warning_message)
 
     def as_dict(self):

@@ -3,7 +3,6 @@ import multiprocessing as mp
 import platform
 import sys
 import time
-from dataclasses import dataclass
 
 from core.exceptionhook import exception_log_and_kill_hook
 from core.statesenum import State
@@ -17,6 +16,7 @@ class ProcessEvents:
     """
     Class containing all events for communication between module_process and module_manager
     """
+
     def __init__(self):
         self.start = mp.Event()
         self.exception = mp.Event()
@@ -29,7 +29,7 @@ class ModuleProcess(mp.Process):
     """
 
     def __init__(self, module: JOANModules, time_step_in_ms, news, settings, events: ProcessEvents):
-        super().__init__()
+        super().__init__(daemon=True)
 
         if time_step_in_ms < 10:
             raise ValueError('The time step of a JOAN process cannot be smaller then 10 ms (not > 100 Hz). This is not possible on a non real time OS.')
@@ -46,9 +46,6 @@ class ModuleProcess(mp.Process):
 
         # mp.Events
         self._events = events
-        # self._start_event = start_event
-        # self._exception_event = exception_event
-        # self._process_is_ready_event = process_is_ready_event
 
     def _get_ready(self):
         # settings dict back to settings object
@@ -106,7 +103,17 @@ class ModuleProcess(mp.Process):
         :return:
         """
         running = True
+
+        # check if state is stopped; if so, stop!
+        if self._module_shared_variables.state == State.STOPPED.value:
+            running = False
+
         while running:
+
+            # check if state is stopped; if so, stop!
+            if self._module_shared_variables.state == State.STOPPED.value:
+                running = False
+
             t0 = time.perf_counter_ns()
 
             self._time = time.perf_counter_ns()

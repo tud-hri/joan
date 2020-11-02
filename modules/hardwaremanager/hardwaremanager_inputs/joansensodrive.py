@@ -1,13 +1,13 @@
 import math
 import multiprocessing as mp
 import os
-import time
 import queue
+import time
 
 from PyQt5 import uic, QtWidgets
 
-from modules.hardwaremp.hardwaremp_inputclasses.PCANBasic import *
-from modules.hardwaremp.hardwaremp_settings import SensoDriveSettings
+from modules.hardwaremanager.hardwaremanager_inputs.PCANBasic import *
+from modules.hardwaremanager.hardwaremanager_inputtypes import HardwareInputTypes
 
 """
 These global parameters are used to make the message ID's more identifiable than just the hex nr.
@@ -25,15 +25,98 @@ PEDAL_MESSAGE_RECEIVE_ID = 0x21C
 PEDAL_MESSAGE_LENGTH = 2
 
 
-class SensoDriveSettingsDialog(QtWidgets.QDialog):  # TODO aparte files voor classes maken
+class JOANSensoDriveProcess:
+
+
+    def __init__(self, settings, shared_variables):
+        super().__init__()
+
+        # We define our settings list which contains only picklable objects
+        self.settings_dict = settings.settings_dict_for_pipe()
+
+        # We will write all the output of the sensodrive to these variables so that we have it in our main joan program
+        self.shared_variables = shared_variables
+
+        # Initialize communication pipe between seperate sensodrive process
+        self.parent_pipe, child_pipe = mp.Pipe(duplex=True)
+
+        # Create the sensodrive communication object with needed events and pipe
+        comm = SensoDriveComm(turn_on_event=settings.turn_on_event, turn_off_event=settings.turn_off_event,
+                              close_event=settings.close_event, clear_error_event=settings.clear_error_event,
+                              child_pipe=child_pipe, state_queue=settings.state_queue)
+
+        # Start the communication process when it is created
+        comm.start()
+        self.parent_pipe.send(self.settings_dict)
+
+
+    def do(self):
+        self.parent_pipe.send(self.settings_dict)
+        values_from_sensodrive = self.parent_pipe.recv()
+        print(values_from_sensodrive)
+
+        self.shared_variables.steering_angle = values_from_sensodrive['steering_angle']
+        self.shared_variables.throttle = values_from_sensodrive['throttle']
+        self.shared_variables.brake = values_from_sensodrive['brake']
+        self.shared_variables.steering_rate = values_from_sensodrive['steering_rate']
+
+class SensoDriveSettings:
+    """
+    Default sensodrive settings that will load whenever a keyboardinput class is created.
+    """
+
+    def __init__(self, identifier=''):
+        self.endstops = math.radians(360.0)  # rad
+        self.torque_limit_between_endstops = 200  # percent
+        self.torque_limit_beyond_endstops = 200  # percent
+        self.friction = 0  # Nm
+        self.damping = 0.1  # Nm * s / rad
+        self.spring_stiffness = 1  # Nm / rad
+        self.torque = 0  # Nm
+        self.identifier = identifier
+        self.input_type = HardwareInputTypes.SENSODRIVE.value
+        # self.input_name = '{0!s} {1!s}'.format(HardwareInputTypes.SENSODRIVE, str(self.identifier))
+
+        self.turn_on_event = mp.Event()
+        self.turn_off_event = mp.Event()
+        self.clear_error_event = mp.Event()
+        self.close_event = mp.Event()
+
+        self.state_queue = mp.Queue()
+
+        self.current_state = 0x00
+
+        self.settings_dict = {}
+
+    def as_dict(self):
+        return self.__dict__
+
+    def set_from_loaded_dict(self, loaded_dict):
+        for key, value in loaded_dict.items():
+            self.__setattr__(key, value)
+
+    def settings_dict_for_pipe(self):
+        self.settings_dict = {'endstops': self.endstops,  # rad
+                              'torque_limit_between_endstops': self.torque_limit_between_endstops,  # percent
+                              'torque_limit_beyond_endstops': self.torque_limit_beyond_endstops,  # percent
+                              'friction': self.friction,  # Nm
+                              'damping': self.damping,  # Nm * s / rad
+                              'spring_stiffness': self.spring_stiffness,  # Nm / rad
+                              'torque': self.torque,  # Nm
+                              'identifier': self.identifier}
+
+        return self.settings_dict
+
+
+class SensoDriveSettingsDialog(QtWidgets.QDialog):
     """
     Class for the settings Dialog of a SensoDrive, this class should pop up whenever it is asked by the user or when
     creating the joystick class for the first time. NOTE: it should not show whenever settings are loaded by .json file.
     """
 
-    def __init__(self, sensodrive_settings, parent=None):
+    def __init__(self, settings=None, parent=None):
         super().__init__(parent)
-        self.sensodrive_settings = sensodrive_settings
+        self.sensodrive_settings = settings
         uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/sensodrive_settings_ui.ui"), self)
 
         self.button_box_settings.button(self.button_box_settings.RestoreDefaults).clicked.connect(
@@ -42,6 +125,7 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):  # TODO aparte files voor cla
         self.btn_apply.clicked.connect(self.update_parameters)
 
         self._display_values()
+        self.show()
 
     def update_parameters(self):
         """
@@ -91,44 +175,22 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):  # TODO aparte files voor cla
         """
         self._display_values(SensoDriveSettings())
 
-class JOANSensoDriveMP():
-    def __init__(self, settings, shared_variables):
-        super().__init__()
 
-        #We define our settings list which contains only picklable objects
-        self.settings_dict = settings.settings_dict_for_pipe()
+def clear_queue(q):
+    try:
+        while True:
+            q.get_nowait()
+    except queue.Empty:
+        pass
 
-        #we will write all the output of the sensodrive to these variables so that we have it in our main joan program
-        self.shared_variables = shared_variables
-
-        #Initialize communication pipe between seperate sensodrive process
-        self.parent_pipe, child_pipe = mp.Pipe(duplex= True)
-
-        #Create the sensodrive communication object with needed events and pipe
-        comm = SensoDriveComm(turn_on_event=settings.turn_on_event, turn_off_event=settings.turn_off_event,
-                               close_event=settings.close_event, clear_error_event=settings.clear_error_event,
-                               child_pipe=child_pipe, state_queue= settings.state_queue)
-
-        #Start the communication process when it is created
-        comm.start()
-        self.parent_pipe.send(self.settings_dict)
-
-    def do(self):
-        self.parent_pipe.send(self.settings_dict)
-        values_from_sensodrive = self.parent_pipe.recv()
-        print(values_from_sensodrive)
-
-        self.shared_variables.steering_angle = values_from_sensodrive['steering_angle']
-        self.shared_variables.throttle = values_from_sensodrive['throttle']
-        self.shared_variables.brake = values_from_sensodrive['brake']
-        self.shared_variables.steering_rate = values_from_sensodrive['steering_rate']
 
 class SensoDriveComm(mp.Process):
     """
     This class is a seperate mp.Process which will start when it is created. It loops at approximately 10ms to keep the sensodrive from shutting off due to
     the watchdog.
     """
-    def __init__(self, turn_on_event, turn_off_event, close_event, clear_error_event, child_pipe , state_queue):
+
+    def __init__(self, turn_on_event, turn_off_event, close_event, clear_error_event, child_pipe, state_queue):
         """
         Initialize the class with events and communication parameters: child_pipe and state_queue
 
@@ -182,7 +244,6 @@ class SensoDriveComm(mp.Process):
         self._time_step_in_ns = 10000000
         # Here we can initialize our PCAN Communication (WE HAVE TO DO THIS HERE ELSE WE WONT HAVE THE PCAN OBJECT IN OUR DESIRED PROCESS
         self.initialize()
-
 
         while True:
             t0 = time.perf_counter_ns()
@@ -241,27 +302,20 @@ class SensoDriveComm(mp.Process):
             # properly uninitialize the pcan dongle if sensodrive is removed
             if self.close_event.is_set():
                 self.close_event.clear()
-                #send last known values over the pipe
+                # send last known values over the pipe
                 self.child_pipe.send(self.values_from_sensodrive)
                 self.pcan_object.Uninitialize(self._pcan_channel)
                 self.child_pipe.close()
                 break
 
-            self.clear_queue(self.state_queue)
+            clear_queue(self.state_queue)
             self.state_queue.put(self._current_state_hex)
             pass
 
             execution_time = time.perf_counter_ns() - t0
 
             # sleep for time step, taking the execution time into account
-            time.sleep((self._time_step_in_ns - execution_time) * 1e-9)
-
-    def clear_queue(self, q):
-        try:
-            while True:
-                q.get_nowait()
-        except queue.Empty:
-            pass
+            time.sleep(max(0.0, (self._time_step_in_ns - execution_time) * 1e-9))
 
     def write_message_steering_wheel(self, pcan_object, pcanmessage, data):
         """
@@ -373,7 +427,7 @@ class SensoDriveComm(mp.Process):
         self.sensodrive_initialization_message.DATA[7] = torque_limit_beyond_endstops_bytes[0]
 
         self.pcan_object.Write(self._pcan_channel, self.sensodrive_initialization_message)
-        #time.sleep(0.002)
+        # time.sleep(0.002)
         self.pcan_object.Read(self._pcan_channel)
 
         # do not switch mode
@@ -384,7 +438,7 @@ class SensoDriveComm(mp.Process):
         self.steering_wheel_parameters = self._map_si_to_sensodrive(self.settings_dict)
 
         self.pcan_object.Write(self._pcan_channel, self.sensodrive_initialization_message)
-        #time.sleep(0.02)
+        # time.sleep(0.02)
         response = self.pcan_object.Read(self._pcan_channel)
 
         self._current_state_hex = response[1].DATA[0]
@@ -457,9 +511,7 @@ class SensoDriveComm(mp.Process):
         self.sensodrive_initialization_message.DATA[7] = torque_limit_beyond_endstops_bytes[0]
 
         self.pcan_object.Write(self._pcan_channel, self.sensodrive_initialization_message)
-        #time.sleep(0.002)
+        # time.sleep(0.002)
         response = self.pcan_object.Read(self._pcan_channel)
 
         self._current_state_hex = response[1].DATA[0]
-
-

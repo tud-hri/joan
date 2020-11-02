@@ -178,7 +178,7 @@ class HardwareManagerAction(JoanModuleAction):
             self._hardware_inputs[hardware_input_name].get_hardware_input_tab.groupBox.setTitle(hardware_input_name)
             self.module_dialog.module_widget.hardware_list_layout.addWidget(
                 self._hardware_inputs[hardware_input_name].get_hardware_input_tab)
-            self._hardware_inputs[hardware_input_name]._open_settings_dialog()
+            self._hardware_inputs[hardware_input_name].open_settings_dialog()
 
         self._state_change_listener()
 
@@ -193,13 +193,13 @@ class HardwareManagerAction(JoanModuleAction):
 
         # remove_input_device controller settings
         try:
-            self.settings.remove_hardware_input_device(
+            self.settings.remove_hardware_input(
                 self._hardware_inputs[hardware_input.get_hardware_input_list_key].settings)
         except ValueError:  # depends if right controller list is present
             pass
 
         try:
-            self.settings.remove_hardware_input_device(
+            self.settings.remove_hardware_input(
                 self._hardware_inputs[hardware_input.get_hardware_input_list_key].settings)
         except ValueError:  # depends if right controller list is present
             pass

@@ -354,7 +354,7 @@ class CarlaInterfaceAction(JoanModuleAction):
                                                         , self.vehicle_tags, self._spawn_points)
             self._agents[agent_name].get_agent_tab.group_agent.setTitle(agent_name)
             self.module_dialog.module_widget.agent_list_layout.addWidget(self._agents[agent_name].get_agent_tab)
-            self._agents[agent_name]._open_settings_dialog()
+            self._agents[agent_name].open_settings_dialog()
 
         self._state_change_listener()
 

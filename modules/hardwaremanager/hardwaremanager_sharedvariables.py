@@ -37,6 +37,7 @@ class KeyboardSharedVariables:
     This class contains all the variables that are shared between the seperate hardware communication core and the
     main JOAN core.
     """
+
     def __init__(self):
         self._steering_angle = mp.Value(c_float, 0.0)
         self._throttle = mp.Value(c_float, 0.0)
@@ -90,6 +91,7 @@ class JoystickSharedVariables:
     This class contains all the variables that are shared between the seperate hardware communication core and the
     main JOAN core.
     """
+
     def __init__(self):
         self._steering_angle = mp.Value(c_float, 0.0)
         self._throttle = mp.Value(c_float, 0.0)
