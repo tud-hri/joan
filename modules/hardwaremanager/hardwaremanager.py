@@ -25,11 +25,11 @@ class HardwareManager(ModuleManager):
 
         # create shared variables for all inputs in the settings
         for keyboard in self.module_settings.keyboards.values():
-            self.shared_variables.keyboards[keyboard.identifier] = HardwareInputTypes(keyboard.input_type).shared_variables()
+            self.shared_variables.inputs[keyboard.identifier] = HardwareInputTypes(keyboard.input_type).shared_variables()
         for joystick in self.module_settings.joysticks.values():
-            self.shared_variables.joysticks[joystick.identifier] = HardwareInputTypes(joystick.input_type).shared_variables()
+            self.shared_variables.inputs[joystick.identifier] = HardwareInputTypes(joystick.input_type).shared_variables()
         for sensodrive in self.module_settings.sensodrives.values():
-            self.shared_variables.sensodrives[sensodrive.identifier] = HardwareInputTypes(sensodrive.input_type).shared_variables()
+            self.shared_variables.inputs[sensodrive.identifier] = HardwareInputTypes(sensodrive.input_type).shared_variables()
 
     def start(self):
         super().start()
