@@ -51,6 +51,8 @@ class CarlaInterfaceManager(ModuleManager):
 
         self.connected = self.connect_carla()
 
+
+
     def initialize(self):
         super().initialize()
         for egovehicle in self.module_settings.ego_vehicles.values():
@@ -96,6 +98,15 @@ class CarlaInterfaceManager(ModuleManager):
             self.msg.setText('Already Connected')
             self.msg.exec()
 
+        return self.connected
+
+    def disconnect_carla(self):
+        """
+        This function will try and disconnect from the carla server, if the module was running it will transition into
+        an error state
+        """
+        self.client = None
+        self.connected = False
         return self.connected
 
     def _open_settings_dialog(self, agent_name):

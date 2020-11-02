@@ -108,6 +108,12 @@ class HQWindow(QtWidgets.QMainWindow):
         widget.btn_showclose.toggled.connect(lambda: button_show_close_checked(widget.btn_showclose))  # change text in the button, based toggle status
         module_dialog.closed.connect(lambda: widget.btn_showclose.setChecked(False))  # if the user closes the dialog, uncheck the button
 
+        #Attach connect and disconnect buttons for the carla interface module_card
+        if module_manager.module == JOANModules.CARLA_INTERFACE:
+            widget.btn_connect.clicked.connect(module_manager.connect_carla)
+            widget.btn_disconnect.clicked.connect(module_manager.disconnect_carla)
+
+
         # with state_machine
         try:
             module_manager.state_machine.add_state_change_listener(lambda: self.handle_state_change(widget, module_manager))
