@@ -82,7 +82,7 @@ class ModuleDialog(QtWidgets.QDialog):
             self.load_settings.setEnabled(True)
             self.load_settings.blockSignals(False)
             self.save_settings.setEnabled(True)
-            self.save_settings.blockSignals(True)
+            self.save_settings.blockSignals(False)
         else:
             self.load_settings.setEnabled(False)
             self.load_settings.blockSignals(True)
