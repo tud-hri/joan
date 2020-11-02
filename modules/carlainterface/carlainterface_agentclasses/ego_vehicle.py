@@ -59,6 +59,7 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
                                      'resetting spawnpoint to None')
                     self.msg_box.exec()
                     self.settings.selected_spawnpoint = 'None'
+                    break
             else:
                 self.settings.selected_spawnpoint = self.combo_spawnpoints.currentText()
         self.settings.set_velocity = self.check_box_set_vel.isChecked()
