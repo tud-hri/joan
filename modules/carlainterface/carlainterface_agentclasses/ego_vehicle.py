@@ -14,15 +14,14 @@ import carla
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QMessageBox, QApplication
 
-msg_box = QMessageBox()
-msg_box.setTextFormat(QtCore.Qt.RichText)
-
 class EgoVehicleSettingsDialog(QtWidgets.QDialog):
     def __init__(self, ego_vehicle_settings, carla_interface_overall_settings,  parent = None):
         super().__init__(parent)
         self.settings = ego_vehicle_settings
         self.carla_interface_overall_settings = carla_interface_overall_settings
         uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/ego_vehicle_settings_ui.ui"), self)
+        self.msg_box = QMessageBox()
+        self.msg_box.setTextFormat(QtCore.Qt.RichText)
 
         self.button_box_egovehicle_settings.button(self.button_box_egovehicle_settings.RestoreDefaults).clicked.connect(
             self._set_default_values)
@@ -37,14 +36,14 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
         for settings in self.carla_interface_overall_settings.ego_vehicles.values():
             if settings.identifier != self.settings.identifier: #exlude own settings
                 if settings.selected_spawnpoint == self.combo_spawnpoints.currentText() and settings.selected_spawnpoint != 'None':
-                    msg_box.setText('This spawnpoint was already chosen for another agent \n'
+                    self.msg_box.setText('This spawnpoint was already chosen for another agent \n'
                                     'resetting spawnpoint to None')
-                    msg_box.exec()
+                    self.msg_box.exec()
                     self.settings.selected_spawnpoint = 'None'
+                    break
                 else:
                     self.settings.selected_spawnpoint = self.combo_spawnpoints.currentText()
-            else:
-                self.settings.selected_input = self.combo_spawnpoints.currentText()
+
         self.settings.set_velocity = self.check_box_set_vel.isChecked()
         self.display_values()
 
@@ -56,14 +55,12 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
         for settings in self.carla_interface_overall_settings.ego_vehicles.values():
             if settings.identifier != self.settings.identifier: #exlude own settings
                 if settings.selected_spawnpoint == self.combo_spawnpoints.currentText() and settings.selected_spawnpoint != 'None':
-                    msg_box.setText('This spawnpoint was already chosen for another agent \n'
-                                    'resetting spawnpoint to None')
-                    msg_box.exec()
+                    self.msg_box.setText('This spawnpoint was already chosen for another agent \n'
+                                     'resetting spawnpoint to None')
+                    self.msg_box.exec()
                     self.settings.selected_spawnpoint = 'None'
-                else:
-                    self.settings.selected_spawnpoint = self.combo_spawnpoints.currentText()
             else:
-                self.settings.selected_input = self.combo_spawnpoints.currentText()
+                self.settings.selected_spawnpoint = self.combo_spawnpoints.currentText()
         self.settings.set_velocity = self.check_box_set_vel.isChecked()
         super().accept()
 
@@ -90,12 +87,10 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
 
 class EgoVehicleMP:
     def __init__(self, carla_mp, settings, shared_variables):
-        print('hai')
         self.settings = settings
         self.shared_variables = shared_variables
         self.carlainterface_mp = carla_mp
 
-        print('joe')
 
         self._control = carla.VehicleControl()
         self._BP = random.choice(self.carlainterface_mp.vehicle_blueprint_library.filter("vehicle." + self.settings.selected_car))
@@ -107,24 +102,25 @@ class EgoVehicleMP:
         torque_curve.append(carla.Vector2D(x=14000, y=600))
         gears.append(carla.GearPhysicsControl(ratio=7.73, down_ratio=0.5, up_ratio=1))
 
-        self.spawned_vehicle = self.carlainterface_mp.world.spawn_actor(self._BP, self.carlainterface_mp.spawn_point_objects[
-            self.carlainterface_mp.spawn_points.index(self.settings.selected_spawnpoint)])
-        physics = self.spawned_vehicle.get_physics_control()
-        physics.torque_curve = torque_curve
-        physics.max_rpm = 14000
-        physics.moi = 1.5
-        physics.final_ratio = 1
-        physics.clutch_strength = 1000  # very big no clutch
-        physics.final_ratio = 1  # ratio from transmission to wheels
-        physics.forward_gears = gears
-        physics.mass = 2316
-        physics.drag_coefficient = 0.24
-        physics.gear_switch_time = 0
-        self.spawned_vehicle.apply_physics_control(physics)
+        if self.settings.selected_spawnpoint != 'None':
+            self.spawned_vehicle = self.carlainterface_mp.world.spawn_actor(self._BP, self.carlainterface_mp.spawn_point_objects[
+                self.carlainterface_mp.spawn_points.index(self.settings.selected_spawnpoint)])
+            physics = self.spawned_vehicle.get_physics_control()
+            physics.torque_curve = torque_curve
+            physics.max_rpm = 14000
+            physics.moi = 1.5
+            physics.final_ratio = 1
+            physics.clutch_strength = 1000  # very big no clutch
+            physics.final_ratio = 1  # ratio from transmission to wheels
+            physics.forward_gears = gears
+            physics.mass = 2316
+            physics.drag_coefficient = 0.24
+            physics.gear_switch_time = 0
+            self.spawned_vehicle.apply_physics_control(physics)
 
 
     def do(self):
-        if self.settings.selected_input != 'None':
+        if self.settings.selected_input != 'None' and hasattr(self, 'spawned_vehicle'):
             self._control.steer = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].steering_angle /math.radians(450)
             self._control.reverse = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].reverse
             self._control.hand_brake = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].handbrake
@@ -135,4 +131,5 @@ class EgoVehicleMP:
 
 
     def destroy(self):
-        self.spawned_vehicle.destroy()
+        if hasattr(self, 'spawned_vehicle'):
+            self.spawned_vehicle.destroy()
