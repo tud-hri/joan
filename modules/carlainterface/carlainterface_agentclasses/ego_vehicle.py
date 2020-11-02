@@ -11,10 +11,17 @@ sys.path.append(glob.glob('carla_pythonapi/carla-*%d.%d-%s.egg' % (
         'win-amd64' if os.name == 'nt' else 'linux-x86_64'))[0])
 import carla
 
+from PyQt5 import QtCore
+from PyQt5.QtWidgets import QMessageBox, QApplication
+
+msg_box = QMessageBox()
+msg_box.setTextFormat(QtCore.Qt.RichText)
+
 class EgoVehicleSettingsDialog(QtWidgets.QDialog):
-    def __init__(self, ego_vehicle_settings, parent = None):
+    def __init__(self, ego_vehicle_settings, carla_interface_overall_settings,  parent = None):
         super().__init__(parent)
         self.settings = ego_vehicle_settings
+        self.carla_interface_overall_settings = carla_interface_overall_settings
         uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/ego_vehicle_settings_ui.ui"), self)
 
         self.button_box_egovehicle_settings.button(self.button_box_egovehicle_settings.RestoreDefaults).clicked.connect(
@@ -27,7 +34,15 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
         self.settings.selected_input = self.combo_input.currentText()
         self.settings.selected_controller = self.combo_sw_controller.currentText()
         self.settings.selected_car = self.combo_car_type.currentText()
-        self.settings.selected_spawnpoint = self.combo_spawnpoints.currentText()
+        for settings in self.carla_interface_overall_settings.ego_vehicles.values():
+            if settings.identifier != self.settings.identifier: #exlude own settings
+                if settings.selected_spawnpoint == self.combo_spawnpoints.currentText() and settings.selected_spawnpoint != 'None':
+                    msg_box.setText('This spawnpoint was already chosen for another agent \n'
+                                    'resetting spawnpoint to None')
+                    msg_box.exec()
+                    self.settings.selected_spawnpoint = 'None'
+                else:
+                    self.settings.selected_spawnpoint = self.combo_spawnpoints.currentText()
         self.settings.set_velocity = self.check_box_set_vel.isChecked()
         self.display_values()
 
@@ -36,7 +51,15 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
         self.settings.selected_input = self.combo_input.currentText()
         self.settings.selected_controller = self.combo_sw_controller.currentText()
         self.settings.selected_car = self.combo_car_type.currentText()
-        self.settings.selected_spawnpoint = self.combo_spawnpoints.currentText()
+        for settings in self.carla_interface_overall_settings.ego_vehicles.values():
+            if settings.identifier != self.settings.identifier: #exlude own settings
+                if settings.selected_spawnpoint == self.combo_spawnpoints.currentText() and settings.selected_spawnpoint != 'None':
+                    msg_box.setText('This spawnpoint was already chosen for another agent \n'
+                                    'resetting spawnpoint to None')
+                    msg_box.exec()
+                    self.settings.selected_spawnpoint = 'None'
+                else:
+                    self.settings.selected_spawnpoint = self.combo_spawnpoints.currentText()
         self.settings.set_velocity = self.check_box_set_vel.isChecked()
         super().accept()
 
@@ -94,33 +117,13 @@ class EgoVehicleMP:
 
 
     def do(self):
-        # self._control.steer = self.carlainterface_mp.shared_variables_hardware
-        if 'Keyboard' in self.settings.selected_input:
-            identifier = int(self.settings.selected_input.replace('Keyboard ', ''))
-            self._control.steer = self.carlainterface_mp.shared_variables_hardware.keyboards[identifier].steering_angle /math.radians(450)
-            self._control.reverse = self.carlainterface_mp.shared_variables_hardware.keyboards[identifier].reverse
-            self._control.hand_brake = self.carlainterface_mp.shared_variables_hardware.keyboards[identifier].handbrake
-            self._control.brake = self.carlainterface_mp.shared_variables_hardware.keyboards[identifier].brake
-            self._control.throttle = self.carlainterface_mp.shared_variables_hardware.keyboards[identifier].throttle
-            print(self._control.steer)
-        if 'Joystick' in self.settings.selected_input:
-            identifier = int(self.settings.selected_input.replace('Joystick ', ''))
-            self._control.steer = self.carlainterface_mp.shared_variables_hardware.joysticks[identifier].steering_angle /math.radians(450)
-            self._control.reverse = self.carlainterface_mp.shared_variables_hardware.joysticks[identifier].reverse
-            self._control.hand_brake = self.carlainterface_mp.shared_variables_hardware.joysticks[identifier].handbrake
-            self._control.brake = self.carlainterface_mp.shared_variables_hardware.joysticks[identifier].brake
-            self._control.throttle = self.carlainterface_mp.shared_variables_hardware.joysticks[identifier].throttle
-        if 'SensoDrive' in self.settings.selected_input:
-            identifier = int(self.settings.selected_input.replace('SensoDrive ', ''))
-            self._control.steer = self.carlainterface_mp.shared_variables_hardware.sensodrives[identifier].steering_angle /math.radians(450)
-            self._control.reverse = self.carlainterface_mp.shared_variables_hardware.sensodrives[identifier].reverse
-            self._control.hand_brake = self.carlainterface_mp.shared_variables_hardware.sensodrives[identifier].handbrake
-            self._control.brake = self.carlainterface_mp.shared_variables_hardware.sensodrives[identifier].brake
-            self._control.throttle = self.carlainterface_mp.shared_variables_hardware.sensodrives[identifier].throttle
-            print(self._control.steer)
-
-
-        self.spawned_vehicle.apply_control(self._control)
+        if self.settings.selected_input != 'None':
+            self._control.steer = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].steering_angle /math.radians(450)
+            self._control.reverse = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].reverse
+            self._control.hand_brake = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].handbrake
+            self._control.brake = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].brake
+            self._control.throttle = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].throttle
+            self.spawned_vehicle.apply_control(self._control)
 
 
 

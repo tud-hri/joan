@@ -54,7 +54,7 @@ class CarlaInterfaceManager(ModuleManager):
     def initialize(self):
         super().initialize()
         for egovehicle in self.module_settings.ego_vehicles.values():
-            self.shared_variables.ego_vehicles[egovehicle.identifier] = egovehicle.input_type.shared_variables()
+            self.shared_variables.agents[egovehicle.identifier] = egovehicle.input_type.shared_variables()
 
     def connect_carla(self):
         """
@@ -132,7 +132,7 @@ class CarlaInterfaceManager(ModuleManager):
         agent_name = '{0!s} {1!s}'.format(agent_type, str(agent_settings.identifier))
 
         # link buttons within settings dialog:
-        self._agent_settingdialogs_dict[agent_name] = agent_type.klass_dialog(agent_settings)
+        self._agent_settingdialogs_dict[agent_name] = agent_type.klass_dialog(ego_vehicle_settings = agent_settings, carla_interface_overall_settings = self.module_settings)
         self._agent_settingdialogs_dict[agent_name].btn_update.clicked.connect(lambda: self._get_update_from_other_modules(agent_name))
         return agent_name
 
@@ -192,3 +192,5 @@ class CarlaInterfaceManager(ModuleManager):
                 self.module_settings.ego_vehicles[ego_vehicle_identifier].selected_spawnpoint)
             if idx != -1:
                 self._agent_settingdialogs_dict[agent_name].combo_spawnpoints.setCurrentIndex(idx)
+
+

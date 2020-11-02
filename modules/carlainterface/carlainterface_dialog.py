@@ -60,6 +60,7 @@ class CarlaInterfaceDialog(ModuleDialog):
         self._agent_tabs_dict[agent_name].btn_settings.clicked.connect(
             lambda: self.module_manager._open_settings_dialog(agent_name))
         self._agent_tabs_dict[agent_name].btn_remove_agent.clicked.connect(lambda: self._remove_agent(agent_name))
+        self.module_manager._open_settings_dialog(agent_name)
 
     def _remove_agent(self, agent_name):
         # Remove dialog

@@ -34,7 +34,7 @@ class CarlaInterfaceProcess(ModuleProcess):
         [self.vehicle_blueprint_library, self.spawn_point_objects, self.world, self.spawn_points] = self.connect_carla(host = host, port = port)
         # Now we create our agents and directly spawn them
         for key, value in self._settings_as_object.ego_vehicles.items():
-            self.agent_objects[key] = AgentTypes.EGO_VEHICLE.klass_mp(self, settings=value, shared_variables=self._module_shared_variables.ego_vehicles[key])
+            self.agent_objects[key] = AgentTypes.EGO_VEHICLE.klass_mp(self, settings=value, shared_variables=self._module_shared_variables.agents[key])
 
     def do_while_running(self):
         """
