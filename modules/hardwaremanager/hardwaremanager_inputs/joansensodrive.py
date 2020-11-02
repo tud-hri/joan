@@ -74,11 +74,11 @@ class SensoDriveSettings:
         self.input_type = HardwareInputTypes.SENSODRIVE.value
         # self.input_name = '{0!s} {1!s}'.format(HardwareInputTypes.SENSODRIVE, str(self.identifier))
 
-        self.turn_on_event = mp.Event()
-        self.turn_off_event = mp.Event()
-        self.clear_error_event = mp.Event()
-        self.close_event = mp.Event()
-        self.state_queue = mp.Queue()
+        # self.turn_on_event = mp.Event()
+        # self.turn_off_event = mp.Event()
+        # self.clear_error_event = mp.Event()
+        # self.close_event = mp.Event()
+        # self.state_queue = mp.Queue()
 
         self.current_state = 0x00
 
@@ -236,6 +236,7 @@ class SensoDriveComm(mp.Process):
 
     def run(self):
         self.settings_dict = self.child_pipe.recv()
+        print(self.settings_dict)
         if self.settings_dict['identifier'] == 'SensoDrive_1':
             self._pcan_channel = PCAN_USBBUS1
         else:

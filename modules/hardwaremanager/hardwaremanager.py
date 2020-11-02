@@ -1,7 +1,7 @@
 from core.module_manager import ModuleManager
 from modules.joanmodules import JOANModules
 from .hardwaremanager_inputtypes import HardwareInputTypes
-
+import multiprocessing as mp
 
 class HardwareManager(ModuleManager):
     """Hardwaremanager keeps track of which inputs are being used with what settings. """
@@ -30,6 +30,11 @@ class HardwareManager(ModuleManager):
             self.shared_variables.inputs[joystick.identifier] = HardwareInputTypes(joystick.input_type).shared_variables()
         for sensodrive in self.module_settings.sensodrives.values():
             self.shared_variables.inputs[sensodrive.identifier] = HardwareInputTypes(sensodrive.input_type).shared_variables()
+            sensodrive.turn_on_event = mp.Event()
+            sensodrive.turn_off_event = mp.Event()
+            sensodrive.clear_error_event = mp.Event()
+            sensodrive.close_event = mp.Event()
+            sensodrive.state_queue = mp.Queue()
 
     def start(self):
         super().start()
@@ -41,6 +46,11 @@ class HardwareManager(ModuleManager):
         for sensodrives in self.module_settings.sensodrives.values():
             sensodrives.turn_off_event.set()
             sensodrives.close_event.set()
+            del sensodrives.turn_on_event
+            del sensodrives.turn_off_event
+            del sensodrives.clear_error_event
+            del sensodrives.close_event
+            del sensodrives.state_queue
         super().stop()
 
     def load_from_file(self, settings_file_to_load):
