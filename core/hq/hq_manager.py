@@ -46,7 +46,6 @@ class HQManager(QtCore.QObject):
     def get_ready_modules(self):
         """
         Get all modules ready
-        :return:
         """
         for _, module in self._instantiated_modules.items():
             module.state_machine.request_state_change(State.READY)

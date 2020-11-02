@@ -147,6 +147,9 @@ class KeyBoardSettings:
     def as_dict(self):
         return self.__dict__
 
+    def __str__(self):
+        return str(self.identifier)
+
     def set_from_loaded_dict(self, loaded_dict):
         for key, value in loaded_dict.items():
             self.__setattr__(key, value)

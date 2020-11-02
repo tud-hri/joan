@@ -1,4 +1,3 @@
-import multiprocessing as mp
 import os
 import sys
 
@@ -32,7 +31,6 @@ class ModuleManager(QtCore.QObject):
 
         # initialize state machine
         self.state_machine = StateMachine(module)
-        # self.state_machine.request_state_change(State.INITIALIZED)
 
         self.state_machine.set_entry_action(State.INITIALIZED, self.initialize)
         self.state_machine.set_entry_action(State.READY, self.get_ready)
@@ -44,9 +42,6 @@ class ModuleManager(QtCore.QObject):
         self.shared_variables = None
         self._process = None
         self._events = ProcessEvents()
-        # self._start_event = mp.Event()
-        # self._exception_event = mp.Event()
-        # self._process_is_ready_event = mp.Event()
 
         self._exception_monitor = ModuleExceptionMonitor(self._events.exception, self.state_machine)
 
@@ -57,9 +52,9 @@ class ModuleManager(QtCore.QObject):
         self.module_settings = module.settings()
 
         # try to load new
-        settings_filename = os.path.join(self.module_path, 'default_settings.json')
-        if os.path.exists(settings_filename):
-            self.module_settings.load_from_file(settings_filename)
+        self.settings_filename = os.path.join(self.module_path, 'default_settings.json')
+        if os.path.exists(self.settings_filename):
+            self.load_from_file(self.settings_filename)
 
         self.singleton_settings.update_settings(self.module, self.module_settings)
 
@@ -109,13 +104,16 @@ class ModuleManager(QtCore.QObject):
         self.shared_variables.state = self.state_machine.current_state.value
 
     def stop(self):
+        self.shared_variables.state = self.state_machine.current_state.value
+
         # send stop state to process and wait for the process to stop
         self.stop_dialog_timer()
 
         # wait for the process to stop
         if self._process:
             if self._process.is_alive():
-                self.shared_variables.state = self.state_machine.current_state.value
+                if not self._events.start.is_set():
+                    self._events.start.set()
                 self._process.join()
 
         print('Process terminated:', self.module)
@@ -134,3 +132,6 @@ class ModuleManager(QtCore.QObject):
 
         self._events.start.clear()
         self._events.process_is_ready.clear()
+
+    def load_from_file(self, settings_file_to_load):
+        self.module_settings.load_from_file(settings_file_to_load)

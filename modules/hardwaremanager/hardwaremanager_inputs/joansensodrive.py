@@ -26,32 +26,32 @@ PEDAL_MESSAGE_LENGTH = 2
 
 
 class JOANSensoDriveProcess:
+
     def __init__(self, settings, shared_variables):
+        super().__init__()
 
-        def __init__(self, settings, shared_variables):
-            super().__init__()
+        # We define our settings list which contains only picklable objects
+        self.settings_dict = settings.settings_dict_for_pipe()
 
-            # We define our settings list which contains only picklable objects
-            self.settings_dict = settings.settings_dict_for_pipe()
+        # We will write all the output of the sensodrive to these variables so that we have it in our main joan program
+        self.shared_variables = shared_variables
 
-            # We will write all the output of the sensodrive to these variables so that we have it in our main joan program
-            self.shared_variables = shared_variables
+        # Initialize communication pipe between seperate sensodrive process
+        self.parent_pipe, child_pipe = mp.Pipe(duplex=True)
 
-            # Initialize communication pipe between seperate sensodrive process
-            self.parent_pipe, child_pipe = mp.Pipe(duplex=True)
+        # Create the sensodrive communication object with needed events and pipe
+        comm = SensoDriveComm(turn_on_event=settings.turn_on_event, turn_off_event=settings.turn_off_event,
+                              close_event=settings.close_event, clear_error_event=settings.clear_error_event,
+                              child_pipe=child_pipe, state_queue=settings.state_queue)
 
-            # Create the sensodrive communication object with needed events and pipe
-            comm = SensoDriveComm(turn_on_event=settings.turn_on_event, turn_off_event=settings.turn_off_event,
-                                  close_event=settings.close_event, clear_error_event=settings.clear_error_event,
-                                  child_pipe=child_pipe, state_queue=settings.state_queue)
-
-            # Start the communication process when it is created
-            comm.start()
-            self.parent_pipe.send(self.settings_dict)
+        # Start the communication process when it is created
+        comm.start()
+        self.parent_pipe.send(self.settings_dict)
 
     def do(self):
         self.parent_pipe.send(self.settings_dict)
         values_from_sensodrive = self.parent_pipe.recv()
+        print(values_from_sensodrive)
 
         self.shared_variables.steering_angle = values_from_sensodrive['steering_angle']
         self.shared_variables.throttle = values_from_sensodrive['throttle']
@@ -89,6 +89,9 @@ class SensoDriveSettings:
 
     def as_dict(self):
         return self.__dict__
+
+    def __str__(self):
+        return str(self.identifier)
 
     def set_from_loaded_dict(self, loaded_dict):
         for key, value in loaded_dict.items():
@@ -200,7 +203,7 @@ class SensoDriveComm(mp.Process):
         :param child_pipe: pipe to send values back to mp process
         :param state_queue: queue to send state to the rest of JOAN
         """
-        super().__init__()
+        super().__init__(daemon=True)
         self.turn_on_event = turn_on_event
         self.child_pipe = child_pipe
         self.turn_off_event = turn_off_event
@@ -304,6 +307,7 @@ class SensoDriveComm(mp.Process):
                 # send last known values over the pipe
                 self.child_pipe.send(self.values_from_sensodrive)
                 self.pcan_object.Uninitialize(self._pcan_channel)
+                self.child_pipe.close()
                 break
 
             clear_queue(self.state_queue)

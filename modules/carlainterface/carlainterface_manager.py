@@ -1,12 +1,15 @@
-from core.module_manager import ModuleManager
-from modules.joanmodules import JOANModules
-from modules.carlainterface.carlainterface_agenttypes import AgentTypes
-from PyQt5 import QtCore
-from PyQt5.QtWidgets import QMessageBox, QApplication
-from PyQt5.QtCore import Qt
-
-import sys, os, glob
+import glob
+import os
+import sys
 import time
+
+from PyQt5 import QtCore
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QMessageBox, QApplication
+
+from core.module_manager import ModuleManager
+from modules.carlainterface.carlainterface_agenttypes import AgentTypes
+from modules.joanmodules import JOANModules
 
 msg_box = QMessageBox()
 msg_box.setTextFormat(QtCore.Qt.RichText)
@@ -28,6 +31,7 @@ except IndexError:
     msg_box.exec()
     pass
 
+
 class CarlaInterfaceManager(ModuleManager):
     """
     Example module for JOAN
@@ -44,7 +48,6 @@ class CarlaInterfaceManager(ModuleManager):
         self.connected = False
         self.vehicle_tags = []
         self.spawn_points = []
-
 
         self.connected = self.connect_carla()
 
@@ -94,7 +97,6 @@ class CarlaInterfaceManager(ModuleManager):
             self.msg.exec()
 
         return self.connected
-
 
     def _open_settings_dialog(self, agent_name):
         self._agent_settingdialogs_dict[agent_name].show()
@@ -153,7 +155,7 @@ class CarlaInterfaceManager(ModuleManager):
     # Made this a seperate function because it will be easier to add your own function for different vehiclewithout making
     # a big mess
     def _get_update_from_other_modules(self, agent_name):
-        #update ego_vehicle settings
+        # update ego_vehicle settings
         self.update_ego_vehicle_settings(agent_name)
 
     def update_ego_vehicle_settings(self, agent_name):
