@@ -26,6 +26,7 @@ class HardwareManagerDialog(ModuleDialog):
         self._module_widget.btn_add_hardware.clicked.connect(self._select_hardware_input_type)
         self._hardware_input_tabs_dict = {}
 
+
     def _handle_state_change(self):
         """
         We only want to be able to add hardware when we are in the stopped state, therefore we add this to the state change listener
@@ -172,6 +173,9 @@ class HardwareManagerDialog(ModuleDialog):
         # add to module_dialog widget
         self._hardware_input_tabs_dict[settings.identifier] = input_tab
         self._module_widget.hardware_list_layout.addWidget(input_tab)
+
+        #open dialog when adding hardware (not sure if this is annoying when loading settings)
+        input_type.settings_dialog(settings=settings, parent=self)
 
     def remove_hardware_input(self, identifier):
         # remove input tab
