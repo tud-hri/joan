@@ -78,7 +78,6 @@ class SensoDriveSettings:
         self.turn_off_event = mp.Event()
         self.clear_error_event = mp.Event()
         self.close_event = mp.Event()
-
         self.state_queue = mp.Queue()
 
         self.current_state = 0x00

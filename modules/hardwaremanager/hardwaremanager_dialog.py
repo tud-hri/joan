@@ -152,9 +152,11 @@ class HardwareManagerDialog(ModuleDialog):
             return
 
         # module_manager manages adding a new hardware input
-        self.module_manager.add_hardware_input(selected_hardware_input)
+        from_button = True
+        self.module_manager.add_hardware_input(selected_hardware_input, from_button)
 
-    def add_hardware_input(self, settings):
+
+    def add_hardware_input(self, settings, from_button):
         input_type = HardwareInputTypes(settings.input_type)
 
         # Adding tab
@@ -175,7 +177,9 @@ class HardwareManagerDialog(ModuleDialog):
         self._module_widget.hardware_list_layout.addWidget(input_tab)
 
         #open dialog when adding hardware (not sure if this is annoying when loading settings)
-        input_type.settings_dialog(settings=settings, parent=self)
+        if from_button:
+            input_type.settings_dialog(settings=settings, parent=self)
+
 
     def remove_hardware_input(self, identifier):
         # remove input tab

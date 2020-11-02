@@ -52,15 +52,16 @@ class HardwareManager(ModuleManager):
         self.module_settings.load_from_file(settings_file_to_load)
 
         # add all settings tp module_dialog
+        from_button = False
         for hardware_input_settings in self.module_settings.all_inputs().values():
-            self.add_hardware_input(HardwareInputTypes(hardware_input_settings.input_type), hardware_input_settings)
+            self.add_hardware_input(HardwareInputTypes(hardware_input_settings.input_type),from_button, hardware_input_settings)
 
-    def add_hardware_input(self, input_type: HardwareInputTypes, input_settings=None):
+    def add_hardware_input(self, input_type: HardwareInputTypes, from_button, input_settings=None):
         # add to module_settings
         input_settings = self.module_settings.add_hardware_input(input_type, input_settings)
 
         # add to module_dialog
-        self.module_dialog.add_hardware_input(input_settings)
+        self.module_dialog.add_hardware_input(input_settings, from_button)
 
     def remove_hardware_input(self, identifier):
         # remove from settings
