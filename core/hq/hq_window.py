@@ -110,6 +110,9 @@ class HQWindow(QtWidgets.QMainWindow):
 
         #Attach connect and disconnect buttons for the carla interface module_card
         if module_manager.module == JOANModules.CARLA_INTERFACE:
+            widget.btn_connect.setEnabled(not module_manager.connected)
+            widget.btn_disconnect.setEnabled(module_manager.connected)
+
             widget.btn_connect.clicked.connect(module_manager.connect_carla)
             widget.btn_disconnect.clicked.connect(module_manager.disconnect_carla)
 
