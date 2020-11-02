@@ -113,6 +113,11 @@ class HQWindow(QtWidgets.QMainWindow):
             widget.btn_connect.clicked.connect(module_manager.connect_carla)
             widget.btn_disconnect.clicked.connect(module_manager.disconnect_carla)
 
+            widget.btn_connect.clicked.connect(lambda: widget.btn_connect.setEnabled(not module_manager.connected))
+            widget.btn_connect.clicked.connect(lambda: widget.btn_disconnect.setEnabled(module_manager.connected))
+            widget.btn_disconnect.clicked.connect(lambda: widget.btn_connect.setEnabled(not module_manager.connected))
+            widget.btn_disconnect.clicked.connect(lambda: widget.btn_disconnect.setEnabled(module_manager.connected))
+
 
         # with state_machine
         try:
