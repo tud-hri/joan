@@ -27,7 +27,6 @@ PEDAL_MESSAGE_LENGTH = 2
 
 class JOANSensoDriveProcess:
 
-
     def __init__(self, settings, shared_variables):
         super().__init__()
 
@@ -49,7 +48,6 @@ class JOANSensoDriveProcess:
         comm.start()
         self.parent_pipe.send(self.settings_dict)
 
-
     def do(self):
         self.parent_pipe.send(self.settings_dict)
         values_from_sensodrive = self.parent_pipe.recv()
@@ -59,6 +57,7 @@ class JOANSensoDriveProcess:
         self.shared_variables.throttle = values_from_sensodrive['throttle']
         self.shared_variables.brake = values_from_sensodrive['brake']
         self.shared_variables.steering_rate = values_from_sensodrive['steering_rate']
+
 
 class SensoDriveSettings:
     """
@@ -90,6 +89,9 @@ class SensoDriveSettings:
 
     def as_dict(self):
         return self.__dict__
+
+    def __str__(self):
+        return str(self.identifier)
 
     def set_from_loaded_dict(self, loaded_dict):
         for key, value in loaded_dict.items():
@@ -201,7 +203,7 @@ class SensoDriveComm(mp.Process):
         :param child_pipe: pipe to send values back to mp process
         :param state_queue: queue to send state to the rest of JOAN
         """
-        super().__init__(daemon = True)
+        super().__init__(daemon=True)
         self.turn_on_event = turn_on_event
         self.child_pipe = child_pipe
         self.turn_off_event = turn_off_event
