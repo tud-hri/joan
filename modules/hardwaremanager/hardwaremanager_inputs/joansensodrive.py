@@ -33,6 +33,7 @@ class JOANSensoDriveProcess:
         # We define our settings list which contains only picklable objects
         self.settings_dict = settings.settings_dict_for_pipe()
 
+
         # We will write all the output of the sensodrive to these variables so that we have it in our main joan program
         self.shared_variables = shared_variables
 
@@ -51,13 +52,10 @@ class JOANSensoDriveProcess:
     def do(self):
         self.parent_pipe.send(self.settings_dict)
         values_from_sensodrive = self.parent_pipe.recv()
-        print(values_from_sensodrive)
-
         self.shared_variables.steering_angle = values_from_sensodrive['steering_angle']
         self.shared_variables.throttle = values_from_sensodrive['throttle']
         self.shared_variables.brake = values_from_sensodrive['brake']
         self.shared_variables.steering_rate = values_from_sensodrive['steering_rate']
-
 
 class SensoDriveSettings:
     """
@@ -239,7 +237,7 @@ class SensoDriveComm(mp.Process):
 
     def run(self):
         self.settings_dict = self.child_pipe.recv()
-        if self.settings_dict['identifier'] == 1:
+        if self.settings_dict['identifier'] == 'SensoDrive_1':
             self._pcan_channel = PCAN_USBBUS1
         else:
             self._pcan_channel = PCAN_USBBUS2
@@ -306,8 +304,10 @@ class SensoDriveComm(mp.Process):
                 self.close_event.clear()
                 # send last known values over the pipe
                 self.child_pipe.send(self.values_from_sensodrive)
-                self.pcan_object.Uninitialize(self._pcan_channel)
                 self.child_pipe.close()
+                clear_queue(self.state_queue)
+                self.state_queue.put(self._current_state_hex)
+                self.pcan_object.Uninitialize(self._pcan_channel)
                 break
 
             clear_queue(self.state_queue)

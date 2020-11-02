@@ -17,6 +17,8 @@ class HardwareManager(ModuleManager):
             self.module_dialog.update_timer.timeout.connect(self.module_dialog.update_sensodrive_state)
             self.module_dialog.update_timer.start()
         super().get_ready()
+        for sensodrives in self.module_settings.sensodrives.values():
+            sensodrives.clear_error_event.set()
 
     def initialize(self):
         super().initialize()
