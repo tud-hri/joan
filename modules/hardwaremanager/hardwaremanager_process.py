@@ -13,14 +13,19 @@ class HardwareManagerProcess(ModuleProcess):
 
     def get_ready(self):
         # Create the objects that are in the settings here
-        for key, value in self._settings_as_object.keyboards.items():
-            self.input_objects[key] = HardwareInputTypes.KEYBOARD.process(settings=value, shared_variables=self._module_shared_variables.inputs[key])
+        for key, value in self._settings_as_object.inputs.items():
+            self.input_objects[key] = HardwareInputTypes(value.input_type).process(settings=value, shared_variables=self._module_shared_variables.inputs[key])
 
-        for key, value in self._settings_as_object.joysticks.items():
-            self.input_objects[key] = HardwareInputTypes.JOYSTICK.process(settings=value, shared_variables=self._module_shared_variables.inputs[key])
-
-        for key, value in self._settings_as_object.sensodrives.items():
-            self.input_objects[key] = HardwareInputTypes.SENSODRIVE.process(settings=value, shared_variables=self._module_shared_variables.inputs[key])
+        #     if value.input_type == HardwareInputTypes.KEYBOARD:
+        #         self.input_objects[key] = HardwareInputTypes.KEYBOARD.process(settings=value, shared_variables=self._module_shared_variables.inputs[key])
+        #     if value.input_type == HardwareInputTypes.JOYSTICK:
+        #
+        #     if value.input_type == HardwareInputTypes.KEYBOARD:
+        # for key, value in self._settings_as_object.joysticks.items():
+        #     self.input_objects[key] = HardwareInputTypes.JOYSTICK.process(settings=value, shared_variables=self._module_shared_variables.inputs[key])
+        #
+        # for key, value in self._settings_as_object.sensodrives.items():
+        #     self.input_objects[key] = HardwareInputTypes.SENSODRIVE.process(settings=value, shared_variables=self._module_shared_variables.inputs[key])
 
     def do_while_running(self):
         for inputs in self.input_objects:

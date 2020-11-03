@@ -93,17 +93,18 @@ class HardwareManagerDialog(ModuleDialog):
                     self._hardware_input_tabs_dict[hardware_tabs].btn_settings.blockSignals(True)
 
     def update_sensodrive_state(self):
-        for sensodrive in self.module_manager.module_settings.sensodrives.values():
-            try:
-                sensodrive.current_state = sensodrive.state_queue.get(timeout=0)
-            except queue.Empty:
-                pass
+        for inputs in self.module_manager.module_settings.inputs.values():
+            if inputs.input_type == HardwareInputTypes.SENSODRIVE.value:
+                try:
+                    inputs.current_state = inputs.events.state_queue.get(timeout=0)
+                except queue.Empty:
+                    pass
 
             state = self.module_manager.state_machine.current_state
-            tab_sensodrive = self._hardware_input_tabs_dict[sensodrive.identifier]
+            tab_sensodrive = self._hardware_input_tabs_dict[inputs.identifier]
 
             if state == State.READY or state == State.RUNNING:
-                if sensodrive.current_state == 0x10:
+                if inputs.current_state == 0x10:
                     tab_sensodrive.btn_on.setEnabled(True)
                     tab_sensodrive.btn_on.blockSignals(False)
                     tab_sensodrive.btn_off.setEnabled(False)
@@ -114,7 +115,7 @@ class HardwareManagerDialog(ModuleDialog):
                     tab_sensodrive.btn_clear_error.blockSignals(True)
                     tab_sensodrive.lbl_sensodrive_state.setStyleSheet("background-color: orange")
                     tab_sensodrive.lbl_sensodrive_state.setText('Off')
-                elif sensodrive.current_state == 0x14:
+                elif inputs.current_state == 0x14:
                     tab_sensodrive.btn_on.setEnabled(False)
                     tab_sensodrive.btn_on.setStyleSheet(None)
                     tab_sensodrive.btn_on.blockSignals(True)
@@ -124,7 +125,7 @@ class HardwareManagerDialog(ModuleDialog):
                     tab_sensodrive.btn_clear_error.blockSignals(True)
                     tab_sensodrive.lbl_sensodrive_state.setStyleSheet("background-color: lightgreen")
                     tab_sensodrive.lbl_sensodrive_state.setText('On')
-                elif sensodrive.current_state == 0x18:
+                elif inputs.current_state == 0x18:
                     tab_sensodrive.btn_on.setEnabled(False)
                     tab_sensodrive.btn_on.blockSignals(True)
                     tab_sensodrive.btn_off.setEnabled(False)
@@ -144,7 +145,12 @@ class HardwareManagerDialog(ModuleDialog):
         selected_hardware_input = self._input_type_dialog.combo_hardware_inputtype.itemData(self._input_type_dialog.combo_hardware_inputtype.currentIndex())
 
         # hardcode maximum nr of sensodrives
-        if selected_hardware_input == HardwareInputTypes.SENSODRIVE and (len(self.module_manager.module_settings.sensodrives) == 2):
+        nr_of_sensodrives = 0
+        for inputs in self.module_manager.module_settings.inputs.values():
+            if inputs.input_type == HardwareInputTypes.SENSODRIVE:
+                nr_of_sensodrives += 1
+
+        if (selected_hardware_input == HardwareInputTypes.SENSODRIVE and nr_of_sensodrives == 2):
             msg_box.setText("""
                                         <h3> Number of sensodrives is limited to 2 for now! </h3>
                                     """)

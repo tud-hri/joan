@@ -176,12 +176,8 @@ class CarlaInterfaceManager(ModuleManager):
             self._agent_settingdialogs_dict[agent_name].combo_input.clear()
             self._agent_settingdialogs_dict[agent_name].combo_input.addItem('None')
             HardwareMPSettings = self.singleton_settings.get_settings(JOANModules.HARDWARE_MP)
-            for keyboards in HardwareMPSettings.keyboards.values():
-                self._agent_settingdialogs_dict[agent_name].combo_input.addItem(str(keyboards))
-            for joysticks in HardwareMPSettings.joysticks.values():
-                self._agent_settingdialogs_dict[agent_name].combo_input.addItem(str(joysticks))
-            for sensodrives in HardwareMPSettings.sensodrives.values():
-                self._agent_settingdialogs_dict[agent_name].combo_input.addItem(str(sensodrives))
+            for inputs in HardwareMPSettings.inputs.values():
+                self._agent_settingdialogs_dict[agent_name].combo_input.addItem(str(inputs))
             idx = self._agent_settingdialogs_dict[agent_name].combo_input.findText(
                 self.module_settings.ego_vehicles[ego_vehicle_identifier].selected_input)
             if idx != -1:

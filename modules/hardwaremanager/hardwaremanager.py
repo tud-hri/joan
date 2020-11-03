@@ -3,6 +3,20 @@ from modules.joanmodules import JOANModules
 from .hardwaremanager_inputtypes import HardwareInputTypes
 import multiprocessing as mp
 
+class SensoDriveEvents:
+    """
+    Class containing all events for communication between hardwaremanager and sensodrive
+    """
+
+    def __init__(self):
+        #events
+        self.turn_on_event = mp.Event()
+        self.turn_off_event = mp.Event()
+        self.clear_error_event = mp.Event()
+        self.close_event = mp.Event()
+        #state queue
+        self.state_queue = mp.Queue()
+
 class HardwareManager(ModuleManager):
     """Hardwaremanager keeps track of which inputs are being used with what settings. """
 
@@ -12,45 +26,51 @@ class HardwareManager(ModuleManager):
         self.hardware_input_type = None
         self.hardware_input_settings = None
 
-    def get_ready(self):
-        if len(self.module_settings.sensodrives) != 0:
-            self.module_dialog.update_timer.timeout.connect(self.module_dialog.update_sensodrive_state)
-            self.module_dialog.update_timer.start()
-        super().get_ready()
-        for sensodrives in self.module_settings.sensodrives.values():
-            sensodrives.clear_error_event.set()
-
     def initialize(self):
         super().initialize()
 
         # create shared variables for all inputs in the settings
-        for keyboard in self.module_settings.keyboards.values():
-            self.shared_variables.inputs[keyboard.identifier] = HardwareInputTypes(keyboard.input_type).shared_variables()
-        for joystick in self.module_settings.joysticks.values():
-            self.shared_variables.inputs[joystick.identifier] = HardwareInputTypes(joystick.input_type).shared_variables()
-        for sensodrive in self.module_settings.sensodrives.values():
-            self.shared_variables.inputs[sensodrive.identifier] = HardwareInputTypes(sensodrive.input_type).shared_variables()
-            sensodrive.turn_on_event = mp.Event()
-            sensodrive.turn_off_event = mp.Event()
-            sensodrive.clear_error_event = mp.Event()
-            sensodrive.close_event = mp.Event()
-            sensodrive.state_queue = mp.Queue()
+        # for keyboard in self.module_settings.inputs.values():
+        #     self.shared_variables.inputs[keyboard.identifier] = HardwareInputTypes(keyboard.input_type).shared_variables()
+        # for joystick in self.module_settings.inputs.values():
+        #     self.shared_variables.inputs[joystick.identifier] = HardwareInputTypes(joystick.input_type).shared_variables()
+        # for sensodrive in self.module_settings.inputs.values():
+        #     self.shared_variables.inputs[sensodrive.identifier] = HardwareInputTypes(sensodrive.input_type).shared_variables()
+        #     events = SensoDriveEvents()
+        #     sensodrive.events = events
+        for input in self.module_settings.inputs.values():
+            self.shared_variables.inputs[input.identifier] = HardwareInputTypes(input.input_type).shared_variables()
+            print(input.input_type, HardwareInputTypes.SENSODRIVE)
+            if input.input_type == HardwareInputTypes.SENSODRIVE.value:
+                print('hoi')
+                input.events = SensoDriveEvents()
+
+
+    def get_ready(self):
+        for inputs in self.module_settings.inputs.values():
+            if inputs.input_type == HardwareInputTypes.SENSODRIVE.value:
+                self.module_dialog.update_timer.timeout.connect(self.module_dialog.update_sensodrive_state)
+                self.module_dialog.update_timer.start()
+        super().get_ready()
+        # for sensodrives in self.module_settings.sensodrives.values():
+        #     sensodrives.events.clear_error_event.set()
+        for inputs in self.module_settings.inputs.values():
+            if inputs.input_type == HardwareInputTypes.SENSODRIVE.value:
+                inputs.events.clear_error_event.set()
 
     def start(self):
         super().start()
-        for sensodrives in self.module_settings.sensodrives.values():
-            if sensodrives.current_state != 0x14:
-                sensodrives.turn_on_event.set()
+        for inputs in self.module_settings.inputs.values():
+            if inputs.input_type == HardwareInputTypes.SENSODRIVE.value:
+                if inputs.current_state != 0x14:
+                    inputs.events.turn_on_event.set()
 
     def stop(self):
-        for sensodrives in self.module_settings.sensodrives.values():
-            sensodrives.turn_off_event.set()
-            sensodrives.close_event.set()
-            del sensodrives.turn_on_event
-            del sensodrives.turn_off_event
-            del sensodrives.clear_error_event
-            del sensodrives.close_event
-            del sensodrives.state_queue
+        for inputs in self.module_settings.inputs.values():
+            if inputs.input_type == HardwareInputTypes.SENSODRIVE.value:
+                inputs.events.turn_off_event.set()
+                inputs.events.close_event.set()
+                del inputs.events
         super().stop()
 
     def load_from_file(self, settings_file_to_load):
@@ -81,10 +101,10 @@ class HardwareManager(ModuleManager):
         self.module_dialog.remove_hardware_input(identifier)
 
     def turn_on_sensodrive(self, identifier):
-        self.module_settings.sensodrives[identifier].turn_on_event.set()
+        self.module_settings.inputs[identifier].events.turn_on_event.set()
 
     def turn_off_sensodrive(self, identifier):
-        self.module_settings.sensodrives[identifier].turn_off_event.set()
+        self.module_settings.inputs[identifier].events.turn_off_event.set()
 
     def clear_error_sensodrive(self, identifier):
-        self.module_settings.sensodrives[identifier].clear_error_event.set()
+        self.module_settings.inputs[identifier].events.clear_error_event.set()

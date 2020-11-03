@@ -41,9 +41,9 @@ class JOANSensoDriveProcess:
         self.parent_pipe, child_pipe = mp.Pipe(duplex=True)
 
         # Create the sensodrive communication object with needed events and pipe
-        comm = SensoDriveComm(turn_on_event=settings.turn_on_event, turn_off_event=settings.turn_off_event,
-                              close_event=settings.close_event, clear_error_event=settings.clear_error_event,
-                              child_pipe=child_pipe, state_queue=settings.state_queue)
+        comm = SensoDriveComm(turn_on_event=settings.events.turn_on_event, turn_off_event=settings.events.turn_off_event,
+                              close_event=settings.events.close_event, clear_error_event=settings.events.clear_error_event,
+                              child_pipe=child_pipe, state_queue=settings.events.state_queue)
 
         # Start the communication process when it is created
         comm.start()
