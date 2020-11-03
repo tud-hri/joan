@@ -1,15 +1,19 @@
-from core.module_process import ModuleProcess
-from modules.joanmodules import JOANModules
-from datetime import datetime
-from modules.carlainterface.carlainterface_agenttypes import AgentTypes
-import sys, glob, os
-from core.statesenum import State
-#TODO Maybe check this again, however it should not even start when it cant find the library the first time
+import glob
+import os
+import sys
+
 import time
+
+from core.module_process import ModuleProcess
+from core.statesenum import State
+from modules.carlainterface.carlainterface_agenttypes import AgentTypes
+from modules.joanmodules import JOANModules
+
+# TODO Maybe check this again, however it should not even start when it cant find the library the first time
 sys.path.append(glob.glob('carla_pythonapi/carla-*%d.%d-%s.egg' % (
-        sys.version_info.major,
-        sys.version_info.minor,
-        'win-amd64' if os.name == 'nt' else 'linux-x86_64'))[0])
+    sys.version_info.major,
+    sys.version_info.minor,
+    'win-amd64' if os.name == 'nt' else 'linux-x86_64'))[0])
 import carla
 
 
@@ -28,10 +32,10 @@ class CarlaInterfaceProcess(ModuleProcess):
         When instantiating the ModuleProcess, the settings ar converted to type dict
         The super().get_ready() method converts the module_settings back to the appropriate settings object
         """
-        #first we make a connection with carla in this multiprocess to get the valid objects we need to spawn our agents
+        # first we make a connection with carla in this multiprocess to get the valid objects we need to spawn our agents
         host = 'localhost'
         port = 2000
-        [self.vehicle_blueprint_library, self.spawn_point_objects, self.world, self.spawn_points] = self.connect_carla(host = host, port = port)
+        [self.vehicle_blueprint_library, self.spawn_point_objects, self.world, self.spawn_points] = self.connect_carla(host=host, port=port)
         # Now we create our agents and directly spawn them
         print(self._settings_as_object.agents.items())
         for key, value in self._settings_as_object.agents.items():

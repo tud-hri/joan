@@ -24,6 +24,7 @@ class CarlaInterfaceSharedVariables:
     def time(self, val):
         self._time.value = val
 
+
 class EgoVehicleSharedVariables:
     def __init__(self):
         self._transform = mp.Array(c_float, 6)
@@ -62,4 +63,3 @@ class EgoVehicleSharedVariables:
     @applied_input.setter
     def applied_input(self, val):
         self._applied_input[:] = val
-
