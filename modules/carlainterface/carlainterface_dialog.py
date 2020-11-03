@@ -18,16 +18,15 @@ class CarlaInterfaceDialog(ModuleDialog):
         self.connected_carla = False
         self.old_nr_cars = 0
         self.i = 1
-        self._agent_tabs_dict = {}
 
         # setup dialogs
         self._agent_type_dialog = uic.loadUi(
             os.path.join(os.path.dirname(os.path.realpath(__file__)), "carlainterface_agentclasses/ui/agent_select_ui.ui"))
-        self._agent_type_dialog.btns_agent_type_select.accepted.connect(self.add_selected_agent)
+        self._agent_type_dialog.btns_agent_type_select.accepted.connect(self._agent_selected)
 
         # connect buttons
-        # TODO have to add the connect and disconnect button of main to the connect function
-        self._module_widget.btn_add_agent.clicked.connect(self._agent_selection)
+        self._module_widget.btn_add_agent.clicked.connect(self._select_agent_type)
+        self._agent_tabs_dict = {}
 
     def _handle_state_change(self):
         """"
@@ -39,33 +38,40 @@ class CarlaInterfaceDialog(ModuleDialog):
         else:
             self._module_widget.groupbox_agents.setEnabled(False)
 
-    def _agent_selection(self):
+    def _select_agent_type(self):
         self._agent_type_dialog.combo_agent_type.clear()
         for agents in AgentTypes:
-            self._agent_type_dialog.combo_agent_type.addItem(agents.__str__(),
-                                                             userData=agents)
+            self._agent_type_dialog.combo_agent_type.addItem(agents.__str__(),userData=agents)
         self._agent_type_dialog.show()
 
-    def add_selected_agent(self):
-        chosen_agent = self._agent_type_dialog.combo_agent_type.itemData(
-            self._agent_type_dialog.combo_agent_type.currentIndex())
-        agent_name = self.module_manager._add_agent(chosen_agent)
+    def _agent_selected(self):
+        selected_agent = self._agent_type_dialog.combo_agent_type.itemData(self._agent_type_dialog.combo_agent_type.currentIndex())
+        # module_manager manages adding a new hardware agent
+        from_button = True
+        self.module_manager.add_agent(selected_agent, from_button)
+        
+    def add_agent(self, settings, from_button):
+        agent_type = AgentTypes(settings.agent_type)
 
         # Adding tab
-        self._agent_tabs_dict[agent_name] = uic.loadUi(chosen_agent.hardware_tab_ui_file)
-        self._agent_tabs_dict[agent_name].group_agent.setTitle(agent_name)
-        self._module_widget.agent_list_layout.addWidget(self._agent_tabs_dict[agent_name])
+        agent_tab = uic.loadUi(agent_type.hardware_tab_ui_file)
+        agent_tab.group_agent.setTitle(settings.identifier)
 
         # Connecting buttons
-        self._agent_tabs_dict[agent_name].btn_settings.clicked.connect(
-            lambda: self.module_manager._open_settings_dialog(agent_name))
-        self._agent_tabs_dict[agent_name].btn_remove_agent.clicked.connect(lambda: self._remove_agent(agent_name))
-        self.module_manager._open_settings_dialog(agent_name)
+        agent_tab.btn_settings.clicked.connect(lambda: agent_type.settings_dialog(settings=settings, module_manager = self.module_manager , parent=self))
+        agent_tab.btn_remove_agent.clicked.connect(lambda: self.module_manager.remove_agent(settings.identifier))
 
-    def _remove_agent(self, agent_name):
-        # Remove dialog
-        self._agent_tabs_dict[agent_name].setParent(None)
-        del self._agent_tabs_dict[agent_name]
+        # add to module_dialog widget
+        self._agent_tabs_dict[settings.identifier] = agent_tab
+        self._module_widget.agent_list_layout.addWidget(agent_tab)
 
-        # We remove the settings dialog and settings object in the module_manager class
-        self.module_manager._remove_agent(agent_name)
+        if from_button:
+            agent_type.settings_dialog(settings=settings, module_manager = self.module_manager ,parent=self)
+    
+
+    def remove_agent(self, identifier):
+        # remove agent tab
+        self._agent_tabs_dict[identifier].setParent(None)
+        del self._agent_tabs_dict[identifier]
+
+

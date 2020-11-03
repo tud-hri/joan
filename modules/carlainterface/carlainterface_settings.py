@@ -1,18 +1,13 @@
 import enum
 
-from core.module_settings import ModuleSettings
+from core.module_settings import ModuleSettings, find_settings_by_identifier
 from modules.joanmodules import JOANModules
 from modules.carlainterface.carlainterface_agenttypes import AgentTypes
 
 class CarlaInterfaceSettings(ModuleSettings):
     def __init__(self):
         super().__init__(JOANModules.CARLA_INTERFACE)
-        self.temp = 0
-        self.ego_vehicles = {}
-
-    def remove_agent(self, setting):
-        if isinstance(setting, EgoVehicleSettings):
-            self.ego_vehicles.pop(setting.identifier)
+        self.agents = {}
 
     def load_from_dict(self, loaded_dict):
         """
@@ -26,36 +21,36 @@ class CarlaInterfaceSettings(ModuleSettings):
 
         module_settings_to_load = loaded_dict[str(self.module)]
 
-        self.ego_vehicles = {}
-        for identifier, settings_dict in module_settings_to_load['ego_vehicles'].items():
-            ego_vehicle_settings = EgoVehicleSettings()
-            ego_vehicle_settings.set_from_loaded_dict(settings_dict)
-            self.ego_vehicles.update({identifier: ego_vehicle_settings})
+        for identifier, settings_dict in module_settings_to_load['agents'].items():
+            if 'Ego Vehicle' in identifier:
+                ego_vehicle_settings = AgentTypes.EGO_VEHICLE.settings()
+                ego_vehicle_settings.set_from_loaded_dict(settings_dict)
+                self.agents.update({identifier: ego_vehicle_settings})
+
+    def add_agent(self, agent_type: AgentTypes, agent_settings=None):
+        # create empty settings object
+        if not agent_settings:
+            agent_settings = agent_type.settings()
+
+            nr = 1
+            name = '{0!s}_{1}'.format(agent_type, nr)
+            while name in self.agents.keys():
+                nr += 1
+                name = '{0!s}_{1}'.format(agent_type, nr)
+
+            agent_settings.identifier = name
 
 
-class EgoVehicleSettings:
-    """
-    Class containing the default settings for an egovehicle
-    """
+        # add settings to dict, check if settings do not already exist
+        if agent_settings not in self.agents.values():
+            self.agents[agent_settings.identifier] = agent_settings
 
-    def __init__(self, agent_type: AgentTypes = AgentTypes.EGO_VEHICLE, identifier = 0):
-        """
-        Initializes the class with default variables
-        """
-        self.selected_input = 'None'
-        self.selected_controller = 'None'
-        self.selected_spawnpoint = 'Spawnpoint 0'
-        self.selected_car = 'hapticslab.audi'
-        self.velocity = 80
-        self.set_velocity = False
-        self.name = ''
-        self.identifier = identifier
+        return agent_settings
 
-        self.input_type = agent_type
+    def all_agents(self):
+        return {**self.agents}
 
-    def as_dict(self):
-        return self.__dict__
+    def remove_agent(self, identifier):
+        key, _ = find_settings_by_identifier(self.agents, identifier)
+        self.agents.pop(key)
 
-    def set_from_loaded_dict(self, loaded_dict):
-        for key, value in loaded_dict.items():
-            self.__setattr__(key, value)

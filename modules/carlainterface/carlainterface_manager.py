@@ -52,11 +52,37 @@ class CarlaInterfaceManager(ModuleManager):
         self.connected = self.connect_carla()
 
 
-
     def initialize(self):
         super().initialize()
-        for egovehicle in self.module_settings.ego_vehicles.values():
-            self.shared_variables.agents[egovehicle.identifier] = egovehicle.input_type.shared_variables()
+        for agent in self.module_settings.agents.values():
+            self.shared_variables.agents[agent.identifier] = AgentTypes(agent.agent_type).shared_variables()
+
+    def load_from_file(self, settings_file_to_load):
+        # remove all settings from the dialog
+        for agent in self.module_settings.all_agents().values():
+            self.remove_agent(agent.identifier)
+
+        # load settings from file into module_settings object
+        self.module_settings.load_from_file(settings_file_to_load)
+
+        # add all settings tp module_dialog
+        from_button = False
+        for agent_settings in self.module_settings.all_agents().values():
+            self.add_agent(AgentTypes(agent_settings.agent_type), from_button, agent_settings)
+
+    def add_agent(self, agent_type: AgentTypes, from_button, agent_settings=None):
+        # add to module_settings
+        agent_settings = self.module_settings.add_agent(agent_type, agent_settings)
+
+        # add to module_dialog
+        self.module_dialog.add_agent(agent_settings, from_button)
+
+    def remove_agent(self, identifier):
+        # remove from settings
+        self.module_settings.remove_agent(identifier)
+
+        # remove settings from dialog
+        self.module_dialog.remove_agent(identifier)
 
     def connect_carla(self):
         """
@@ -112,92 +138,5 @@ class CarlaInterfaceManager(ModuleManager):
     def _open_settings_dialog(self, agent_name):
         self._agent_settingdialogs_dict[agent_name].show()
         self._get_update_from_other_modules(agent_name)
-
-    def _add_agent(self, agent_type, agent_settings=None):
-        """
-        Add hardware agent
-        :param agent_type:
-        :param agent_settings:
-        :return:
-        """
-        if not agent_settings:
-            agent_settings = agent_type.settings(agent_type)
-
-            # find unique identifier
-            type_dict = None
-            if agent_type == AgentTypes.EGO_VEHICLE:
-                type_dict = self.module_settings.ego_vehicles
-
-            identifier = 0
-            for v in type_dict.values():
-                if v.identifier > identifier:
-                    identifier = v.identifier
-            agent_settings.identifier = identifier + 1
-
-        # check if settings do not already exist
-        if agent_type == AgentTypes.EGO_VEHICLE:
-            if agent_settings not in self.module_settings.ego_vehicles.values():
-                self.module_settings.ego_vehicles[agent_settings.identifier] = agent_settings
-
-        # create dialog thing
-        agent_name = '{0!s} {1!s}'.format(agent_type, str(agent_settings.identifier))
-
-        # link buttons within settings dialog:
-        self._agent_settingdialogs_dict[agent_name] = agent_type.klass_dialog(ego_vehicle_settings = agent_settings, carla_interface_overall_settings = self.module_settings)
-        self._agent_settingdialogs_dict[agent_name].btn_update.clicked.connect(lambda: self._get_update_from_other_modules(agent_name))
-        return agent_name
-
-    def _remove_agent(self, agent_name):
-        # Remove settings if they are available
-        settings_object = None
-
-        if 'Ego Vehicle' in agent_name:
-            identifier = int(agent_name.replace('Ego Vehicle', ''))
-            for egovehicle in self.module_settings.ego_vehicles.values():
-                if egovehicle.identifier == identifier:
-                    settings_object = egovehicle
-
-        self.module_settings.remove_agent(settings_object)
-
-        # Remove settings dialog
-        self._agent_settingdialogs_dict[agent_name].setParent(None)
-        del self._agent_settingdialogs_dict[agent_name]
-
-    # Made this a seperate function because it will be easier to add your own function for different vehiclewithout making
-    # a big mess
-    def _get_update_from_other_modules(self, agent_name):
-        # update ego_vehicle settings
-        self.update_ego_vehicle_settings(agent_name)
-
-    def update_ego_vehicle_settings(self, agent_name):
-        if AgentTypes.EGO_VEHICLE.__str__() in agent_name:
-            ego_vehicle_identifier = int(agent_name.replace('Ego Vehicle', ''))
-            # Update hardware inputs according to current settings:
-            self._agent_settingdialogs_dict[agent_name].combo_input.clear()
-            self._agent_settingdialogs_dict[agent_name].combo_input.addItem('None')
-            HardwareMPSettings = self.singleton_settings.get_settings(JOANModules.HARDWARE_MP)
-            for inputs in HardwareMPSettings.inputs.values():
-                self._agent_settingdialogs_dict[agent_name].combo_input.addItem(str(inputs))
-            idx = self._agent_settingdialogs_dict[agent_name].combo_input.findText(
-                self.module_settings.ego_vehicles[ego_vehicle_identifier].selected_input)
-            if idx != -1:
-                self._agent_settingdialogs_dict[agent_name].combo_input.setCurrentIndex(idx)
-
-            # update available vehicles
-            self._agent_settingdialogs_dict[agent_name].combo_car_type.clear()
-            self._agent_settingdialogs_dict[agent_name].combo_car_type.addItem('None')
-            self._agent_settingdialogs_dict[agent_name].combo_car_type.addItems(self.vehicle_tags)
-            idx = self._agent_settingdialogs_dict[agent_name].combo_car_type.findText(self.module_settings.ego_vehicles[ego_vehicle_identifier].selected_car)
-            if idx != -1:
-                self._agent_settingdialogs_dict[agent_name].combo_car_type.setCurrentIndex(idx)
-
-            # update available spawn_points:
-            self._agent_settingdialogs_dict[agent_name].combo_spawnpoints.clear()
-            self._agent_settingdialogs_dict[agent_name].combo_spawnpoints.addItem('None')
-            self._agent_settingdialogs_dict[agent_name].combo_spawnpoints.addItems(self.spawn_points)
-            idx = self._agent_settingdialogs_dict[agent_name].combo_spawnpoints.findText(
-                self.module_settings.ego_vehicles[ego_vehicle_identifier].selected_spawnpoint)
-            if idx != -1:
-                self._agent_settingdialogs_dict[agent_name].combo_spawnpoints.setCurrentIndex(idx)
 
 

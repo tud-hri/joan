@@ -18,15 +18,15 @@ class AgentTypes(enum.Enum):
     EGO_VEHICLE = 0
 
     @property
-    def klass_mp(self):
-        from modules.carlainterface.carlainterface_agentclasses.ego_vehicle import EgoVehicleMP
+    def process(self):
+        from modules.carlainterface.carlainterface_agentclasses.ego_vehicle import EgoVehicleProcess
 
 
-        return {AgentTypes.EGO_VEHICLE: EgoVehicleMP
+        return {AgentTypes.EGO_VEHICLE: EgoVehicleProcess
                 }[self]
 
     @property
-    def klass_dialog(self):
+    def settings_dialog(self):
         from modules.carlainterface.carlainterface_agentclasses.ego_vehicle import EgoVehicleSettingsDialog
 
         return {AgentTypes.EGO_VEHICLE: EgoVehicleSettingsDialog
@@ -55,7 +55,7 @@ class AgentTypes(enum.Enum):
 
     @property
     def settings(self):
-        from modules.carlainterface.carlainterface_settings import EgoVehicleSettings
+        from modules.carlainterface.carlainterface_agentclasses.ego_vehicle import EgoVehicleSettings
 
         return {AgentTypes.EGO_VEHICLE: EgoVehicleSettings
                 }[self]
