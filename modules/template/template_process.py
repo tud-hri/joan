@@ -11,6 +11,7 @@ class TemplateProcess(ModuleProcess):
         # it is possible to read from other modules
         # do_while_running NOT WRITE to other modules' news to prevent spaghetti-code
         self.shared_variables_hardware = news.read_news(JOANModules.HARDWARE_MP)
+        self.shared_variables_carlainterface = news.read_news(JOANModules.CARLA_INTERFACE)
 
     def get_ready(self):
         """
@@ -22,12 +23,6 @@ class TemplateProcess(ModuleProcess):
         # the settings-key 'overwrite_with_current_time' will be used as key
         self._module_shared_variables.overwrite_with_current_time = now.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
 
-        # show current shared values for this module
-        print(self._module_shared_variables.__dict__)
-
-        # show current shared_variables for another module
-        print(self.shared_variables_hardware.__dict__)
-
     def do_while_running(self):
         """
         do_while_running something and write the result in a shared_variable
@@ -36,9 +31,7 @@ class TemplateProcess(ModuleProcess):
         self._module_shared_variables.overwrite_with_current_time = now.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
 
         try:
-            print("Sensodrive 1 = ", self.shared_variables_hardware.inputs['SensoDrive_1'].steering_angle,
-                  "    Keyboard 1 = ", self.shared_variables_hardware.inputs['Keyboard_1'].steering_angle,
-                  "    Joystick 1 = ", self.shared_variables_hardware.inputs['Joystick_1'].steering_angle)
+            print(self.shared_variables_carlainterface.agents['Ego Vehicle_1'].__dict__)
         except KeyError:
             pass
 

@@ -14,11 +14,6 @@ class CarlaInterfaceDialog(ModuleDialog):
         :param module_manager:
         :param parent:
         """
-        # initialize variables
-        self.connected_carla = False
-        self.old_nr_cars = 0
-        self.i = 1
-
         # setup dialogs
         self._agent_type_dialog = uic.loadUi(
             os.path.join(os.path.dirname(os.path.realpath(__file__)), "carlainterface_agentclasses/ui/agent_select_ui.ui"))
@@ -67,7 +62,6 @@ class CarlaInterfaceDialog(ModuleDialog):
 
         if from_button:
             agent_type.settings_dialog(settings=settings, module_manager = self.module_manager ,parent=self)
-    
 
     def remove_agent(self, identifier):
         # remove agent tab

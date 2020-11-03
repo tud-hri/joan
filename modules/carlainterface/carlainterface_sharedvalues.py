@@ -6,7 +6,6 @@ class CarlaInterfaceSharedVariables:
     def __init__(self):
         self._state = mp.Value(c_int, -2)  # module state [initialized, running, error]
         self._time = mp.Value(c_float, 0.0)
-        self._overwrite_with_current_time = mp.Array('c', 30)  # 30=length of string
         self.agents = {}
 
     @property
@@ -25,22 +24,42 @@ class CarlaInterfaceSharedVariables:
     def time(self, val):
         self._time.value = val
 
-    @property
-    def overwrite_with_current_time(self):
-        return str(self._overwrite_with_current_time.value, encoding='utf-8')
-
-    @overwrite_with_current_time.setter
-    def overwrite_with_current_time(self, val):
-        self._overwrite_with_current_time.value = bytes(val, 'utf-8')
-
 class EgoVehicleSharedVariables:
     def __init__(self):
-        self._temp = mp.Value(c_float, 0.0)
+        self._transform = mp.Array(c_float, 6)
+        self._velocities = mp.Array(c_float, 6)
+        self._accelerations = mp.Array(c_float, 3)
+        self._applied_input = mp.Array(c_float, 5)
 
     @property
-    def temp(self):
-        return self._temp.value
+    def transform(self):
+        return self._transform[:]
 
-    @temp.setter
-    def temp(self, val):
-        self._temp.value = val
+    @transform.setter
+    def transform(self, val):
+        self._transform[:] = val
+
+    @property
+    def velocities(self):
+        return self._velocities[:]
+
+    @velocities.setter
+    def velocities(self, val):
+        self._velocities[:] = val
+
+    @property
+    def accelerations(self):
+        return self._accelerations[:]
+
+    @accelerations.setter
+    def accelerations(self, val):
+        self._accelerations[:] = val
+
+    @property
+    def applied_input(self):
+        return self._applied_input[:]
+
+    @applied_input.setter
+    def applied_input(self, val):
+        self._applied_input[:] = val
+

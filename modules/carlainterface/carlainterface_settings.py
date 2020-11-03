@@ -40,7 +40,6 @@ class CarlaInterfaceSettings(ModuleSettings):
 
             agent_settings.identifier = name
 
-
         # add settings to dict, check if settings do not already exist
         if agent_settings not in self.agents.values():
             self.agents[agent_settings.identifier] = agent_settings

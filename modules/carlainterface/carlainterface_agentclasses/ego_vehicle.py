@@ -127,7 +127,6 @@ class EgoVehicleProcess:
         self.shared_variables = shared_variables
         self.carlainterface_mp = carla_mp
 
-
         self._control = carla.VehicleControl()
         self._BP = random.choice(self.carlainterface_mp.vehicle_blueprint_library.filter("vehicle." + self.settings.selected_car))
         self._control = carla.VehicleControl()
@@ -137,8 +136,6 @@ class EgoVehicleProcess:
         torque_curve.append(carla.Vector2D(x=0, y=600))
         torque_curve.append(carla.Vector2D(x=14000, y=600))
         gears.append(carla.GearPhysicsControl(ratio=7.73, down_ratio=0.5, up_ratio=1))
-
-        print(self.settings.selected_spawnpoint)
 
         if self.settings.selected_spawnpoint != 'None':
             self.spawned_vehicle = self.carlainterface_mp.world.spawn_actor(self._BP, self.carlainterface_mp.spawn_point_objects[
@@ -163,14 +160,72 @@ class EgoVehicleProcess:
             self._control.reverse = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].reverse
             self._control.hand_brake = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].handbrake
             self._control.brake = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].brake
-            self._control.throttle = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].throttle
+            if self.settings.set_velocity:
+                vel_error = self.settings.velocity - (math.sqrt(
+                    self.spawned_vehicle.get_velocity().x ** 2 + self.spawned_vehicle.get_velocity().y ** 2 + self.spawned_vehicle.get_velocity().z ** 2) * 3.6)
+                vel_error_rate = (math.sqrt(
+                    self.spawned_vehicle.get_acceleration().x ** 2 + self.spawned_vehicle.get_acceleration().y ** 2 + self.spawned_vehicle.get_acceleration().z ** 2) * 3.6)
+                error_velocity = [vel_error, vel_error_rate]
+
+                pd_vel_output = self.velocity_PD_controller(error_velocity)
+                if pd_vel_output < 0:
+                    self._control.brake = -pd_vel_output
+                    self._control.throttle = 0
+                    if pd_vel_output < -1:
+                        self._control.brake = 1
+                elif pd_vel_output > 0:
+                    if self._control.brake == 0:
+                        self._control.throttle = pd_vel_output
+                    else:
+                        self._control.throttle = 0
+            else:
+                self._control.throttle = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].throttle
+
             self.spawned_vehicle.apply_control(self._control)
 
-
+        self.set_shared_variables()
 
     def destroy(self):
         if hasattr(self, 'spawned_vehicle'):
             self.spawned_vehicle.destroy()
+
+    def velocity_PD_controller(self, vel_error):
+        _kp_vel = 50
+        _kd_vel = 1
+        temp = _kp_vel * vel_error[0] + _kd_vel * vel_error[1]
+
+        if temp > 100:
+            temp = 100
+
+        output = temp / 100
+
+        return output
+
+    def set_shared_variables(self):
+        if hasattr(self, 'spawned_vehicle'):
+            self.shared_variables.transform = [self.spawned_vehicle.get_transform().location.x,
+                                               self.spawned_vehicle.get_transform().location.y,
+                                               self.spawned_vehicle.get_transform().location.z,
+                                               self.spawned_vehicle.get_transform().rotation.yaw,
+                                               self.spawned_vehicle.get_transform().rotation.pitch,
+                                               self.spawned_vehicle.get_transform().rotation.roll]
+            self.shared_variables.velocities = [self.spawned_vehicle.get_velocity().x,
+                                               self.spawned_vehicle.get_velocity().y,
+                                               self.spawned_vehicle.get_velocity().z,
+                                               self.spawned_vehicle.get_angular_velocity().x,
+                                               self.spawned_vehicle.get_angular_velocity().y,
+                                               self.spawned_vehicle.get_angular_velocity().z]
+            self.shared_variables.accelerations = [self.spawned_vehicle.get_acceleration().x,
+                                                   self.spawned_vehicle.get_acceleration().y,
+                                                   self.spawned_vehicle.get_acceleration().z]
+            latest_applied_control = self.spawned_vehicle.get_control()
+            self.shared_variables.applied_input = [float(latest_applied_control.steer),
+                                                   float(latest_applied_control.reverse),
+                                                   float(latest_applied_control.hand_brake),
+                                                   float(latest_applied_control.brake),
+                                                   float(latest_applied_control.throttle)]
+                
+
 
 
 class EgoVehicleSettings:
