@@ -1,6 +1,5 @@
 from core.module_process import ModuleProcess
 from modules.joanmodules import JOANModules
-from datetime import datetime
 from modules.carlainterface.carlainterface_agenttypes import AgentTypes
 import sys, glob, os
 from core.statesenum import State
@@ -20,7 +19,7 @@ class CarlaInterfaceProcess(ModuleProcess):
 
         # it is possible to read from other modules
         # do_while_running NOT WRITE to other modules' news to prevent spaghetti-code
-        self.shared_variables_hardware = news.read_news(JOANModules.HARDWARE_MP)
+        self.shared_variables_hardware = news.read_news(JOANModules.HARDWARE_MANAGER)
         self.agent_objects = {}
 
     def get_ready(self):
@@ -33,7 +32,6 @@ class CarlaInterfaceProcess(ModuleProcess):
         port = 2000
         [self.vehicle_blueprint_library, self.spawn_point_objects, self.world, self.spawn_points] = self.connect_carla(host = host, port = port)
         # Now we create our agents and directly spawn them
-        print(self._settings_as_object.agents.items())
         for key, value in self._settings_as_object.agents.items():
             self.agent_objects[key] = AgentTypes(value.agent_type).process(self, settings=value, shared_variables=self._module_shared_variables.agents[key])
 

@@ -10,7 +10,7 @@ class TemplateProcess(ModuleProcess):
 
         # it is possible to read from other modules
         # do_while_running NOT WRITE to other modules' news to prevent spaghetti-code
-        self.shared_variables_hardware = news.read_news(JOANModules.HARDWARE_MP)
+        self.shared_variables_hardware = news.read_news(JOANModules.HARDWARE_MANAGER)
         self.shared_variables_carlainterface = news.read_news(JOANModules.CARLA_INTERFACE)
 
     def get_ready(self):

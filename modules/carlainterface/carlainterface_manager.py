@@ -40,7 +40,6 @@ class CarlaInterfaceManager(ModuleManager):
 
     def __init__(self, time_step_in_ms=10, parent=None):
         super().__init__(module=JOANModules.CARLA_INTERFACE, time_step_in_ms=time_step_in_ms, parent=parent)
-        self._agent_settingdialogs_dict = {}
         # CARLA connection variables:
         self.host = 'localhost'
         self.port = 2000
@@ -134,9 +133,5 @@ class CarlaInterfaceManager(ModuleManager):
         self.client = None
         self.connected = False
         return self.connected
-
-    def _open_settings_dialog(self, agent_name):
-        self._agent_settingdialogs_dict[agent_name].show()
-        self._get_update_from_other_modules(agent_name)
 
 

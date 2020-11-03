@@ -16,7 +16,7 @@ msg_box.setTextFormat(QtCore.Qt.RichText)
 
 class HardwareManagerDialog(ModuleDialog):
     def __init__(self, module_manager: ModuleManager, parent=None):
-        super().__init__(module=JOANModules.HARDWARE_MP, module_manager=module_manager, parent=parent)
+        super().__init__(module=JOANModules.HARDWARE_MANAGER, module_manager=module_manager, parent=parent)
 
         # Loading the inputtype dialog (in which we will be able to add hardwareclasses dynamically)
         self._input_type_dialog = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "select_input_type.ui"))

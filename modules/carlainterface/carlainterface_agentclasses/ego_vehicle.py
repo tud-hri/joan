@@ -95,7 +95,7 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
         # Update hardware inputs according to current settings:
         self.combo_input.clear()
         self.combo_input.addItem('None')
-        HardwareManagerSettings = self.module_manager.singleton_settings.get_settings(JOANModules.HARDWARE_MP)
+        HardwareManagerSettings = self.module_manager.singleton_settings.get_settings(JOANModules.HARDWARE_MANAGER)
         for inputs in HardwareManagerSettings.inputs.values():
             self.combo_input.addItem(str(inputs))
         idx = self.combo_input.findText(
