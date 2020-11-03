@@ -11,7 +11,6 @@ sys.path.append(glob.glob('carla_pythonapi/carla-*%d.%d-%s.egg' % (
         'win-amd64' if os.name == 'nt' else 'linux-x86_64'))[0])
 import carla
 from modules.joanmodules import JOANModules
-
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QMessageBox, QApplication
 
