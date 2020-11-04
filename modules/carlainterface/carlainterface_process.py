@@ -21,11 +21,15 @@ class CarlaInterfaceProcess(ModuleProcess):
         # it is possible to read from other modules
         # do_while_running NOT WRITE to other modules' news to prevent spaghetti-code
         self.shared_variables_hardware = news.read_news(JOANModules.HARDWARE_MP)
+        self.vehicle_blueprint_library = None
+        self.spawn_point_objects = None
+        self.spawn_points = None
+        self.world = None
         self.agent_objects = {}
 
     def get_ready(self):
         """
-        When instantiating the ModuleProcess, the settings ar converted to type dict
+        When instantiating the ModuleProcess, the settings ar converted to type di ct
         The super().get_ready() method converts the module_settings back to the appropriate settings object
         """
         #first we make a connection with carla in this multiprocess to get the valid objects we need to spawn our agents

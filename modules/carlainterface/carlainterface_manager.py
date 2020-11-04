@@ -48,6 +48,9 @@ class CarlaInterfaceManager(ModuleManager):
         self.connected = False
         self.vehicle_tags = []
         self.spawn_points = []
+        self.client = None
+        self._vehicle_bp_library = None
+        self.carla_waypoints = None
 
         self.connected = self.connect_carla()
 
