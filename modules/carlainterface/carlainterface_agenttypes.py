@@ -21,7 +21,6 @@ class AgentTypes(enum.Enum):
     def process(self):
         from modules.carlainterface.carlainterface_agentclasses.ego_vehicle import EgoVehicleProcess
 
-
         return {AgentTypes.EGO_VEHICLE: EgoVehicleProcess
                 }[self]
 

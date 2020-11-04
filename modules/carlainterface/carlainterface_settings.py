@@ -1,8 +1,7 @@
-import enum
-
 from core.module_settings import ModuleSettings, find_settings_by_identifier
-from modules.joanmodules import JOANModules
 from modules.carlainterface.carlainterface_agenttypes import AgentTypes
+from modules.joanmodules import JOANModules
+
 
 class CarlaInterfaceSettings(ModuleSettings):
     def __init__(self):
@@ -22,7 +21,7 @@ class CarlaInterfaceSettings(ModuleSettings):
         module_settings_to_load = loaded_dict[str(self.module)]
 
         for identifier, settings_dict in module_settings_to_load['agents'].items():
-            if 'Ego Vehicle' in identifier:
+            if str(AgentTypes.EGO_VEHICLE) in identifier:
                 ego_vehicle_settings = AgentTypes.EGO_VEHICLE.settings()
                 ego_vehicle_settings.set_from_loaded_dict(settings_dict)
                 self.agents.update({identifier: ego_vehicle_settings})
@@ -52,4 +51,3 @@ class CarlaInterfaceSettings(ModuleSettings):
     def remove_agent(self, identifier):
         key, _ = find_settings_by_identifier(self.agents, identifier)
         self.agents.pop(key)
-
