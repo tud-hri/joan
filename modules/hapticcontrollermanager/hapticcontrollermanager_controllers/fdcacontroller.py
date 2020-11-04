@@ -122,6 +122,7 @@ class FDCAControllerProcess:
         self._trajectory = None
         self.t_lookahead = 0
         self._path_trajectory_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'trajectories')
+        self.load_trajectory()
 
     def load_trajectory(self):
         """Load HCR trajectory"""
@@ -212,8 +213,136 @@ class FDCAControllerProcess:
 
         return sw_angle_ff_des
 
-    def do(self):
-        pass
+    def do(self, carlainterface_data_in, hw_data_in, vehicle_identifier):
+        """
+        In manual, the controller has no additional control. We could add some self-centering torque, if we want.
+        For now, steeringwheel torque is zero
+        :param vehicle_object:
+        :param hw_data_in:
+        :return:
+        """
+        if vehicle_object.selected_sw_controller == self.controller_list_key:
+            try:
+                # make sure this is in [Nm/rad]
+                try:
+                    stiffness = hw_data_in[vehicle_object.selected_input]['spring_stiffness']
+                except:
+                    stiffness = 1
+                sw_angle = hw_data_in[vehicle_object.selected_input]['steering_angle']  # [rad]
+
+                # get delta_t (we could also use 'tick_interval_ms' but this is a bit more precise)
+                delta_t = self.module_action.tick_interval_ms / 1000  # [s]
+                # _time_this_tick = time.time_ns() / (10 ** 9)  # time in seconds
+                # delta_t = _time_this_tick - self._time_previous_tick
+                # if delta_t < (self.module_action.tick_interval_ms - 0.5) / 1000:
+                #     delta_t = self.module_action.tick_interval_ms / 1000
+
+                # extract data from CARLA
+                # CARLA coordinate system (left-handed coordinate system)
+                # X: forward
+                # Y: right
+                # Z: upward
+                # Psi (heading): left-hand z-axis positive (yaw to the right is positive)
+                # torque: rightward rotation is positive
+
+                # extract data
+                car = vehicle_object.spawned_vehicle
+                pos_car = np.array([car.get_location().x, car.get_location().y])
+                vel_car = np.array([car.get_velocity().x, car.get_velocity().y])
+                heading_car = car.get_transform().rotation.yaw
+
+                # find static error and error rate:
+                error = self.calculate_error(pos_car, heading_car, vel_car)
+                error_rate = (error - self._error_old) / delta_t
+
+                # filter the error rate with biquad filter
+                error_rate_filtered = np.array([0.0, 0.0])
+                error_rate_filtered[0] = self._bq_filter_velocity.step(error_rate[0])
+                error_rate_filtered[1] = self._bq_filter_heading.step(error_rate[1])
+
+                # put errors in 1 variable
+                self._controller_error[0:2] = error
+                self._controller_error[2:4] = error_rate_filtered
+
+                # FDCA specific calculations here
+                # strength of haptic feedback
+                sw_angle_fb = self.settings.sohf * (self.settings.k_y * self._controller_error[0] + self.settings.k_psi * self._controller_error[1])
+
+                # get feedforward sw angle
+                sw_angle_ff_des = self._get_reference_sw_angle(self.t_lookahead, car)
+
+                # level of haptic support (feedforward); get sw angle needed for haptic support
+                sw_angle_ff = self.settings.lohs * sw_angle_ff_des
+
+                # calculate torques
+
+                # loha torque
+                # calculate sw error; BASED ON BASTIAAN PETERMEIJER's SIMULINK IMPLEMENTATION OF THE FDCA
+                # add fb and ff sw angles to get total desired sw angle; this is the sw angle the sw should get
+                delta_sw = (sw_angle_fb + sw_angle_ff_des) - sw_angle
+
+                torque_loha = delta_sw * self.settings.loha  # loha should be [Nm/rad]
+
+                # feedforward/feedback torque
+                sw_angle_ff_fb = sw_angle_ff + sw_angle_fb
+
+                # simplified inverse steering dynamics
+
+                # check: the inherent SW stiffness should not be zero (div by 0)
+                if abs(stiffness) < (1 ** -6):
+                    stiffness = np.sign(stiffness) * (1 ** -6)
+
+                torque_ff_fb = sw_angle_ff_fb * 1.0  / (1.0 / stiffness)  # !!! stiffness should be in [Nm/rad]
+
+                # total torque of FDCA, to be sent to SW controller in Nm
+                torque_fdca = torque_loha + torque_ff_fb
+
+                # print("torque_fdca = {}, torque_ff_fb = {}, torque_loha = {}, sw_angle_des = {}, sw_angle = {}".format(torque_fdca, torque_ff_fb, torque_loha, sw_angle_ff_des, sw_angle))
+                # print("sw_angle = {}, sw_angle_fb = {}, sw_angle_ff = {}, ".format(sw_angle, sw_angle_fb, sw_angle_ff))
+
+
+                # print(torque_integer)
+                self._data_out['sw_torque'] = torque_fdca  # [Nm]
+                #self._data_out['sw_torque'] = 0
+
+                # update variables
+                self._error_old = error
+                self._data_out['sw_angle_desired_radians'] = sw_angle_ff_des + sw_angle_fb
+                self._data_out['sw_angle_current_radians'] = sw_angle
+                self._data_out['lat_error'] = error[0]
+                self._data_out['heading_error'] = error[1]
+                self._data_out['delta_t'] = delta_t
+                self._data_out['lat_error_rate_unfiltered'] = error_rate[0]
+                self._data_out['heading_error_rate_unfiltered'] = error_rate[1]
+                self._data_out['lat_error_rate_filtered'] = error_rate_filtered[0]
+                self._data_out['heading_error_rate_filtered'] = error_rate_filtered[1]
+                self._data_out['k_psi'] = self.settings.k_psi
+                self._data_out['k_y'] = self.settings.k_y
+                self._data_out['sohf'] = self.settings.sohf
+                self._data_out['loha'] = self.settings.loha
+                self._data_out['lohs'] = self.settings.lohs
+                self._data_out['delta_sw'] = delta_sw
+                self._data_out['ff_torque'] = sw_angle_ff * stiffness
+                self._data_out['fb_torque'] = sw_angle_fb * stiffness
+                self._data_out['loha_torque'] = torque_loha
+                self._data_out['trajectory_name'] = self.settings.trajectory_name
+
+
+                # self._data_out['sw_angle_desired_degrees'] = math.radians(sw_angle_ff_des)
+
+
+                return self._data_out
+
+            except Exception as inst:
+                print(inst)
+                self._data_out['sw_torque'] = 0.0
+                self._data_out['sw_angle_desired_radians'] = 0
+                return self._data_out
+        else:
+            self._data_out['sw_torque'] = 0.0
+            self._data_out['sw_angle_desired_radians'] = 0
+
+            return self._data_out
 
 
 class FDCAControllerSettings:
