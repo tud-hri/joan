@@ -5,6 +5,7 @@ from PyQt5 import QtWidgets, uic
 import os
 from modules.hapticcontrollermanager.hapticcontrollermanager_controllertypes import HapticControllerTypes
 from tools import LowPassFilterBiquad
+from tools.haptic_controller_tools import find_closest_node, check_equal
 
 
 class FDCAControllerSettingsDialog(QtWidgets.QDialog):
@@ -95,6 +96,84 @@ class FDCAControllerProcess:
     def __init__(self, settings, shared_variables):
         self.settings = settings
         self.shared_variables = shared_variables
+        self._trajectory = None
+        self.t_lookahead = 0
+
+    def calculate_error(self, pos_car, heading_car, vel_car=np.array([0.0, 0.0])):
+        """
+        Calculate the controller error
+        CARLA coordinate frame
+        X: forward
+        Y: right
+        Z: upward
+        Psi (heading): left-hand z-axis positive (yaw to the right is positive)
+        Torque: rightward rotation is positive
+        :param pos_car:
+        :param heading_car:
+        :param vel_car:
+        :return:
+        """
+        pos_car = pos_car + vel_car * self.t_lookahead  # linear extrapolation, should be updated
+
+        # Find waypoint index of the point that the car would be in the future (compared to own driven trajectory)
+        index_closest_waypoint = find_closest_node(pos_car, self._trajectory[:, 1:3])
+
+        # TODO: this needs checking
+        # circular: if end of the trajectory, go back to the first one; note that this is risky, if the reference trajectory is not circular!
+        if index_closest_waypoint >= len(self._trajectory) - 3:
+            index_closest_waypoint_next = 0
+        else:
+            index_closest_waypoint_next = index_closest_waypoint + 3
+
+        # calculate lateral error
+        pos_ref = self._trajectory[index_closest_waypoint, 1:3]
+        pos_ref_next = self._trajectory[index_closest_waypoint_next, 1:3]
+
+        vec_car = pos_car - pos_ref
+        vec_dir = pos_ref_next - pos_ref
+
+        # find the lateral error. Project vec_car on the reference trajectory direction vector
+        vec_error_lat = vec_car - (np.dot(vec_car, vec_dir) / np.dot(vec_dir, vec_dir)) * vec_dir
+        error_lat = np.sqrt(np.dot(vec_error_lat, vec_error_lat))
+
+        # calculate sign of error using the cross product
+        e_sign = np.cross(vec_dir, vec_car)  # used to be e_sign = np.math.atan2(np.linalg.det([vec_dir, vec_car]), np.dot(vec_dir, vec_car))
+        e_sign = -1.0 * e_sign / np.abs(e_sign)
+        error_lat *= e_sign
+
+        # calculate heading error: left-handed CW positive
+        heading_ref = self._trajectory[index_closest_waypoint, 6]
+
+        error_heading = math.radians(heading_ref) - math.radians(heading_car)  # in radians
+
+        # Make sure you dont get jumps (basically unwrap the angle with a threshold of pi radians (180 degrees))
+        if error_heading > math.pi:
+            error_heading = error_heading - 2.0 * math.pi
+        if error_heading < -math.pi:
+            error_heading = error_heading + 2.0 * math.pi
+
+        return np.array([error_lat, error_heading])
+
+    def _get_reference_sw_angle(self, t_ahead, car):
+        car_location = car.get_location()
+        car_velocity = car.get_velocity()
+
+        location = np.array([car_location.x, car_location.y])
+        velocity = np.array([car_velocity.x, car_velocity.y])
+
+        future_location = location + velocity * t_ahead
+
+        idx = find_closest_node(future_location, self._trajectory[:, 1:3])
+        if idx >= len(self._trajectory) - 20:
+            idx1 = 0
+        else:
+            idx1 = idx + 1
+
+        # the trajectory is recorded in unitless steering angles (verify this in the csv)
+        # so, we need to convert this to radians. First, multiply with 450 (1, -1) [-] = (450,-450) [deg]
+        sw_angle_ff_des = math.radians(self._trajectory[idx1, 3] * 450)
+
+        return sw_angle_ff_des
 
     def do(self):
         pass
@@ -315,78 +394,78 @@ class FDCAControllerSettings:
 #
 #             return self._data_out
 #
-#     def calculate_error(self, pos_car, heading_car, vel_car=np.array([0.0, 0.0])):
-#         """
-#         Calculate the controller error
-#         CARLA coordinate frame
-#         X: forward
-#         Y: right
-#         Z: upward
-#         Psi (heading): left-hand z-axis positive (yaw to the right is positive)
-#         Torque: rightward rotation is positive
-#         :param pos_car:
-#         :param heading_car:
-#         :param vel_car:
-#         :return:
-#         """
-#         pos_car = pos_car + vel_car * self.t_lookahead  # linear extrapolation, should be updated
-#
-#         # Find waypoint index of the point that the car would be in the future (compared to own driven trajectory)
-#         index_closest_waypoint = find_closest_node(pos_car, self._trajectory[:, 1:3])
-#
-#         # TODO: this needs checking
-#         # circular: if end of the trajectory, go back to the first one; note that this is risky, if the reference trajectory is not circular!
-#         if index_closest_waypoint >= len(self._trajectory) - 3:
-#             index_closest_waypoint_next = 0
-#         else:
-#             index_closest_waypoint_next = index_closest_waypoint + 3
-#
-#         # calculate lateral error
-#         pos_ref = self._trajectory[index_closest_waypoint, 1:3]
-#         pos_ref_next = self._trajectory[index_closest_waypoint_next, 1:3]
-#
-#         vec_car = pos_car - pos_ref
-#         vec_dir = pos_ref_next - pos_ref
-#
-#         # find the lateral error. Project vec_car on the reference trajectory direction vector
-#         vec_error_lat = vec_car - (np.dot(vec_car, vec_dir) / np.dot(vec_dir, vec_dir)) * vec_dir
-#         error_lat = np.sqrt(np.dot(vec_error_lat, vec_error_lat))
-#
-#         # calculate sign of error using the cross product
-#         e_sign = np.cross(vec_dir, vec_car)  # used to be e_sign = np.math.atan2(np.linalg.det([vec_dir, vec_car]), np.dot(vec_dir, vec_car))
-#         e_sign = -1.0 * e_sign / np.abs(e_sign)
-#         error_lat *= e_sign
-#
-#         # calculate heading error: left-handed CW positive
-#         heading_ref = self._trajectory[index_closest_waypoint, 6]
-#
-#         error_heading = math.radians(heading_ref) - math.radians(heading_car)  # in radians
-#
-#         # Make sure you dont get jumps (basically unwrap the angle with a threshold of pi radians (180 degrees))
-#         if error_heading > math.pi:
-#             error_heading = error_heading - 2.0 * math.pi
-#         if error_heading < -math.pi:
-#             error_heading = error_heading + 2.0 * math.pi
-#
-#         return np.array([error_lat, error_heading])
-#
-#     def _get_reference_sw_angle(self, t_ahead, car):
-#         car_location = car.get_location()
-#         car_velocity = car.get_velocity()
-#
-#         location = np.array([car_location.x, car_location.y])
-#         velocity = np.array([car_velocity.x, car_velocity.y])
-#
-#         future_location = location + velocity * t_ahead
-#
-#         idx = find_closest_node(future_location, self._trajectory[:, 1:3])
-#         if idx >= len(self._trajectory) - 20:
-#             idx1 = 0
-#         else:
-#             idx1 = idx + 1
-#
-#         # the trajectory is recorded in unitless steering angles (verify this in the csv)
-#         # so, we need to convert this to radians. First, multiply with 450 (1, -1) [-] = (450,-450) [deg]
-#         sw_angle_ff_des = math.radians(self._trajectory[idx1, 3] * 450)
-#
-#         return sw_angle_ff_des
+    def calculate_error(self, pos_car, heading_car, vel_car=np.array([0.0, 0.0])):
+        """
+        Calculate the controller error
+        CARLA coordinate frame
+        X: forward
+        Y: right
+        Z: upward
+        Psi (heading): left-hand z-axis positive (yaw to the right is positive)
+        Torque: rightward rotation is positive
+        :param pos_car:
+        :param heading_car:
+        :param vel_car:
+        :return:
+        """
+        pos_car = pos_car + vel_car * self.t_lookahead  # linear extrapolation, should be updated
+
+        # Find waypoint index of the point that the car would be in the future (compared to own driven trajectory)
+        index_closest_waypoint = find_closest_node(pos_car, self._trajectory[:, 1:3])
+
+        # TODO: this needs checking
+        # circular: if end of the trajectory, go back to the first one; note that this is risky, if the reference trajectory is not circular!
+        if index_closest_waypoint >= len(self._trajectory) - 3:
+            index_closest_waypoint_next = 0
+        else:
+            index_closest_waypoint_next = index_closest_waypoint + 3
+
+        # calculate lateral error
+        pos_ref = self._trajectory[index_closest_waypoint, 1:3]
+        pos_ref_next = self._trajectory[index_closest_waypoint_next, 1:3]
+
+        vec_car = pos_car - pos_ref
+        vec_dir = pos_ref_next - pos_ref
+
+        # find the lateral error. Project vec_car on the reference trajectory direction vector
+        vec_error_lat = vec_car - (np.dot(vec_car, vec_dir) / np.dot(vec_dir, vec_dir)) * vec_dir
+        error_lat = np.sqrt(np.dot(vec_error_lat, vec_error_lat))
+
+        # calculate sign of error using the cross product
+        e_sign = np.cross(vec_dir, vec_car)  # used to be e_sign = np.math.atan2(np.linalg.det([vec_dir, vec_car]), np.dot(vec_dir, vec_car))
+        e_sign = -1.0 * e_sign / np.abs(e_sign)
+        error_lat *= e_sign
+
+        # calculate heading error: left-handed CW positive
+        heading_ref = self._trajectory[index_closest_waypoint, 6]
+
+        error_heading = math.radians(heading_ref) - math.radians(heading_car)  # in radians
+
+        # Make sure you dont get jumps (basically unwrap the angle with a threshold of pi radians (180 degrees))
+        if error_heading > math.pi:
+            error_heading = error_heading - 2.0 * math.pi
+        if error_heading < -math.pi:
+            error_heading = error_heading + 2.0 * math.pi
+
+        return np.array([error_lat, error_heading])
+
+    def _get_reference_sw_angle(self, t_ahead, car):
+        car_location = car.get_location()
+        car_velocity = car.get_velocity()
+
+        location = np.array([car_location.x, car_location.y])
+        velocity = np.array([car_velocity.x, car_velocity.y])
+
+        future_location = location + velocity * t_ahead
+
+        idx = find_closest_node(future_location, self._trajectory[:, 1:3])
+        if idx >= len(self._trajectory) - 20:
+            idx1 = 0
+        else:
+            idx1 = idx + 1
+
+        # the trajectory is recorded in unitless steering angles (verify this in the csv)
+        # so, we need to convert this to radians. First, multiply with 450 (1, -1) [-] = (450,-450) [deg]
+        sw_angle_ff_des = math.radians(self._trajectory[idx1, 3] * 450)
+
+        return sw_angle_ff_des
