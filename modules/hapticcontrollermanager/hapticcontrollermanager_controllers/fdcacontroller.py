@@ -6,6 +6,7 @@ import os
 from modules.hapticcontrollermanager.hapticcontrollermanager_controllertypes import HapticControllerTypes
 from tools import LowPassFilterBiquad
 from tools.haptic_controller_tools import find_closest_node, check_equal
+import pandas as pd
 
 
 class FDCAControllerSettingsDialog(QtWidgets.QDialog):
@@ -16,6 +17,8 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
         self.module_manager = module_manager
 
         uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/fdca_settings_ui.ui"), self)
+        self._path_trajectory_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'trajectories')
+
         self.btnbox_fdca_controller_settings.button(
             self.btnbox_fdca_controller_settings.RestoreDefaults).clicked.connect(self._set_default_values)
         self.slider_loha.valueChanged.connect(self._update_loha_slider_label)
@@ -27,6 +30,8 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
         self._loha_resolution = 50
         self.slider_loha.setMaximum(self._loha_resolution)
         self.spin_loha.setMaximum(self._loha_resolution)
+
+        self.update_trajectory_list()
 
         self._display_values()
 
@@ -92,12 +97,44 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
         self._display_values(HapticControllerTypes.FDCA.settings())
         self.update_parameters()
 
+    def update_trajectory_list(self):
+        """
+        Check what trajectory files are present and update the selection list
+        """
+        # get list of csv files in directory
+        if not os.path.isdir(self._path_trajectory_directory):
+            os.mkdir(self._path_trajectory_directory)
+
+        files = [filename for filename in os.listdir(self._path_trajectory_directory) if filename.endswith('csv')]
+
+        self.cmbbox_hcr_selection.clear()
+        self.cmbbox_hcr_selection.addItem('None')
+        self.cmbbox_hcr_selection.addItems(files)
+
+        idx = self.cmbbox_hcr_selection.findText(self.fdca_controller_settings.trajectory_name)
+        if idx != -1:
+            self.cmbbox_hcr_selection.setCurrentIndex(idx)
+
 class FDCAControllerProcess:
     def __init__(self, settings, shared_variables):
         self.settings = settings
         self.shared_variables = shared_variables
         self._trajectory = None
         self.t_lookahead = 0
+        self._path_trajectory_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'trajectories')
+
+    def load_trajectory(self):
+        """Load HCR trajectory"""
+        try:
+
+            tmp = pd.read_csv(os.path.join(self._path_trajectory_directory, self.settings.trajectory_name))
+            if not np.array_equal(tmp.values, self._trajectory):
+                self._trajectory = tmp.values
+            # TODO We might want to do_while_running some checks on the trajectory here.
+            print('Loaded trajectory = ', self.settings.trajectory_name)
+            # self.trajectory_name = fname
+        except OSError as err:
+                print('Error loading HCR trajectory file: ', err)
 
     def calculate_error(self, pos_car, heading_car, vel_car=np.array([0.0, 0.0])):
         """
