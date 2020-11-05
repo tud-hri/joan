@@ -50,7 +50,7 @@ class JOANSensoDriveProcess:
 
     def do(self):
         # self.settings_dict['torque'] = self.shared_variables.torque
-        # self.parent_pipe.send(self.settings_dict)
+        self.parent_pipe.send(self.settings_dict)
         values_from_sensodrive = self.parent_pipe.recv()
         self.shared_variables.steering_angle = values_from_sensodrive['steering_angle']
         self.shared_variables.throttle = values_from_sensodrive['throttle']
