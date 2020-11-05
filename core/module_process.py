@@ -28,7 +28,7 @@ class ModuleProcess(mp.Process):
     Base class for the module process.
     """
 
-    def __init__(self, module: JOANModules, time_step_in_ms, news, settings, events: ProcessEvents):
+    def __init__(self, module: JOANModules, time_step_in_ms, news, settings, events: ProcessEvents, settings_singleton):
         super().__init__()
 
         if time_step_in_ms < 10:
@@ -43,6 +43,8 @@ class ModuleProcess(mp.Process):
 
         # extract shared variables from news
         self._module_shared_variables = news.read_news(module)
+        # extract settings from singleton settings
+        self.singleton_settings = settings_singleton
 
         # mp.Events
         self._events = events

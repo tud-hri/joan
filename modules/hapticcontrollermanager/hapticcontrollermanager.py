@@ -16,6 +16,9 @@ class HapticControllerManager(ModuleManager):
         for haptic_controller in self.module_settings.haptic_controllers.values():
             self.shared_variables.haptic_controllers[haptic_controller.identifier] = HapticControllerTypes(haptic_controller.haptic_controller_type).shared_variables()
 
+    def get_ready(self):
+        super().get_ready()
+
     def load_from_file(self, settings_file_to_load):
         # remove all settings from the dialog
         for haptic_controller in self.module_settings.all_haptic_controllers().values():

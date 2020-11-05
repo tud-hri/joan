@@ -69,6 +69,7 @@ class ModuleManager(QtCore.QObject):
         """
         self.shared_variables = self.module.shared_variables()
         self.singleton_news.write_news(self.module, self.shared_variables)
+        self.singleton_settings.update_settings(self.module, self.module_settings)
 
         # update state in shared variables
         self.shared_variables.state = self.state_machine.current_state.value
@@ -86,7 +87,8 @@ class ModuleManager(QtCore.QObject):
                                             time_step_in_ms=self._time_step_in_ms,
                                             news=self.singleton_news,
                                             settings=self.module_settings,
-                                            events=self._events)
+                                            events=self._events,
+                                            settings_singleton=self.singleton_settings)
 
         # Start the process, run() will wait until start_event is set
         if self._process and not self._process.is_alive():
@@ -126,6 +128,7 @@ class ModuleManager(QtCore.QObject):
         # delete object
         # remove shared values from news
         self.singleton_news.remove_news(self.module)
+        self.singleton_settings.remove_settings(self.module)
 
         if self.shared_variables:
             del self.shared_variables

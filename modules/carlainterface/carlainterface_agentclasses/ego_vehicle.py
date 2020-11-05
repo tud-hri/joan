@@ -36,7 +36,7 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
     def update_parameters(self):
         self.settings.velocity = self.spin_velocity.value()
         self.settings.selected_input = self.combo_input.currentText()
-        self.settings.selected_controller = self.combo_sw_controller.currentText()
+        self.settings.selected_controller = self.combo_haptic_controllers.currentText()
         self.settings.selected_car = self.combo_car_type.currentText()
         for settings in self.carla_interface_overall_settings.agents.values():
             if settings.identifier != self.settings.identifier: #exlude own settings
@@ -55,7 +55,7 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
     def accept(self):
         self.settings.velocity = self.spin_velocity.value()
         self.settings.selected_input = self.combo_input.currentText()
-        self.settings.selected_controller = self.combo_sw_controller.currentText()
+        self.settings.selected_controller = self.combo_haptic_controllers.currentText()
         self.settings.selected_car = self.combo_car_type.currentText()
         for settings in self.carla_interface_overall_settings.agents.values():
             if settings.identifier != self.settings.identifier: #exlude own settings
@@ -74,8 +74,8 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
         if not settings_to_display:
             settings_to_display = self.settings
 
-        idx_controller = self.combo_sw_controller.findText(settings_to_display.selected_controller)
-        self.combo_sw_controller.setCurrentIndex(idx_controller)
+        idx_controller = self.combo_haptic_controllers.findText(settings_to_display.selected_controller)
+        self.combo_haptic_controllers.setCurrentIndex(idx_controller)
 
         idx_input = self.combo_input.findText(settings_to_display.selected_input)
         self.combo_input.setCurrentIndex(idx_input)
@@ -119,6 +119,17 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
             self.settings.selected_spawnpoint)
         if idx != -1:
             self.combo_spawnpoints.setCurrentIndex(idx)
+
+        # update available controllers according to current settings:
+        self.combo_haptic_controllers.clear()
+        self.combo_haptic_controllers.addItem('None')
+        HapticControllerManagerSettings = self.module_manager.singleton_settings.get_settings(JOANModules.HAPTIC_CONTROLLER_MANAGER)
+        for haptic_controller in HapticControllerManagerSettings.haptic_controllers.values():
+            self.combo_haptic_controllers.addItem(str(haptic_controller))
+        idx = self.combo_haptic_controllers.findText(
+            self.settings.selected_controller)
+        if idx != -1:
+            self.combo_haptic_controllers.setCurrentIndex(idx)
 
 class EgoVehicleProcess:
     def __init__(self, carla_mp, settings, shared_variables):
@@ -252,3 +263,6 @@ class EgoVehicleSettings:
     def set_from_loaded_dict(self, loaded_dict):
         for key, value in loaded_dict.items():
             self.__setattr__(key, value)
+
+    def __str__(self):
+        return self.identifier
