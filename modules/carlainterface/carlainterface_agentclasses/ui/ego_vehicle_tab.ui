@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
+    <width>300</width>
     <height>44</height>
    </rect>
   </property>
@@ -30,7 +30,7 @@
     <widget class="QGroupBox" name="group_agent">
      <property name="minimumSize">
       <size>
-       <width>600</width>
+       <width>300</width>
        <height>0</height>
       </size>
      </property>

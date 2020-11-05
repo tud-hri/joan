@@ -154,9 +154,10 @@ class SensoDriveSharedVariables:
         self._steering_rate = mp.Value(c_float, 0.0)
 
         self._torque = mp.Value(c_float, 0.0)
+        self._damping = mp.Value(c_float, 0.0)
+        self._friction = mp.Value(c_float, 0.0)
+        self._stiffness = mp.Value(c_float, 0.0)
 
-
-        self._init_event = mp.Event()
 
     @property
     def steering_angle(self):
@@ -221,3 +222,27 @@ class SensoDriveSharedVariables:
     @torque.setter
     def torque(self, var):
         self._torque.value = var
+
+    @property
+    def spring_stiffness(self):
+        return self._stiffness.value
+
+    @spring_stiffness.setter
+    def spring_stiffness(self, var):
+        self._stiffness.value = var
+
+    @property
+    def damping(self):
+        return self._damping.value
+
+    @damping.setter
+    def damping(self, var):
+        self._damping.value = var
+
+    @property
+    def friction(self):
+        return self._friction.value
+
+    @friction.setter
+    def friction(self, var):
+        self._friction.value = var

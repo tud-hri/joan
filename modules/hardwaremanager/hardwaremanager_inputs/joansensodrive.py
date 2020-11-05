@@ -33,6 +33,8 @@ class JOANSensoDriveProcess:
         # We define our settings list which contains only picklable objects
         self.settings_dict = settings.settings_dict_for_pipe()
 
+        self.settings = settings
+
         # We will write all the output of the sensodrive to these variables so that we have it in our main joan program
         self.shared_variables = shared_variables
 
@@ -45,11 +47,22 @@ class JOANSensoDriveProcess:
                               child_pipe=child_pipe, state_queue=settings.events.state_queue)
 
         # Start the communication process when it is created
+
+        self.shared_variables.torque = settings.torque
+        self.shared_variables.friction = settings.friction
+        self.shared_variables.damping = settings.damping
+        self.shared_variables.spring_stiffness = settings.spring_stiffness
+
         comm.start()
         self.parent_pipe.send(self.settings_dict)
 
     def do(self):
-        # self.settings_dict['torque'] = self.shared_variables.torque
+        # 'variable settings' (can be changed at runtime through the shared variables)
+        self.settings_dict['torque'] = self.shared_variables.torque
+        self.settings_dict['friction'] = self.shared_variables.friction
+        self.settings_dict['damping'] = self.shared_variables.damping
+        self.settings_dict['spring_stiffness'] = self.shared_variables.spring_stiffness
+
         self.parent_pipe.send(self.settings_dict)
         values_from_sensodrive = self.parent_pipe.recv()
         self.shared_variables.steering_angle = values_from_sensodrive['steering_angle']
@@ -229,7 +242,6 @@ class SensoDriveComm(mp.Process):
 
     def run(self):
         self.settings_dict = self.child_pipe.recv()
-        print(self.settings_dict)
         if self.settings_dict['identifier'] == 'SensoDrive_1':
             self._pcan_channel = PCAN_USBBUS1
         else:
@@ -289,7 +301,7 @@ class SensoDriveComm(mp.Process):
 
             # TODO: Have to fix this stuff when we have the variable settings
             # if self.update_settings_event.is_set():
-            self.update_settings()
+            # self.update_settings()
                 # self.update_settings_event.clear()
 
             # properly uninitialize the pcan dongle if sensodrive is removed

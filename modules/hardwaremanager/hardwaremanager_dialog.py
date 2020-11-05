@@ -81,7 +81,7 @@ class HardwareManagerDialog(ModuleDialog):
                     self._hardware_input_tabs_dict[hardware_tabs].lbl_sensodrive_state.setText('Off')
 
         # TODO Use this with state!= running when we have the adjustable settings
-        if state == State.STOPPED or state == State.INITIALIZED:
+        if state == State.STOPPED:
             for hardware_tabs in self._hardware_input_tabs_dict:
                 if str(HardwareInputTypes.SENSODRIVE) in hardware_tabs:
                     self._hardware_input_tabs_dict[hardware_tabs].btn_settings.setEnabled(True)

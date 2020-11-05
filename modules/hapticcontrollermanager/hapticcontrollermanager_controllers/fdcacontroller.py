@@ -224,10 +224,9 @@ class FDCAControllerProcess:
         """
         for agent_settings in carla_interface_settings.agents.values():
             if agent_settings.selected_controller == self.settings.__str__():
-                #TODO implement check to see if a sensodrive is used + get the actual stiffness here
                 if 'SensoDrive' in agent_settings.selected_input:
-                    # stiffness = hw_data_in[agent_settings.selected_controller].stiffness
-                    stiffness = 0.1
+                    stiffness = hardware_manager_shared_variables.inputs[agent_settings.selected_input].spring_stiffness
+                    # TODO get the ms of the module in here
                     # delta_t = self.module_action.tick_interval_ms / 1000  # [s]
                     delta_t = 10 / 1000  # [s]
 
