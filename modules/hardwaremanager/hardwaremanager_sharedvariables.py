@@ -144,13 +144,6 @@ class SensoDriveSharedVariables:
     """
 
     def __init__(self):
-        self.init_event = mp.Event()
-        self.close_event = mp.Event()
-        self.turn_on_event = mp.Event()
-        self.update_shared_variables_from_settings_event = mp.Event()
-        self.turn_off_event = mp.Event()
-        self.clear_error_event = mp.Event()
-
         self._steering_angle = mp.Value(c_float, 0.0)
         self._throttle = mp.Value(c_float, 0.0)
         self._brake = mp.Value(c_float, -9.9)
