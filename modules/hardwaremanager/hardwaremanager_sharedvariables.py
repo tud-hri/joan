@@ -160,8 +160,6 @@ class SensoDriveSharedVariables:
         self._measured_torque = mp.Value(c_float, 0.0)
         self._steering_rate = mp.Value(c_float, 0.0)
 
-        self._init_event = mp.Event()
-
     @property
     def steering_angle(self):
         return self._steering_angle.value
