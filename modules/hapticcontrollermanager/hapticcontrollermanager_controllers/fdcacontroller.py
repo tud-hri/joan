@@ -295,32 +295,9 @@ class FDCAControllerProcess:
                     # update variables
                     self._error_old = error
 
-                    print(heading_car, error)
+                    # TODO Dit moet echt beter - > set the torque
+                    hardware_manager_shared_variables.inputs[agent_settings.selected_input].torque = torque_fdca
 
-                    # # print(torque_integer)
-                    # self._data_out['sw_torque'] = torque_fdca  # [Nm]
-                    # #self._data_out['sw_torque'] = 0
-                    #
-                    #
-                    # self._data_out['sw_angle_desired_radians'] = sw_angle_ff_des + sw_angle_fb
-                    # self._data_out['sw_angle_current_radians'] = sw_angle
-                    # self._data_out['lat_error'] = error[0]
-                    # self._data_out['heading_error'] = error[1]
-                    # self._data_out['delta_t'] = delta_t
-                    # self._data_out['lat_error_rate_unfiltered'] = error_rate[0]
-                    # self._data_out['heading_error_rate_unfiltered'] = error_rate[1]
-                    # self._data_out['lat_error_rate_filtered'] = error_rate_filtered[0]
-                    # self._data_out['heading_error_rate_filtered'] = error_rate_filtered[1]
-                    # self._data_out['k_psi'] = self.settings.k_psi
-                    # self._data_out['k_y'] = self.settings.k_y
-                    # self._data_out['sohf'] = self.settings.sohf
-                    # self._data_out['loha'] = self.settings.loha
-                    # self._data_out['lohs'] = self.settings.lohs
-                    # self._data_out['delta_sw'] = delta_sw
-                    # self._data_out['ff_torque'] = sw_angle_ff * stiffness
-                    # self._data_out['fb_torque'] = sw_angle_fb * stiffness
-                    # self._data_out['loha_torque'] = torque_loha
-                    # self._data_out['trajectory_name'] = self.settings.trajectory_name
 
 
 

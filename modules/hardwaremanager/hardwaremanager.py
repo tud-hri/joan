@@ -34,6 +34,7 @@ class HardwareManager(ModuleManager):
                 input.events = SensoDriveEvents()
 
 
+
     def get_ready(self):
         for inputs in self.module_settings.inputs.values():
             if inputs.input_type == HardwareInputTypes.SENSODRIVE.value:

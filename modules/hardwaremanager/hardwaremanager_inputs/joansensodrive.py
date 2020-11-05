@@ -33,7 +33,6 @@ class JOANSensoDriveProcess:
         # We define our settings list which contains only picklable objects
         self.settings_dict = settings.settings_dict_for_pipe()
 
-
         # We will write all the output of the sensodrive to these variables so that we have it in our main joan program
         self.shared_variables = shared_variables
 
@@ -50,6 +49,7 @@ class JOANSensoDriveProcess:
         self.parent_pipe.send(self.settings_dict)
 
     def do(self):
+        self.settings_dict['torque'] = self.shared_variables.torque
         self.parent_pipe.send(self.settings_dict)
         values_from_sensodrive = self.parent_pipe.recv()
         self.shared_variables.steering_angle = values_from_sensodrive['steering_angle']
@@ -296,8 +296,8 @@ class SensoDriveComm(mp.Process):
 
             # TODO: Have to fix this stuff when we have the variable settings
             # if self.update_settings_event.is_set():
-            #     self.update_settings()
-            #     self.update_settings_event.clear()
+            self.update_settings()
+                # self.update_settings_event.clear()
 
             # properly uninitialize the pcan dongle if sensodrive is removed
             if self.close_event.is_set():
