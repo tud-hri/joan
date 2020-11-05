@@ -30,9 +30,22 @@ class HapticControllerManagerDialog(ModuleDialog):
         """
         super()._handle_state_change()
         if self.module_manager.state_machine.current_state == State.STOPPED:
-            self._module_widget.groupbox_haptic_controllers.setEnabled(True)
+            self._module_widget.btn_add_haptic_controller.setEnabled(True)
+            self._module_widget.btn_add_haptic_controller.blockSignals(False)
+            for haptic_controller_tabs in self._haptic_controller_tabs_dict:
+                self._haptic_controller_tabs_dict[haptic_controller_tabs].btn_remove_haptic_controller.setEnabled(True)
+                self._haptic_controller_tabs_dict[haptic_controller_tabs].btn_remove_haptic_controller.blockSignals(False)
         else:
-            self._module_widget.groupbox_haptic_controllers.setEnabled(False)
+            self._module_widget.btn_add_haptic_controller.setEnabled(False)
+            self._module_widget.btn_add_haptic_controller.blockSignals(True)
+            for haptic_controller_tabs in self._haptic_controller_tabs_dict:
+                self._haptic_controller_tabs_dict[haptic_controller_tabs].btn_remove_haptic_controller.setEnabled(False)
+                self._haptic_controller_tabs_dict[haptic_controller_tabs].btn_remove_haptic_controller.blockSignals(True)
+
+        for haptic_controller_tabs in self._haptic_controller_tabs_dict:
+            self._haptic_controller_tabs_dict[haptic_controller_tabs].btn_settings.setEnabled(True)
+            self._haptic_controller_tabs_dict[haptic_controller_tabs].btn_settings.blockSignals(False)
+
 
     def _select_haptic_controller_type(self):
         self._haptic_controller_type_dialog.combo_haptic_controller_type.clear()

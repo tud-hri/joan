@@ -7,6 +7,7 @@ from modules.hapticcontrollermanager.hapticcontrollermanager_controllertypes imp
 from tools import LowPassFilterBiquad
 from tools.haptic_controller_tools import find_closest_node, check_equal
 import pandas as pd
+from core.statesenum import State
 
 
 class FDCAControllerSettingsDialog(QtWidgets.QDialog):
@@ -31,12 +32,23 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
         self.slider_loha.setMaximum(self._loha_resolution)
         self.spin_loha.setMaximum(self._loha_resolution)
 
-        self.update_trajectory_list()
+        self.module_manager.state_machine.add_state_change_listener(self.handle_state_change)
 
+        self.update_trajectory_list()
         self._display_values()
+
+        self.handle_state_change()
 
         self.show()
 
+    def handle_state_change(self):
+        #disable changing of trajectory while running (would be quite dangerous)
+        if self.module_manager.state_machine.current_state == State.RUNNING:
+            self.cmbbox_hcr_selection.setEnabled(False)
+            self.cmbbox_hcr_selection.blockSignals(True)
+        else:
+            self.cmbbox_hcr_selection.setEnabled(True)
+            self.cmbbox_hcr_selection.blockSignals(False)
 
     def update_parameters(self):
         self.slider_loha.setValue(self.spin_loha.value())
@@ -48,6 +60,15 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
         self.fdca_controller_settings.trajectory_name = self.cmbbox_hcr_selection.itemText(
             self.cmbbox_hcr_selection.currentIndex())
 
+        try:
+            self.module_manager.shared_variables.haptic_controllers[self.fdca_controller_settings.identifier].k_y = self.fdca_controller_settings.k_y
+            self.module_manager.shared_variables.haptic_controllers[self.fdca_controller_settings.identifier].k_psi = self.fdca_controller_settings.k_psi
+            self.module_manager.shared_variables.haptic_controllers[self.fdca_controller_settings.identifier].lohs = self.fdca_controller_settings.lohs
+            self.module_manager.shared_variables.haptic_controllers[self.fdca_controller_settings.identifier].sohf = self.fdca_controller_settings.sohf
+            self.module_manager.shared_variables.haptic_controllers[self.fdca_controller_settings.identifier].loha = self.fdca_controller_settings.loha
+        except Exception as inst:
+            print(inst)
+
         self._display_values()
 
     def _update_loha_slider_label(self):
@@ -56,6 +77,10 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
             self.fdca_controller_settings.loha = float(self.slider_loha.value())
             self.lbl_loha.setText(str(self.fdca_controller_settings.loha))
             self.lbl_loha_deg.setText(str(round(math.radians(self.fdca_controller_settings.loha), 3)))
+            try:
+                self.module_manager.shared_variables.haptic_controllers[self.fdca_controller_settings.identifier].loha = self.fdca_controller_settings.loha
+            except:
+                print('bestaat nog niet')
 
 
     def accept(self):
@@ -67,6 +92,15 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
         self.fdca_controller_settings.loha = float(self.slider_loha.value())
         self.fdca_controller_settings.trajectory_name = self.cmbbox_hcr_selection.itemText(
             self.cmbbox_hcr_selection.currentIndex())
+
+        try:
+            self.module_manager.shared_variables.haptic_controllers[self.fdca_controller_settings.identifier].k_y = self.fdca_controller_settings.k_y
+            self.module_manager.shared_variables.haptic_controllers[self.fdca_controller_settings.identifier].k_psi = self.fdca_controller_settings.k_psi
+            self.module_manager.shared_variables.haptic_controllers[self.fdca_controller_settings.identifier].lohs = self.fdca_controller_settings.lohs
+            self.module_manager.shared_variables.haptic_controllers[self.fdca_controller_settings.identifier].sohf = self.fdca_controller_settings.sohf
+            self.module_manager.shared_variables.haptic_controllers[self.fdca_controller_settings.identifier].loha = self.fdca_controller_settings.loha
+        except:
+            print('bestaat nog nie')
 
         super().accept()
 
@@ -129,6 +163,12 @@ class FDCAControllerProcess:
         self._bq_filter_heading = LowPassFilterBiquad(fc=30, fs=100)
         self._controller_error = np.array([0.0, 0.0, 0.0, 0.0])
         self._error_old = np.array([0.0, 0.0])
+
+        self.shared_variables.k_y = settings.k_y
+        self.shared_variables.k_psi = settings.k_psi
+        self.shared_variables.lohs = settings.lohs
+        self.shared_variables.sohf = settings.sohf
+        self.shared_variables.loha = settings.loha
 
 
     def load_trajectory(self):
@@ -260,13 +300,13 @@ class FDCAControllerProcess:
 
                     # FDCA specific calculations here
                     # strength of haptic feedback
-                    sw_angle_fb = self.settings.sohf * (self.settings.k_y * self._controller_error[0] + self.settings.k_psi * self._controller_error[1])
+                    sw_angle_fb = self.shared_variables.sohf * (self.shared_variables.k_y * self._controller_error[0] + self.shared_variables.k_psi * self._controller_error[1])
 
                     # get feedforward sw angle
                     sw_angle_ff_des = self._get_reference_sw_angle(self.t_lookahead, pos_car, vel_car)
 
                     # level of haptic support (feedforward); get sw angle needed for haptic support
-                    sw_angle_ff = self.settings.lohs * sw_angle_ff_des
+                    sw_angle_ff = self.shared_variables.lohs * sw_angle_ff_des
 
                     # calculate torques
 
@@ -275,7 +315,7 @@ class FDCAControllerProcess:
                     # add fb and ff sw angles to get total desired sw angle; this is the sw angle the sw should get
                     delta_sw = (sw_angle_fb + sw_angle_ff_des) - sw_angle
 
-                    torque_loha = delta_sw * self.settings.loha  # loha should be [Nm/rad]
+                    torque_loha = delta_sw * self.shared_variables.loha  # loha should be [Nm/rad]
 
                     # feedforward/feedback torque
                     sw_angle_ff_fb = sw_angle_ff + sw_angle_fb

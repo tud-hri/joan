@@ -26,20 +26,18 @@ PEDAL_MESSAGE_LENGTH = 2
 
 
 class JOANSensoDriveProcess:
-
     def __init__(self, settings, shared_variables):
         super().__init__()
 
         # We define our settings list which contains only picklable objects
         self.settings_dict = settings.settings_dict_for_pipe()
 
-        self.settings = settings
-
         # We will write all the output of the sensodrive to these variables so that we have it in our main joan program
         self.shared_variables = shared_variables
 
         # Initialize communication pipe between seperate sensodrive process
         self.parent_pipe, child_pipe = mp.Pipe(duplex=True)
+
 
         # Create the sensodrive communication object with needed events and pipe
         comm = SensoDriveComm(turn_on_event=settings.events.turn_on_event, turn_off_event=settings.events.turn_off_event,
@@ -55,6 +53,12 @@ class JOANSensoDriveProcess:
 
         comm.start()
         self.parent_pipe.send(self.settings_dict)
+
+    def update_variables(self):
+        # 'variable settings' (can be changed at runtime through the shared variables)
+        self.settings_dict['friction'] = self.shared_variables.friction
+        self.settings_dict['damping'] = self.shared_variables.damping
+        self.settings_dict['spring_stiffness'] = self.shared_variables.spring_stiffness
 
     def do(self):
         # 'variable settings' (can be changed at runtime through the shared variables)
@@ -119,9 +123,10 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
     creating the joystick class for the first time. NOTE: it should not show whenever settings are loaded by .json file.
     """
 
-    def __init__(self, settings=None, parent=None):
+    def __init__(self, module_manager, settings=None, parent=None):
         super().__init__(parent)
         self.sensodrive_settings = settings
+        self.module_manager = module_manager
         uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/sensodrive_settings_ui.ui"), self)
 
         self.button_box_settings.button(self.button_box_settings.RestoreDefaults).clicked.connect(
@@ -142,6 +147,14 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
         self.sensodrive_settings.friction = self.spin_friction.value()
         self.sensodrive_settings.damping = self.spin_damping.value()
         self.sensodrive_settings.spring_stiffness = self.spin_spring_stiffness.value()
+        
+        try:
+            # TODO, dit moet op de een of andere manier nog in de ready state ook gaan werken (werkt nu alleen in running)
+            self.module_manager.shared_variables.inputs[self.sensodrive_settings.identifier].friction = self.sensodrive_settings.friction
+            self.module_manager.shared_variables.inputs[self.sensodrive_settings.identifier].damping = self.sensodrive_settings.damping
+            self.module_manager.shared_variables.inputs[self.sensodrive_settings.identifier].spring_stiffness = self.sensodrive_settings.spring_stiffness
+        except Exception as inst:
+            print(inst)
 
     def accept(self):
         """
@@ -154,6 +167,14 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
         self.sensodrive_settings.friction = self.spin_friction.value()
         self.sensodrive_settings.damping = self.spin_damping.value()
         self.sensodrive_settings.spring_stiffness = self.spin_spring_stiffness.value()
+
+        try:
+            self.module_manager._process.input_objects[self.sensodrive_settings.identifier].update_variables()
+            self.module_manager.shared_variables.inputs[self.sensodrive_settings.identifier].friction = self.sensodrive_settings.friction
+            self.module_manager.shared_variables.inputs[self.sensodrive_settings.identifier].damping = self.sensodrive_settings.damping
+            self.module_manager.shared_variables.inputs[self.sensodrive_settings.identifier].spring_stiffness = self.sensodrive_settings.spring_stiffness
+        except:
+            print('werkt niet')
 
         super().accept()
 
@@ -522,3 +543,5 @@ class SensoDriveComm(mp.Process):
         response = self.pcan_object.Read(self._pcan_channel)
 
         self._current_state_hex = response[1].DATA[0]
+
+

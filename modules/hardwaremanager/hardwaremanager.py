@@ -14,7 +14,6 @@ class SensoDriveEvents:
         self.turn_off_event = mp.Event()
         self.clear_error_event = mp.Event()
         self.close_event = mp.Event()
-        #state queue
         self.state_queue = mp.Queue()
 
 class HardwareManager(ModuleManager):
@@ -44,6 +43,7 @@ class HardwareManager(ModuleManager):
         for inputs in self.module_settings.inputs.values():
             if inputs.input_type == HardwareInputTypes.SENSODRIVE.value:
                 inputs.events.clear_error_event.set()
+
 
     def start(self):
         super().start()

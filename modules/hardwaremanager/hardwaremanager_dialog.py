@@ -81,7 +81,7 @@ class HardwareManagerDialog(ModuleDialog):
                     self._hardware_input_tabs_dict[hardware_tabs].lbl_sensodrive_state.setText('Off')
 
         # TODO Use this with state!= running when we have the adjustable settings
-        if state == State.STOPPED:
+        if state != State.RUNNING:
             for hardware_tabs in self._hardware_input_tabs_dict:
                 if str(HardwareInputTypes.SENSODRIVE) in hardware_tabs:
                     self._hardware_input_tabs_dict[hardware_tabs].btn_settings.setEnabled(True)
@@ -170,7 +170,7 @@ class HardwareManagerDialog(ModuleDialog):
         input_tab.groupBox.setTitle(settings.identifier)
 
         # Connecting buttons
-        input_tab.btn_settings.clicked.connect(lambda: input_type.settings_dialog(settings=settings, parent=self))
+        input_tab.btn_settings.clicked.connect(lambda: input_type.settings_dialog(module_manager = self.module_manager, settings=settings, parent=self))
         input_tab.btn_remove_hardware.clicked.connect(lambda: self.module_manager.remove_hardware_input(settings.identifier))
 
         if str(HardwareInputTypes.SENSODRIVE) in settings.identifier:
@@ -184,7 +184,7 @@ class HardwareManagerDialog(ModuleDialog):
 
         #open dialog when adding hardware (not sure if this is annoying when loading settings)
         if from_button:
-            input_type.settings_dialog(settings=settings, parent=self)
+            input_type.settings_dialog(module_manager=self.module_manager, settings=settings, parent=self)
 
 
     def remove_hardware_input(self, identifier):

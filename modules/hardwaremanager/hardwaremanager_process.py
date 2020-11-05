@@ -16,6 +16,7 @@ class HardwareManagerProcess(ModuleProcess):
         for key, value in self._settings_as_object.inputs.items():
             self.input_objects[key] = HardwareInputTypes(value.input_type).process(settings=value, shared_variables=self._module_shared_variables.inputs[key])
 
+
     def do_while_running(self):
         for inputs in self.input_objects:
             # will perform the mp input class for eaach available input
