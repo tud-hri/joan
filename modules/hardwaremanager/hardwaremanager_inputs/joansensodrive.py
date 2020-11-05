@@ -72,13 +72,6 @@ class SensoDriveSettings:
         self.torque = 0  # Nm
         self.identifier = identifier
         self.input_type = HardwareInputTypes.SENSODRIVE.value
-        # self.input_name = '{0!s} {1!s}'.format(HardwareInputTypes.SENSODRIVE, str(self.identifier))
-
-        # self.turn_on_event = mp.Event()
-        # self.turn_off_event = mp.Event()
-        # self.clear_error_event = mp.Event()
-        # self.close_event = mp.Event()
-        # self.state_queue = mp.Queue()
 
         self.current_state = 0x00
 
