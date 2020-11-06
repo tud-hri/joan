@@ -15,7 +15,7 @@ class ModuleDialog(QtWidgets.QDialog):
     closed = QtCore.pyqtSignal()
 
     def __init__(self, module: JOANModules, module_manager: ModuleManager, parent=None):
-        super().__init__(parent=parent)
+        super().__init__(parent=None)
 
         # reference to the manager class of this module
         self.module_manager = module_manager
