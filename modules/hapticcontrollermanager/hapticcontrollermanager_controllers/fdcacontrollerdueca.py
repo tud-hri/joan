@@ -329,7 +329,8 @@ class FDCAControllerDuecaProcess:
                     # update variables
                     self._error_old = error
 
-                    hardware_manager_shared_variables.inputs[agent_settings.selected_input].stiffness = self.shared_variables.loha + auto_center_stiffness
+                    hardware_manager_shared_variables.inputs[agent_settings.selected_input].auto_center_stiffness = auto_center_stiffness
+                    hardware_manager_shared_variables.inputs[agent_settings.selected_input].loha_stiffness = self.shared_variables.loha
                     hardware_manager_shared_variables.inputs[agent_settings.selected_input].torque = torque_fdca
 
 

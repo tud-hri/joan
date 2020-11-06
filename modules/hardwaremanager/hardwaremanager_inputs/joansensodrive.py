@@ -58,14 +58,15 @@ class JOANSensoDriveProcess:
         # 'variable settings' (can be changed at runtime through the shared variables)
         self.settings_dict['friction'] = self.shared_variables.friction
         self.settings_dict['damping'] = self.shared_variables.damping
-        self.settings_dict['spring_stiffness'] = self.shared_variables.spring_stiffness
+        self.settings_dict['spring_stiffness'] = self.shared_variables.loha_stiffness + self.shared_variables.auto_center_stiffness
 
     def do(self):
         # 'variable settings' (can be changed at runtime through the shared variables)
+        print(self.shared_variables.auto_center_stiffness, self.shared_variables.loha_stiffness)
         self.settings_dict['torque'] = self.shared_variables.torque
         self.settings_dict['friction'] = self.shared_variables.friction
         self.settings_dict['damping'] = self.shared_variables.damping
-        self.settings_dict['spring_stiffness'] = self.shared_variables.spring_stiffness
+        self.settings_dict['spring_stiffness'] = self.shared_variables.loha_stiffness + self.shared_variables.auto_center_stiffness
 
         self.parent_pipe.send(self.settings_dict)
         values_from_sensodrive = self.parent_pipe.recv()
