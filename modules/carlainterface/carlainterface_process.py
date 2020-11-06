@@ -46,9 +46,7 @@ class CarlaInterfaceProcess(ModuleProcess):
             self.agent_objects[key] = AgentTypes(value.agent_type).process(self, settings=value, shared_variables=self._module_shared_variables.agents[key])
 
     def destroy_agents(self):
-        print(self.agent_objects)
         for agents in self.agent_objects:
-            print('joe')
             self.agent_objects[agents].destroy()
 
     def do_while_running(self):
