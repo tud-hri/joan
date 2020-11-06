@@ -262,77 +262,79 @@ class FDCAControllerDuecaProcess:
         :param hw_data_in:
         :return:
         """
-        for agent_settings in carla_interface_settings.agents.values():
-            if agent_settings.selected_controller == self.settings.__str__():
-                if 'SensoDrive' in agent_settings.selected_input:
-                    auto_center_stiffness = hardware_manager_shared_variables.inputs[agent_settings.selected_input].auto_center_stiffness
-                    # TODO get the ms of the module in here
-                    # delta_t = self.module_action.tick_interval_ms / 1000  # [s]
-                    delta_t = 10 / 1000  # [s]
+        try:
+            for agent_settings in carla_interface_settings.agents.values():
+                if agent_settings.selected_controller == self.settings.__str__():
+                    if 'SensoDrive' in agent_settings.selected_input:
+                        auto_center_stiffness = hardware_manager_shared_variables.inputs[agent_settings.selected_input].auto_center_stiffness
+                        # TODO get the ms of the module in here
+                        # delta_t = self.module_action.tick_interval_ms / 1000  # [s]
+                        delta_t = 10 / 1000  # [s]
 
-                    sw_angle = hardware_manager_shared_variables.inputs[agent_settings.selected_input].steering_angle
+                        sw_angle = hardware_manager_shared_variables.inputs[agent_settings.selected_input].steering_angle
 
-                    # extract data from CARLA
-                    # CARLA coordinate system (left-handed coordinate system)
-                    # X: forward
-                    # Y: right
-                    # Z: upward
-                    # Psi (heading): left-hand z-axis positive (yaw to the right is positive)
-                    # torque: rightward rotation is positive
+                        # extract data from CARLA
+                        # CARLA coordinate system (left-handed coordinate system)
+                        # X: forward
+                        # Y: right
+                        # Z: upward
+                        # Psi (heading): left-hand z-axis positive (yaw to the right is positive)
+                        # torque: rightward rotation is positive
 
-                    pos_car = np.array([carlainterface_shared_variables.agents[agent_settings.__str__()].transform[0], carlainterface_shared_variables.agents[agent_settings.__str__()].transform[1]])
-                    vel_car = np.array([carlainterface_shared_variables.agents[agent_settings.__str__()].velocities[0], carlainterface_shared_variables.agents[agent_settings.__str__()].velocities[1]])
+                        pos_car = np.array([carlainterface_shared_variables.agents[agent_settings.__str__()].transform[0], carlainterface_shared_variables.agents[agent_settings.__str__()].transform[1]])
+                        vel_car = np.array([carlainterface_shared_variables.agents[agent_settings.__str__()].velocities[0], carlainterface_shared_variables.agents[agent_settings.__str__()].velocities[1]])
 
-                    heading_car = carlainterface_shared_variables.agents[agent_settings.__str__()].transform[3]
+                        heading_car = carlainterface_shared_variables.agents[agent_settings.__str__()].transform[3]
 
-                    # find static error and error rate:
-                    error = self.calculate_error(pos_car, heading_car, vel_car)
-                    error_rate = (error - self._error_old) / delta_t
+                        # find static error and error rate:
+                        error = self.calculate_error(pos_car, heading_car, vel_car)
+                        error_rate = (error - self._error_old) / delta_t
 
-                    # filter the error rate with biquad filter
-                    error_rate_filtered = np.array([0.0, 0.0])
-                    error_rate_filtered[0] = self._bq_filter_velocity.step(error_rate[0])
-                    error_rate_filtered[1] = self._bq_filter_heading.step(error_rate[1])
+                        # filter the error rate with biquad filter
+                        error_rate_filtered = np.array([0.0, 0.0])
+                        error_rate_filtered[0] = self._bq_filter_velocity.step(error_rate[0])
+                        error_rate_filtered[1] = self._bq_filter_heading.step(error_rate[1])
 
-                    # put errors in 1 variable
-                    self._controller_error[0:2] = error
-                    self._controller_error[2:4] = error_rate_filtered
+                        # put errors in 1 variable
+                        self._controller_error[0:2] = error
+                        self._controller_error[2:4] = error_rate_filtered
 
-                    # FDCA specific calculations here
-                    # strength of haptic feedback
-                    sw_angle_fb = self.shared_variables.sohf * (self.shared_variables.k_y * self._controller_error[0] + self.shared_variables.k_psi * self._controller_error[1])
+                        # FDCA specific calculations here
+                        # strength of haptic feedback
+                        sw_angle_fb = self.shared_variables.sohf * (self.shared_variables.k_y * self._controller_error[0] + self.shared_variables.k_psi * self._controller_error[1])
 
-                    # get feedforward sw angle
-                    sw_angle_ff_des = self._get_reference_sw_angle(self.t_lookahead, pos_car, vel_car)
+                        # get feedforward sw angle
+                        sw_angle_ff_des = self._get_reference_sw_angle(self.t_lookahead, pos_car, vel_car)
 
-                    # level of haptic support (feedforward); get sw angle needed for haptic support
-                    sw_angle_ff = self.shared_variables.lohs * sw_angle_ff_des
+                        # level of haptic support (feedforward); get sw angle needed for haptic support
+                        sw_angle_ff = self.shared_variables.lohs * sw_angle_ff_des
 
-                    # calculate torques
+                        # calculate torques
 
-                    # loha torque
-                    # calculate sw error; BASED ON BASTIAAN PETERMEIJER's SIMULINK IMPLEMENTATION OF THE FDCA
-                    # add fb and ff sw angles to get total desired sw angle; this is the sw angle the sw should get
-                    delta_sw = (sw_angle_fb + sw_angle_ff_des) - sw_angle
+                        # loha torque
+                        # calculate sw error; BASED ON BASTIAAN PETERMEIJER's SIMULINK IMPLEMENTATION OF THE FDCA
+                        # add fb and ff sw angles to get total desired sw angle; this is the sw angle the sw should get
+                        delta_sw = (sw_angle_fb + sw_angle_ff_des) - sw_angle
 
-                    torque_loha = delta_sw * self.shared_variables.loha  # loha should be [Nm/rad]
+                        torque_loha = delta_sw * self.shared_variables.loha  # loha should be [Nm/rad]
 
-                    # feedforward/feedback torque
-                    sw_angle_ff_fb = sw_angle_ff + sw_angle_fb
+                        # feedforward/feedback torque
+                        sw_angle_ff_fb = sw_angle_ff + sw_angle_fb
 
-                    #Inverse steering dynamics
-                    torque_ff_fb = sw_angle_ff_fb * 1.0  / (1.0 / auto_center_stiffness)  # !!! stiffness should be in [Nm/rad]
+                        #Inverse steering dynamics
+                        torque_ff_fb = sw_angle_ff_fb * 1.0  / (1.0 / auto_center_stiffness)  # !!! stiffness should be in [Nm/rad]
 
-                    # total torque of FDCA, to be sent to SW controller in Nm
-                    torque_fdca = torque_loha + torque_ff_fb
+                        # total torque of FDCA, to be sent to SW controller in Nm
+                        torque_fdca = torque_loha + torque_ff_fb
 
-                    # update variables
-                    self._error_old = error
+                        # update variables
+                        self._error_old = error
 
-                    hardware_manager_shared_variables.inputs[agent_settings.selected_input].auto_center_stiffness = auto_center_stiffness
-                    hardware_manager_shared_variables.inputs[agent_settings.selected_input].loha_stiffness = self.shared_variables.loha
-                    hardware_manager_shared_variables.inputs[agent_settings.selected_input].torque = torque_fdca
-
+                        hardware_manager_shared_variables.inputs[agent_settings.selected_input].auto_center_stiffness = auto_center_stiffness
+                        hardware_manager_shared_variables.inputs[agent_settings.selected_input].loha_stiffness = self.shared_variables.loha
+                        hardware_manager_shared_variables.inputs[agent_settings.selected_input].torque = torque_fdca
+        except AttributeError:
+            pass
 
 
 
