@@ -323,8 +323,8 @@ class FDCAControllerProcess:
                     # simplified inverse steering dynamics
 
                     # check: the inherent SW stiffness should not be zero (div by 0)
-                    if abs(stiffness) < (1 ** -6):
-                        stiffness = np.sign(stiffness) * (1 ** -6)
+                    if abs(stiffness) < 0.001:
+                        stiffness = 0.001
 
                     torque_ff_fb = sw_angle_ff_fb * 1.0  / (1.0 / stiffness)  # !!! stiffness should be in [Nm/rad]
 
