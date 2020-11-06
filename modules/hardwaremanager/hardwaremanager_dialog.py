@@ -42,8 +42,8 @@ class HardwareManagerDialog(ModuleDialog):
             for hardware_tabs in self._hardware_input_tabs_dict:
                 self._hardware_input_tabs_dict[hardware_tabs].btn_remove_hardware.setEnabled(False)
                 self._hardware_input_tabs_dict[hardware_tabs].btn_remove_hardware.blockSignals(True)
-                # self._hardware_input_tabs_dict[hardware_tabs].btn_settings.setEnabled(False)
-                # self._hardware_input_tabs_dict[hardware_tabs].btn_settings.blockSignals(True)
+                self._hardware_input_tabs_dict[hardware_tabs].btn_settings.setEnabled(False)
+                self._hardware_input_tabs_dict[hardware_tabs].btn_settings.blockSignals(True)
                 if str(HardwareInputTypes.SENSODRIVE) not in hardware_tabs:
                     self._hardware_input_tabs_dict[hardware_tabs].setEnabled(False)
                     self._hardware_input_tabs_dict[hardware_tabs].blockSignals(True)
@@ -52,8 +52,8 @@ class HardwareManagerDialog(ModuleDialog):
             for hardware_tabs in self._hardware_input_tabs_dict:
                 self._hardware_input_tabs_dict[hardware_tabs].btn_remove_hardware.setEnabled(True)
                 self._hardware_input_tabs_dict[hardware_tabs].btn_remove_hardware.blockSignals(False)
-                # self._hardware_input_tabs_dict[hardware_tabs].btn_settings.setEnabled(True)
-                # self._hardware_input_tabs_dict[hardware_tabs].btn_settings.blockSignals(False)
+                self._hardware_input_tabs_dict[hardware_tabs].btn_settings.setEnabled(True)
+                self._hardware_input_tabs_dict[hardware_tabs].btn_settings.blockSignals(False)
                 if str(HardwareInputTypes.SENSODRIVE) not in hardware_tabs:
                     self._hardware_input_tabs_dict[hardware_tabs].setEnabled(True)
                     self._hardware_input_tabs_dict[hardware_tabs].blockSignals(False)
@@ -80,17 +80,17 @@ class HardwareManagerDialog(ModuleDialog):
                     self._hardware_input_tabs_dict[hardware_tabs].lbl_sensodrive_state.setStyleSheet("background-color: orange")
                     self._hardware_input_tabs_dict[hardware_tabs].lbl_sensodrive_state.setText('Off')
 
-        # TODO Use this with state!= running when we have the adjustable settings
-        if state != State.RUNNING:
-            for hardware_tabs in self._hardware_input_tabs_dict:
-                if str(HardwareInputTypes.SENSODRIVE) in hardware_tabs:
-                    self._hardware_input_tabs_dict[hardware_tabs].btn_settings.setEnabled(True)
-                    self._hardware_input_tabs_dict[hardware_tabs].btn_settings.blockSignals(False)
-        else:
-            for hardware_tabs in self._hardware_input_tabs_dict:
-                if str(HardwareInputTypes.SENSODRIVE) in hardware_tabs:
-                    self._hardware_input_tabs_dict[hardware_tabs].btn_settings.setEnabled(False)
-                    self._hardware_input_tabs_dict[hardware_tabs].btn_settings.blockSignals(True)
+        # # TODO Use this with state!= running when we have the adjustable settings
+        # if state != State.STOPPED:
+        #     for hardware_tabs in self._hardware_input_tabs_dict:
+        #         if str(HardwareInputTypes.SENSODRIVE) in hardware_tabs:
+        #             self._hardware_input_tabs_dict[hardware_tabs].btn_settings.setEnabled(True)
+        #             self._hardware_input_tabs_dict[hardware_tabs].btn_settings.blockSignals(False)
+        # else:
+        #     for hardware_tabs in self._hardware_input_tabs_dict:
+        #         if str(HardwareInputTypes.SENSODRIVE) in hardware_tabs:
+        #             self._hardware_input_tabs_dict[hardware_tabs].btn_settings.setEnabled(False)
+        #             self._hardware_input_tabs_dict[hardware_tabs].btn_settings.blockSignals(True)
 
     def update_sensodrive_state(self):
         for inputs in self.module_manager.module_settings.inputs.values():

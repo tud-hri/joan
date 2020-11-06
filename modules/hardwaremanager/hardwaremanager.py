@@ -40,10 +40,14 @@ class HardwareManager(ModuleManager):
                 self.module_dialog.update_timer.timeout.connect(self.module_dialog.update_sensodrive_state)
                 self.module_dialog.update_timer.start()
         super().get_ready()
+
+
         for inputs in self.module_settings.inputs.values():
             if inputs.input_type == HardwareInputTypes.SENSODRIVE.value:
                 inputs.events.clear_error_event.set()
 
+    def printkak(self):
+        print('kak')
 
     def start(self):
         super().start()

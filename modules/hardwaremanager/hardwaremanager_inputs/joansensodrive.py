@@ -148,13 +148,13 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
         self.sensodrive_settings.damping = self.spin_damping.value()
         self.sensodrive_settings.spring_stiffness = self.spin_spring_stiffness.value()
         
-        try:
-            # TODO, dit moet op de een of andere manier nog in de ready state ook gaan werken (werkt nu alleen in running)
-            self.module_manager.shared_variables.inputs[self.sensodrive_settings.identifier].friction = self.sensodrive_settings.friction
-            self.module_manager.shared_variables.inputs[self.sensodrive_settings.identifier].damping = self.sensodrive_settings.damping
-            self.module_manager.shared_variables.inputs[self.sensodrive_settings.identifier].spring_stiffness = self.sensodrive_settings.spring_stiffness
-        except Exception as inst:
-            print(inst)
+        # try:
+        #     # TODO, dit moet op de een of andere manier nog in de ready state ook gaan werken (werkt nu alleen in running)
+        #     self.module_manager.shared_variables.inputs[self.sensodrive_settings.identifier].friction = self.sensodrive_settings.friction
+        #     self.module_manager.shared_variables.inputs[self.sensodrive_settings.identifier].damping = self.sensodrive_settings.damping
+        #     self.module_manager.shared_variables.inputs[self.sensodrive_settings.identifier].spring_stiffness = self.sensodrive_settings.spring_stiffness
+        # except Exception as inst:
+        #     print(inst)
 
     def accept(self):
         """
@@ -168,13 +168,13 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
         self.sensodrive_settings.damping = self.spin_damping.value()
         self.sensodrive_settings.spring_stiffness = self.spin_spring_stiffness.value()
 
-        try:
-            self.module_manager._process.input_objects[self.sensodrive_settings.identifier].update_variables()
-            self.module_manager.shared_variables.inputs[self.sensodrive_settings.identifier].friction = self.sensodrive_settings.friction
-            self.module_manager.shared_variables.inputs[self.sensodrive_settings.identifier].damping = self.sensodrive_settings.damping
-            self.module_manager.shared_variables.inputs[self.sensodrive_settings.identifier].spring_stiffness = self.sensodrive_settings.spring_stiffness
-        except:
-            print('werkt niet')
+        # try:
+        #     self.module_manager._process.input_objects[self.sensodrive_settings.identifier].update_variables()
+        #     self.module_manager.shared_variables.inputs[self.sensodrive_settings.identifier].friction = self.sensodrive_settings.friction
+        #     self.module_manager.shared_variables.inputs[self.sensodrive_settings.identifier].damping = self.sensodrive_settings.damping
+        #     self.module_manager.shared_variables.inputs[self.sensodrive_settings.identifier].spring_stiffness = self.sensodrive_settings.spring_stiffness
+        # except:
+        #     print('werkt niet')
 
         super().accept()
 

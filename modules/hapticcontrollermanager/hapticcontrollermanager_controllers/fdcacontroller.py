@@ -66,8 +66,8 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
             self.module_manager.shared_variables.haptic_controllers[self.fdca_controller_settings.identifier].lohs = self.fdca_controller_settings.lohs
             self.module_manager.shared_variables.haptic_controllers[self.fdca_controller_settings.identifier].sohf = self.fdca_controller_settings.sohf
             self.module_manager.shared_variables.haptic_controllers[self.fdca_controller_settings.identifier].loha = self.fdca_controller_settings.loha
-        except Exception as inst:
-            print(inst)
+        except:
+            pass
 
         self._display_values()
 
@@ -80,7 +80,7 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
             try:
                 self.module_manager.shared_variables.haptic_controllers[self.fdca_controller_settings.identifier].loha = self.fdca_controller_settings.loha
             except:
-                print('bestaat nog niet')
+                pass
 
 
     def accept(self):
@@ -100,7 +100,7 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
             self.module_manager.shared_variables.haptic_controllers[self.fdca_controller_settings.identifier].sohf = self.fdca_controller_settings.sohf
             self.module_manager.shared_variables.haptic_controllers[self.fdca_controller_settings.identifier].loha = self.fdca_controller_settings.loha
         except:
-            print('bestaat nog nie')
+            pass
 
         super().accept()
 

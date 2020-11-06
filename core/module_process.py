@@ -84,6 +84,7 @@ class ModuleProcess(mp.Process):
         """
         try:
             self._get_ready()
+
             self._events.start.wait()
 
             # run
