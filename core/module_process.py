@@ -61,7 +61,8 @@ class ModuleProcess(mp.Process):
     @abc.abstractmethod
     def destroy_agents(self):
         """
-            get_ready is called when the module goes to READY state. This function is called from the new process (in run()).
+            Extra function for carlainterface that whenever you want to go to the stopped state again you also destroy the actors in your simulation,
+            so you can spawn them again.
             :return:
             """
 

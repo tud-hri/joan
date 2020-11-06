@@ -122,7 +122,6 @@ class ModuleManager(QtCore.QObject):
         self.module_dialog.update_timer.stop()
 
     def clean_up(self):
-
         # delete object
         # remove shared values from news
         self.singleton_news.remove_news(self.module)
