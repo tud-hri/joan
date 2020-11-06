@@ -29,7 +29,7 @@ class ModuleProcess(mp.Process):
     """
 
     def __init__(self, module: JOANModules, time_step_in_ms, news, settings, events: ProcessEvents, settings_singleton):
-        super().__init__()
+        super().__init__(daemon = True)
 
         if time_step_in_ms < 10:
             raise ValueError('The time step of a JOAN process cannot be smaller then 10 ms (not > 100 Hz). This is not possible on a non real time OS.')

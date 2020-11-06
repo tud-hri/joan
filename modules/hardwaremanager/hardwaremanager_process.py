@@ -9,6 +9,7 @@ class HardwareManagerProcess(ModuleProcess):
     """
     def __init__(self, module: JOANModules, time_step_in_ms, news, settings, events, settings_singleton):
         super().__init__(module, time_step_in_ms=time_step_in_ms, news=news, settings=settings, events=events, settings_singleton= settings_singleton)
+        self.daemon = False
         self.input_objects = {}
 
     def get_ready(self):
