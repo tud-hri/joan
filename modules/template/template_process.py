@@ -30,10 +30,10 @@ class TemplateProcess(ModuleProcess):
         now = datetime.now()
         self._module_shared_variables.overwrite_with_current_time = now.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
 
-        try:
-            print(self.shared_variables_carlainterface.agents['Ego Vehicle_1'].__dict__)
-        except KeyError:
-            pass
+        # try:
+        #     print(self.shared_variables_carlainterface.agents['Ego Vehicle_1'].__dict__)
+        # except KeyError:
+        #     pass
 
         # show current time
         # print(self._module_shared_variables.overwrite_with_current_time)
