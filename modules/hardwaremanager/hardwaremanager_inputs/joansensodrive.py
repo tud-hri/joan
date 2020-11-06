@@ -49,7 +49,7 @@ class JOANSensoDriveProcess:
         self.shared_variables.torque = settings.torque
         self.shared_variables.friction = settings.friction
         self.shared_variables.damping = settings.damping
-        self.shared_variables.spring_stiffness = settings.spring_stiffness
+        self.shared_variables.auto_center_stiffness = settings.spring_stiffness
 
         comm.start()
         self.parent_pipe.send(self.settings_dict)

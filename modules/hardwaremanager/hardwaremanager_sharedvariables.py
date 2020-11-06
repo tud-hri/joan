@@ -156,7 +156,8 @@ class SensoDriveSharedVariables:
         self._torque = mp.Value(c_float, 0.0)
         self._damping = mp.Value(c_float, 0.0)
         self._friction = mp.Value(c_float, 0.0)
-        self._stiffness = mp.Value(c_float, 0.0)
+        self._spring_stiffness = mp.Value(c_float, 0.0)
+        self._auto_center_stiffness = mp.Value(c_float, 0.0)
 
 
     @property
@@ -225,11 +226,11 @@ class SensoDriveSharedVariables:
 
     @property
     def spring_stiffness(self):
-        return self._stiffness.value
+        return self._spring_stiffness.value
 
     @spring_stiffness.setter
     def spring_stiffness(self, var):
-        self._stiffness.value = var
+        self._spring_stiffness.value = var
 
     @property
     def damping(self):
@@ -246,3 +247,12 @@ class SensoDriveSharedVariables:
     @friction.setter
     def friction(self, var):
         self._friction.value = var
+
+    @property
+    def auto_center_stiffness(self):
+        return self._auto_center_stiffness.value
+
+    @auto_center_stiffness.setter
+    def auto_center_stiffness(self, var):
+        self._auto_center_stiffness.value = var
+
