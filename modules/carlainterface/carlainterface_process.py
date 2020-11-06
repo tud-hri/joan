@@ -39,11 +39,17 @@ class CarlaInterfaceProcess(ModuleProcess):
         # first we make a connection with carla in this multiprocess to get the valid objects we need to spawn our agents
         host = 'localhost'
         port = 2000
+
         [self.vehicle_blueprint_library, self.spawn_point_objects, self.world, self.spawn_points] = self.connect_carla(host=host, port=port)
         # Now we create our agents and directly spawn them
-        print(self._settings_as_object.agents.items())
         for key, value in self._settings_as_object.agents.items():
             self.agent_objects[key] = AgentTypes(value.agent_type).process(self, settings=value, shared_variables=self._module_shared_variables.agents[key])
+
+    def destroy_agents(self):
+        print(self.agent_objects)
+        for agents in self.agent_objects:
+            print('joe')
+            self.agent_objects[agents].destroy()
 
     def do_while_running(self):
         """

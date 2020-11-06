@@ -21,6 +21,7 @@ class ProcessEvents:
         self.start = mp.Event()
         self.exception = mp.Event()
         self.process_is_ready = mp.Event()
+        self.emergency = mp.Event()
 
 
 class ModuleProcess(mp.Process):
@@ -58,6 +59,14 @@ class ModuleProcess(mp.Process):
         self._events.process_is_ready.set()
 
     @abc.abstractmethod
+    def destroy_agents(self):
+        """
+            get_ready is called when the module goes to READY state. This function is called from the new process (in run()).
+            :return:
+            """
+
+
+    @abc.abstractmethod
     def get_ready(self):
         """
         get_ready is called when the module goes to READY state. This function is called from the new process (in run()).
@@ -88,6 +97,9 @@ class ModuleProcess(mp.Process):
             if platform.system() == 'Windows':
                 with wres.set_resolution(10000):
                     self._run_loop()
+                    if self._events.emergency.is_set():
+                        self.destroy_agents()
+                        self._events.emergency.clear()
             else:
                 self._run_loop()
         except:

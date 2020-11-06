@@ -64,9 +64,10 @@ class HQManager(QtCore.QObject):
         for _, module in self._instantiated_modules.items():
             module.state_machine.request_state_change(State.STOPPED)
 
+
     def emergency_stop(self):
         """
-        Put all modules into error state (which will terminate everything
+        Stops all modules whichever state you are in.
         """
         for _, module in self._instantiated_modules.items():
             module.state_machine.request_state_change(State.STOPPED)
@@ -105,6 +106,9 @@ class HQManager(QtCore.QObject):
         """
         Emergency button processing
         """
+        for _, module in self._instantiated_modules.items():
+            module.emergency()
+
         self.stop_modules()
 
     def quit(self):
