@@ -51,6 +51,7 @@ class CarlaInterfaceManager(ModuleManager):
         self.client = None
         self._vehicle_bp_library = None
         self.carla_waypoints = None
+        self.haptic_controllers = []
 
         self.connected = self.connect_carla()
 
@@ -140,3 +141,5 @@ class CarlaInterfaceManager(ModuleManager):
     def _open_settings_dialog(self, agent_name):
         self._agent_settingdialogs_dict[agent_name].show()
         self._get_update_from_other_modules(agent_name)
+
+

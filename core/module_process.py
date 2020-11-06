@@ -29,7 +29,7 @@ class ModuleProcess(mp.Process):
     Base class for the module process.
     """
 
-    def __init__(self, module: JOANModules, time_step_in_ms, news, settings, events: ProcessEvents):
+    def __init__(self, module: JOANModules, time_step_in_ms, news, settings, events: ProcessEvents, settings_singleton):
         super().__init__(daemon = True)
 
         if time_step_in_ms < 10:
@@ -44,6 +44,8 @@ class ModuleProcess(mp.Process):
 
         # extract shared variables from news
         self._module_shared_variables = news.read_news(module)
+        # extract settings from singleton settings
+        self.singleton_settings = settings_singleton
 
         # mp.Events
         self._events = events
@@ -59,6 +61,7 @@ class ModuleProcess(mp.Process):
         self._events.process_is_ready.set()
 
     @abc.abstractmethod
+    # TODO does this need to be an abstract class in module_process?
     def destroy_agents(self):
         """
             Extra function for carlainterface that whenever you want to go to the stopped state again you also destroy the actors in your simulation,
@@ -92,12 +95,15 @@ class ModuleProcess(mp.Process):
         """
         try:
             self._get_ready()
+
             self._events.start.wait()
 
             # run
             if platform.system() == 'Windows':
                 with wres.set_resolution(10000):
                     self._run_loop()
+
+                    # TODO same comment as above with the function 'destroy_agents()'. Does this need to be here and why not in carlainterface directly?
                     if self._events.emergency.is_set():
                         self.destroy_agents()
                         self._events.emergency.clear()

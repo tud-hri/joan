@@ -153,6 +153,14 @@ class SensoDriveSharedVariables:
         self._measured_torque = mp.Value(c_float, 0.0)
         self._steering_rate = mp.Value(c_float, 0.0)
 
+        self._torque = mp.Value(c_float, 0.0)
+        self._damping = mp.Value(c_float, 0.0)
+        self._friction = mp.Value(c_float, 0.0)
+        self._loha_stiffness = mp.Value(c_float, 0.0)
+        self._auto_center_stiffness = mp.Value(c_float, 0.0)
+
+
+
     @property
     def steering_angle(self):
         return self._steering_angle.value
@@ -208,3 +216,44 @@ class SensoDriveSharedVariables:
     @measured_torque.setter
     def measured_torque(self, var):
         self._measured_torque.value = var
+
+    @property
+    def torque(self):
+        return self._torque.value
+
+    @torque.setter
+    def torque(self, var):
+        self._torque.value = var
+
+    @property
+    def loha_stiffness(self):
+        return self._loha_stiffness.value
+
+    @loha_stiffness.setter
+    def loha_stiffness(self, var):
+        self._loha_stiffness.value = var
+
+    @property
+    def damping(self):
+        return self._damping.value
+
+    @damping.setter
+    def damping(self, var):
+        self._damping.value = var
+
+    @property
+    def friction(self):
+        return self._friction.value
+
+    @friction.setter
+    def friction(self, var):
+        self._friction.value = var
+
+    @property
+    def auto_center_stiffness(self):
+        return self._auto_center_stiffness.value
+
+    @auto_center_stiffness.setter
+    def auto_center_stiffness(self, var):
+        self._auto_center_stiffness.value = var
+

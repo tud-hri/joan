@@ -33,6 +33,17 @@ class Settings:
         except KeyError:
             return {}
 
+    def remove_settings(self, module: JOANModules):
+        """
+        Remove module shared variable from News
+        :param module: module enum
+        :return:
+        """
+        try:
+            del self._settings[module]
+        except KeyError as e:
+            print('There is no settings yet from',e)
+
     @property
     def all_settings(self):
         return self._settings

@@ -9,7 +9,7 @@ class HardwareMPSettings(ModuleSettings):
     """
 
     def __init__(self):
-        super().__init__(JOANModules.HARDWARE_MP)
+        super().__init__(JOANModules.HARDWARE_MANAGER)
 
         self.inputs = {}
 

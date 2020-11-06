@@ -14,14 +14,13 @@ class SensoDriveEvents:
         self.turn_off_event = mp.Event()
         self.clear_error_event = mp.Event()
         self.close_event = mp.Event()
-        #state queue
         self.state_queue = mp.Queue()
 
 class HardwareManager(ModuleManager):
     """Hardwaremanager keeps track of which inputs are being used with what settings. """
 
     def __init__(self, time_step_in_ms=10, parent=None):
-        super().__init__(module=JOANModules.HARDWARE_MP, time_step_in_ms=time_step_in_ms, parent=parent)
+        super().__init__(module=JOANModules.HARDWARE_MANAGER, time_step_in_ms=time_step_in_ms, parent=parent)
         self._hardware_inputs = {}
         self.hardware_input_type = None
         self.hardware_input_settings = None
@@ -34,15 +33,21 @@ class HardwareManager(ModuleManager):
                 input.events = SensoDriveEvents()
 
 
+
     def get_ready(self):
         for inputs in self.module_settings.inputs.values():
             if inputs.input_type == HardwareInputTypes.SENSODRIVE.value:
                 self.module_dialog.update_timer.timeout.connect(self.module_dialog.update_sensodrive_state)
                 self.module_dialog.update_timer.start()
         super().get_ready()
+
+
         for inputs in self.module_settings.inputs.values():
             if inputs.input_type == HardwareInputTypes.SENSODRIVE.value:
                 inputs.events.clear_error_event.set()
+
+    def printkak(self):
+        print('kak')
 
     def start(self):
         super().start()

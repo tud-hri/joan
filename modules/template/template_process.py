@@ -5,12 +5,12 @@ from datetime import datetime
 
 class TemplateProcess(ModuleProcess):
 
-    def __init__(self, module: JOANModules, time_step_in_ms, news, settings, events):
-        super().__init__(module, time_step_in_ms=time_step_in_ms, news=news, settings=settings, events=events)
+    def __init__(self, module: JOANModules, time_step_in_ms, news, settings, events, settings_singleton):
+        super().__init__(module, time_step_in_ms=time_step_in_ms, news=news, settings=settings, events=events, settings_singleton= settings_singleton)
 
         # it is possible to read from other modules
         # do_while_running NOT WRITE to other modules' news to prevent spaghetti-code
-        self.shared_variables_hardware = news.read_news(JOANModules.HARDWARE_MP)
+        self.shared_variables_hardware = news.read_news(JOANModules.HARDWARE_MANAGER)
         self.shared_variables_carlainterface = news.read_news(JOANModules.CARLA_INTERFACE)
 
     def get_ready(self):
@@ -30,10 +30,10 @@ class TemplateProcess(ModuleProcess):
         now = datetime.now()
         self._module_shared_variables.overwrite_with_current_time = now.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
 
-        try:
-            print(self.shared_variables_carlainterface.agents['Ego Vehicle_1'].__dict__)
-        except KeyError:
-            pass
+        # try:
+        #     print(self.shared_variables_carlainterface.agents['Ego Vehicle_1'].__dict__)
+        # except KeyError:
+        #     pass
 
         # show current time
         # print(self._module_shared_variables.overwrite_with_current_time)

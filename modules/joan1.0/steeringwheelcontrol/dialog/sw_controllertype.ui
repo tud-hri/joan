@@ -20,7 +20,7 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="2" column="0">
-    <widget class="QDialogButtonBox" name="btnbox_sw_controller_type">
+    <widget class="QDialogButtonBox" name="btns_haptic_controller_type_select">
      <property name="font">
       <font>
        <pointsize>11</pointsize>
@@ -60,7 +60,7 @@
  <resources/>
  <connections>
   <connection>
-   <sender>btnbox_sw_controller_type</sender>
+   <sender>btns_haptic_controller_type_select</sender>
    <signal>accepted()</signal>
    <receiver>Dialog</receiver>
    <slot>accept()</slot>
@@ -76,7 +76,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>btnbox_sw_controller_type</sender>
+   <sender>btns_haptic_controller_type_select</sender>
    <signal>rejected()</signal>
    <receiver>Dialog</receiver>
    <slot>reject()</slot>
