@@ -59,8 +59,7 @@ class HQWindow(QtWidgets.QMainWindow):
         self._view_menu = self.menuBar().addMenu('View')
         self._view_menu.addAction('Show all current settings..', self.show_settings_overview)
 
-        # TODO performance monitor needs to be connected to new module structure
-        # self._view_menu.addAction('Show performance monitor..', self.show_performance_monitor)
+        self._view_menu.addAction('Show performance monitor..', self.show_performance_monitor)
 
     def initialize(self):
         self.manager.initialize_modules()

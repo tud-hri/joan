@@ -1,6 +1,7 @@
 import os
 
 from PyQt5 import QtWidgets, QtCore, QtGui, uic
+from core.statesenum import State
 
 
 class PerformanceMonitorDialog(QtWidgets.QDialog):
@@ -15,11 +16,12 @@ class PerformanceMonitorDialog(QtWidgets.QDialog):
             self.tableWidget.insertRow(row)
             self.module_row_numbers[module] = row
             self.tableWidget.setItem(row, 0, QtWidgets.QTableWidgetItem(str(enum)))
-            self.tableWidget.setItem(row, 1, QtWidgets.QTableWidgetItem("%.1f Hz" % module.running_frequency))
-            self.tableWidget.setItem(row, 2, QtWidgets.QTableWidgetItem("%.1f Hz" % (1000 / module._millis)))
-            self.tableWidget.setItem(row, 3, QtWidgets.QTableWidgetItem("%.1f Hz" % module.maximum_frequency))
+            self.tableWidget.setItem(row, 1, QtWidgets.QTableWidgetItem("- Hz"))
+            self.tableWidget.setItem(row, 2, QtWidgets.QTableWidgetItem("- Hz"))
+            self.tableWidget.setItem(row, 3, QtWidgets.QTableWidgetItem("- Hz"))
             row += 1
 
+        self._update_gui()
         self.update_timer = QtCore.QTimer()
         self.update_timer.setSingleShot(False)
         self.update_timer.setInterval(1000)
@@ -31,11 +33,22 @@ class PerformanceMonitorDialog(QtWidgets.QDialog):
     def _update_gui(self):
         for enum, module in self.all_instantiated_modules.items():
             row = self.module_row_numbers[module]
-            self.tableWidget.item(row, 1).setText("%.1f Hz" % module.running_frequency)
-            self.tableWidget.item(row, 2).setText("%.1f Hz" % (1000 / module._millis))
-            self.tableWidget.item(row, 3).setText("%.1f Hz" % module.maximum_frequency)
+            if module.shared_variables and module.state_machine.current_state is State.RUNNING:
+                self.tableWidget.setItem(row, 1, QtWidgets.QTableWidgetItem("%.1f Hz" % module.shared_variables.running_frequency))
+                self.tableWidget.setItem(row, 2, QtWidgets.QTableWidgetItem("%.1f Hz" % (1000 / module._time_step_in_ms)))
+                try:
+                    self.tableWidget.setItem(row, 3, QtWidgets.QTableWidgetItem("%.1f Hz" % (1e9 / module.shared_variables.execution_time)))
+                except ZeroDivisionError:
+                    self.tableWidget.setItem(row, 3, QtWidgets.QTableWidgetItem("inf Hz"))
 
-            if module.running_frequency < (1000 / module._millis) * 0.99 and module.running_frequency:
-                self.tableWidget.item(row, 1).setBackground(QtGui.QBrush(QtCore.Qt.red))
+                if module.shared_variables.running_frequency < (1000 / module._time_step_in_ms) * 0.95 and module.shared_variables.running_frequency:
+                    self.tableWidget.item(row, 1).setBackground(QtGui.QBrush(QtCore.Qt.red))
+                else:
+                    self.tableWidget.item(row, 1).setBackground(QtGui.QBrush(QtCore.Qt.NoBrush))
+
             else:
-                self.tableWidget.item(row, 1).setBackground(QtGui.QBrush(QtCore.Qt.NoBrush))
+                self.tableWidget.setItem(row, 1, QtWidgets.QTableWidgetItem("- Hz"))
+                self.tableWidget.setItem(row, 2, QtWidgets.QTableWidgetItem("%.1f Hz" % (1000 / module._time_step_in_ms)))
+                self.tableWidget.setItem(row, 3, QtWidgets.QTableWidgetItem("- Hz"))
+
+
