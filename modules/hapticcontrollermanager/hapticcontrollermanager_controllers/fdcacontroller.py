@@ -337,9 +337,6 @@ class FDCAControllerProcess:
                     # TODO Dit moet echt beter - > set the torque
                     hardware_manager_shared_variables.inputs[agent_settings.selected_input].torque = torque_fdca
 
-
-
-
 class FDCAControllerSettings:
     def __init__(self, identifier=''):
         self.t_lookahead = 0.0
