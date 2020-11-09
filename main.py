@@ -7,7 +7,7 @@ import sys
 
 from PyQt5 import QtWidgets
 
-from core import HQManager, HQWindow
+from core import HQManager
 from modules.joanmodules import JOANModules
 
 if __name__ == '__main__':

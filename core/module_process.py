@@ -30,7 +30,7 @@ class ModuleProcess(mp.Process):
     """
 
     def __init__(self, module: JOANModules, time_step_in_ms, news, settings, events: ProcessEvents, settings_singleton):
-        super().__init__(daemon = True)
+        super().__init__(daemon=True)
 
         if time_step_in_ms < 10:
             raise ValueError('The time step of a JOAN process cannot be smaller then 10 ms (not > 100 Hz). This is not possible on a non real time OS.')
@@ -38,6 +38,8 @@ class ModuleProcess(mp.Process):
         self.module = module
         self._time_step_in_ns = time_step_in_ms * 1e6
         self._time = 0.0
+        self._last_execution_time = 0.0
+        self._running_frequency = 0.0
 
         self._settings_as_dict = settings.as_dict()
         self._settings_as_object = None
@@ -135,7 +137,12 @@ class ModuleProcess(mp.Process):
 
             t0 = time.perf_counter_ns()
 
-            self._time = time.perf_counter_ns()
+            try:
+                self._running_frequency = 1e9 / (t0 - self._time)
+            except ZeroDivisionError:
+                self._running_frequency = 1e9 / 1
+
+            self._time = t0
 
             # read shared values here, store in local variables
             self.read_from_shared_variables()
@@ -150,11 +157,11 @@ class ModuleProcess(mp.Process):
             if self._module_shared_variables.state == State.STOPPED.value:
                 running = False
 
-            execution_time = time.perf_counter_ns() - t0
+            self._last_execution_time = time.perf_counter_ns() - t0
 
             # sleep for time step, taking the execution time into account
-            if (self._time_step_in_ns - execution_time) * 1e-9 > 0:
-                time.sleep((self._time_step_in_ns - execution_time) * 1e-9)
+            if (self._time_step_in_ns - self._last_execution_time) * 1e-9 > 0:
+                time.sleep((self._time_step_in_ns - self._last_execution_time) * 1e-9)
 
     def close_down(self):
         pass
@@ -172,4 +179,6 @@ class ModuleProcess(mp.Process):
         Write to shared values from your local variables. This should only happen in this function!
         :return:
         """
+        self._module_shared_variables.running_frequency = self._running_frequency
+        self._module_shared_variables.execution_time = self._last_execution_time
         self._module_shared_variables.time = self._time
