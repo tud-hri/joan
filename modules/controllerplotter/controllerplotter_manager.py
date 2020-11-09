@@ -14,6 +14,16 @@ class ControllerPlotterManager(ModuleManager):
 
     def __init__(self, time_step_in_ms=10, parent=None):
         super().__init__(module=JOANModules.CONTROLLER_PLOTTER, time_step_in_ms=time_step_in_ms, parent=parent)
+        background_color = pg.mkColor((240, 240, 240, 255))
+
+        pg.setConfigOption('background', 'k')
+        pg.setConfigOption('foreground', 'k')
+
+        self.module_dialog._module_widget.top_view_graph.setBackground(background_color)
+        self.module_dialog._module_widget.sw_graph.setBackground(background_color)
+        self.module_dialog._module_widget.errors_graph.setBackground(background_color)
+        self.module_dialog._module_widget.torque_graph.setBackground(background_color)
+        self.module_dialog._module_widget.fb_torques_graph.setBackground(background_color)
 
 
         #initialize lists and variables for plotting
@@ -77,9 +87,6 @@ class ControllerPlotterManager(ModuleManager):
 
         for color_car in colors_car:
             colors_rgb_car.append(color_car.rgb)
-        background_color = pg.mkColor((240, 240, 240, 255))
-        pg.setConfigOption('background', background_color)
-        pg.setConfigOption('foreground', 'k')
 
         for k in range(self.amount_of_remaining_points):
             self.brushes.append(
@@ -112,7 +119,7 @@ class ControllerPlotterManager(ModuleManager):
         try:
             # TODO: Make this depend on the trajectory selected in FDCA controller (read news and then apply that name)
             trajectory_name = "MiddleRoadTVRecord_filtered_ffswang_heading_2hz.csv"
-            tmp = pd.read_csv(os.path.join('modules/steeringwheelcontrol/action/swcontrollers/trajectories', trajectory_name))
+            tmp = pd.read_csv(os.path.join('modules/hapticcontrollermanager/hapticcontrollermanager_controllers/trajectories', trajectory_name))
             HCR_trajectory_data = tmp.values
             plot_data_HCR_x = HCR_trajectory_data[:, 1]
             plot_data_HCR_y = HCR_trajectory_data[:, 2]
