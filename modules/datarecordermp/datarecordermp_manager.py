@@ -7,7 +7,7 @@ class DatarecorderMPManager(ModuleManager):
     """ Manages the datarecordermp environment """
 
     def __init__(self, time_step_in_ms=10, parent=None):
-        super().__init__(module=JOANModules.DATARECORDER_MP, time_step_in_ms=time_step_in_ms, parent=parent)
+        super().__init__(module=JOANModules.DATA_RECORDER, time_step_in_ms=time_step_in_ms, parent=parent)
 
     def initialize(self):
         print("init")

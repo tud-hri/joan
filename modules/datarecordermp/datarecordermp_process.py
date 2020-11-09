@@ -9,12 +9,12 @@ from copy import deepcopy
 
 class DatarecorderMPProcess(ModuleProcess):
 
-    def __init__(self, module: JOANModules, time_step_in_ms, news, settings, events):
-        super().__init__(module, time_step_in_ms=time_step_in_ms, news=news, settings=settings, events=events)
+    def __init__(self, module: JOANModules, time_step_in_ms, news, settings, events, settings_singleton):
+        super().__init__(module, time_step_in_ms=time_step_in_ms, news=news, settings=settings, events=events, settings_singleton= settings_singleton)
         # it is possible to read from other modules
         # do NOT WRITE to other modules' news to prevent spaghetti-code
-        self.shared_variables_hardware = news.read_news(JOANModules.HARDWARE_MP)
-        self.shared_variables_template = news.read_news(JOANModules.TEMPLATE_MP)
+        self.shared_variables_hardware = news.read_news(JOANModules.HARDWARE_MANAGER)
+        self.shared_variables_template = news.read_news(JOANModules.TEMPLATE)
         self._module_shared_variables = news.read_news(module)
 
         # somehow self.news = news ends up as an empty dict in the 
@@ -48,9 +48,9 @@ class DatarecorderMPProcess(ModuleProcess):
             for _, member in JOANModules.__members__.items():
                 shared_variables = self.readable_news.get(member)
                 for variable in inspect.getmembers(shared_variables):
-                    print(variable)
                     if not variable[0].startswith('_')  and type(variable[1]) in (int, str, float):
-                        print(variable[0], variable[1])
+                        # print(variable[0], variable[1])
+                        pass
         except Exception as inst:
             print('werkt niet omdat:, ', inst)
 

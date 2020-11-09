@@ -6,7 +6,7 @@ from datetime import datetime
 
 class DatarecorderMPSettings(ModuleSettings):
     def __init__(self):
-        super().__init__(module=JOANModules.DATARECORDER_MP)
+        super().__init__(module=JOANModules.DATA_RECORDER)
 
         '''
         if Path(module_manager.settings_filename).is_file():

@@ -15,8 +15,8 @@ from core.settings import Settings
 
 class DatarecorderMPDialog(ModuleDialog):
     def __init__(self, module_manager: ModuleManager, parent=None):
-        super().__init__(module=JOANModules.DATARECORDER_MP, module_manager=module_manager, parent=parent)
-        
+        super().__init__(module=JOANModules.DATA_RECORDER, module_manager=module_manager, parent=parent)
+        self._module_manager = module_manager
         # set current data file name
         self._module_widget.lbl_data_filename.setText("< none >")
 
@@ -194,7 +194,7 @@ class CreateTreeWidgetDialog(QtWidgets.QDialog):
         super().__init__(parent)
 
         for module_key, module_news in variable_to_save.items():
-            if module_news and module_key != str(JOANModules.DATARECORDER_MP):  # show only modules with shared_variables
+            if module_news and module_key != str(JOANModules.DATA_RECORDER):  # show only modules with shared_variables
                 self._create_tree_item(tree_widget, module_key, module_news)
         self.show()
 
