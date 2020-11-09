@@ -264,8 +264,9 @@ class FDCAControllerProcess:
         """
         for agent_settings in carla_interface_settings.agents.values():
             if agent_settings.selected_controller == self.settings.__str__():
-                if 'SensoDrive' in agent_settings.selected_input:
-                    stiffness = hardware_manager_shared_variables.inputs[agent_settings.selected_input].auto_center_stiffness
+                if 'Keyboard' in agent_settings.selected_input:
+                    # stiffness = hardware_manager_shared_variables.inputs[agent_settings.selected_input].auto_center_stiffness
+                    stiffness = 1
                     # TODO get the ms of the module in here
                     # delta_t = self.module_action.tick_interval_ms / 1000  # [s]
                     delta_t = 10 / 1000  # [s]
@@ -335,7 +336,17 @@ class FDCAControllerProcess:
                     self._error_old = error
 
                     # TODO Dit moet echt beter - > set the torque
-                    hardware_manager_shared_variables.inputs[agent_settings.selected_input].torque = torque_fdca
+                    # hardware_manager_shared_variables.inputs[agent_settings.selected_input].torque = torque_fdca
+
+                    #set the shared variables
+                    self.shared_variables.lat_error = error[0]
+                    self.shared_variables.heading_error = error[1]
+                    self.shared_variables.sw_des = sw_angle_ff_des + sw_angle_fb
+                    self.shared_variables.ff_torque = sw_angle_ff * stiffness
+                    self.shared_variables.fb_torque = sw_angle_fb * stiffness
+                    self.shared_variables.loha_torque = torque_loha
+                    self.shared_variables.req_torque = torque_fdca
+
 
 class FDCAControllerSettings:
     def __init__(self, identifier=''):
