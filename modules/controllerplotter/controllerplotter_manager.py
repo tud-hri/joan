@@ -385,3 +385,15 @@ class ControllerPlotterManager(ModuleManager):
         sw_legend.addItem(self.sw_act_plot_handle, name='Actual Steering Angle')
 
         return super().initialize()
+
+
+    def stop(self):
+        """stop the module"""
+        # Will automatically go to READY as defined above in self.state_machine.set_automatic_transition
+        self.module_dialog._module_widget.top_view_graph.clear()
+        self.module_dialog._module_widget.torque_graph.clear()
+        self.module_dialog._module_widget.errors_graph.clear()
+        self.module_dialog._module_widget.fb_torques_graph.clear()
+        self.module_dialog._module_widget.sw_graph.clear()
+
+        return super().stop()
