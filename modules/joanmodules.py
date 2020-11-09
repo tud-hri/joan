@@ -41,7 +41,7 @@ class JOANModules(Enum):
                 JOANModules.TEMPLATE: TemplateDialog,
                 JOANModules.CARLA_INTERFACE: CarlaInterfaceDialog,
                 JOANModules.HAPTIC_CONTROLLER_MANAGER: HapticControllerManagerDialog,
-                JOANModules.CONTROLLER_PLOTTER: ControllerPlotterDialog }[self]
+                JOANModules.CONTROLLER_PLOTTER: ControllerPlotterDialog}[self]
 
     @property
     def settings(self):
@@ -65,13 +65,13 @@ class JOANModules(Enum):
         from modules.template.template_sharedvalues import TemplateSharedVariables
         from modules.carlainterface.carlainterface_sharedvalues import CarlaInterfaceSharedVariables
         from modules.hapticcontrollermanager.hapticcontrollermanager_sharedvalues import HapticControllerManagerSharedVariables
-        from modules.controllerplotter.controllerplotter_sharedvalues import ControllerPlotterSharedVariables
+        from core.modulesharedvariables import ModuleSharedVariables
 
         return {JOANModules.HARDWARE_MANAGER: HardwareSharedVariables,
                 JOANModules.TEMPLATE: TemplateSharedVariables,
                 JOANModules.CARLA_INTERFACE: CarlaInterfaceSharedVariables,
                 JOANModules.HAPTIC_CONTROLLER_MANAGER: HapticControllerManagerSharedVariables,
-                JOANModules.CONTROLLER_PLOTTER: ControllerPlotterSharedVariables}[self]
+                JOANModules.CONTROLLER_PLOTTER: ModuleSharedVariables}[self]
 
     @property
     def process(self):
@@ -79,13 +79,13 @@ class JOANModules(Enum):
         from modules.template.template_process import TemplateProcess
         from modules.carlainterface.carlainterface_process import CarlaInterfaceProcess
         from modules.hapticcontrollermanager.hapticcontrollermanager_process import HapticControllerManagerProcess
-        from modules.controllerplotter.controllerplotter_process import ControllerPlotterProcess
+        from core.module_process import ModuleProcess
 
         return {JOANModules.HARDWARE_MANAGER: HardwareManagerProcess,
                 JOANModules.TEMPLATE: TemplateProcess,
                 JOANModules.CARLA_INTERFACE: CarlaInterfaceProcess,
                 JOANModules.HAPTIC_CONTROLLER_MANAGER: HapticControllerManagerProcess,
-                JOANModules.CONTROLLER_PLOTTER: ControllerPlotterProcess}[self]
+                JOANModules.CONTROLLER_PLOTTER: ModuleProcess}[self]
 
     @property
     def ui_file(self):
