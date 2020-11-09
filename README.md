@@ -164,7 +164,7 @@ over the news channel
 ### modules.carlainterface.widget.interface.ui
 definition of the gui
 
-### modules.template.widget.template.py
+### modules.template.widget.controllerplotter_manager.py
 Template to create other widgets, has predefined connection with the Control class
 reads the corresponding .ui file and does all the action needed for this widget
 ### modules.template.widget.template.ui
