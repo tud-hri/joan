@@ -13,6 +13,7 @@ class JOANModules(Enum):
     HARDWARE_MANAGER = auto()
     CARLA_INTERFACE = auto()
     HAPTIC_CONTROLLER_MANAGER = auto()
+    FDCA_PLOTTER = auto()
 
     @property
     def manager(self):
