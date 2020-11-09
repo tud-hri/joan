@@ -161,13 +161,14 @@ class KeyBoardSettingsDialog(QtWidgets.QDialog):
     creating the joystick class for the first time. NOTE: it should not show whenever settings are loaded by .json file.
     """
 
-    def __init__(self, module_manager, settings=None, parent=None):
+    def __init__(self, module_manager=None, settings=None, parent=None):
         """
         Initializes the settings dialog with the appropriate keyboardinput settings
         :param keyboard_settings:
         :param parent:
         """
         super().__init__(parent)
+        self.module_manager = module_manager
         self.keyboard_settings = settings
         uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/keyboard_settings_ui.ui"), self)
 
