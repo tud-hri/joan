@@ -19,7 +19,7 @@ if __name__ == '__main__':
     JOANHQACTION.add_module(JOANModules.TEMPLATE, time_step_in_ms=100)
     JOANHQACTION.add_module(JOANModules.HARDWARE_MANAGER, time_step_in_ms=10)
     # JOANHQACTION.add_module(JOANModules.CARLA_INTERFACE, time_step_in_ms= 10)
-    JOANHQACTION.add_module(JOANModules.HAPTIC_CONTROLLER_MANAGER, time_step_in_ms= 10)
-    JOANHQACTION.add_module(JOANModules.DATA_RECORDER)
+    # JOANHQACTION.add_module(JOANModules.HAPTIC_CONTROLLER_MANAGER, time_step_in_ms=10)
+    JOANHQACTION.add_module(JOANModules.DATA_RECORDER, time_step_in_ms=100)
 
     APP.exec_()
