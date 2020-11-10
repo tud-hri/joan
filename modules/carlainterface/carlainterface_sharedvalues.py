@@ -25,7 +25,7 @@ class EgoVehicleSharedVariables:
         self._data_road_y = mp.Array(c_float, 50)
         self._data_road_y_inner = mp.Array(c_float, 50)
         self._data_road_y_outer = mp.Array(c_float, 50)
-        self._data_road_psi = mp.Array(c_float, 99)
+        self._data_road_psi = mp.Array(c_float, 50)
         self._data_road_lanewidth = mp.Array(c_float, 50)
 
     @property

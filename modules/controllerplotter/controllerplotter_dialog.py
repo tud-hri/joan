@@ -1,7 +1,6 @@
 from core.module_dialog import ModuleDialog
 from core.module_manager import ModuleManager
 from modules.joanmodules import JOANModules
-import numpy as np
 import pyqtgraph as pg
 import math
 from PyQt5 import QtGui, QtCore
@@ -27,6 +26,7 @@ class ControllerPlotterDialog(ModuleDialog):
         # initialize lists and variables for plotting
         self.amount_of_remaining_points = 50
         self.car_trace_length = 10
+        #dialog will always update at 10hz
         self.history_time = self.amount_of_remaining_points / round(1000 / 100)
         self.plot_data_torque_x = []
         self.plot_data_torque_y = []
@@ -432,11 +432,11 @@ class ControllerPlotterDialog(ModuleDialog):
             vehicle_location_x = car_transform[0]
             vehicle_location_y = car_transform[1]
             self.plot_data_road_x = data_from_carla_interface.data_road_x
-            self.plot_data_road_x_inner = data_from_carla_interface.data_road_x
-            self.plot_data_road_x_outer = data_from_carla_interface.data_road_x
+            self.plot_data_road_x_inner = data_from_carla_interface.data_road_x_inner
+            self.plot_data_road_x_outer = data_from_carla_interface.data_road_x_outer
             self.plot_data_road_y = data_from_carla_interface.data_road_y
-            self.plot_data_road_y_inner = data_from_carla_interface.data_road_y
-            self.plot_data_road_y_outer = data_from_carla_interface.data_road_y
+            self.plot_data_road_y_inner = data_from_carla_interface.data_road_y_inner
+            self.plot_data_road_y_outer = data_from_carla_interface.data_road_y_outer
             self.plot_data_road_psi = data_from_carla_interface.data_road_psi
             self.plot_data_road_lanewidth = data_from_carla_interface.data_road_lanewidth
 
@@ -514,7 +514,6 @@ class ControllerPlotterDialog(ModuleDialog):
             self.car_trace_x.pop(0)
             self.car_trace_y.pop(0)
             self.car_trace_psi.pop(0)
-
         self.road_outer_plot_handle.setData(x=self.plot_data_road_x_outer[0:-2], y=self.plot_data_road_y_outer[0:-2])
         self.road_inner_plot_handle.setData(x=self.plot_data_road_x_inner[0:-2], y=self.plot_data_road_y_inner[0:-2])
         self.road_plot_handle.setData(x=self.plot_data_road_x[0:-2], y=self.plot_data_road_y[0:-2])
@@ -654,9 +653,3 @@ class ControllerPlotterDialog(ModuleDialog):
                                             symbolPen=pg.mkPen((217, 83, 25, 200)), symbolSize=3)
         else:
             self.sw_act_plot_handle.setData(pen=pg.mkPen((217, 83, 25, 0)))
-
-    def compute_angle(self, v1, v2):
-        arg1 = np.cross(v1, v2)
-        arg2 = np.dot(v1, v2)
-        angle = np.arctan2(arg1, arg2)
-        return angle

@@ -250,12 +250,15 @@ class EgoVehicleProcess:
                 data_road_lanewidth.append(waypoints[0].lane_width)
 
             pos_array = np.array([[data_road_x], [data_road_y]])
-            diff = np.transpose(np.diff(pos_array, prepend=pos_array))
+            diff = np.transpose(np.diff(pos_array))
+
 
 
             x_unit_vector = np.array([[1], [0]])
             for row in diff:
                 data_road_psi.append(self.compute_angle(row.ravel(), x_unit_vector.ravel()))
+
+            data_road_psi.append(0)
 
             iter_x = 0
             for roadpoint_x in data_road_x:
@@ -270,7 +273,6 @@ class EgoVehicleProcess:
                 iter_y = iter_y + 1
 
             #set shared variables:
-            print(len(data_road_psi), len(data_road_x))
             self.shared_variables.data_road_x = data_road_x
             self.shared_variables.data_road_x_inner = data_road_x_inner
             self.shared_variables.data_road_x_outer = data_road_x_outer
@@ -279,6 +281,10 @@ class EgoVehicleProcess:
             self.shared_variables.data_road_y_outer = data_road_y_outer
             self.shared_variables.data_road_psi = data_road_psi
             self.shared_variables.data_road_lanewidth = data_road_lanewidth
+
+            # print(data_road_x_outer)
+            # print(data_road_x_inner)
+
 
 
 
