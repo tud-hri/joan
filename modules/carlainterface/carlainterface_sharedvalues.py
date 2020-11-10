@@ -124,3 +124,4 @@ class EgoVehicleSharedVariables:
     def data_road_lanewidth(self, val):
         self._data_road_lanewidth[:] = val
 
+

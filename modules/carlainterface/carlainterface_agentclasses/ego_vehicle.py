@@ -1,12 +1,10 @@
 from PyQt5 import uic, QtWidgets
-import os
 from modules.carlainterface.carlainterface_agenttypes import AgentTypes
 import random, os, sys, glob
 import math
 import numpy as np
 
 #TODO Maybe check this again, however it should not even start when it cant find the library the first time
-import time
 sys.path.append(glob.glob('carla_pythonapi/carla-*%d.%d-%s.egg' % (
         sys.version_info.major,
         sys.version_info.minor,
@@ -272,7 +270,7 @@ class EgoVehicleProcess:
                 data_road_y_inner.append(roadpoint_y + math.cos(data_road_psi[iter_y]) * data_road_lanewidth[iter_y] / 2)
                 iter_y = iter_y + 1
 
-            #set shared variables:
+            #set shared road variables:
             self.shared_variables.data_road_x = data_road_x
             self.shared_variables.data_road_x_inner = data_road_x_inner
             self.shared_variables.data_road_x_outer = data_road_x_outer
@@ -281,12 +279,6 @@ class EgoVehicleProcess:
             self.shared_variables.data_road_y_outer = data_road_y_outer
             self.shared_variables.data_road_psi = data_road_psi
             self.shared_variables.data_road_lanewidth = data_road_lanewidth
-
-            # print(data_road_x_outer)
-            # print(data_road_x_inner)
-
-
-
 
     def compute_angle(self, v1, v2):
         arg1 = np.cross(v1, v2)

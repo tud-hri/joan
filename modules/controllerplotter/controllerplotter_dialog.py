@@ -395,7 +395,7 @@ class ControllerPlotterDialog(ModuleDialog):
 
     def do(self):
         """
-        This function is called every controller tick of this module implement your main calculations here
+        This function is called every module dialog update tick of this module implement your main calculations here
         """
 
         data_from_haptic_controller_manager = self.data[JOANModules.HAPTIC_CONTROLLER_MANAGER].haptic_controllers['FDCA_1']
@@ -544,6 +544,7 @@ class ControllerPlotterDialog(ModuleDialog):
 
         # Big Torque vs steering Angle plot
         self.plot_data_torque_x.append(steering_ang)
+        # TODO conditional statement that if there is a sensodrive chosen it should take the measured torque instead of requested
         #only append the actual measured torque if there is a sensodrive, else plot the requested torque by the controller
         # if 'SensoDrive 1' in data_from_hardware_manager.keys():
         #     self.plot_data_torque_y.append(actual_torque)
