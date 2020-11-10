@@ -3,6 +3,8 @@ import os
 from modules.carlainterface.carlainterface_agenttypes import AgentTypes
 import random, os, sys, glob
 import math
+import numpy as np
+
 #TODO Maybe check this again, however it should not even start when it cant find the library the first time
 import time
 sys.path.append(glob.glob('carla_pythonapi/carla-*%d.%d-%s.egg' % (
@@ -140,6 +142,7 @@ class EgoVehicleProcess:
         self._control = carla.VehicleControl()
         self._BP = random.choice(self.carlainterface_mp.vehicle_blueprint_library.filter("vehicle." + self.settings.selected_car))
         self._control = carla.VehicleControl()
+        self.world_map = self.carlainterface_mp.world.get_map()
         torque_curve = []
         gears = []
 
@@ -192,6 +195,7 @@ class EgoVehicleProcess:
                 self._control.throttle = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].throttle
 
             self.spawned_vehicle.apply_control(self._control)
+            self.calculate_plotter_road_arrays()
 
         self.set_shared_variables()
 
@@ -210,6 +214,80 @@ class EgoVehicleProcess:
         output = temp / 100
 
         return output
+    
+    def calculate_plotter_road_arrays(self):
+        data_road_x = []
+        data_road_x_inner = []
+        data_road_x_outer = []
+        data_road_y = []
+        data_road_y_inner = []
+        data_road_y_outer = []
+        data_road_psi = []
+        data_road_lanewidth = []
+
+        if self.spawned_vehicle is not None:
+            vehicle_location = self.spawned_vehicle.get_location()
+            closest_waypoint = self.world_map.get_waypoint(vehicle_location, project_to_road=True)
+
+            # previous points
+            previous_waypoints = []
+            for a in reversed(range(1, 26)):
+                previous_waypoints.append(closest_waypoint.previous(a))
+
+            # next
+            next_waypoints = []
+            for a in range(1, 26):
+                next_waypoints.append(closest_waypoint.next(a))
+
+            for waypoints in previous_waypoints:
+                data_road_x.append(waypoints[0].transform.location.x)
+                data_road_y.append(waypoints[0].transform.location.y)
+                data_road_lanewidth.append(waypoints[0].lane_width)
+
+            for waypoints in next_waypoints:
+                data_road_x.append(waypoints[0].transform.location.x)
+                data_road_y.append(waypoints[0].transform.location.y)
+                data_road_lanewidth.append(waypoints[0].lane_width)
+
+            pos_array = np.array([[data_road_x], [data_road_y]])
+            diff = np.transpose(np.diff(pos_array, prepend=pos_array))
+
+
+            x_unit_vector = np.array([[1], [0]])
+            for row in diff:
+                data_road_psi.append(self.compute_angle(row.ravel(), x_unit_vector.ravel()))
+
+            iter_x = 0
+            for roadpoint_x in data_road_x:
+                data_road_x_outer.append(roadpoint_x - math.sin(data_road_psi[iter_x]) * data_road_lanewidth[iter_x] / 2)
+                data_road_x_inner.append(roadpoint_x + math.sin(data_road_psi[iter_x]) * data_road_lanewidth[iter_x] / 2)
+                iter_x = iter_x + 1
+
+            iter_y = 0
+            for roadpoint_y in data_road_y:
+                data_road_y_outer.append(roadpoint_y - math.cos(data_road_psi[iter_y]) * data_road_lanewidth[iter_y] / 2)
+                data_road_y_inner.append(roadpoint_y + math.cos(data_road_psi[iter_y]) * data_road_lanewidth[iter_y] / 2)
+                iter_y = iter_y + 1
+
+            #set shared variables:
+            print(len(data_road_psi), len(data_road_x))
+            self.shared_variables.data_road_x = data_road_x
+            self.shared_variables.data_road_x_inner = data_road_x_inner
+            self.shared_variables.data_road_x_outer = data_road_x_outer
+            self.shared_variables.data_road_y = data_road_y
+            self.shared_variables.data_road_y_inner = data_road_y_inner
+            self.shared_variables.data_road_y_outer = data_road_y_outer
+            self.shared_variables.data_road_psi = data_road_psi
+            self.shared_variables.data_road_lanewidth = data_road_lanewidth
+
+
+
+    def compute_angle(self, v1, v2):
+        arg1 = np.cross(v1, v2)
+        arg2 = np.dot(v1, v2)
+        angle = np.arctan2(arg1, arg2)
+        return angle
+
 
     def set_shared_variables(self):
         if hasattr(self, 'spawned_vehicle'):
