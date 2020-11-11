@@ -186,7 +186,7 @@ class HQWindow(QtWidgets.QMainWindow):
             event.ignore()
 
     def show_settings_overview(self):
-        SettingsOverviewDialog(self.manager.singleton_settings.all_settings, parent=self)
+        SettingsOverviewDialog(manager =self.manager, parent=self)
 
     def show_performance_monitor(self):
         PerformanceMonitorDialog(self.manager.instantiated_modules, parent=self)
