@@ -464,10 +464,6 @@ class ControllerPlotterDialog(ModuleDialog):
             vehicle_location_x = 0
             vehicle_location_y = 0
 
-
-
-
-        #
         #Set plotranges (KEEP IT SQUARE)
         max_plotrange_x = self.plot_data_road_x[24] + 20
         min_plotrange_x = self.plot_data_road_x[24] - 20
