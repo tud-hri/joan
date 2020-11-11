@@ -49,6 +49,7 @@ class CarlaInterfaceManager(ModuleManager):
         self.vehicle_tags = []
         self.spawn_points = []
         self.client = None
+        self.world_map = None
         self._vehicle_bp_library = None
         self.carla_waypoints = None
         self.haptic_controllers = []
@@ -104,11 +105,11 @@ class CarlaInterfaceManager(ModuleManager):
                 self._vehicle_bp_library = blueprint_library.filter('vehicle.*')
                 for items in self._vehicle_bp_library:
                     self.vehicle_tags.append(items.id[8:])
-                world_map = self._world.get_map()
-                spawn_point_objects = world_map.get_spawn_points()
+                self.world_map = self._world.get_map()
+                spawn_point_objects = self.world_map.get_spawn_points()
                 for item in spawn_point_objects:
                     self.spawn_points.append("Spawnpoint " + str(spawn_point_objects.index(item)))
-                self.carla_waypoints = world_map.generate_waypoints(0.5)
+                self.carla_waypoints = self.world_map.generate_waypoints(0.5)
                 print('JOAN connected to CARLA Server!')
                 QApplication.restoreOverrideCursor()
                 self.connected = True

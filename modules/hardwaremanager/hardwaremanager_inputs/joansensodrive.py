@@ -62,7 +62,6 @@ class JOANSensoDriveProcess:
 
     def do(self):
         # 'variable settings' (can be changed at runtime through the shared variables)
-        print(self.shared_variables.auto_center_stiffness, self.shared_variables.loha_stiffness)
         self.settings_dict['torque'] = self.shared_variables.torque
         self.settings_dict['friction'] = self.shared_variables.friction
         self.settings_dict['damping'] = self.shared_variables.damping
@@ -74,6 +73,7 @@ class JOANSensoDriveProcess:
         self.shared_variables.throttle = values_from_sensodrive['throttle']
         self.shared_variables.brake = values_from_sensodrive['brake']
         self.shared_variables.steering_rate = values_from_sensodrive['steering_rate']
+        self.shared_variables.measured_torque = values_from_sensodrive['measured_torque']
 
 class SensoDriveSettings:
     """
