@@ -264,7 +264,8 @@ class FDCAControllerProcess:
         """
         for agent_settings in carla_interface_settings.agents.values():
             if agent_settings.selected_controller == self.settings.__str__():
-                if 'Keyboard' in agent_settings.selected_input:
+                # TODO has to be dynamic for inputs
+                if 'SensoDrive' in agent_settings.selected_input:
                     # stiffness = hardware_manager_shared_variables.inputs[agent_settings.selected_input].auto_center_stiffness
                     stiffness = 1
                     # TODO get the ms of the module in here
@@ -336,7 +337,7 @@ class FDCAControllerProcess:
                     self._error_old = error
 
                     # TODO Dit moet echt beter - > set the torque
-                    # hardware_manager_shared_variables.inputs[agent_settings.selected_input].torque = torque_fdca
+                    hardware_manager_shared_variables.inputs[agent_settings.selected_input].torque = torque_fdca
 
                     #set the shared variables
                     self.shared_variables.lat_error = error[0]

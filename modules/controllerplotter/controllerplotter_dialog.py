@@ -107,7 +107,7 @@ class ControllerPlotterDialog(ModuleDialog):
 
         self.data = {}
         
-        self.initialize()
+        # self.initialize()
 
     def initialize(self):
         """
@@ -131,6 +131,8 @@ class ControllerPlotterDialog(ModuleDialog):
                                                                                     pen=pg.mkPen(0, 102, 0, 255, width=2))
         self.carSymbol = QtGui.QPainterPath()
         self.carSymbol.addRect(-0.2, -0.4, 0.4, 0.8)
+
+
 
 
 
@@ -399,12 +401,13 @@ class ControllerPlotterDialog(ModuleDialog):
         """
 
         data_from_haptic_controller_manager = self.data[JOANModules.HAPTIC_CONTROLLER_MANAGER].haptic_controllers['FDCA_1']
-        data_from_hardware_manager = self.data[JOANModules.HARDWARE_MANAGER].inputs['Keyboard_1']
+        data_from_hardware_manager = self.data[JOANModules.HARDWARE_MANAGER].inputs['SensoDrive_1']
         data_from_carla_interface = self.data[JOANModules.CARLA_INTERFACE].agents['Ego Vehicle_1']
 
         steering_ang = math.degrees(data_from_hardware_manager.steering_angle)
         sw_actual = math.degrees(data_from_hardware_manager.steering_angle)
         sw_stiffness = math.radians(1)
+
 
         # from steeringwheel controller
         try:
@@ -424,6 +427,12 @@ class ControllerPlotterDialog(ModuleDialog):
             fb_torque = 0
             ff_torque = 0
             loha_torque = 0
+
+        try:
+            actual_torque = data_from_hardware_manager.measured_torque
+            print(actual_torque)
+        except AttributeError:
+            actual_torque = req_torque
 
         # from carla interface
         try:
@@ -544,12 +553,7 @@ class ControllerPlotterDialog(ModuleDialog):
 
         # Big Torque vs steering Angle plot
         self.plot_data_torque_x.append(steering_ang)
-        # TODO conditional statement that if there is a sensodrive chosen it should take the measured torque instead of requested
-        #only append the actual measured torque if there is a sensodrive, else plot the requested torque by the controller
-        # if 'SensoDrive 1' in data_from_hardware_manager.keys():
-        #     self.plot_data_torque_y.append(actual_torque)
-        # else:
-        self.plot_data_torque_y.append(req_torque)
+        self.plot_data_torque_y.append(actual_torque)
         if len(self.plot_data_torque_x) > self.amount_of_remaining_points:
             self.plot_data_torque_y.pop(0)
             self.plot_data_torque_x.pop(0)
