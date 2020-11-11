@@ -349,6 +349,7 @@ class FDCAControllerProcess:
                     self.shared_variables.req_torque = torque_fdca
 
 
+
 class FDCAControllerSettings:
     def __init__(self, identifier=''):
         self.t_lookahead = 0.0

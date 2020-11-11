@@ -60,6 +60,9 @@ class ControllerPlotterDialog(ModuleDialog):
         self.plot_data_heading_error_top_view_y = [0] * 50
         self.plot_data_sw_stiffness_x = [-160, 160]
         self.plot_data_sw_stiffness_y = [0, 0]
+        self.plot_data_loha_stiffness_x = [-160, 160]
+        self.plot_data_loha_stiffness_shifted = []
+        self.plot_data_loha_stiffness_y = [0, 0]
         self.converted_x_road_outer = [] * 50
         self.converted_y_road_outer = [] * 50
         # change labelfont
@@ -265,6 +268,11 @@ class ControllerPlotterDialog(ModuleDialog):
                                                                                  symbolPen=pg.mkPen((217, 83, 25, 200)),
                                                                                  symbolSize=3)
 
+        self.loha_stiffness_plot_handle = self._module_widget.torque_graph.plot(x=[-160, 160], y=[0, 0],
+                                                                                             pen='m',
+                                                                                             brush='g', symbol=None,
+                                                                                             )
+
         # self.loha_plot_handle = self._module_widget.loha_graph.plot()
 
         ## Initialize topview Graph
@@ -312,6 +320,7 @@ class ControllerPlotterDialog(ModuleDialog):
         torque_legend.addItem(self.torque_plot_handle, name='Torque vs Steering Angle')
         torque_legend.addItem(self.sw_des_point_plot_handle, name='Desired Steering Angle')
         torque_legend.addItem(self.sw_stiffness_plot_handle, name='Self Centering Stiffness')
+        torque_legend.addItem(self.loha_stiffness_plot_handle, name='LoHA Stiffness')
 
         ## Initialize Errors Plot
         self._module_widget.errors_graph.setTitle('Lateral position vs Time')
@@ -418,6 +427,7 @@ class ControllerPlotterDialog(ModuleDialog):
             fb_torque = data_from_haptic_controller_manager.fb_torque
             loha_torque = data_from_haptic_controller_manager.loha_torque
             req_torque = data_from_haptic_controller_manager.req_torque
+            loha = data_from_haptic_controller_manager.loha
 
         except KeyError or TypeError:
             lat_error = 0
@@ -427,6 +437,7 @@ class ControllerPlotterDialog(ModuleDialog):
             fb_torque = 0
             ff_torque = 0
             loha_torque = 0
+            loha = 0
 
         try:
             actual_torque = data_from_hardware_manager.measured_torque
@@ -569,6 +580,15 @@ class ControllerPlotterDialog(ModuleDialog):
         self.sw_stiffness_plot_handle.setData(x=self.plot_data_sw_stiffness_x, y=self.plot_data_sw_stiffness_y, size=2,
                                               pen='b',
                                               brush='b', symbol=None,
+                                              )
+
+        # LoHA Stiffness
+        # Steering Wheel stiffness
+        self.plot_data_loha_stiffness_y = [math.radians(loha) * 160, math.radians(loha) * -160]
+        self.plot_data_loha_stiffness_shifted =  [x+ self.plot_data_sw_des_y[-1] for x in self.plot_data_loha_stiffness_x]
+        self.loha_stiffness_plot_handle.setData(x=self.plot_data_loha_stiffness_shifted, y=self.plot_data_loha_stiffness_y, size=2,
+                                              pen='m',
+                                              brush='m', symbol=None,
                                               )
         # ERROR PLOTS
         # Lateral Position Plot
