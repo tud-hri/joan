@@ -100,40 +100,40 @@ class HardwareManagerDialog(ModuleDialog):
                 except queue.Empty:
                     pass
 
-            state = self.module_manager.state_machine.current_state
-            tab_sensodrive = self._hardware_input_tabs_dict[inputs.identifier]
+                state = self.module_manager.state_machine.current_state
+                tab_sensodrive = self._hardware_input_tabs_dict[inputs.identifier]
 
-            if state == State.READY or state == State.RUNNING:
-                if inputs.current_state == 0x10:
-                    tab_sensodrive.btn_on.setEnabled(True)
-                    tab_sensodrive.btn_on.blockSignals(False)
-                    tab_sensodrive.btn_off.setEnabled(False)
-                    tab_sensodrive.btn_off.setStyleSheet(None)
-                    tab_sensodrive.btn_off.blockSignals(True)
-                    tab_sensodrive.btn_clear_error.setEnabled(False)
-                    tab_sensodrive.btn_clear_error.blockSignals(True)
-                    tab_sensodrive.btn_clear_error.blockSignals(True)
-                    tab_sensodrive.lbl_sensodrive_state.setStyleSheet("background-color: orange")
-                    tab_sensodrive.lbl_sensodrive_state.setText('Off')
-                elif inputs.current_state == 0x14:
-                    tab_sensodrive.btn_on.setEnabled(False)
-                    tab_sensodrive.btn_on.setStyleSheet(None)
-                    tab_sensodrive.btn_on.blockSignals(True)
-                    tab_sensodrive.btn_off.setEnabled(True)
-                    tab_sensodrive.btn_off.blockSignals(False)
-                    tab_sensodrive.btn_clear_error.setEnabled(False)
-                    tab_sensodrive.btn_clear_error.blockSignals(True)
-                    tab_sensodrive.lbl_sensodrive_state.setStyleSheet("background-color: lightgreen")
-                    tab_sensodrive.lbl_sensodrive_state.setText('On')
-                elif inputs.current_state == 0x18:
-                    tab_sensodrive.btn_on.setEnabled(False)
-                    tab_sensodrive.btn_on.blockSignals(True)
-                    tab_sensodrive.btn_off.setEnabled(False)
-                    tab_sensodrive.btn_off.blockSignals(True)
-                    tab_sensodrive.btn_clear_error.setEnabled(True)
-                    tab_sensodrive.btn_clear_error.blockSignals(False)
-                    tab_sensodrive.lbl_sensodrive_state.setStyleSheet("background-color: red")
-                    tab_sensodrive.lbl_sensodrive_state.setText('Error')
+                if state == State.READY or state == State.RUNNING:
+                    if inputs.current_state == 0x10:
+                        tab_sensodrive.btn_on.setEnabled(True)
+                        tab_sensodrive.btn_on.blockSignals(False)
+                        tab_sensodrive.btn_off.setEnabled(False)
+                        tab_sensodrive.btn_off.setStyleSheet(None)
+                        tab_sensodrive.btn_off.blockSignals(True)
+                        tab_sensodrive.btn_clear_error.setEnabled(False)
+                        tab_sensodrive.btn_clear_error.blockSignals(True)
+                        tab_sensodrive.btn_clear_error.blockSignals(True)
+                        tab_sensodrive.lbl_sensodrive_state.setStyleSheet("background-color: orange")
+                        tab_sensodrive.lbl_sensodrive_state.setText('Off')
+                    elif inputs.current_state == 0x14:
+                        tab_sensodrive.btn_on.setEnabled(False)
+                        tab_sensodrive.btn_on.setStyleSheet(None)
+                        tab_sensodrive.btn_on.blockSignals(True)
+                        tab_sensodrive.btn_off.setEnabled(True)
+                        tab_sensodrive.btn_off.blockSignals(False)
+                        tab_sensodrive.btn_clear_error.setEnabled(False)
+                        tab_sensodrive.btn_clear_error.blockSignals(True)
+                        tab_sensodrive.lbl_sensodrive_state.setStyleSheet("background-color: lightgreen")
+                        tab_sensodrive.lbl_sensodrive_state.setText('On')
+                    elif inputs.current_state == 0x18:
+                        tab_sensodrive.btn_on.setEnabled(False)
+                        tab_sensodrive.btn_on.blockSignals(True)
+                        tab_sensodrive.btn_off.setEnabled(False)
+                        tab_sensodrive.btn_off.blockSignals(True)
+                        tab_sensodrive.btn_clear_error.setEnabled(True)
+                        tab_sensodrive.btn_clear_error.blockSignals(False)
+                        tab_sensodrive.lbl_sensodrive_state.setStyleSheet("background-color: red")
+                        tab_sensodrive.lbl_sensodrive_state.setText('Error')
 
     def _select_hardware_input_type(self):
         self._input_type_dialog.combo_hardware_inputtype.clear()
