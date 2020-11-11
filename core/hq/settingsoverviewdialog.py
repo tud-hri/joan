@@ -27,7 +27,6 @@ class SettingsOverviewDialog(QtWidgets.QDialog):
         if isinstance(value, dict):
             item = QtWidgets.QTreeWidgetItem(parent)
             item.setData(0, 0, str(key))
-            item.setExpanded(True)
 
             for inner_key, inner_value in value.items():
                 SettingsOverviewDialog._create_tree_item(item, inner_key, inner_value)
