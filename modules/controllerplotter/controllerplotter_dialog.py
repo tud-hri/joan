@@ -39,14 +39,14 @@ class ControllerPlotterDialog(ModuleDialog):
         self.plot_data_loha_y = [0] * self.amount_of_remaining_points
         self.plot_data_sw_des_y = [0] * self.amount_of_remaining_points
         self.plot_data_sw_act_y = [0] * self.amount_of_remaining_points
-        self.plot_data_road_x = []
-        self.plot_data_road_x_outer = []
-        self.plot_data_road_x_inner = []
-        self.plot_data_road_y = []
-        self.plot_data_road_y_outer = []
-        self.plot_data_road_y_inner = []
-        self.plot_data_road_psi = []
-        self.road_lanewidth = []
+        self.plot_data_road_x = [0] * 50
+        self.plot_data_road_x_outer =[0] * 50
+        self.plot_data_road_x_inner = [0] * 50
+        self.plot_data_road_y = [0] * 50
+        self.plot_data_road_y_outer = [0] * 50
+        self.plot_data_road_y_inner = [0] * 50
+        self.plot_data_road_psi = [0] * 50
+        self.road_lanewidth = [0] * 50
         self.car_trace_x = [0] * self.car_trace_length
         self.car_trace_y = [0] * self.car_trace_length
         self.car_trace_psi = [0] * self.car_trace_length
@@ -408,14 +408,23 @@ class ControllerPlotterDialog(ModuleDialog):
         """
         This function is called every module dialog update tick of this module implement your main calculations here
         """
+        try:
+            data_from_haptic_controller_manager = self.data[JOANModules.HAPTIC_CONTROLLER_MANAGER].haptic_controllers['FDCA_1']
+            data_from_hardware_manager = self.data[JOANModules.HARDWARE_MANAGER].inputs['SensoDrive_1']
+            data_from_carla_interface = self.data[JOANModules.CARLA_INTERFACE].agents['Ego Vehicle_1']
+        except KeyError:
+            data_from_haptic_controller_manager = {}
+            data_from_hardware_manager = {}
+            data_from_carla_interface = {}
 
-        data_from_haptic_controller_manager = self.data[JOANModules.HAPTIC_CONTROLLER_MANAGER].haptic_controllers['FDCA_1']
-        data_from_hardware_manager = self.data[JOANModules.HARDWARE_MANAGER].inputs['SensoDrive_1']
-        data_from_carla_interface = self.data[JOANModules.CARLA_INTERFACE].agents['Ego Vehicle_1']
-
-        steering_ang = math.degrees(data_from_hardware_manager.steering_angle)
-        sw_actual = math.degrees(data_from_hardware_manager.steering_angle)
-        sw_stiffness = math.radians(1)
+        try:
+            steering_ang = math.degrees(data_from_hardware_manager.steering_angle)
+            sw_actual = math.degrees(data_from_hardware_manager.steering_angle)
+            sw_stiffness = math.radians(data_from_hardware_manager.auto_center_stiffness)
+        except AttributeError:
+            steering_ang = 0
+            sw_actual = 0
+            sw_stiffness = math.radians(1)
 
 
         # from steeringwheel controller
@@ -429,7 +438,7 @@ class ControllerPlotterDialog(ModuleDialog):
             req_torque = data_from_haptic_controller_manager.req_torque
             loha = data_from_haptic_controller_manager.loha
 
-        except KeyError or TypeError:
+        except AttributeError:
             lat_error = 0
             sw_des = 0
             heading_error = 0
@@ -463,6 +472,14 @@ class ControllerPlotterDialog(ModuleDialog):
             vehicle_rotation = 0
             vehicle_location_x = 0
             vehicle_location_y = 0
+            self.plot_data_road_x = [0] * 50
+            self.plot_data_road_x_outer = [0] * 50
+            self.plot_data_road_x_inner = [0] * 50
+            self.plot_data_road_y = [0] * 50
+            self.plot_data_road_y_outer = [0] * 50
+            self.plot_data_road_y_inner = [0] * 50
+            self.plot_data_road_psi = [0] * 50
+            self.road_lanewidth = [0] * 50
 
         #Set plotranges (KEEP IT SQUARE)
         max_plotrange_x = self.plot_data_road_x[24] + 20
