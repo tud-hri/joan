@@ -7,29 +7,13 @@ from core.module_process import ModuleProcess
 from core.statesenum import State
 from modules.carlainterface.carlainterface_agenttypes import AgentTypes
 from modules.joanmodules import JOANModules
-from PyQt5 import Qt, QtCore
-from PyQt5.QtWidgets import QMessageBox, QApplication
+
 # TODO Maybe check this again, however it should not even start when it cant find the library the first time
-msg_box = QMessageBox()
-msg_box.setTextFormat(QtCore.Qt.RichText)
-
-try:
-    sys.path.append(glob.glob('carla_pythonapi/carla-*%d.%d-%s.egg' % (
-        sys.version_info.major,
-        sys.version_info.minor,
-        'win-amd64' if os.name == 'nt' else 'linux-x86_64'))[0])
-    import carla
-
-except IndexError:
-    msg_box.setText("""
-                <h3> Could not find the carla python API! </h3>
-                <h3> Check whether you copied the egg file correctly, reference:
-            <a href=\"https://joan.readthedocs.io/en/latest/setup-run-joan/#getting-necessary-python3-libraries-to-run-joan\">https://joan.readthedocs.io/en/latest/setup-run-joan/#getting-necessary-python3-libraries-to-run-joan</a>
-            </h3>
-            """)
-    msg_box.exec()
-    pass
-
+sys.path.append(glob.glob('carla_pythonapi/carla-*%d.%d-%s.egg' % (
+    sys.version_info.major,
+    sys.version_info.minor,
+    'win-amd64' if os.name == 'nt' else 'linux-x86_64'))[0])
+import carla
 
 
 class CarlaInterfaceProcess(ModuleProcess):
