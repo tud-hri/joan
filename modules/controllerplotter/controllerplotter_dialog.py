@@ -441,7 +441,6 @@ class ControllerPlotterDialog(ModuleDialog):
 
         try:
             actual_torque = data_from_hardware_manager.measured_torque
-            print(actual_torque)
         except AttributeError:
             actual_torque = req_torque
 
