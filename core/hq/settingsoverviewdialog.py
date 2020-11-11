@@ -19,7 +19,6 @@ class SettingsOverviewDialog(QtWidgets.QDialog):
                 self._create_tree_item(self.treeWidget, module_key, settings_object)
 
         self.btnUpdate.clicked.connect(self.update_dialog)
-
         self.show()
 
     @staticmethod
