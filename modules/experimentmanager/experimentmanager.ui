@@ -15,19 +15,6 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_2">
-    <item row="11" column="0">
-     <widget class="QPushButton" name="btn_start_all">
-      <property name="minimumSize">
-       <size>
-        <width>0</width>
-        <height>40</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>Start all</string>
-      </property>
-     </widget>
-    </item>
     <item row="2" column="0">
      <widget class="QLabel" name="lbl_loaded_experiment">
       <property name="text">
@@ -35,21 +22,14 @@
       </property>
      </widget>
     </item>
-    <item row="12" column="0">
-     <widget class="QPushButton" name="btn_stop_all">
-      <property name="minimumSize">
-       <size>
-        <width>0</width>
-        <height>40</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>Stop all</string>
-      </property>
-     </widget>
+    <item row="3" column="0" colspan="2">
+     <widget class="QListWidget" name="condition_list"/>
     </item>
     <item row="5" column="0">
      <widget class="QPushButton" name="btn_activate_condition">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="minimumSize">
        <size>
         <width>0</width>
@@ -60,9 +40,6 @@
        <string>Activate condition</string>
       </property>
      </widget>
-    </item>
-    <item row="3" column="0" colspan="2">
-     <widget class="QListWidget" name="condition_list"/>
     </item>
     <item row="1" column="0" colspan="2">
      <layout class="QHBoxLayout" name="horizontalLayout">
@@ -135,6 +112,9 @@
     </item>
     <item row="4" column="0">
      <widget class="QPushButton" name="btn_transition_to_next">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="minimumSize">
        <size>
         <width>0</width>
@@ -159,19 +139,6 @@
       </property>
       <property name="checked">
        <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="6" column="0">
-     <widget class="QPushButton" name="btn_initialize_all">
-      <property name="minimumSize">
-       <size>
-        <width>0</width>
-        <height>40</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>Initialize all</string>
       </property>
      </widget>
     </item>

@@ -23,6 +23,7 @@ class ExperimentManager(ModuleManager):
         path = os.path.dirname(os.path.dirname(os.path.dirname(cur_path)))
         self.experiment_save_path = os.path.join(path, 'experiments/')
 
+
         self.active_condition = None
         self.active_condition_index = None
 
@@ -62,6 +63,7 @@ class ExperimentManager(ModuleManager):
             module_settings_dict = base_settings_dict.copy()
             self._recursively_copy_dict(condition.diff[module], module_settings_dict)
             self.singleton_settings.get_settings(module).load_from_dict({str(module): module_settings_dict})
+
 
         self.active_condition = condition
         self.active_condition_index = condition_index
