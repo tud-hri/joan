@@ -52,17 +52,6 @@ class ExperimentManagerDialog(ModuleDialog):
         if file_path:
             self.module_manager.load_experiment(file_path)
 
-    # def start_all(self):
-    #     self.module_manager.start_all()
-    #
-    # def initialize_all(self):
-    #     self.module_manager.initialize_all()
-    #
-    # def stop_all(self):
-    #     self.module_manager.stop_all()
-    #     if self._module_widget.autoTransitionCheckBox.isChecked():
-    #         self.transition_to_next_condition()
-
     def _update_enabled_buttons(self):
 
         if self.module_manager.current_experiment:
@@ -101,9 +90,9 @@ class ExperimentManagerDialog(ModuleDialog):
                         self.module_manager.current_experiment.active_condition_sequence) and self.module_manager.active_condition_index != len(
                         self.module_manager.current_experiment.active_condition_sequence) - 1)
         else:
-            self._module_widget.btn_initialize_all.setEnabled(False)
-            self._module_widget.btn_start_all.setEnabled(False)
-            self._module_widget.btn_stop_all.setEnabled(False)
+            # self._module_widget.btn_initialize_all.setEnabled(False)
+            # self._module_widget.btn_start_all.setEnabled(False)
+            # self._module_widget.btn_stop_all.setEnabled(False)
             self._module_widget.btn_activate_condition.setEnabled(False)
             self._module_widget.btn_transition_to_next.setEnabled(False)
 

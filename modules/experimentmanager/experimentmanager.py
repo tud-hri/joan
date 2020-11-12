@@ -70,24 +70,25 @@ class ExperimentManager(ModuleManager):
 
         return True
 
-    def initialize_all(self):
-        print(self.current_experiment.modules_included)
-        if self.current_experiment:
-            for module in self.current_experiment.modules_included:
-                signals = self.singleton_signals.get_signals(module)
-                signals.initialize_module.emit()
-
-    def start_all(self):
-        if self.current_experiment:
-            for module in self.current_experiment.modules_included:
-                signals = self.singleton_signals.get_signals(module)
-                signals.start_module.emit()
-
-    def stop_all(self):
-        if self.current_experiment:
-            for module in self.current_experiment.modules_included:
-                signals = self.singleton_signals.get_signals(module)
-                signals.stop_module.emit()
+    # def initialize_all(self):
+    #     print(self.current_experiment.modules_included)
+    #     if self.current_experiment:
+    #         for module in self.current_experiment.modules_included:
+    #             module.initialize()
+    #             signals = self.singleton_signals.get_signals(module)
+    #             signals.initialize_module.emit()
+    #
+    # def start_all(self):
+    #     if self.current_experiment:
+    #         for module in self.current_experiment.modules_included:
+    #             signals = self.singleton_signals.get_signals(module)
+    #             signals.start_module.emit()
+    #
+    # def stop_all(self):
+    #     if self.current_experiment:
+    #         for module in self.current_experiment.modules_included:
+    #             signals = self.singleton_signals.get_signals(module)
+    #             signals.stop_module.emit()
 
     def transition_to_next_condition(self):
         if not self.current_experiment:
