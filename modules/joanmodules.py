@@ -65,13 +65,13 @@ class JOANModules(Enum):
         from modules.template.template_sharedvalues import TemplateSharedVariables
         from modules.carlainterface.carlainterface_sharedvalues import CarlaInterfaceSharedVariables
         from modules.hapticcontrollermanager.hapticcontrollermanager_sharedvalues import HapticControllerManagerSharedVariables
-        from modules.datarecordermp.datarecordermp_sharedvalues import DatarecorderMPSharedValues
+        from modules.datarecordermp.datarecordermp_sharedvalues import DataRecorderMPSharedValues
 
         return {JOANModules.HARDWARE_MANAGER: HardwareSharedVariables,
                 JOANModules.TEMPLATE: TemplateSharedVariables,
                 JOANModules.CARLA_INTERFACE: CarlaInterfaceSharedVariables,
                 JOANModules.HAPTIC_CONTROLLER_MANAGER: HapticControllerManagerSharedVariables,
-                JOANModules.DATA_RECORDER: DatarecorderMPSharedValues}[self]
+                JOANModules.DATA_RECORDER: DataRecorderMPSharedValues}[self]
 
     @property
     def process(self):

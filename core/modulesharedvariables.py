@@ -1,9 +1,10 @@
 import ctypes
 
 import multiprocessing as mp
+from .sharedvariables import SharedVariables
 
 
-class ModuleSharedVariables:
+class ModuleSharedVariables(SharedVariables):
     def __init__(self):
         self._state = mp.Value(ctypes.c_int, -2)  # module state [initialized, running, error]
         self._execution_time = mp.Value(ctypes.c_double)

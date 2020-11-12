@@ -6,11 +6,10 @@ from PyQt5 import QtCore
 from core.module_exceptionmonitor import ModuleExceptionMonitor
 from core.module_process import ProcessEvents
 from core.news import News
+from core.settings import Settings
 from core.statemachine import StateMachine
 from core.statesenum import State
-from core.settings import Settings
 from modules.joanmodules import JOANModules
-from core.settings import Settings
 
 
 class ModuleManager(QtCore.QObject):
@@ -28,6 +27,10 @@ class ModuleManager(QtCore.QObject):
         # self.singleton_status = Status()
         self.singleton_news = News()
         self.singleton_settings = Settings()
+
+        # initialize an empty shared variables class
+        self.shared_variables = self.module.shared_variables()
+        self.singleton_news.write_news(self.module, self.shared_variables)
 
         # initialize state machine
         self.state_machine = StateMachine(module)
@@ -140,4 +143,3 @@ class ModuleManager(QtCore.QObject):
 
     def emergency(self):
         self._events.emergency.set()
-

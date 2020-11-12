@@ -1,5 +1,5 @@
+import datetime
 import os
-import inspect
 
 from PyQt5 import QtCore
 from PyQt5 import QtWidgets
@@ -7,10 +7,10 @@ from PyQt5.Qt import Qt
 
 from core.module_dialog import ModuleDialog
 from core.module_manager import ModuleManager
-from modules.joanmodules import JOANModules
-
 from core.news import News
-from core.settings import Settings
+from core.sharedvariables import SharedVariables
+from core.statesenum import State
+from modules.joanmodules import JOANModules
 
 
 class DatarecorderMPDialog(ModuleDialog):
@@ -20,9 +20,6 @@ class DatarecorderMPDialog(ModuleDialog):
         # set current data file name
         self._module_widget.lbl_data_filename.setText("< none >")
 
-        # set current data directory name
-        self._module_widget.lbl_data_directoryname.setText("TODO: filenameself.module_action.directoryname")
-
         # set message text
         self._module_widget.lbl_message_recorder.setText("not recording")
         self._module_widget.lbl_message_recorder.setStyleSheet('color: orange')
@@ -30,20 +27,9 @@ class DatarecorderMPDialog(ModuleDialog):
         # get news items
         self.news = News()
 
-        # get settings
-        self.settings = Settings()
-
-        # Log files
-        self.log_dir_menu = QtWidgets.QMenu('Log files')
-        self.log_dir = QtWidgets.QAction('Select Directory')
-        self.log_dir_menu.addAction(self.log_dir)
-        self.menu_bar.addMenu(self.log_dir_menu)
-        self.log_dir.triggered.connect(self._set_datalog_path)
-        self.log_dir.setEnabled(True)
-        self._module_widget.lbl_data_directoryname.mouseReleaseEvent = self._set_datalog_path
-
-        # create tree widget
-        #self.create_tree_widget()
+        self._module_widget.browsePathPushButton.clicked.connect(self._browse_datalog_path)
+        self.module_manager.state_machine.add_state_change_listener(self.handle_state_change)
+        self.handle_state_change()
 
     def _load_settings(self):
         """
@@ -51,152 +37,71 @@ class DatarecorderMPDialog(ModuleDialog):
         When loading is cancelled, the default settings are used, otherwise the loaded fiule is used
         State is set to READY
         """
-        settings_file_to_load, _ = QtWidgets.QFileDialog.getOpenFileName(self, 'load settings',
-                                                                         os.path.join(self.module_action.module_path,
-                                                                                      'action'),
+        # TODO: implement method to represent current settings
+        settings_file_to_load, _ = QtWidgets.QFileDialog.getOpenFileName(self, 'load settings', os.path.join(self.module_action.module_path, 'action'),
                                                                          filter='*.json')
-
         if settings_file_to_load:
             self.module_action.load_settings(settings_file_to_load)
-            self.create_tree_widget()
+            self.update_tree_widget()
 
-    def _set_datalog_path(self, event):
+    def _browse_datalog_path(self):
         """
         Sets the path to datalog and let users create folders
         When selecting is cancelled, the previous path is used
         """
-
-        file_path = QtWidgets.QFileDialog.getExistingDirectory(self, 
-                                                               'select directory',
-                                                               self.module_action.directoryname)
+        date_string = datetime.datetime.now().strftime('%Y%m%d_%Hh%Mm%Ss')
+        file_path, _ = QtWidgets.QFileDialog.getSaveFileName(self, 'select save destination', date_string, filter='*.csv')
 
         if file_path:
-            self.module_action.directoryname = file_path
-            self._module_widget.lbl_data_directoryname.setText(self.module_action.directoryname)
+            self._module_widget.lbl_data_filename.setText(os.path.basename(file_path))
+            self._module_widget.lbl_data_directoryname.setText(os.path.dirname(file_path))
 
-    def _skip_event(self, event):
-        pass
-
-    def handle_click(self, nodes):
-        """
-        For each item a pedigree is built up starting at the item-level and working upwards 
-        to the top-level, which is the module-key
-        The handling of these items into the Datarecorder settings is done in the Action module
-        :param nodes: contains a list of the deepest tree level items
-        """
-        for node in nodes:
-            state = (node.checkState(0) > 0)
-            node_path = []
-            while node:
-                node_path.append(node.text(0))
-                node = node.parent()
-            node_from_top = node_path[::-1]
-            node_from_top.append(state)
-        
-        print("zie: DatarecorderMPDialog, TODO: handle self.module_action.handle_dialog_checkboxes(node_from_top)")
-        #TODO: handle self.module_action.handle_dialog_checkboxes(node_from_top)
-
-    def get_subtree_nodes(self, tree_widget_item):
-        """
-        Recursively take all QTreeWidgetItems in the subtree of the current tree_widget
-        :param tree_widget_item: current tree widget item to take further action on
-        :return: a list of deepest items
-        """
-        nodes = []
-        nodes.append(tree_widget_item)
-
-        if tree_widget_item.childCount() > 0:
-            for i in range(tree_widget_item.childCount()):
-                nodes.extend(self.get_subtree_nodes(tree_widget_item.child(i)))
+    def handle_state_change(self):
+        if self.module_manager.state_machine.current_state == State.INITIALIZED:
+            self._module_widget.treeWidget.setEnabled(True)
+            self._module_widget.browsePathPushButton.setEnabled(True)
+            self.update_tree_widget()
+        elif self.module_manager.state_machine.current_state == State.STOPPED:
+            self._module_widget.browsePathPushButton.setEnabled(True)
+            self._module_widget.treeWidget.setEnabled(False)
         else:
-            self.handle_click(nodes)
-            write = 'No'
-            if tree_widget_item.checkState(0) > 0:
-                write = 'Yes'
-            tree_widget_item.setData(1, Qt.DisplayRole, write)
-        return nodes
+            self._module_widget.browsePathPushButton.setEnabled(False)
+            self._module_widget.treeWidget.setEnabled(False)
 
-    def get_all_items(self, tree_widget):
-        """
-        Returns all QTreeWidgetItems in the given QTreeWidget
-        :param tree_widget: contains the tree widget items
-        """
-        all_items = []
-        for i in range(tree_widget.topLevelItemCount()):
-            top_item = tree_widget.topLevelItem(i)
-            all_items.extend(self.get_subtree_nodes(top_item))
-        return all_items
+    def apply_settings(self):
+        self.module_manager.module_settings.variables_to_be_saved = self._get_all_check_items()
+        path_to_save_to = os.path.join(self._module_widget.lbl_data_directoryname.text(), self._module_widget.lbl_data_filename.text())
+        self.module_manager.module_settings.path_to_save_file = path_to_save_to
 
-    @QtCore.pyqtSlot(QtWidgets.QTreeWidgetItem, int)
-    def on_item_clicked(self):
-        """
-        A slot to pick up the click event signal on the treewidget item
-        Every click somewhere on the tree widget starts a handle for all items
-        :param: the selected tree widget item
-        """
-        self.get_all_items(self._module_widget.treeWidget)
+    def _get_all_check_items(self):
+        checked_items = []
+        self._recursively_get_checked_items(self._module_widget.treeWidget.invisibleRootItem(), [], checked_items)
+        return checked_items
 
-    def create_tree_widget(self, _news):
+    def _recursively_get_checked_items(self, parent, path_to_parent, list_of_checked_items):
+        for index in range(parent.childCount()):
+            child = parent.child(index)
+
+            new_list = path_to_parent.copy()
+            new_list.append(child.text(0))
+
+            if not child.childCount():
+                if child.checkState(0) == QtCore.Qt.Checked:
+                    list_of_checked_items.append(new_list)
+            else:
+                self._recursively_get_checked_items(child, new_list, list_of_checked_items)
+
+    def update_tree_widget(self):
         """
         Reads, or creates default settings when starting the module
         By pretending that a click event has happened, Datarecorder settings will be written
         """
         self._module_widget.treeWidget.clear()
 
-        
-        variables_to_save = {}
-        for name, member in JOANModules.__members__.items():
-            shared_variables = _news.read_news(member)
-            variables_to_save[name] = shared_variables
-            '''
-            for variable in inspect.getmembers(shared_variables):
-                try:
-                    var_type = type(getattr(shared_variables, variable[0], None))
-                    var = getattr(shared_variables, variable[0], None)
-                    if not variable[0].startswith('_') and var_type in (int, str, float):
-                        if not inspect.ismethod(variable[1]):
-                            print('name: %s, value: %s, type: %s\n' % (variable[0], var, var_type))
-                            variables_to_save[name] = var
-                except AttributeError as inst:
-                    print('Error', inst)
-
-            '''
-        #variables_to_save = self.module_action.settings.get_variables_to_save()
-        CreateTreeWidgetDialog(variables_to_save, self._module_widget.treeWidget)
-        self._module_widget.treeWidget.itemClicked.connect(self.on_item_clicked)
-        self.on_item_clicked()
-
-
-    def update_dialog(self):
-        """
-        Update the dialog based on a variable in the shared values
-        :return:
-        """
-        if self._module_manager.shared_variables:
-            pass
-            #print('datarecorder: update_dialog state', str(self._module_manager.shared_variables.state))
-            #self._module_widget.lbl_time.setText("State: " + str(self._module_manager.shared_variables.state))
-
-
-class CreateTreeWidgetDialog(QtWidgets.QDialog):
-    """
-    Creates a recursive treewidget from the available news-items from all initialized modules
-    except for the Data Recorder
-    The dialog is shown and editable in the Data Recorder Settings part
-    """
-
-    def __init__(self, variable_to_save, tree_widget=None, parent=None):
-        """
-        :param variabele_to_save: contains all Data Recorder settings from the default_settings_file_location
-        :param tree_widget: the tree which is built up
-        :param parent:
-        """
-        super().__init__(parent)
-
-        for module_key, module_news in variable_to_save.items():
-            if module_news and module_key != str(JOANModules.DATA_RECORDER):  # show only modules with shared_variables
-                self._create_tree_item(tree_widget, module_key, module_news)
-        self.show()
+        for module in JOANModules:
+            shared_variables = self.news.read_news(module)
+            if shared_variables:
+                self._create_tree_item(self._module_widget.treeWidget, str(module), shared_variables)
 
     @staticmethod
     def _create_tree_item(parent, key, value):
@@ -207,29 +112,40 @@ class CreateTreeWidgetDialog(QtWidgets.QDialog):
         :param value: current used value
         :return: the item within the tree
         """
-        if isinstance(value, dict):
+        if isinstance(value, SharedVariables):
+            item = QtWidgets.QTreeWidgetItem(parent)
+            item.setData(0, Qt.DisplayRole, str(key))
+            item.setFlags(item.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
+
+            for prop in value.get_all_properties():
+                DatarecorderMPDialog._create_tree_item(item, prop, None)
+
+            for inner_key, inner_value in value.__dict__.items():
+                if inner_key[0] != '_' and not callable(inner_value):
+                    DatarecorderMPDialog._create_tree_item(item, inner_key, inner_value)
+            return item
+        elif isinstance(value, dict):
             item = QtWidgets.QTreeWidgetItem(parent)
             item.setData(0, Qt.DisplayRole, str(key))
             item.setFlags(item.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
 
             for inner_key, inner_value in value.items():
-                CreateTreeWidgetDialog._create_tree_item(item, inner_key, inner_value)
+                DatarecorderMPDialog._create_tree_item(item, inner_key, inner_value)
             return item
-        if isinstance(value, list):
+        elif isinstance(value, list):
             item = QtWidgets.QTreeWidgetItem(parent)
             item.setData(0, Qt.DisplayRole, str(key))
+            item.setFlags(item.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
             for index, inner_value in enumerate(value):
-                CreateTreeWidgetDialog._create_tree_item(item, str(index), inner_value)
+                DatarecorderMPDialog._create_tree_item(item, str(index), inner_value)
             return item
         else:
             item = QtWidgets.QTreeWidgetItem(parent)
             item.setData(0, Qt.DisplayRole, str(key))
             if value:
                 item.setCheckState(0, Qt.Checked)
-                item.setData(1, Qt.DisplayRole, 'Yes')
             else:
                 item.setCheckState(0, Qt.Unchecked)
-                item.setData(1, Qt.DisplayRole, 'No')
 
             item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
             return item
