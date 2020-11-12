@@ -6,6 +6,7 @@ from modules.joanmodules import JOANModules
 from .condition import Condition
 from .experiment import Experiment
 
+
 class ExperimentManager(ModuleManager):
     """
     Example module for JOAN
@@ -16,61 +17,28 @@ class ExperimentManager(ModuleManager):
     def __init__(self, time_step_in_ms=10, parent=None):
         super().__init__(module=JOANModules.EXPERIMENT_MANAGER, time_step_in_ms=time_step_in_ms, parent=parent)
         # create/get default experiment_settings
-        self.my_file = os.path.join('.', 'default_experiment_settings.json')
-
-        # First remove_input_device current file
-        if os.path.exists(self.my_file):
-            os.remove(self.my_file)
-
         self.current_experiment = None
-        self.experiment_save_path = ''
+        # TODO: We should definitely make a ROOT_PATH singleton somewhere in main so we dont have to do the following:
+        cur_path = os.path.dirname(os.path.realpath(__file__))
+        path = os.path.dirname(os.path.dirname(os.path.dirname(cur_path)))
+        self.experiment_save_path = os.path.join(path, 'experiments/')
+
         self.active_condition = None
         self.active_condition_index = None
 
-    def initialize_new_experiment(self, modules_to_include, save_path):
+    def create_new_experiment(self, modules_to_include, save_path):
+        # create the experiment
         self.current_experiment = Experiment(modules_to_include)
         self.current_experiment.set_from_current_settings(self.singleton_settings)
         self.experiment_save_path = save_path
         self.save_experiment()
 
+        # update the gui
         self.module_dialog.update_gui()
         self.module_dialog.update_condition_lists()
 
-    def create_new_condition(self, condition_name):
-        if self.current_experiment:
-            if condition_name in [condition.name for condition in self.current_experiment.all_conditions]:
-                raise ValueError('You cannot create two condition with the same name in one experiment')
-
-            new_condition = Condition.set_from_current_settings(condition_name, self.current_experiment, self.singleton_settings)
-            self.current_experiment.all_conditions.append(new_condition)
-
-            self.module_dialog.update_condition_lists()
-
-    def add_condition(self, condition):
-        if self.current_experiment:
-            self.current_experiment.active_condition_sequence.append(condition)
-            self.module_dialog.update_condition_lists()
-
-    def remove_condition(self, index):
-        if self.current_experiment:
-            self.current_experiment.active_condition_sequence.pop(index)
-            self.module_dialog.update_condition_lists()
-
-    def add_transition(self, transition):
-        if self.current_experiment:
-            self.current_experiment.active_condition_sequence.append(transition)
-            self.module_dialog.update_condition_lists()
-
-    def remove_transition(self, index):
-        if self.current_experiment:
-            self.current_experiment.active_condition_sequence.pop(index)
-            self.module_dialog.update_condition_lists()
-
-    def update_condition_sequence(self, new_sequence):
-        if self.current_experiment:
-            self.current_experiment.active_condition_sequence = []
-            for list_item in new_sequence:
-                self.current_experiment.active_condition_sequence.append(list_item)
+        # and open the experiment dialog
+        self.module_dialog.open_experiment_dialog()
 
     def save_experiment(self):
         if self.current_experiment:
@@ -82,16 +50,16 @@ class ExperimentManager(ModuleManager):
         self.module_dialog.update_gui()
         self.module_dialog.update_condition_lists()
 
-    def activate_condition(self, condition, condition_index):
+    def activate_selected_condition(self, condition, condition_index):
         """
         To activate the condition, send the settings to the corresponding module (settings)
         :param condition:
+        :param condition_index: self-explanatory
         :return:
         """
 
         for module, base_settings_dict in self.current_experiment.base_settings.items():
             module_settings_dict = base_settings_dict.copy()
-
             self._recursively_copy_dict(condition.diff[module], module_settings_dict)
             self.singleton_settings.get_settings(module).load_from_dict({str(module): module_settings_dict})
 
@@ -101,6 +69,7 @@ class ExperimentManager(ModuleManager):
         return True
 
     def initialize_all(self):
+        print(self.current_experiment.modules_included)
         if self.current_experiment:
             for module in self.current_experiment.modules_included:
                 signals = self.singleton_signals.get_signals(module)
@@ -127,7 +96,7 @@ class ExperimentManager(ModuleManager):
         try:
             next_condition_or_transition = self.current_experiment.active_condition_sequence[self.active_condition_index + 1]
             if isinstance(next_condition_or_transition, Condition):
-                return self.activate_condition(next_condition_or_transition, self.active_condition_index + 1)
+                return self.activate_selected_condition(next_condition_or_transition, self.active_condition_index + 1)
             else:
                 transition = next_condition_or_transition
                 transition.execute_before_new_condition_activation(self.current_experiment, self.active_condition)
@@ -147,7 +116,7 @@ class ExperimentManager(ModuleManager):
                                                                                          'This is illegal, only the first was executed, the others were '
                                                                                          'ignored.')
 
-                if self.activate_condition(next_condition_or_transition, self.active_condition_index + added_index):
+                if self.activate_selected_condition(next_condition_or_transition, self.active_condition_index + added_index):
                     transition.execute_after_new_condition_activation(self.current_experiment, self.active_condition)
                     return True
                 else:
@@ -165,7 +134,5 @@ class ExperimentManager(ModuleManager):
                     destination[key] = {}
                     ExperimentManager._recursively_copy_dict(item, destination[key])
             else:
-                destination[key] = item
-
-
-
+                if item:  # check to avoid empty source list copying over filled destination list.
+                    destination[key] = item

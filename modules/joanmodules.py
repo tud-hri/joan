@@ -105,7 +105,7 @@ class JOANModules(Enum):
                 JOANModules.CARLA_INTERFACE: os.path.join(path_to_modules, "carlainterface/carlainterface_dialog.ui"),
                 JOANModules.HAPTIC_CONTROLLER_MANAGER: os.path.join(path_to_modules, "hapticcontrollermanager/hapticcontrollermanager_dialog.ui"),
                 JOANModules.CONTROLLER_PLOTTER: os.path.join(path_to_modules, "controllerplotter/controllerplotter_dialog.ui"),
-                JOANModules.EXPERIMENT_MANAGER: os.path.join(path_to_modules,"experimentmanager/experimentmanager_widget.ui")
+                JOANModules.EXPERIMENT_MANAGER: os.path.join(path_to_modules,"experimentmanager/experimentmanager.ui")
                 }[self]
 
     def __str__(self):

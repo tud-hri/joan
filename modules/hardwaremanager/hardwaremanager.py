@@ -25,6 +25,7 @@ class HardwareManager(ModuleManager):
         self.hardware_input_type = None
         self.hardware_input_settings = None
 
+
     def initialize(self):
         super().initialize()
         for input in self.module_settings.inputs.values():

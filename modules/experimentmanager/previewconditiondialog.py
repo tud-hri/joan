@@ -1,5 +1,5 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
-from .previeconditiondialog_ui import Ui_Dialog
+from .previewconditiondialog_ui import Ui_Dialog
 
 
 class PreviewConditionDialog(QtWidgets.QDialog):

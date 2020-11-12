@@ -2,12 +2,18 @@ import copy
 import json
 
 from core import Settings
-from modules.joanmodules import JOANModules
 from modules.experimentmanager.transitions import TransitionsList
+from modules.joanmodules import JOANModules
 from .condition import Condition
 
 
 class Experiment:
+    """
+    Experiment class
+    Contains all conditions, and transitions in the experiment
+    Allows for loading and saving to user-readable json files
+    """
+
     def __init__(self, modules_included: list):
         self.modules_included = modules_included
         self.base_settings = {}
@@ -20,7 +26,7 @@ class Experiment:
             raise RuntimeError("The base settings of an experiment can only be modified when no conditions exist.")
 
         for module in self.modules_included:
-            self.base_settings[module] = copy.deepcopy(settings_singleton.get_settings(module).as_dict()[str(module)]) # not sure if .as_dict() is a good idea
+            self.base_settings[module] = copy.deepcopy(settings_singleton.get_settings(module).as_dict()[str(module)])  # not sure if .as_dict() is a good idea
 
     def save_to_file(self, file_path):
         dict_to_save = {'modules_included': [str(module) for module in self.modules_included],
@@ -50,9 +56,13 @@ class Experiment:
             new_experiment.base_settings[module] = loaded_dict['base_settings'][str(module)]
 
         for condition_name, diff_dict in loaded_dict['conditions'].items():
-            new_condition = Condition(modules_included, condition_name)
-            new_condition.set_from_loaded_dict(diff_dict)
-            new_experiment.all_conditions.append(new_condition)
+            if condition_name in [c.name for c in new_experiment.all_conditions]:
+                print("WARNING: while loading an experiment from %s, two condition with the same name where found. The second was ignored. "
+                      "Please edit the *.JSON file and give all conditions unique names" % file_path)
+            else:
+                new_condition = Condition(modules_included, condition_name)
+                new_condition.set_from_loaded_dict(diff_dict)
+                new_experiment.all_conditions.append(new_condition)
 
         for condition_name in loaded_dict['active_condition_sequence']:
             condition_found = False
