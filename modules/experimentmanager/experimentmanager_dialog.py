@@ -25,9 +25,9 @@ class ExperimentManagerDialog(ModuleDialog):
         self._module_widget.btn_load_experiment.setToolTip("Load an experiment from a JSON file.")
         self._module_widget.btn_edit_experiment.setToolTip("Edit the current experiment.")
 
-        self._module_widget.btn_initialize_all.clicked.connect(self.initialize_all)
-        self._module_widget.btn_start_all.clicked.connect(self.start_all)
-        self._module_widget.btn_stop_all.clicked.connect(self.stop_all)
+        # self._module_widget.btn_initialize_all.clicked.connect(self.initialize_all)
+        # self._module_widget.btn_start_all.clicked.connect(self.start_all)
+        # self._module_widget.btn_stop_all.clicked.connect(self.stop_all)
         self._module_widget.btn_activate_condition.clicked.connect(self.activate_selected_condition)
         self._module_widget.condition_list.currentItemChanged.connect(self._update_enabled_buttons)
         self._module_widget.btn_transition_to_next.clicked.connect(self.transition_to_next_condition)
@@ -52,17 +52,6 @@ class ExperimentManagerDialog(ModuleDialog):
         if file_path:
             self.module_manager.load_experiment(file_path)
 
-    def start_all(self):
-        self.module_manager.start_all()
-
-    def initialize_all(self):
-        self.module_manager.initialize_all()
-
-    def stop_all(self):
-        self.module_manager.stop_all()
-        if self._module_widget.autoTransitionCheckBox.isChecked():
-            self.transition_to_next_condition()
-
     def _update_enabled_buttons(self):
 
         if self.module_manager.current_experiment:
@@ -79,9 +68,9 @@ class ExperimentManagerDialog(ModuleDialog):
                 any_running |= current_state is State.RUNNING
                 all_ready &= current_state is State.READY
 
-            self._module_widget.btn_initialize_all.setEnabled(all_idle)
-            self._module_widget.btn_start_all.setEnabled(all_ready)
-            self._module_widget.btn_stop_all.setEnabled(all_running)
+            # self._module_widget.btn_initialize_all.setEnabled(all_idle)
+            # self._module_widget.btn_start_all.setEnabled(all_ready)
+            # self._module_widget.btn_stop_all.setEnabled(all_running)
 
             self._module_widget.btn_edit_experiment.setEnabled(not any_running)
             self._module_widget.btn_create_experiment.setEnabled(not any_running)
@@ -101,9 +90,9 @@ class ExperimentManagerDialog(ModuleDialog):
                         self.module_manager.current_experiment.active_condition_sequence) and self.module_manager.active_condition_index != len(
                         self.module_manager.current_experiment.active_condition_sequence) - 1)
         else:
-            self._module_widget.btn_initialize_all.setEnabled(False)
-            self._module_widget.btn_start_all.setEnabled(False)
-            self._module_widget.btn_stop_all.setEnabled(False)
+            # self._module_widget.btn_initialize_all.setEnabled(False)
+            # self._module_widget.btn_start_all.setEnabled(False)
+            # self._module_widget.btn_stop_all.setEnabled(False)
             self._module_widget.btn_activate_condition.setEnabled(False)
             self._module_widget.btn_transition_to_next.setEnabled(False)
 
