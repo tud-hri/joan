@@ -9,11 +9,14 @@ from modules.carlainterface.carlainterface_agenttypes import AgentTypes
 from modules.joanmodules import JOANModules
 
 # TODO Maybe check this again, however it should not even start when it cant find the library the first time
-sys.path.append(glob.glob('carla_pythonapi/carla-*%d.%d-%s.egg' % (
-    sys.version_info.major,
-    sys.version_info.minor,
-    'win-amd64' if os.name == 'nt' else 'linux-x86_64'))[0])
-import carla
+try:
+    sys.path.append(glob.glob('carla_pythonapi/carla-*%d.%d-%s.egg' % (
+        sys.version_info.major,
+        sys.version_info.minor,
+        'win-amd64' if os.name == 'nt' else 'linux-x86_64'))[0])
+    import carla
+except IndexError as inst:
+    print("CarlaAPI could not be loaded:", inst)
 
 
 class CarlaInterfaceProcess(ModuleProcess):
