@@ -116,9 +116,10 @@ class DatarecorderMPDialog(ModuleDialog):
         self._module_widget.treeWidget.clear()
 
         for module in JOANModules:
-            shared_variables = self.news.read_news(module)
-            if shared_variables:
-                self._create_tree_item(self._module_widget.treeWidget, str(module), shared_variables)
+            if module is not JOANModules.DATA_RECORDER:
+                shared_variables = self.news.read_news(module)
+                if shared_variables:
+                    self._create_tree_item(self._module_widget.treeWidget, str(module), shared_variables)
 
     @staticmethod
     def _create_tree_item(parent, key, value):
