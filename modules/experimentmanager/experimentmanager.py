@@ -61,6 +61,7 @@ class ExperimentManager(ModuleManager):
 
         for module, base_settings_dict in self.current_experiment.base_settings.items():
             module_settings_dict = base_settings_dict.copy()
+            print(condition.diff[module])
             self._recursively_copy_dict(condition.diff[module], module_settings_dict)
             self.singleton_settings.get_settings(module).load_from_dict({str(module): module_settings_dict})
 
