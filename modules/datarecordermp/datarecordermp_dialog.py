@@ -25,13 +25,13 @@ class DatarecorderMPDialog(ModuleDialog):
         self._module_widget.lbl_message_recorder.setStyleSheet('color: orange')
 
         # get news items
-        self.news = News()
+        self.news = self.module_manager.news
 
         self._module_widget.browsePathPushButton.clicked.connect(self._browse_datalog_path)
         self.module_manager.state_machine.add_state_change_listener(self.handle_state_change)
         self.handle_state_change()
 
-    def update(self):
+    def update_dialog(self):
         file_path = self.module_manager.module_settings.path_to_save_file
         self._module_widget.lbl_data_filename.setText(os.path.basename(file_path))
         self._module_widget.lbl_data_directoryname.setText(os.path.dirname(file_path))

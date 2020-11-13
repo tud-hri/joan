@@ -5,14 +5,9 @@ class News:
     """
     The News class is a singleton that holds all the shared variables that contain the latest data
     """
-    instance = None
 
-    def __new__(cls):
-        if not cls.instance:
-            cls.instance = object.__new__(News)
-            cls._news = {}
-
-        return cls.instance
+    def __init__(self):
+        self._news = {}
 
     def write_news(self, module: JOANModules, news_dict):
         """

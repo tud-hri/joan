@@ -58,7 +58,6 @@ class JOANModules(Enum):
                 JOANModules.DATA_RECORDER: DatarecorderMPSettings
                 }[self]
 
-
     @property
     def shared_variables(self):
         from modules.hardwaremanager.hardwaremanager_sharedvariables import HardwareSharedVariables

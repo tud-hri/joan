@@ -71,7 +71,6 @@ class ModuleProcess(mp.Process):
             :return:
             """
 
-
     @abc.abstractmethod
     def get_ready(self):
         """
