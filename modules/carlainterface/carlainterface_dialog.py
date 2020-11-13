@@ -27,12 +27,6 @@ class CarlaInterfaceDialog(ModuleDialog):
         self._module_widget.btn_add_agent.clicked.connect(self._select_agent_type)
         self._agent_tabs_dict = {}
 
-
-
-    def print_kak(self):
-        print('kak')
-
-
     def _handle_state_change(self):
         """"
         This function handles the enabling and disabling of the carla interface change
@@ -55,7 +49,6 @@ class CarlaInterfaceDialog(ModuleDialog):
         self.module_manager.add_agent(selected_agent, from_button=True)
 
     def update_dialog(self):
-        print('joejoe')
         for agent_settings in self.module_manager.module_settings.agents:
             if self.module_manager.module_settings.agents[agent_settings].identifier not in self._agent_tabs_dict:
                 self.add_agent(self.module_manager.module_settings.agents[agent_settings], False)

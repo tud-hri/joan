@@ -66,10 +66,7 @@ class ModuleDialog(QtWidgets.QDialog):
         Use to update the module dialog
         :return:
         """
-        try:
-            self.print_kak()
-        except Exception as inst:
-            print(inst)
+
     def start(self):
         """
         Start timer
@@ -114,6 +111,8 @@ class ModuleDialog(QtWidgets.QDialog):
                 self._state_widget.lbl_module_state.setStyleSheet("background: red;")
             elif current_state is State.STOPPED:
                 self._state_widget.lbl_module_state.setStyleSheet("background: orange;")
+
+
 
 
     def _load_settings(self):

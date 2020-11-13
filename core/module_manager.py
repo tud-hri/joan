@@ -59,6 +59,7 @@ class ModuleManager(QtCore.QObject):
         self.singleton_settings.update_settings(self.module, self.module_settings)
 
         self.module_dialog._handle_state_change()
+        self.module_dialog.start()
 
     def initialize(self):
         """
@@ -75,6 +76,8 @@ class ModuleManager(QtCore.QObject):
         self.shared_variables.state = self.state_machine.current_state.value
 
         self.update_shared_variables_adjustable_settings()
+
+
 
 
     def update_shared_variables_adjustable_settings(self):
@@ -100,7 +103,7 @@ class ModuleManager(QtCore.QObject):
         self.shared_variables.state = self.state_machine.current_state.value
 
     def start(self):
-        self.module_dialog.start()
+        # self.module_dialog.start()
 
         self._events.start.set()
 

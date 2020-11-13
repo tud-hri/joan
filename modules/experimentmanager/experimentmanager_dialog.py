@@ -5,7 +5,6 @@ from modules.experimentmanager.condition import Condition
 from .newexperimentdialog import NewExperimentDialog
 from PyQt5 import QtWidgets, QtCore, QtGui
 from core.statesenum import State
-from modules.experimentmanager.experimentmanager import ExperimentManager
 from modules.experimentmanager.editexperimentdialog import EditExperimentDialog
 
 import os
@@ -53,35 +52,13 @@ class ExperimentManagerDialog(ModuleDialog):
             self.module_manager.load_experiment(file_path)
 
     def _update_enabled_buttons(self):
-
-        if self.module_manager.current_experiment:
-            all_idle = bool(len(self.module_manager.current_experiment.modules_included))
-            all_running = bool(len(self.module_manager.current_experiment.modules_included))
-            any_running = False
-            all_ready = bool(len(self.module_manager.current_experiment.modules_included))
-
-            for module in self.module_manager.current_experiment.modules_included:
-                current_state = self.module_manager.state_machine.current_state
-
-                all_idle &= current_state is State.INITIALIZED
-                all_running &= current_state is State.RUNNING
-                any_running |= current_state is State.RUNNING
-                all_ready &= current_state is State.READY
-
-            # self._module_widget.btn_initialize_all.setEnabled(all_idle)
-            # self._module_widget.btn_start_all.setEnabled(all_ready)
-            # self._module_widget.btn_stop_all.setEnabled(all_running)
-
-            self._module_widget.btn_edit_experiment.setEnabled(not any_running)
-            self._module_widget.btn_create_experiment.setEnabled(not any_running)
-            self._module_widget.btn_load_experiment.setEnabled(not any_running)
-
-            if any_running:
-                self._module_widget.btn_activate_condition.setEnabled(True)
-                self._module_widget.btn_transition_to_next.setEnabled(True)
-            else:
+        if self.module_manager.state_machine.current_state == State.STOPPED:
+            self._module_widget.btn_edit_experiment.setEnabled(True)
+            self._module_widget.btn_create_experiment.setEnabled(True)
+            self._module_widget.btn_load_experiment.setEnabled(True)
+            if self.module_manager.current_experiment:
                 if bool(self._module_widget.condition_list.currentItem()):
-                    selected_current_is_condition = isinstance(self._module_widget.condition_list.currentItem().data(QtCore.Qt.UserRole), Condition)
+                        selected_current_is_condition = isinstance(self._module_widget.condition_list.currentItem().data(QtCore.Qt.UserRole), Condition)
                 else:
                     selected_current_is_condition = False
                 self._module_widget.btn_activate_condition.setEnabled(selected_current_is_condition)
@@ -89,16 +66,14 @@ class ExperimentManagerDialog(ModuleDialog):
                     bool(self.module_manager.current_experiment) and len(
                         self.module_manager.current_experiment.active_condition_sequence) and self.module_manager.active_condition_index != len(
                         self.module_manager.current_experiment.active_condition_sequence) - 1)
+
         else:
-            # self._module_widget.btn_initialize_all.setEnabled(False)
-            # self._module_widget.btn_start_all.setEnabled(False)
-            # self._module_widget.btn_stop_all.setEnabled(False)
+            self._module_widget.btn_edit_experiment.setEnabled(False)
+            self._module_widget.btn_create_experiment.setEnabled(False)
+            self._module_widget.btn_load_experiment.setEnabled(False)
             self._module_widget.btn_activate_condition.setEnabled(False)
             self._module_widget.btn_transition_to_next.setEnabled(False)
 
-            self._module_widget.btn_edit_experiment.setEnabled(False)
-            self._module_widget.btn_create_experiment.setEnabled(True)
-            self._module_widget.btn_load_experiment.setEnabled(True)
 
     def update_gui(self):
         self._module_widget.condition_list.clear()
