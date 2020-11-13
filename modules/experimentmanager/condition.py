@@ -54,7 +54,7 @@ class Condition:
         # TODO: if a value is a list (e.g. SW controller), then the complete dict is copied (which is fine, I guess)
         for key, value in base_dict.items():
             if isinstance(value, dict):
-                return Condition._get_dict_diff(value, specific_dict[key], diff_dict)
+                return {key: Condition._get_dict_diff(value, specific_dict[key], diff_dict)}
             elif specific_dict[key] != value:
                 diff_dict[key] = specific_dict[key]
 
