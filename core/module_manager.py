@@ -86,7 +86,6 @@ class ModuleManager(QtCore.QObject):
         pass
 
     def get_ready(self):
-        print('Getting ' + str(self.module) + ' ready')
         self._process = self.module.process(self.module,
                                             time_step_in_ms=self._time_step_in_ms,
                                             news=self.news,
