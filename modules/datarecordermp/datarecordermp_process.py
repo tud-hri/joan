@@ -1,5 +1,4 @@
 from core.module_process import ModuleProcess
-# rom modules.datarecordermp.writermp.newswritermp import DataWriter
 from modules.datarecordermp.datarecordermp_settings import DatarecorderMPSettings
 from modules.joanmodules import JOANModules
 
@@ -15,6 +14,8 @@ class DatarecorderMPProcess(ModuleProcess):
         self.variables_to_be_saved = {}
         self.save_path = ''
 
+        self.file = None
+
     def get_ready(self):
         """
         When instantiating the ModuleProcess, the settings are converted to type dict
@@ -23,9 +24,35 @@ class DatarecorderMPProcess(ModuleProcess):
         self.variables_to_be_saved = self.settings.variables_to_be_saved
         self.save_path = self.settings.path_to_save_file
 
+        header = ', '.join(['.'.join(v) for v in self.variables_to_be_saved])
+        with open(self.save_path, 'w') as self.file:
+            self.file.write(header + '\n')
+
+    def _run_loop(self):
+        with open(self.save_path, 'a') as self.file:
+            super()._run_loop()
+
     def do_while_running(self):
         """
-        do_while_running something and, dfor datarecorder, read the result from a shared_variable
+        do_while_running something and, for datarecorder, read the result from a shared_variable
         """
-        # TODO implement writing to file
-        pass
+        row = self._get_data_row()
+        self.file.write(row + '\n')
+
+    def _get_data_row(self):
+        row = []
+        for variable in self.variables_to_be_saved:
+            module = JOANModules.from_string_representation(variable[0])
+            last_object = self.news.read_news(module)
+
+            for attribute_name in variable[1:]:
+                if isinstance(last_object, dict):
+                    last_object = last_object[attribute_name]
+                elif isinstance(last_object, list):
+                    last_object = last_object[int(attribute_name)]
+                else:
+                    last_object = getattr(last_object, attribute_name)
+
+            row.append(str(last_object))
+
+        return ', '.join(row)

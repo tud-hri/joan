@@ -12,6 +12,7 @@ class DatarecorderMPManager(ModuleManager):
         super().__init__(module=JOANModules.DATA_RECORDER, news=news, time_step_in_ms=time_step_in_ms, parent=parent)
 
         self.state_machine.set_exit_action(State.INITIALIZED, self.module_dialog.apply_settings)
+        self.state_machine.set_exit_action(State.STOPPED, self.module_dialog.apply_settings)
         self.state_machine.set_transition_condition(State.INITIALIZED, State.READY, self._check_save_path)
 
     def _check_save_path(self):
