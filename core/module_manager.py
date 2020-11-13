@@ -6,16 +6,15 @@ from PyQt5 import QtCore
 from core.module_exceptionmonitor import ModuleExceptionMonitor
 from core.module_process import ProcessEvents
 from core.news import News
+from core.settings import Settings
 from core.statemachine import StateMachine
 from core.statesenum import State
-from core.settings import Settings
 from modules.joanmodules import JOANModules
-from core.settings import Settings
 
 
 class ModuleManager(QtCore.QObject):
 
-    def __init__(self, module: JOANModules, time_step_in_ms=100, parent=None):
+    def __init__(self, module: JOANModules, news, time_step_in_ms=100, parent=None):
         super(QtCore.QObject, self).__init__()
 
         self.module = module
@@ -26,8 +25,12 @@ class ModuleManager(QtCore.QObject):
         self._time_step_in_ms = time_step_in_ms
 
         # self.singleton_status = Status()
-        self.singleton_news = News()
+        self.news = news
         self.singleton_settings = Settings()
+
+        # initialize an empty shared variables class
+        self.shared_variables = self.module.shared_variables()
+        self.news.write_news(self.module, self.shared_variables)
 
         # initialize state machine
         self.state_machine = StateMachine(module)
@@ -68,7 +71,7 @@ class ModuleManager(QtCore.QObject):
         :return:
         """
         self.shared_variables = self.module.shared_variables()
-        self.singleton_news.write_news(self.module, self.shared_variables)
+        self.news.write_news(self.module, self.shared_variables)
         self.singleton_settings.update_settings(self.module, self.module_settings)
 
         # update state in shared variables
@@ -85,7 +88,7 @@ class ModuleManager(QtCore.QObject):
     def get_ready(self):
         self._process = self.module.process(self.module,
                                             time_step_in_ms=self._time_step_in_ms,
-                                            news=self.singleton_news,
+                                            news=self.news,
                                             settings=self.module_settings,
                                             events=self._events,
                                             settings_singleton=self.singleton_settings)
@@ -126,7 +129,7 @@ class ModuleManager(QtCore.QObject):
     def clean_up(self):
         # delete object
         # remove shared values from news
-        self.singleton_news.remove_news(self.module)
+        self.news.remove_news(self.module)
         self.singleton_settings.remove_settings(self.module)
 
         if self.shared_variables:
@@ -140,4 +143,3 @@ class ModuleManager(QtCore.QObject):
 
     def emergency(self):
         self._events.emergency.set()
-

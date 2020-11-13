@@ -4,6 +4,7 @@ import os
 from PyQt5 import QtCore
 
 from core import Settings
+from core import News
 from core.hq.centralstatemonitor import CentralStateMonitor
 from core.hq.hq_window import HQWindow
 from core.statesenum import State
@@ -22,6 +23,9 @@ class HQManager(QtCore.QObject):
         super(QtCore.QObject, self).__init__()
 
         self.central_state_monitor = CentralStateMonitor()
+
+        # News
+        self.news= News()
 
         # settings
         self.singleton_settings = Settings()
@@ -84,7 +88,7 @@ class HQManager(QtCore.QObject):
         if not parent:
             parent = self.window
 
-        module_manager = module.manager(time_step_in_ms=time_step_in_ms, parent=parent)
+        module_manager = module.manager(news=self.news, time_step_in_ms=time_step_in_ms, parent=parent)
 
         self.central_state_monitor.register_state_machine(module, module_manager.state_machine)
 

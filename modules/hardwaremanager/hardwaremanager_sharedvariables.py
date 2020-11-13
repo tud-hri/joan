@@ -2,6 +2,7 @@ import multiprocessing as mp
 from ctypes import *
 
 from core.modulesharedvariables import ModuleSharedVariables
+from core.sharedvariables import SharedVariables
 
 
 class HardwareSharedVariables(ModuleSharedVariables):
@@ -14,7 +15,7 @@ class HardwareSharedVariables(ModuleSharedVariables):
         self.inputs = {}
 
 
-class KeyboardSharedVariables:
+class KeyboardSharedVariables(SharedVariables):
     """"
     This class contains all the variables that are shared between the seperate hardware communication core and the
     main JOAN core.
@@ -68,7 +69,7 @@ class KeyboardSharedVariables:
         self._handbrake.value = val
 
 
-class JoystickSharedVariables:
+class JoystickSharedVariables(SharedVariables):
     """"
     This class contains all the variables that are shared between the seperate hardware communication core and the
     main JOAN core.
@@ -122,7 +123,7 @@ class JoystickSharedVariables:
         self._handbrake.value = val
 
 
-class SensoDriveSharedVariables:
+class SensoDriveSharedVariables(SharedVariables):
     """"
     This class contains all the variables that are shared between the seperate hardware communication core and the
     main JOAN core.

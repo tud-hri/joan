@@ -38,8 +38,8 @@ class CarlaInterfaceManager(ModuleManager):
     Can also be used as a template for your own modules.
     """
 
-    def __init__(self, time_step_in_ms=10, parent=None):
-        super().__init__(module=JOANModules.CARLA_INTERFACE, time_step_in_ms=time_step_in_ms, parent=parent)
+    def __init__(self, news, time_step_in_ms=10, parent=None):
+        super().__init__(module=JOANModules.CARLA_INTERFACE, news=news, time_step_in_ms=time_step_in_ms, parent=parent)
         self._agent_settingdialogs_dict = {}
         # CARLA connection variables:
         self.host = 'localhost'

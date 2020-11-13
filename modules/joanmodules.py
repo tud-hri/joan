@@ -13,6 +13,7 @@ class JOANModules(Enum):
     HARDWARE_MANAGER = auto()
     CARLA_INTERFACE = auto()
     HAPTIC_CONTROLLER_MANAGER = auto()
+    DATA_RECORDER = auto()
     CONTROLLER_PLOTTER = auto()
 
     @property
@@ -22,12 +23,14 @@ class JOANModules(Enum):
         from modules.carlainterface.carlainterface_manager import CarlaInterfaceManager
         from modules.hapticcontrollermanager.hapticcontrollermanager import HapticControllerManager
         from modules.controllerplotter.controllerplotter_manager import ControllerPlotterManager
+        from modules.datarecordermp.datarecordermp_manager import DatarecorderMPManager
 
         return {JOANModules.HARDWARE_MANAGER: HardwareManager,
                 JOANModules.TEMPLATE: TemplateManager,
                 JOANModules.CARLA_INTERFACE: CarlaInterfaceManager,
                 JOANModules.HAPTIC_CONTROLLER_MANAGER: HapticControllerManager,
-                JOANModules.CONTROLLER_PLOTTER: ControllerPlotterManager}[self]
+                JOANModules.CONTROLLER_PLOTTER: ControllerPlotterManager,
+                JOANModules.DATA_RECORDER: DatarecorderMPManager}[self]
 
     @property
     def dialog(self):
@@ -36,11 +39,13 @@ class JOANModules(Enum):
         from modules.carlainterface.carlainterface_dialog import CarlaInterfaceDialog
         from modules.hapticcontrollermanager.hapticcontrollermanager_dialog import HapticControllerManagerDialog
         from modules.controllerplotter.controllerplotter_dialog import ControllerPlotterDialog
+        from modules.datarecordermp.datarecordermp_dialog import DatarecorderMPDialog
 
         return {JOANModules.HARDWARE_MANAGER: HardwareManagerDialog,
                 JOANModules.TEMPLATE: TemplateDialog,
                 JOANModules.CARLA_INTERFACE: CarlaInterfaceDialog,
                 JOANModules.HAPTIC_CONTROLLER_MANAGER: HapticControllerManagerDialog,
+                JOANModules.DATA_RECORDER: DatarecorderMPDialog,
                 JOANModules.CONTROLLER_PLOTTER: ControllerPlotterDialog}[self]
 
     @property
@@ -50,14 +55,15 @@ class JOANModules(Enum):
         from modules.carlainterface.carlainterface_settings import CarlaInterfaceSettings
         from modules.hapticcontrollermanager.hapticcontrollermanager_settings import HapticControllerManagerSettings
         from modules.controllerplotter.controllerplotter_settings import ControllerPlotterSettings
+        from modules.datarecordermp.datarecordermp_settings import DatarecorderMPSettings
 
         return {JOANModules.TEMPLATE: TemplateSettings,
                 JOANModules.HARDWARE_MANAGER: HardwareMPSettings,
                 JOANModules.CARLA_INTERFACE: CarlaInterfaceSettings,
                 JOANModules.HAPTIC_CONTROLLER_MANAGER: HapticControllerManagerSettings,
+                JOANModules.DATA_RECORDER: DatarecorderMPSettings,
                 JOANModules.CONTROLLER_PLOTTER: ControllerPlotterSettings
                 }[self]
-
 
     @property
     def shared_variables(self):
@@ -66,12 +72,14 @@ class JOANModules(Enum):
         from modules.carlainterface.carlainterface_sharedvalues import CarlaInterfaceSharedVariables
         from modules.hapticcontrollermanager.hapticcontrollermanager_sharedvalues import HapticControllerManagerSharedVariables
         from core.modulesharedvariables import ModuleSharedVariables
+        from modules.datarecordermp.datarecordermp_sharedvalues import DataRecorderMPSharedValues
 
         return {JOANModules.HARDWARE_MANAGER: HardwareSharedVariables,
                 JOANModules.TEMPLATE: TemplateSharedVariables,
                 JOANModules.CARLA_INTERFACE: CarlaInterfaceSharedVariables,
                 JOANModules.HAPTIC_CONTROLLER_MANAGER: HapticControllerManagerSharedVariables,
-                JOANModules.CONTROLLER_PLOTTER: ModuleSharedVariables}[self]
+                JOANModules.CONTROLLER_PLOTTER: ModuleSharedVariables,
+                JOANModules.DATA_RECORDER: DataRecorderMPSharedValues}[self]
 
     @property
     def process(self):
@@ -80,12 +88,14 @@ class JOANModules(Enum):
         from modules.carlainterface.carlainterface_process import CarlaInterfaceProcess
         from modules.hapticcontrollermanager.hapticcontrollermanager_process import HapticControllerManagerProcess
         from core.module_process import ModuleProcess
+        from modules.datarecordermp.datarecordermp_process import DatarecorderMPProcess
 
         return {JOANModules.HARDWARE_MANAGER: HardwareManagerProcess,
                 JOANModules.TEMPLATE: TemplateProcess,
                 JOANModules.CARLA_INTERFACE: CarlaInterfaceProcess,
                 JOANModules.HAPTIC_CONTROLLER_MANAGER: HapticControllerManagerProcess,
-                JOANModules.CONTROLLER_PLOTTER: ModuleProcess}[self]
+                JOANModules.CONTROLLER_PLOTTER: ModuleProcess,
+                JOANModules.DATA_RECORDER: DatarecorderMPProcess}[self]
 
     @property
     def ui_file(self):
@@ -94,15 +104,17 @@ class JOANModules(Enum):
                 JOANModules.TEMPLATE: os.path.join(path_to_modules, "template/template_dialog.ui"),
                 JOANModules.CARLA_INTERFACE: os.path.join(path_to_modules, "carlainterface/carlainterface_dialog.ui"),
                 JOANModules.HAPTIC_CONTROLLER_MANAGER: os.path.join(path_to_modules, "hapticcontrollermanager/hapticcontrollermanager_dialog.ui"),
-                JOANModules.CONTROLLER_PLOTTER: os.path.join(path_to_modules, "controllerplotter/controllerplotter_dialog.ui")
+                JOANModules.CONTROLLER_PLOTTER: os.path.join(path_to_modules, "controllerplotter/controllerplotter_dialog.ui"),
+                JOANModules.DATA_RECORDER: os.path.join(path_to_modules, "datarecordermp/datarecordermp_dialog.ui")
                 }[self]
 
     def __str__(self):
         return {JOANModules.HARDWARE_MANAGER: 'Hardware Manager',
                 JOANModules.TEMPLATE: 'Template',
                 JOANModules.CARLA_INTERFACE: 'Carla Interface',
-                JOANModules.HAPTIC_CONTROLLER_MANAGER:'Haptic Controller Manager',
-                JOANModules.CONTROLLER_PLOTTER: 'Controller Plotter'}[self]
+                JOANModules.HAPTIC_CONTROLLER_MANAGER: 'Haptic Controller Manager',
+                JOANModules.CONTROLLER_PLOTTER: 'Controller Plotter',
+                JOANModules.DATA_RECORDER: 'Data Recorder'}[self]
 
     @staticmethod
     def from_string_representation(string):

@@ -5,8 +5,8 @@ from .hapticcontrollermanager_controllertypes import HapticControllerTypes
 class HapticControllerManager(ModuleManager):
     """HapticControllerManager keeps track of which haptic controllers are being used with what settings. """
 
-    def __init__(self, time_step_in_ms=10, parent=None):
-        super().__init__(module=JOANModules.HAPTIC_CONTROLLER_MANAGER, time_step_in_ms=time_step_in_ms, parent=parent)
+    def __init__(self, news, time_step_in_ms=10, parent=None):
+        super().__init__(module=JOANModules.HAPTIC_CONTROLLER_MANAGER, news=news, time_step_in_ms=time_step_in_ms, parent=parent)
         self._haptic_controllers = {}
         self.haptic_controller_type = None
         self.haptic_controller_settings = None
