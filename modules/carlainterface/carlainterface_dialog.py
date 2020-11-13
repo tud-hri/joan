@@ -18,6 +18,7 @@ class CarlaInterfaceDialog(ModuleDialog):
         :param parent:
         """
         # setup dialogs
+
         self._agent_type_dialog = uic.loadUi(
             os.path.join(os.path.dirname(os.path.realpath(__file__)), "carlainterface_agentclasses/ui/agent_select_ui.ui"))
         self._agent_type_dialog.btns_agent_type_select.accepted.connect(self._agent_selected)
@@ -25,6 +26,12 @@ class CarlaInterfaceDialog(ModuleDialog):
         # connect buttons
         self._module_widget.btn_add_agent.clicked.connect(self._select_agent_type)
         self._agent_tabs_dict = {}
+
+
+
+    def print_kak(self):
+        print('kak')
+
 
     def _handle_state_change(self):
         """"
@@ -46,6 +53,12 @@ class CarlaInterfaceDialog(ModuleDialog):
         selected_agent = self._agent_type_dialog.combo_agent_type.itemData(self._agent_type_dialog.combo_agent_type.currentIndex())
         # module_manager manages adding a new hardware agent
         self.module_manager.add_agent(selected_agent, from_button=True)
+
+    def update_dialog(self):
+        print('joejoe')
+        for agent_settings in self.module_manager.module_settings.agents:
+            if self.module_manager.module_settings.agents[agent_settings].identifier not in self._agent_tabs_dict:
+                self.add_agent(self.module_manager.module_settings.agents[agent_settings], False)
 
     def add_agent(self, settings, from_button):
         agent_type = AgentTypes(settings.agent_type)

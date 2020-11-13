@@ -14,6 +14,7 @@ class ModuleDialog(QtWidgets.QDialog):
     # signal when dialog is closed
     closed = QtCore.pyqtSignal()
 
+
     def __init__(self, module: JOANModules, module_manager: ModuleManager, parent=None):
         super().__init__(parent=None)
 
@@ -47,6 +48,9 @@ class ModuleDialog(QtWidgets.QDialog):
         self.settings_menu.addAction(self.save_settings)
         self.menu_bar.addMenu(self.settings_menu)
 
+
+
+
         # connect to module manager's state machine
         self.module_manager.state_machine.add_state_change_listener(self._handle_state_change)
 
@@ -62,8 +66,10 @@ class ModuleDialog(QtWidgets.QDialog):
         Use to update the module dialog
         :return:
         """
-        pass
-
+        try:
+            self.print_kak()
+        except Exception as inst:
+            print(inst)
     def start(self):
         """
         Start timer
@@ -108,6 +114,7 @@ class ModuleDialog(QtWidgets.QDialog):
                 self._state_widget.lbl_module_state.setStyleSheet("background: red;")
             elif current_state is State.STOPPED:
                 self._state_widget.lbl_module_state.setStyleSheet("background: orange;")
+
 
     def _load_settings(self):
         """

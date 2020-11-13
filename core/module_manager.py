@@ -76,6 +76,7 @@ class ModuleManager(QtCore.QObject):
 
         self.update_shared_variables_adjustable_settings()
 
+
     def update_shared_variables_adjustable_settings(self):
         """
         Update the adjustable settings in self.shared_variables with the current setting values

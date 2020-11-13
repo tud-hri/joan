@@ -77,8 +77,8 @@ class ExperimentManagerDialog(ModuleDialog):
             self._module_widget.btn_load_experiment.setEnabled(not any_running)
 
             if any_running:
-                self._module_widget.btn_activate_condition.setEnabled(False)
-                self._module_widget.btn_transition_to_next.setEnabled(False)
+                self._module_widget.btn_activate_condition.setEnabled(True)
+                self._module_widget.btn_transition_to_next.setEnabled(True)
             else:
                 if bool(self._module_widget.condition_list.currentItem()):
                     selected_current_is_condition = isinstance(self._module_widget.condition_list.currentItem().data(QtCore.Qt.UserRole), Condition)
@@ -139,6 +139,8 @@ class ExperimentManagerDialog(ModuleDialog):
         if success:
             self._update_highlighted_condition()
             self._update_enabled_buttons()
+
+
 
     def transition_to_next_condition(self):
         success = self.module_manager.transition_to_next_condition()
