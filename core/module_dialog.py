@@ -77,8 +77,8 @@ class ModuleDialog(QtWidgets.QDialog):
         Handle state change, registered in the module manager's state machine
         :return:
         """
-        # make sure we can only load and save settings in the stopped state:
-        if self.module_manager.state_machine.current_state == State.STOPPED:
+        # make sure we can only load and save settings in the stopped or initialized state:
+        if self.module_manager.state_machine.current_state in [State.STOPPED, State.INITIALIZED]:
             self.load_settings.setEnabled(True)
             self.load_settings.blockSignals(False)
             self.save_settings.setEnabled(True)
@@ -119,6 +119,7 @@ class ModuleDialog(QtWidgets.QDialog):
                                                                          filter='*.json')
         if settings_file_to_load:
             self.module_manager.load_from_file(settings_file_to_load)
+            self.update()
 
     def _save_settings(self):
         """

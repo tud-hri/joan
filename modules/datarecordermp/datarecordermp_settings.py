@@ -7,4 +7,4 @@ class DatarecorderMPSettings(ModuleSettings):
         super().__init__(module=JOANModules.DATA_RECORDER)
 
         self.path_to_save_file = ''
-        self.variables_to_be_saved = {}
+        self.variables_to_be_saved = []

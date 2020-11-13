@@ -31,18 +31,13 @@ class DatarecorderMPDialog(ModuleDialog):
         self.module_manager.state_machine.add_state_change_listener(self.handle_state_change)
         self.handle_state_change()
 
-    def _load_settings(self):
-        """
-        Opens dialog to load settings
-        When loading is cancelled, the default settings are used, otherwise the loaded fiule is used
-        State is set to READY
-        """
-        # TODO: implement method to represent current settings
-        settings_file_to_load, _ = QtWidgets.QFileDialog.getOpenFileName(self, 'load settings', os.path.join(self.module_action.module_path, 'action'),
-                                                                         filter='*.json')
-        if settings_file_to_load:
-            self.module_action.load_settings(settings_file_to_load)
-            self.update_tree_widget()
+    def update(self):
+        file_path = self.module_manager.module_settings.path_to_save_file
+        self._module_widget.lbl_data_filename.setText(os.path.basename(file_path))
+        self._module_widget.lbl_data_directoryname.setText(os.path.dirname(file_path))
+
+        variables_to_save = self.module_manager.module_settings.variables_to_be_saved
+        self._set_all_checked_items(variables_to_save)
 
     def _browse_datalog_path(self):
         """
@@ -60,7 +55,7 @@ class DatarecorderMPDialog(ModuleDialog):
         if self.module_manager.state_machine.current_state == State.INITIALIZED:
             self._module_widget.treeWidget.setEnabled(True)
             self._module_widget.browsePathPushButton.setEnabled(True)
-            self.update_tree_widget()
+            self._fill_tree_widget()
         elif self.module_manager.state_machine.current_state == State.STOPPED:
             self._module_widget.browsePathPushButton.setEnabled(True)
             self._module_widget.treeWidget.setEnabled(False)
@@ -68,12 +63,34 @@ class DatarecorderMPDialog(ModuleDialog):
             self._module_widget.browsePathPushButton.setEnabled(False)
             self._module_widget.treeWidget.setEnabled(False)
 
+    def _save_settings(self):
+        self.apply_settings()
+        super()._save_settings()
+
     def apply_settings(self):
-        self.module_manager.module_settings.variables_to_be_saved = self._get_all_check_items()
+        self.module_manager.module_settings.variables_to_be_saved = self._get_all_checked_items()
         path_to_save_to = os.path.join(self._module_widget.lbl_data_directoryname.text(), self._module_widget.lbl_data_filename.text())
         self.module_manager.module_settings.path_to_save_file = path_to_save_to
 
-    def _get_all_check_items(self):
+    def _set_all_checked_items(self, variables_to_save):
+        self._recursively_set_checked_items(self._module_widget.treeWidget.invisibleRootItem(), [], variables_to_save)
+
+    def _recursively_set_checked_items(self, parent, path_to_parent, list_of_checked_items):
+        for index in range(parent.childCount()):
+            child = parent.child(index)
+
+            new_list = path_to_parent.copy()
+            new_list.append(child.text(0))
+
+            if not child.childCount():
+                if new_list in list_of_checked_items:
+                    child.setCheckState(0, Qt.Checked)
+                else:
+                    child.setCheckState(0, Qt.Unchecked)
+            else:
+                self._recursively_set_checked_items(child, new_list, list_of_checked_items)
+
+    def _get_all_checked_items(self):
         checked_items = []
         self._recursively_get_checked_items(self._module_widget.treeWidget.invisibleRootItem(), [], checked_items)
         return checked_items
@@ -91,7 +108,7 @@ class DatarecorderMPDialog(ModuleDialog):
             else:
                 self._recursively_get_checked_items(child, new_list, list_of_checked_items)
 
-    def update_tree_widget(self):
+    def _fill_tree_widget(self):
         """
         Reads, or creates default settings when starting the module
         By pretending that a click event has happened, Datarecorder settings will be written
