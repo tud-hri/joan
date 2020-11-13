@@ -24,7 +24,7 @@ class HQManager(QtCore.QObject):
 
         self.central_state_monitor = CentralStateMonitor()
 
-
+        self.singleton_settings = Settings()
         self.signals = Signals()
 
         # path to modules directory
