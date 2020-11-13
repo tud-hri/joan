@@ -8,17 +8,19 @@ from core.module_process import ProcessEvents
 from core.news import News
 from core.statemachine import StateMachine
 from core.statesenum import State
-from core.settings import Settings
+from core.signals import Signals
 from modules.joanmodules import JOANModules
 from core.settings import Settings
+from PyQt5.QtCore import pyqtSignal
 
 
 class ModuleManager(QtCore.QObject):
-
-    def __init__(self, module: JOANModules, time_step_in_ms=100, parent=None):
+    loaded_signal = pyqtSignal()
+    def __init__(self,  signals, module: JOANModules, time_step_in_ms=100, parent=None):
         super(QtCore.QObject, self).__init__()
 
         self.module = module
+        self.signals = signals
 
         self.module_path = os.path.dirname(os.path.abspath(sys.modules[self.__class__.__module__].__file__))
 
@@ -28,6 +30,7 @@ class ModuleManager(QtCore.QObject):
         # self.singleton_status = Status()
         self.singleton_news = News()
         self.singleton_settings = Settings()
+
 
         # initialize state machine
         self.state_machine = StateMachine(module)
@@ -59,7 +62,14 @@ class ModuleManager(QtCore.QObject):
         self.singleton_settings.update_settings(self.module, self.module_settings)
 
         self.module_dialog._handle_state_change()
-        self.module_dialog.start()
+
+        self.signals.write_signal(self.module, self.loaded_signal)
+
+        self.signals._signals[self.module].connect(self.module_dialog.update_dialog)
+
+
+
+
 
     def initialize(self):
         """
@@ -71,6 +81,8 @@ class ModuleManager(QtCore.QObject):
         self.shared_variables = self.module.shared_variables()
         self.singleton_news.write_news(self.module, self.shared_variables)
         self.singleton_settings.update_settings(self.module, self.module_settings)
+
+
 
         # update state in shared variables
         self.shared_variables.state = self.state_machine.current_state.value
@@ -103,7 +115,7 @@ class ModuleManager(QtCore.QObject):
         self.shared_variables.state = self.state_machine.current_state.value
 
     def start(self):
-        # self.module_dialog.start()
+        self.module_dialog.start()
 
         self._events.start.set()
 

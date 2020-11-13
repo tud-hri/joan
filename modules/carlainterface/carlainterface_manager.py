@@ -38,8 +38,8 @@ class CarlaInterfaceManager(ModuleManager):
     Can also be used as a template for your own modules.
     """
 
-    def __init__(self, time_step_in_ms=10, parent=None):
-        super().__init__(module=JOANModules.CARLA_INTERFACE, time_step_in_ms=time_step_in_ms, parent=parent)
+    def __init__(self, signals, time_step_in_ms=10, parent=None):
+        super().__init__(module=JOANModules.CARLA_INTERFACE, signals = signals, time_step_in_ms=time_step_in_ms, parent=parent)
         self._agent_settingdialogs_dict = {}
         # CARLA connection variables:
         self.host = 'localhost'
@@ -55,6 +55,7 @@ class CarlaInterfaceManager(ModuleManager):
         self.haptic_controllers = []
 
         self.connected = self.connect_carla()
+
 
     def initialize(self):
         super().initialize()

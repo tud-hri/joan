@@ -37,6 +37,8 @@ class ExperimentManagerDialog(ModuleDialog):
         self.settings_menu.clear()
         self.settings_menu = None
 
+
+
         # self.update_gui()
         # self._update_enabled_buttons()
         # self.update_condition_lists()

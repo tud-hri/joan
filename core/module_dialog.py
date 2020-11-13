@@ -60,6 +60,8 @@ class ModuleDialog(QtWidgets.QDialog):
         self.update_timer.setInterval(100)  # 10 Hz update
         self.update_timer.timeout.connect(self.update_dialog)
 
+
+
     def update_dialog(self):
         """
         Called by the update timer.

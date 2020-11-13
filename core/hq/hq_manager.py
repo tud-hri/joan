@@ -8,6 +8,7 @@ from core.hq.centralstatemonitor import CentralStateMonitor
 from core.hq.hq_window import HQWindow
 from core.statesenum import State
 from modules.joanmodules import JOANModules
+from core.signals import Signals
 
 
 class HQManager(QtCore.QObject):
@@ -23,8 +24,8 @@ class HQManager(QtCore.QObject):
 
         self.central_state_monitor = CentralStateMonitor()
 
-        # settings
-        self.singleton_settings = Settings()
+
+        self.signals = Signals()
 
         # path to modules directory
         self.path_modules = os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../", "modules"))
@@ -84,7 +85,7 @@ class HQManager(QtCore.QObject):
         if not parent:
             parent = self.window
 
-        module_manager = module.manager(time_step_in_ms=time_step_in_ms, parent=parent)
+        module_manager = module.manager(signals = self.signals ,time_step_in_ms=time_step_in_ms, parent=parent)
 
         self.central_state_monitor.register_state_machine(module, module_manager.state_machine)
 

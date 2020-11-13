@@ -14,8 +14,8 @@ class ExperimentManager(ModuleManager):
     """
     current_experiment: Experiment
 
-    def __init__(self, time_step_in_ms=10, parent=None):
-        super().__init__(module=JOANModules.EXPERIMENT_MANAGER, time_step_in_ms=time_step_in_ms, parent=parent)
+    def __init__(self, signals, time_step_in_ms=10, parent=None):
+        super().__init__(module=JOANModules.EXPERIMENT_MANAGER, signals = signals, time_step_in_ms=time_step_in_ms, parent=parent)
         # create/get default experiment_settings
         self.current_experiment = None
         # TODO: We should definitely make a ROOT_PATH singleton somewhere in main so we dont have to do the following:
@@ -67,7 +67,10 @@ class ExperimentManager(ModuleManager):
 
         self.active_condition = condition
         self.active_condition_index = condition_index
-        self.module_dialog.update_dialog()
+        print(self.signals.all_signals)
+        for signal in self.signals.all_signals:
+            self.signals._signals[signal].emit()
+
 
         return True
 

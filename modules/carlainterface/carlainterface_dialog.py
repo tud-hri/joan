@@ -27,6 +27,7 @@ class CarlaInterfaceDialog(ModuleDialog):
         self._module_widget.btn_add_agent.clicked.connect(self._select_agent_type)
         self._agent_tabs_dict = {}
 
+
     def _handle_state_change(self):
         """"
         This function handles the enabling and disabling of the carla interface change
