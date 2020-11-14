@@ -3,13 +3,13 @@ import os
 
 from PyQt5 import QtCore
 
-from core import Settings
 from core import News
+from core import Settings
 from core.hq.centralstatemonitor import CentralStateMonitor
 from core.hq.hq_window import HQWindow
+from core.signals import Signals
 from core.statesenum import State
 from modules.joanmodules import JOANModules
-from core.signals import Signals
 
 
 class HQManager(QtCore.QObject):
@@ -26,7 +26,7 @@ class HQManager(QtCore.QObject):
         self.central_state_monitor = CentralStateMonitor()
 
         # News
-        self.news= News()
+        self.news = News()
 
         # settings
         self.singleton_settings = Settings()
@@ -70,7 +70,6 @@ class HQManager(QtCore.QObject):
         for _, module in self._instantiated_modules.items():
             module.state_machine.request_state_change(State.STOPPED)
 
-
     def emergency_stop(self):
         """
         Stops all modules whichever state you are in.
@@ -90,7 +89,7 @@ class HQManager(QtCore.QObject):
         if not parent:
             parent = self.window
 
-        module_manager = module.manager(news=self.news, signals = self.signals ,time_step_in_ms=time_step_in_ms, parent=parent)
+        module_manager = module.manager(news=self.news, signals=self.signals, time_step_in_ms=time_step_in_ms, parent=parent)
 
         self.central_state_monitor.register_state_machine(module, module_manager.state_machine)
 

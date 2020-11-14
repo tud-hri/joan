@@ -1,14 +1,15 @@
 from core.module_manager import ModuleManager
 from modules.joanmodules import JOANModules
 
+
 class ControllerPlotterManager(ModuleManager):
     """
     Example module for JOAN
     Can also be used as a template for your own modules.
     """
 
-    def __init__(self, signals, time_step_in_ms=10, parent=None):
-        super().__init__(module=JOANModules.CONTROLLER_PLOTTER, signals=signals, time_step_in_ms=time_step_in_ms, parent=parent)
+    def __init__(self, news, signals, time_step_in_ms=10, parent=None):
+        super().__init__(module=JOANModules.CONTROLLER_PLOTTER, news=news, signals=signals, time_step_in_ms=time_step_in_ms, parent=parent)
 
     def initialize(self):
         self.module_dialog.initialize()
@@ -16,7 +17,7 @@ class ControllerPlotterManager(ModuleManager):
 
     def stop(self):
         """stop the module"""
-        #Clear graphs when stopping module
+        # Clear graphs when stopping module
         self.module_dialog._module_widget.top_view_graph.clear()
         self.module_dialog._module_widget.torque_graph.clear()
         self.module_dialog._module_widget.errors_graph.clear()

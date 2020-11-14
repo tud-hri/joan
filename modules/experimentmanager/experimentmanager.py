@@ -1,4 +1,5 @@
 import os
+
 from PyQt5 import QtWidgets
 
 from core.module_manager import ModuleManager
@@ -14,15 +15,14 @@ class ExperimentManager(ModuleManager):
     """
     current_experiment: Experiment
 
-    def __init__(self, signals, time_step_in_ms=10, parent=None):
-        super().__init__(module=JOANModules.EXPERIMENT_MANAGER, signals = signals, time_step_in_ms=time_step_in_ms, parent=parent)
+    def __init__(self, news, signals, time_step_in_ms=10, parent=None):
+        super().__init__(module=JOANModules.EXPERIMENT_MANAGER, news=news, signals=signals, time_step_in_ms=time_step_in_ms, parent=parent)
         # create/get default experiment_settings
         self.current_experiment = None
         # TODO: We should definitely make a ROOT_PATH singleton somewhere in main so we dont have to do the following:
         cur_path = os.path.dirname(os.path.realpath(__file__))
         path = os.path.dirname(os.path.dirname(os.path.dirname(cur_path)))
         self.experiment_save_path = os.path.join(path, 'experiments/')
-
 
         self.active_condition = None
         self.active_condition_index = None
@@ -64,16 +64,13 @@ class ExperimentManager(ModuleManager):
             self._recursively_copy_dict(condition.diff[module], module_settings_dict)
             self.singleton_settings.get_settings(module).load_from_dict({str(module): module_settings_dict})
 
-
         self.active_condition = condition
         self.active_condition_index = condition_index
         print(self.signals.all_signals)
         for signal in self.signals.all_signals:
             self.signals._signals[signal].emit()
 
-
         return True
-
 
     def transition_to_next_condition(self):
         if not self.current_experiment:

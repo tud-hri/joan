@@ -1,6 +1,6 @@
-from modules.joanmodules import JOANModules
-from PyQt5.QtCore import pyqtSignal
 from PyQt5 import QtCore
+
+from modules.joanmodules import JOANModules
 
 
 class Signals(QtCore.QObject):
@@ -10,8 +10,7 @@ class Signals(QtCore.QObject):
 
     def __init__(self):
         super().__init__()
-        self._signals= {}
-
+        self._signals = {}
 
     def write_signal(self, module: JOANModules, signal_dict):
         """
@@ -20,7 +19,6 @@ class Signals(QtCore.QObject):
         :param news_dict: dictionary (keys, values) with the new data
         """
         self._signals.update({module: signal_dict})
-
 
     def read_signal(self, module: JOANModules):
         """
@@ -36,6 +34,3 @@ class Signals(QtCore.QObject):
     @property
     def all_signals(self):
         return self._signals
-
-
-
