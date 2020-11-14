@@ -7,8 +7,8 @@ class ControllerPlotterManager(ModuleManager):
     Can also be used as a template for your own modules.
     """
 
-    def __init__(self, time_step_in_ms=10, parent=None):
-        super().__init__(module=JOANModules.CONTROLLER_PLOTTER, time_step_in_ms=time_step_in_ms, parent=parent)
+    def __init__(self, signals, time_step_in_ms=10, parent=None):
+        super().__init__(module=JOANModules.CONTROLLER_PLOTTER, signals=signals, time_step_in_ms=time_step_in_ms, parent=parent)
 
     def initialize(self):
         self.module_dialog.initialize()

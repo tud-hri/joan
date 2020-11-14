@@ -24,6 +24,11 @@ class HapticControllerManagerDialog(ModuleDialog):
         self._module_widget.btn_add_haptic_controller.clicked.connect(self._select_haptic_controller_type)
         self._haptic_controller_tabs_dict = {}
 
+    def update_dialog(self):
+        for controller_settings in self.module_manager.module_settings.haptic_controllers:
+            if self.module_manager.module_settings.haptic_controllers[controller_settings].identifier not in self._haptic_controller_tabs_dict:
+                self.add_haptic_controller(self.module_manager.module_settings.haptic_controllers[controller_settings], False)
+
     def _handle_state_change(self):
         """"
         This function handles the enabling and disabling of the carla interface change

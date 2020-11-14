@@ -20,6 +20,7 @@ class NewExperimentDialog(QtWidgets.QDialog):
         self._fill_module_box(all_modules_in_settings)
         self.ui.browsePushButton.clicked.connect(self._browse_file)
 
+
         self.file_path = ""
         self.path = path
         self.modules_to_include = []

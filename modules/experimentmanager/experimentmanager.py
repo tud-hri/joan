@@ -1,23 +1,28 @@
+import os
 from PyQt5 import QtWidgets
 
-from core.joanmoduleaction import JoanModuleAction
+from core.module_manager import ModuleManager
 from modules.joanmodules import JOANModules
 from .condition import Condition
 from .experiment import Experiment
-import os, glob
 
 
-class ExperimentManagerAction(JoanModuleAction):
+class ExperimentManager(ModuleManager):
+    """
+    Example module for JOAN
+    Can also be used as a template for your own modules.
+    """
     current_experiment: Experiment
 
-    def __init__(self, millis=100):
-        super().__init__(module=JOANModules.EXPERIMENT_MANAGER, use_state_machine_and_timer=False)
-
+    def __init__(self, signals, time_step_in_ms=10, parent=None):
+        super().__init__(module=JOANModules.EXPERIMENT_MANAGER, signals = signals, time_step_in_ms=time_step_in_ms, parent=parent)
+        # create/get default experiment_settings
         self.current_experiment = None
-        #TODO: We should definitely make a ROOT_PATH singleton somewhere in main so we dont have to do the following:
+        # TODO: We should definitely make a ROOT_PATH singleton somewhere in main so we dont have to do the following:
         cur_path = os.path.dirname(os.path.realpath(__file__))
         path = os.path.dirname(os.path.dirname(os.path.dirname(cur_path)))
         self.experiment_save_path = os.path.join(path, 'experiments/')
+
 
         self.active_condition = None
         self.active_condition_index = None
@@ -59,29 +64,16 @@ class ExperimentManagerAction(JoanModuleAction):
             self._recursively_copy_dict(condition.diff[module], module_settings_dict)
             self.singleton_settings.get_settings(module).load_from_dict({str(module): module_settings_dict})
 
+
         self.active_condition = condition
         self.active_condition_index = condition_index
+        print(self.signals.all_signals)
+        for signal in self.signals.all_signals:
+            self.signals._signals[signal].emit()
+
 
         return True
 
-    def initialize_all(self):
-        print(self.current_experiment.modules_included)
-        if self.current_experiment:
-            for module in self.current_experiment.modules_included:
-                signals = self.singleton_signals.get_signals(module)
-                signals.initialize_module.emit()
-
-    def start_all(self):
-        if self.current_experiment:
-            for module in self.current_experiment.modules_included:
-                signals = self.singleton_signals.get_signals(module)
-                signals.start_module.emit()
-
-    def stop_all(self):
-        if self.current_experiment:
-            for module in self.current_experiment.modules_included:
-                signals = self.singleton_signals.get_signals(module)
-                signals.stop_module.emit()
 
     def transition_to_next_condition(self):
         if not self.current_experiment:
@@ -125,10 +117,10 @@ class ExperimentManagerAction(JoanModuleAction):
         for key, item in source.items():
             if isinstance(item, dict):
                 try:
-                    ExperimentManagerAction._recursively_copy_dict(item, destination[key])
+                    ExperimentManager._recursively_copy_dict(item, destination[key])
                 except KeyError:
                     destination[key] = {}
-                    ExperimentManagerAction._recursively_copy_dict(item, destination[key])
+                    ExperimentManager._recursively_copy_dict(item, destination[key])
             else:
                 if item:  # check to avoid empty source list copying over filled destination list.
                     destination[key] = item

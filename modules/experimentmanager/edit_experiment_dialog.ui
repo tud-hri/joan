@@ -11,39 +11,9 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>ExperimentManagerWidget</string>
+   <string>Edit Current Experiment</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
-   <item>
-    <widget class="QGroupBox" name="groupBox_3">
-     <property name="title">
-      <string>File</string>
-     </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
-      <item>
-       <widget class="QPushButton" name="initializeExperimentPushButton">
-        <property name="text">
-         <string>Initialize new experiment from current settings</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="saveExperimentPushButton">
-        <property name="text">
-         <string>Save experiment</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="loadExperimentPushButton">
-        <property name="text">
-         <string>Load experiment</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
    <item>
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
@@ -54,6 +24,16 @@
        <widget class="QLabel" name="label">
         <property name="text">
          <string>Current Experiment:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>Modules included in experiment:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
         </property>
        </widget>
       </item>
@@ -78,13 +58,10 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="label_5">
-        <property name="text">
-         <string>Modules included in experiment:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="experimentNameLineEdit">
+        <property name="readOnly">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -101,13 +78,6 @@
           <width>0</width>
           <height>100</height>
          </size>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QLineEdit" name="experimentNameLineEdit">
-        <property name="readOnly">
-         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -188,6 +158,9 @@
         </item>
        </layout>
       </item>
+      <item row="3" column="0">
+       <widget class="QListWidget" name="availableConditionsListWidget"/>
+      </item>
       <item row="3" column="5">
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
@@ -256,11 +229,15 @@
         </item>
        </layout>
       </item>
-      <item row="3" column="0">
-       <widget class="QListWidget" name="availableConditionsListWidget"/>
-      </item>
       <item row="3" column="2">
        <widget class="QListWidget" name="currentConditionsListWidget"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Available Conditions</string>
+        </property>
+       </widget>
       </item>
       <item row="4" column="2">
        <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -330,10 +307,10 @@
         </item>
        </layout>
       </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="label_2">
+      <item row="4" column="0">
+       <widget class="QPushButton" name="createConditionPushButton">
         <property name="text">
-         <string>Available Conditions</string>
+         <string>Create new condition from current settings</string>
         </property>
        </widget>
       </item>
@@ -347,72 +324,34 @@
       <item row="3" column="6">
        <widget class="QListWidget" name="availableTransitionsListWidget"/>
       </item>
-      <item row="4" column="0">
-       <widget class="QPushButton" name="createConditionPushButton">
+      <item row="5" column="0">
+       <widget class="QPushButton" name="deleteAvailableConditionPushButton">
         <property name="text">
-         <string>Create new condition from current settings</string>
+         <string>Remove selected available condition</string>
         </property>
        </widget>
       </item>
-      <item row="5" column="2">
-       <layout class="QHBoxLayout" name="horizontalLayout_4">
-        <item>
-         <widget class="QPushButton" name="transitionToNextConditionPushButton">
-          <property name="text">
-           <string>Transition to next</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="activateConditionPushButton">
-          <property name="text">
-           <string>Activate condition</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
+      <item row="1" column="6">
+       <widget class="QLabel" name="label_6">
+        <property name="text">
+         <string>Available Transitions</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="groupBox_2">
-     <property name="title">
-      <string>JOAN controls</string>
+    <widget class="QPushButton" name="saveExperimentPushButton">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>50</height>
+      </size>
      </property>
-     <layout class="QHBoxLayout" name="horizontalLayout">
-      <item>
-       <widget class="QPushButton" name="initializeAllPushButton">
-        <property name="text">
-         <string>Initialize All</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="startAllPushButton">
-        <property name="text">
-         <string>Start All</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="stopAllPushButton">
-        <property name="text">
-         <string>Stop All</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="autoTransitionCheckBox">
-        <property name="text">
-         <string>Auto transition after stop</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-     </layout>
+     <property name="text">
+      <string>Save experiment</string>
+     </property>
     </widget>
    </item>
   </layout>

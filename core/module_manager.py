@@ -9,15 +9,20 @@ from core.news import News
 from core.settings import Settings
 from core.statemachine import StateMachine
 from core.statesenum import State
+from core.signals import Signals
 from modules.joanmodules import JOANModules
+from core.settings import Settings
+from PyQt5.QtCore import pyqtSignal
 
 
 class ModuleManager(QtCore.QObject):
+    loaded_signal = pyqtSignal()
 
-    def __init__(self, module: JOANModules, news, time_step_in_ms=100, parent=None):
+    def __init__(self, module: JOANModules, news, signals, time_step_in_ms=100, parent=None):
         super(QtCore.QObject, self).__init__()
 
         self.module = module
+        self.signals = signals
 
         self.module_path = os.path.dirname(os.path.abspath(sys.modules[self.__class__.__module__].__file__))
 
@@ -62,6 +67,10 @@ class ModuleManager(QtCore.QObject):
         self.singleton_settings.update_settings(self.module, self.module_settings)
 
         self.module_dialog._handle_state_change()
+
+        self.signals.write_signal(self.module, self.loaded_signal)
+
+        self.signals._signals[self.module].connect(self.module_dialog.update_dialog)
 
     def initialize(self):
         """

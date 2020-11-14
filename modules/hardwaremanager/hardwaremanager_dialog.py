@@ -25,6 +25,11 @@ class HardwareManagerDialog(ModuleDialog):
         # Connect the add hardware button to showing our just created inputtype dialog
         self._module_widget.btn_add_hardware.clicked.connect(self._select_hardware_input_type)
         self._hardware_input_tabs_dict = {}
+        
+    def update_dialog(self):
+        for input_settings in self.module_manager.module_settings.inputs:
+            if self.module_manager.module_settings.inputs[input_settings].identifier not in self._hardware_input_tabs_dict:
+                self.add_hardware_input(self.module_manager.module_settings.inputs[input_settings], False)
 
 
     def _handle_state_change(self):

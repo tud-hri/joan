@@ -22,5 +22,6 @@ if __name__ == '__main__':
     JOANHQACTION.add_module(JOANModules.HAPTIC_CONTROLLER_MANAGER, time_step_in_ms= 10)
     JOANHQACTION.add_module(JOANModules.CONTROLLER_PLOTTER, time_step_in_ms=500)
     JOANHQACTION.add_module(JOANModules.DATA_RECORDER, time_step_in_ms=100)
+    JOANHQACTION.add_module(JOANModules.EXPERIMENT_MANAGER, time_step_in_ms=500)
 
     APP.exec_()
