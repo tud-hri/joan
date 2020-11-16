@@ -2,16 +2,15 @@ import multiprocessing as mp
 from ctypes import *
 
 from core.modulesharedvariables import ModuleSharedVariables
-
+from core.sharedvariables import SharedVariables
 
 class CarlaInterfaceSharedVariables(ModuleSharedVariables):
     def __init__(self):
         super().__init__()
-        self._state = mp.Value(c_int, -2)  # module state [initialized, running, error]
         self.agents = {}
 
 
-class EgoVehicleSharedVariables:
+class EgoVehicleSharedVariables(SharedVariables):
     def __init__(self):
         self._transform = mp.Array(c_float, 6)
         self._velocities = mp.Array(c_float, 6)

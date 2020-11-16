@@ -1,29 +1,16 @@
 import multiprocessing as mp
 from ctypes import *
 
-class HapticControllerManagerSharedVariables:
+from core.modulesharedvariables import ModuleSharedVariables
+from core.sharedvariables import SharedVariables
+
+class HapticControllerManagerSharedVariables(ModuleSharedVariables):
     def __init__(self):
-        self._state = mp.Value(c_int, -2)  # module state [initialized, running, error]
-        self._time = mp.Value(c_float, 0.0)
+        super().__init__()
         self.haptic_controllers = {}
 
-    @property
-    def state(self):
-        return self._state.value
 
-    @state.setter
-    def state(self, val):
-        self._state.value = val
-
-    @property
-    def time(self):
-        return self._time.value
-
-    @time.setter
-    def time(self, val):
-        self._time.value = val
-
-class FDCASharedVariables:
+class FDCASharedVariables(SharedVariables):
     def __init__(self):
         # controller parameters
         self._temp = mp.Value(c_float, 0)
@@ -147,7 +134,7 @@ class FDCASharedVariables:
         self._req_torque.value = val
 
 
-class FDCADuecaSharedVariables:
+class FDCADuecaSharedVariables(SharedVariables):
     def __init__(self):
         self._temp = mp.Value(c_float, 0)
         self._k_y = mp.Value(c_float, 0)

@@ -398,7 +398,7 @@ class ControllerPlotterDialog(ModuleDialog):
     def update_dialog(self):
         "update de hele zooi hier"
         for keys in self.module_manager.singleton_settings.all_settings_keys:
-            self.data[keys] = self.module_manager.singleton_news.read_news(keys)
+            self.data[keys] = self.module_manager.news.read_news(keys)
 
         self.do()
 
