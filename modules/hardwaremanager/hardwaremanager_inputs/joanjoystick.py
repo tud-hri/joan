@@ -209,7 +209,7 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
         self.value_preview_check_boxes = []
 
         self._display_settings()
-        self.show()
+
 
     def preview_joystick_values(self):
         """
@@ -395,3 +395,5 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
 
             self.value_preview_labels.append(display_label)
             self.value_preview_check_boxes.append(check_box)
+
+

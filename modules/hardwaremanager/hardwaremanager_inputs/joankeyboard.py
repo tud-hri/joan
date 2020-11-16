@@ -187,7 +187,7 @@ class KeyBoardSettingsDialog(QtWidgets.QDialog):
                                         self.label_handbrake]
 
         self._display_values()
-        self.show()
+
 
     def accept(self):
         """

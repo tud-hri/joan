@@ -25,11 +25,13 @@ class HardwareManagerDialog(ModuleDialog):
         # Connect the add hardware button to showing our just created inputtype dialog
         self._module_widget.btn_add_hardware.clicked.connect(self._select_hardware_input_type)
         self._hardware_input_tabs_dict = {}
+        self._hardware_input_dialogs_dict = {}
         
     def update_dialog(self):
         for input_settings in self.module_manager.module_settings.inputs:
             if self.module_manager.module_settings.inputs[input_settings].identifier not in self._hardware_input_tabs_dict:
                 self.add_hardware_input(self.module_manager.module_settings.inputs[input_settings], False)
+            self._hardware_input_dialogs_dict[self.module_manager.module_settings.inputs[input_settings].identifier]._display_values(self.module_manager.module_settings.inputs[input_settings])
 
 
     def _handle_state_change(self):
@@ -175,7 +177,8 @@ class HardwareManagerDialog(ModuleDialog):
         input_tab.groupBox.setTitle(settings.identifier)
 
         # Connecting buttons
-        input_tab.btn_settings.clicked.connect(lambda: input_type.settings_dialog(module_manager = self.module_manager, settings=settings, parent=self))
+        input_dialog = input_type.settings_dialog(module_manager = self.module_manager, settings=settings, parent=self)
+        input_tab.btn_settings.clicked.connect(input_dialog.show)
         input_tab.btn_remove_hardware.clicked.connect(lambda: self.module_manager.remove_hardware_input(settings.identifier))
 
         if str(HardwareInputTypes.SENSODRIVE) in settings.identifier:
@@ -186,13 +189,15 @@ class HardwareManagerDialog(ModuleDialog):
         # add to module_dialog widget
         self._hardware_input_tabs_dict[settings.identifier] = input_tab
         self._module_widget.hardware_list_layout.addWidget(input_tab)
+        self._hardware_input_dialogs_dict[settings.identifier] = input_dialog
 
         #open dialog when adding hardware (not sure if this is annoying when loading settings)
         if from_button:
-            input_type.settings_dialog(module_manager=self.module_manager, settings=settings, parent=self)
+            input_dialog.show()
 
 
     def remove_hardware_input(self, identifier):
         # remove input tab
         self._hardware_input_tabs_dict[identifier].setParent(None)
         del self._hardware_input_tabs_dict[identifier]
+        del self._hardware_input_dialogs_dict[identifier]
