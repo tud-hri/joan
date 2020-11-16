@@ -6,7 +6,7 @@ from core.module_manager import ModuleManager
 from modules.joanmodules import JOANModules
 from .condition import Condition
 from .experiment import Experiment
-
+import copy
 
 class ExperimentManager(ModuleManager):
     """
@@ -58,15 +58,14 @@ class ExperimentManager(ModuleManager):
         :param condition_index: self-explanatory
         :return:
         """
-
         for module, base_settings_dict in self.current_experiment.base_settings.items():
-            module_settings_dict = base_settings_dict.copy()
+            module_settings_dict = copy.deepcopy(base_settings_dict)
             self._recursively_copy_dict(condition.diff[module], module_settings_dict)
             self.singleton_settings.get_settings(module).load_from_dict({str(module): module_settings_dict})
 
         self.active_condition = condition
         self.active_condition_index = condition_index
-        print(self.signals.all_signals)
+
         for signal in self.signals.all_signals:
             self.signals._signals[signal].emit()
 
