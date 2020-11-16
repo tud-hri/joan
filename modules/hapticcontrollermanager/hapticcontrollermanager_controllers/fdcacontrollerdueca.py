@@ -39,7 +39,6 @@ class FDCAControllerDuecaSettingsDialog(QtWidgets.QDialog):
 
         self.handle_state_change()
 
-        self.show()
 
     def handle_state_change(self):
         #disable changing of trajectory while running (would be quite dangerous)
