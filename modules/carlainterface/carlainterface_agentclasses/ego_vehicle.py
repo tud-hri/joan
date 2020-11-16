@@ -28,10 +28,10 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
         self.button_box_egovehicle_settings.button(self.button_box_egovehicle_settings.RestoreDefaults).clicked.connect(
             self._set_default_values)
         self.btn_apply_parameters.clicked.connect(self.update_parameters)
-        self.btn_update.clicked.connect(lambda: self.update_ego_vehicle_settings(self.settings))
+        self.btn_update.clicked.connect(lambda: self.update_settings(self.settings))
         self.display_values()
 
-        self.update_ego_vehicle_settings(self.settings)
+        self.update_settings(self.settings)
 
 
     def update_parameters(self):
@@ -95,7 +95,7 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
     def _set_default_values(self):
         self.display_values(AgentTypes.EGO_VEHICLE.settings())
         
-    def update_ego_vehicle_settings(self, settings):
+    def update_settings(self, settings):
         # Update hardware inputs according to current settings:
         self.combo_input.clear()
         self.combo_input.addItem('None')

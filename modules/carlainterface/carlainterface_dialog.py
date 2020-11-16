@@ -55,7 +55,7 @@ class CarlaInterfaceDialog(ModuleDialog):
             if self.module_manager.module_settings.agents[agent_settings].identifier not in self._agent_tabs_dict:
                 self.add_agent(self.module_manager.module_settings.agents[agent_settings], False)
 
-            self._agent_dialogs_dict[self.module_manager.module_settings.agents[agent_settings].identifier].update_ego_vehicle_settings(self.module_manager.module_settings.agents[agent_settings])
+            self._agent_dialogs_dict[self.module_manager.module_settings.agents[agent_settings].identifier].update_settings(self.module_manager.module_settings.agents[agent_settings])
 
 
 
