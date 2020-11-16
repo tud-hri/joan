@@ -14,7 +14,6 @@ class ModuleDialog(QtWidgets.QDialog):
     # signal when dialog is closed
     closed = QtCore.pyqtSignal()
 
-
     def __init__(self, module: JOANModules, module_manager: ModuleManager, parent=None):
         super().__init__(parent=None)
 
@@ -48,9 +47,6 @@ class ModuleDialog(QtWidgets.QDialog):
         self.settings_menu.addAction(self.save_settings)
         self.menu_bar.addMenu(self.settings_menu)
 
-
-
-
         # connect to module manager's state machine
         self.module_manager.state_machine.add_state_change_listener(self._handle_state_change)
 
@@ -59,8 +55,6 @@ class ModuleDialog(QtWidgets.QDialog):
         self.update_timer.setTimerType(QtCore.Qt.PreciseTimer)
         self.update_timer.setInterval(100)  # 10 Hz update
         self.update_timer.timeout.connect(self.update_dialog)
-
-
 
     def update_dialog(self):
         """
@@ -102,7 +96,6 @@ class ModuleDialog(QtWidgets.QDialog):
             self._state_widget.lbl_module_state.setText(str(current_state))
             self._state_widget.lbl_state_message.setText(message)
 
-
             if current_state is State.RUNNING:
                 self._state_widget.lbl_module_state.setStyleSheet("background: lightgreen;")
             elif current_state is State.INITIALIZED:
@@ -114,9 +107,6 @@ class ModuleDialog(QtWidgets.QDialog):
             elif current_state is State.STOPPED:
                 self._state_widget.lbl_module_state.setStyleSheet("background: orange;")
 
-
-
-
     def _load_settings(self):
         """
         Loads settings from json file.
@@ -127,7 +117,7 @@ class ModuleDialog(QtWidgets.QDialog):
                                                                          filter='*.json')
         if settings_file_to_load:
             self.module_manager.load_from_file(settings_file_to_load)
-            self.update()
+            self.update_dialog()
 
     def _save_settings(self):
         """
