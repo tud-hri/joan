@@ -34,10 +34,9 @@ class ExperimentManagerDialog(ModuleDialog):
         self.settings_menu.clear()
         self.settings_menu = None
 
-    def _handle_state_change(self):
-        if self.module_manager.state_machine.current_state == State.STOPPED:
-            if self._module_widget.autoTransitionCheckBox.isChecked():
-                self.transition_to_next_condition()
+    def _stopped_entry_action(self):
+        if self._module_widget.autoTransitionCheckBox.isChecked():
+            self.transition_to_next_condition()
 
     def create_new_experiment(self):
         new_experiment_dialog = NewExperimentDialog(self.module_manager.singleton_settings.all_settings_keys, parent=self)

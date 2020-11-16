@@ -7,6 +7,7 @@ from modules.joanmodules import JOANModules
 from .condition import Condition
 from .experiment import Experiment
 import copy
+from core.statesenum import State
 
 class ExperimentManager(ModuleManager):
     """
@@ -23,6 +24,7 @@ class ExperimentManager(ModuleManager):
         cur_path = os.path.dirname(os.path.realpath(__file__))
         path = os.path.dirname(os.path.dirname(os.path.dirname(cur_path)))
         self.experiment_save_path = os.path.join(path, 'experiments/')
+        self.state_machine.set_entry_action(State.STOPPED, self.module_dialog._stopped_entry_action)
 
         self.active_condition = None
         self.active_condition_index = None
