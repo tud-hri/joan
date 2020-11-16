@@ -24,9 +24,6 @@ class ExperimentManagerDialog(ModuleDialog):
         self._module_widget.btn_load_experiment.setToolTip("Load an experiment from a JSON file.")
         self._module_widget.btn_edit_experiment.setToolTip("Edit the current experiment.")
 
-        # self._module_widget.btn_initialize_all.clicked.connect(self.initialize_all)
-        # self._module_widget.btn_start_all.clicked.connect(self.start_all)
-        # self._module_widget.btn_stop_all.clicked.connect(self.stop_all)
         self._module_widget.btn_activate_condition.clicked.connect(self.activate_selected_condition)
         self._module_widget.condition_list.currentItemChanged.connect(self._update_enabled_buttons)
         self._module_widget.btn_transition_to_next.clicked.connect(self.transition_to_next_condition)
@@ -37,11 +34,10 @@ class ExperimentManagerDialog(ModuleDialog):
         self.settings_menu.clear()
         self.settings_menu = None
 
-
-
-        # self.update_gui()
-        # self._update_enabled_buttons()
-        # self.update_condition_lists()
+    def _handle_state_change(self):
+        if self.module_manager.state_machine.current_state == State.STOPPED:
+            if self._module_widget.autoTransitionCheckBox.isChecked():
+                self.transition_to_next_condition()
 
     def create_new_experiment(self):
         new_experiment_dialog = NewExperimentDialog(self.module_manager.singleton_settings.all_settings_keys, parent=self)
