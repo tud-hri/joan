@@ -26,6 +26,7 @@ class CarlaInterfaceDialog(ModuleDialog):
         # connect buttons
         self._module_widget.btn_add_agent.clicked.connect(self._select_agent_type)
         self._agent_tabs_dict = {}
+        self._agent_dialogs_dict = {}
 
 
     def _handle_state_change(self):
@@ -54,6 +55,10 @@ class CarlaInterfaceDialog(ModuleDialog):
             if self.module_manager.module_settings.agents[agent_settings].identifier not in self._agent_tabs_dict:
                 self.add_agent(self.module_manager.module_settings.agents[agent_settings], False)
 
+            self._agent_dialogs_dict[self.module_manager.module_settings.agents[agent_settings].identifier].update_ego_vehicle_settings(self.module_manager.module_settings.agents[agent_settings])
+
+
+
     def add_agent(self, settings, from_button):
         agent_type = AgentTypes(settings.agent_type)
 
@@ -61,18 +66,24 @@ class CarlaInterfaceDialog(ModuleDialog):
         agent_tab = uic.loadUi(agent_type.hardware_tab_ui_file)
         agent_tab.group_agent.setTitle(settings.identifier)
 
+
+        # Adding dialog
+        agent_dialog = agent_type.settings_dialog(settings=settings, module_manager=self.module_manager, parent=self)
+
         # Connecting buttons
-        agent_tab.btn_settings.clicked.connect(lambda: agent_type.settings_dialog(settings=settings, module_manager=self.module_manager, parent=self))
+        agent_tab.btn_settings.clicked.connect(lambda: agent_dialog.show())
         agent_tab.btn_remove_agent.clicked.connect(lambda: self.module_manager.remove_agent(settings.identifier))
 
         # add to module_dialog widget
         self._agent_tabs_dict[settings.identifier] = agent_tab
+        self._agent_dialogs_dict[settings.identifier] = agent_dialog
         self._module_widget.agent_list_layout.addWidget(agent_tab)
 
         if from_button:
-            agent_type.settings_dialog(settings=settings, module_manager=self.module_manager, parent=self)
+            agent_dialog.show()
 
     def remove_agent(self, identifier):
         # remove agent tab
         self._agent_tabs_dict[identifier].setParent(None)
+        del self._agent_dialogs_dict[identifier]
         del self._agent_tabs_dict[identifier]

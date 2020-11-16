@@ -17,6 +17,7 @@ from PyQt5.QtWidgets import QMessageBox, QApplication
 class EgoVehicleSettingsDialog(QtWidgets.QDialog):
     def __init__(self, settings, module_manager, parent = None):
         super().__init__(parent)
+
         self.settings = settings
         self.module_manager = module_manager
         self.carla_interface_overall_settings = self.module_manager.module_settings
@@ -27,27 +28,29 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
         self.button_box_egovehicle_settings.button(self.button_box_egovehicle_settings.RestoreDefaults).clicked.connect(
             self._set_default_values)
         self.btn_apply_parameters.clicked.connect(self.update_parameters)
-        self.btn_update.clicked.connect(self.update_ego_vehicle_settings)
+        self.btn_update.clicked.connect(lambda: self.update_ego_vehicle_settings(self.settings))
         self.display_values()
 
-        self.update_ego_vehicle_settings()
-        self.show()
+        self.update_ego_vehicle_settings(self.settings)
+
 
     def update_parameters(self):
         self.settings.velocity = self.spin_velocity.value()
         self.settings.selected_input = self.combo_input.currentText()
         self.settings.selected_controller = self.combo_haptic_controllers.currentText()
         self.settings.selected_car = self.combo_car_type.currentText()
-        for settings in self.carla_interface_overall_settings.agents.values():
-            if settings.identifier != self.settings.identifier: #exlude own settings
-                if settings.selected_spawnpoint == self.combo_spawnpoints.currentText() and settings.selected_spawnpoint != 'None':
-                    self.msg_box.setText('This spawnpoint was already chosen for another agent \n'
-                                    'resetting spawnpoint to None')
-                    self.msg_box.exec()
-                    self.settings.selected_spawnpoint = 'None'
-                    break
-                else:
-                    self.settings.selected_spawnpoint = self.combo_spawnpoints.currentText()
+        self.settings.selected_spawnpoint = self.combo_spawnpoints.currentText()
+        # TODO reimplement this correctly
+        # for settings in self.carla_interface_overall_settings.agents.values():
+        #     if settings.identifier != self.settings.identifier: #exlude own settings
+        #         if settings.selected_spawnpoint == self.combo_spawnpoints.currentText() and settings.selected_spawnpoint != 'None':
+        #             self.msg_box.setText('This spawnpoint was already chosen for another agent \n'
+        #                             'resetting spawnpoint to None')
+        #             self.msg_box.exec()
+        #             self.settings.selected_spawnpoint = 'None'
+        #             break
+        #         else:
+        #             self.settings.selected_spawnpoint = self.combo_spawnpoints.currentText()
 
         self.settings.set_velocity = self.check_box_set_vel.isChecked()
         self.display_values()
@@ -57,16 +60,17 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
         self.settings.selected_input = self.combo_input.currentText()
         self.settings.selected_controller = self.combo_haptic_controllers.currentText()
         self.settings.selected_car = self.combo_car_type.currentText()
-        for settings in self.carla_interface_overall_settings.agents.values():
-            if settings.identifier != self.settings.identifier: #exlude own settings
-                if settings.selected_spawnpoint == self.combo_spawnpoints.currentText() and settings.selected_spawnpoint != 'None':
-                    self.msg_box.setText('This spawnpoint was already chosen for another agent \n'
-                                     'resetting spawnpoint to None')
-                    self.msg_box.exec()
-                    self.settings.selected_spawnpoint = 'None'
-                    break
-            else:
-                self.settings.selected_spawnpoint = self.combo_spawnpoints.currentText()
+        # for settings in self.carla_interface_overall_settings.agents.values():
+        #     if settings.identifier != self.settings.identifier: #exlude own settings
+        #         if settings.selected_spawnpoint == self.combo_spawnpoints.currentText() and settings.selected_spawnpoint != 'None':
+        #             self.msg_box.setText('This spawnpoint was already chosen for another agent \n'
+        #                              'resetting spawnpoint to None')
+        #             self.msg_box.exec()
+        #             self.settings.selected_spawnpoint = 'None'
+        #             break
+        #     else:
+        #         self.settings.selected_spawnpoint = self.combo_spawnpoints.currentText()
+        self.settings.selected_spawnpoint = self.combo_spawnpoints.currentText()
         self.settings.set_velocity = self.check_box_set_vel.isChecked()
         super().accept()
 
@@ -91,7 +95,7 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
     def _set_default_values(self):
         self.display_values(AgentTypes.EGO_VEHICLE.settings())
         
-    def update_ego_vehicle_settings(self):
+    def update_ego_vehicle_settings(self, settings):
         # Update hardware inputs according to current settings:
         self.combo_input.clear()
         self.combo_input.addItem('None')
@@ -99,7 +103,7 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
         for inputs in HardwareManagerSettings.inputs.values():
             self.combo_input.addItem(str(inputs))
         idx = self.combo_input.findText(
-            self.settings.selected_input)
+            settings.selected_input)
         if idx != -1:
             self.combo_input.setCurrentIndex(idx)
 
@@ -107,7 +111,7 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
         self.combo_car_type.clear()
         self.combo_car_type.addItem('None')
         self.combo_car_type.addItems(self.module_manager.vehicle_tags)
-        idx = self.combo_car_type.findText(self.settings.selected_car)
+        idx = self.combo_car_type.findText(settings.selected_car)
         if idx != -1:
             self.combo_car_type.setCurrentIndex(idx)
 
@@ -116,7 +120,7 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
         self.combo_spawnpoints.addItem('None')
         self.combo_spawnpoints.addItems(self.module_manager.spawn_points)
         idx = self.combo_spawnpoints.findText(
-            self.settings.selected_spawnpoint)
+            settings.selected_spawnpoint)
         if idx != -1:
             self.combo_spawnpoints.setCurrentIndex(idx)
 
@@ -127,7 +131,7 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
         for haptic_controller in HapticControllerManagerSettings.haptic_controllers.values():
             self.combo_haptic_controllers.addItem(str(haptic_controller))
         idx = self.combo_haptic_controllers.findText(
-            self.settings.selected_controller)
+            settings.selected_controller)
         if idx != -1:
             self.combo_haptic_controllers.setCurrentIndex(idx)
 

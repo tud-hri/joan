@@ -53,6 +53,7 @@ class CarlaInterfaceManager(ModuleManager):
         self._vehicle_bp_library = None
         self.carla_waypoints = None
         self.haptic_controllers = []
+        self.signals = signals
 
         self.connected = self.connect_carla()
 
