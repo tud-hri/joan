@@ -6,11 +6,8 @@ from PyQt5.QtWidgets import QApplication
 
 from core.module_exceptionmonitor import ModuleExceptionMonitor
 from core.module_process import ProcessEvents
-from core.news import News
-from core.settings import Settings
 from core.statemachine import StateMachine
 from core.statesenum import State
-from core.signals import Signals
 from modules.joanmodules import JOANModules
 from core.settings import Settings
 from PyQt5.QtCore import pyqtSignal, Qt
@@ -107,7 +104,6 @@ class ModuleManager(QtCore.QObject):
         # Start the process, run() will wait until start_event is set
         if self._process and not self._process.is_alive():
             self._process.start()
-
 
         self._events.process_is_ready.wait()
 
