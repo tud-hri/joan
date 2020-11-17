@@ -2,6 +2,7 @@ import os
 import sys
 
 from PyQt5 import QtCore
+from PyQt5.QtWidgets import QApplication
 
 from core.module_exceptionmonitor import ModuleExceptionMonitor
 from core.module_process import ProcessEvents
@@ -12,7 +13,7 @@ from core.statesenum import State
 from core.signals import Signals
 from modules.joanmodules import JOANModules
 from core.settings import Settings
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtCore import pyqtSignal, Qt
 
 
 class ModuleManager(QtCore.QObject):
@@ -95,6 +96,7 @@ class ModuleManager(QtCore.QObject):
         pass
 
     def get_ready(self):
+        QApplication.setOverrideCursor(Qt.WaitCursor)
         self._process = self.module.process(self.module,
                                             time_step_in_ms=self._time_step_in_ms,
                                             news=self.news,
@@ -106,9 +108,11 @@ class ModuleManager(QtCore.QObject):
         if self._process and not self._process.is_alive():
             self._process.start()
 
+
         self._events.process_is_ready.wait()
 
         self.shared_variables.state = self.state_machine.current_state.value
+        QApplication.restoreOverrideCursor()
 
     def start(self):
         self.module_dialog.start()
@@ -118,6 +122,7 @@ class ModuleManager(QtCore.QObject):
         self.shared_variables.state = self.state_machine.current_state.value
 
     def stop(self):
+        QApplication.setOverrideCursor(Qt.WaitCursor)
         self.shared_variables.state = self.state_machine.current_state.value
 
         # send stop state to process and wait for the process to stop
@@ -131,6 +136,7 @@ class ModuleManager(QtCore.QObject):
                 self._process.join()
 
         print('Process terminated:', self.module)
+        QApplication.restoreOverrideCursor()
 
     def stop_dialog_timer(self):
         self.module_dialog.update_timer.stop()
