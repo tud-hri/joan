@@ -144,6 +144,8 @@ class KeyBoardSettings:
         self.throttle_sensitivity = float(50.0)
         self.brake_sensitivity = float(50.0)
 
+
+
     def as_dict(self):
         return self.__dict__
 

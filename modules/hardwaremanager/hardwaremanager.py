@@ -46,9 +46,6 @@ class HardwareManager(ModuleManager):
             if inputs.input_type == HardwareInputTypes.SENSODRIVE.value:
                 inputs.events.clear_error_event.set()
 
-    def printkak(self):
-        print('kak')
-
     def start(self):
         super().start()
         for inputs in self.module_settings.inputs.values():
@@ -80,6 +77,7 @@ class HardwareManager(ModuleManager):
     def add_hardware_input(self, input_type: HardwareInputTypes, from_button, input_settings=None):
         # add to module_settings
         input_settings = self.module_settings.add_hardware_input(input_type, input_settings)
+
 
         # add to module_dialog
         self.module_dialog.add_hardware_input(input_settings, from_button)

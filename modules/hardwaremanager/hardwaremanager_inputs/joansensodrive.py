@@ -32,6 +32,7 @@ class JOANSensoDriveProcess:
         # We define our settings list which contains only picklable objects
         self.settings_dict = settings.settings_dict_for_pipe()
 
+
         # We will write all the output of the sensodrive to these variables so that we have it in our main joan program
         self.shared_variables = shared_variables
 
@@ -45,7 +46,6 @@ class JOANSensoDriveProcess:
                               child_pipe=child_pipe, state_queue=settings.events.state_queue)
 
         # Start the communication process when it is created
-
         self.shared_variables.torque = settings.torque
         self.shared_variables.friction = settings.friction
         self.shared_variables.damping = settings.damping
@@ -93,7 +93,14 @@ class SensoDriveSettings:
 
         self.current_state = 0x00
 
-        self.settings_dict = {}
+        self.settings_dict = {'endstops': self.endstops,  # rad
+                              'torque_limit_between_endstops': self.torque_limit_between_endstops,  # percent
+                              'torque_limit_beyond_endstops': self.torque_limit_beyond_endstops,  # percent
+                              'friction': self.friction,  # Nm
+                              'damping': self.damping,  # Nm * s / rad
+                              'spring_stiffness': self.spring_stiffness,  # Nm / rad
+                              'torque': self.torque,  # Nm
+                              'identifier': self.identifier}
 
     def as_dict(self):
         return self.__dict__
