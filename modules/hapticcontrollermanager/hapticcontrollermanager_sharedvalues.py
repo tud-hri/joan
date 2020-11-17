@@ -4,6 +4,7 @@ from ctypes import *
 from core.modulesharedvariables import ModuleSharedVariables
 from core.sharedvariables import SharedVariables
 
+
 class HapticControllerManagerSharedVariables(ModuleSharedVariables):
     def __init__(self):
         super().__init__()
@@ -20,14 +21,14 @@ class FDCASharedVariables(SharedVariables):
         self._sohf = mp.Value(c_float, 0)
         self._loha = mp.Value(c_float, 0)
 
-        #controller outputs
+        # controller outputs
         self._lat_error = mp.Value(c_float, 0)
         self._sw_des = mp.Value(c_float, 0)
         self._heading_error = mp.Value(c_float, 0)
         self._ff_torque = mp.Value(c_float, 0)
         self._fb_torque = mp.Value(c_float, 0)
         self._loha_torque = mp.Value(c_float, 0)
-        self._req_torque = mp.Value(c_float,0)
+        self._req_torque = mp.Value(c_float, 0)
 
     @property
     def temp(self):

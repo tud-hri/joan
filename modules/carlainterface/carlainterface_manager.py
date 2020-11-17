@@ -143,5 +143,3 @@ class CarlaInterfaceManager(ModuleManager):
     def _open_settings_dialog(self, agent_name):
         self._agent_settingdialogs_dict[agent_name].show()
         self._get_update_from_other_modules(agent_name)
-
-

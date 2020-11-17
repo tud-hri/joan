@@ -161,7 +161,7 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
     creating the joystick class for the first time. NOTE: it should not show whenever settings are loaded by .json file.
     """
 
-    def __init__(self, module_manager= None, settings=None, parent=None):
+    def __init__(self, module_manager=None, settings=None, parent=None):
         """
         Initializes the joystick class with the proper settings.
         :param joystick_settings:
@@ -209,7 +209,6 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
         self.value_preview_check_boxes = []
 
         self._display_settings()
-
 
     def preview_joystick_values(self):
         """
@@ -395,5 +394,3 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
 
             self.value_preview_labels.append(display_label)
             self.value_preview_check_boxes.append(check_box)
-
-

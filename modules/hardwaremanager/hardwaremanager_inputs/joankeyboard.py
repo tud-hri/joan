@@ -144,8 +144,6 @@ class KeyBoardSettings:
         self.throttle_sensitivity = float(50.0)
         self.brake_sensitivity = float(50.0)
 
-
-
     def as_dict(self):
         return self.__dict__
 
@@ -189,7 +187,6 @@ class KeyBoardSettingsDialog(QtWidgets.QDialog):
                                         self.label_handbrake]
 
         self._display_values()
-
 
     def accept(self):
         """

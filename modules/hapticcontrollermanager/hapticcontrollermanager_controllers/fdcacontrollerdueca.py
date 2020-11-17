@@ -25,7 +25,7 @@ class FDCAControllerDuecaSettingsDialog(QtWidgets.QDialog):
         self.slider_loha.valueChanged.connect(self._update_loha_slider_label)
         self.btn_apply_parameters.clicked.connect(self.update_parameters)
 
-        #hardcode lookahead time if someone needs it
+        # hardcode lookahead time if someone needs it
         self.t_lookahead = 0
 
         self._loha_resolution = 50
@@ -39,9 +39,8 @@ class FDCAControllerDuecaSettingsDialog(QtWidgets.QDialog):
 
         self.handle_state_change()
 
-
     def handle_state_change(self):
-        #disable changing of trajectory while running (would be quite dangerous)
+        # disable changing of trajectory while running (would be quite dangerous)
         if self.module_manager.state_machine.current_state == State.RUNNING:
             self.cmbbox_hcr_selection.setEnabled(False)
             self.cmbbox_hcr_selection.blockSignals(True)
@@ -81,7 +80,6 @@ class FDCAControllerDuecaSettingsDialog(QtWidgets.QDialog):
             except:
                 pass
 
-
     def accept(self):
         self.slider_loha.setValue(self.spin_loha.value())
         self.fdca_controller_dueca_settings.k_y = float(self.edit_k_y.text())
@@ -114,7 +112,7 @@ class FDCAControllerDuecaSettingsDialog(QtWidgets.QDialog):
         self.lbl_lohs.setText(str(settings_to_display.lohs))
         self.lbl_sohf.setText(str(settings_to_display.sohf))
         self.lbl_loha.setText(str(settings_to_display.loha))
-        self.lbl_loha_deg.setText(str(round(math.radians(settings_to_display.loha),3)))
+        self.lbl_loha_deg.setText(str(round(math.radians(settings_to_display.loha), 3)))
 
         self.edit_k_y.setText(str(settings_to_display.k_y))
         self.edit_k_psi.setText(str(settings_to_display.k_psi))
@@ -148,6 +146,7 @@ class FDCAControllerDuecaSettingsDialog(QtWidgets.QDialog):
         if idx != -1:
             self.cmbbox_hcr_selection.setCurrentIndex(idx)
 
+
 class FDCAControllerDuecaProcess:
     def __init__(self, settings, shared_variables, carla_interface_settings):
         self.settings = settings
@@ -169,7 +168,6 @@ class FDCAControllerDuecaProcess:
         self.shared_variables.sohf = settings.sohf
         self.shared_variables.loha = settings.loha
 
-
     def load_trajectory(self):
         """Load HCR trajectory"""
         try:
@@ -181,7 +179,7 @@ class FDCAControllerDuecaProcess:
             print('Loaded trajectory = ', self.settings.trajectory_name)
             # self.trajectory_name = fname
         except OSError as err:
-                print('Error loading HCR trajectory file: ', err)
+            print('Error loading HCR trajectory file: ', err)
 
     def calculate_error(self, pos_car, heading_car, vel_car=np.array([0.0, 0.0])):
         """
@@ -280,8 +278,10 @@ class FDCAControllerDuecaProcess:
                         # Psi (heading): left-hand z-axis positive (yaw to the right is positive)
                         # torque: rightward rotation is positive
 
-                        pos_car = np.array([carlainterface_shared_variables.agents[agent_settings.__str__()].transform[0], carlainterface_shared_variables.agents[agent_settings.__str__()].transform[1]])
-                        vel_car = np.array([carlainterface_shared_variables.agents[agent_settings.__str__()].velocities[0], carlainterface_shared_variables.agents[agent_settings.__str__()].velocities[1]])
+                        pos_car = np.array([carlainterface_shared_variables.agents[agent_settings.__str__()].transform[0],
+                                            carlainterface_shared_variables.agents[agent_settings.__str__()].transform[1]])
+                        vel_car = np.array([carlainterface_shared_variables.agents[agent_settings.__str__()].velocities[0],
+                                            carlainterface_shared_variables.agents[agent_settings.__str__()].velocities[1]])
 
                         heading_car = carlainterface_shared_variables.agents[agent_settings.__str__()].transform[3]
 
@@ -320,8 +320,8 @@ class FDCAControllerDuecaProcess:
                         # feedforward/feedback torque
                         sw_angle_ff_fb = sw_angle_ff + sw_angle_fb
 
-                        #Inverse steering dynamics
-                        torque_ff_fb = sw_angle_ff_fb * 1.0  / (1.0 / auto_center_stiffness)  # !!! stiffness should be in [Nm/rad]
+                        # Inverse steering dynamics
+                        torque_ff_fb = sw_angle_ff_fb * 1.0 / (1.0 / auto_center_stiffness)  # !!! stiffness should be in [Nm/rad]
 
                         # total torque of FDCA, to be sent to SW controller in Nm
                         torque_fdca = torque_loha + torque_ff_fb
@@ -334,7 +334,6 @@ class FDCAControllerDuecaProcess:
                         hardware_manager_shared_variables.inputs[agent_settings.selected_input].torque = torque_fdca
         except AttributeError:
             pass
-
 
 
 class FDCAControllerDuecaSettings:
@@ -359,4 +358,3 @@ class FDCAControllerDuecaSettings:
     def set_from_loaded_dict(self, loaded_dict):
         for key, value in loaded_dict.items():
             self.__setattr__(key, value)
-

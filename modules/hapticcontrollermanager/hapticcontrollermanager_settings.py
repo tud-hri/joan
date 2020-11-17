@@ -4,6 +4,7 @@ from core.module_settings import ModuleSettings, find_settings_by_identifier
 from modules.joanmodules import JOANModules
 from modules.hapticcontrollermanager.hapticcontrollermanager_controllertypes import HapticControllerTypes
 
+
 class HapticControllerManagerSettings(ModuleSettings):
     def __init__(self):
         super().__init__(JOANModules.HAPTIC_CONTROLLER_MANAGER)
@@ -52,4 +53,3 @@ class HapticControllerManagerSettings(ModuleSettings):
     def remove_haptic_controller(self, identifier):
         key, _ = find_settings_by_identifier(self.haptic_controllers, identifier)
         self.haptic_controllers.pop(key)
-

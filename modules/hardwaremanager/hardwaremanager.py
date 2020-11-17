@@ -3,18 +3,20 @@ from modules.joanmodules import JOANModules
 from .hardwaremanager_inputtypes import HardwareInputTypes
 import multiprocessing as mp
 
+
 class SensoDriveEvents:
     """
     Class containing all events for communication between hardwaremanager and sensodrive
     """
 
     def __init__(self):
-        #events
+        # events
         self.turn_on_event = mp.Event()
         self.turn_off_event = mp.Event()
         self.clear_error_event = mp.Event()
         self.close_event = mp.Event()
         self.state_queue = mp.Queue()
+
 
 class HardwareManager(ModuleManager):
     """Hardwaremanager keeps track of which inputs are being used with what settings. """
@@ -32,15 +34,12 @@ class HardwareManager(ModuleManager):
             if input.input_type == HardwareInputTypes.SENSODRIVE.value:
                 input.events = SensoDriveEvents()
 
-
-
     def get_ready(self):
         for inputs in self.module_settings.inputs.values():
             if inputs.input_type == HardwareInputTypes.SENSODRIVE.value:
                 self.module_dialog.update_timer.timeout.connect(self.module_dialog.update_sensodrive_state)
                 self.module_dialog.update_timer.start()
         super().get_ready()
-
 
         for inputs in self.module_settings.inputs.values():
             if inputs.input_type == HardwareInputTypes.SENSODRIVE.value:
@@ -72,12 +71,11 @@ class HardwareManager(ModuleManager):
         # add all settings tp module_dialog
         from_button = False
         for hardware_input_settings in self.module_settings.all_inputs().values():
-            self.add_hardware_input(HardwareInputTypes(hardware_input_settings.input_type),from_button, hardware_input_settings)
+            self.add_hardware_input(HardwareInputTypes(hardware_input_settings.input_type), from_button, hardware_input_settings)
 
     def add_hardware_input(self, input_type: HardwareInputTypes, from_button, input_settings=None):
         # add to module_settings
         input_settings = self.module_settings.add_hardware_input(input_type, input_settings)
-
 
         # add to module_dialog
         self.module_dialog.add_hardware_input(input_settings, from_button)

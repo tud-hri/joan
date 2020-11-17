@@ -29,7 +29,8 @@ class HapticControllerManagerDialog(ModuleDialog):
         for controller_settings in self.module_manager.module_settings.haptic_controllers:
             if self.module_manager.module_settings.haptic_controllers[controller_settings].identifier not in self._haptic_controller_tabs_dict:
                 self.add_haptic_controller(self.module_manager.module_settings.haptic_controllers[controller_settings], False)
-            self._haptic_controller_dialogs_dict[self.module_manager.module_settings.haptic_controllers[controller_settings].identifier]._display_values(self.module_manager.module_settings.haptic_controllers[controller_settings])
+            self._haptic_controller_dialogs_dict[self.module_manager.module_settings.haptic_controllers[controller_settings].identifier]._display_values(
+                self.module_manager.module_settings.haptic_controllers[controller_settings])
 
     def _handle_state_change(self):
         """"
@@ -53,7 +54,6 @@ class HapticControllerManagerDialog(ModuleDialog):
             self._haptic_controller_tabs_dict[haptic_controller_tabs].btn_settings.setEnabled(True)
             self._haptic_controller_tabs_dict[haptic_controller_tabs].btn_settings.blockSignals(False)
 
-
     def _select_haptic_controller_type(self):
         self._haptic_controller_type_dialog.combo_haptic_controller_type.clear()
         for haptic_controllers in HapticControllerTypes:
@@ -61,7 +61,8 @@ class HapticControllerManagerDialog(ModuleDialog):
         self._haptic_controller_type_dialog.show()
 
     def _haptic_controller_selected(self):
-        selected_haptic_controller = self._haptic_controller_type_dialog.combo_haptic_controller_type.itemData(self._haptic_controller_type_dialog.combo_haptic_controller_type.currentIndex())
+        selected_haptic_controller = self._haptic_controller_type_dialog.combo_haptic_controller_type.itemData(
+            self._haptic_controller_type_dialog.combo_haptic_controller_type.currentIndex())
         # module_manager manages adding a new haptic_controller
         from_button = True
         self.module_manager.add_haptic_controller(selected_haptic_controller, from_button)
@@ -73,7 +74,7 @@ class HapticControllerManagerDialog(ModuleDialog):
         haptic_controller_tab = uic.loadUi(haptic_controller_type.haptic_controller_ui_file)
         haptic_controller_tab.group_haptic_controller.setTitle(settings.identifier)
 
-        #adding dialog
+        # adding dialog
         haptic_controller_dialog = haptic_controller_type.settings_dialog(settings=settings, module_manager=self.module_manager, parent=self)
 
         # Connecting buttons
@@ -93,5 +94,3 @@ class HapticControllerManagerDialog(ModuleDialog):
         self._haptic_controller_tabs_dict[identifier].setParent(None)
         del self._haptic_controller_tabs_dict[identifier]
         del self._haptic_controller_dialogs_dict[identifier]
-
-

@@ -32,13 +32,11 @@ class JOANSensoDriveProcess:
         # We define our settings list which contains only picklable objects
         self.settings_dict = settings.settings_dict_for_pipe()
 
-
         # We will write all the output of the sensodrive to these variables so that we have it in our main joan program
         self.shared_variables = shared_variables
 
         # Initialize communication pipe between seperate sensodrive process
         self.parent_pipe, child_pipe = mp.Pipe(duplex=True)
-
 
         # Create the sensodrive communication object with needed events and pipe
         comm = SensoDriveComm(turn_on_event=settings.events.turn_on_event, turn_off_event=settings.events.turn_off_event,
@@ -74,6 +72,7 @@ class JOANSensoDriveProcess:
         self.shared_variables.brake = values_from_sensodrive['brake']
         self.shared_variables.steering_rate = values_from_sensodrive['steering_rate']
         self.shared_variables.measured_torque = values_from_sensodrive['measured_torque']
+
 
 class SensoDriveSettings:
     """
@@ -144,7 +143,6 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
 
         self._display_values()
 
-
     def update_parameters(self):
         """
         Updates the parameters without closing the dialog
@@ -155,7 +153,7 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
         self.sensodrive_settings.friction = self.spin_friction.value()
         self.sensodrive_settings.damping = self.spin_damping.value()
         self.sensodrive_settings.spring_stiffness = self.spin_spring_stiffness.value()
-        
+
         # try:
         #     # TODO, dit moet op de een of andere manier nog in de ready state ook gaan werken (werkt nu alleen in running)
         #     self.module_manager.shared_variables.inputs[self.sensodrive_settings.identifier].friction = self.sensodrive_settings.friction
@@ -331,7 +329,7 @@ class SensoDriveComm(mp.Process):
             # TODO: Have to fix this stuff when we have the variable settings
             # if self.update_settings_event.is_set():
             # self.update_settings()
-                # self.update_settings_event.clear()
+            # self.update_settings_event.clear()
 
             # properly uninitialize the pcan dongle if sensodrive is removed
             if self.close_event.is_set():
@@ -551,5 +549,3 @@ class SensoDriveComm(mp.Process):
         response = self.pcan_object.Read(self._pcan_channel)
 
         self._current_state_hex = response[1].DATA[0]
-
-

@@ -28,7 +28,6 @@ class CarlaInterfaceDialog(ModuleDialog):
         self._agent_tabs_dict = {}
         self._agent_dialogs_dict = {}
 
-
     def _handle_state_change(self):
         """"
         This function handles the enabling and disabling of the carla interface change
@@ -55,9 +54,8 @@ class CarlaInterfaceDialog(ModuleDialog):
             if self.module_manager.module_settings.agents[agent_settings].identifier not in self._agent_tabs_dict:
                 self.add_agent(self.module_manager.module_settings.agents[agent_settings], False)
 
-            self._agent_dialogs_dict[self.module_manager.module_settings.agents[agent_settings].identifier].display_values(self.module_manager.module_settings.agents[agent_settings])
-
-
+            self._agent_dialogs_dict[self.module_manager.module_settings.agents[agent_settings].identifier].display_values(
+                self.module_manager.module_settings.agents[agent_settings])
 
     def add_agent(self, settings, from_button):
         agent_type = AgentTypes(settings.agent_type)
@@ -65,7 +63,6 @@ class CarlaInterfaceDialog(ModuleDialog):
         # Adding tab
         agent_tab = uic.loadUi(agent_type.hardware_tab_ui_file)
         agent_tab.group_agent.setTitle(settings.identifier)
-
 
         # Adding dialog
         agent_dialog = agent_type.settings_dialog(settings=settings, module_manager=self.module_manager, parent=self)

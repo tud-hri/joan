@@ -2,6 +2,7 @@ from core.module_manager import ModuleManager
 from modules.joanmodules import JOANModules
 from .hapticcontrollermanager_controllertypes import HapticControllerTypes
 
+
 class HapticControllerManager(ModuleManager):
     """HapticControllerManager keeps track of which haptic controllers are being used with what settings. """
 

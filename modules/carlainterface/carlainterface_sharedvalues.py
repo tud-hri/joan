@@ -4,6 +4,7 @@ from ctypes import *
 from core.modulesharedvariables import ModuleSharedVariables
 from core.sharedvariables import SharedVariables
 
+
 class CarlaInterfaceSharedVariables(ModuleSharedVariables):
     def __init__(self):
         super().__init__()
@@ -17,7 +18,7 @@ class EgoVehicleSharedVariables(SharedVariables):
         self._accelerations = mp.Array(c_float, 3)
         self._applied_input = mp.Array(c_float, 5)
 
-        #road data for controller plotter
+        # road data for controller plotter
         self._data_road_x = mp.Array(c_float, 50)
         self._data_road_x_inner = mp.Array(c_float, 50)
         self._data_road_x_outer = mp.Array(c_float, 50)
@@ -122,5 +123,3 @@ class EgoVehicleSharedVariables(SharedVariables):
     @data_road_lanewidth.setter
     def data_road_lanewidth(self, val):
         self._data_road_lanewidth[:] = val
-
-
