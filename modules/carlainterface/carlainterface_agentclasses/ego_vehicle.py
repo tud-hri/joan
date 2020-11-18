@@ -33,6 +33,10 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
 
         self.update_settings(self.settings)
 
+    def show(self):
+        self.update_settings(self.settings)
+        super().show()
+
 
     def update_parameters(self):
         self.settings.velocity = self.spin_velocity.value()
