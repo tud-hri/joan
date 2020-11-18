@@ -1,6 +1,7 @@
 import os
 
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
+from PyQt5.QtCore import QSize
 
 from core.statesenum import State
 from core.status import Status
@@ -38,15 +39,27 @@ class HQWindow(QtWidgets.QMainWindow):
         self.setCentralWidget(self._main_widget)
         self.resize(400, 400)
 
-        self._main_widget.btn_emergency.setIcon(QtGui.QIcon(QtGui.QPixmap(os.path.join(self._path_resources, "stop.png"))))
+        self._main_widget.btn_emergency.setIcon(QtGui.QIcon(QtGui.QPixmap(os.path.join(self._path_resources, "emergency_stop2.png"))))
         self._main_widget.btn_emergency.clicked.connect(self.emergency)
 
         self._main_widget.btn_quit.setStyleSheet("background-color: darkred")
         self._main_widget.btn_quit.clicked.connect(self.close)
 
+        self._main_widget.btn_initialize.setIcon(QtGui.QIcon(QtGui.QPixmap(os.path.join(self._path_resources, "Init.png"))))
+        self._main_widget.btn_initialize.setIconSize(QSize(100,100))
+        self._main_widget.btn_initialize.setFixedSize(QSize(110,110))
         self._main_widget.btn_initialize.clicked.connect(self.initialize)
+        self._main_widget.btn_get_ready.setIcon(QtGui.QIcon(QtGui.QPixmap(os.path.join(self._path_resources, "GetReady.png"))))
+        self._main_widget.btn_get_ready.setIconSize(QSize(100, 100))
+        self._main_widget.btn_get_ready.setFixedSize(QSize(110, 110))
         self._main_widget.btn_get_ready.clicked.connect(self.get_ready)
+        self._main_widget.btn_start.setIcon(QtGui.QIcon(QtGui.QPixmap(os.path.join(self._path_resources, "Run.png"))))
+        self._main_widget.btn_start.setIconSize(QSize(100, 100))
+        self._main_widget.btn_start.setFixedSize(QSize(110, 110))
         self._main_widget.btn_start.clicked.connect(self.start)
+        self._main_widget.btn_stop.setIcon(QtGui.QIcon(QtGui.QPixmap(os.path.join(self._path_resources, "Stop.png"))))
+        self._main_widget.btn_stop.setIconSize(QSize(100, 100))
+        self._main_widget.btn_stop.setFixedSize(QSize(110, 110))
         self._main_widget.btn_stop.clicked.connect(self.stop)
 
         # dictionary to store all the module widgets
