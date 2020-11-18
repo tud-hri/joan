@@ -45,16 +45,16 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
         self.settings.selected_car = self.combo_car_type.currentText()
         self.settings.selected_spawnpoint = self.combo_spawnpoints.currentText()
         # TODO reimplement this correctly
-        # for settings in self.carla_interface_overall_settings.agents.values():
-        #     if settings.identifier != self.settings.identifier: #exlude own settings
-        #         if settings.selected_spawnpoint == self.combo_spawnpoints.currentText() and settings.selected_spawnpoint != 'None':
-        #             self.msg_box.setText('This spawnpoint was already chosen for another agent \n'
-        #                             'resetting spawnpoint to None')
-        #             self.msg_box.exec()
-        #             self.settings.selected_spawnpoint = 'None'
-        #             break
-        #         else:
-        #             self.settings.selected_spawnpoint = self.combo_spawnpoints.currentText()
+        for settings in self.carla_interface_overall_settings.agents.values():
+            if settings.identifier != self.settings.identifier: #exlude own settings
+                if settings.selected_spawnpoint == self.combo_spawnpoints.currentText() and settings.selected_spawnpoint != 'None':
+                    self.msg_box.setText('This spawnpoint was already chosen for another agent \n'
+                                    'resetting spawnpoint to None')
+                    self.msg_box.exec()
+                    self.settings.selected_spawnpoint = 'None'
+                    break
+                else:
+                    self.settings.selected_spawnpoint = self.combo_spawnpoints.currentText()
 
         self.settings.set_velocity = self.check_box_set_vel.isChecked()
         self.display_values()
@@ -64,17 +64,17 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
         self.settings.selected_input = self.combo_input.currentText()
         self.settings.selected_controller = self.combo_haptic_controllers.currentText()
         self.settings.selected_car = self.combo_car_type.currentText()
-        # for settings in self.carla_interface_overall_settings.agents.values():
-        #     if settings.identifier != self.settings.identifier: #exlude own settings
-        #         if settings.selected_spawnpoint == self.combo_spawnpoints.currentText() and settings.selected_spawnpoint != 'None':
-        #             self.msg_box.setText('This spawnpoint was already chosen for another agent \n'
-        #                              'resetting spawnpoint to None')
-        #             self.msg_box.exec()
-        #             self.settings.selected_spawnpoint = 'None'
-        #             break
-        #     else:
-        #         self.settings.selected_spawnpoint = self.combo_spawnpoints.currentText()
         self.settings.selected_spawnpoint = self.combo_spawnpoints.currentText()
+        for settings in self.carla_interface_overall_settings.agents.values():
+            if settings.identifier != self.settings.identifier: #exlude own settings
+                if settings.selected_spawnpoint == self.combo_spawnpoints.currentText() and settings.selected_spawnpoint != 'None':
+                    self.msg_box.setText('This spawnpoint was already chosen for another agent \n'
+                                     'resetting spawnpoint to None')
+                    self.msg_box.exec()
+                    self.settings.selected_spawnpoint = 'None'
+                    break
+            else:
+                self.settings.selected_spawnpoint = self.combo_spawnpoints.currentText()
         self.settings.set_velocity = self.check_box_set_vel.isChecked()
         super().accept()
 
