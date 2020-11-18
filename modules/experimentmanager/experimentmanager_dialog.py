@@ -13,7 +13,7 @@ class ExperimentManagerDialog(ModuleDialog):
     module_manager: ModuleManager
     def __init__(self, module_manager: ModuleManager, parent=None):
         super().__init__(module=JOANModules.EXPERIMENT_MANAGER, module_manager=module_manager, parent=parent)
-
+        self._module_widget.autoTransitionCheckBox.setChecked(True)
         self._module_widget.btn_create_experiment.clicked.connect(self.create_new_experiment)
         self._module_widget.btn_load_experiment.clicked.connect(self.load_experiment)
         self._module_widget.btn_edit_experiment.clicked.connect(self.open_experiment_dialog)

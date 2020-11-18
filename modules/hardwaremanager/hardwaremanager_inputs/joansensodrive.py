@@ -54,16 +54,16 @@ class JOANSensoDriveProcess:
 
     def update_variables(self):
         # 'variable settings' (can be changed at runtime through the shared variables)
-        self.settings_dict['friction'] = self.shared_variables.friction
-        self.settings_dict['damping'] = self.shared_variables.damping
-        self.settings_dict['spring_stiffness'] = self.shared_variables.loha_stiffness + self.shared_variables.auto_center_stiffness
+        self.settings_dict['mp_friction'] = self.shared_variables.friction
+        self.settings_dict['mp_damping'] = self.shared_variables.damping
+        self.settings_dict['mp_spring_stiffness'] = self.shared_variables.loha_stiffness + self.shared_variables.auto_center_stiffness
 
     def do(self):
         # 'variable settings' (can be changed at runtime through the shared variables)
-        self.settings_dict['torque'] = self.shared_variables.torque
-        self.settings_dict['friction'] = self.shared_variables.friction
-        self.settings_dict['damping'] = self.shared_variables.damping
-        self.settings_dict['spring_stiffness'] = self.shared_variables.loha_stiffness + self.shared_variables.auto_center_stiffness
+        self.settings_dict['mp_torque'] = self.shared_variables.torque
+        self.settings_dict['mp_friction'] = self.shared_variables.friction
+        self.settings_dict['mp_damping'] = self.shared_variables.damping
+        self.settings_dict['mp_spring_stiffness'] = self.shared_variables.loha_stiffness + self.shared_variables.auto_center_stiffness
 
         self.parent_pipe.send(self.settings_dict)
         values_from_sensodrive = self.parent_pipe.recv()
@@ -92,14 +92,14 @@ class SensoDriveSettings:
 
         self.current_state = 0x00
 
-        self.settings_dict = {'endstops': self.endstops,  # rad
-                              'torque_limit_between_endstops': self.torque_limit_between_endstops,  # percent
-                              'torque_limit_beyond_endstops': self.torque_limit_beyond_endstops,  # percent
-                              'friction': self.friction,  # Nm
-                              'damping': self.damping,  # Nm * s / rad
-                              'spring_stiffness': self.spring_stiffness,  # Nm / rad
-                              'torque': self.torque,  # Nm
-                              'identifier': self.identifier}
+        self.settings_dict = {'mp_endstops': self.endstops,  # rad
+                              'mp_torque_limit_between_endstops': self.torque_limit_between_endstops,  # percent
+                              'mp_torque_limit_beyond_endstops': self.torque_limit_beyond_endstops,  # percent
+                              'mp_friction': self.friction,  # Nm
+                              'mp_damping': self.damping,  # Nm * s / rad
+                              'mp_spring_stiffness': self.spring_stiffness,  # Nm / rad
+                              'mp_torque': self.torque,  # Nm
+                              'mp_identifier': self.identifier}
 
     def as_dict(self):
         return self.__dict__
@@ -112,14 +112,14 @@ class SensoDriveSettings:
             self.__setattr__(key, value)
 
     def settings_dict_for_pipe(self):
-        self.settings_dict = {'endstops': self.endstops,  # rad
-                              'torque_limit_between_endstops': self.torque_limit_between_endstops,  # percent
-                              'torque_limit_beyond_endstops': self.torque_limit_beyond_endstops,  # percent
-                              'friction': self.friction,  # Nm
-                              'damping': self.damping,  # Nm * s / rad
-                              'spring_stiffness': self.spring_stiffness,  # Nm / rad
-                              'torque': self.torque,  # Nm
-                              'identifier': self.identifier}
+        self.settings_dict = {'mp_endstops': self.endstops,  # rad
+                              'mp_torque_limit_between_endstops': self.torque_limit_between_endstops,  # percent
+                              'mp_torque_limit_beyond_endstops': self.torque_limit_beyond_endstops,  # percent
+                              'mp_friction': self.friction,  # Nm
+                              'mp_damping': self.damping,  # Nm * s / rad
+                              'mp_spring_stiffness': self.spring_stiffness,  # Nm / rad
+                              'mp_torque': self.torque,  # Nm
+                              'mp_identifier': self.identifier}
 
         return self.settings_dict
 
@@ -269,7 +269,7 @@ class SensoDriveComm(mp.Process):
 
     def run(self):
         self.settings_dict = self.child_pipe.recv()
-        if self.settings_dict['identifier'] == 'SensoDrive_1':
+        if self.settings_dict['mp_identifier'] == 'SensoDrive_1':
             self._pcan_channel = PCAN_USBBUS1
         else:
             self._pcan_channel = PCAN_USBBUS2
@@ -296,7 +296,7 @@ class SensoDriveComm(mp.Process):
             received = self.pcan_object.Read(self._pcan_channel)
 
             # request state data
-            endstops_bytes = int.to_bytes(int(math.degrees(self.settings_dict['endstops'])), 2, byteorder='little', signed=True)
+            endstops_bytes = int.to_bytes(int(math.degrees(self.settings_dict['mp_endstops'])), 2, byteorder='little', signed=True)
             self.state_message.DATA[2] = endstops_bytes[0]
             self.state_message.DATA[3] = endstops_bytes[1]
 
@@ -435,10 +435,10 @@ class SensoDriveComm(mp.Process):
         self.pcan_initialization_result = self.pcan_object.Initialize(self._pcan_channel, PCAN_BAUD_1M)
 
         # Convert our shared settings to bytes
-        endstops_bytes = int.to_bytes(int(math.degrees(self.settings_dict['endstops'])), 2, byteorder='little', signed=True)
-        torque_limit_between_endstops_bytes = int.to_bytes(self.settings_dict['torque_limit_between_endstops'], 1, byteorder='little',
+        endstops_bytes = int.to_bytes(int(math.degrees(self.settings_dict['mp_endstops'])), 2, byteorder='little', signed=True)
+        torque_limit_between_endstops_bytes = int.to_bytes(self.settings_dict['mp_torque_limit_between_endstops'], 1, byteorder='little',
                                                            signed=False)
-        torque_limit_beyond_endstops_bytes = int.to_bytes(self.settings_dict['torque_limit_beyond_endstops'], 1, byteorder='little',
+        torque_limit_beyond_endstops_bytes = int.to_bytes(self.settings_dict['mp_torque_limit_beyond_endstops'], 1, byteorder='little',
                                                           signed=False)
 
         # We need to have our init message here as well
@@ -484,10 +484,10 @@ class SensoDriveComm(mp.Process):
         # convert SI units to Sensowheel units
 
         out = {
-            'torque': int(settings['torque'] * 1000.0),
-            'friction': int(settings['friction'] * 1000.0),
-            'damping': int(settings['damping'] * 1000.0 * (2.0 * math.pi) / 60.0),
-            'spring_stiffness': int(settings['spring_stiffness'] * 1000.0 / (180.0 / math.pi))
+            'torque': int(settings['mp_torque'] * 1000.0),
+            'friction': int(settings['mp_friction'] * 1000.0),
+            'damping': int(settings['mp_damping'] * 1000.0 * (2.0 * math.pi) / 60.0),
+            'spring_stiffness': int(settings['mp_spring_stiffness'] * 1000.0 / (180.0 / math.pi))
         }
 
         return out

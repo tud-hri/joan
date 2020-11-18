@@ -62,10 +62,8 @@ class ExperimentManager(ModuleManager):
         """
         for module, base_settings_dict in self.current_experiment.base_settings.items():
             module_settings_dict = copy.deepcopy(base_settings_dict)
-            print(base_settings_dict)
             self._recursively_copy_dict(condition.diff[module], module_settings_dict)
             self.singleton_settings.get_settings(module).load_from_dict({str(module): module_settings_dict})
-            print(module_settings_dict)
 
         self.active_condition = condition
         self.active_condition_index = condition_index
