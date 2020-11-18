@@ -39,7 +39,7 @@ class HQWindow(QtWidgets.QMainWindow):
         self.setCentralWidget(self._main_widget)
         self.resize(400, 400)
 
-        self._main_widget.btn_emergency.setIcon(QtGui.QIcon(QtGui.QPixmap(os.path.join(self._path_resources, "emergency_stop2.png"))))
+        self._main_widget.btn_emergency.setIcon(QtGui.QIcon(QtGui.QPixmap(os.path.join(self._path_resources, "emergency_stop.png"))))
         self._main_widget.btn_emergency.clicked.connect(self.emergency)
 
         self._main_widget.btn_quit.setStyleSheet("background-color: darkred")
