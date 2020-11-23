@@ -140,7 +140,7 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
             if idx != -1:
                 self.combo_haptic_controllers.setCurrentIndex(idx)
         except AttributeError:
-            "Catching attribute error when using default car settings"
+            # Catching attribute error when using default car settings
             pass
 
 class EgoVehicleProcess:
