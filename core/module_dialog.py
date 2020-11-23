@@ -59,7 +59,7 @@ class ModuleDialog(QtWidgets.QDialog):
     def update_dialog(self):
         """
         Called by the update timer.
-        Use to update the module dialog
+        Use to update the module dialog, usually overwritten by inherited module.
         :return:
         """
 
