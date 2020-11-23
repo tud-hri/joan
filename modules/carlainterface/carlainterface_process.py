@@ -8,7 +8,6 @@ from core.statesenum import State
 from modules.carlainterface.carlainterface_agenttypes import AgentTypes
 from modules.joanmodules import JOANModules
 
-# TODO Maybe check this again, however it should not even start when it cant find the library the first time
 try:
     sys.path.append(glob.glob('carla_pythonapi/carla-*%d.%d-%s.egg' % (
         sys.version_info.major,
@@ -81,4 +80,3 @@ class CarlaInterfaceProcess(ModuleProcess):
             spawn_points.append("Spawnpoint " + str(spawn_point_objects.index(item)))
 
         return vehicle_bp_library, spawn_point_objects, world, spawn_points
-
