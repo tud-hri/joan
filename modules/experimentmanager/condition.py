@@ -3,6 +3,11 @@ import copy
 from modules.joanmodules import JOANModules
 
 
+class RemovedDictItem(str):
+    def __new__(cls, **kw):
+        return str.__new__(cls, "__This item was deleted__", **kw)
+
+
 class Condition:
 
     def __init__(self, modules_included: list, name):
@@ -44,16 +49,12 @@ class Condition:
         :return:
         """
 
-        for key in base_dict.keys():
-            if key not in specific_dict.keys():
-                raise ValueError(
-                    'It is not possible to remove_input_device settings that are present in the base of in experiment in a certain condition. '
-                    'Conditions can only add or change settings.')
-
         # TODO: list handling here is pretty inefficient have a look later
         # TODO: if a value is a list (e.g. SW controller), then the complete dict is copied (which is fine, I guess)
         for key, value in base_dict.items():
-            if isinstance(value, dict):
+            if key not in specific_dict.keys():
+                diff_dict[key] = RemovedDictItem()
+            elif isinstance(value, dict):
                 diff_dict[key] = Condition._get_dict_diff(value, specific_dict[key], {})
             elif specific_dict[key] != value:
                 diff_dict[key] = specific_dict[key]

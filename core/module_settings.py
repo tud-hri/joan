@@ -94,6 +94,10 @@ class ModuleSettings:
                     self.module) + " settings, but this setting did not exist. It was created.")
                 destination[key] = value
 
+        for key in destination.keys():
+            if key not in source.keys():
+                del destination[key]
+
     @staticmethod
     def _copy_dict_to_dict(source, destination):
         """

@@ -55,7 +55,7 @@ class ModuleProcess(mp.Process):
     def _get_ready(self):
         # settings dict back to settings object
         self._settings_as_object = self.module.settings()  # create empty settings object
-        self._settings_as_object.load_from_dict(self._settings_as_dict)  # settings as object
+        self._settings_as_object.from_dict(self._settings_as_dict)  # settings as object
 
         # get_ready to
         self.get_ready()

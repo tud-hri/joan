@@ -23,6 +23,7 @@ class HardwareManagerSettings(ModuleSettings):
         :return: None
         """
         module_settings_to_load = loaded_dict[str(self.module)]
+        self.inputs = {}
         for identifier, settings_dict in module_settings_to_load['inputs'].items():
             if 'Keyboard' in identifier:
                 keyboard_settings = HardwareInputTypes.KEYBOARD.settings()

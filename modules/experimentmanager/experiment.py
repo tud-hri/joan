@@ -4,7 +4,7 @@ import json
 from core import Settings
 from modules.experimentmanager.transitions import TransitionsList
 from modules.joanmodules import JOANModules
-from .condition import Condition
+from .condition import Condition, RemovedDictItem
 
 
 class Experiment:
@@ -44,10 +44,20 @@ class Experiment:
             json.dump(dict_to_save, settings_file, indent=4)
 
     @staticmethod
+    def _find_deleted_dict_items_in_diff(dictionary):
+        for key, item in dictionary.items():
+            if item == RemovedDictItem():
+                dictionary[key] = RemovedDictItem()
+            elif isinstance(item, dict):
+                Experiment._find_deleted_dict_items_in_diff(item)
+
+    @staticmethod
     def load_from_file(file_path):
         transitions_list = TransitionsList()
         with open(file_path, 'r') as settings_file:
             loaded_dict = json.load(settings_file)
+
+        Experiment._find_deleted_dict_items_in_diff(loaded_dict)
 
         modules_included = [JOANModules.from_string_representation(string) for string in loaded_dict['modules_included']]
         new_experiment = Experiment(modules_included)
