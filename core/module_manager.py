@@ -27,7 +27,6 @@ class ModuleManager(QtCore.QObject):
         # time step
         self._time_step_in_ms = time_step_in_ms
 
-        # self.singleton_status = Status()
         self.news = news
         self.singleton_settings = Settings()
 
@@ -86,12 +85,6 @@ class ModuleManager(QtCore.QObject):
 
         self.update_shared_variables_adjustable_settings()
 
-    def update_shared_variables_adjustable_settings(self):
-        """
-        Update the adjustable settings in self.shared_variables with the current setting values
-        """
-        pass
-
     def get_ready(self):
         QApplication.setOverrideCursor(Qt.WaitCursor)
         self._process = self.module.process(self.module,
@@ -138,11 +131,12 @@ class ModuleManager(QtCore.QObject):
         self.module_dialog.update_timer.stop()
 
     def clean_up(self):
-        # delete object
         # remove shared values from news
         self.news.remove_news(self.module)
+        # delete object
         self.singleton_settings.remove_settings(self.module)
 
+        # remove shared variables if any
         if self.shared_variables:
             del self.shared_variables
 
