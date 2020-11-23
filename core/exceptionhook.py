@@ -7,7 +7,6 @@ from PyQt5 import QtWidgets, QtCore
 
 
 def exception_log_and_kill_hook(exctype, value, tb, joan_module, exception_event):
-
     # trigger the event to transition the module to ERROR state
     exception_event.set()
 
@@ -16,7 +15,7 @@ def exception_log_and_kill_hook(exctype, value, tb, joan_module, exception_event
 
     #  save log
     try:
-        log_dir = os.path.join(os.getcwd(),'crash_logs')
+        log_dir = os.path.join(os.getcwd(), 'crash_logs')
         if not os.path.isdir(os.path.dirname(log_dir)):
             os.makedirs(log_dir)
 
