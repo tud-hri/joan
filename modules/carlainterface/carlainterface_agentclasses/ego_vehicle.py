@@ -100,44 +100,48 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
         self.display_values(AgentTypes.EGO_VEHICLE.settings())
         
     def update_settings(self, settings):
-        # Update hardware inputs according to current settings:
-        self.combo_input.clear()
-        self.combo_input.addItem('None')
-        HardwareManagerSettings = self.module_manager.singleton_settings.get_settings(JOANModules.HARDWARE_MANAGER)
-        for inputs in HardwareManagerSettings.inputs.values():
-            self.combo_input.addItem(str(inputs))
-        idx = self.combo_input.findText(
-            settings.selected_input)
-        if idx != -1:
-            self.combo_input.setCurrentIndex(idx)
+        try:
+            # Update hardware inputs according to current settings:
+            self.combo_input.clear()
+            self.combo_input.addItem('None')
+            HardwareManagerSettings = self.module_manager.singleton_settings.get_settings(JOANModules.HARDWARE_MANAGER)
+            for inputs in HardwareManagerSettings.inputs.values():
+                self.combo_input.addItem(str(inputs))
+            idx = self.combo_input.findText(
+                settings.selected_input)
+            if idx != -1:
+                self.combo_input.setCurrentIndex(idx)
 
-        # update available vehicles
-        self.combo_car_type.clear()
-        self.combo_car_type.addItem('None')
-        self.combo_car_type.addItems(self.module_manager.vehicle_tags)
-        idx = self.combo_car_type.findText(settings.selected_car)
-        if idx != -1:
-            self.combo_car_type.setCurrentIndex(idx)
+            # update available vehicles
+            self.combo_car_type.clear()
+            self.combo_car_type.addItem('None')
+            self.combo_car_type.addItems(self.module_manager.vehicle_tags)
+            idx = self.combo_car_type.findText(settings.selected_car)
+            if idx != -1:
+                self.combo_car_type.setCurrentIndex(idx)
 
-        # update available spawn_points:
-        self.combo_spawnpoints.clear()
-        self.combo_spawnpoints.addItem('None')
-        self.combo_spawnpoints.addItems(self.module_manager.spawn_points)
-        idx = self.combo_spawnpoints.findText(
-            settings.selected_spawnpoint)
-        if idx != -1:
-            self.combo_spawnpoints.setCurrentIndex(idx)
+            # update available spawn_points:
+            self.combo_spawnpoints.clear()
+            self.combo_spawnpoints.addItem('None')
+            self.combo_spawnpoints.addItems(self.module_manager.spawn_points)
+            idx = self.combo_spawnpoints.findText(
+                settings.selected_spawnpoint)
+            if idx != -1:
+                self.combo_spawnpoints.setCurrentIndex(idx)
 
-        # update available controllers according to current settings:
-        self.combo_haptic_controllers.clear()
-        self.combo_haptic_controllers.addItem('None')
-        HapticControllerManagerSettings = self.module_manager.singleton_settings.get_settings(JOANModules.HAPTIC_CONTROLLER_MANAGER)
-        for haptic_controller in HapticControllerManagerSettings.haptic_controllers.values():
-            self.combo_haptic_controllers.addItem(str(haptic_controller))
-        idx = self.combo_haptic_controllers.findText(
-            settings.selected_controller)
-        if idx != -1:
-            self.combo_haptic_controllers.setCurrentIndex(idx)
+            # update available controllers according to current settings:
+            self.combo_haptic_controllers.clear()
+            self.combo_haptic_controllers.addItem('None')
+            HapticControllerManagerSettings = self.module_manager.singleton_settings.get_settings(JOANModules.HAPTIC_CONTROLLER_MANAGER)
+            for haptic_controller in HapticControllerManagerSettings.haptic_controllers.values():
+                self.combo_haptic_controllers.addItem(str(haptic_controller))
+            idx = self.combo_haptic_controllers.findText(
+                settings.selected_controller)
+            if idx != -1:
+                self.combo_haptic_controllers.setCurrentIndex(idx)
+        except AttributeError:
+            "Catching attribute error when using default car settings"
+            pass
 
 class EgoVehicleProcess:
     def __init__(self, carla_mp, settings, shared_variables):
