@@ -50,5 +50,3 @@ class PerformanceMonitorDialog(QtWidgets.QDialog):
                 self.tableWidget.setItem(row, 1, QtWidgets.QTableWidgetItem("- Hz"))
                 self.tableWidget.setItem(row, 2, QtWidgets.QTableWidgetItem("%.1f Hz" % (1000 / module._time_step_in_ms)))
                 self.tableWidget.setItem(row, 3, QtWidgets.QTableWidgetItem("- Hz"))
-
-
