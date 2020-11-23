@@ -11,12 +11,7 @@ class SettingsOverviewDialog(QtWidgets.QDialog):
         all_settings = self.manager.singleton_settings.all_settings
 
         for module_key, settings_object in all_settings.items():
-            try:
-                print(settings_object.as_dict())
-                self._create_tree_item(self.treeWidget, module_key, settings_object.as_dict())
-            except AttributeError:
-                # This means the settings object is a dict, which is old style  TODO remove_input_device this try/except when fully converted to new style
-                self._create_tree_item(self.treeWidget, module_key, settings_object)
+            self._create_tree_item(self.treeWidget, module_key, settings_object.as_dict())
 
         self.btnUpdate.clicked.connect(self.update_dialog)
         self.show()
@@ -49,7 +44,3 @@ class SettingsOverviewDialog(QtWidgets.QDialog):
         all_settings = self.manager.singleton_settings.all_settings
         for module_key, settings_object in all_settings.items():
             self._create_tree_item(self.treeWidget, module_key, settings_object.as_dict())
-
-
-
-
