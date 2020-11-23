@@ -3,7 +3,7 @@ from modules.joanmodules import JOANModules
 
 class News:
     """
-    The News class is a singleton that holds all the shared variables that contain the latest data
+    The News class is a class that holds all the shared variables that contain the latest data
     """
 
     def __init__(self):
