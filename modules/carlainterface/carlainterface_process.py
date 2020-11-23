@@ -2,11 +2,15 @@ import glob
 import os
 import sys
 import time
+import platform
 
 from core.module_process import ModuleProcess
 from core.statesenum import State
 from modules.carlainterface.carlainterface_agenttypes import AgentTypes
 from modules.joanmodules import JOANModules
+from core.exceptionhook import exception_log_and_kill_hook
+if platform.system() == 'Windows':
+    import wres
 
 try:
     sys.path.append(glob.glob('carla_pythonapi/carla-*%d.%d-%s.egg' % (
@@ -45,6 +49,33 @@ class CarlaInterfaceProcess(ModuleProcess):
         # Now we create our agents and directly spawn them
         for key, value in self._settings_as_object.agents.items():
             self.agent_objects[key] = AgentTypes(value.agent_type).process(self, settings=value, shared_variables=self._module_shared_variables.agents[key])
+
+    def run(self):
+        """
+        Run function, starts once start() is called.
+        Note: anything you created in __init__ and you want to use in run() needs to be picklable. Failing the 'picklable' requirement will result in errors.
+        If you need to use an object from __init__ that is not picklable, see if you can translate your object into something
+        picklable (lists, dicts, primitives etc) and create a new object in here. Example: settings in get_ready.
+        :return:
+        """
+        try:
+            self._get_ready()
+
+            self._events.start.wait()
+
+            # run
+            if platform.system() == 'Windows':
+                with wres.set_resolution(10000):
+                    self._run_loop()
+
+                    if self._events.emergency.is_set():
+                        self.destroy_agents()
+                        self._events.emergency.clear()
+            else:
+                self._run_loop()
+        except:
+            # sys.excepthook is not called from within processes so can't be overridden. instead, catch all exceptions here and call the new excepthook manually
+            exception_log_and_kill_hook(*sys.exc_info(), self.module, self._events.exception)
 
     def destroy_agents(self):
         for agents in self.agent_objects:
