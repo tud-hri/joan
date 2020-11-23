@@ -1,12 +1,12 @@
+import os, math
+import pandas as pd
+import pyqtgraph as pg
+
 from core.module_dialog import ModuleDialog
 from core.module_manager import ModuleManager
 from modules.joanmodules import JOANModules
-import pyqtgraph as pg
-import math
 from PyQt5 import QtGui, QtCore
 from colour import Color
-import pandas as pd
-import os
 
 
 class ControllerPlotterDialog(ModuleDialog):
@@ -133,10 +133,10 @@ class ControllerPlotterDialog(ModuleDialog):
             print('Could not find HCR trajectory, please hardcode a name that is in your sw contorller trajectory list ')
             self.HCR_plot_handle = self._module_widget.top_view_graph.plot(x=[0], y=[0], shadowPen=pg.mkPen(10, 200, 0, 100, width=18),
                                                                            pen=pg.mkPen(0, 102, 0, 255, width=2))
-        self.carSymbol = QtGui.QPainterPath()
-        self.carSymbol.addRect(-0.2, -0.4, 0.4, 0.8)
+        self.CarSymbol = QtGui.QPainterPath()
+        self.CarSymbol.addRect(-0.2, -0.4, 0.4, 0.8)
 
-        self.auto_position_plot_handle = self._module_widget.top_view_graph.plot(x=[0], y=[0], symbol=self.carSymbol,
+        self.auto_position_plot_handle = self._module_widget.top_view_graph.plot(x=[0], y=[0], symbol=self.CarSymbol,
                                                                                  symbolSize=40, pen=None,
                                                                                  symbolBrush=pg.mkBrush(0,
                                                                                                         0,
@@ -269,8 +269,6 @@ class ControllerPlotterDialog(ModuleDialog):
                                                                                 pen='m',
                                                                                 brush='g', symbol=None,
                                                                                 )
-
-        # self.loha_plot_handle = self._module_widget.loha_graph.plot()
 
         ## Initialize topview Graph
         self._module_widget.top_view_graph.setXRange(- 15, 15, padding=0)
@@ -512,11 +510,11 @@ class ControllerPlotterDialog(ModuleDialog):
 
             tr = QtGui.QTransform()
             angle_rot = tr.rotate(vehicle_rotation + (math.degrees(self.plot_data_road_psi[24])))
-            rot_carSymbol = angle_rot.map(self.carSymbol)
+            rot_CarSymbol = angle_rot.map(self.CarSymbol)
 
             self.car_trace_x.append(vehicle_location_x)
             self.car_trace_y.append(vehicle_location_y)
-            self.car_trace_psi.append(rot_carSymbol)
+            self.car_trace_psi.append(rot_CarSymbol)
 
             self.plot_data_lat_error_topview_x = [vehicle_location_x, vehicle_location_x + math.sin(self.plot_data_road_psi[24]) * lat_error]
             self.plot_data_lat_error_topview_y = [vehicle_location_y, vehicle_location_y + math.cos(self.plot_data_road_psi[24]) * lat_error]
