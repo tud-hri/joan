@@ -83,7 +83,7 @@ class ModuleManager(QtCore.QObject):
         # update state in shared variables
         self.shared_variables.state = self.state_machine.current_state.value
 
-        self.update_shared_variables_adjustable_settings()
+
 
     def get_ready(self):
         QApplication.setOverrideCursor(Qt.WaitCursor)
