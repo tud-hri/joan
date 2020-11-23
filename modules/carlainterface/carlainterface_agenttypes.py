@@ -33,7 +33,7 @@ class AgentTypes(enum.Enum):
 
     @property
     def shared_variables(self):
-        from modules.carlainterface.carlainterface_sharedvalues import EgoVehicleSharedVariables
+        from modules.carlainterface.carlainterface_sharedvariables import EgoVehicleSharedVariables
 
         return {AgentTypes.EGO_VEHICLE: EgoVehicleSharedVariables
                 }[self]

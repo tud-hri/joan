@@ -76,7 +76,7 @@ class JOANModules(Enum):
     def shared_variables(self):
         from modules.hardwaremanager.hardwaremanager_sharedvariables import HardwareSharedVariables
         from modules.template.template_sharedvalues import TemplateSharedVariables
-        from modules.carlainterface.carlainterface_sharedvalues import CarlaInterfaceSharedVariables
+        from modules.carlainterface.carlainterface_sharedvariables import CarlaInterfaceSharedVariables
         from modules.hapticcontrollermanager.hapticcontrollermanager_sharedvalues import HapticControllerManagerSharedVariables
         from core.modulesharedvariables import ModuleSharedVariables
         from modules.datarecordermp.datarecordermp_sharedvalues import DataRecorderMPSharedValues
