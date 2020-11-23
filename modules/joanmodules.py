@@ -20,7 +20,7 @@ class JOANModules(Enum):
     @property
     def manager(self):
         from modules.hardwaremanager.hardwaremanager_manager import HardwareManager
-        from modules.template.template import TemplateManager
+        from modules.template.template_manager import TemplateManager
         from modules.carlainterface.carlainterface_manager import CarlaInterfaceManager
         from modules.hapticcontrollermanager.hapticcontrollermanager_manager import HapticControllerManager
         from modules.controllerplotter.controllerplotter_manager import ControllerPlotterManager

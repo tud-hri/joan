@@ -6,7 +6,7 @@ from datetime import datetime
 class TemplateProcess(ModuleProcess):
 
     def __init__(self, module: JOANModules, time_step_in_ms, news, settings, events, settings_singleton):
-        super().__init__(module, time_step_in_ms=time_step_in_ms, news=news, settings=settings, events=events, settings_singleton= settings_singleton)
+        super().__init__(module, time_step_in_ms=time_step_in_ms, news=news, settings=settings, events=events, settings_singleton=settings_singleton)
 
         # it is possible to read from other modules
         # do_while_running NOT WRITE to other modules' news to prevent spaghetti-code
@@ -29,15 +29,3 @@ class TemplateProcess(ModuleProcess):
         """
         now = datetime.now()
         self._module_shared_variables.overwrite_with_current_time = now.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
-
-        # try:
-        #     print(self.shared_variables_carlainterface.agents['Ego Vehicle_1'].__dict__)
-        # except KeyError:
-        #     pass
-
-        # show current time
-        # print(self._module_shared_variables.overwrite_with_current_time)
-
-        # try the brake-key (the default key for brake is 's')
-        # for _, value in self.shared_variables_hardware.keyboards.items():
-        #     print("brake %s" % value.brake)

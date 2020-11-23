@@ -14,4 +14,3 @@ class TemplateManager(ModuleManager):
     def update_shared_variables_adjustable_settings(self):
         # update value in self.shared_variables with the value in settings
         self.shared_variables.overwrite_with_current_time = self.module_settings.overwrite_with_current_time
-

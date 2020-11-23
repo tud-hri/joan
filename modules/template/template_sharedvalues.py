@@ -1,5 +1,4 @@
 import multiprocessing as mp
-from ctypes import *
 
 from core.modulesharedvariables import ModuleSharedVariables
 

@@ -22,7 +22,7 @@ class JOANModules(Enum):
 
     @property
     def manager(self):
-        from modules.template.template import TemplateManager
+        from modules.template.template_manager import TemplateManager
 
         return {JOANModules.TEMPLATE_MP: TemplateManager}[self]
 
