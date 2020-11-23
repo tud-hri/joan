@@ -2,7 +2,7 @@ from core.module_settings import ModuleSettings
 from modules.joanmodules import JOANModules
 
 
-class DatarecorderMPSettings(ModuleSettings):
+class DatarecorderSettings(ModuleSettings):
     def __init__(self):
         super().__init__(module=JOANModules.DATA_RECORDER)
 

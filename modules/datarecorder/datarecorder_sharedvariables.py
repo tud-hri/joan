@@ -1,6 +1,6 @@
 from core.modulesharedvariables import ModuleSharedVariables
 
 
-class DataRecorderMPSharedValues(ModuleSharedVariables):
+class DataRecorderSharedVariables(ModuleSharedVariables):
     def __init__(self):
         super().__init__()

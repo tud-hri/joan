@@ -1,10 +1,10 @@
 from core.module_process import ModuleProcess
-from modules.datarecordermp.datarecordermp_settings import DatarecorderMPSettings
+from modules.datarecorder.datarecorder_settings import DatarecorderSettings
 from modules.joanmodules import JOANModules
 
 
-class DatarecorderMPProcess(ModuleProcess):
-    settings: DatarecorderMPSettings
+class DatarecorderProcess(ModuleProcess):
+    settings: DatarecorderSettings
 
     def __init__(self, module: JOANModules, time_step_in_ms, news, settings, events, settings_singleton):
         super().__init__(module, time_step_in_ms=time_step_in_ms, news=news, settings=settings, events=events, settings_singleton=settings_singleton)
