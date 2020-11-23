@@ -13,7 +13,7 @@ from core.statesenum import State
 from modules.joanmodules import JOANModules
 
 
-class DatarecorderDialog(ModuleDialog):
+class DataRecorderDialog(ModuleDialog):
     def __init__(self, module_manager: ModuleManager, parent=None):
         super().__init__(module=JOANModules.DATA_RECORDER, module_manager=module_manager, parent=parent)
         self._module_manager = module_manager
@@ -137,11 +137,11 @@ class DatarecorderDialog(ModuleDialog):
             item.setFlags(item.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
 
             for prop in value.get_all_properties():
-                DatarecorderDialog._create_tree_item(item, prop, None)
+                DataRecorderDialog._create_tree_item(item, prop, None)
 
             for inner_key, inner_value in value.__dict__.items():
                 if inner_key[0] != '_' and not callable(inner_value):
-                    DatarecorderDialog._create_tree_item(item, inner_key, inner_value)
+                    DataRecorderDialog._create_tree_item(item, inner_key, inner_value)
             return item
         elif isinstance(value, dict):
             item = QtWidgets.QTreeWidgetItem(parent)
@@ -149,14 +149,14 @@ class DatarecorderDialog(ModuleDialog):
             item.setFlags(item.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
 
             for inner_key, inner_value in value.items():
-                DatarecorderDialog._create_tree_item(item, inner_key, inner_value)
+                DataRecorderDialog._create_tree_item(item, inner_key, inner_value)
             return item
         elif isinstance(value, list):
             item = QtWidgets.QTreeWidgetItem(parent)
             item.setData(0, Qt.DisplayRole, str(key))
             item.setFlags(item.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
             for index, inner_value in enumerate(value):
-                DatarecorderDialog._create_tree_item(item, str(index), inner_value)
+                DataRecorderDialog._create_tree_item(item, str(index), inner_value)
             return item
         else:
             item = QtWidgets.QTreeWidgetItem(parent)

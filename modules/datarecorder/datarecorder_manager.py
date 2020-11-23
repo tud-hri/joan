@@ -5,7 +5,7 @@ from modules.joanmodules import JOANModules
 from core.statesenum import State
 
 
-class DatarecorderManager(ModuleManager):
+class DataRecorderManager(ModuleManager):
     """ Manages the datarecorder environment """
 
     def __init__(self, news, signals, time_step_in_ms=10, parent=None):

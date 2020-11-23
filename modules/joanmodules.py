@@ -24,7 +24,7 @@ class JOANModules(Enum):
         from modules.carlainterface.carlainterface_manager import CarlaInterfaceManager
         from modules.hapticcontrollermanager.hapticcontrollermanager import HapticControllerManager
         from modules.controllerplotter.controllerplotter_manager import ControllerPlotterManager
-        from modules.datarecorder.datarecorder_manager import DatarecorderManager
+        from modules.datarecorder.datarecorder_manager import DataRecorderManager
         from modules.experimentmanager.experimentmanager import ExperimentManager
 
         return {JOANModules.HARDWARE_MANAGER: HardwareManager,
@@ -32,7 +32,7 @@ class JOANModules(Enum):
                 JOANModules.CARLA_INTERFACE: CarlaInterfaceManager,
                 JOANModules.HAPTIC_CONTROLLER_MANAGER: HapticControllerManager,
                 JOANModules.CONTROLLER_PLOTTER: ControllerPlotterManager,
-                JOANModules.DATA_RECORDER: DatarecorderManager,
+                JOANModules.DATA_RECORDER: DataRecorderManager,
                 JOANModules.EXPERIMENT_MANAGER: ExperimentManager}[self]
 
     @property
@@ -42,14 +42,14 @@ class JOANModules(Enum):
         from modules.carlainterface.carlainterface_dialog import CarlaInterfaceDialog
         from modules.hapticcontrollermanager.hapticcontrollermanager_dialog import HapticControllerManagerDialog
         from modules.controllerplotter.controllerplotter_dialog import ControllerPlotterDialog
-        from modules.datarecorder.datarecorder_dialog import DatarecorderDialog
+        from modules.datarecorder.datarecorder_dialog import DataRecorderDialog
         from modules.experimentmanager.experimentmanager_dialog import ExperimentManagerDialog
 
         return {JOANModules.HARDWARE_MANAGER: HardwareManagerDialog,
                 JOANModules.TEMPLATE: TemplateDialog,
                 JOANModules.CARLA_INTERFACE: CarlaInterfaceDialog,
                 JOANModules.HAPTIC_CONTROLLER_MANAGER: HapticControllerManagerDialog,
-                JOANModules.DATA_RECORDER: DatarecorderDialog,
+                JOANModules.DATA_RECORDER: DataRecorderDialog,
                 JOANModules.CONTROLLER_PLOTTER: ControllerPlotterDialog,
                 JOANModules.EXPERIMENT_MANAGER: ExperimentManagerDialog}[self]
 
@@ -60,14 +60,14 @@ class JOANModules(Enum):
         from modules.carlainterface.carlainterface_settings import CarlaInterfaceSettings
         from modules.hapticcontrollermanager.hapticcontrollermanager_settings import HapticControllerManagerSettings
         from modules.controllerplotter.controllerplotter_settings import ControllerPlotterSettings
-        from modules.datarecorder.datarecorder_settings import DatarecorderSettings
+        from modules.datarecorder.datarecorder_settings import DataRecorderSettings
         from modules.experimentmanager.experimentmanager_settings import ExperimentManagerSettings
 
         return {JOANModules.TEMPLATE: TemplateSettings,
                 JOANModules.HARDWARE_MANAGER: HardwareMPSettings,
                 JOANModules.CARLA_INTERFACE: CarlaInterfaceSettings,
                 JOANModules.HAPTIC_CONTROLLER_MANAGER: HapticControllerManagerSettings,
-                JOANModules.DATA_RECORDER: DatarecorderSettings,
+                JOANModules.DATA_RECORDER: DataRecorderSettings,
                 JOANModules.CONTROLLER_PLOTTER: ControllerPlotterSettings,
                 JOANModules.EXPERIMENT_MANAGER: ExperimentManagerSettings
                 }[self]
@@ -96,14 +96,14 @@ class JOANModules(Enum):
         from modules.carlainterface.carlainterface_process import CarlaInterfaceProcess
         from modules.hapticcontrollermanager.hapticcontrollermanager_process import HapticControllerManagerProcess
         from core.module_process import ModuleProcess
-        from modules.datarecorder.datarecorder_process import DatarecorderProcess
+        from modules.datarecorder.datarecorder_process import DataRecorderProcess
 
         return {JOANModules.HARDWARE_MANAGER: HardwareManagerProcess,
                 JOANModules.TEMPLATE: TemplateProcess,
                 JOANModules.CARLA_INTERFACE: CarlaInterfaceProcess,
                 JOANModules.HAPTIC_CONTROLLER_MANAGER: HapticControllerManagerProcess,
                 JOANModules.CONTROLLER_PLOTTER: ModuleProcess,
-                JOANModules.DATA_RECORDER: DatarecorderProcess,
+                JOANModules.DATA_RECORDER: DataRecorderProcess,
                 JOANModules.EXPERIMENT_MANAGER: ModuleProcess}[self]
 
     @property
