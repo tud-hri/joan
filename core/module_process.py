@@ -63,7 +63,7 @@ class ModuleProcess(mp.Process):
         self._events.process_is_ready.set()
 
     @abc.abstractmethod
-    # TODO does this need to be an abstract class in module_process?
+    # TODO does this need to be an abstract class in module_process? Yes it does because else you wont be able to destroy your agents if you are in the ready state
     def destroy_agents(self):
         """
             Extra function for carlainterface that whenever you want to go to the stopped state again you also destroy the actors in your simulation,
@@ -104,7 +104,7 @@ class ModuleProcess(mp.Process):
                 with wres.set_resolution(10000):
                     self._run_loop()
 
-                    # TODO same comment as above with the function 'destroy_agents()'. Does this need to be here and why not in carlainterface directly?
+                    # TODO same comment as above with the function 'destroy_agents()'. Does this need to be here and why not in carlainterface directly? same answer as above
                     if self._events.emergency.is_set():
                         self.destroy_agents()
                         self._events.emergency.clear()
