@@ -1,6 +1,6 @@
 import os
 
-from PyQt5 import QtWidgets, uic, QtCore
+from PyQt5 import QtWidgets, uic
 
 
 class SettingsOverviewDialog(QtWidgets.QDialog):
@@ -48,11 +48,7 @@ class SettingsOverviewDialog(QtWidgets.QDialog):
         self.treeWidget.clear()
         all_settings = self.manager.singleton_settings.all_settings
         for module_key, settings_object in all_settings.items():
-            try:
-                self._create_tree_item(self.treeWidget, module_key, settings_object.as_dict())
-            except AttributeError:
-                # This means the settings object is a dict, which is old style  TODO remove_input_device this try/except when fully converted to new style
-                self._create_tree_item(self.treeWidget, module_key, settings_object)
+            self._create_tree_item(self.treeWidget, module_key, settings_object.as_dict())
 
 
 

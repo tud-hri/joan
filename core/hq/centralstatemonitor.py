@@ -7,6 +7,7 @@ class CentralStateMonitor:
     """
     Monitors states of all instantiated modules, by registering _state_changed to each module's state machine.
     """
+
     def __init__(self):
         self._all_state_machines = {}
 
