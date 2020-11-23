@@ -7,7 +7,6 @@ from PyQt5.Qt import Qt
 
 from core.module_dialog import ModuleDialog
 from core.module_manager import ModuleManager
-from core.news import News
 from core.sharedvariables import SharedVariables
 from core.statesenum import State
 from modules.joanmodules import JOANModules
