@@ -25,7 +25,7 @@ class JOANModules(Enum):
         from modules.hapticcontrollermanager.hapticcontrollermanager_manager import HapticControllerManager
         from modules.controllerplotter.controllerplotter_manager import ControllerPlotterManager
         from modules.datarecorder.datarecorder_manager import DataRecorderManager
-        from modules.experimentmanager.experimentmanager import ExperimentManager
+        from modules.experimentmanager.experimentmanager_manager import ExperimentManager
 
         return {JOANModules.HARDWARE_MANAGER: HardwareManager,
                 JOANModules.TEMPLATE: TemplateManager,
