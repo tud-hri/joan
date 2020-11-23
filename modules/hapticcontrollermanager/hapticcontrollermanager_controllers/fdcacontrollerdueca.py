@@ -1,13 +1,15 @@
 import math
-
-import numpy as np
-from PyQt5 import QtWidgets, uic
 import os
+import pandas as pd
+import numpy as np
+
+from PyQt5 import QtWidgets, uic
+
 from modules.hapticcontrollermanager.hapticcontrollermanager_controllertypes import HapticControllerTypes
 from tools import LowPassFilterBiquad
-from tools.haptic_controller_tools import find_closest_node, check_equal
-import pandas as pd
+from tools.haptic_controller_tools import find_closest_node
 from core.statesenum import State
+
 
 
 class FDCAControllerDuecaSettingsDialog(QtWidgets.QDialog):
