@@ -6,7 +6,7 @@ from .sharedvariables import SharedVariables
 
 class ModuleSharedVariables(SharedVariables):
     def __init__(self):
-        self._state = mp.Value(ctypes.c_int, -2)  # module state [initialized, running, error]
+        self._state = mp.Value(ctypes.c_int, -2)  # module state [initialized, running, error, stopped]
         self._execution_time = mp.Value(ctypes.c_double)
         self._running_frequency = mp.Value(ctypes.c_double)
         self._time = mp.Value(ctypes.c_double)
