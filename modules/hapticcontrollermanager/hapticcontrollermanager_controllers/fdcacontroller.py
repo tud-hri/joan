@@ -1,12 +1,13 @@
 import math
-
-import numpy as np
-from PyQt5 import QtWidgets, uic
 import os
+import pandas as pd
+import numpy as np
+
+from PyQt5 import QtWidgets, uic
+
 from modules.hapticcontrollermanager.hapticcontrollermanager_controllertypes import HapticControllerTypes
 from tools import LowPassFilterBiquad
-from tools.haptic_controller_tools import find_closest_node, check_equal
-import pandas as pd
+from tools.haptic_controller_tools import find_closest_node
 from core.statesenum import State
 
 
@@ -175,9 +176,7 @@ class FDCAControllerProcess:
             tmp = pd.read_csv(os.path.join(self._path_trajectory_directory, self.settings.trajectory_name))
             if not np.array_equal(tmp.values, self._trajectory):
                 self._trajectory = tmp.values
-            # TODO We might want to do_while_running some checks on the trajectory here.
             print('Loaded trajectory = ', self.settings.trajectory_name)
-            # self.trajectory_name = fname
         except OSError as err:
             print('Error loading HCR trajectory file: ', err)
 
