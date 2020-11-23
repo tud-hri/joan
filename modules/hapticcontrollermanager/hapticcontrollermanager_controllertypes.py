@@ -11,7 +11,7 @@ class HapticControllerTypes(enum.Enum):
     settings_ui_file: ui file of the settings dialog
     hardware_tab_uifile: ui file of the widget added in the module dialog
     settings: specific settings of the hardware input type
-    __str__: the string represntation of the hardware input type
+    __str__: the string representation of the hardware input type
 
     """
 
@@ -38,8 +38,8 @@ class HapticControllerTypes(enum.Enum):
 
     @property
     def shared_variables(self):
-        from modules.hapticcontrollermanager.hapticcontrollermanager_sharedvalues import FDCASharedVariables
-        from modules.hapticcontrollermanager.hapticcontrollermanager_sharedvalues import FDCADuecaSharedVariables
+        from modules.hapticcontrollermanager.hapticcontrollermanager_sharedvariables import FDCASharedVariables
+        from modules.hapticcontrollermanager.hapticcontrollermanager_sharedvariables import FDCADuecaSharedVariables
 
         return {HapticControllerTypes.FDCA: FDCASharedVariables,
                 HapticControllerTypes.FDCA_DUECA: FDCADuecaSharedVariables

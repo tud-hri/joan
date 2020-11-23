@@ -22,7 +22,7 @@ class JOANModules(Enum):
         from modules.hardwaremanager.hardwaremanager_manager import HardwareManager
         from modules.template.template import TemplateManager
         from modules.carlainterface.carlainterface_manager import CarlaInterfaceManager
-        from modules.hapticcontrollermanager.hapticcontrollermanager import HapticControllerManager
+        from modules.hapticcontrollermanager.hapticcontrollermanager_manager import HapticControllerManager
         from modules.controllerplotter.controllerplotter_manager import ControllerPlotterManager
         from modules.datarecorder.datarecorder_manager import DataRecorderManager
         from modules.experimentmanager.experimentmanager import ExperimentManager
@@ -77,7 +77,7 @@ class JOANModules(Enum):
         from modules.hardwaremanager.hardwaremanager_sharedvariables import HardwareManagerSharedVariables
         from modules.template.template_sharedvalues import TemplateSharedVariables
         from modules.carlainterface.carlainterface_sharedvariables import CarlaInterfaceSharedVariables
-        from modules.hapticcontrollermanager.hapticcontrollermanager_sharedvalues import HapticControllerManagerSharedVariables
+        from modules.hapticcontrollermanager.hapticcontrollermanager_sharedvariables import HapticControllerManagerSharedVariables
         from core.modulesharedvariables import ModuleSharedVariables
         from modules.datarecorder.datarecorder_sharedvariables import DataRecorderSharedVariables
 

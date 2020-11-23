@@ -17,15 +17,14 @@ class HapticControllerManagerProcess(ModuleProcess):
         self.haptic_controller_objects = {}
 
     def get_ready(self):
-        for key, value in self._settings_as_object.haptic_controllers.items():
-            self.haptic_controller_objects[key] = HapticControllerTypes(value.haptic_controller_type).process(settings=value,
-                                                                                                              shared_variables=self._module_shared_variables.haptic_controllers[
-                                                                                                                  key], carla_interface_settings=self.settings_carla_interface)
         """
         When instantiating the ModuleProcess, the settings ar converted to type dict
         The super().get_ready() method converts the module_settings back to the appropriate settings object
         """
-        pass
+        for key, value in self._settings_as_object.haptic_controllers.items():
+            self.haptic_controller_objects[key] = HapticControllerTypes(value.haptic_controller_type).process(settings=value,
+                                                                                                              shared_variables=self._module_shared_variables.haptic_controllers[
+                                                                                                                  key], carla_interface_settings=self.settings_carla_interface)
 
     def do_while_running(self):
         """
@@ -36,4 +35,3 @@ class HapticControllerManagerProcess(ModuleProcess):
             self.haptic_controller_objects[haptic_controllers].do(carlainterface_shared_variables=self.shared_variables_carla_interface,
                                                                   hardware_manager_shared_variables=self.shared_variables_hardware,
                                                                   carla_interface_settings=self.settings_carla_interface)
-        pass

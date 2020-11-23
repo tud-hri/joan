@@ -1,5 +1,3 @@
-import enum
-
 from core.module_settings import ModuleSettings, find_settings_by_identifier
 from modules.joanmodules import JOANModules
 from modules.hapticcontrollermanager.hapticcontrollermanager_controllertypes import HapticControllerTypes

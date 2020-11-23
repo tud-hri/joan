@@ -1,7 +1,9 @@
+import os
+
 from core.module_dialog import ModuleDialog
 from core.module_manager import ModuleManager
 from modules.joanmodules import JOANModules
-import os
+
 from PyQt5 import uic
 from modules.hapticcontrollermanager.hapticcontrollermanager_controllertypes import HapticControllerTypes
 from core.statesenum import State
