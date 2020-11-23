@@ -55,7 +55,8 @@ class CarlaInterfaceProcess(ModuleProcess):
         Run function, starts once start() is called.
         Note: anything you created in __init__ and you want to use in run() needs to be picklable. Failing the 'picklable' requirement will result in errors.
         If you need to use an object from __init__ that is not picklable, see if you can translate your object into something
-        picklable (lists, dicts, primitives etc) and create a new object in here. Example: settings in get_ready.
+        picklable (lists, dicts, primitives etc) and create a new object in here. Example: settings in get_ready. This function is overwritten in carlainterface
+        because we need to be able to destroy our actors in the READY state as well as in the RUNNING state
         :return:
         """
         try:
