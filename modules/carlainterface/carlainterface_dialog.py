@@ -1,7 +1,6 @@
 import os
 
 from PyQt5 import uic
-
 from core.module_dialog import ModuleDialog
 from core.module_manager import ModuleManager
 from core.statesenum import State
@@ -18,7 +17,6 @@ class CarlaInterfaceDialog(ModuleDialog):
         :param parent:
         """
         # setup dialogs
-
         self._agent_type_dialog = uic.loadUi(
             os.path.join(os.path.dirname(os.path.realpath(__file__)), "carlainterface_agentclasses/ui/agent_select_ui.ui"))
         self._agent_type_dialog.btns_agent_type_select.accepted.connect(self._agent_selected)

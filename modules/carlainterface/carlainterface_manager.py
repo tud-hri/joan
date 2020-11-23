@@ -118,7 +118,7 @@ class CarlaInterfaceManager(ModuleManager):
                 # # TODO: untested, settings are only able to be applied after connecting to CARLA
                 # self.apply_loaded_settings()
 
-            except RuntimeError as inst:
+            except RuntimeError:
                 QApplication.restoreOverrideCursor()
                 msg_box.setText('Could not connect check if CARLA is running in Unreal')
                 msg_box.exec()
