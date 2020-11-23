@@ -3,7 +3,7 @@ import copy
 
 from PyQt5 import QtWidgets, QtCore, QtGui
 
-from modules.experimentmanager.condition import  Condition
+from modules.experimentmanager.condition import Condition
 from modules.experimentmanager.experiment import Experiment
 from modules.experimentmanager.transitions import TransitionsList
 from .edit_experiment_dialog_ui import Ui_ExperimentManagerWidget

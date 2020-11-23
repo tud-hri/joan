@@ -9,8 +9,10 @@ from modules.experimentmanager.editexperimentdialog import EditExperimentDialog
 
 import os
 
+
 class ExperimentManagerDialog(ModuleDialog):
     module_manager: ModuleManager
+
     def __init__(self, module_manager: ModuleManager, parent=None):
         super().__init__(module=JOANModules.EXPERIMENT_MANAGER, module_manager=module_manager, parent=parent)
         self._module_widget.autoTransitionCheckBox.setChecked(True)
@@ -55,7 +57,7 @@ class ExperimentManagerDialog(ModuleDialog):
             self._module_widget.btn_load_experiment.setEnabled(True)
             if self.module_manager.current_experiment:
                 if bool(self._module_widget.condition_list.currentItem()):
-                        selected_current_is_condition = isinstance(self._module_widget.condition_list.currentItem().data(QtCore.Qt.UserRole), Condition)
+                    selected_current_is_condition = isinstance(self._module_widget.condition_list.currentItem().data(QtCore.Qt.UserRole), Condition)
                 else:
                     selected_current_is_condition = False
                 self._module_widget.btn_activate_condition.setEnabled(selected_current_is_condition)
@@ -70,7 +72,6 @@ class ExperimentManagerDialog(ModuleDialog):
             self._module_widget.btn_load_experiment.setEnabled(False)
             self._module_widget.btn_activate_condition.setEnabled(False)
             self._module_widget.btn_transition_to_next.setEnabled(False)
-
 
     def update_gui(self):
         self._module_widget.condition_list.clear()
@@ -111,8 +112,6 @@ class ExperimentManagerDialog(ModuleDialog):
         if success:
             self._update_highlighted_condition()
             self._update_enabled_buttons()
-
-
 
     def transition_to_next_condition(self):
         success = self.module_manager.transition_to_next_condition()
