@@ -1,4 +1,5 @@
 from modules.joanmodules import JOANModules
+
 """
 Holds settings of every module to be used by the experimentmanager
 """
@@ -42,7 +43,7 @@ class Settings:
         try:
             del self._settings[module]
         except KeyError as e:
-            print('There is no settings yet from',e)
+            print('There is no settings yet from', e)
 
     @property
     def all_settings(self):
