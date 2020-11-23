@@ -1,21 +1,21 @@
-from PyQt5 import uic, QtWidgets
-from modules.carlainterface.carlainterface_agenttypes import AgentTypes
-import random, os, sys, glob
-import math
+import random, os, sys, glob, math
 import numpy as np
 
-#TODO Maybe check this again, however it should not even start when it cant find the library the first time
 sys.path.append(glob.glob('carla_pythonapi/carla-*%d.%d-%s.egg' % (
-        sys.version_info.major,
-        sys.version_info.minor,
-        'win-amd64' if os.name == 'nt' else 'linux-x86_64'))[0])
+    sys.version_info.major,
+    sys.version_info.minor,
+    'win-amd64' if os.name == 'nt' else 'linux-x86_64'))[0])
 import carla
+
+from PyQt5 import uic, QtWidgets
+from modules.carlainterface.carlainterface_agenttypes import AgentTypes
 from modules.joanmodules import JOANModules
 from PyQt5 import QtCore
-from PyQt5.QtWidgets import QMessageBox, QApplication
+from PyQt5.QtWidgets import QMessageBox
+
 
 class EgoVehicleSettingsDialog(QtWidgets.QDialog):
-    def __init__(self, settings, module_manager, parent = None):
+    def __init__(self, settings, module_manager, parent=None):
         super().__init__(parent)
 
         self.settings = settings
@@ -37,19 +37,17 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
         self.update_settings(self.settings)
         super().show()
 
-
     def update_parameters(self):
         self.settings.velocity = self.spin_velocity.value()
         self.settings.selected_input = self.combo_input.currentText()
         self.settings.selected_controller = self.combo_haptic_controllers.currentText()
         self.settings.selected_car = self.combo_car_type.currentText()
         self.settings.selected_spawnpoint = self.combo_spawnpoints.currentText()
-        # TODO reimplement this correctly
         for settings in self.carla_interface_overall_settings.agents.values():
-            if settings.identifier != self.settings.identifier: #exlude own settings
+            if settings.identifier != self.settings.identifier:  # exlude own settings
                 if settings.selected_spawnpoint == self.combo_spawnpoints.currentText() and settings.selected_spawnpoint != 'None':
                     self.msg_box.setText('This spawnpoint was already chosen for another agent \n'
-                                    'resetting spawnpoint to None')
+                                         'resetting spawnpoint to None')
                     self.msg_box.exec()
                     self.settings.selected_spawnpoint = 'None'
                     break
@@ -66,10 +64,10 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
         self.settings.selected_car = self.combo_car_type.currentText()
         self.settings.selected_spawnpoint = self.combo_spawnpoints.currentText()
         for settings in self.carla_interface_overall_settings.agents.values():
-            if settings.identifier != self.settings.identifier: #exlude own settings
+            if settings.identifier != self.settings.identifier:  # exlude own settings
                 if settings.selected_spawnpoint == self.combo_spawnpoints.currentText() and settings.selected_spawnpoint != 'None':
                     self.msg_box.setText('This spawnpoint was already chosen for another agent \n'
-                                     'resetting spawnpoint to None')
+                                         'resetting spawnpoint to None')
                     self.msg_box.exec()
                     self.settings.selected_spawnpoint = 'None'
                     break
@@ -98,7 +96,7 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
 
     def _set_default_values(self):
         self.display_values(AgentTypes.EGO_VEHICLE.settings())
-        
+
     def update_settings(self, settings):
         try:
             # Update hardware inputs according to current settings:
@@ -143,6 +141,7 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
             # Catching attribute error when using default car settings
             pass
 
+
 class EgoVehicleProcess:
     def __init__(self, carla_mp, settings, shared_variables):
         self.settings = settings
@@ -176,10 +175,9 @@ class EgoVehicleProcess:
             physics.gear_switch_time = 0
             self.spawned_vehicle.apply_physics_control(physics)
 
-
     def do(self):
         if self.settings.selected_input != 'None' and hasattr(self, 'spawned_vehicle'):
-            self._control.steer = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].steering_angle /math.radians(450)
+            self._control.steer = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].steering_angle / math.radians(450)
             self._control.reverse = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].reverse
             self._control.hand_brake = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].handbrake
             self._control.brake = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].brake
@@ -224,7 +222,7 @@ class EgoVehicleProcess:
         output = temp / 100
 
         return output
-    
+
     def calculate_plotter_road_arrays(self):
         data_road_x = []
         data_road_x_inner = []
@@ -262,8 +260,6 @@ class EgoVehicleProcess:
             pos_array = np.array([[data_road_x], [data_road_y]])
             diff = np.transpose(np.diff(pos_array))
 
-
-
             x_unit_vector = np.array([[1], [0]])
             for row in diff:
                 data_road_psi.append(self.compute_angle(row.ravel(), x_unit_vector.ravel()))
@@ -282,7 +278,7 @@ class EgoVehicleProcess:
                 data_road_y_inner.append(roadpoint_y + math.cos(data_road_psi[iter_y]) * data_road_lanewidth[iter_y] / 2)
                 iter_y = iter_y + 1
 
-            #set shared road variables:
+            # set shared road variables:
             self.shared_variables.data_road_x = data_road_x
             self.shared_variables.data_road_x_inner = data_road_x_inner
             self.shared_variables.data_road_x_outer = data_road_x_outer
@@ -298,7 +294,6 @@ class EgoVehicleProcess:
         angle = np.arctan2(arg1, arg2)
         return angle
 
-
     def set_shared_variables(self):
         if hasattr(self, 'spawned_vehicle'):
             self.shared_variables.transform = [self.spawned_vehicle.get_transform().location.x,
@@ -308,11 +303,11 @@ class EgoVehicleProcess:
                                                self.spawned_vehicle.get_transform().rotation.pitch,
                                                self.spawned_vehicle.get_transform().rotation.roll]
             self.shared_variables.velocities = [self.spawned_vehicle.get_velocity().x,
-                                               self.spawned_vehicle.get_velocity().y,
-                                               self.spawned_vehicle.get_velocity().z,
-                                               self.spawned_vehicle.get_angular_velocity().x,
-                                               self.spawned_vehicle.get_angular_velocity().y,
-                                               self.spawned_vehicle.get_angular_velocity().z]
+                                                self.spawned_vehicle.get_velocity().y,
+                                                self.spawned_vehicle.get_velocity().z,
+                                                self.spawned_vehicle.get_angular_velocity().x,
+                                                self.spawned_vehicle.get_angular_velocity().y,
+                                                self.spawned_vehicle.get_angular_velocity().z]
             self.shared_variables.accelerations = [self.spawned_vehicle.get_acceleration().x,
                                                    self.spawned_vehicle.get_acceleration().y,
                                                    self.spawned_vehicle.get_acceleration().z]
@@ -322,8 +317,6 @@ class EgoVehicleProcess:
                                                    float(latest_applied_control.hand_brake),
                                                    float(latest_applied_control.brake),
                                                    float(latest_applied_control.throttle)]
-                
-
 
 
 class EgoVehicleSettings:
@@ -331,7 +324,7 @@ class EgoVehicleSettings:
     Class containing the default settings for an egovehicle
     """
 
-    def __init__(self, identifier = ''):
+    def __init__(self, identifier=''):
         """
         Initializes the class with default variables
         """
