@@ -13,8 +13,6 @@ def find_settings_by_identifier(search_dict: dict, identifier: int):
 
 
 class ModuleSettings:
-    # signal when new settings are loaded. Action and Dialog can connect to this signal to apply the new settings
-
     def __init__(self, module: JOANModules):
         """
         Initialize
