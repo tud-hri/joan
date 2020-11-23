@@ -5,7 +5,7 @@ from core.modulesharedvariables import ModuleSharedVariables
 from core.sharedvariables import SharedVariables
 
 
-class HardwareSharedVariables(ModuleSharedVariables):
+class HardwareManagerSharedVariables(ModuleSharedVariables):
     def __init__(self):
         """"
         This class contains all the variables that are shared between the seperate hardware communication core and the
@@ -145,8 +145,6 @@ class SensoDriveSharedVariables(SharedVariables):
         self._loha_stiffness = mp.Value(c_float, 0.0)
         self._auto_center_stiffness = mp.Value(c_float, 0.0)
 
-
-
     @property
     def steering_angle(self):
         return self._steering_angle.value
@@ -242,4 +240,3 @@ class SensoDriveSharedVariables(SharedVariables):
     @auto_center_stiffness.setter
     def auto_center_stiffness(self, var):
         self._auto_center_stiffness.value = var
-

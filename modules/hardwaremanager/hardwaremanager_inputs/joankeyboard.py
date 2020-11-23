@@ -1,9 +1,8 @@
 import math
 import os
-
 import keyboard
-from PyQt5 import QtWidgets, QtGui, uic
 
+from PyQt5 import QtWidgets, QtGui, uic
 from modules.hardwaremanager.hardwaremanager_inputtypes import HardwareInputTypes
 
 
@@ -130,7 +129,6 @@ class KeyBoardSettings:
         self.handbrake_key = QtGui.QKeySequence('space')[0]
         self.identifier = identifier
         self.input_type = HardwareInputTypes.KEYBOARD.value
-        # self.input_name = '{0!s} {1!s}'.format(HardwareInputTypes.KEYBOARD, str(self.identifier))
 
         # Steering Range
         self.min_steer = - 0.5 * math.pi

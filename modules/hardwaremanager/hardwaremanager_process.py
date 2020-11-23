@@ -20,5 +20,5 @@ class HardwareManagerProcess(ModuleProcess):
 
     def do_while_running(self):
         for inputs in self.input_objects:
-            # will perform the mp input class for eaach available input
+            # will perform the mp input class for each available input
             self.input_objects[inputs].do()

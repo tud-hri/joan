@@ -154,14 +154,6 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
         self.sensodrive_settings.damping = self.spin_damping.value()
         self.sensodrive_settings.spring_stiffness = self.spin_spring_stiffness.value()
 
-        # try:
-        #     # TODO, dit moet op de een of andere manier nog in de ready state ook gaan werken (werkt nu alleen in running)
-        #     self.module_manager.shared_variables.inputs[self.sensodrive_settings.identifier].friction = self.sensodrive_settings.friction
-        #     self.module_manager.shared_variables.inputs[self.sensodrive_settings.identifier].damping = self.sensodrive_settings.damping
-        #     self.module_manager.shared_variables.inputs[self.sensodrive_settings.identifier].spring_stiffness = self.sensodrive_settings.spring_stiffness
-        # except Exception as inst:
-        #     print(inst)
-
     def accept(self):
         """
         Accepts the settings of the sensodrive and saves them internally.
@@ -173,14 +165,6 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
         self.sensodrive_settings.friction = self.spin_friction.value()
         self.sensodrive_settings.damping = self.spin_damping.value()
         self.sensodrive_settings.spring_stiffness = self.spin_spring_stiffness.value()
-
-        # try:
-        #     self.module_manager._process.input_objects[self.sensodrive_settings.identifier].update_variables()
-        #     self.module_manager.shared_variables.inputs[self.sensodrive_settings.identifier].friction = self.sensodrive_settings.friction
-        #     self.module_manager.shared_variables.inputs[self.sensodrive_settings.identifier].damping = self.sensodrive_settings.damping
-        #     self.module_manager.shared_variables.inputs[self.sensodrive_settings.identifier].spring_stiffness = self.sensodrive_settings.spring_stiffness
-        # except:
-        #     print('werkt niet')
 
         super().accept()
 
@@ -325,11 +309,6 @@ class SensoDriveComm(mp.Process):
             if self.clear_error_event.is_set():
                 self.clear_error(self.state_message)
                 self.clear_error_event.clear()
-
-            # TODO: Have to fix this stuff when we have the variable settings
-            # if self.update_settings_event.is_set():
-            # self.update_settings()
-            # self.update_settings_event.clear()
 
             # properly uninitialize the pcan dongle if sensodrive is removed
             if self.close_event.is_set():

@@ -19,7 +19,7 @@ class JOANModules(Enum):
 
     @property
     def manager(self):
-        from modules.hardwaremanager.hardwaremanager import HardwareManager
+        from modules.hardwaremanager.hardwaremanager_manager import HardwareManager
         from modules.template.template import TemplateManager
         from modules.carlainterface.carlainterface_manager import CarlaInterfaceManager
         from modules.hapticcontrollermanager.hapticcontrollermanager import HapticControllerManager
@@ -56,7 +56,7 @@ class JOANModules(Enum):
     @property
     def settings(self):
         from modules.template.template_settings import TemplateSettings
-        from modules.hardwaremanager.hardwaremanager_settings import HardwareMPSettings
+        from modules.hardwaremanager.hardwaremanager_settings import HardwareManagerSettings
         from modules.carlainterface.carlainterface_settings import CarlaInterfaceSettings
         from modules.hapticcontrollermanager.hapticcontrollermanager_settings import HapticControllerManagerSettings
         from modules.controllerplotter.controllerplotter_settings import ControllerPlotterSettings
@@ -64,7 +64,7 @@ class JOANModules(Enum):
         from modules.experimentmanager.experimentmanager_settings import ExperimentManagerSettings
 
         return {JOANModules.TEMPLATE: TemplateSettings,
-                JOANModules.HARDWARE_MANAGER: HardwareMPSettings,
+                JOANModules.HARDWARE_MANAGER: HardwareManagerSettings,
                 JOANModules.CARLA_INTERFACE: CarlaInterfaceSettings,
                 JOANModules.HAPTIC_CONTROLLER_MANAGER: HapticControllerManagerSettings,
                 JOANModules.DATA_RECORDER: DataRecorderSettings,
@@ -74,14 +74,14 @@ class JOANModules(Enum):
 
     @property
     def shared_variables(self):
-        from modules.hardwaremanager.hardwaremanager_sharedvariables import HardwareSharedVariables
+        from modules.hardwaremanager.hardwaremanager_sharedvariables import HardwareManagerSharedVariables
         from modules.template.template_sharedvalues import TemplateSharedVariables
         from modules.carlainterface.carlainterface_sharedvariables import CarlaInterfaceSharedVariables
         from modules.hapticcontrollermanager.hapticcontrollermanager_sharedvalues import HapticControllerManagerSharedVariables
         from core.modulesharedvariables import ModuleSharedVariables
         from modules.datarecorder.datarecorder_sharedvariables import DataRecorderSharedVariables
 
-        return {JOANModules.HARDWARE_MANAGER: HardwareSharedVariables,
+        return {JOANModules.HARDWARE_MANAGER: HardwareManagerSharedVariables,
                 JOANModules.TEMPLATE: TemplateSharedVariables,
                 JOANModules.CARLA_INTERFACE: CarlaInterfaceSharedVariables,
                 JOANModules.HAPTIC_CONTROLLER_MANAGER: HapticControllerManagerSharedVariables,

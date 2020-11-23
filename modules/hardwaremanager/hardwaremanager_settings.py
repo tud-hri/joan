@@ -3,7 +3,7 @@ from modules.hardwaremanager.hardwaremanager_inputtypes import HardwareInputType
 from modules.joanmodules import JOANModules
 
 
-class HardwareMPSettings(ModuleSettings):
+class HardwareManagerSettings(ModuleSettings):
     """
     Contains the settings of the seperate hardware input types of the hardware manager module.
     """

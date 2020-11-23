@@ -1,9 +1,8 @@
 import math
 import os
-
 import hid
-from PyQt5 import QtWidgets, uic, QtCore
 
+from PyQt5 import QtWidgets, uic, QtCore
 from modules.hardwaremanager.hardwaremanager_inputtypes import HardwareInputTypes
 
 
@@ -99,7 +98,6 @@ class JoyStickSettings:
         self.device_product_id = 0
         self.identifier = identifier
         self.input_type = HardwareInputTypes.JOYSTICK.value
-        # self.input_name = '{0!s} {1!s}'.format(HardwareInputTypes.JOYSTICK, str(self.identifier))
 
         self.degrees_of_freedom = 12
         self.gas_channel = 9
