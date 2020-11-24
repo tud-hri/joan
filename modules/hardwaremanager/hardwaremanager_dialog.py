@@ -28,6 +28,10 @@ class HardwareManagerDialog(ModuleDialog):
         self._hardware_input_dialogs_dict = {}
 
     def update_dialog(self):
+        #Compare dicts of dialogs and current settings and return key difference
+        difference_dict = {k: self._hardware_input_tabs_dict[k] for k in set(self._hardware_input_tabs_dict) - set(self.module_manager.module_settings.inputs)}
+        for key in difference_dict:
+            self.remove_hardware_input(key)
         for input_settings in self.module_manager.module_settings.inputs:
             if self.module_manager.module_settings.inputs[input_settings].identifier not in self._hardware_input_tabs_dict:
                 self.add_hardware_input(self.module_manager.module_settings.inputs[input_settings], False)
