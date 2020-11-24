@@ -39,8 +39,6 @@ class HQWindow(QtWidgets.QMainWindow):
         self.setCentralWidget(self._main_widget)
         self.resize(400, 400)
 
-        self._main_widget.btn_emergency.setIcon(QtGui.QIcon(QtGui.QPixmap(os.path.join(self._path_resources, "emergency_stop.png"))))
-        self._main_widget.btn_emergency.clicked.connect(self.emergency)
 
         self._main_widget.btn_quit.setStyleSheet("background-color: darkred")
         self._main_widget.btn_quit.clicked.connect(self.close)
@@ -176,7 +174,8 @@ class HQWindow(QtWidgets.QMainWindow):
         self._main_widget.btn_initialize.setEnabled(False)
         self._main_widget.btn_get_ready.setEnabled(False)
         self._main_widget.btn_start.setEnabled(False)
-        self._main_widget.btn_stop.setEnabled(False)
+        #always be able to go back to stopped
+        self._main_widget.btn_stop.setEnabled(True)
 
     def closeEvent(self, event):
         """

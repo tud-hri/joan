@@ -146,5 +146,4 @@ class ModuleManager(QtCore.QObject):
     def load_from_file(self, settings_file_to_load):
         self.module_settings.load_from_file(settings_file_to_load)
 
-    def emergency(self):
-        self._events.emergency.set()
+

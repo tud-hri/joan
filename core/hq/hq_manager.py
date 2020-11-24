@@ -70,13 +70,6 @@ class HQManager(QtCore.QObject):
         for _, module in self._instantiated_modules.items():
             module.state_machine.request_state_change(State.STOPPED)
 
-    def emergency_stop(self):
-        """
-        Stops all modules whichever state you are in.
-        """
-        for _, module in self._instantiated_modules.items():
-            module.state_machine.request_state_change(State.STOPPED)
-
     def add_module(self, module: JOANModules, name='', parent=None, time_step_in_ms=100):
         """
         Add a module
@@ -106,15 +99,6 @@ class HQManager(QtCore.QObject):
         :param module: module to be removed
         """
         del self._instantiated_modules[module]
-
-    def emergency(self):
-        """
-        Emergency button processing
-        """
-        for _, module in self._instantiated_modules.items():
-            module.emergency()
-
-        self.stop_modules()
 
     def quit(self):
         """
