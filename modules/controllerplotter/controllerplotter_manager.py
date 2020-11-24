@@ -24,4 +24,10 @@ class ControllerPlotterManager(ModuleManager):
         self.module_dialog._module_widget.fb_torques_graph.clear()
         self.module_dialog._module_widget.sw_graph.clear()
 
+        self.module_dialog.top_view_legend.clear()
+        self.module_dialog.torque_legend.clear()
+        self.module_dialog.torques_legend.clear()
+        self.module_dialog.errors_legend.clear()
+        self.module_dialog.sw_legend.clear()
+
         return super().stop()

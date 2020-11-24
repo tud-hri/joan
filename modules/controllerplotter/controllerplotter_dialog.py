@@ -117,12 +117,18 @@ class ControllerPlotterDialog(ModuleDialog):
         """
         This function is called before the module is started
         """
+        haptic_controller_settings = self.module_manager.singleton_settings.get_settings(JOANModules.HAPTIC_CONTROLLER_MANAGER)
+        carla_interface_settings = self.module_manager.singleton_settings.get_settings(JOANModules.CARLA_INTERFACE)
+        for agent in carla_interface_settings.agents.values():
+            if agent.__str__() == 'Ego Vehicle_1':
+                controller = agent.selected_controller
+                if controller != 'None':
+                    trajectory_name = haptic_controller_settings.haptic_controllers[controller].trajectory_name
+            else:
+                trajectory_name = 'None'
 
         # Top view graph
         try:
-            # TODO: Make this depend on the trajectory selected in FDCA controller (read news and then apply that name)
-            trajectory_name = "MiddleRoadTVRecord_filtered_ffswang_heading_2hz.csv"
-            # trajectory_name = "tweedetestKIJKUIT.csv"
             tmp = pd.read_csv(os.path.join('modules/hapticcontrollermanager/hapticcontrollermanager_controllers/trajectories', trajectory_name))
             HCR_trajectory_data = tmp.values
             plot_data_HCR_x = HCR_trajectory_data[:, 1]
@@ -284,14 +290,14 @@ class ControllerPlotterDialog(ModuleDialog):
         top_view_viewbox.invertY(True)
         top_view_viewbox.setBorder(pen=pg.mkPen(0, 0, 0, 255))
         top_view_viewbox.setBackgroundColor((255, 255, 255, 200))
-        top_view_legend = pg.LegendItem(offset=(10, -10), horSpacing=30, verSpacing=2,
+        self.top_view_legend = pg.LegendItem(offset=(10, -10), horSpacing=30, verSpacing=2,
                                         pen=pg.mkPen(0, 0, 0, 0), brush=pg.mkBrush(255, 255, 255, 0))
-        top_view_legend.setParentItem(top_view_viewbox)
-        top_view_legend.addItem(self.HCR_plot_handle, name='HCR')
-        top_view_legend.addItem(self.road_outer_plot_handle, name='Lane/Road Edge')
-        top_view_legend.addItem(self.road_plot_handle, name='Lane/Road Center')
-        top_view_legend.addItem(self.topview_lat_error_plot_handle, name='Lateral Error')
-        top_view_legend.addItem(self.topview_heading_error_plot_handle, name='Heading Error')
+        self.top_view_legend.setParentItem(top_view_viewbox)
+        self.top_view_legend.addItem(self.HCR_plot_handle, name='HCR')
+        self.top_view_legend.addItem(self.road_outer_plot_handle, name='Lane/Road Edge')
+        self.top_view_legend.addItem(self.road_plot_handle, name='Lane/Road Center')
+        self.top_view_legend.addItem(self.topview_lat_error_plot_handle, name='Lateral Error')
+        self.top_view_legend.addItem(self.topview_heading_error_plot_handle, name='Heading Error')
 
         ## Initialize Torque Graph
         self._module_widget.torque_graph.setXRange(- 180, 180, padding=0)
@@ -310,13 +316,13 @@ class ControllerPlotterDialog(ModuleDialog):
         torque_viewbox.invertX(False)
         torque_viewbox.invertY(True)
         torque_viewbox.setBackgroundColor((255, 255, 255, 200))
-        torque_legend = pg.LegendItem(size=(120, 0), offset=None, horSpacing=30, verSpacing=-7,
+        self.torque_legend = pg.LegendItem(size=(120, 0), offset=None, horSpacing=30, verSpacing=-7,
                                       pen=pg.mkPen(0, 0, 0, 255), brush=pg.mkBrush(255, 255, 255, 255))
-        torque_legend.setParentItem(torque_viewbox)
-        torque_legend.addItem(self.torque_plot_handle, name='Torque vs Steering Angle')
-        torque_legend.addItem(self.sw_des_point_plot_handle, name='Desired Steering Angle')
-        torque_legend.addItem(self.sw_stiffness_plot_handle, name='Self Centering Stiffness')
-        torque_legend.addItem(self.loha_stiffness_plot_handle, name='LoHA Stiffness')
+        self.torque_legend.setParentItem(torque_viewbox)
+        self.torque_legend.addItem(self.torque_plot_handle, name='Torque vs Steering Angle')
+        self.torque_legend.addItem(self.sw_des_point_plot_handle, name='Desired Steering Angle')
+        self.torque_legend.addItem(self.sw_stiffness_plot_handle, name='Self Centering Stiffness')
+        self.torque_legend.addItem(self.loha_stiffness_plot_handle, name='LoHA Stiffness')
 
         ## Initialize Errors Plot
         self._module_widget.errors_graph.setTitle('Lateral position vs Time')
@@ -325,10 +331,10 @@ class ControllerPlotterDialog(ModuleDialog):
         self._module_widget.errors_graph.setLabel('left', 'Lat Pos [m]', **{'font-size': '12pt'})
         self._module_widget.errors_graph.setLabel('right', 'Heading Error [deg]', **{'font-size': '12pt'})
         errors_viewbox = self._module_widget.errors_graph.getViewBox()
-        errors_legend = pg.LegendItem(size=(120, 0), offset=None, horSpacing=30, verSpacing=-7,
+        self.errors_legend = pg.LegendItem(size=(120, 0), offset=None, horSpacing=30, verSpacing=-7,
                                       pen=pg.mkPen(0, 0, 0, 255), brush=pg.mkBrush(255, 255, 255, 255))
-        errors_legend.setParentItem(errors_viewbox)
-        errors_legend.addItem(self.e_lat_plot_handle, name='Lateral position Error')
+        self.errors_legend.setParentItem(errors_viewbox)
+        self.errors_legend.addItem(self.e_lat_plot_handle, name='Lateral position Error')
 
         # viewbox 2 for double axis
         p2 = pg.ViewBox()
@@ -353,7 +359,7 @@ class ControllerPlotterDialog(ModuleDialog):
 
         updateViews()
         errors_viewbox.sigResized.connect(updateViews)
-        errors_legend.addItem(self.head_error_plot_handle, name='Heading Error')
+        self.errors_legend.addItem(self.head_error_plot_handle, name='Heading Error')
 
         ## Initialize fb torque Plot
         self._module_widget.fb_torques_graph.setTitle('Feedback Torques vs Time')
@@ -365,13 +371,13 @@ class ControllerPlotterDialog(ModuleDialog):
         torques_viewbox = self._module_widget.fb_torques_graph.getViewBox()
         torques_viewbox.setBackgroundColor((255, 255, 255, 200))
         torques_viewbox.invertY(True)
-        torques_legend = pg.LegendItem(size=(120, 60), offset=None, horSpacing=30, verSpacing=-7,
+        self.torques_legend = pg.LegendItem(size=(120, 60), offset=None, horSpacing=30, verSpacing=-7,
                                        pen=pg.mkPen(0, 0, 0, 255), brush=pg.mkBrush(255, 255, 255, 255))
-        torques_legend.setParentItem(torques_viewbox)
-        torques_legend.addItem(self.fb_torque_plot_handle, name='Feedback Torque')
-        torques_legend.addItem(self.ff_torque_plot_handle, name='Feedforward Torque')
-        torques_legend.addItem(self.loha_torque_plot_handle, name='LoHA Torque')
-        torques_legend.addItem(self.total_torque_plot_handle, name='Total Torque')
+        self.torques_legend.setParentItem(torques_viewbox)
+        self.torques_legend.addItem(self.fb_torque_plot_handle, name='Feedback Torque')
+        self.torques_legend.addItem(self.ff_torque_plot_handle, name='Feedforward Torque')
+        self.torques_legend.addItem(self.loha_torque_plot_handle, name='LoHA Torque')
+        self.torques_legend.addItem(self.total_torque_plot_handle, name='Total Torque')
         self._module_widget.fb_torques_graph.showGrid(True, True, 1)
 
         ## Initialize sw angle Plot
@@ -384,11 +390,11 @@ class ControllerPlotterDialog(ModuleDialog):
         self._module_widget.sw_graph.setLabel('bottom', 'Time[s]', **{'font-size': '12pt'})
         sw_des_viewbox = self._module_widget.sw_graph.getViewBox()
         sw_des_viewbox.setBackgroundColor((255, 255, 255, 200))
-        sw_legend = pg.LegendItem(size=(120, 0), offset=None, horSpacing=30, verSpacing=-7,
+        self.sw_legend = pg.LegendItem(size=(120, 0), offset=None, horSpacing=30, verSpacing=-7,
                                   pen=pg.mkPen(0, 0, 0, 255), brush=pg.mkBrush(255, 255, 255, 255))
-        sw_legend.setParentItem(sw_des_viewbox)
-        sw_legend.addItem(self.sw_des_plot_handle, name='Desired Steering Angle')
-        sw_legend.addItem(self.sw_act_plot_handle, name='Actual Steering Angle')
+        self.sw_legend.setParentItem(sw_des_viewbox)
+        self.sw_legend.addItem(self.sw_des_plot_handle, name='Desired Steering Angle')
+        self.sw_legend.addItem(self.sw_act_plot_handle, name='Actual Steering Angle')
 
     def update_dialog(self):
         "update de hele zooi hier"
