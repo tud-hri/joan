@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>568</width>
+    <width>586</width>
     <height>732</height>
    </rect>
   </property>
@@ -80,7 +80,7 @@
    <item>
     <widget class="QCheckBox" name="check_trajectory">
      <property name="text">
-      <string>Generate Trajectory</string>
+      <string>Generate Trajectory  (note this will only save a trajectory of ego_vehicle 1 and a sensodrive if they are available)</string>
      </property>
     </widget>
    </item>

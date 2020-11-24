@@ -13,8 +13,10 @@ class DataRecorderProcess(ModuleProcess):
 
         self.variables_to_be_saved = {}
         self.save_path = ''
+        self.trajectory_save_path = ''
 
         self.file = None
+        self.trajectory_file = None
 
     def get_ready(self):
         """
@@ -23,6 +25,15 @@ class DataRecorderProcess(ModuleProcess):
         """
         self.variables_to_be_saved = self.settings.variables_to_be_saved
         self.save_path = self.settings.path_to_save_file
+
+        if self.settings.should_record_trajectory:
+            self.trajectory_save_path = self.settings.path_to_trajectory_save_file
+            try:
+                self.carla_interface_variables = self.news.read_news(JOANModules.CARLA_INTERFACE)
+            except Exception as inst:
+                print(inst)
+
+
 
         header = ', '.join(['.'.join(v) for v in self.variables_to_be_saved])
         with open(self.save_path, 'w') as self.file:
@@ -38,6 +49,14 @@ class DataRecorderProcess(ModuleProcess):
         """
         row = self._get_data_row()
         self.file.write(row + '\n')
+
+        if self.settings.should_record_trajectory == True:
+            #create the appropriate row for csv file
+            try:
+                print(self.carla_interface_variables.agents['Ego Vehicle_1'].transform)
+            except KeyError: #this would mean there is no ego_vehicle to record trajectory for
+                pass
+
 
     def _get_data_row(self):
         row = []

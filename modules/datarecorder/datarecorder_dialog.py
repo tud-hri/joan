@@ -54,6 +54,7 @@ class DataRecorderDialog(ModuleDialog):
 
         if file_path:
             self._module_widget.label_trajectory_path.setText(file_path)
+            self.module_manager.module_settings.path_to_trajectory_save_file = os.path.normpath(file_path)
 
     def _browse_datalog_path(self):
         """
@@ -98,6 +99,7 @@ class DataRecorderDialog(ModuleDialog):
 
     def apply_settings(self):
         self.module_manager.module_settings.variables_to_be_saved = self._get_all_checked_items()
+        self.module_manager.module_settings.should_record_trajectory = self._module_widget.check_trajectory.isChecked()
 
     def _set_all_checked_items(self, variables_to_save):
         self._recursively_set_checked_items(self._module_widget.treeWidget.invisibleRootItem(), [], variables_to_save)
