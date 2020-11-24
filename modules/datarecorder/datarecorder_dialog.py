@@ -57,10 +57,17 @@ class DataRecorderDialog(ModuleDialog):
             self._module_widget.browsePathPushButton.setEnabled(True)
             self._fill_tree_widget()
             self.update_dialog()
+        elif self.module_manager.state_machine.current_state == State.RUNNING:
+            self._module_widget.lbl_message_recorder.setText("recording")
+            self._module_widget.lbl_message_recorder.setStyleSheet('color: green')
         elif self.module_manager.state_machine.current_state == State.STOPPED:
+            self._module_widget.lbl_message_recorder.setText("not recording")
+            self._module_widget.lbl_message_recorder.setStyleSheet('color: orange')
             self._module_widget.browsePathPushButton.setEnabled(True)
             self._module_widget.treeWidget.setEnabled(False)
         else:
+            self._module_widget.lbl_message_recorder.setText("not recording")
+            self._module_widget.lbl_message_recorder.setStyleSheet('color: orange')
             self._module_widget.browsePathPushButton.setEnabled(False)
             self._module_widget.treeWidget.setEnabled(False)
 
