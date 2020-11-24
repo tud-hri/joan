@@ -39,8 +39,9 @@ class HQWindow(QtWidgets.QMainWindow):
         self.setCentralWidget(self._main_widget)
         self.resize(400, 400)
 
-
-        self._main_widget.btn_quit.setStyleSheet("background-color: darkred")
+        self._main_widget.btn_quit.setIcon(QtGui.QIcon(QtGui.QPixmap(os.path.join(self._path_resources, "quit.png"))))
+        self._main_widget.btn_quit.setIconSize(QSize(100, 100))
+        self._main_widget.btn_quit.setFixedSize(QSize(110, 110))
         self._main_widget.btn_quit.clicked.connect(self.close)
 
         self._main_widget.btn_initialize.setIcon(QtGui.QIcon(QtGui.QPixmap(os.path.join(self._path_resources, "Init.png"))))

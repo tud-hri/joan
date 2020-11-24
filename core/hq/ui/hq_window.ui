@@ -120,7 +120,7 @@
            </spacer>
           </item>
           <item>
-           <widget class="QPushButton" name="btn_quit">
+           <widget class="QToolButton" name="btn_quit">
             <property name="minimumSize">
              <size>
               <width>0</width>
@@ -129,6 +129,9 @@
             </property>
             <property name="text">
              <string>Quit</string>
+            </property>
+            <property name="autoRaise">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
