@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>544</width>
+    <width>568</width>
     <height>648</height>
    </rect>
   </property>
@@ -32,24 +32,10 @@
       <string>Save Path</string>
      </property>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="0">
-       <widget class="QLabel" name="lblCurrentDataDir">
+      <item row="2" column="0">
+       <widget class="QPushButton" name="browsePathPushButton">
         <property name="text">
-         <string>Current data directory: </string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QLabel" name="lbl_data_directoryname">
-        <property name="text">
-         <string>&lt; none &gt;</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QLabel" name="lbl_data_filename">
-        <property name="text">
-         <string>&lt; none &gt;</string>
+         <string>Change save path...</string>
         </property>
        </widget>
       </item>
@@ -67,14 +53,35 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="0">
-       <widget class="QPushButton" name="browsePathPushButton">
+      <item row="1" column="1">
+       <widget class="QLabel" name="lbl_data_filename">
         <property name="text">
-         <string>Change save path...</string>
+         <string>&lt; none &gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="lblCurrentDataDir">
+        <property name="text">
+         <string>Current data directory: </string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLabel" name="lbl_data_directoryname">
+        <property name="text">
+         <string>&lt; none &gt;</string>
         </property>
        </widget>
       </item>
      </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Trajectory Recorder</string>
+     </property>
     </widget>
    </item>
    <item>
@@ -91,11 +98,11 @@
        <height>500</height>
       </size>
      </property>
-     <attribute name="headerMinimumSectionSize">
-      <number>100</number>
-     </attribute>
      <attribute name="headerDefaultSectionSize">
       <number>200</number>
+     </attribute>
+     <attribute name="headerMinimumSectionSize">
+      <number>100</number>
      </attribute>
      <column>
       <property name="text">
