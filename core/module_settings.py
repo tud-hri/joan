@@ -80,6 +80,7 @@ class ModuleSettings:
         :param destination (__dict__): class dict to restore
         :return: None
         """
+        keys_to_remove = []
         for key, value in source.items():
             try:
                 if isinstance(destination[key], Enum):  # reconstruct the enum from its value
@@ -94,9 +95,12 @@ class ModuleSettings:
                     self.module) + " settings, but this setting did not exist. It was created.")
                 destination[key] = value
 
-        for key in destination.keys():
+        all_keys = list(destination.keys())
+        for key in all_keys:
             if key not in source.keys():
+                keys_to_remove.append(key)
                 del destination[key]
+
 
     @staticmethod
     def _copy_dict_to_dict(source, destination):
