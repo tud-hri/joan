@@ -26,6 +26,7 @@ class DataRecorderDialog(ModuleDialog):
         # get news items
         self.news = self.module_manager.news
 
+        # set gui functionality
         self._module_widget.check_trajectory.stateChanged.connect(self.update_trajectory_groupbox)
         self._module_widget.browsePathPushButton.clicked.connect(self._browse_datalog_path)
         self._module_widget.btn_trajectory_path.clicked.connect(self._browse_trajectory_path)
@@ -69,14 +70,17 @@ class DataRecorderDialog(ModuleDialog):
 
     def handle_state_change(self):
         if self.module_manager.state_machine.current_state == State.INITIALIZED:
+            self._module_widget.check_trajectory.setEnabled(False)
             self._module_widget.treeWidget.setEnabled(True)
             self._module_widget.browsePathPushButton.setEnabled(True)
             self._fill_tree_widget()
             self.update_dialog()
         elif self.module_manager.state_machine.current_state == State.RUNNING:
+            self._module_widget.check_trajectory.setEnabled(False)
             self._module_widget.lbl_message_recorder.setText("recording")
             self._module_widget.lbl_message_recorder.setStyleSheet('color: green')
         elif self.module_manager.state_machine.current_state == State.STOPPED:
+            self._module_widget.check_trajectory.setEnabled(True)
             self._module_widget.lbl_message_recorder.setText("not recording")
             self._module_widget.lbl_message_recorder.setStyleSheet('color: orange')
             self._module_widget.browsePathPushButton.setEnabled(True)
@@ -86,6 +90,7 @@ class DataRecorderDialog(ModuleDialog):
             self._module_widget.lbl_message_recorder.setStyleSheet('color: orange')
             self._module_widget.browsePathPushButton.setEnabled(False)
             self._module_widget.treeWidget.setEnabled(False)
+            self._module_widget.check_trajectory.setEnabled(False)
 
     def _save_settings(self):
         self.apply_settings()

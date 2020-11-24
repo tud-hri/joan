@@ -93,27 +93,6 @@
       <string>Trajectory Recorder</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
-      <item row="5" column="2">
-       <widget class="QPushButton" name="btn_save">
-        <property name="text">
-         <string>Save</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QPushButton" name="btn_trajectory_path">
-        <property name="text">
-         <string>Change Save Path ...</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="1">
-       <widget class="QPushButton" name="btn_discard">
-        <property name="text">
-         <string>Discard </string>
-        </property>
-       </widget>
-      </item>
       <item row="1" column="1" colspan="2">
        <widget class="QLabel" name="label_trajectory_path">
         <property name="text">
@@ -125,6 +104,13 @@
        <widget class="QLabel" name="path_title">
         <property name="text">
          <string>Current save path:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QPushButton" name="btn_trajectory_path">
+        <property name="text">
+         <string>Change Save Path ...</string>
         </property>
        </widget>
       </item>
