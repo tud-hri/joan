@@ -26,9 +26,14 @@ class DataRecorderDialog(ModuleDialog):
         # get news items
         self.news = self.module_manager.news
 
+        self._module_widget.check_trajectory.stateChanged.connect(self.update_trajectory_groupbox)
         self._module_widget.browsePathPushButton.clicked.connect(self._browse_datalog_path)
+        self._module_widget.btn_trajectory_path.clicked.connect(self._browse_trajectory_path)
         self.module_manager.state_machine.add_state_change_listener(self.handle_state_change)
         self.handle_state_change()
+
+    def update_trajectory_groupbox(self):
+        self._module_widget.group_traj.setEnabled(self._module_widget.check_trajectory.isChecked())
 
     def update_dialog(self):
         file_path = self.module_manager.module_settings.path_to_save_file
@@ -37,6 +42,17 @@ class DataRecorderDialog(ModuleDialog):
 
         variables_to_save = self.module_manager.module_settings.variables_to_be_saved
         self._set_all_checked_items(variables_to_save)
+
+    def _browse_trajectory_path(self):
+        """
+        Sets the path to datalog and let users create folders
+        When selecting is cancelled, the previous path is used
+        """
+        date_string = datetime.datetime.now().strftime('%Y%m%d_%Hh%Mm%Ss')
+        file_path, _ = QtWidgets.QFileDialog.getSaveFileName(self, 'select save destination', date_string, filter='*.csv')
+
+        if file_path:
+            self._module_widget.label_trajectory_path.setText(file_path)
 
     def _browse_datalog_path(self):
         """
