@@ -1,3 +1,5 @@
+import math
+
 from core.module_process import ModuleProcess
 from modules.datarecorder.datarecorder_settings import DataRecorderSettings
 from modules.joanmodules import JOANModules
@@ -17,6 +19,9 @@ class DataRecorderProcess(ModuleProcess):
 
         self.file = None
         self.trajectory_file = None
+        self.index = 0
+        self.temp = [0,0]
+        self.travelled_distance = 0
 
     def get_ready(self):
         """
@@ -30,10 +35,10 @@ class DataRecorderProcess(ModuleProcess):
             self.trajectory_save_path = self.settings.path_to_trajectory_save_file
             try:
                 self.carla_interface_variables = self.news.read_news(JOANModules.CARLA_INTERFACE)
+                self.transform = self.carla_interface_variables.agents['Ego Vehicle_1'].transform
+                self.trajectory_file = open(self.trajectory_save_path, 'w')
             except Exception as inst:
                 print(inst)
-
-
 
         header = ', '.join(['.'.join(v) for v in self.variables_to_be_saved])
         with open(self.save_path, 'w') as self.file:
@@ -41,7 +46,12 @@ class DataRecorderProcess(ModuleProcess):
 
     def _run_loop(self):
         with open(self.save_path, 'a') as self.file:
-            super()._run_loop()
+            if self.settings.should_record_trajectory == True:
+                with open(self.trajectory_save_path, 'a') as self.trajectory_file:
+                    super()._run_loop()
+            else:
+                super()._run_loop()
+
 
     def do_while_running(self):
         """
@@ -51,11 +61,7 @@ class DataRecorderProcess(ModuleProcess):
         self.file.write(row + '\n')
 
         if self.settings.should_record_trajectory == True:
-            #create the appropriate row for csv file
-            try:
-                print(self.carla_interface_variables.agents['Ego Vehicle_1'].transform)
-            except KeyError: #this would mean there is no ego_vehicle to record trajectory for
-                pass
+            self._write_trajectory_row()
 
 
     def _get_data_row(self):
@@ -75,3 +81,27 @@ class DataRecorderProcess(ModuleProcess):
             row.append(str(last_object))
 
         return ', '.join(row)
+
+    def _write_trajectory_row(self):
+        try:
+            self.transform = self.carla_interface_variables.agents['Ego Vehicle_1'].transform
+            velocities = self.carla_interface_variables.agents['Ego Vehicle_1'].velocities
+            applied_inputs = self.carla_interface_variables.agents['Ego Vehicle_1'].applied_input
+
+            travelled_distance_tick_x = self.transform[0] - self.temp[0]
+            travelled_distance_tick_y = self.transform[1] - self.temp[1]
+            travelled_distance_tick = math.sqrt(travelled_distance_tick_x**2 + travelled_distance_tick_y**2)
+            self.travelled_distance += travelled_distance_tick
+
+            print(self.travelled_distance)
+            if self.travelled_distance >= 1.0:
+                self.index += 1
+                trajectory_row = [self.index, self.transform[0], self.transform[1], applied_inputs[0] * 450.0, applied_inputs[4], applied_inputs[3], self.transform[3],
+                                  math.sqrt(velocities[0] ** 2 + velocities[1] ** 2 + velocities[2] ** 2)]
+
+                self.trajectory_file.write(", ".join(repr(e) for e in trajectory_row) + '\n')
+                self.travelled_distance = 0.0
+
+            self.temp = [self.transform[0], self.transform[1]]
+        except Exception as inst:  # this would mean there is no ego_vehicle to record trajectory for
+            print(inst)
