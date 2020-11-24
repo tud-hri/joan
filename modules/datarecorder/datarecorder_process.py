@@ -93,10 +93,10 @@ class DataRecorderProcess(ModuleProcess):
             travelled_distance_tick = math.sqrt(travelled_distance_tick_x**2 + travelled_distance_tick_y**2)
             self.travelled_distance += travelled_distance_tick
 
-            print(self.travelled_distance)
+
             if self.travelled_distance >= 1.0:
                 self.index += 1
-                trajectory_row = [self.index, self.transform[0], self.transform[1], applied_inputs[0] * 450.0, applied_inputs[4], applied_inputs[3], self.transform[3],
+                trajectory_row = [self.index, self.transform[0], self.transform[1], applied_inputs[0], applied_inputs[4], applied_inputs[3], self.transform[3],
                                   math.sqrt(velocities[0] ** 2 + velocities[1] ** 2 + velocities[2] ** 2)]
 
                 self.trajectory_file.write(", ".join(repr(e) for e in trajectory_row) + '\n')

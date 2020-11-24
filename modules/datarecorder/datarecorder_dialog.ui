@@ -80,7 +80,7 @@
    <item>
     <widget class="QCheckBox" name="check_trajectory">
      <property name="text">
-      <string>Generate Trajectory  (note this will only save a trajectory of ego_vehicle 1 and a sensodrive if they are available)</string>
+      <string>Generate Trajectory  (note this will only save a trajectory of ego_vehicle 1)</string>
      </property>
     </widget>
    </item>

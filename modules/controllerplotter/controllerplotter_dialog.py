@@ -122,6 +122,7 @@ class ControllerPlotterDialog(ModuleDialog):
         try:
             # TODO: Make this depend on the trajectory selected in FDCA controller (read news and then apply that name)
             trajectory_name = "MiddleRoadTVRecord_filtered_ffswang_heading_2hz.csv"
+            # trajectory_name = "tweedetestKIJKUIT.csv"
             tmp = pd.read_csv(os.path.join('modules/hapticcontrollermanager/hapticcontrollermanager_controllers/trajectories', trajectory_name))
             HCR_trajectory_data = tmp.values
             plot_data_HCR_x = HCR_trajectory_data[:, 1]
