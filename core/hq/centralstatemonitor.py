@@ -33,4 +33,6 @@ class CentralStateMonitor:
         if new_state == State.ERROR:
             for other_module, other_state_machine in self._all_state_machines.items():
                 if other_module != module:
-                    other_state_machine.request_state_change(State.STOPPED)
+                    other_state_machine.request_state_change(State.ERROR)
+
+

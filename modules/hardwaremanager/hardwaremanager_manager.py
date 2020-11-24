@@ -2,6 +2,7 @@ from core.module_manager import ModuleManager
 from modules.joanmodules import JOANModules
 from .hardwaremanager_inputtypes import HardwareInputTypes
 import multiprocessing as mp
+from core.statesenum import State
 
 
 class SensoDriveEvents:
@@ -33,6 +34,7 @@ class HardwareManager(ModuleManager):
             self.shared_variables.inputs[input.identifier] = HardwareInputTypes(input.input_type).shared_variables()
             if input.input_type == HardwareInputTypes.SENSODRIVE.value:
                 input.events = SensoDriveEvents()
+
 
     def get_ready(self):
         for inputs in self.module_settings.inputs.values():

@@ -69,6 +69,7 @@ class ModuleManager(QtCore.QObject):
 
         self.signals._signals[self.module].connect(self.module_dialog.update_dialog)
 
+
     def initialize(self):
         """
         Create shared variables, share through news
@@ -112,7 +113,10 @@ class ModuleManager(QtCore.QObject):
 
     def stop(self):
         QApplication.setOverrideCursor(Qt.WaitCursor)
-        self.shared_variables.state = self.state_machine.current_state.value
+        try:
+            self.shared_variables.state = self.state_machine.current_state.value
+        except AttributeError:
+            pass
 
         # send stop state to process and wait for the process to stop
         self.stop_dialog_timer()
@@ -137,7 +141,7 @@ class ModuleManager(QtCore.QObject):
         self.singleton_settings.remove_settings(self.module)
 
         # remove shared variables if any
-        if self.shared_variables:
+        if hasattr(self, 'shared_variables'):
             del self.shared_variables
 
         self._events.start.clear()
