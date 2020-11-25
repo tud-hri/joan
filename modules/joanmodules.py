@@ -16,6 +16,7 @@ class JOANModules(Enum):
     DATA_RECORDER = auto()
     CONTROLLER_PLOTTER = auto()
     EXPERIMENT_MANAGER = auto()
+    DATA_PLOTTER = auto()
 
     @property
     def manager(self):
@@ -26,6 +27,7 @@ class JOANModules(Enum):
         from modules.controllerplotter.controllerplotter_manager import ControllerPlotterManager
         from modules.datarecorder.datarecorder_manager import DataRecorderManager
         from modules.experimentmanager.experimentmanager_manager import ExperimentManager
+        from modules.dataplotter.dataplotter_manager import DataPlotterManager
 
         return {JOANModules.HARDWARE_MANAGER: HardwareManager,
                 JOANModules.TEMPLATE: TemplateManager,
@@ -33,7 +35,8 @@ class JOANModules(Enum):
                 JOANModules.HAPTIC_CONTROLLER_MANAGER: HapticControllerManager,
                 JOANModules.CONTROLLER_PLOTTER: ControllerPlotterManager,
                 JOANModules.DATA_RECORDER: DataRecorderManager,
-                JOANModules.EXPERIMENT_MANAGER: ExperimentManager}[self]
+                JOANModules.EXPERIMENT_MANAGER: ExperimentManager,
+                JOANModules.DATA_PLOTTER: DataPlotterManager}[self]
 
     @property
     def dialog(self):
@@ -44,6 +47,7 @@ class JOANModules(Enum):
         from modules.controllerplotter.controllerplotter_dialog import ControllerPlotterDialog
         from modules.datarecorder.datarecorder_dialog import DataRecorderDialog
         from modules.experimentmanager.experimentmanager_dialog import ExperimentManagerDialog
+        from modules.dataplotter.dataplotter_dialog import DataPlotterDialog
 
         return {JOANModules.HARDWARE_MANAGER: HardwareManagerDialog,
                 JOANModules.TEMPLATE: TemplateDialog,
@@ -51,7 +55,8 @@ class JOANModules(Enum):
                 JOANModules.HAPTIC_CONTROLLER_MANAGER: HapticControllerManagerDialog,
                 JOANModules.DATA_RECORDER: DataRecorderDialog,
                 JOANModules.CONTROLLER_PLOTTER: ControllerPlotterDialog,
-                JOANModules.EXPERIMENT_MANAGER: ExperimentManagerDialog}[self]
+                JOANModules.EXPERIMENT_MANAGER: ExperimentManagerDialog,
+                JOANModules.DATA_PLOTTER: DataPlotterDialog}[self]
 
     @property
     def settings(self):
@@ -62,6 +67,7 @@ class JOANModules(Enum):
         from modules.controllerplotter.controllerplotter_settings import ControllerPlotterSettings
         from modules.datarecorder.datarecorder_settings import DataRecorderSettings
         from modules.experimentmanager.experimentmanager_settings import ExperimentManagerSettings
+        from modules.dataplotter.dataplotter_settings import DataPlotterSettings
 
         return {JOANModules.TEMPLATE: TemplateSettings,
                 JOANModules.HARDWARE_MANAGER: HardwareManagerSettings,
@@ -69,7 +75,8 @@ class JOANModules(Enum):
                 JOANModules.HAPTIC_CONTROLLER_MANAGER: HapticControllerManagerSettings,
                 JOANModules.DATA_RECORDER: DataRecorderSettings,
                 JOANModules.CONTROLLER_PLOTTER: ControllerPlotterSettings,
-                JOANModules.EXPERIMENT_MANAGER: ExperimentManagerSettings
+                JOANModules.EXPERIMENT_MANAGER: ExperimentManagerSettings,
+                JOANModules.DATA_PLOTTER: DataPlotterSettings
                 }[self]
 
     @property
@@ -80,6 +87,7 @@ class JOANModules(Enum):
         from modules.hapticcontrollermanager.hapticcontrollermanager_sharedvariables import HapticControllerManagerSharedVariables
         from core.modulesharedvariables import ModuleSharedVariables
         from modules.datarecorder.datarecorder_sharedvariables import DataRecorderSharedVariables
+        from modules.dataplotter.dataplotter_sharedvariables import DataPlotterSharedVariables
 
         return {JOANModules.HARDWARE_MANAGER: HardwareManagerSharedVariables,
                 JOANModules.TEMPLATE: TemplateSharedVariables,
@@ -87,7 +95,8 @@ class JOANModules(Enum):
                 JOANModules.HAPTIC_CONTROLLER_MANAGER: HapticControllerManagerSharedVariables,
                 JOANModules.CONTROLLER_PLOTTER: ModuleSharedVariables,
                 JOANModules.DATA_RECORDER: DataRecorderSharedVariables,
-                JOANModules.EXPERIMENT_MANAGER: ModuleSharedVariables}[self]
+                JOANModules.EXPERIMENT_MANAGER: ModuleSharedVariables,
+                JOANModules.DATA_PLOTTER: DataPlotterSharedVariables}[self]
 
     @property
     def process(self):
@@ -97,6 +106,7 @@ class JOANModules(Enum):
         from modules.hapticcontrollermanager.hapticcontrollermanager_process import HapticControllerManagerProcess
         from core.module_process import ModuleProcess
         from modules.datarecorder.datarecorder_process import DataRecorderProcess
+        from modules.dataplotter.dataplotter_process import DataPlotterProcess
 
         return {JOANModules.HARDWARE_MANAGER: HardwareManagerProcess,
                 JOANModules.TEMPLATE: TemplateProcess,
@@ -104,7 +114,8 @@ class JOANModules(Enum):
                 JOANModules.HAPTIC_CONTROLLER_MANAGER: HapticControllerManagerProcess,
                 JOANModules.CONTROLLER_PLOTTER: ModuleProcess,
                 JOANModules.DATA_RECORDER: DataRecorderProcess,
-                JOANModules.EXPERIMENT_MANAGER: ModuleProcess}[self]
+                JOANModules.EXPERIMENT_MANAGER: ModuleProcess,
+                JOANModules.DATA_PLOTTER: DataPlotterProcess}[self]
 
     @property
     def ui_file(self):
@@ -115,7 +126,8 @@ class JOANModules(Enum):
                 JOANModules.HAPTIC_CONTROLLER_MANAGER: os.path.join(path_to_modules, "hapticcontrollermanager/hapticcontrollermanager_dialog.ui"),
                 JOANModules.CONTROLLER_PLOTTER: os.path.join(path_to_modules, "controllerplotter/controllerplotter_dialog.ui"),
                 JOANModules.DATA_RECORDER: os.path.join(path_to_modules, "datarecorder/datarecorder_dialog.ui"),
-                JOANModules.EXPERIMENT_MANAGER: os.path.join(path_to_modules, "experimentmanager/experimentmanager.ui")
+                JOANModules.EXPERIMENT_MANAGER: os.path.join(path_to_modules, "experimentmanager/experimentmanager.ui",),
+                JOANModules.DATA_PLOTTER: os.path.join(path_to_modules, "dataplotter/dataplotter.ui")
                 }[self]
 
     def __str__(self):
@@ -125,7 +137,8 @@ class JOANModules(Enum):
                 JOANModules.HAPTIC_CONTROLLER_MANAGER: 'Haptic Controller Manager',
                 JOANModules.CONTROLLER_PLOTTER: 'Controller Plotter',
                 JOANModules.DATA_RECORDER: 'Data Recorder',
-                JOANModules.EXPERIMENT_MANAGER: 'Experiment Manager'}[self]
+                JOANModules.EXPERIMENT_MANAGER: 'Experiment Manager',
+                JOANModules.DATA_PLOTTER: 'Data Plotter'}[self]
 
     @staticmethod
     def from_string_representation(string):

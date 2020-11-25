@@ -16,13 +16,7 @@ class DataPlotterDialog(ModuleDialog):
     def __init__(self, module_manager: ModuleManager, parent=None):
         super().__init__(module=JOANModules.DATA_PLOTTER, module_manager=module_manager, parent=parent)
         self._module_manager = module_manager
-        # # set current data file name
-        # self._module_widget.lbl_data_filename.setText("< none >")
-        #
-        # # set message text
-        # self._module_widget.lbl_message_plotter.setText("not recording")
-        # self._module_widget.lbl_message_plotter.setStyleSheet('color: orange')
-        #
+
         # # get news items
         self.news = self.module_manager.news
         #
@@ -35,7 +29,12 @@ class DataPlotterDialog(ModuleDialog):
         self._set_all_checked_items(variables_to_plot)
 
     def handle_state_change(self):
-        pass
+        if self.module_manager.state_machine.current_state == State.INITIALIZED:
+            self._module_widget.treeWidget.setEnabled(True)
+            self._fill_tree_widget()
+            self.update_dialog()
+        else:
+            self._module_widget.treeWidget.setEnabled(False)
 
     def _save_settings(self):
         self.apply_settings()
