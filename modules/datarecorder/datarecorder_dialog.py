@@ -26,6 +26,14 @@ class DataRecorderDialog(ModuleDialog):
         # get news items
         self.news = self.module_manager.news
 
+        #make sure you can only record a trajectory if carlainterface is loaded
+        if JOANModules.CARLA_INTERFACE in self.news.all_news:
+            self.carla_interface_present = True
+        else:
+            self.carla_interface_present = False
+            self._module_widget.check_trajectory.blockSignals(True)
+
+
         # set gui functionality
         self._module_widget.check_trajectory.stateChanged.connect(self.update_trajectory_groupbox)
         self._module_widget.browsePathPushButton.clicked.connect(self._browse_datalog_path)
@@ -81,7 +89,10 @@ class DataRecorderDialog(ModuleDialog):
             self._module_widget.lbl_message_recorder.setText("recording")
             self._module_widget.lbl_message_recorder.setStyleSheet('color: green')
         elif self.module_manager.state_machine.current_state == State.STOPPED:
-            self._module_widget.check_trajectory.setEnabled(True)
+            if self.carla_interface_present:
+                self._module_widget.check_trajectory.setEnabled(True)
+            else:
+                self._module_widget.check_trajectory.setEnabled(False)
             self._module_widget.lbl_message_recorder.setText("not recording")
             self._module_widget.lbl_message_recorder.setStyleSheet('color: orange')
             self._module_widget.browsePathPushButton.setEnabled(True)

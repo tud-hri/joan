@@ -37,8 +37,8 @@ class DataRecorderProcess(ModuleProcess):
                 self.carla_interface_variables = self.news.read_news(JOANModules.CARLA_INTERFACE)
                 self.transform = self.carla_interface_variables.agents['Ego Vehicle_1'].transform
                 self.trajectory_file = open(self.trajectory_save_path, 'w')
-            except Exception as inst:
-                print(inst)
+            except KeyError: #means there is no egovehicle 1
+                pass
 
         header = ', '.join(['.'.join(v) for v in self.variables_to_be_saved])
         with open(self.save_path, 'w') as self.file:

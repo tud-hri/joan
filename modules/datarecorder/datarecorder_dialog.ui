@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>586</width>
+    <width>568</width>
     <height>732</height>
    </rect>
   </property>
@@ -80,7 +80,7 @@
    <item>
     <widget class="QCheckBox" name="check_trajectory">
      <property name="text">
-      <string>Generate Trajectory  (note this will only save a trajectory of ego_vehicle 1)</string>
+      <string>Generate Trajectory  (will only record for Ego Vehicle_1, only checkable if CarlaInterface is included)</string>
      </property>
     </widget>
    </item>
