@@ -103,5 +103,5 @@ class DataRecorderProcess(ModuleProcess):
                 self.travelled_distance = 0.0
 
             self.temp = [self.transform[0], self.transform[1]]
-        except Exception as inst:  # this would mean there is no ego_vehicle to record trajectory for
-            print(inst)
+        except KeyError:  # this would mean there is no ego_vehicle to record trajectory for
+            pass
