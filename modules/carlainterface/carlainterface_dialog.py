@@ -33,8 +33,10 @@ class CarlaInterfaceDialog(ModuleDialog):
         super()._handle_state_change()
         if self.module_manager.state_machine.current_state == State.STOPPED:
             self._module_widget.groupbox_agents.setEnabled(True)
+            self._module_widget.btn_add_agent.setEnabled(True)
         else:
             self._module_widget.groupbox_agents.setEnabled(False)
+            self._module_widget.btn_add_agent.setEnabled(False)
 
     def _select_agent_type(self):
         self._agent_type_dialog.combo_agent_type.clear()

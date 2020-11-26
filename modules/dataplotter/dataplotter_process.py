@@ -11,7 +11,7 @@ class DataPlotterProcess(ModuleProcess):
         self.settings = settings
         self.news = news
 
-        self.variables_to_be_saved = {}
+        self.variables_to_be_plotted = {}
         self.save_path = ''
 
         self.file = None
@@ -22,6 +22,7 @@ class DataPlotterProcess(ModuleProcess):
         The super().get_ready() method converts the module_settings back to the appropriate settings object
         """
         self.variables_to_be_plotted = self.settings.variables_to_be_plotted
+        print(self.variables_to_be_plotted)
 
 
     def _run_loop(self):

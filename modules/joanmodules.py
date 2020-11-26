@@ -106,7 +106,6 @@ class JOANModules(Enum):
         from modules.hapticcontrollermanager.hapticcontrollermanager_process import HapticControllerManagerProcess
         from core.module_process import ModuleProcess
         from modules.datarecorder.datarecorder_process import DataRecorderProcess
-        from modules.dataplotter.dataplotter_process import DataPlotterProcess
 
         return {JOANModules.HARDWARE_MANAGER: HardwareManagerProcess,
                 JOANModules.TEMPLATE: TemplateProcess,
@@ -115,7 +114,7 @@ class JOANModules(Enum):
                 JOANModules.CONTROLLER_PLOTTER: ModuleProcess,
                 JOANModules.DATA_RECORDER: DataRecorderProcess,
                 JOANModules.EXPERIMENT_MANAGER: ModuleProcess,
-                JOANModules.DATA_PLOTTER: DataPlotterProcess}[self]
+                JOANModules.DATA_PLOTTER: ModuleProcess}[self]
 
     @property
     def ui_file(self):

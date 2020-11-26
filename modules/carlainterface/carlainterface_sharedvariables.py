@@ -19,14 +19,14 @@ class EgoVehicleSharedVariables(SharedVariables):
         self._applied_input = mp.Array(c_float, 5)
 
         # road data for controller plotter
-        self._data_road_x = mp.Array(c_float, 50)
-        self._data_road_x_inner = mp.Array(c_float, 50)
-        self._data_road_x_outer = mp.Array(c_float, 50)
-        self._data_road_y = mp.Array(c_float, 50)
-        self._data_road_y_inner = mp.Array(c_float, 50)
-        self._data_road_y_outer = mp.Array(c_float, 50)
-        self._data_road_psi = mp.Array(c_float, 50)
-        self._data_road_lanewidth = mp.Array(c_float, 50)
+        self._data_road_x = mp.Array(c_float, 0)
+        self._data_road_x_inner = mp.Array(c_float, 0)
+        self._data_road_x_outer = mp.Array(c_float, 0)
+        self._data_road_y = mp.Array(c_float, 0)
+        self._data_road_y_inner = mp.Array(c_float, 0)
+        self._data_road_y_outer = mp.Array(c_float, 0)
+        self._data_road_psi = mp.Array(c_float, 0)
+        self._data_road_lanewidth = mp.Array(c_float, 0)
 
     @property
     def transform(self):
