@@ -145,8 +145,9 @@ class DataPlotterDialog(ModuleDialog):
                 #                                                                                  pen=pg.mkPen((color[0], color[1], color[2], 255), width=3))
                 if isinstance(last_object, list):
                     # TODO olger, weet jij waarom return statements in deze methode hierondner worden genegeerd? het is iets met die recursiveness.
-                    self._recursively_check_item_name(self._module_widget.treeWidget.invisibleRootItem(), attribute_name)
-                    self._add_to_tree(self.value, attribute_name, last_object)
+                    if 'data' not in attribute_name:
+                        self._recursively_check_item_name(self._module_widget.treeWidget.invisibleRootItem(), attribute_name)
+                        self._add_to_tree(self.value, attribute_name, last_object)
                     # for idx, value in enumerate(last_object):
                     #     variables.append(str(idx))
                     #     self.ydata_listdict['.'.join(variables)]= [0]*50
@@ -160,6 +161,8 @@ class DataPlotterDialog(ModuleDialog):
 
     def _set_all_checked_items(self, variables_to_save):
         self._recursively_set_checked_items(self._module_widget.treeWidget.invisibleRootItem(), [], variables_to_save)
+
+
 
     def _recursively_check_item_name(self, parent, key):
         for index in range(parent.childCount()):
@@ -287,7 +290,6 @@ class DataPlotterDialog(ModuleDialog):
             item = QtWidgets.QTreeWidgetItem(parent)
             item.setData(0, Qt.DisplayRole, str(key))
             item.setFlags(item.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
-
             for inner_key, inner_value in value.items():
                 DataPlotterDialog._create_tree_item(item, inner_key, inner_value)
             return item
@@ -299,14 +301,15 @@ class DataPlotterDialog(ModuleDialog):
                 DataPlotterDialog._create_tree_item(item, str(index), inner_value)
             return item
         else:
-            item = QtWidgets.QTreeWidgetItem(parent)
-            item.setData(0, Qt.DisplayRole, str(key))
-            if value:
-                item.setCheckState(0, Qt.Checked)
-            else:
-                item.setCheckState(0, Qt.Unchecked)
+            if 'data_road' not in str(key):
+                item = QtWidgets.QTreeWidgetItem(parent)
+                item.setData(0, Qt.DisplayRole, str(key))
+                if value:
+                    item.setCheckState(0, Qt.Checked)
+                else:
+                    item.setCheckState(0, Qt.Unchecked)
 
-            item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
-            return item
+                item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
+                return item
 
 
