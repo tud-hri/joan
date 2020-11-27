@@ -101,7 +101,7 @@ class DataPlotterDialog(ModuleDialog):
                             self.ydata_listdict[strings].append(float(last_object[int(variable_name[-1])]))
                             self.ydata_listdict[strings].pop(0)
 
-                        self.plot_handle_dict[strings].setData(x=self.time_list, y=self.ydata_listdict[strings])
+
 
                 elif isinstance(last_object, float or int or bool):
                     i = 0
