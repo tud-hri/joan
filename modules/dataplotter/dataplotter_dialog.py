@@ -34,8 +34,9 @@ class DataPlotterDialog(ModuleDialog):
         viewbox.setBackgroundColor((255, 255, 255, 200))
         self._module_widget.plot_graph.showGrid(True, True, 1)
 
-        self.plot_handles = {}
+        self.plot_handle_dict = {}
         self.ydata_listdict = {}
+        self.ydata_empty = [0]*50
         self.time_list = [-5 + x * (0 - -5) / 50 for x in range(50)]
         self.pencolor_dict = {}
 
@@ -51,70 +52,91 @@ class DataPlotterDialog(ModuleDialog):
         self._set_all_checked_items(self.variables_to_plot)
 
     def handleItemChanged(self, item, column):
-        # if item.checkState(column) == QtCore.Qt.Checked:
-        #     print(item.text(column),' checked')
-        #     print(item.parent().text(column), 'checked')
-        pass
+        if (self.module_manager.state_machine.current_state is not State.INITIALIZED) and (self.module_manager.state_machine.current_state is not State.STOPPED):
+            item_variable_path_list = self._get_item_path(item)
+            item_variable_path_list.reverse()
+            if item.checkState(column) == Qt.Checked:
+                color = list(np.random.choice(range(256), size=3))
+                try:
+                    self.plot_handle_dict['.'.join(item_variable_path_list)].clear()
+                    self.ydata_listdict['.'.join(item_variable_path_list)].clear()
+                except KeyError:
+                    pass
+
+                self.plot_handle_dict['.'.join(item_variable_path_list)] = pg.PlotDataItem(x= self.time_list, y= self.ydata_empty, size=2, pen=pg.mkPen((color[0], color[1], color[2], 255), width=3))
+                self._module_widget.plot_graph.addItem(self.plot_handle_dict['.'.join(item_variable_path_list)])
+                self.ydata_listdict['.'.join(item_variable_path_list)] = self.ydata_empty
+                self._module_widget.plot_graph.repaint()
+            elif item.checkState(column) == Qt.Unchecked:
+                self.plot_handle_dict['.'.join(item_variable_path_list)].clear()
+                self._module_widget.plot_graph.removeItem(self.plot_handle_dict['.'.join(item_variable_path_list)])
+                self.plot_handle_dict.pop('.'.join(item_variable_path_list))
+                self.ydata_listdict.pop('.'.join(item_variable_path_list))
+
+
+
+
+
+
+
+    def _get_item_path(self, item):
+        temp = [item.text(0)]
+        path = self._recursively_get_item_path(item, temp)
+        return path
+
+    def _recursively_get_item_path(self, child , path):
+        parent = child.parent()
+        if parent is not None:
+            new_list = path.copy()
+            new_list.append(parent.text(0))
+            return self._recursively_get_item_path(parent, new_list)
+        else:
+            return path
+
+
+
 
     def update_dialog(self):
-        pass
+        variables_to_plot = self._get_all_checked_items()
+        for variable in variables_to_plot:
+            module = JOANModules.from_string_representation(variable[0])
+            last_object = self.news.read_news(module)
+    
+            for attribute_name in variable[1:]:
+                if isinstance(last_object, dict):
+                    last_object = last_object[attribute_name]
+                elif isinstance(last_object, list):
+                    last_object = last_object[int(attribute_name)]
+                else:
+                    last_object = getattr(last_object, attribute_name)
+    
+                if isinstance(last_object, list):
+                    pass
+                    for strings in self.plot_handle_dict.keys():
+                        variable_name = strings.rsplit('.')
+                        if attribute_name == variable_name[-2] and variable[0] == variable_name[0]:
+                                self.ydata_listdict[strings].append(float(last_object[int(variable_name[-1])]))
+                                self.ydata_listdict[strings].pop(0)
 
-        # variables_to_plot = self._get_all_checked_items()
-        # variables_to_clear = self._get_all_unchecked_items()
-        #
-        # if len(variables_to_plot) == 0:
-        #     for plots in self.plot_handles.values():
-        #         plots.setData(x =[0], y=[0])
-        #
-        # for variable in variables_to_clear:
-        #         plot_handle_key = '.'.join(variable)
-        #         all_plot_handle_keys = self.plot_handles.keys()
-        #         for string_keys in all_plot_handle_keys:
-        #             if plot_handle_key in string_keys:
-        #                 self.plot_handles[string_keys].setData(x = [0], y =[0])
-        #
-        # for variable in variables_to_plot:
-        #     module = JOANModules.from_string_representation(variable[0])
-        #     last_object = self.news.read_news(module)
-        #
-        #     for attribute_name in variable[1:]:
-        #         if isinstance(last_object, dict):
-        #             last_object = last_object[attribute_name]
-        #         elif isinstance(last_object, list):
-        #             last_object = last_object[int(attribute_name)]
-        #         else:
-        #             last_object = getattr(last_object, attribute_name)
-        #
-        #         if isinstance(last_object, list):
-        #             for strings in self.plot_handles.keys():
-        #                 variable_name = strings.rsplit('.')
-        #                 if attribute_name == variable_name[-2] and variable[0] == variable_name[0]:
-        #                         self.ydata_listdict[strings].append(float(last_object[int(variable_name[-1])]))
-        #                         self.ydata_listdict[strings].pop(0)
-        #
-        #                 self.plot_handles[strings].setData(x=self.time_list, y=self.ydata_listdict[strings])
-        #
-        #         elif isinstance(last_object, float or int or bool):
-        #             for strings in self.plot_handles.keys():
-        #                 variable_name = strings.rsplit('.')
-        #                 if attribute_name == variable_name[-1] and variable[0] == variable_name[0]:
-        #                     self.ydata_listdict[strings].append(float(last_object))
-        #                     self.ydata_listdict[strings].pop(0)
-        #                     self.plot_handles[strings].setData(x = self.time_list, y = self.ydata_listdict[strings])
+                        self.plot_handle_dict[strings].setData(x=self.time_list, y=self.ydata_listdict[strings])
+    
+                elif isinstance(last_object, float or int or bool):
+                    if attribute_name == 'execution_time':
+                        self.ydata_listdict['Hardware Manager.execution_time'].append(last_object)
+                        self.ydata_listdict['Hardware Manager.execution_time'].pop(0)
+
+
+        for plot_item_key in self.plot_handle_dict.keys():
+            self.plot_handle_dict[plot_item_key].setData(x=self.time_list, y=self.ydata_listdict[plot_item_key])
+
 
     def handle_state_change(self):
         if self.module_manager.state_machine.current_state == State.INITIALIZED:
             self._module_widget.treeWidget.setEnabled(True)
-            self._fill_tree_widget()
             self.initialize_dialog()
         elif self.module_manager.state_machine.current_state == State.STOPPED:
-            self._module_widget.treeWidget.setEnabled(True)
-            try:
-                for plots in self.plot_handles.values():
-                    plots.setData(x =[0], y=[0])
-                    plots.clear()
-            except AttributeError: #this means there are no plots yet
-                pass
+            self._module_widget.treeWidget.clear()
+            self._module_widget.plot_graph.clear()
         else:
             self._module_widget.treeWidget.setEnabled(True)
 
@@ -123,62 +145,10 @@ class DataPlotterDialog(ModuleDialog):
         super()._save_settings()
 
     def apply_settings(self):
-        self._check_all_items(self._module_widget.treeWidget.invisibleRootItem())
-        self.module_manager.module_settings.variables_to_be_plotted = self._get_all_checked_items()
-        for variables in self.module_manager.module_settings.variables_to_be_plotted:
-            module = JOANModules.from_string_representation(variables[0])
-            last_object = self.news.read_news(module)
+        self._fill_tree_widget()
 
-            for attribute_name in variables[1:]:
-                if isinstance(last_object, dict):
-                    last_object = last_object[attribute_name]
-                elif isinstance(last_object, list):
-                    last_object = last_object[int(attribute_name)]
-                else:
-                    last_object = getattr(last_object, attribute_name)
-
-                # if isinstance(last_object, float or int or bool):
-                #     self.ydata_listdict['.'.join(variables)]= [0]*50
-                #     self.ydata_listdict['.'.join(variables)] = [0] * 50
-                #     color = list(np.random.choice(range(256), size=3))
-                #     self.plot_handles['.'.join(variables)] = self._module_widget.plot_graph.plot(x=[0], y=[0], size=2,
-                #                                                                                  pen=pg.mkPen((color[0], color[1], color[2], 255), width=3))
-                if isinstance(last_object, list):
-                    # TODO olger, weet jij waarom return statements in deze methode hierondner worden genegeerd? het is iets met die recursiveness.
-                    if 'data' not in attribute_name:
-                        self._recursively_check_item_name(self._module_widget.treeWidget.invisibleRootItem(), attribute_name)
-                        self._add_to_tree(self.value, attribute_name, last_object)
-                    # for idx, value in enumerate(last_object):
-                    #     variables.append(str(idx))
-                    #     self.ydata_listdict['.'.join(variables)]= [0]*50
-                    #     color = list(np.random.choice(range(256), size=3))
-                    #     self.plot_handles['.'.join(variables)] = self._module_widget.plot_graph.plot(x=[0], y=[0], size=2,
-                    #                                                                                  pen=pg.mkPen((color[0], color[1], color[2], 255), width=3))
-                    #     variables.remove(str(idx))
-        #
-        #
-        self._uncheck_all_items(self._module_widget.treeWidget.invisibleRootItem())
-
-    def _set_all_checked_items(self, variables_to_save):
-        self._recursively_set_checked_items(self._module_widget.treeWidget.invisibleRootItem(), [], variables_to_save)
-
-
-
-    def _recursively_check_item_name(self, parent, key):
-        for index in range(parent.childCount()):
-            child = parent.child(index)
-            if child.text(0) == key:
-                self.value = child
-                break
-
-            else:
-                self._recursively_check_item_name(child, key)
-
-
-
-
-
-
+    def _set_all_checked_items(self, variables_to_plot):
+        self._recursively_set_checked_items(self._module_widget.treeWidget.invisibleRootItem(), [], variables_to_plot)
 
     def _recursively_set_checked_items(self, parent, path_to_parent, list_of_checked_items):
         for index in range(parent.childCount()):
@@ -229,6 +199,19 @@ class DataPlotterDialog(ModuleDialog):
             else:
                 self._recursively_get_checked_items(child, new_list, list_of_checked_items)
 
+    def _recursively_get_all_items(self, parent, path_to_parent, list_of_items):
+        for index in range(parent.childCount()):
+            child = parent.child(index)
+
+            new_list = path_to_parent.copy()
+            new_list.append(child.text(0))
+
+            if not child.childCount():
+                list_of_items.append(new_list)
+
+            else:
+                self._recursively_get_all_items(child, new_list, list_of_items)
+
     def _recursively_get_unchecked_items(self, parent, path_to_parent, list_of_unchecked_items):
         for index in range(parent.childCount()):
             child = parent.child(index)
@@ -257,15 +240,6 @@ class DataPlotterDialog(ModuleDialog):
                     self._create_tree_item(self._module_widget.treeWidget, str(module), shared_variables)
 
     @staticmethod
-    def _add_to_tree(item, key, value):
-        if isinstance(value, list):
-            item.setData(0, Qt.DisplayRole, str(key))
-            item.setFlags(item.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
-            for index, inner_value in enumerate(value):
-                DataPlotterDialog._create_tree_item(item, str(index), inner_value)
-            return item
-
-    @staticmethod
     def _create_tree_item(parent, key, value):
         """
         Tree-items are created here.
@@ -277,10 +251,12 @@ class DataPlotterDialog(ModuleDialog):
         if isinstance(value, SharedVariables):
             item = QtWidgets.QTreeWidgetItem(parent)
             item.setData(0, Qt.DisplayRole, str(key))
-            item.setFlags(item.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
 
             for prop in value.get_all_properties():
-                DataPlotterDialog._create_tree_item(item, prop, None)
+                if prop is not None:
+                    last_object = getattr(value, prop)
+                    DataPlotterDialog._create_tree_item(item, prop, last_object)
+
 
             for inner_key, inner_value in value.__dict__.items():
                 if inner_key[0] != '_' and not callable(inner_value):
@@ -289,27 +265,22 @@ class DataPlotterDialog(ModuleDialog):
         elif isinstance(value, dict):
             item = QtWidgets.QTreeWidgetItem(parent)
             item.setData(0, Qt.DisplayRole, str(key))
-            item.setFlags(item.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
             for inner_key, inner_value in value.items():
                 DataPlotterDialog._create_tree_item(item, inner_key, inner_value)
             return item
         elif isinstance(value, list):
-            item = QtWidgets.QTreeWidgetItem(parent)
-            item.setData(0, Qt.DisplayRole, str(key))
-            item.setFlags(item.flags() | Qt.ItemIsTristate | Qt.ItemIsUserCheckable)
-            for index, inner_value in enumerate(value):
-                DataPlotterDialog._create_tree_item(item, str(index), inner_value)
-            return item
-        else:
             if 'data_road' not in str(key):
                 item = QtWidgets.QTreeWidgetItem(parent)
                 item.setData(0, Qt.DisplayRole, str(key))
-                if value:
-                    item.setCheckState(0, Qt.Checked)
-                else:
-                    item.setCheckState(0, Qt.Unchecked)
-
-                item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
+                for index, inner_value in enumerate(value):
+                    DataPlotterDialog._create_tree_item(item, str(index), inner_value)
                 return item
+        else:
+            item = QtWidgets.QTreeWidgetItem(parent)
+            item.setData(0, Qt.DisplayRole, str(key))
+            item.setCheckState(0, Qt.Unchecked)
+
+            item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
+            return item
 
 
