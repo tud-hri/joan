@@ -107,7 +107,7 @@ class DataPlotterDialog(ModuleDialog):
                     i = 0
                     for strings in self.plot_handle_dict.keys():
                         variable_name = strings.rsplit('.')
-                        if attribute_name == variable_name[-1]:
+                        if attribute_name == variable_name[-1] and variable[-2] == variable_name[-2]:
                             self.ydata_listdict[strings].append(float(last_object))
                             self.ydata_listdict[strings].pop(0)
 
