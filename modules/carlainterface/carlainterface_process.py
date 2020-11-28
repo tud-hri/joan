@@ -46,10 +46,11 @@ class CarlaInterfaceProcess(ModuleProcess):
         port = 2000
 
         [self.vehicle_blueprint_library, self.spawn_point_objects, self.world, self.spawn_points] = self.connect_carla(host=host, port=port)
-        settings = self.world.get_settings()
-        settings.synchronous_mode = True  # Enables synchronous mode
-        settings.fixed_delta_seconds = 0.01666 # set fixed time steep of 0.05
-        self.world.apply_settings(settings)
+        # TODO check whether this is a good idea
+        # settings = self.world.get_settings()
+        # settings.synchronous_mode = True  # Enables synchronous mode
+        # settings.fixed_delta_seconds = 0.01666 # set fixed time steep of 0.05
+        # self.world.apply_settings(settings)
         # Now we create our agents and directly spawn them
         for key, value in self._settings_as_object.agents.items():
             self.agent_objects[key] = AgentTypes(value.agent_type).process(self, settings=value, shared_variables=self._module_shared_variables.agents[key])

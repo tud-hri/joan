@@ -54,7 +54,7 @@ class DataPlotterDialog(ModuleDialog):
             item_variable_path_list.reverse()
             if item.checkState(column) == Qt.Checked:
                 color = list(np.random.choice(range(256), size=3))
-                self.plot_handle_dict['.'.join(item_variable_path_list)] = pg.PlotDataItem(name ='.'.join(item_variable_path_list), x=self.time_list, y=self.empty_y, size=2,
+                self.plot_handle_dict['.'.join(item_variable_path_list)] = pg.PlotDataItem(name='.'.join(item_variable_path_list), x=self.time_list, y=self.empty_y, size=2,
                                                                                            pen=pg.mkPen((color[0], color[1], color[2], 255), width=3))
                 self._module_widget.plot_graph.addItem(self.plot_handle_dict['.'.join(item_variable_path_list)])
                 self.ydata_listdict['.'.join(item_variable_path_list)] = [0] * 50
@@ -62,8 +62,7 @@ class DataPlotterDialog(ModuleDialog):
                 self.ydata_listdict['.'.join(item_variable_path_list)] = [0] * 50
                 self.plot_handle_dict['.'.join(item_variable_path_list)].clear()
                 self._module_widget.plot_graph.removeItem(self.plot_handle_dict['.'.join(item_variable_path_list)])
-
-
+                del self.plot_handle_dict['.'.join(item_variable_path_list)]
 
     def _get_item_path(self, item):
         temp = [item.text(0)]
@@ -89,28 +88,18 @@ class DataPlotterDialog(ModuleDialog):
                 if isinstance(last_object, dict):
                     last_object = last_object[attribute_name]
                 elif isinstance(last_object, list):
-                    last_object = last_object[int(attribute_name)]
-                else:
-                    last_object = getattr(last_object, attribute_name)
-
-                if isinstance(last_object, list):
-                    pass
                     for strings in self.plot_handle_dict.keys():
                         variable_name = strings.rsplit('.')
-                        if attribute_name == variable_name[-2] and variable[0] == variable_name[0]:
+                        if attribute_name == variable_name[-1] and variable[-2] == variable_name[-2] and variable_name[-3] == variable[-3]:
                             self.ydata_listdict[strings].append(float(last_object[int(variable_name[-1])]))
                             self.ydata_listdict[strings].pop(0)
-
-
-
-                elif isinstance(last_object, float or int or bool):
-                    i = 0
+                else:
+                    last_object = getattr(last_object, attribute_name)
                     for strings in self.plot_handle_dict.keys():
                         variable_name = strings.rsplit('.')
                         if attribute_name == variable_name[-1] and variable[-2] == variable_name[-2]:
                             self.ydata_listdict[strings].append(float(last_object))
                             self.ydata_listdict[strings].pop(0)
-
 
         for plot_item in self.plot_handle_dict.values():
             plot_item.setData(x=self.time_list, y=self.ydata_listdict[plot_item.name()])
@@ -149,7 +138,7 @@ class DataPlotterDialog(ModuleDialog):
                     child.setCheckState(0, Qt.Unchecked)
             else:
                 self._recursively_set_checked_items(child, new_list, list_of_checked_items)
-
+                
     def _get_all_checked_items(self):
         checked_items = []
         self._recursively_get_checked_items(self._module_widget.treeWidget.invisibleRootItem(), [], checked_items)
