@@ -213,8 +213,7 @@ class DataPlotterDialog(ModuleDialog):
                 if shared_variables:
                     self._create_tree_item(self._module_widget.treeWidget, str(module), shared_variables)
 
-    @staticmethod
-    def _create_tree_item(parent, key, value):
+    def _create_tree_item(self, parent, key, value):
         """
         Tree-items are created here.
         :param parent: parent of the current key/value
@@ -229,24 +228,28 @@ class DataPlotterDialog(ModuleDialog):
             for prop in value.get_all_properties():
                 if prop is not None:
                     last_object = getattr(value, prop)
-                    DataPlotterDialog._create_tree_item(item, prop, last_object)
+                    DataPlotterDialog._create_tree_item(self, item, prop, last_object)
 
             for inner_key, inner_value in value.__dict__.items():
                 if inner_key[0] != '_' and not callable(inner_value):
-                    DataPlotterDialog._create_tree_item(item, inner_key, inner_value)
+                    DataPlotterDialog._create_tree_item(self, item, inner_key, inner_value)
             return item
         elif isinstance(value, dict):
             item = QtWidgets.QTreeWidgetItem(parent)
             item.setData(0, Qt.DisplayRole, str(key))
             for inner_key, inner_value in value.items():
-                DataPlotterDialog._create_tree_item(item, inner_key, inner_value)
+                DataPlotterDialog._create_tree_item(self, item, inner_key, inner_value)
             return item
         elif isinstance(value, list):
             if 'data_road' not in str(key):
                 item = QtWidgets.QTreeWidgetItem(parent)
                 item.setData(0, Qt.DisplayRole, str(key))
+                print(item.text(0))
                 for index, inner_value in enumerate(value):
-                    DataPlotterDialog._create_tree_item(item, str(index), inner_value)
+                    # Hardcoded formatting of strings for mostly used variables:
+                    self.convert_indexes_to_variable_names()
+
+                    DataPlotterDialog._create_tree_item(self, item, str(index), inner_value)
                 return item
         else:
             item = QtWidgets.QTreeWidgetItem(parent)
@@ -255,3 +258,7 @@ class DataPlotterDialog(ModuleDialog):
 
             item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
             return item
+
+
+    def convert_indexes_to_variable_names(cls, list_name, index):
+        pass
