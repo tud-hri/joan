@@ -258,7 +258,6 @@ class DataPlotterDialog(ModuleDialog):
             if 'data_road' not in str(key):
                 item = QtWidgets.QTreeWidgetItem(parent)
                 item.setData(0, Qt.DisplayRole, str(key))
-                print(item.text(0))
                 for index, inner_value in enumerate(value):
                     # Hardcoded formatting of strings for mostly used variables:
                     variable_name = self.convert_indexes_to_variable_names(item.text(0), index)
