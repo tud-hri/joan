@@ -29,9 +29,9 @@ class DataPlotterDialog(ModuleDialog):
         pg.setConfigOption('foreground', 'k')
 
         self._module_widget.plot_graph.setBackground(background_color)
-        viewbox = self._module_widget.plot_graph.getViewBox()
-        viewbox.setBorder(pen=pg.mkPen(0, 0, 0, 255))
-        viewbox.setBackgroundColor((255, 255, 255, 200))
+        self.viewbox = self._module_widget.plot_graph.getViewBox()
+        self.viewbox.setBorder(pen=pg.mkPen(0, 0, 0, 255))
+        self.viewbox.setBackgroundColor((255, 255, 255, 200))
         self._module_widget.plot_graph.showGrid(True, True, 1)
 
         self.plot_handle_dict = {}
@@ -47,6 +47,12 @@ class DataPlotterDialog(ModuleDialog):
     def initialize_dialog(self):
         self.variables_to_plot = self.module_manager.module_settings.variables_to_be_plotted
         self._set_all_checked_items(self.variables_to_plot)
+        self.overall_legend = pg.LegendItem(offset=10, horSpacing=30, verSpacing=-7,
+                                      pen=pg.mkPen(0, 0, 0, 255), brush=pg.mkBrush(255, 255, 255, 255))
+        self.overall_legend.setParentItem(self.viewbox)
+        self._module_widget.plot_graph.setLabel('bottom', 'Time[s]', **{'font-size': '12pt'})
+
+
 
     def handleItemChanged(self, item, column):
         if (self.module_manager.state_machine.current_state is not State.INITIALIZED) and (self.module_manager.state_machine.current_state is not State.STOPPED):
@@ -58,10 +64,13 @@ class DataPlotterDialog(ModuleDialog):
                                                                                            pen=pg.mkPen((color[0], color[1], color[2], 255), width=3))
                 self._module_widget.plot_graph.addItem(self.plot_handle_dict['.'.join(item_variable_path_list)])
                 self.ydata_listdict['.'.join(item_variable_path_list)] = [0] * 50
+                self.overall_legend.addItem(self.plot_handle_dict['.'.join(item_variable_path_list)], item_variable_path_list[-1])
+
             elif item.checkState(column) == Qt.Unchecked:
                 self.ydata_listdict['.'.join(item_variable_path_list)] = [0] * 50
                 self.plot_handle_dict['.'.join(item_variable_path_list)].clear()
                 self._module_widget.plot_graph.removeItem(self.plot_handle_dict['.'.join(item_variable_path_list)])
+                self.overall_legend.removeItem(self.plot_handle_dict['.'.join(item_variable_path_list)])
                 del self.plot_handle_dict['.'.join(item_variable_path_list)]
 
     def _get_item_path(self, item):
@@ -90,8 +99,9 @@ class DataPlotterDialog(ModuleDialog):
                 elif isinstance(last_object, list):
                     for strings in self.plot_handle_dict.keys():
                         variable_name = strings.rsplit('.')
+                        variable_index = self.convert_variablename_to_index(variable_name[-1])
                         if attribute_name == variable_name[-1] and variable[-2] == variable_name[-2] and variable_name[-3] == variable[-3]:
-                            self.ydata_listdict[strings].append(float(last_object[int(variable_name[-1])]))
+                            self.ydata_listdict[strings].append(float(last_object[variable_index]))
                             self.ydata_listdict[strings].pop(0)
                 else:
                     last_object = getattr(last_object, attribute_name)
@@ -111,6 +121,10 @@ class DataPlotterDialog(ModuleDialog):
         elif self.module_manager.state_machine.current_state == State.STOPPED:
             self._module_widget.treeWidget.clear()
             self._module_widget.plot_graph.clear()
+            try:
+                self.overall_legend.scene().removeItem(self.overall_legend)
+            except AttributeError:
+                pass
         else:
             self._module_widget.treeWidget.setEnabled(True)
 
@@ -247,9 +261,9 @@ class DataPlotterDialog(ModuleDialog):
                 print(item.text(0))
                 for index, inner_value in enumerate(value):
                     # Hardcoded formatting of strings for mostly used variables:
-                    self.convert_indexes_to_variable_names()
+                    variable_name = self.convert_indexes_to_variable_names(item.text(0), index)
 
-                    DataPlotterDialog._create_tree_item(self, item, str(index), inner_value)
+                    DataPlotterDialog._create_tree_item(self, item, variable_name, inner_value)
                 return item
         else:
             item = QtWidgets.QTreeWidgetItem(parent)
@@ -260,5 +274,104 @@ class DataPlotterDialog(ModuleDialog):
             return item
 
 
-    def convert_indexes_to_variable_names(cls, list_name, index):
-        pass
+    def convert_indexes_to_variable_names(self, list_name, index):
+        if list_name == 'accelerations':
+            if index == 0:
+                return 'X Acceleration'
+            elif index == 1:
+                return 'Y Acceleration'
+            elif index == 2:
+                return 'Z Acceleration'
+
+        elif list_name == 'transform':
+            if index == 0:
+                return 'X Position'
+            elif index == 1:
+                return 'Y Position'
+            elif index == 2:
+                return 'Z Position'
+            elif index == 3:
+                return 'Yaw'
+            elif index == 4:
+                return 'Pitch'
+            elif index == 5:
+                return 'Roll'
+
+        elif list_name == 'velocities':
+            if index == 0:
+                return 'X Velocity'
+            elif index == 1:
+                return 'Y Velocity'
+            elif index == 2:
+                return 'Z Velocity'
+            elif index == 3:
+                return 'Angular Velocity X'
+            elif index == 4:
+                return 'Angular Velocity Y'
+            elif index == 5:
+                return 'Angular Velocity Z'
+
+        elif list_name == 'applied_input':
+            if index == 0:
+                return 'Steering'
+            elif index == 1:
+                return 'Reverse'
+            elif index == 2:
+                return 'Handbrake'
+            elif index == 3:
+                return 'Brake'
+            elif index == 4:
+                return 'Throttle'
+
+        else:
+            return str(index)
+
+    def convert_variablename_to_index(self, variable_name):
+
+        if variable_name == 'X Acceleration':
+            return 0
+        elif variable_name == 'Y Acceleration':
+            return 1
+        elif variable_name == 'Z Acceleration':
+            return 2
+
+        elif variable_name == 'X Position':
+            return 0
+        elif variable_name == 'Y Position':
+            return 1
+        elif variable_name == 'Z Position':
+            return 2
+
+        elif variable_name == 'Yaw':
+            return 3
+        elif variable_name == 'Pitch':
+            return 4
+        elif variable_name == 'Roll':
+            return 5
+
+        elif variable_name == 'X Velocity':
+            return 0
+        elif variable_name == 'X Velocity':
+            return 1
+        elif variable_name == 'X Velocity':
+            return 2
+        elif variable_name == 'Angular Velocity X':
+            return 3
+        elif variable_name == 'Angular Velocity Y':
+            return 4
+        elif variable_name == 'Angular Velocity Z':
+            return 5
+
+        elif variable_name == 'Steering':
+            return 0
+        elif variable_name == 'Reverse':
+            return 1
+        elif variable_name == 'Handbrake':
+            return 2
+        elif variable_name == 'Brake':
+            return 3
+        elif variable_name == 'Throttle':
+            return 4
+
+        else:
+            return 0
