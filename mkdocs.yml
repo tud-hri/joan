@@ -13,7 +13,7 @@ nav:
       - Setup JOAN on a TUD computer: setup-on-tud-shared-hardware.md
 
     - First steps:
-      - JOAN overview: firststeps-joan-overview.md
+      - JOAN Overview: firststeps-joan-overview.md
       - Run JOAN and CARLA: firststeps-joan-run.md
 #      - Starting JOAN and CARLA: joan-workflow.md
       - Quick start CARLA: firststeps-carle-ue4.md
@@ -23,7 +23,9 @@ nav:
       - CARLA interface: modules-carlainterface.md
       - Hardware Manager: modules-hardwaremanager.md
       - Experiment Manager: modules-experimentmanager.md
-      - Steering Wheel Controller: modules-swcontroller.md
+      - Haptic Controller Manager: modules-hapticcontrollermanager.md
+      - Data Plotter: modules-dataplotter.md
+
 
     - Advanced steps:
       - Create custom JOAN modules: advancedsteps-add-custom-module.md

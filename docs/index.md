@@ -39,7 +39,7 @@ JOAN is developed by members of the [Human-Robot Interaction group](https://delf
 * __[Setup JOAN on a TUD computer](setup-on-tud-shared-hardware.md)__ - guide on how to install your project on TUD shared hardware (probably your first step)
 
 ## First steps
-* __[JOAN overview](firststeps-joan-overview.md)__ - JOAN modules, News, ...
+* __[JOAN Overview](firststeps-joan-overview.md)__ - JOAN modules, News, ...
 * __[Run JOAN and CARLA](firststeps-joan-run.md)__ - Quickstart on how to run JOAN and CARLA
 * __[Quick start CARLA](firststeps-carle-ue4.md)__ - Quickstart on CARLA and the Unreal Editor
 
