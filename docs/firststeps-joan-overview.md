@@ -23,7 +23,6 @@ example where we use 2 seperate modules, 'module 1' and 'module 2'.
 [ ![](imgs/first-steps-communication.png) ](imgs/first-steps-communication.png)
 Please keep the above image in mind when going through the text below, there we will explain the flow of data and JOAN in more detail.
 
-
 ### States
 The first thing you'll notice is that we have 4 columns of almost the same thing, these represent the different states
 JOAN can be in during expected operation; STOPPED, IDLE, READY and RUNNING. This is important because it will give you more insight
@@ -33,7 +32,6 @@ into when, how and why certain communication elements are used.
 As mentioned earlier every module has its own settings. These settings are made whenever a module is loaded and stored in the Settings() singleton. 
 Loading a module means nothing more than including the module in the main.py of the program via the headquarters. So whenever you have a module loaded it will
 have a settings object associated with it.
-
 
 ### News
 
