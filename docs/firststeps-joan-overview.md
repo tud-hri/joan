@@ -30,6 +30,10 @@ JOAN can be in during expected operation; STOPPED, IDLE, READY and RUNNING. This
 into when, how and why certain communication elements are used. 
 
 ### Settings
+As mentioned earlier every module has its own settings. These settings are made whenever a module is loaded and stored in the Settings() singleton. 
+Loading a module means nothing more than including the module in the main.py of the program via the headquarters. So whenever you have a module loaded it will
+have a settings object associated with it.
+
 
 ### News
 
