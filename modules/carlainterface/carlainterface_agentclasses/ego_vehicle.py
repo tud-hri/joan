@@ -102,7 +102,7 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
             # Update hardware inputs according to current settings:
             self.combo_input.clear()
             self.combo_input.addItem('None')
-            HardwareManagerSettings = self.module_manager.singleton_settings.get_settings(JOANModules.HARDWARE_MANAGER)
+            HardwareManagerSettings = self.module_manager.central_settings.get_settings(JOANModules.HARDWARE_MANAGER)
             for inputs in HardwareManagerSettings.inputs.values():
                 self.combo_input.addItem(str(inputs))
             idx = self.combo_input.findText(
@@ -130,7 +130,7 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
             # update available controllers according to current settings:
             self.combo_haptic_controllers.clear()
             self.combo_haptic_controllers.addItem('None')
-            HapticControllerManagerSettings = self.module_manager.singleton_settings.get_settings(JOANModules.HAPTIC_CONTROLLER_MANAGER)
+            HapticControllerManagerSettings = self.module_manager.central_settings.get_settings(JOANModules.HAPTIC_CONTROLLER_MANAGER)
             for haptic_controller in HapticControllerManagerSettings.haptic_controllers.values():
                 self.combo_haptic_controllers.addItem(str(haptic_controller))
             idx = self.combo_haptic_controllers.findText(

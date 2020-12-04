@@ -29,7 +29,7 @@ class HQManager(QtCore.QObject):
         self.news = News()
 
         # settings
-        self.singleton_settings = Settings()
+        self.central_settings = Settings()
         self.signals = Signals()
 
         # path to modules directory
@@ -82,7 +82,8 @@ class HQManager(QtCore.QObject):
         if not parent:
             parent = self.window
 
-        module_manager = module.manager(news=self.news, signals=self.signals, time_step_in_ms=time_step_in_ms, parent=parent)
+        module_manager = module.manager(news=self.news, central_settings=self.central_settings, signals=self.signals, time_step_in_ms=time_step_in_ms,
+                                        parent=parent)
 
         self.central_state_monitor.register_state_machine(module, module_manager.state_machine)
 
