@@ -21,3 +21,7 @@ into that, below the module is shown as it should look like in the `STOPPED` sta
  will nicely show what is happening. Also notice that the legend is updated automatically. 
  
  ![DataPlotter GIF](gifs/modules-dataplotter.gif)
+ 
+!!! Note
+    If you plot CarlaInterface variables keep in mind that the data you receive from carla is always from the last applied frame. This means that
+    there will always be a bit of a delay between the data from for example the brake in hardwaramanager w.r.t. the applied input in CARLA.
