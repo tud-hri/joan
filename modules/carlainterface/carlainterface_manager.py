@@ -34,17 +34,15 @@ except IndexError:
 
 class CarlaInterfaceManager(ModuleManager):
     """
-    Example module for JOAN
-    Can also be used as a template for your own modules.
+    CarlaInterfaceManager module, inherits from the ModuleManager
     """
 
     def __init__(self, news, central_settings, signals, time_step_in_ms=10, parent=None):
         """
-
-        :param news:
-        :param signals:
-        :param time_step_in_ms:
-        :param parent:
+        :param news: contains all news from all modules
+        :param signals: contains all signals
+        :param time_step_in_ms: contains interval in ms
+        :param parent: neede for Qt windows
         """
         super().__init__(module=JOANModules.CARLA_INTERFACE, news=news, central_settings=central_settings, signals=signals, time_step_in_ms=time_step_in_ms,
                          parent=parent)
@@ -68,8 +66,7 @@ class CarlaInterfaceManager(ModuleManager):
 
     def initialize(self):
         """
-
-        :return:
+        Initializes agents
         """
         super().initialize()
         for agent in self.module_settings.agents.values():
@@ -77,9 +74,8 @@ class CarlaInterfaceManager(ModuleManager):
 
     def load_from_file(self, settings_file_to_load):
         """
-
-        :param settings_file_to_load:
-        :return:
+        Loads all agent settings from file
+        :param settings_file_to_load: filename for the settings
         """
         # remove all settings from the dialog
         for agent in self.module_settings.all_agents().values():
@@ -96,10 +92,9 @@ class CarlaInterfaceManager(ModuleManager):
     def add_agent(self, agent_type: AgentTypes, from_button, agent_settings=None):
         """
         Add an agent
-        :param agent_type:
-        :param from_button:
-        :param agent_settings:
-        :return:
+        :param agent_type: holds the agent type, see enum AgentTypes
+        :param from_button: boolean to prevent showing more than one window
+        :param agent_settings: contains settigns for added agent
         """
         # add to module_settings
         agent_settings = self.module_settings.add_agent(agent_type, agent_settings)
@@ -109,9 +104,7 @@ class CarlaInterfaceManager(ModuleManager):
 
     def remove_agent(self, identifier):
         """
-
-        :param identifier:
-        :return:
+        :param identifier: identifies an agent
         """
         # remove from settings
         self.module_settings.remove_agent(identifier)
@@ -170,9 +163,7 @@ class CarlaInterfaceManager(ModuleManager):
 
     def _open_settings_dialog(self, agent_name):
         """
-
-        :param agent_name:
-        :return:
+        :param agent_name: name of the agent
         """
         self._agent_settingdialogs_dict[agent_name].show()
         self._get_update_from_other_modules(agent_name)

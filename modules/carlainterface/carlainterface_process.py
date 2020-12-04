@@ -26,8 +26,8 @@ except IndexError as inst:
 def connect_carla(host, port):
     """
     We also want a connection to carla in our multiprocess therefore we need this function here
-    :param host:
-    :param port:
+    :param host: name of the host
+    :param port: portnumber of the host
     :return:
     """
     vehicle_tags = []
@@ -50,17 +50,16 @@ def connect_carla(host, port):
 
 class CarlaInterfaceProcess(ModuleProcess):
     """
-
+    Processes CarlaInterface, inherits from ModuleProcess
     """
 
     def __init__(self, module: JOANModules, time_step_in_ms, news, settings, events, settings_singleton):
         """
-
-        :param module:
-        :param time_step_in_ms:
-        :param news:
-        :param settings:
-        :param events:
+        :param module: CarlaInterfaceProcess module as defined in JOANModules
+        :param time_step_in_ms: contains the process-interval time in ms
+        :param news: contains news of all modules
+        :param settings: contains settings of all modules
+        :param events: contains multiprocess events
         :param settings_singleton:
         """
         super().__init__(module, time_step_in_ms=time_step_in_ms, news=news, settings=settings, events=events, settings_singleton=settings_singleton)

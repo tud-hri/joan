@@ -6,12 +6,18 @@ from core.sharedvariables import SharedVariables
 
 
 class CarlaInterfaceSharedVariables(ModuleSharedVariables):
+    """
+    CarlaInterfaceSharedVariables module, inherits from the ModuleSharedVariables
+    """
     def __init__(self):
         super().__init__()
         self.agents = {}
 
 
 class EgoVehicleSharedVariables(SharedVariables):
+    """
+    Holds shared variables
+    """
     def __init__(self):
         self._transform = mp.Array(c_float, 6)
         self._velocities = mp.Array(c_float, 6)

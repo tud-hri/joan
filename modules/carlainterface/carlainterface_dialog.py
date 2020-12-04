@@ -11,9 +11,8 @@ from modules.joanmodules import JOANModules
 class CarlaInterfaceDialog(ModuleDialog):
     def __init__(self, module_manager: ModuleManager, parent=None):
         """
-
-        :param module_manager:
-        :param parent:
+        :param module_manager: see JOANModules
+        :param parent: Needed for Qt windows
         """
         super().__init__(module=JOANModules.CARLA_INTERFACE, module_manager=module_manager, parent=parent)
 
@@ -59,6 +58,10 @@ class CarlaInterfaceDialog(ModuleDialog):
                 self.module_manager.module_settings.agents[agent_settings])
 
     def add_agent(self, settings, from_button):
+        """
+        :param setting: contains all settings
+        :param from_button: boolean to prevent showing more than one window
+        """
         agent_type = AgentTypes(settings.agent_type)
 
         # Adding tab
