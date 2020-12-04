@@ -37,7 +37,7 @@ class DataPlotterDialog(ModuleDialog):
         pg.setConfigOption('foreground', 'k')
 
         self.module_widget.plot_graph.setBackground(background_color)
-        self.view_box = self._module_widget.plot_graph.getViewBox()
+        self.view_box = self.module_widget.plot_graph.getViewBox()
         self.view_box.setBorder(pen=pg.mkPen(0, 0, 0, 255))
         self.view_box.setBackgroundColor((255, 255, 255, 200))
         self.module_widget.plot_graph.showGrid(True, True, 1)
@@ -65,7 +65,7 @@ class DataPlotterDialog(ModuleDialog):
         self.overall_legend.setParentItem(self.view_box)
         self.module_widget.plot_graph.setLabel('bottom', 'Time[s]', **{'font-size': '12pt'})
 
-    def handleItemChanged(self, item, column):
+    def handle_item_changed(self, item, column):
         """
         Handles whenever a tree item is clicked.
         :param item: Which item in treewidget was clicked
