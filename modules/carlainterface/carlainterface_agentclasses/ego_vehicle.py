@@ -149,7 +149,8 @@ class EgoVehicleProcess:
         self.carlainterface_mp = carla_mp
 
         self._control = carla.VehicleControl()
-        self._BP = random.choice(self.carlainterface_mp.vehicle_blueprint_library.filter("vehicle." + self.settings.selected_car))
+        if self.settings.selected_car != 'None':
+            self._BP = random.choice(self.carlainterface_mp.vehicle_blueprint_library.filter("vehicle." + self.settings.selected_car))
         self._control = carla.VehicleControl()
         self.world_map = self.carlainterface_mp.world.get_map()
         torque_curve = []
@@ -160,20 +161,21 @@ class EgoVehicleProcess:
         gears.append(carla.GearPhysicsControl(ratio=7.73, down_ratio=0.5, up_ratio=1))
 
         if self.settings.selected_spawnpoint != 'None':
-            self.spawned_vehicle = self.carlainterface_mp.world.spawn_actor(self._BP, self.carlainterface_mp.spawn_point_objects[
-                self.carlainterface_mp.spawn_points.index(self.settings.selected_spawnpoint)])
-            physics = self.spawned_vehicle.get_physics_control()
-            physics.torque_curve = torque_curve
-            physics.max_rpm = 14000
-            physics.moi = 1.5
-            physics.final_ratio = 1
-            physics.clutch_strength = 1000  # very big no clutch
-            physics.final_ratio = 1  # ratio from transmission to wheels
-            physics.forward_gears = gears
-            physics.mass = 2316
-            physics.drag_coefficient = 0.24
-            physics.gear_switch_time = 0
-            self.spawned_vehicle.apply_physics_control(physics)
+            if self.settings.selected_car != 'None':
+                self.spawned_vehicle = self.carlainterface_mp.world.spawn_actor(self._BP, self.carlainterface_mp.spawn_point_objects[
+                    self.carlainterface_mp.spawn_points.index(self.settings.selected_spawnpoint)])
+                physics = self.spawned_vehicle.get_physics_control()
+                physics.torque_curve = torque_curve
+                physics.max_rpm = 14000
+                physics.moi = 1.5
+                physics.final_ratio = 1
+                physics.clutch_strength = 1000  # very big no clutch
+                physics.final_ratio = 1  # ratio from transmission to wheels
+                physics.forward_gears = gears
+                physics.mass = 2316
+                physics.drag_coefficient = 0.24
+                physics.gear_switch_time = 0
+                self.spawned_vehicle.apply_physics_control(physics)
 
     def do(self):
         if self.settings.selected_input != 'None' and hasattr(self, 'spawned_vehicle'):
