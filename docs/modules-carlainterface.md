@@ -6,9 +6,11 @@ An example screenshot of the module dialog layout in the `READY` state is shown 
 
 ![carlainterface_dialog](imgs/modules-carlainterface-dialog_ready.PNG)
 
-In this section we'll cover 3 main things; the connection to CARLA, adding agents to simulation and creating your own agent class to add.
+In this section we'll cover 2 main things namely: `using the module` and `creating your own agent to add`.
 
-## Carla Connection
+## Using the module
+
+### Carla Connection
 Whenever you have included CarlaInterface in your modules, JOAN will try to connect to CARLA at start up. If this process fails you will see the following
 dialog:
 
@@ -27,7 +29,7 @@ we have acces to our CARLA pythonapi function within this process. There is howe
     Whenever you are already in the `READY` state, and you stop CARLA from the unreal side, this will lead to erratic behaviour in JOAN. So never stop your
     experiments via the quit button in Unreal. Ideally you use the 'play' button in unreal once before starting up JOAN and stop it again after you quit JOAN.
     
-## Adding Agents
+### Adding Agents
 As with most modules it is only possible to add, remove or change settings in the `STOPPED` state:
 
 ![Carla interface dialog stopped](imgs/modules-carlainterface-dialog_stopped.PNG)
