@@ -49,7 +49,7 @@ class AgentTypes(enum.Enum):
     def agent_tab_ui_file(self):
         path_to_uis = os.path.join(os.path.dirname(os.path.realpath(__file__)), "carlainterface_agentclasses/ui/")
 
-        return {AgentTypes.EGO_VEHICLE: os.path.join(path_to_uis, "ego_vehicle_tab.ui")
+        return {AgentTypes.EGO_VEHICLE: os.path.join(path_to_uis, "agent_tab.ui")
                 }[self]
 
     @property
