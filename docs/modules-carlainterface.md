@@ -110,3 +110,6 @@ If we have also included `carcolor` as a setting we can then in the `<YOUR_AGENT
 Rather than chew everything out here, we recommend you take a look at the inner workings of this in the `ego_vehicle.py` file!
 
 ### Agent Tab ui file
+Luckily this one is easier, assuming that you only want to have the buttons `settings` and `remove_agent` you can just use the standard:
+
+    
