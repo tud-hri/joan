@@ -61,7 +61,7 @@ class CarlaInterfaceDialog(ModuleDialog):
         agent_type = AgentTypes(settings.agent_type)
 
         # Adding tab
-        agent_tab = uic.loadUi(agent_type.hardware_tab_ui_file)
+        agent_tab = uic.loadUi(agent_type.agent_tab_ui_file)
         agent_tab.group_agent.setTitle(settings.identifier)
 
         # Adding dialog
