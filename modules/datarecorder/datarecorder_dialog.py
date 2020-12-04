@@ -13,7 +13,15 @@ from modules.joanmodules import JOANModules
 
 
 class DataRecorderDialog(ModuleDialog):
+    """
+    DataRecorder dialog class
+    """
+
     def __init__(self, module_manager: ModuleManager, parent=None):
+        """
+        :param module_manager: manager object (datarecorder_manager)
+        :param parent: parent object
+        """
         super().__init__(module=JOANModules.DATA_RECORDER, module_manager=module_manager, parent=parent)
         self._module_manager = module_manager
         # set current data file name
@@ -26,13 +34,12 @@ class DataRecorderDialog(ModuleDialog):
         # get news items
         self.news = self.module_manager.news
 
-        #make sure you can only record a trajectory if carlainterface is loaded
+        # make sure you can only record a trajectory if carlainterface is loaded
         if JOANModules.CARLA_INTERFACE in self.news.all_news:
             self.carla_interface_present = True
         else:
             self.carla_interface_present = False
             self.module_widget.check_trajectory.blockSignals(True)
-
 
         # set gui functionality
         self.module_widget.check_trajectory.stateChanged.connect(self.update_trajectory_groupbox)

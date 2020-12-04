@@ -6,9 +6,17 @@ from core.statesenum import State
 
 
 class DataRecorderManager(ModuleManager):
-    """ Manages the datarecorder environment """
+    """
+    Manages the datarecorder environment
+    """
 
     def __init__(self, news, signals, time_step_in_ms=10, parent=None):
+        """
+        :param news: dict with all the news (shared variable) objects of other modules
+        :param signals: dict with signals for inter-module communication
+        :param time_step_in_ms:
+        :param parent:
+        """
         super().__init__(module=JOANModules.DATA_RECORDER, news=news, signals=signals, time_step_in_ms=time_step_in_ms, parent=parent)
 
         self.state_machine.set_exit_action(State.INITIALIZED, self.module_dialog.apply_settings)

@@ -20,8 +20,11 @@ class DataRecorderProcess(ModuleProcess):
         self.file = None
         self.trajectory_file = None
         self.index = 0
-        self.temp = [0,0]
+        self.temp = [0, 0]
         self.travelled_distance = 0
+
+        self.carla_interface_variables = None
+        self.transform = None
 
     def get_ready(self):
         """
@@ -37,7 +40,7 @@ class DataRecorderProcess(ModuleProcess):
                 self.carla_interface_variables = self.news.read_news(JOANModules.CARLA_INTERFACE)
                 self.transform = self.carla_interface_variables.agents['Ego Vehicle_1'].transform
                 self.trajectory_file = open(self.trajectory_save_path, 'w')
-            except KeyError: #means there is no egovehicle 1
+            except KeyError:  # means there is no egovehicle 1
                 pass
 
         header = ', '.join(['.'.join(v) for v in self.variables_to_be_saved])
@@ -46,12 +49,11 @@ class DataRecorderProcess(ModuleProcess):
 
     def _run_loop(self):
         with open(self.save_path, 'a') as self.file:
-            if self.settings.should_record_trajectory == True:
+            if self.settings.should_record_trajectory:
                 with open(self.trajectory_save_path, 'a') as self.trajectory_file:
                     super()._run_loop()
             else:
                 super()._run_loop()
-
 
     def do_while_running(self):
         """
@@ -60,9 +62,8 @@ class DataRecorderProcess(ModuleProcess):
         row = self._get_data_row()
         self.file.write(row + '\n')
 
-        if self.settings.should_record_trajectory == True:
+        if self.settings.should_record_trajectory:
             self._write_trajectory_row()
-
 
     def _get_data_row(self):
         row = []
@@ -90,9 +91,8 @@ class DataRecorderProcess(ModuleProcess):
 
             travelled_distance_tick_x = self.transform[0] - self.temp[0]
             travelled_distance_tick_y = self.transform[1] - self.temp[1]
-            travelled_distance_tick = math.sqrt(travelled_distance_tick_x**2 + travelled_distance_tick_y**2)
+            travelled_distance_tick = math.sqrt(travelled_distance_tick_x ** 2 + travelled_distance_tick_y ** 2)
             self.travelled_distance += travelled_distance_tick
-
 
             if self.travelled_distance > 0.0:
                 self.index += 1
