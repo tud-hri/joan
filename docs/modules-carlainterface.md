@@ -54,11 +54,11 @@ If you add 2 vehicles and they have the same spawnpoint an message will pop-up s
     
 The last thing you can choose from is cruise control checkbox and a desired speed. Please note that this will use a PD controller on the throttle and brake and does not set the velocity instantly.
 
-# Adding your own Agents
+## Adding your own Agents
 This section will describe, how you can go about to implement your own agent, so adding an agent other than `Ego Vehicle`. There are some things you need to keep in mind while doing this
-so therefore this section will go a bit more into actual code. The steps below do not have to be followed in this particular order, however it might be easy to just follow them in this order anyway.
+so therefore this section will go a bit more into detail. The steps below do not have to be followed in this particular order, however it might be easy to just follow them in this order anyway.
 
-## Step 1. 
+### Step 1, getting informed
 Check out the file 
 
     .../modules/carlainterface/carlainterface_agenttypes.py
@@ -74,7 +74,7 @@ the locations and needed files. You'll notice that the `EGO_VEHICLE` has the fol
 6. `agent_tab_ui_file`
 7. `__str__` representation
 
-## Step 2, adding the classes. 
+### Step 2, adding/copying the classes. 
 We would highly like to recommend by first creating your new agent_type file:
 
     .../modules/carlainterface/carlainterface_agentclasses/<YOUR_AGENT_TYPE_FILE>.py
@@ -90,9 +90,9 @@ If you are a well-versed python programmer you can just look at the ego_vehicle 
 be easier to (for now) copy these classes from the `ego_vehicle.py` file, make it error free and then start making your changes. Once you have these classes implemented
 you have 3/7 elements you need as mentioned earlier.
 
-## Step 3 adding the ui files.
+### Step 3, adding/copying the ui files.
 
-### SettingsDialog ui file
+#### SettingsDialog ui file
 This step might be a bit difficult. We would recommend using some sort of UI generating program to create your dialogs (ui files). 
 We used [QtDesigner](https://build-system.fman.io/qt-designer-download) for JOAN. Just to begin its a good idea to find the `ego_vehicle` ui files, and open
 them in QtDesigner (click for enlargement):
@@ -109,7 +109,53 @@ If we have also included `carcolor` as a setting we can then in the `<YOUR_AGENT
 
 Rather than chew everything out here, we recommend you take a look at the inner workings of this in the `ego_vehicle.py` file!
 
-### Agent Tab ui file
+#### Agent Tab ui file
 Luckily this one is easier, assuming that you only want to have the buttons `settings` and `remove_agent` you can just use the standard:
 
+    .../modules/carlainterface/carlainterface_agentclasses/ui/agent_tab.ui
     
+However if you want more functionality in this tab you can add your ownly designed tab ofcourse!
+
+!!! Note
+    For reference, this has also been done for the `module_card.ui` and `module_card_carlainterface.ui`, so if you're interested please take a look there inside
+    `.../core/hq`
+
+
+### Step 4, adding/copying shared variables object
+The sharedvariables object should contrain all the variables you'd like to do something with from the rest of JOAN, so if you want to record or plot anything or just do
+anything with the data at all outside of its own process it should be inside the sharedvariables class.
+
+As you might have noticed this object is not contained within your new `<YOUR_AGENT_TYPE_FILE>.py1`, so it should come from somewhere else, namely:
+
+    `.../modules/carlainterface/carlainterface_sharedvariables.py`
+    
+You should add a class containing your desired variables `<YOUR_AGENT_TYPE_NAME>SharedVariables(SharedVariables)` here.
+
+### Step 5, linking it all together from the `carlainterface_agenttypes.py` enum
+Now that you have all needed files its now a matter of adding them to the enum!
+
+!!! Important
+    Make sure you link to the correct files in the enum, take the Ego Vehicle as a reference
+    
+    
+### Step 6, loading from dict update
+If you want to load settings from a json file for your freshly new agent there is one thing you should still do:
+In the following file you should add the same lines but adjusted for your new vehicle:
+
+    .../carlainterface/carlainterface_settings.py
+    
+In the function `load_from_dict` you will need to add:
+
+    for identifier, settings_dict in module_settings_to_load['agents'].items():
+        if str(AgentTypes.<YOUR_AGENT>) in identifier:
+            <YOUR_AGENT>_settings = AgentTypes.<YOUR_AGENT>.settings()
+            <YOUR_AGENT>_settings.set_from_loaded_dict(settings_dict)
+            self.agents.update({identifier: <YOUR_AGENT>_settings})
+
+
+
+
+### Step 7, This guide wasnt useful at all I tried copying everything and it doesnt work!? What do I do?!
+It is highly likely that you forgot a crucial part, you have to be verty meticulous! The error messages you get in the terminal should help you underway
+as to where things went wrong!
+
