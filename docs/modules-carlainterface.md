@@ -117,7 +117,7 @@ Luckily this one is easier, assuming that you only want to have the buttons `set
 However if you want more functionality in this tab you can add your ownly designed tab ofcourse!
 
 !!! Note
-    For reference, this has also been done for the `module_card.ui` and `module_card_carlainterface.ui`, so if you're interested please take a look there inside
+    For reference, this has also been done for the `module_card.ui` and `module_card_carlainterface.ui`, so if you're interested please take a inside
     `.../core/hq`
 
 
