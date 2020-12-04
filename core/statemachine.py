@@ -18,9 +18,11 @@ class StateMachine:
                 if departing_state is not target_state:
                     self._transition_conditions[departing_state][target_state] = lambda: True
 
-        # declare state changes that are illegal by default
-        # allowed state order: STOPPED -> INITIALIZED -> READY -> RUNNING -> STOPPED
-        # from any state, allow transition to STOPPED
+        """
+        Declare state changes that are illegal by default
+        allowed state order: STOPPED -> INITIALIZED -> READY -> RUNNING -> STOPPED
+        from any state, allow transition to STOPPED.
+        """
         self._transition_conditions[State.STOPPED][State.READY] = lambda: False
         self._transition_conditions[State.STOPPED][State.RUNNING] = lambda: False
         self._transition_conditions[State.INITIALIZED][State.RUNNING] = lambda: False

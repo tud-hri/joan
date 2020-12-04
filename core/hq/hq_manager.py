@@ -70,7 +70,7 @@ class HQManager(QtCore.QObject):
         for _, module in self._instantiated_modules.items():
             module.state_machine.request_state_change(State.STOPPED)
 
-    def add_module(self, module: JOANModules, name='', parent=None, time_step_in_ms=100):
+    def add_module(self, module: JOANModules, parent=None, time_step_in_ms=100):
         """
         Add a module
         :param module: module type, from JOANModules enum
