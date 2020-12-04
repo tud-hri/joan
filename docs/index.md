@@ -1,4 +1,4 @@
-# JOAN documentation
+mk d# JOAN documentation
 
 Welcome to the JOAN human-automated vehicle interaction simulator documentation! This documentation should get you up and running with JOAN and [CARLA](http://carla.org).
 
