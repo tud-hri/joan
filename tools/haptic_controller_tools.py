@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def check_equal(lst):
     return lst[1:] == lst[:-1]
 

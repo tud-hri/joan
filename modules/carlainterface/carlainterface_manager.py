@@ -38,7 +38,7 @@ class CarlaInterfaceManager(ModuleManager):
     Can also be used as a template for your own modules.
     """
 
-    def __init__(self, news, signals, time_step_in_ms=10, parent=None):
+    def __init__(self, news, central_settings, signals, time_step_in_ms=10, parent=None):
         """
 
         :param news:
@@ -46,7 +46,8 @@ class CarlaInterfaceManager(ModuleManager):
         :param time_step_in_ms:
         :param parent:
         """
-        super().__init__(module=JOANModules.CARLA_INTERFACE, news=news, signals=signals, time_step_in_ms=time_step_in_ms, parent=parent)
+        super().__init__(module=JOANModules.CARLA_INTERFACE, news=news, central_settings=central_settings, signals=signals, time_step_in_ms=time_step_in_ms,
+                         parent=parent)
         self._agent_settingdialogs_dict = {}
 
         # CARLA connection variables:

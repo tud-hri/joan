@@ -8,7 +8,7 @@ class SettingsOverviewDialog(QtWidgets.QDialog):
         super().__init__(parent)
         uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/settingsoverview_dialog.ui"), self)
         self.manager = manager
-        all_settings = self.manager.singleton_settings.all_settings
+        all_settings = self.manager.central_settings.all_settings
 
         for module_key, settings_object in all_settings.items():
             self._create_tree_item(self.treeWidget, module_key, settings_object.as_dict())
@@ -41,6 +41,6 @@ class SettingsOverviewDialog(QtWidgets.QDialog):
 
     def update_dialog(self):
         self.treeWidget.clear()
-        all_settings = self.manager.singleton_settings.all_settings
+        all_settings = self.manager.central_settings.all_settings
         for module_key, settings_object in all_settings.items():
             self._create_tree_item(self.treeWidget, module_key, settings_object.as_dict())
