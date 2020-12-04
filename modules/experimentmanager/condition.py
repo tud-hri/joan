@@ -50,8 +50,6 @@ class Condition:
                     'It is not possible to remove_input_device settings that are present in the base of in experiment in a certain condition. '
                     'Conditions can only add or change settings.')
 
-        # TODO: list handling here is pretty inefficient have a look later
-        # TODO: if a value is a list (e.g. SW controller), then the complete dict is copied (which is fine, I guess)
         for key, value in base_dict.items():
             if isinstance(value, dict):
                 diff_dict[key] = Condition._get_dict_diff(value, specific_dict[key], {})

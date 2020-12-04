@@ -17,19 +17,32 @@ class ExperimentManager(ModuleManager):
     current_experiment: Experiment
 
     def __init__(self, news, signals, time_step_in_ms=10, parent=None):
+        """
+
+        :param news:
+        :param signals:
+        :param time_step_in_ms:
+        :param parent:
+        """
         super().__init__(module=JOANModules.EXPERIMENT_MANAGER, news=news, signals=signals, time_step_in_ms=time_step_in_ms, parent=parent)
         # create/get default experiment_settings
         self.current_experiment = None
-        # TODO: We should definitely make a ROOT_PATH singleton somewhere in main so we dont have to do the following:
+
         cur_path = os.path.dirname(os.path.realpath(__file__))
         path = os.path.dirname(os.path.dirname(os.path.dirname(cur_path)))
         self.experiment_save_path = os.path.join(path, 'experiments/')
-        self.state_machine.set_entry_action(State.STOPPED, self.module_dialog._stopped_entry_action)
+        self.state_machine.set_entry_action(State.STOPPED, self.module_dialog.stopped_entry_action)
 
         self.active_condition = None
         self.active_condition_index = None
 
     def create_new_experiment(self, modules_to_include, save_path):
+        """
+
+        :param modules_to_include:
+        :param save_path:
+        :return:
+        """
         # create the experiment
         self.current_experiment = Experiment(modules_to_include)
         self.current_experiment.set_from_current_settings(self.singleton_settings)
@@ -44,10 +57,19 @@ class ExperimentManager(ModuleManager):
         self.module_dialog.open_experiment_dialog()
 
     def save_experiment(self):
+        """
+
+        :return:
+        """
         if self.current_experiment:
             self.current_experiment.save_to_file(self.experiment_save_path)
 
     def load_experiment(self, file_path):
+        """
+
+        :param file_path:
+        :return:
+        """
         self.experiment_save_path = file_path
         self.current_experiment = Experiment.load_from_file(file_path)
         self.module_dialog.update_gui()
@@ -69,11 +91,15 @@ class ExperimentManager(ModuleManager):
         self.active_condition_index = condition_index
 
         for signal in self.signals.all_signals:
-            self.signals._signals[signal].emit()
+            self.signals.all_signals[signal].emit()
 
         return True
 
     def transition_to_next_condition(self):
+        """
+
+        :return:
+        """
         if not self.current_experiment:
             return False
 

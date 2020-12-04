@@ -2,15 +2,15 @@ import os
 import sys
 
 from PyQt5 import QtCore
+from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtWidgets import QApplication
 
 from core.module_exceptionmonitor import ModuleExceptionMonitor
 from core.module_process import ProcessEvents
+from core.settings import Settings
 from core.statemachine import StateMachine
 from core.statesenum import State
 from modules.joanmodules import JOANModules
-from core.settings import Settings
-from PyQt5.QtCore import pyqtSignal, Qt
 
 
 class ModuleManager(QtCore.QObject):
@@ -67,8 +67,7 @@ class ModuleManager(QtCore.QObject):
 
         self.signals.write_signal(self.module, self.loaded_signal)
 
-        self.signals._signals[self.module].connect(self.module_dialog.update_dialog)
-
+        self.signals.all_signals[self.module].connect(self.module_dialog.update_dialog)
 
     def initialize(self):
         """
@@ -83,8 +82,6 @@ class ModuleManager(QtCore.QObject):
 
         # update state in shared variables
         self.shared_variables.state = self.state_machine.current_state.value
-
-
 
     def get_ready(self):
         QApplication.setOverrideCursor(Qt.WaitCursor)
@@ -149,5 +146,3 @@ class ModuleManager(QtCore.QObject):
 
     def load_from_file(self, settings_file_to_load):
         self.module_settings.load_from_file(settings_file_to_load)
-
-

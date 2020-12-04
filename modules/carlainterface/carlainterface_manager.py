@@ -39,8 +39,16 @@ class CarlaInterfaceManager(ModuleManager):
     """
 
     def __init__(self, news, signals, time_step_in_ms=10, parent=None):
+        """
+
+        :param news:
+        :param signals:
+        :param time_step_in_ms:
+        :param parent:
+        """
         super().__init__(module=JOANModules.CARLA_INTERFACE, news=news, signals=signals, time_step_in_ms=time_step_in_ms, parent=parent)
         self._agent_settingdialogs_dict = {}
+
         # CARLA connection variables:
         self.host = 'localhost'
         self.port = 2000
@@ -58,11 +66,20 @@ class CarlaInterfaceManager(ModuleManager):
         self.connected = self.connect_carla()
 
     def initialize(self):
+        """
+
+        :return:
+        """
         super().initialize()
         for agent in self.module_settings.agents.values():
             self.shared_variables.agents[agent.identifier] = AgentTypes(agent.agent_type).shared_variables()
 
     def load_from_file(self, settings_file_to_load):
+        """
+
+        :param settings_file_to_load:
+        :return:
+        """
         # remove all settings from the dialog
         for agent in self.module_settings.all_agents().values():
             self.remove_agent(agent.identifier)
@@ -76,6 +93,13 @@ class CarlaInterfaceManager(ModuleManager):
             self.add_agent(AgentTypes(agent_settings.agent_type), from_button, agent_settings)
 
     def add_agent(self, agent_type: AgentTypes, from_button, agent_settings=None):
+        """
+        Add an agent
+        :param agent_type:
+        :param from_button:
+        :param agent_settings:
+        :return:
+        """
         # add to module_settings
         agent_settings = self.module_settings.add_agent(agent_type, agent_settings)
 
@@ -83,6 +107,11 @@ class CarlaInterfaceManager(ModuleManager):
         self.module_dialog.add_agent(agent_settings, from_button)
 
     def remove_agent(self, identifier):
+        """
+
+        :param identifier:
+        :return:
+        """
         # remove from settings
         self.module_settings.remove_agent(identifier)
 
@@ -111,22 +140,20 @@ class CarlaInterfaceManager(ModuleManager):
                 for item in spawn_point_objects:
                     self.spawn_points.append("Spawnpoint " + str(spawn_point_objects.index(item)))
                 self.carla_waypoints = self.world_map.generate_waypoints(0.5)
-                print('JOAN connected to CARLA Server!')
                 QApplication.restoreOverrideCursor()
                 self.connected = True
 
-                # # TODO: untested, settings are only able to be applied after connecting to CARLA
-                # self.apply_loaded_settings()
+                print('JOAN connected to CARLA Server!')
 
             except RuntimeError:
                 QApplication.restoreOverrideCursor()
-                msg_box.setText('Could not connect check if CARLA is running in Unreal')
+                msg_box.setText('Could not connect to CARLA. Check if CARLA is running in Unreal Engine')
                 msg_box.exec()
                 self.connected = False
                 QApplication.restoreOverrideCursor()
 
         else:
-            self.msg.setText('Already Connected')
+            self.msg.setText('JOAN is already connected to CARLA')
             self.msg.exec()
 
         return self.connected
@@ -141,5 +168,10 @@ class CarlaInterfaceManager(ModuleManager):
         return self.connected
 
     def _open_settings_dialog(self, agent_name):
+        """
+
+        :param agent_name:
+        :return:
+        """
         self._agent_settingdialogs_dict[agent_name].show()
         self._get_update_from_other_modules(agent_name)

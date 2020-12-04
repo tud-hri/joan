@@ -1,16 +1,23 @@
-import os, math
+import math
+import os
+
 import pandas as pd
 import pyqtgraph as pg
+from PyQt5 import QtGui, QtCore
+from colour import Color
 
 from core.module_dialog import ModuleDialog
 from core.module_manager import ModuleManager
 from modules.joanmodules import JOANModules
-from PyQt5 import QtGui, QtCore
-from colour import Color
 
 
 class ControllerPlotterDialog(ModuleDialog):
     def __init__(self, module_manager: ModuleManager, parent=None):
+        """
+
+        :param module_manager:
+        :param parent:
+        """
         super().__init__(module=JOANModules.CONTROLLER_PLOTTER, module_manager=module_manager, parent=parent)
 
         background_color = pg.mkColor((240, 240, 240, 255))
@@ -27,6 +34,7 @@ class ControllerPlotterDialog(ModuleDialog):
         # initialize lists and variables for plotting
         self.amount_of_remaining_points = 50
         self.car_trace_length = 10
+
         # dialog will always update at 10hz
         self.history_time = self.amount_of_remaining_points / round(1000 / 100)
         self.plot_data_torque_x = []
@@ -111,7 +119,7 @@ class ControllerPlotterDialog(ModuleDialog):
 
         self.data = {}
 
-        # self.initialize()
+        self.car_symbol = None
 
     def initialize(self):
         """
@@ -137,13 +145,13 @@ class ControllerPlotterDialog(ModuleDialog):
             self.HCR_plot_handle = self._module_widget.top_view_graph.plot(x=plot_data_HCR_x, y=plot_data_HCR_y, shadowPen=pg.mkPen(10, 200, 0, 100, width=18),
                                                                            pen=pg.mkPen(0, 102, 0, 255, width=2))
         except:
-            print('Could not find HCR trajectory, please hardcode a name that is in your sw contorller trajectory list ')
+            print('Could not find HCR trajectory, please hardcode a name that is in your sw controller trajectory list ')
             self.HCR_plot_handle = self._module_widget.top_view_graph.plot(x=[0], y=[0], shadowPen=pg.mkPen(10, 200, 0, 100, width=18),
                                                                            pen=pg.mkPen(0, 102, 0, 255, width=2))
-        self.CarSymbol = QtGui.QPainterPath()
-        self.CarSymbol.addRect(-0.2, -0.4, 0.4, 0.8)
+        self.car_symbol = QtGui.QPainterPath()
+        self.car_symbol.addRect(-0.2, -0.4, 0.4, 0.8)
 
-        self.auto_position_plot_handle = self._module_widget.top_view_graph.plot(x=[0], y=[0], symbol=self.CarSymbol,
+        self.auto_position_plot_handle = self._module_widget.top_view_graph.plot(x=[0], y=[0], symbol=self.car_symbol,
                                                                                  symbolSize=40, pen=None,
                                                                                  symbolBrush=pg.mkBrush(0,
                                                                                                         0,
@@ -218,7 +226,6 @@ class ControllerPlotterDialog(ModuleDialog):
                                                                             symbolBrush=self.brushes,
                                                                             symbolPen=self.pens, symbolSize=5)
         # Feedback torques graph
-
         self.fb_torque_plot_handle = self._module_widget.fb_torques_graph.plot(x=[0], y=[0], size=2,
                                                                                pen=pg.mkPen(
                                                                                    (0, 114, 190, 200),
@@ -277,7 +284,7 @@ class ControllerPlotterDialog(ModuleDialog):
                                                                                 brush='g', symbol=None,
                                                                                 )
 
-        ## Initialize topview Graph
+        # Initialize topview Graph
         self._module_widget.top_view_graph.setXRange(- 15, 15, padding=0)
         self._module_widget.top_view_graph.setYRange(-25, 25, padding=0)
         self._module_widget.top_view_graph.setTitle('Top View')
@@ -291,7 +298,7 @@ class ControllerPlotterDialog(ModuleDialog):
         top_view_viewbox.setBorder(pen=pg.mkPen(0, 0, 0, 255))
         top_view_viewbox.setBackgroundColor((255, 255, 255, 200))
         self.top_view_legend = pg.LegendItem(offset=(10, -10), horSpacing=30, verSpacing=2,
-                                        pen=pg.mkPen(0, 0, 0, 0), brush=pg.mkBrush(255, 255, 255, 0))
+                                             pen=pg.mkPen(0, 0, 0, 0), brush=pg.mkBrush(255, 255, 255, 0))
         self.top_view_legend.setParentItem(top_view_viewbox)
         self.top_view_legend.addItem(self.HCR_plot_handle, name='HCR')
         self.top_view_legend.addItem(self.road_outer_plot_handle, name='Lane/Road Edge')
@@ -299,7 +306,7 @@ class ControllerPlotterDialog(ModuleDialog):
         self.top_view_legend.addItem(self.topview_lat_error_plot_handle, name='Lateral Error')
         self.top_view_legend.addItem(self.topview_heading_error_plot_handle, name='Heading Error')
 
-        ## Initialize Torque Graph
+        # Initialize Torque Graph
         self._module_widget.torque_graph.setXRange(- 180, 180, padding=0)
         self._module_widget.torque_graph.setYRange(-7.5, 7.5, padding=0)
         self._module_widget.torque_graph.showGrid(True, True, 1)
@@ -317,14 +324,14 @@ class ControllerPlotterDialog(ModuleDialog):
         torque_viewbox.invertY(True)
         torque_viewbox.setBackgroundColor((255, 255, 255, 200))
         self.torque_legend = pg.LegendItem(size=(120, 0), offset=None, horSpacing=30, verSpacing=-7,
-                                      pen=pg.mkPen(0, 0, 0, 255), brush=pg.mkBrush(255, 255, 255, 255))
+                                           pen=pg.mkPen(0, 0, 0, 255), brush=pg.mkBrush(255, 255, 255, 255))
         self.torque_legend.setParentItem(torque_viewbox)
         self.torque_legend.addItem(self.torque_plot_handle, name='Torque vs Steering Angle')
         self.torque_legend.addItem(self.sw_des_point_plot_handle, name='Desired Steering Angle')
         self.torque_legend.addItem(self.sw_stiffness_plot_handle, name='Self Centering Stiffness')
         self.torque_legend.addItem(self.loha_stiffness_plot_handle, name='LoHA Stiffness')
 
-        ## Initialize Errors Plot
+        # Initialize Errors Plot
         self._module_widget.errors_graph.setTitle('Lateral position vs Time')
         self._module_widget.errors_graph.setXRange(-self.history_time, self.history_time / 10, padding=0)
         self._module_widget.errors_graph.setYRange(-10, 10, padding=0)
@@ -332,7 +339,7 @@ class ControllerPlotterDialog(ModuleDialog):
         self._module_widget.errors_graph.setLabel('right', 'Heading Error [deg]', **{'font-size': '12pt'})
         errors_viewbox = self._module_widget.errors_graph.getViewBox()
         self.errors_legend = pg.LegendItem(size=(120, 0), offset=None, horSpacing=30, verSpacing=-7,
-                                      pen=pg.mkPen(0, 0, 0, 255), brush=pg.mkBrush(255, 255, 255, 255))
+                                           pen=pg.mkPen(0, 0, 0, 255), brush=pg.mkBrush(255, 255, 255, 255))
         self.errors_legend.setParentItem(errors_viewbox)
         self.errors_legend.addItem(self.e_lat_plot_handle, name='Lateral position Error')
 
@@ -351,9 +358,9 @@ class ControllerPlotterDialog(ModuleDialog):
         self._module_widget.errors_graph.getAxis('left').setPen(pg.mkPen(255, 0, 0, 255))
         self._module_widget.errors_graph.getAxis('right').setPen(pg.mkPen(0, 0, 255, 255))
 
-        ## Handle view resizing
+        # Handle view resizing
         def updateViews():
-            ## view has resized; update auxiliary views to match
+            # view has resized; update auxiliary views to match
             p2.setGeometry(errors_viewbox.sceneBoundingRect())
             p2.linkedViewChanged(errors_viewbox, p2.XAxis)
 
@@ -361,7 +368,7 @@ class ControllerPlotterDialog(ModuleDialog):
         errors_viewbox.sigResized.connect(updateViews)
         self.errors_legend.addItem(self.head_error_plot_handle, name='Heading Error')
 
-        ## Initialize fb torque Plot
+        # Initialize fb torque Plot
         self._module_widget.fb_torques_graph.setTitle('Feedback Torques vs Time')
         self._module_widget.fb_torques_graph.setXRange(-self.history_time, self.history_time / 10,
                                                        padding=0)
@@ -372,7 +379,7 @@ class ControllerPlotterDialog(ModuleDialog):
         torques_viewbox.setBackgroundColor((255, 255, 255, 200))
         torques_viewbox.invertY(True)
         self.torques_legend = pg.LegendItem(size=(120, 60), offset=None, horSpacing=30, verSpacing=-7,
-                                       pen=pg.mkPen(0, 0, 0, 255), brush=pg.mkBrush(255, 255, 255, 255))
+                                            pen=pg.mkPen(0, 0, 0, 255), brush=pg.mkBrush(255, 255, 255, 255))
         self.torques_legend.setParentItem(torques_viewbox)
         self.torques_legend.addItem(self.fb_torque_plot_handle, name='Feedback Torque')
         self.torques_legend.addItem(self.ff_torque_plot_handle, name='Feedforward Torque')
@@ -391,7 +398,7 @@ class ControllerPlotterDialog(ModuleDialog):
         sw_des_viewbox = self._module_widget.sw_graph.getViewBox()
         sw_des_viewbox.setBackgroundColor((255, 255, 255, 200))
         self.sw_legend = pg.LegendItem(size=(120, 0), offset=None, horSpacing=30, verSpacing=-7,
-                                  pen=pg.mkPen(0, 0, 0, 255), brush=pg.mkBrush(255, 255, 255, 255))
+                                       pen=pg.mkPen(0, 0, 0, 255), brush=pg.mkBrush(255, 255, 255, 255))
         self.sw_legend.setParentItem(sw_des_viewbox)
         self.sw_legend.addItem(self.sw_des_plot_handle, name='Desired Steering Angle')
         self.sw_legend.addItem(self.sw_act_plot_handle, name='Actual Steering Angle')
@@ -517,7 +524,7 @@ class ControllerPlotterDialog(ModuleDialog):
 
             tr = QtGui.QTransform()
             angle_rot = tr.rotate(vehicle_rotation + (math.degrees(self.plot_data_road_psi[24])))
-            rot_CarSymbol = angle_rot.map(self.CarSymbol)
+            rot_CarSymbol = angle_rot.map(self.car_symbol)
 
             self.car_trace_x.append(vehicle_location_x)
             self.car_trace_y.append(vehicle_location_y)
@@ -567,7 +574,8 @@ class ControllerPlotterDialog(ModuleDialog):
             self.converted_x_road_outer = []
 
             # set data
-            self.auto_position_plot_handle.setData(x=self.car_trace_x, y=self.car_trace_y, symbol=self.car_trace_psi, symbolPen=self.car_pens, symbolBrush=self.car_brushes)
+            self.auto_position_plot_handle.setData(x=self.car_trace_x, y=self.car_trace_y, symbol=self.car_trace_psi, symbolPen=self.car_pens,
+                                                   symbolBrush=self.car_brushes)
             self.topview_lat_error_plot_handle.setData(x=self.plot_data_lat_error_topview_x, y=self.plot_data_lat_error_topview_y)
             self.topview_heading_line_plot_handle.setData(x=self.plot_data_car_heading_line_x, y=self.plot_data_car_heading_line_y)
             self.topview_HCR_heading_line_plot_handle.setData(x=self.plot_data_HCR_heading_line_x, y=self.plot_data_HCR_heading_line_y)

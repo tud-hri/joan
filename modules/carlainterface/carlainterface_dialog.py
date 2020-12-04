@@ -10,12 +10,13 @@ from modules.joanmodules import JOANModules
 
 class CarlaInterfaceDialog(ModuleDialog):
     def __init__(self, module_manager: ModuleManager, parent=None):
-        super().__init__(module=JOANModules.CARLA_INTERFACE, module_manager=module_manager, parent=parent)
         """
-        Initializes the class
+
         :param module_manager:
         :param parent:
         """
+        super().__init__(module=JOANModules.CARLA_INTERFACE, module_manager=module_manager, parent=parent)
+
         # setup dialogs
         self._agent_type_dialog = uic.loadUi(
             os.path.join(os.path.dirname(os.path.realpath(__file__)), "carlainterface_agentclasses/ui/agent_select_ui.ui"))

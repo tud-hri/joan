@@ -123,7 +123,6 @@ class StateMachine:
                     "A transition condition function should return a boolean indicating if a transition is legal. Or a tuple containing a "
                     "boolean and a (error) message to display. Received object was of type: " + str(type(condition_evaluation)))
 
-            # TODO check if the exit and entry actions are successful, else move to error?
             if state_change_is_legal:
                 if self._exit_actions[self.current_state]:
                     self._exit_actions[self.current_state]()

@@ -32,6 +32,6 @@ class HapticControllerManagerProcess(ModuleProcess):
         """
         for haptic_controllers in self.haptic_controller_objects:
             # will perform the mp input class for eaach available input
-            self.haptic_controller_objects[haptic_controllers].do(carlainterface_shared_variables=self.shared_variables_carla_interface,
+            self.haptic_controller_objects[haptic_controllers].do(self._time_step_in_ns, carlainterface_shared_variables=self.shared_variables_carla_interface,
                                                                   hardware_manager_shared_variables=self.shared_variables_hardware,
                                                                   carla_interface_settings=self.settings_carla_interface)

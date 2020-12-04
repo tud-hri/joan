@@ -1,14 +1,14 @@
 import math
 import os
-import pandas as pd
-import numpy as np
 
+import numpy as np
+import pandas as pd
 from PyQt5 import QtWidgets, uic
 
+from core.statesenum import State
 from modules.hapticcontrollermanager.hapticcontrollermanager_controllertypes import HapticControllerTypes
 from tools import LowPassFilterBiquad
 from tools.haptic_controller_tools import find_closest_node
-from core.statesenum import State
 
 
 class FDCAControllerSettingsDialog(QtWidgets.QDialog):
@@ -169,6 +169,9 @@ class FDCAControllerProcess:
         self.shared_variables.sohf = settings.sohf
         self.shared_variables.loha = settings.loha
 
+        # threshold to check if a trajectory is circular in meters; subsequent points need to be 1 m of each other
+        self.threshold_circular_trajectory = 1.0
+
     def load_trajectory(self):
         """Load HCR trajectory"""
         try:
@@ -199,12 +202,14 @@ class FDCAControllerProcess:
         # Find waypoint index of the point that the car would be in the future (compared to own driven trajectory)
         index_closest_waypoint = find_closest_node(pos_car, self._trajectory[:, 1:3])
 
-        # TODO: this needs checking
         # circular: if end of the trajectory, go back to the first one; note that this is risky, if the reference trajectory is not circular!
-        if index_closest_waypoint >= len(self._trajectory) - 3:
-            index_closest_waypoint_next = 0
+        if index_closest_waypoint >= len(self._trajectory) - 1:
+            if np.linalg.norm(self._trajectory[0, 1:3] - self._trajectory[index_closest_waypoint, 1:3]) < self.threshold_circular_trajectory:
+                index_closest_waypoint_next = 0
+            else:
+                index_closest_waypoint_next = index_closest_waypoint
         else:
-            index_closest_waypoint_next = index_closest_waypoint + 3
+            index_closest_waypoint_next = index_closest_waypoint + 1
 
         # calculate lateral error
         pos_ref = self._trajectory[index_closest_waypoint, 1:3]
@@ -250,23 +255,20 @@ class FDCAControllerProcess:
 
         return sw_angle_ff_des
 
-    def do(self, carlainterface_shared_variables, hardware_manager_shared_variables, carla_interface_settings):
+    def do(self, time_step_in_ns, carlainterface_shared_variables, hardware_manager_shared_variables, carla_interface_settings):
         """
-        In manual, the controller has no additional control. We could add some self-centering torque, if we want.
-        For now, steeringwheel torque is zero
-        :param vehicle_object:
-        :param hw_data_in:
+        :param time_step_in_ns:
+        :param carlainterface_shared_variables:
+        :param hardware_manager_shared_variables:
+        :param carla_interface_settings:
         :return:
         """
         for agent_settings in carla_interface_settings.agents.values():
             if agent_settings.selected_controller == self.settings.__str__():
-                # TODO has to be dynamic for inputs
                 if 'SensoDrive' in agent_settings.selected_input:
-                    # stiffness = hardware_manager_shared_variables.inputs[agent_settings.selected_input].auto_center_stiffness
-                    stiffness = 1
-                    # TODO get the ms of the module in here
-                    # delta_t = self.module_action.tick_interval_ms / 1000  # [s]
-                    delta_t = 10 / 1000  # [s]
+                    stiffness = hardware_manager_shared_variables.inputs[agent_settings.selected_input].auto_center_stiffness
+
+                    delta_t = time_step_in_ns / 1e9  # [s]
 
                     sw_angle = hardware_manager_shared_variables.inputs[agent_settings.selected_input].steering_angle
 
@@ -300,7 +302,8 @@ class FDCAControllerProcess:
 
                     # FDCA specific calculations here
                     # strength of haptic feedback
-                    sw_angle_fb = self.shared_variables.sohf * (self.shared_variables.k_y * self._controller_error[0] + self.shared_variables.k_psi * self._controller_error[1])
+                    sw_angle_fb = self.shared_variables.sohf * (
+                                self.shared_variables.k_y * self._controller_error[0] + self.shared_variables.k_psi * self._controller_error[1])
 
                     # get feedforward sw angle
                     sw_angle_ff_des = self._get_reference_sw_angle(self.t_lookahead, pos_car, vel_car)
@@ -334,7 +337,6 @@ class FDCAControllerProcess:
                     # update variables
                     self._error_old = error
 
-                    # TODO Dit moet echt beter - > set the torque
                     hardware_manager_shared_variables.inputs[agent_settings.selected_input].torque = torque_fdca
 
                     # set the shared variables

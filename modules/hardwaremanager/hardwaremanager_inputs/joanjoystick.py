@@ -32,7 +32,7 @@ class JOANJoystickProcess:
             self._joystick.open(self.settings.device_vendor_id, self.settings.device_product_id)
             self._joystick_open = True
         except OSError:
-            print('Connection to USB Joystick failed')  # TODO: move to messagebox
+            print('Connection to USB Joystick failed')
             self._joystick_open = False
 
     def do(self):

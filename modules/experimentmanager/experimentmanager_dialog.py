@@ -36,7 +36,7 @@ class ExperimentManagerDialog(ModuleDialog):
         self.settings_menu.clear()
         self.settings_menu = None
 
-    def _stopped_entry_action(self):
+    def stopped_entry_action(self):
         if self._module_widget.autoTransitionCheckBox.isChecked():
             self.transition_to_next_condition()
 
