@@ -165,7 +165,6 @@ class DataRecorderDialog(ModuleDialog):
         for module in JOANModules:
             if module is not JOANModules.DATA_RECORDER:
                 shared_variables = self.news.read_news(module)
-                print(shared_variables)
                 if shared_variables:
                     self._create_tree_item(self.module_widget.treeWidget, str(module), shared_variables)
 

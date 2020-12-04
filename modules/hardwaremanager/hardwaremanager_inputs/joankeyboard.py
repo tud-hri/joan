@@ -184,7 +184,7 @@ class KeyBoardSettingsDialog(QtWidgets.QDialog):
                                         self.label_brake, self.label_reverse,
                                         self.label_handbrake]
 
-        self._display_values()
+        self.display_values()
 
     def accept(self):
         """
@@ -217,7 +217,7 @@ class KeyBoardSettingsDialog(QtWidgets.QDialog):
         self.keyboard_settings.handbrake_key = QtGui.QKeySequence(self.label_handbrake.text())[0]
         super().accept()
 
-    def _display_values(self, settings=None):
+    def display_values(self, settings=None):
         """
         Displays the settings that are currently being used (internally)
         :param settings:
@@ -247,7 +247,7 @@ class KeyBoardSettingsDialog(QtWidgets.QDialog):
         Sets the settings as they are described in 'hardwarempSettings => KeyboardSettings)
         :return:
         """
-        self._display_values(HardwareInputTypes.KEYBOARD.settings(self.keyboard_settings.identifier))
+        self.display_values(HardwareInputTypes.KEYBOARD.settings(self.keyboard_settings.identifier))
 
     def _start_key_setting_sequence(self):
         """

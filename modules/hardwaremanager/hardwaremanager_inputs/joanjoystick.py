@@ -206,7 +206,7 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
         self.value_preview_labels = []
         self.value_preview_check_boxes = []
 
-        self._display_settings()
+        self.display_values()
 
     def preview_joystick_values(self):
         """
@@ -270,9 +270,9 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
         """
         if self.presetsComboBox.currentText().lower() != 'custom':
             preset_settings = HardwareInputTypes.JOYSTICK.settings.get_preset_settings(self.presetsComboBox.currentText().lower())
-            self._display_settings(settings_to_display=preset_settings, only_keymap=True)
+            self.display_values(settings_to_display=preset_settings, only_keymap=True)
 
-    def _display_settings(self, settings_to_display=None, only_keymap=False):
+    def display_values(self, settings_to_display=None, only_keymap=False):
         """
         Displays the settings that are currently being used (internally)
         :param settings_to_display:
@@ -312,7 +312,7 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
         Sets the settings as they are described in 'HardwaremanagerSettings => JoystickSettings)
         :return:
         """
-        self._display_settings(HardwareInputTypes.JOYSTICK.settings(identifier=self.joystick_settings.identifier))
+        self.display_values(HardwareInputTypes.JOYSTICK.settings(identifier=self.joystick_settings.identifier))
 
     def _update_brake_channel_enabled(self, value):
         """
