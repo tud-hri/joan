@@ -28,11 +28,11 @@ class DataPlotterDialog(ModuleDialog):
         pg.setConfigOption('background', 'k')
         pg.setConfigOption('foreground', 'k')
 
-        self._module_widget.plot_graph.setBackground(background_color)
-        self.viewbox = self._module_widget.plot_graph.getViewBox()
+        self.module_widget.plot_graph.setBackground(background_color)
+        self.viewbox = self.module_widget.plot_graph.getViewBox()
         self.viewbox.setBorder(pen=pg.mkPen(0, 0, 0, 255))
         self.viewbox.setBackgroundColor((255, 255, 255, 200))
-        self._module_widget.plot_graph.showGrid(True, True, 1)
+        self.module_widget.plot_graph.showGrid(True, True, 1)
 
         self.plot_handle_dict = {}
         self.ydata_listdict = {}
@@ -42,7 +42,7 @@ class DataPlotterDialog(ModuleDialog):
 
         self.data_container = [[0] * 1000] * 50
 
-        self._module_widget.treeWidget.itemChanged.connect(self.handleItemChanged)
+        self.module_widget.treeWidget.itemChanged.connect(self.handleItemChanged)
 
     def initialize_dialog(self):
         self.variables_to_plot = self.module_manager.module_settings.variables_to_be_plotted
@@ -50,7 +50,7 @@ class DataPlotterDialog(ModuleDialog):
         self.overall_legend = pg.LegendItem(offset=10, horSpacing=30, verSpacing=-7,
                                       pen=pg.mkPen(0, 0, 0, 255), brush=pg.mkBrush(255, 255, 255, 255))
         self.overall_legend.setParentItem(self.viewbox)
-        self._module_widget.plot_graph.setLabel('bottom', 'Time[s]', **{'font-size': '12pt'})
+        self.module_widget.plot_graph.setLabel('bottom', 'Time[s]', **{'font-size': '12pt'})
 
 
 
@@ -62,14 +62,14 @@ class DataPlotterDialog(ModuleDialog):
                 color = list(np.random.choice(range(256), size=3))
                 self.plot_handle_dict['.'.join(item_variable_path_list)] = pg.PlotDataItem(name='.'.join(item_variable_path_list), x=self.time_list, y=self.empty_y, size=2,
                                                                                            pen=pg.mkPen((color[0], color[1], color[2], 255), width=3))
-                self._module_widget.plot_graph.addItem(self.plot_handle_dict['.'.join(item_variable_path_list)])
+                self.module_widget.plot_graph.addItem(self.plot_handle_dict['.'.join(item_variable_path_list)])
                 self.ydata_listdict['.'.join(item_variable_path_list)] = [0] * 50
                 self.overall_legend.addItem(self.plot_handle_dict['.'.join(item_variable_path_list)], item_variable_path_list[-1])
 
             elif item.checkState(column) == Qt.Unchecked:
                 self.ydata_listdict['.'.join(item_variable_path_list)] = [0] * 50
                 self.plot_handle_dict['.'.join(item_variable_path_list)].clear()
-                self._module_widget.plot_graph.removeItem(self.plot_handle_dict['.'.join(item_variable_path_list)])
+                self.module_widget.plot_graph.removeItem(self.plot_handle_dict['.'.join(item_variable_path_list)])
                 self.overall_legend.removeItem(self.plot_handle_dict['.'.join(item_variable_path_list)])
                 del self.plot_handle_dict['.'.join(item_variable_path_list)]
 
@@ -116,17 +116,17 @@ class DataPlotterDialog(ModuleDialog):
 
     def handle_state_change(self):
         if self.module_manager.state_machine.current_state == State.INITIALIZED:
-            self._module_widget.treeWidget.setEnabled(True)
+            self.module_widget.treeWidget.setEnabled(True)
             self.initialize_dialog()
         elif self.module_manager.state_machine.current_state == State.STOPPED:
-            self._module_widget.treeWidget.clear()
-            self._module_widget.plot_graph.clear()
+            self.module_widget.treeWidget.clear()
+            self.module_widget.plot_graph.clear()
             try:
                 self.overall_legend.scene().removeItem(self.overall_legend)
             except AttributeError:
                 pass
         else:
-            self._module_widget.treeWidget.setEnabled(True)
+            self.module_widget.treeWidget.setEnabled(True)
 
     def _save_settings(self):
         self.apply_settings()
@@ -136,7 +136,7 @@ class DataPlotterDialog(ModuleDialog):
         self._fill_tree_widget()
 
     def _set_all_checked_items(self, variables_to_plot):
-        self._recursively_set_checked_items(self._module_widget.treeWidget.invisibleRootItem(), [], variables_to_plot)
+        self._recursively_set_checked_items(self.module_widget.treeWidget.invisibleRootItem(), [], variables_to_plot)
 
     def _recursively_set_checked_items(self, parent, path_to_parent, list_of_checked_items):
         for index in range(parent.childCount()):
@@ -155,12 +155,12 @@ class DataPlotterDialog(ModuleDialog):
                 
     def _get_all_checked_items(self):
         checked_items = []
-        self._recursively_get_checked_items(self._module_widget.treeWidget.invisibleRootItem(), [], checked_items)
+        self._recursively_get_checked_items(self.module_widget.treeWidget.invisibleRootItem(), [], checked_items)
         return checked_items
 
     def _get_all_unchecked_items(self):
         unchecked_items = []
-        self._recursively_get_unchecked_items(self._module_widget.treeWidget.invisibleRootItem(), [], unchecked_items)
+        self._recursively_get_unchecked_items(self.module_widget.treeWidget.invisibleRootItem(), [], unchecked_items)
         return unchecked_items
 
     def _check_all_items(self, parent):
@@ -219,13 +219,13 @@ class DataPlotterDialog(ModuleDialog):
         Reads, or creates default settings when starting the module
         By pretending that a click event has happened, Dataplotter settings will be written
         """
-        self._module_widget.treeWidget.clear()
+        self.module_widget.treeWidget.clear()
 
         for module in JOANModules:
             if module is not JOANModules.DATA_PLOTTER:
                 shared_variables = self.news.read_news(module)
                 if shared_variables:
-                    self._create_tree_item(self._module_widget.treeWidget, str(module), shared_variables)
+                    self._create_tree_item(self.module_widget.treeWidget, str(module), shared_variables)
 
     def _create_tree_item(self, parent, key, value):
         """

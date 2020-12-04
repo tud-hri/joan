@@ -13,4 +13,4 @@ class TemplateDialog(ModuleDialog):
         :return:
         """
         if self.module_manager.shared_variables:
-            self._module_widget.lbl_time.setText("State: " + str(self.module_manager.shared_variables.state))
+            self.module_widget.lbl_time.setText("State: " + str(self.module_manager.shared_variables.state))

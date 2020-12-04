@@ -23,7 +23,7 @@ class CarlaInterfaceDialog(ModuleDialog):
         self._agent_type_dialog.btns_agent_type_select.accepted.connect(self._agent_selected)
 
         # connect buttons
-        self._module_widget.btn_add_agent.clicked.connect(self._select_agent_type)
+        self.module_widget.btn_add_agent.clicked.connect(self._select_agent_type)
         self._agent_tabs_dict = {}
         self._agent_dialogs_dict = {}
 
@@ -33,11 +33,11 @@ class CarlaInterfaceDialog(ModuleDialog):
         """
         super()._handle_state_change()
         if self.module_manager.state_machine.current_state == State.STOPPED:
-            self._module_widget.groupbox_agents.setEnabled(True)
-            self._module_widget.btn_add_agent.setEnabled(True)
+            self.module_widget.groupbox_agents.setEnabled(True)
+            self.module_widget.btn_add_agent.setEnabled(True)
         else:
-            self._module_widget.groupbox_agents.setEnabled(False)
-            self._module_widget.btn_add_agent.setEnabled(False)
+            self.module_widget.groupbox_agents.setEnabled(False)
+            self.module_widget.btn_add_agent.setEnabled(False)
 
     def _select_agent_type(self):
         self._agent_type_dialog.combo_agent_type.clear()
@@ -75,7 +75,7 @@ class CarlaInterfaceDialog(ModuleDialog):
         # add to module_dialog widget
         self._agent_tabs_dict[settings.identifier] = agent_tab
         self._agent_dialogs_dict[settings.identifier] = agent_dialog
-        self._module_widget.agent_list_layout.addWidget(agent_tab)
+        self.module_widget.agent_list_layout.addWidget(agent_tab)
 
         if from_button:
             agent_dialog.show()

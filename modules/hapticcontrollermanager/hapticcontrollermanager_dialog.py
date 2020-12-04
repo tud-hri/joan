@@ -23,7 +23,7 @@ class HapticControllerManagerDialog(ModuleDialog):
         self._haptic_controller_type_dialog.btns_haptic_controller_type_select.accepted.connect(self._haptic_controller_selected)
 
         # connect buttons
-        self._module_widget.btn_add_haptic_controller.clicked.connect(self._select_haptic_controller_type)
+        self.module_widget.btn_add_haptic_controller.clicked.connect(self._select_haptic_controller_type)
         self._haptic_controller_tabs_dict = {}
         self._haptic_controller_dialogs_dict = {}
 
@@ -40,14 +40,14 @@ class HapticControllerManagerDialog(ModuleDialog):
         """
         super()._handle_state_change()
         if self.module_manager.state_machine.current_state == State.STOPPED:
-            self._module_widget.btn_add_haptic_controller.setEnabled(True)
-            self._module_widget.btn_add_haptic_controller.blockSignals(False)
+            self.module_widget.btn_add_haptic_controller.setEnabled(True)
+            self.module_widget.btn_add_haptic_controller.blockSignals(False)
             for haptic_controller_tabs in self._haptic_controller_tabs_dict:
                 self._haptic_controller_tabs_dict[haptic_controller_tabs].btn_remove_haptic_controller.setEnabled(True)
                 self._haptic_controller_tabs_dict[haptic_controller_tabs].btn_remove_haptic_controller.blockSignals(False)
         else:
-            self._module_widget.btn_add_haptic_controller.setEnabled(False)
-            self._module_widget.btn_add_haptic_controller.blockSignals(True)
+            self.module_widget.btn_add_haptic_controller.setEnabled(False)
+            self.module_widget.btn_add_haptic_controller.blockSignals(True)
             for haptic_controller_tabs in self._haptic_controller_tabs_dict:
                 self._haptic_controller_tabs_dict[haptic_controller_tabs].btn_remove_haptic_controller.setEnabled(False)
                 self._haptic_controller_tabs_dict[haptic_controller_tabs].btn_remove_haptic_controller.blockSignals(True)
@@ -85,7 +85,7 @@ class HapticControllerManagerDialog(ModuleDialog):
 
         # add to module_dialog widget
         self._haptic_controller_tabs_dict[settings.identifier] = haptic_controller_tab
-        self._module_widget.haptic_controller_list_layout.addWidget(haptic_controller_tab)
+        self.module_widget.haptic_controller_list_layout.addWidget(haptic_controller_tab)
         self._haptic_controller_dialogs_dict[settings.identifier] = haptic_controller_dialog
 
         if from_button:

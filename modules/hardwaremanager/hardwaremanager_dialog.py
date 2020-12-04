@@ -23,7 +23,7 @@ class HardwareManagerDialog(ModuleDialog):
         self._input_type_dialog.btns_hardware_inputtype.accepted.connect(self._hardware_input_selected)
 
         # Connect the add hardware button to showing our just created inputtype dialog
-        self._module_widget.btn_add_hardware.clicked.connect(self._select_hardware_input_type)
+        self.module_widget.btn_add_hardware.clicked.connect(self._select_hardware_input_type)
         self._hardware_input_tabs_dict = {}
         self._hardware_input_dialogs_dict = {}
 
@@ -45,7 +45,7 @@ class HardwareManagerDialog(ModuleDialog):
 
         # joysticks and keyboards
         if state != State.STOPPED:
-            self._module_widget.btn_add_hardware.setEnabled(False)
+            self.module_widget.btn_add_hardware.setEnabled(False)
             for hardware_tabs in self._hardware_input_tabs_dict:
                 self._hardware_input_tabs_dict[hardware_tabs].btn_remove_hardware.setEnabled(False)
                 self._hardware_input_tabs_dict[hardware_tabs].btn_remove_hardware.blockSignals(True)
@@ -55,7 +55,7 @@ class HardwareManagerDialog(ModuleDialog):
                     self._hardware_input_tabs_dict[hardware_tabs].setEnabled(False)
                     self._hardware_input_tabs_dict[hardware_tabs].blockSignals(True)
         else:
-            self._module_widget.btn_add_hardware.setEnabled(True)
+            self.module_widget.btn_add_hardware.setEnabled(True)
             for hardware_tabs in self._hardware_input_tabs_dict:
                 self._hardware_input_tabs_dict[hardware_tabs].btn_remove_hardware.setEnabled(True)
                 self._hardware_input_tabs_dict[hardware_tabs].btn_remove_hardware.blockSignals(False)
@@ -175,7 +175,7 @@ class HardwareManagerDialog(ModuleDialog):
 
         # add to module_dialog widget
         self._hardware_input_tabs_dict[settings.identifier] = input_tab
-        self._module_widget.hardware_list_layout.addWidget(input_tab)
+        self.module_widget.hardware_list_layout.addWidget(input_tab)
         self._hardware_input_dialogs_dict[settings.identifier] = input_dialog
 
         # open dialog when adding hardware (not sure if this is annoying when loading settings)

@@ -28,8 +28,8 @@ class ModuleDialog(QtWidgets.QDialog):
         self.layout().addWidget(self._state_widget)
 
         # setup module-specific widget
-        self._module_widget = uic.loadUi(module.ui_file)
-        self.layout().addWidget(self._module_widget)
+        self.module_widget = uic.loadUi(module.ui_file)
+        self.layout().addWidget(self.module_widget)
 
         # menu bar
         self.menu_bar = QtWidgets.QMenuBar(self)
