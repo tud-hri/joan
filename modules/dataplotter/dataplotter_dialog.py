@@ -1,6 +1,5 @@
-import pyqtgraph as pg
 import numpy as np
-
+import pyqtgraph as pg
 from PyQt5 import QtCore
 from PyQt5 import QtWidgets
 from PyQt5.Qt import Qt
@@ -48,19 +47,19 @@ class DataPlotterDialog(ModuleDialog):
         self.variables_to_plot = self.module_manager.module_settings.variables_to_be_plotted
         self._set_all_checked_items(self.variables_to_plot)
         self.overall_legend = pg.LegendItem(offset=10, horSpacing=30, verSpacing=-7,
-                                      pen=pg.mkPen(0, 0, 0, 255), brush=pg.mkBrush(255, 255, 255, 255))
+                                            pen=pg.mkPen(0, 0, 0, 255), brush=pg.mkBrush(255, 255, 255, 255))
         self.overall_legend.setParentItem(self.viewbox)
         self.module_widget.plot_graph.setLabel('bottom', 'Time[s]', **{'font-size': '12pt'})
 
-
-
     def handleItemChanged(self, item, column):
-        if (self.module_manager.state_machine.current_state is not State.INITIALIZED) and (self.module_manager.state_machine.current_state is not State.STOPPED):
+        if (self.module_manager.state_machine.current_state is not State.INITIALIZED) and (
+                self.module_manager.state_machine.current_state is not State.STOPPED):
             item_variable_path_list = self._get_item_path(item)
             item_variable_path_list.reverse()
             if item.checkState(column) == Qt.Checked:
                 color = list(np.random.choice(range(256), size=3))
-                self.plot_handle_dict['.'.join(item_variable_path_list)] = pg.PlotDataItem(name='.'.join(item_variable_path_list), x=self.time_list, y=self.empty_y, size=2,
+                self.plot_handle_dict['.'.join(item_variable_path_list)] = pg.PlotDataItem(name='.'.join(item_variable_path_list), x=self.time_list,
+                                                                                           y=self.empty_y, size=2,
                                                                                            pen=pg.mkPen((color[0], color[1], color[2], 255), width=3))
                 self.module_widget.plot_graph.addItem(self.plot_handle_dict['.'.join(item_variable_path_list)])
                 self.ydata_listdict['.'.join(item_variable_path_list)] = [0] * 50
@@ -152,7 +151,7 @@ class DataPlotterDialog(ModuleDialog):
                     child.setCheckState(0, Qt.Unchecked)
             else:
                 self._recursively_set_checked_items(child, new_list, list_of_checked_items)
-                
+
     def _get_all_checked_items(self):
         checked_items = []
         self._recursively_get_checked_items(self.module_widget.treeWidget.invisibleRootItem(), [], checked_items)
@@ -271,7 +270,6 @@ class DataPlotterDialog(ModuleDialog):
 
             item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
             return item
-
 
     def convert_indexes_to_variable_names(self, list_name, index):
         if list_name == 'accelerations':

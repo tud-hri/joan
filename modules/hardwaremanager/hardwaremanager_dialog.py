@@ -31,7 +31,7 @@ class HardwareManagerDialog(ModuleDialog):
         for input_settings in self.module_manager.module_settings.inputs:
             if self.module_manager.module_settings.inputs[input_settings].identifier not in self._hardware_input_tabs_dict:
                 self.add_hardware_input(self.module_manager.module_settings.inputs[input_settings], False)
-            self._hardware_input_dialogs_dict[self.module_manager.module_settings.inputs[input_settings].identifier]._display_values(
+            self._hardware_input_dialogs_dict[self.module_manager.module_settings.inputs[input_settings].identifier].display_values(
                 self.module_manager.module_settings.inputs[input_settings])
 
     def _handle_state_change(self):

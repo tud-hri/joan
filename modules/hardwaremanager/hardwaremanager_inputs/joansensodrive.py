@@ -141,7 +141,7 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
 
         self.btn_apply.clicked.connect(self.update_parameters)
 
-        self._display_values()
+        self.display_values()
 
     def update_parameters(self):
         """
@@ -168,7 +168,7 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
 
         super().accept()
 
-    def _display_values(self, settings_to_display=None):
+    def display_values(self, settings_to_display=None):
         """
         Displays the currently used settings in the settings dialog.
         :param settings_to_display:
@@ -189,7 +189,7 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
         Sets the settings as they are described in hardwarempsettings ->SensodriveSettings().
         :return:
         """
-        self._display_values(SensoDriveSettings())
+        self.display_values(SensoDriveSettings())
 
 
 def clear_queue(q):
