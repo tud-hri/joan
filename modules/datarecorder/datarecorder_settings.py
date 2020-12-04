@@ -8,3 +8,7 @@ class DataRecorderSettings(ModuleSettings):
 
         self.path_to_save_file = ''
         self.variables_to_be_saved = []
+
+    def reset(self):
+        self.path_to_save_file = ''
+        self.variables_to_be_saved = []

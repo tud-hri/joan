@@ -18,6 +18,17 @@ class TemplateSettings(ModuleSettings):
         # settings can also be nested with 'sub' setting objects
         self.custom_class_setting = CustomClassSetting()
 
+    def reset(self):
+        self.time_step = 100
+        self.int_setting = 1
+        self.float_setting = 1.5
+        self.string_setting = 'Hello World'
+        self.overwrite_with_current_time = 'current time'
+        self.enum_setting = CustomEnumSetting.BLUE
+
+        # settings can also be nested with 'sub' setting objects
+        self.custom_class_setting = CustomClassSetting()
+
 
 class CustomClassSetting:
     def __init__(self):

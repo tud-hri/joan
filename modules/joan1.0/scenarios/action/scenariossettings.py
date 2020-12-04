@@ -9,6 +9,9 @@ class ScenarioSettings(ModuleSettings):
 
         self.current_scenario = None
 
+    def reset(self):
+        self.current_scenario = None
+
     def as_dict(self):
         dict_to_return = super(ScenarioSettings, self).as_dict()
 
@@ -17,6 +20,7 @@ class ScenarioSettings(ModuleSettings):
         return dict_to_return
 
     def set_from_loaded_dict(self, loaded_dict):
+        self.reset()
         super(ScenarioSettings, self).set_from_loaded_dict(loaded_dict)
         if loaded_dict[str(self._module_enum)]['current_scenario'] is not None:
 

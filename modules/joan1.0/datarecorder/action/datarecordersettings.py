@@ -17,6 +17,11 @@ class DataRecorderSettings(ModuleSettings):
         self.existing_variables_to_save = {}
         self.write_interval = 100
 
+    def reset(self):
+        self.variables_to_save = {}
+        self.existing_variables_to_save = {}
+        self.write_interval = 100
+
     def _set_checked(self, element):
         """
         Set the news-item in the variables_to_save to True 

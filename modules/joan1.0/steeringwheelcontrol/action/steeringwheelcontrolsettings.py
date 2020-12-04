@@ -12,6 +12,10 @@ class SteeringWheelControlSettings(ModuleSettings):
         self.pd_controllers = []
         self.fdca_controllers = []
 
+    def reset(self):
+        self.pd_controllers = []
+        self.fdca_controllers = []
+
     def load_from_dict(self, loaded_dict):
         """
         This method overrides the base implementation of loading settings from dicts. This is done because hardware manager has the unique property that
@@ -22,6 +26,7 @@ class SteeringWheelControlSettings(ModuleSettings):
         :return: None
         """
         try:
+            self.reset()
             self.before_load_settings.emit()
             module_settings_to_load = loaded_dict[str(self._module_enum)]
         except KeyError:

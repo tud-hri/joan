@@ -1,4 +1,5 @@
 import inspect
+import abc
 import json
 from enum import Enum
 
@@ -19,6 +20,14 @@ class ModuleSettings:
         :param module: module type
         """
         self.module = module
+
+    @abc.abstractmethod
+    def reset(self):
+        """
+        This method should reset all settings to their defaults, exactly like in init. This is used when loading settings from a file or dict.
+        :return:
+        """
+        pass
 
     def save_to_file(self, file_path, keys_to_omit=()):
         """
@@ -54,6 +63,7 @@ class ModuleSettings:
         :param loaded_dict: dictionary with loaded settings (keys, values)
         :return:
         """
+        self.reset()
         try:
             self._copy_dict_to_class_dict(loaded_dict[str(self.module)], self.__dict__)
         except KeyError:

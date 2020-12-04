@@ -16,6 +16,11 @@ class HardwareManagerSettings(ModuleSettings):
         self.joy_sticks = []
         self.sensodrives = []
 
+    def reset(self):
+        self.key_boards = []
+        self.joy_sticks = []
+        self.sensodrives = []
+
     def load_from_dict(self, loaded_dict):
         """
         This method overrides the base implementation of loading settings from dicts. This is done because hardware manager has the unique property that
@@ -27,6 +32,7 @@ class HardwareManagerSettings(ModuleSettings):
         """
         # prepare the module for the new settings
         self.before_load_settings.emit()
+        self.reset()
 
         module_settings_to_load = loaded_dict[str(self._module_enum)]
 

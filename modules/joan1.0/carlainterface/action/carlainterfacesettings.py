@@ -16,6 +16,10 @@ class CarlaInterfaceSettings(ModuleSettings):
         self.ego_vehicles = []
         self.traffic_vehicles = []
 
+    def reset(self):
+        self.ego_vehicles = []
+        self.traffic_vehicles = []
+
     def load_from_dict(self, loaded_dict):
         """
         This method overrides the base implementation of loading settings from dicts. This is done because hardware manager has the unique property that
@@ -25,6 +29,7 @@ class CarlaInterfaceSettings(ModuleSettings):
         :param loaded_dict: (dict) dictionary containing the settings to load
         :return: None
         """
+        self.reset()
         try:
             self.before_load_settings.emit()
             module_settings_to_load = loaded_dict[str(self._module_enum)]

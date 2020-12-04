@@ -15,6 +15,14 @@ class ControllerPlotterSettings(ModuleSettings):
         self.enum_setting = CustomEnumSetting.BLUE
         self.custom_class_setting = CustomClassSetting()
 
+    def reset(self):
+        self.millis = 100
+
+        self.int_setting = 1
+        self.float_setting = 1.5
+        self.string_setting = 'Hello World'
+        self.enum_setting = CustomEnumSetting.BLUE
+        self.custom_class_setting = CustomClassSetting()
 
 class CustomClassSetting:
     def __init__(self):

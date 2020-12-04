@@ -112,6 +112,20 @@ class DataPlotterSettings(ModuleSettings):
         self.picklist_line_colors = [str(e) for e in LineColors]
         self.picklist_line_colors.remove(str(LineColors.KEY))
 
+    def reset(self):
+        self.variables_to_save = {}
+        self.existing_variables_to_save = {}
+        self.write_interval = 100
+
+        self.picklist_plot_windows = [str(e) for e in PlotWindows]
+        self.picklist_plot_windows.remove(str(PlotWindows.KEY))
+
+        self.picklist_line_types = [str(e) for e in LineTypes]
+        self.picklist_line_types.remove(str(LineTypes.KEY))
+
+        self.picklist_line_colors = [str(e) for e in LineColors]
+        self.picklist_line_colors.remove(str(LineColors.KEY))
+
     def _set_properties_empty(self, element):
         """
         Set the news-item in the variables_to_save to empty/default values
@@ -136,7 +150,6 @@ class DataPlotterSettings(ModuleSettings):
             module_news = copy.deepcopy(news.read_news(module))
             self.variables_to_save[str(module)] = module_news
         self._set_properties_empty(self.variables_to_save)
-
 
     def _set_new_entries_empty(self, element, variables_element):
         """
@@ -167,8 +180,6 @@ class DataPlotterSettings(ModuleSettings):
             module_news = copy.deepcopy(news.read_news(module))
             self.variables_to_save[str(module)] = module_news
         self._set_new_entries_empty(self.variables_to_save, self.existing_variables_to_save)
-
-
 
     def get_variables_to_save(self):
         return self.variables_to_save
