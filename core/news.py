@@ -37,7 +37,7 @@ class News:
         try:
             del self._news[module]
         except KeyError as e:
-            print('There is no news yet from',e)
+            print('There is no news yet from', e)
 
     @property
     def all_news(self):

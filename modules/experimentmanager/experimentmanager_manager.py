@@ -9,6 +9,7 @@ from .experiment import Experiment
 import copy
 from core.statesenum import State
 
+
 class ExperimentManager(ModuleManager):
     """
     Example module for JOAN
@@ -16,7 +17,7 @@ class ExperimentManager(ModuleManager):
     """
     current_experiment: Experiment
 
-    def __init__(self, news, signals, time_step_in_ms=10, parent=None):
+    def __init__(self, news, central_settings, signals, time_step_in_ms=10, parent=None):
         """
 
         :param news:
@@ -24,7 +25,8 @@ class ExperimentManager(ModuleManager):
         :param time_step_in_ms:
         :param parent:
         """
-        super().__init__(module=JOANModules.EXPERIMENT_MANAGER, news=news, signals=signals, time_step_in_ms=time_step_in_ms, parent=parent)
+        super().__init__(module=JOANModules.EXPERIMENT_MANAGER, news=news, central_settings=central_settings, signals=signals, time_step_in_ms=time_step_in_ms,
+                         parent=parent)
         # create/get default experiment_settings
         self.current_experiment = None
 

@@ -152,13 +152,14 @@ class ControllerPlotterDialog(ModuleDialog):
         trajectory_name = ''
         haptic_controller_settings = self.module_manager.singleton_settings.get_settings(JOANModules.HAPTIC_CONTROLLER_MANAGER)
         carla_interface_settings = self.module_manager.singleton_settings.get_settings(JOANModules.CARLA_INTERFACE)
-        for agent in carla_interface_settings.agents.values():
-            if agent.__str__() == 'Ego Vehicle_1':
-                controller = agent.selected_controller
-                if controller != 'None':
-                    trajectory_name = haptic_controller_settings.haptic_controllers[controller].trajectory_name
-            else:
-                trajectory_name = 'None'
+        if carla_interface_settings:
+            for agent in carla_interface_settings.agents.values():
+                if agent.__str__() == 'Ego Vehicle_1':
+                    controller = agent.selected_controller
+                    if controller != 'None':
+                        trajectory_name = haptic_controller_settings.haptic_controllers[controller].trajectory_name
+                else:
+                    trajectory_name = 'None'
 
         # Top view graph
         try:

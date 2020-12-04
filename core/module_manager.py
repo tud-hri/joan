@@ -16,7 +16,7 @@ from modules.joanmodules import JOANModules
 class ModuleManager(QtCore.QObject):
     loaded_signal = pyqtSignal()
 
-    def __init__(self, module: JOANModules, news, signals, time_step_in_ms=100, parent=None):
+    def __init__(self, module: JOANModules, news, central_settings, signals, time_step_in_ms=100, parent=None):
         super(QtCore.QObject, self).__init__()
 
         self.module = module
@@ -28,7 +28,7 @@ class ModuleManager(QtCore.QObject):
         self._time_step_in_ms = time_step_in_ms
 
         self.news = news
-        self.singleton_settings = Settings()
+        self.singleton_settings = central_settings
 
         # initialize an empty shared variables class
         self.shared_variables = self.module.shared_variables()

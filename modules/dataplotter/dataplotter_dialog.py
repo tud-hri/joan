@@ -12,7 +12,16 @@ from modules.joanmodules import JOANModules
 
 
 class DataPlotterDialog(ModuleDialog):
+    """
+    The DataPlotter dialog is the main class of importance for the DataPlotter. It handles everything to do with the
+    dialog, which is where we plot the data.
+    """
     def __init__(self, module_manager: ModuleManager, parent=None):
+        """
+
+        :param module_manager: DataPlotterManager
+        :param parent: None
+        """
         super().__init__(module=JOANModules.DATA_PLOTTER, module_manager=module_manager, parent=parent)
         self._module_manager = module_manager
 
@@ -28,56 +37,79 @@ class DataPlotterDialog(ModuleDialog):
         pg.setConfigOption('foreground', 'k')
 
         self.module_widget.plot_graph.setBackground(background_color)
-        self.viewbox = self.module_widget.plot_graph.getViewBox()
-        self.viewbox.setBorder(pen=pg.mkPen(0, 0, 0, 255))
-        self.viewbox.setBackgroundColor((255, 255, 255, 200))
+        self.view_box = self._module_widget.plot_graph.getViewBox()
+        self.view_box.setBorder(pen=pg.mkPen(0, 0, 0, 255))
+        self.view_box.setBackgroundColor((255, 255, 255, 200))
         self.module_widget.plot_graph.showGrid(True, True, 1)
 
         self.plot_handle_dict = {}
-        self.ydata_listdict = {}
+        self.ydata_list_dict = {}
         self.empty_y = [0] * 50
         self.time_list = [-5 + x * (0 - -5) / 50 for x in range(50)]
         self.pencolor_dict = {}
-
         self.data_container = [[0] * 1000] * 50
+        self.variables_to_plot = None
+        self.overall_legend = None
 
-        self.module_widget.treeWidget.itemChanged.connect(self.handleItemChanged)
+        self.module_widget.treeWidget.itemChanged.connect(self.handle_item_changed)
 
     def initialize_dialog(self):
+        """
+        Initializes the dialog
+        :return:
+        """
         self.variables_to_plot = self.module_manager.module_settings.variables_to_be_plotted
         self._set_all_checked_items(self.variables_to_plot)
         self.overall_legend = pg.LegendItem(offset=10, horSpacing=30, verSpacing=-7,
                                             pen=pg.mkPen(0, 0, 0, 255), brush=pg.mkBrush(255, 255, 255, 255))
-        self.overall_legend.setParentItem(self.viewbox)
+        self.overall_legend.setParentItem(self.view_box)
         self.module_widget.plot_graph.setLabel('bottom', 'Time[s]', **{'font-size': '12pt'})
 
     def handleItemChanged(self, item, column):
+        """
+        Handles whenever a tree item is clicked.
+        :param item: Which item in treewidget was clicked
+        :param column: In which column this item is (always column 0)
+        :return:
+        """
         if (self.module_manager.state_machine.current_state is not State.INITIALIZED) and (
                 self.module_manager.state_machine.current_state is not State.STOPPED):
             item_variable_path_list = self._get_item_path(item)
             item_variable_path_list.reverse()
             if item.checkState(column) == Qt.Checked:
                 color = list(np.random.choice(range(256), size=3))
-                self.plot_handle_dict['.'.join(item_variable_path_list)] = pg.PlotDataItem(name='.'.join(item_variable_path_list), x=self.time_list,
-                                                                                           y=self.empty_y, size=2,
-                                                                                           pen=pg.mkPen((color[0], color[1], color[2], 255), width=3))
+                self.plot_handle_dict['.'.join(item_variable_path_list)] = pg.PlotDataItem(
+                    name='.'.join(item_variable_path_list), x=self.time_list, y=self.empty_y, size=2,
+                    pen=pg.mkPen((color[0], color[1], color[2], 255), width=3))
                 self.module_widget.plot_graph.addItem(self.plot_handle_dict['.'.join(item_variable_path_list)])
-                self.ydata_listdict['.'.join(item_variable_path_list)] = [0] * 50
-                self.overall_legend.addItem(self.plot_handle_dict['.'.join(item_variable_path_list)], item_variable_path_list[-1])
+                self.ydata_list_dict['.'.join(item_variable_path_list)] = [0] * 50
+                self.overall_legend.addItem(self.plot_handle_dict['.'.join(item_variable_path_list)],
+                                            item_variable_path_list[-1])
 
             elif item.checkState(column) == Qt.Unchecked:
-                self.ydata_listdict['.'.join(item_variable_path_list)] = [0] * 50
+                self.ydata_list_dict['.'.join(item_variable_path_list)] = [0] * 50
                 self.plot_handle_dict['.'.join(item_variable_path_list)].clear()
                 self.module_widget.plot_graph.removeItem(self.plot_handle_dict['.'.join(item_variable_path_list)])
                 self.overall_legend.removeItem(self.plot_handle_dict['.'.join(item_variable_path_list)])
                 del self.plot_handle_dict['.'.join(item_variable_path_list)]
 
     def _get_item_path(self, item):
+        """
+        Get Item path
+        :param item:
+        :return:
+        """
         temp = [item.text(0)]
         path = self._recursively_get_item_path(item, temp)
         return path
 
     def _recursively_get_item_path(self, child, path):
+        """
+        Get item paths
+        :param child:
+        :param path:
+        :return:
+        """
         parent = child.parent()
         if parent is not None:
             new_list = path.copy()
@@ -87,6 +119,10 @@ class DataPlotterDialog(ModuleDialog):
             return path
 
     def update_dialog(self):
+        """
+        Updates the dialog and plots the graph on a 10hz rate.
+        :return:
+        """
         variables_to_plot = self._get_all_checked_items()
         for variable in variables_to_plot:
             module = JOANModules.from_string_representation(variable[0])
@@ -98,22 +134,27 @@ class DataPlotterDialog(ModuleDialog):
                 elif isinstance(last_object, list):
                     for strings in self.plot_handle_dict.keys():
                         variable_name = strings.rsplit('.')
-                        variable_index = self.convert_variablename_to_index(variable_name[-1])
-                        if attribute_name == variable_name[-1] and variable[-2] == variable_name[-2] and variable_name[-3] == variable[-3]:
-                            self.ydata_listdict[strings].append(float(last_object[variable_index]))
-                            self.ydata_listdict[strings].pop(0)
+                        variable_index = self.convert_variable_name_to_index(variable_name[-1])
+                        if attribute_name == variable_name[-1] and variable[-2] == variable_name[-2] \
+                                and variable_name[-3] == variable[-3]:
+                            self.ydata_list_dict[strings].append(float(last_object[variable_index]))
+                            self.ydata_list_dict[strings].pop(0)
                 else:
                     last_object = getattr(last_object, attribute_name)
                     for strings in self.plot_handle_dict.keys():
                         variable_name = strings.rsplit('.')
                         if attribute_name == variable_name[-1] and variable[-2] == variable_name[-2]:
-                            self.ydata_listdict[strings].append(float(last_object))
-                            self.ydata_listdict[strings].pop(0)
+                            self.ydata_list_dict[strings].append(float(last_object))
+                            self.ydata_list_dict[strings].pop(0)
 
         for plot_item in self.plot_handle_dict.values():
-            plot_item.setData(x=self.time_list, y=self.ydata_listdict[plot_item.name()])
+            plot_item.setData(x=self.time_list, y=self.ydata_list_dict[plot_item.name()])
 
     def handle_state_change(self):
+        """
+        Handles the state changes of the module
+        :return:
+        """
         if self.module_manager.state_machine.current_state == State.INITIALIZED:
             self.module_widget.treeWidget.setEnabled(True)
             self.initialize_dialog()
@@ -127,17 +168,29 @@ class DataPlotterDialog(ModuleDialog):
         else:
             self.module_widget.treeWidget.setEnabled(True)
 
-    def _save_settings(self):
-        self.apply_settings()
-        super()._save_settings()
-
     def apply_settings(self):
+        """
+        This function is called on get ready and fills the treewidget
+        :return:
+        """
         self._fill_tree_widget()
 
     def _set_all_checked_items(self, variables_to_plot):
+        """
+        Checks all items that are in the list
+        :param variables_to_plot:
+        :return:
+        """
         self._recursively_set_checked_items(self.module_widget.treeWidget.invisibleRootItem(), [], variables_to_plot)
 
     def _recursively_set_checked_items(self, parent, path_to_parent, list_of_checked_items):
+        """
+        Recursively checks all items.
+        :param parent:
+        :param path_to_parent:
+        :param list_of_checked_items:
+        :return:
+        """
         for index in range(parent.childCount()):
             child = parent.child(index)
 
@@ -153,26 +206,53 @@ class DataPlotterDialog(ModuleDialog):
                 self._recursively_set_checked_items(child, new_list, list_of_checked_items)
 
     def _get_all_checked_items(self):
+        """
+        Gets all checked tree items
+        :return:
+        """
         checked_items = []
         self._recursively_get_checked_items(self.module_widget.treeWidget.invisibleRootItem(), [], checked_items)
         return checked_items
 
     def _get_all_unchecked_items(self):
+        """
+        Gets all unchecked tree items
+        :return:
+        """
         unchecked_items = []
         self._recursively_get_unchecked_items(self.module_widget.treeWidget.invisibleRootItem(), [], unchecked_items)
         return unchecked_items
 
-    def _check_all_items(self, parent):
+    @staticmethod
+    def _check_all_items(parent):
+        """
+        Checks all tree items
+        :param parent:
+        :return:
+        """
         for index in range(parent.childCount()):
             child = parent.child(index)
             child.setCheckState(0, QtCore.Qt.Checked)
 
-    def _uncheck_all_items(self, parent):
+    @staticmethod
+    def _uncheck_all_items(parent):
+        """
+        Unchecks all tree items
+        :param parent:
+        :return:
+        """
         for index in range(parent.childCount()):
             child = parent.child(index)
             child.setCheckState(0, QtCore.Qt.Unchecked)
 
     def _recursively_get_checked_items(self, parent, path_to_parent, list_of_checked_items):
+        """
+        Checks whole tree widget and returns a list of checked items
+        :param parent:
+        :param path_to_parent:
+        :param list_of_checked_items:
+        :return:
+        """
         for index in range(parent.childCount()):
             child = parent.child(index)
 
@@ -187,6 +267,13 @@ class DataPlotterDialog(ModuleDialog):
                 self._recursively_get_checked_items(child, new_list, list_of_checked_items)
 
     def _recursively_get_all_items(self, parent, path_to_parent, list_of_items):
+        """
+        Checks the whole tree and returns list of all items.
+        :param parent:
+        :param path_to_parent:
+        :param list_of_items:
+        :return:
+        """
         for index in range(parent.childCount()):
             child = parent.child(index)
 
@@ -200,6 +287,13 @@ class DataPlotterDialog(ModuleDialog):
                 self._recursively_get_all_items(child, new_list, list_of_items)
 
     def _recursively_get_unchecked_items(self, parent, path_to_parent, list_of_unchecked_items):
+        """
+        Checks the whole tree and returns the unchecked items.
+        :param parent:
+        :param path_to_parent:
+        :param list_of_unchecked_items:
+        :return:
+        """
         for index in range(parent.childCount()):
             child = parent.child(index)
 
@@ -271,7 +365,14 @@ class DataPlotterDialog(ModuleDialog):
             item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
             return item
 
-    def convert_indexes_to_variable_names(self, list_name, index):
+    @staticmethod
+    def convert_indexes_to_variable_names(list_name, index):
+        """
+        Hardcoded indexes to variable names.
+        :param list_name:
+        :param index:
+        :return:
+        """
         if list_name == 'accelerations':
             if index == 0:
                 return 'X Acceleration'
@@ -323,7 +424,13 @@ class DataPlotterDialog(ModuleDialog):
         else:
             return str(index)
 
-    def convert_variablename_to_index(self, variable_name):
+    @staticmethod
+    def convert_variable_name_to_index(variable_name):
+        """
+        Hardcoded variable names to indices.
+        :param variable_name:
+        :return:
+        """
 
         if variable_name == 'X Acceleration':
             return 0
