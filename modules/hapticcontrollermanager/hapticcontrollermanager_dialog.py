@@ -28,11 +28,17 @@ class HapticControllerManagerDialog(ModuleDialog):
         self._haptic_controller_dialogs_dict = {}
 
     def update_dialog(self):
-        for controller_settings in self.module_manager.module_settings.haptic_controllers:
-            if self.module_manager.module_settings.haptic_controllers[controller_settings].identifier not in self._haptic_controller_tabs_dict:
-                self.add_haptic_controller(self.module_manager.module_settings.haptic_controllers[controller_settings], False)
-            self._haptic_controller_dialogs_dict[self.module_manager.module_settings.haptic_controllers[controller_settings].identifier]._display_values(
-                self.module_manager.module_settings.haptic_controllers[controller_settings])
+        difference_dict = {k: self._haptic_controller_tabs_dict[k] for k in
+                           set(self._haptic_controller_tabs_dict) - set(self.module_manager.module_settings.haptic_controllers)}
+        for key in difference_dict:
+            self.remove_haptic_controller(key)
+        for haptic_controller_settings in self.module_manager.module_settings.haptic_controllers:
+            if self.module_manager.module_settings.haptic_controllers[
+                haptic_controller_settings].identifier not in self._haptic_controller_tabs_dict:
+                self.add_haptic_controller(self.module_manager.module_settings.haptic_controllers[haptic_controller_settings], False)
+            self._haptic_controller_dialogs_dict[
+                self.module_manager.module_settings.haptic_controllers[haptic_controller_settings].identifier]._display_values(
+                self.module_manager.module_settings.haptic_controllers[haptic_controller_settings])
 
     def _handle_state_change(self):
         """"
