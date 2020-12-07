@@ -56,7 +56,7 @@ If you add 2 vehicles and they have the same spawnpoint an message will pop-up s
     
 The last thing you can choose from is cruise control checkbox and a desired speed. Please note that this will use a PD controller on the throttle and brake and does not set the velocity instantly.
 
-## Adding your own Agents
+## <a name="adding_own_agents"></a>Adding Your Own Agents
 This section will describe, how you can go about to implement your own agent, so adding an agent other than `Ego Vehicle`. There are some things you need to keep in mind while doing this
 so therefore this section will go a bit more into detail. The steps below do not have to be followed in this particular order, however it might be easy to just follow them in this order anyway.
 
