@@ -26,14 +26,13 @@ class ExperimentManager(ModuleManager):
         :param parent:
         """
         super().__init__(module=JOANModules.EXPERIMENT_MANAGER, news=news, central_settings=central_settings, signals=signals, time_step_in_ms=time_step_in_ms,
-                         parent=parent)
+                         use_state_machine_and_process=False, parent=parent)
         # create/get default experiment_settings
         self.current_experiment = None
 
         cur_path = os.path.dirname(os.path.realpath(__file__))
         path = os.path.dirname(os.path.dirname(os.path.dirname(cur_path)))
         self.experiment_save_path = os.path.join(path, 'experiments/')
-        self.state_machine.set_entry_action(State.STOPPED, self.module_dialog.stopped_state_entry_action)
 
         self.active_condition = None
         self.active_condition_index = None

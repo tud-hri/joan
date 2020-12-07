@@ -37,14 +37,6 @@ class ExperimentManagerDialog(ModuleDialog):
         self.settings_menu.clear()
         self.settings_menu = None
 
-    def stopped_state_entry_action(self):
-        """
-        An action that is called when the state machine stransitions to the stopped state. This connection in made in the experiment manager manager.
-        :return:
-        """
-        if self.module_widget.autoTransitionCheckBox.isChecked():
-            self.transition_to_next_condition()
-
     def create_new_experiment(self):
         new_experiment_dialog = NewExperimentDialog(self.module_manager.singleton_settings.all_settings_keys, parent=self)
         new_experiment_dialog.accepted.connect(

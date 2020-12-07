@@ -47,28 +47,32 @@ class HQManager(QtCore.QObject):
         Initialize modules
         """
         for _, module in self._instantiated_modules.items():
-            module.state_machine.request_state_change(State.INITIALIZED)
+            if module.use_state_machine_and_process:
+                module.state_machine.request_state_change(State.INITIALIZED)
 
     def get_ready_modules(self):
         """
         Get all modules ready
         """
         for _, module in self._instantiated_modules.items():
-            module.state_machine.request_state_change(State.READY)
+            if module.use_state_machine_and_process:
+                module.state_machine.request_state_change(State.READY)
 
     def start_modules(self):
         """
         Initialize modules
         """
         for _, module in self._instantiated_modules.items():
-            module.state_machine.request_state_change(State.RUNNING)
+            if module.use_state_machine_and_process:
+                module.state_machine.request_state_change(State.RUNNING)
 
     def stop_modules(self):
         """
         Stop all modules
         """
         for _, module in self._instantiated_modules.items():
-            module.state_machine.request_state_change(State.STOPPED)
+            if module.use_state_machine_and_process:
+                module.state_machine.request_state_change(State.STOPPED)
 
     def add_module(self, module: JOANModules, parent=None, time_step_in_ms=100):
         """
@@ -85,7 +89,8 @@ class HQManager(QtCore.QObject):
         module_manager = module.manager(news=self.news, central_settings=self.central_settings, signals=self.signals, time_step_in_ms=time_step_in_ms,
                                         parent=parent)
 
-        self.central_state_monitor.register_state_machine(module, module_manager.state_machine)
+        if module_manager.use_state_machine_and_process:
+            self.central_state_monitor.register_state_machine(module, module_manager.state_machine)
 
         self.window.add_module(module_manager)
 

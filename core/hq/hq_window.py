@@ -152,24 +152,27 @@ class HQWindow(QtWidgets.QMainWindow):
 
     def handle_state_change(self, widget, module_manager):
         # disable all buttons first then activate the one you can press
-        self.disable_all_buttons()
-        current_state = module_manager.state_machine.current_state
-        widget.lbl_state.setText(str(current_state))
-        if current_state is State.RUNNING:
-            widget.lbl_state.setStyleSheet("background: lightgreen;")
-            self._main_widget.btn_stop.setEnabled(True)
-        elif current_state is State.INITIALIZED:
-            widget.lbl_state.setStyleSheet("background: lightblue;")
-            self._main_widget.btn_get_ready.setEnabled(True)
-        elif current_state is State.READY:
-            widget.lbl_state.setStyleSheet("background: yellow;")
-            self._main_widget.btn_start.setEnabled(True)
-        elif current_state is State.ERROR:  # an Error state
-            widget.lbl_state.setStyleSheet("background: red;")
-            self._main_widget.btn_stop.setEnabled(True)
-        elif current_state is State.STOPPED:
-            widget.lbl_state.setStyleSheet("background: orange;")
-            self._main_widget.btn_initialize.setEnabled(True)
+        if module_manager.use_state_machine_and_process:
+            self.disable_all_buttons()
+            current_state = module_manager.state_machine.current_state
+            widget.lbl_state.setText(str(current_state))
+            if current_state is State.RUNNING:
+                widget.lbl_state.setStyleSheet("background: lightgreen;")
+                self._main_widget.btn_stop.setEnabled(True)
+            elif current_state is State.INITIALIZED:
+                widget.lbl_state.setStyleSheet("background: lightblue;")
+                self._main_widget.btn_get_ready.setEnabled(True)
+            elif current_state is State.READY:
+                widget.lbl_state.setStyleSheet("background: yellow;")
+                self._main_widget.btn_start.setEnabled(True)
+            elif current_state is State.ERROR:  # an Error state
+                widget.lbl_state.setStyleSheet("background: red;")
+                self._main_widget.btn_stop.setEnabled(True)
+            elif current_state is State.STOPPED:
+                widget.lbl_state.setStyleSheet("background: orange;")
+                self._main_widget.btn_initialize.setEnabled(True)
+        else:
+            widget.lbl_state.setText('-')
 
     def disable_all_buttons(self):
         self._main_widget.btn_initialize.setEnabled(False)
