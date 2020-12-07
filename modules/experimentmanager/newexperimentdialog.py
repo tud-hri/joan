@@ -1,7 +1,8 @@
+import glob
 import os
 
 from PyQt5 import QtWidgets
-import glob
+
 from .newexperimentdialog_ui import Ui_Dialog
 
 

@@ -1,13 +1,14 @@
+import os
+
+from PyQt5 import QtWidgets, QtCore, QtGui
+
 from core.module_dialog import ModuleDialog
 from core.module_manager import ModuleManager
-from modules.joanmodules import JOANModules
-from modules.experimentmanager.condition import Condition
-from .newexperimentdialog import NewExperimentDialog
-from PyQt5 import QtWidgets, QtCore, QtGui
 from core.statesenum import State
+from modules.experimentmanager.condition import Condition
 from modules.experimentmanager.editexperimentdialog import EditExperimentDialog
-
-import os
+from modules.joanmodules import JOANModules
+from .newexperimentdialog import NewExperimentDialog
 
 
 class ExperimentManagerDialog(ModuleDialog):
@@ -36,7 +37,11 @@ class ExperimentManagerDialog(ModuleDialog):
         self.settings_menu.clear()
         self.settings_menu = None
 
-    def stopped_entry_action(self):
+    def stopped_state_entry_action(self):
+        """
+        An action that is called when the state machine stransitions to the stopped state. This connection in made in the experiment manager manager.
+        :return:
+        """
         if self.module_widget.autoTransitionCheckBox.isChecked():
             self.transition_to_next_condition()
 
@@ -88,6 +93,10 @@ class ExperimentManagerDialog(ModuleDialog):
             self.module_widget.lbl_loaded_experiment.setText('-')
 
     def update_condition_lists(self):
+        """
+        updates the display of available conditions and transitions.
+        :return:
+        """
         self.module_widget.condition_list.clear()
 
         if self.module_manager.current_experiment:
@@ -123,7 +132,6 @@ class ExperimentManagerDialog(ModuleDialog):
         """
         Create and open an experiment dialog
         Note: this dialog is always "freshly" created, and the experiment is then loaded in
-        :param experiment:
         :return:
         """
         self.experiment_dialog = EditExperimentDialog(self.module_manager.current_experiment, self.module_manager.experiment_save_path,

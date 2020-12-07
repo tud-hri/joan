@@ -4,7 +4,11 @@ from modules.joanmodules import JOANModules
 
 
 class Condition:
-
+    """
+    a condition to be used in experiments. A condition can be set from the current settings of JOAN or from a saved file. The condition consists of a diff dict.
+    This dict holds the differences in settings with respect to the base settings of an experiment. When activated, the base settings are applied first, after
+    which the differences are applied.
+    """
     def __init__(self, modules_included: list, name):
         self.name = name
         self.diff = {}
@@ -14,13 +18,19 @@ class Condition:
 
     @staticmethod
     def set_from_current_settings(condition_name, parent_experiment, settings_singleton):
+        """
+        Creates a new condition based on the current settings of the modules in JOAN.
+        :param condition_name:
+        :param parent_experiment:
+        :param settings_singleton:
+        :return:
+        """
         condition = Condition(parent_experiment.modules_included, condition_name)
         for module in parent_experiment.modules_included:
             condition.diff[module] = Condition._get_dict_diff(parent_experiment.base_settings[module],
                                                               copy.deepcopy(settings_singleton.get_settings(module).as_dict())[
                                                                   str(module)], {})
 
-        # return deepcopy of the condition dictionary; else changing a module setting will change the setting across all conditions.
         return condition
 
     def get_savable_dict(self):

@@ -4,6 +4,10 @@ import os
 
 
 class TransitionsList(list):
+    """
+    a list object that is automatically filled with all available transitions in the transitions folder. This list makes your custom transition available in
+    JOAN automatically if you've added it to the transitions folder.
+    """
 
     def __init__(self):
         super().__init__()

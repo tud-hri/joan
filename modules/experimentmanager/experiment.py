@@ -10,8 +10,11 @@ from .condition import Condition
 class Experiment:
     """
     Experiment class
-    Contains all conditions, and transitions in the experiment
-    Allows for loading and saving to user-readable json files
+    An experiment consists of base settings, conditions, and transitions. The base settings represent the general state of all modules in the experiment.
+    Conditions hold the differences in settings with respect to the base settings. The experiment has an active sequence the holds the conditions in the
+    sequence in which they are used. A single condition can be used multiple times in the experiments sequence. Transitions hold actions that are executed when
+    a new condition is activated. This can be anything from saving files to re-initializing objects.
+    An experiment can be loaded from and saved to user-readable json files.
     """
 
     def __init__(self, modules_included: list):
@@ -22,6 +25,11 @@ class Experiment:
         self.active_condition_sequence = []
 
     def set_from_current_settings(self, settings_singleton: Settings):
+        """
+        Set the base settings
+        :param settings_singleton:
+        :return:
+        """
         if self.all_conditions:
             raise RuntimeError("The base settings of an experiment can only be modified when no conditions exist.")
 

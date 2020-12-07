@@ -1,4 +1,5 @@
-from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt5 import QtWidgets
+
 from .previewconditiondialog_ui import Ui_Dialog
 
 
@@ -16,6 +17,13 @@ class PreviewConditionDialog(QtWidgets.QDialog):
 
     @staticmethod
     def _create_tree_item(parent, key, value):
+        """
+        recursive method to create all tree items needed to display the settings in a condition.
+        :param parent:
+        :param key:
+        :param value:
+        :return:
+        """
         if isinstance(value, dict):
             item = QtWidgets.QTreeWidgetItem(parent)
             item.setData(0, 0, str(key))
