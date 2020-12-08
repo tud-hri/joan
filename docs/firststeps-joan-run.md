@@ -53,10 +53,16 @@ the `initialized` (blue color) state accordingly. Going to that state is easily 
     If any code errors are found the module will go into the error state and save a log file
 
 ### 5. Setup the variables you'd like to record and where to save them in the DataRecorder
+Whenever you want to record some data you'll have to setup the DataRecorder after initializing. First we open up the DataRecorder
+module dialog, then we specify our save path (where we want the `.csv` file to go) and lastly we check the variables we would like
+to record:
+
+[ ![](gifs/joan-run-setup-datarecorder.gif) ](gifs/joan-run-setup-datarecorder.gif)
 
 ### 6. Get Ready
-
+[ ![](gifs/joan-run-setup-getready.gif) ](gifs/joan-run-setup-getready.gif)
 ### 7. Run and Drive!
+[ ![](gifs/joan-run-setup-rundrive.gif)](gifs/joan-run-setup-rundrive.gif)
 
 ### 8. Have a look at your CSV file full of data.
 
