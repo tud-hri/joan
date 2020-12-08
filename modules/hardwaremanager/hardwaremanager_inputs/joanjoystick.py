@@ -7,6 +7,9 @@ from modules.hardwaremanager.hardwaremanager_inputtypes import HardwareInputType
 
 
 class JOANJoystickProcess:
+    """
+    Contains the seperate process of the joystick input, reads the device input and communicates it to the rest of JOAN
+    """
     def __init__(self, settings, shared_variables):
         # Initialize Variables
         self.brake = 0
@@ -269,7 +272,8 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
         :return:
         """
         if self.presetsComboBox.currentText().lower() != 'custom':
-            preset_settings = HardwareInputTypes.JOYSTICK.settings.get_preset_settings(self.presetsComboBox.currentText().lower())
+            preset_settings = HardwareInputTypes.JOYSTICK.settings.get_preset_settings(
+                self.presetsComboBox.currentText().lower())
             self.display_values(settings_to_display=preset_settings, only_keymap=True)
 
     def display_values(self, settings_to_display=None, only_keymap=False):
