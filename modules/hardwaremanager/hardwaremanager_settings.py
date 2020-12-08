@@ -18,8 +18,9 @@ class HardwareManagerSettings(ModuleSettings):
 
     def load_from_dict(self, loaded_dict):
         """
-        This method overrides the base implementation of loading settings from dicts. This is done because hardware manager has the unique property that
-        multiple custom settings classes are combined in a list. This behavior is not supported by the normal joan module settings, so it an specific solution
+        This method overrides the base implementation of loading settings from dicts. This is done because hardware ]
+        manager has the unique property that multiple custom settings classes are combined in a list. This behavior is
+        not supported by the normal joan module settings, so it an specific solution
         to loading is implemented here.
 
         :param loaded_dict: (dict) dictionary containing the settings to load
