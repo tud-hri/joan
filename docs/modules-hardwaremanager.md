@@ -13,7 +13,7 @@ In the image below the HardwareManager module is shown how it should look like i
 
 ![Hwmanager in stopped state](imgs/modules-hardwaremanager-stopped-state.PNG)
 
-## Using the Module
+## <a name="using_hw_manager"></a>Using the Module
 Using the module is quite similar to using other 'core' modules of JOAN. You can add/remove devices in the `STOPPED` 
 state only. This will open up a dialog in which you can choose which input you want to add, which will then pop up in the 
 hardware list, see the pictures below:
@@ -51,6 +51,9 @@ The second input you can choose from by default is the `Joystick` input.
 Whenever adding a Joystick device it will automatically open up the joystick settings dialog (if you do it from the `add hardware input` button):
 
 ![Joystick Settings](imgs/modules-hardwaremanager-joystick-settings.PNG)
+
+In here the first thing you do is find your plugged in USB device in the list of `available HID devices`. In this example 
+we have a Xbox Controller connected. 
 
 ### SensoDrives
 
