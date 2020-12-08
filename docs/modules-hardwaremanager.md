@@ -48,6 +48,10 @@ The second input you can choose from by default is the `Joystick` input.
     you would expect from for example flight simulator. A `Joystick` in JOAN constitutes nothing more than a HID 
     (Human Interface Device). For example, steering wheels by thrustmaster or logitech are also 'Joysticks'.
 
+Whenever adding a Joystick device it will automatically open up the joystick settings dialog (if you do it from the `add hardware input` button):
+
+![Joystick Settings](imgs/modules-hardwaremanager-joystick-settings.PNG)
+
 ### SensoDrives
 
 
