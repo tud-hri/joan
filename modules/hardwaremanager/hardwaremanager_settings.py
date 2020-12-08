@@ -9,6 +9,9 @@ class HardwareManagerSettings(ModuleSettings):
     """
 
     def __init__(self):
+        """
+        Initializes the inputs dictionary
+        """
         super().__init__(JOANModules.HARDWARE_MANAGER)
 
         self.inputs = {}
@@ -38,9 +41,19 @@ class HardwareManagerSettings(ModuleSettings):
                 self.inputs[identifier] = sensodrive_settings
 
     def all_inputs(self):
+        """
+        Returns all input objects
+        :return: all current objects in the inputs dictionary
+        """
         return {**self.inputs}
 
     def add_hardware_input(self, input_type: HardwareInputTypes, input_settings=None):
+        """
+        Adds the hardware input settings
+        :param input_type:
+        :param input_settings:
+        :return:
+        """
         # create empty settings object
         if not input_settings:
             input_settings = input_type.settings()
@@ -60,5 +73,10 @@ class HardwareManagerSettings(ModuleSettings):
         return input_settings
 
     def remove_hardware_input(self, identifier):
+        """
+        Removes the hardware input settings
+        :param identifier:
+        :return:
+        """
         key, _ = find_settings_by_identifier(self.inputs, identifier)
         self.inputs.pop(key)

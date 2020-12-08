@@ -15,11 +15,21 @@ msg_box.setTextFormat(QtCore.Qt.RichText)
 
 
 class HardwareManagerDialog(ModuleDialog):
+    """
+    Dialog of the Hardware Manager Class, will handle all button presses and UI functionality.
+    """
+
     def __init__(self, module_manager: ModuleManager, parent=None):
+        """
+        Initializes the class
+        :param module_manager:
+        :param parent:
+        """
         super().__init__(module=JOANModules.HARDWARE_MANAGER, module_manager=module_manager, parent=parent)
 
         # Loading the inputtype dialog (in which we will be able to add hardwareclasses dynamically)
-        self._input_type_dialog = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "select_input_type.ui"))
+        self._input_type_dialog = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                                          "select_input_type.ui"))
         self._input_type_dialog.btns_hardware_inputtype.accepted.connect(self._hardware_input_selected)
 
         # Connect the add hardware button to showing our just created inputtype dialog
@@ -28,16 +38,23 @@ class HardwareManagerDialog(ModuleDialog):
         self._hardware_input_dialogs_dict = {}
 
     def update_dialog(self):
+        """
+        Updates the Dialog, this function is called at a rate of 10Hz.
+        :return:
+        """
         for input_settings in self.module_manager.module_settings.inputs:
-            if self.module_manager.module_settings.inputs[input_settings].identifier not in self._hardware_input_tabs_dict:
+            if self.module_manager.module_settings.inputs[input_settings].identifier not in \
+                    self._hardware_input_tabs_dict:
                 self.add_hardware_input(self.module_manager.module_settings.inputs[input_settings], False)
-            self._hardware_input_dialogs_dict[self.module_manager.module_settings.inputs[input_settings].identifier].display_values(
+            self._hardware_input_dialogs_dict[
+                self.module_manager.module_settings.inputs[input_settings].identifier].display_values(
                 self.module_manager.module_settings.inputs[input_settings])
 
     def _handle_state_change(self):
         """
-        We only want to be able to add hardware when we are in the stopped state, therefore we add this to the state change listener
-        for this module. We should however not forget also calling the super()._handle_state_change() method.
+        We only want to be able to add hardware when we are in the stopped state, therefore we add this to the state
+        change listener for this module. We should however not forget also calling the super()._handle_state_change()
+        method.
         """
         super()._handle_state_change()
 
@@ -84,10 +101,15 @@ class HardwareManagerDialog(ModuleDialog):
                     self._hardware_input_tabs_dict[hardware_tabs].btn_off.blockSignals(True)
                     self._hardware_input_tabs_dict[hardware_tabs].btn_clear_error.setEnabled(False)
                     self._hardware_input_tabs_dict[hardware_tabs].btn_clear_error.blockSignals(True)
-                    self._hardware_input_tabs_dict[hardware_tabs].lbl_sensodrive_state.setStyleSheet("background-color: orange")
+                    self._hardware_input_tabs_dict[hardware_tabs].lbl_sensodrive_state.setStyleSheet(
+                        "background-color: orange")
                     self._hardware_input_tabs_dict[hardware_tabs].lbl_sensodrive_state.setText('Off')
 
     def update_sensodrive_state(self):
+        """
+        Updates the state label of a SensoDrive in the Tab. This goes via the MultiProcessing Queue class.
+        :return:
+        """
         for inputs in self.module_manager.module_settings.inputs.values():
             if inputs.input_type == HardwareInputTypes.SENSODRIVE.value:
                 try:
@@ -131,13 +153,24 @@ class HardwareManagerDialog(ModuleDialog):
                         tab_sensodrive.lbl_sensodrive_state.setText('Error')
 
     def _select_hardware_input_type(self):
+        """
+        Fills and opens up the selection dialog of hardware.
+        :return:
+        """
         self._input_type_dialog.combo_hardware_inputtype.clear()
         for hardware_inputs in HardwareInputTypes:
-            self._input_type_dialog.combo_hardware_inputtype.addItem(hardware_inputs.__str__(), userData=hardware_inputs)
+            self._input_type_dialog.combo_hardware_inputtype.addItem(hardware_inputs.__str__(),
+                                                                     userData=hardware_inputs)
         self._input_type_dialog.show()
 
     def _hardware_input_selected(self):
-        selected_hardware_input = self._input_type_dialog.combo_hardware_inputtype.itemData(self._input_type_dialog.combo_hardware_inputtype.currentIndex())
+        """
+        Executes when a hardware input is chosen. Also checks the number of SensoDrives,
+        currently there is a maximum of 2.
+        :return:
+        """
+        selected_hardware_input = self._input_type_dialog.combo_hardware_inputtype.itemData(
+            self._input_type_dialog.combo_hardware_inputtype.currentIndex())
 
         # hardcode maximum nr of sensodrives
         nr_of_sensodrives = 0
@@ -145,7 +178,7 @@ class HardwareManagerDialog(ModuleDialog):
             if inputs.input_type == HardwareInputTypes.SENSODRIVE:
                 nr_of_sensodrives += 1
 
-        if (selected_hardware_input == HardwareInputTypes.SENSODRIVE and nr_of_sensodrives == 2):
+        if selected_hardware_input == HardwareInputTypes.SENSODRIVE and nr_of_sensodrives == 2:
             msg_box.setText("""
                                         <h3> Number of sensodrives is limited to 2 for now! </h3>
                                     """)
@@ -157,6 +190,12 @@ class HardwareManagerDialog(ModuleDialog):
         self.module_manager.add_hardware_input(selected_hardware_input, from_button)
 
     def add_hardware_input(self, settings, from_button):
+        """
+        Adds the chosen hardware input
+        :param settings: chosen hardware input settings
+        :param from_button: boolean that says whether the settings dialog should open or not
+        :return:
+        """
         input_type = HardwareInputTypes(settings.input_type)
 
         # Adding tab
@@ -166,12 +205,14 @@ class HardwareManagerDialog(ModuleDialog):
         # Connecting buttons
         input_dialog = input_type.settings_dialog(module_manager=self.module_manager, settings=settings, parent=self)
         input_tab.btn_settings.clicked.connect(input_dialog.show)
-        input_tab.btn_remove_hardware.clicked.connect(lambda: self.module_manager.remove_hardware_input(settings.identifier))
+        input_tab.btn_remove_hardware.clicked.connect(
+            lambda: self.module_manager.remove_hardware_input(settings.identifier))
 
         if str(HardwareInputTypes.SENSODRIVE) in settings.identifier:
             input_tab.btn_on.clicked.connect(lambda: self.module_manager.turn_on_sensodrive(settings.identifier))
             input_tab.btn_off.clicked.connect(lambda: self.module_manager.turn_off_sensodrive(settings.identifier))
-            input_tab.btn_clear_error.clicked.connect(lambda: self.module_manager.clear_error_sensodrive(settings.identifier))
+            input_tab.btn_clear_error.clicked.connect(
+                lambda: self.module_manager.clear_error_sensodrive(settings.identifier))
 
         # add to module_dialog widget
         self._hardware_input_tabs_dict[settings.identifier] = input_tab
@@ -183,6 +224,11 @@ class HardwareManagerDialog(ModuleDialog):
             input_dialog.show()
 
     def remove_hardware_input(self, identifier):
+        """
+        Removes the particular hardware input from the dialog and deletes the dialog/hardware tab.
+        :param identifier:
+        :return:
+        """
         # remove input tab
         self._hardware_input_tabs_dict[identifier].setParent(None)
         del self._hardware_input_tabs_dict[identifier]
