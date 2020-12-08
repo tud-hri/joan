@@ -1,4 +1,4 @@
-mk d# JOAN documentation
+# JOAN documentation
 
 Welcome to the JOAN human-automated vehicle interaction simulator documentation! This documentation should get you up and running with JOAN and [CARLA](http://carla.org).
 
@@ -6,10 +6,10 @@ JOAN is a software framework that builds upon CARLA, a simulator made to study a
 
 Among others, we build JOAN to enable you to 
 
-- quickly set up (human-in-the-loop) experiments, 
-- define traffic scenarios, 
-- log data, and 
-- implement haptic driver-automated vehicle interaction.
+- Quickly set up (human-in-the-loop) experiments, 
+- Define traffic scenarios, 
+- Log data, and 
+- Implement haptic driver-automated vehicle interaction.
 
 Have fun!
 

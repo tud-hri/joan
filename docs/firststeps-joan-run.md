@@ -65,7 +65,7 @@ to record:
 [ ![](gifs/joan-run-setup-rundrive.gif)](gifs/joan-run-setup-rundrive.gif)
 
 ### 8. Have a look at your CSV file full of data.
-
+[ ![](gifs/joan-run-lookatdata.gif)](gifs/joan-run-lookatdata.gif)
 
 
 
