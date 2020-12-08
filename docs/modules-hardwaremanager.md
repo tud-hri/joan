@@ -29,7 +29,24 @@ Whenever adding a keyboard it will automatically open up the keyboard settings d
 
 ![keyboard settings](imgs/modules-hardwaremanager-keyboard-settings.PNG)
 
+The settings in the dialog are quite self explanatory, besides maybe the `sensitivities` section. The higher
+a sensitivity the faster it will react to you pushing the appropriate button.
+You can set different keys by pressing the `Set Different Keys` button, the button you can change will then
+light up green, see the GIF below:
+
+![Keyboard settings gif](gifs/modules-hardwaremanager-keyboard-settings.gif)
+
+!!! Note
+    If you try to select the same button twice for a different function you will get notified of doing so. You will be able 
+    continue, however it can lead to erratic behaviour.
+
 ### Joysticks
+The second input you can choose from by default is the `Joystick` input. 
+
+!!! Note 
+    The nomenclature `Joystick` may be a bit confusing  since it does not necessarily need to be an actual joystick as 
+    you would expect from for example flight simulator. A `Joystick` in JOAN constitutes nothing more than a HID 
+    (Human Interface Device). For example, steering wheels by thrustmaster or logitech are also 'Joysticks'.
 
 ### SensoDrives
 
