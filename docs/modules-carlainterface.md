@@ -8,7 +8,7 @@ An example screenshot of the module dialog layout in the `READY` state is shown 
 
 In this section we'll cover 2 main things namely: `using the module` and `creating your own agent to add`.
 
-## Using the module
+## <a name="using_carlainterface"></a>Using the Module
 
 ### Carla Connection
 Whenever you have included CarlaInterface in your modules, JOAN will try to connect to CARLA at start up. If this process fails you will see the following
