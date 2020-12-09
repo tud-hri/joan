@@ -18,9 +18,11 @@ Have fun!
 
 JOAN is developed by members of the [Human-Robot Interaction group](https://delfthapticslab.nl) at Cognitive Robotics of Delft University of Technology.
 
+Below a video of some of the capabilities of JOAN is shown, one of the main software components of the Symbiotic Driving Demonstrator was JOAN :)!ssssssss
+
 ---
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/TLLw48isYJU" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/xcGXE7rI61s" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 --- 
 
