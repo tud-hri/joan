@@ -53,12 +53,53 @@ Whenever adding a Joystick device it will automatically open up the joystick set
 ![Joystick Settings](imgs/modules-hardwaremanager-joystick-settings.PNG)
 
 In here the first thing you do is find your plugged in USB device in the list of `available HID devices`. In this example 
-we have a Xbox Controller connected. 
+we have a Xbox Controller connected and will try and preview the inputs. Also notice that there are presets available for
+both x-box and playstation controllers.
+
+[ ![](gifs/modules-hardwaremanager-joysticksettings.gif) ](gifs/modules-hardwaremanager-joysticksettings.gif)
+
+Now if you have a Logitech Steering Wheel or for example some other sort of HID device which is not an Xbox or Playstation controller
+you will have to check which channel does what. So for example if you turn the steering wheel and see that both value #01 and value #02 
+are changing, you'll have to put the steering to channel 1 and 2 with a double resolution. This will take some trial and error
+but once you have your settings completed you can save them and re-use them. :)
+
+!!! Important
+    There is a bug where if you are using a newer generation X-box one controller it will not work with JOAN, this is due to the fact that
+    windows blocks any input from the controller if it is not used in the active process. And since we use multiprocessing this is 
+    impossible to guarantee. The fix for this is using the `X-Input` library, which is still on our list. For now, it will just not work
+    with the later generation x-box controllers :(.
 
 ### SensoDrives
+This section is mainly important for TUD students who will have access to a SensoDrive wheel. Firstly, when you add a `sensodrive` as input 
+via the `add hardware input` button it will open up the settings dialog:
 
+![SensoDrive Settings](imgs/modules-hardwaremanager-sensodrive-settings.PNG)
+
+The `Endstop Position` mean at which turning of the wheel it will simulate a wall, it will be very hard to go through this point. Note that
+it is not possible to create unsymmetric endstops. 6.28 Radians means it will have an endstop at -360 degrees and 360 degrees.
+The `Torque Limit` settings should just be kept at 200%, which is the maximum, you can lower these values for safety reasons.
+The steering characteristics are something more important, this will determine the way your steering will feel. The default 
+settings are okay to start with.
+
+Now the second thing you will notice when you add a SensoDrive is that the `hardware tab` which is added to the `Hardware Manager Dialog` is a bit
+different than the ones for Joysticks and Keyboards, It contains extra buttons and a `state` label:
+
+![SensoDrive Settings](imgs/modules-hardwaremanager-sensodrive-tab.PNG)
+
+The SensoDrive can in be 1 of three states:
+
+- On (green)
+- Off (orange)
+- Error (red)
+
+Depending on the state of the SensoDrive you can click the buttons. So if its off, you can turn it on, on to off and you can clear the error if it is in 
+error. 
+
+!!! Note 
+    You can use these buttons in both the `ready` and `running` states. For more information on the exact workings of a SensoDrive please
+    take a look at the [SensoDrive Explanation section](other-sensodrive.md)
 
 ## Adding to the Module
 If there is any sort of input device or hardware you'd like to add to JOAN ofcourse you can! The method
 of doing so is greatly similar to the adding of your own agents described in
-[adding your own agent](modules-carlainterface.md#adding_own_agents),please use the same methodology.
+[adding your own agent](modules-carlainterface.md#adding_own_agents), please use the same methodology.

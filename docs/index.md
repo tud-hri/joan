@@ -48,7 +48,7 @@ If you want to build up an understanding of JOAN the sections below are a good p
 * __[Quick start CARLA environment](firststeps-carle-ue4.md)__ - Quickstart on CARLA and the Unreal Editor
 
 ## Using the JOAN modules
-Several modules are included in JOAN by default, the way to use them is described in their seperate sections:
+Several modules are included with JOAN by default, the way to use them is described in their seperate sections:
 
 * __[Data Recorder](modules-datarecorder.md)__ - The data recorder is a module which can record data.
 * __[CARLA Interface](modules-carlainterface.md)__ - The experiment manager is a useful tool for performing experiments

@@ -18,6 +18,9 @@ into that, below the module is shown as it should look like in the `STOPPED` sta
  
  If we now check or uncheck these items we can see what the value was over the last 5 seconds, in the graph on the right. The GIF below
  will nicely show what is happening. Also notice that the legend is updated automatically. 
+
+!!! Note
+    It is not shown in the gif below, but we can also delete and add plots during the `running` state! :)
  
  ![DataPlotter GIF](gifs/modules-dataplotter.gif)
  

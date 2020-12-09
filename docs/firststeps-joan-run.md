@@ -60,11 +60,20 @@ to record:
 [ ![](gifs/joan-run-setup-datarecorder.gif) ](gifs/joan-run-setup-datarecorder.gif)
 
 ### 6. Get Ready
+Next step is to transition to the next state, `ready`, as you will see in the gif below this process takes
+a little while because JOAN has to create and setup all the multiprocesses and will only continue if they are 
+all done. This can take up to 15 seconds or so, so please be patient. You'll see the cursor also being a 
+circle during this time.
+If everything went well you'll notice the state change from the blue `initialized` to the yellow `ready`.
 [ ![](gifs/joan-run-setup-getready.gif) ](gifs/joan-run-setup-getready.gif)
 ### 7. Run and Drive!
+Now the only thing left to do is to click `run` to go to the `running` state and start driving around:
 [ ![](gifs/joan-run-setup-rundrive.gif)](gifs/joan-run-setup-rundrive.gif)
+If you press the `stop` button, JOAN Will handle everything accordingly and properly shut down
+your session. (Also destroyign any spawned objects in CARLA)
 
 ### 8. Have a look at your CSV file full of data.
+Just to check whether we have really recorded something we can look at the generated CSV file:
 [ ![](gifs/joan-run-lookatdata.gif)](gifs/joan-run-lookatdata.gif)
 
 
