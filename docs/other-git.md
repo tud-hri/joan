@@ -10,7 +10,7 @@ Some pros of using `git`:
 - you have a history of all changes you made
 - in case things go wrong, you can easily go back to a previous, working version
 - it is easy to share the latest version of your code with others
-- you can work on your code on multiple computers. For example, you create and test your project at home, push those changes to the online repository, and pull them on your TUDelft computer to do_while_running experiments. No more USB sticks with crappy zip files! 
+- you can work on your code on multiple computers. For example, you create and test your project at home, push those changes to the online repository, and pull them on your TUDelft computer to do experiments. No more USB sticks with crappy zip files! 
 - the TU provides us with a local `git` server, which is great for GDPR-reasons (not cloud-based like `github`).
 
 However, using `git` requires a relatively steep learning curve. We will add some tutorials below. 
@@ -18,7 +18,7 @@ However, using `git` requires a relatively steep learning curve. We will add som
 !!! Warning
     There are some ground rules for using our `git` servers. 
 
-    - DO NOT UPLOAD DATA FILES TO THE REPOSITORY. Seriously, do_while_running not push big files or batches of files to the servers. Use `Surfdrive` instead for big data files. If the data file is of the greatest importance for your project, sure. DO NOT PUSH PARTICIPANT DATA TO THE GITLAB SERVER.
+    - DO NOT UPLOAD DATA FILES TO THE REPOSITORY. Seriously, do not push big files or batches of files to the servers. Use `Surfdrive` instead for big data files. If the data file is of the greatest importance for your project, sure. DO NOT PUSH PARTICIPANT DATA TO THE GITLAB SERVER.
     - Other stuff. We'll keep you posted.
 
 ## Your first git steps
@@ -34,7 +34,7 @@ For now, familiarize yourself with the following `git` things:
 
 In addition, we will provide some instructions on how to retrieve the latest changes of JOAN. 
 
-__merge__: a slightly more advanced action in `git` is merging incoming changes to your current working version. PyCharm can help you to merge files. We are not going to give a full description on how to do_while_running this here. Google is your friend. If you really cannot figure it out, ask your supervisor.
+__merge__: a slightly more advanced action in `git` is merging incoming changes to your current working version. PyCharm can help you to merge files. We are not going to give a full description on how to do this here. Google is your friend. If you really cannot figure it out, ask your supervisor.
 
 ### git tutorials and documentation
 
