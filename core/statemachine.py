@@ -136,7 +136,8 @@ class StateMachine:
                     self._entry_actions[target_state]()
             else:
                 self.state_message = 'State change from ' + str(self.current_state) + ' to ' + str(
-                    target_state) + ' is illegal for ' + str(self._module_enum) + ' module. Will remain in current state'
+                    target_state) + ' is illegal for ' + str(self._module_enum) + ' module. Transitioned to Error.'
+                self.current_state = State.ERROR
                 if error_message:
                     self.state_message += 'Error: ' + error_message
 

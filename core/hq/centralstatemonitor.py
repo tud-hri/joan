@@ -42,7 +42,7 @@ class CentralStateMonitor:
         if new_state == State.ERROR:
             for other_module, other_state_machine in self._all_state_machines.items():
                 if other_module != module:
-                    other_state_machine.request_state_change(State.ERROR)
+                    other_state_machine.request_state_change(State.STOPPED)
 
         if self.combined_state:
             for listener in self._combined_state_change_listeners:
