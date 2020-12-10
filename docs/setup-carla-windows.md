@@ -4,7 +4,7 @@
     If you are a TU Delft student working on one of the TUD computers with CARLA installed, you can skip these instructions. Go to the [setup guide for installing on TUD shared hardware](setup-on-tud-shared-hardware.md) instead.
 
 !!! Note
-    If you want to do_while_running a clean install of CARLA, Python etc. on a TUD PC (if it's a new PC, or when you want to upgrade Python or Unreal Engine), first ask one of the JOAN developer team on Slack or your supervisor. Next, you need to do_while_running all the installations on the `localadmin` account to make everything available for all users.
+    If you want to do a clean install of CARLA, Python etc. on a TUD PC (if it's a new PC, or when you want to upgrade Python or Unreal Engine), first ask one of the JOAN developer team on Slack or your supervisor. Next, you need to do all the installations on the `localadmin` account to make everything available for all users.
     
    
 These instructions are are heavily based on the awesome documentation provided by the CARLA team. If you get stuck somewhere or you want to know more, you could have a look at [their documentation](https://carla.readthedocs.io/en/latest/).
@@ -34,11 +34,11 @@ Please make sure you have the following programs installed before continuing. If
 
 * __[CMake](https://cmake.org/download/)__: A small software package to make the CARLA build can compile C-code. Please follow the link, scroll down and download the "Windows win64-x64 Installer" (there is no need to download the source). When installing select the option "Add CMake to the system `PATH` for all users"
 * __[git](https://git-scm.com/download/win)__: Ensures version control of both the python software and CARLA64-bit Git for Windows Setup. Please follow the link and download the "64-bit Git for Windows Setup.". During installation you can keep all the default settings but especially make sure to select the (default) option "Use Git from the Windows command prompt".
-* __[Make](http://gnuwin32.sourceforge.net/packages/make.htm)__: Generates the executables. Please follow the link and download the "Complete package, except sources" setup. Install it and after installing add the binary folder (C:\Program Files (x86)\GnuWin32\bin by default) the the system `PATH` variable. follow the link in the info box below if you're not sure how to do_while_running this.
+* __[Make](http://gnuwin32.sourceforge.net/packages/make.htm)__: Generates the executables. Please follow the link and download the "Complete package, except sources" setup. Install it and after installing add the binary folder (C:\Program Files (x86)\GnuWin32\bin by default) the the system `PATH` variable. follow the link in the info box below if you're not sure how to do this.
 * __[PowerShell 5.0 or newer](https://www.microsoft.com/en-us/download/details.aspx?id=54616)__: If you have Windows 10, it already includes this. If however you are still using Windows 7, you need to update PowerShell to version 5.0 or newer to be able to use out-of-the-box build scripts provided with carla. Follow steps 1 to 3 [here](https://www.csoonline.com/article/3343048/how-to-install-powershell-5-on-windows-7.html)
 
 !!! Important
-    When you already have installed versions of the above mentioned software please make sure that the bin folders are added to the system's `PATH` variable! If you don't know how to do_while_running so, check ['Adding to System Variables'](https://www.architectryan.com/2018/03/17/add-to-the-path-on-windows-10/){target=_blank}.
+    When you already have installed versions of the above mentioned software please make sure that the bin folders are added to the system's `PATH` variable! If you don't know how to do so, check ['Adding to System Variables'](https://www.architectryan.com/2018/03/17/add-to-the-path-on-windows-10/){target="_blank"}.
 
 ### Visual Studio 2017
 
@@ -70,7 +70,7 @@ Go to __[Unreal Engine](https://www.unrealengine.com/download)__ and download th
 Download Unreal Engine 4.24.x and use the default install settings. Make sure to run it in order to check that everything was properly installed. Also, when right-clicking on `CarlaUE4.uproject` in `C:\carla\Unreal\CarlaUE4`, you should see an option to Generate Visual Studio project files (but don't click it).
 
 !!! Note
-    If you get an error while installing the Unreal engine stating you do_while_running not have permission to install to ... (error code like DP-06), exit the Epic Games installer. Also make sure to complete quit the program (check in the system tray; is the Epic Game icon still there? Right-click &rarr; Exit). Then, run the Epic Game installer as administrator (right-click on Epic Game installer &rarr; Run as administrator). This should enable you to start the install.
+    If you get an error while installing the Unreal engine stating you do not have permission to install to ... (error code like DP-06), exit the Epic Games installer. Also make sure to complete quit the program (check in the system tray; is the Epic Game icon still there? Right-click &rarr; Exit). Then, run the Epic Game installer as administrator (right-click on Epic Game installer &rarr; Run as administrator). This should enable you to start the install.
 
     
 ### Python3 x64
@@ -83,7 +83,7 @@ Install python 3 and __make sure you get the x64 version__ else it will not work
     - make sure to check the 'make available for all users' and 'add to path' boxes.
 
 Having multiple versions of Python installed (even if they're all x64) can cause issues. If you don't really need multiple versions, the best option is to get
-rid of the version(s) you don't really need. If you do_while_running need multiple versions, please make sure that the version you will be using for joan (3.8 if you've
+rid of the version(s) you don't really need. If you do need multiple versions, please make sure that the version you will be using for joan (3.8 if you've
 followed above instructions) is the only version in your system and user `PATH` variable.
 
 To check if we can run Python from the command line. And if the python command links to the correct version of Python, it might not if you have multiple
@@ -138,7 +138,7 @@ JOAN was tested with Carla version 0.9.9, other versions might work but no guara
     git clone https://github.com/carla-simulator/carla --branch 0.9.9
 
 !!! Important 
-    The CARLA build will fail if the path to CARLA contains spaces, so please clone CARLA to a folder without spaces in the path. If in doubt; use `C:\carla`. To do_while_running this navigate to `C:\` in a command prompt and call `git clone` from there, the `carla` folder will be created automatically. 
+    The CARLA build will fail if the path to CARLA contains spaces, so please clone CARLA to a folder without spaces in the path. If in doubt; use `C:\carla`. To do this navigate to `C:\` in a command prompt and call `git clone` from there, the `carla` folder will be created automatically. 
 
 After cloning, verify that you have actually cloned the repository, it should look like this:
 ![alt text](imgs/setup-carla-windows-git-carla-clone.png "cloned repository")
@@ -148,7 +148,7 @@ After cloning, verify that you have actually cloned the repository, it should lo
 To get the latest CARLA assets open up the folder `Util` in the `carla` folder that you have just created in step 1, and open the file `contentversions.txt`, see below:
 ![alt text](imgs/setup-carla-windows-util-screenshot.png "cloned repository")
 
-This text file contains the instructions of what to do_while_running to download the latest assets, for now get the 0.9.9 version. You can also click this
+This text file contains the instructions of what to do to download the latest assets, for now get the 0.9.9 version. You can also click this
 [link](http://carla-assets.s3.amazonaws.com/20200422_ea5179a.tar.gz). Note: this file is almost 10GB. To extract the compressed file, you can use
 [7-zip](https://www.7-zip.org/), for example.
 
@@ -156,7 +156,7 @@ Unpack these assets in `C:\carla\Unreal\CarlaUE4\Content\Carla`. If the director
 
 ### Step 3: Get specific JOAN Assets
 To have a nice car interior which also turns the steering wheel when you turn your physical steering wheel, some extra assets are required. You can download them [here](https://www.dropbox.com/s/yhbf59t7i5iu6rw/JOAN_Assets.zip?dl=0).
-This folder contains the assets which are needed to accomplish this. The file structure is exactly the same as it should be in the carla content folder. Before you do_while_running that please unzip the folder and copy the contents of this folder to:
+This folder contains the assets which are needed to accomplish this. The file structure is exactly the same as it should be in the carla content folder. Before you do that please unzip the folder and copy the contents of this folder to:
 
     C:\carla\Unreal\CarlaUE4\Content
     
@@ -185,12 +185,12 @@ The exact filename depends on the CARLA version and python version (in our case 
 
 ### Step 5: Building and launching CARLA
 
-Essentially the steps here are exactly the same as the PythonAPI build, however as a precaution it is a good idea to do_while_running the following:
+Essentially the steps here are exactly the same as the PythonAPI build, however as a precaution it is a good idea to do the following:
 
 ![alt text](imgs/setup-carla-windows-gen-vis.png "genVisfiles")
 
 !!! Note
-    If you do_while_running not see this option of 'Generate Visual Studio Project Files', you probably have not selected the right Unreal Engine version. Try and run the 'UnrealSelectEngine' version in: `C:\Program Files\Epic Games\UE_4.24\Engine\Binaries\Win64`
+    If you do not see this option of 'Generate Visual Studio Project Files', you probably have not selected the right Unreal Engine version. Try and run the 'UnrealSelectEngine' version in: `C:\Program Files\Epic Games\UE_4.24\Engine\Binaries\Win64`
     If this program is not present it is possible it is located in: `C:\Program Files (x86)\Epic Games\Launcher\Engine\Binaries\Win64`. Just copy the 'UnrealSelectEngine' program to the first mentioned folder. It should now associate the engine with Visual Studio.
      It is possible with newer versions of the unreal engine (unreal 4.24 has versions itself), the UnrealSelectEngine program does not exist, then please look for 'UnrealVersionSelector' it is possible that this one does exist.
 
@@ -234,6 +234,6 @@ Usually when you install a software package the option to add to the `PATH` is a
 
 ![alt text](imgs/setup-carla-windows-python-path.png "Python add to `PATH` example")
 
-However when this is not an available option, for example with make (gnuwin32), you can do_while_running the following:
+However when this is not an available option, for example with make (gnuwin32), you can do the following:
 
 ![alt text](gifs/setup-carla-windows-system-path.gif "Adding to path")
