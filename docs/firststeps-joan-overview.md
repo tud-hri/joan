@@ -47,6 +47,7 @@ depend on the States as shown below:
 
 !!! Important
     Shared Variables have to be pickleable (serializable)!!
+
 ### Signals (maybe)
 
 
