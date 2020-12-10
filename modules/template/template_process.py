@@ -4,7 +4,10 @@ from datetime import datetime
 
 
 class TemplateProcess(ModuleProcess):
-
+    """
+    Example module for JOAN
+    Can also be used as a template for your own modules.
+    """
     def __init__(self, module: JOANModules, time_step_in_ms, news, settings, events, settings_singleton):
         super().__init__(module, time_step_in_ms=time_step_in_ms, news=news, settings=settings, events=events, settings_singleton=settings_singleton)
 

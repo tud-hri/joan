@@ -7,7 +7,6 @@ class TemplateManager(ModuleManager):
     Example module for JOAN
     Can also be used as a template for your own modules.
     """
-
     def __init__(self, news, central_settings, signals, time_step_in_ms=10, parent=None):
         super().__init__(module=JOANModules.TEMPLATE, news=news, central_settings=central_settings, signals=signals, time_step_in_ms=time_step_in_ms, parent=parent)
 
