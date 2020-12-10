@@ -40,6 +40,7 @@ it goes is as depicted below:
 [ ![](imgs/first-steps-settingsvsstates.png) ](imgs/first-steps-settingsvsstates.png)
 
 ### News
+The `News()` class is 
 
 ### Shared Variables
 
