@@ -75,19 +75,14 @@ api can return an error, this is not the sensowheel itself (obviously)
 
 - `Make sure you initialize the Dongle with appropriate USB channel and BAUDRATE`
 
-We will show this in the example later but just to emphasize that you should initialize the dongle.
-
 - `Make sure you read all the messages you send, else a buffer will fill up and you introduce lag`
 
-Self explanatory
 
-## Code Example
-Not all the nitty gritty of the sensodrive has been explained yet but I think its more productive to just show a 
-small program here that communicates with the sensodrive and has functionality for turning it off and on.
+### Actual Code
 
-!!! Note
-    Please read all included comments carefully since they do_while_running explain some crucial information about the sensodrive's functionality,
-    however if you really want to know the exact workings I refer you to the previously stated Software Manual by SensoDrive
-    themselves. [LINK](https://www.dropbox.com/s/zzh1kauwl3apl50/SoftwareManual_SENSO-Wheel_v3p20p0.pdf?dl=0)
-    
-    (UNDER CONSTRUCTION)
+If you are really insisting on getting how the SensoDrive works within JOAN, we'd like to refer you to the specific file 
+
+    joan/modules/hardwaremanager/hardwaremanager_inputs/joansensodrive.py
+
+Within this file the most important class is the `SensoDriveComm` (which is a multi-process) class. In here all the above mentioned tips and tricks are used.
+So please dig your teeth in there!
