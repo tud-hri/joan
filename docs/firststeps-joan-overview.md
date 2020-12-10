@@ -43,6 +43,8 @@ it goes is as depicted below:
 The `Shared Variables` are one of the most essential classes of JOAN. As with the `Settings()` the creation and removal of these classes
 depend on the States as shown below:
 
+[ ![](imgs/first-steps-settingsvssharedvariables.png) ](imgs/first-steps-settingsvssharedvariables.png)
+
 !!! Important
     Shared Variables have to be pickleable (serializable)!!
 ### Signals (maybe)
