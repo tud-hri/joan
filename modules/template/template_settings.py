@@ -5,6 +5,10 @@ from modules.joanmodules import JOANModules
 
 
 class TemplateSettings(ModuleSettings):
+    """
+    Example module for JOAN
+    Can also be used as a template for your own modules.
+    """
     def __init__(self):
         super().__init__(JOANModules.TEMPLATE)
 
