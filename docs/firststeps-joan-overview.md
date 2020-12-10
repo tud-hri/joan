@@ -39,11 +39,13 @@ it goes is as depicted below:
 
 [ ![](imgs/first-steps-settingsvsstates.png) ](imgs/first-steps-settingsvsstates.png)
 
-### News
-The `News()` class is 
-
 ### Shared Variables
 
 ### Signals (maybe)
 
+
+### News
+The `News()` class the red thread throughout all modules, and serves as a sort of message pipe to all modules. It mainly contains the seperate `shared_variables` objects
+of all the modules. This is needed because then we can access our shared variables from all modules. For example if I'd like to calculate something in a seperate
+`calculator` module, and for this I need the input values of a `keyboard` from the `hardwaremanager` I can easily access this info in my new module! 
 
