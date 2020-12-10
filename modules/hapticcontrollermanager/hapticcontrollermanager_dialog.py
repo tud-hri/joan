@@ -32,8 +32,8 @@ class HapticControllerManagerDialog(ModuleDialog):
         for controller_settings in self.module_manager.module_settings.haptic_controllers:
             if self.module_manager.module_settings.haptic_controllers[controller_settings].identifier not in self._haptic_controller_tabs_dict:
                 self.add_haptic_controller(self.module_manager.module_settings.haptic_controllers[controller_settings], False)
-            self._haptic_controller_dialogs_dict[self.module_manager.module_settings.haptic_controllers[controller_settings].identifier].display_values(
-                self.module_manager.module_settings.haptic_controllers[controller_settings])
+                self._haptic_controller_dialogs_dict[self.module_manager.module_settings.haptic_controllers[controller_settings].identifier]._display_values(
+                    self.module_manager.module_settings.haptic_controllers[controller_settings])
 
     def _handle_state_change(self):
         """"
