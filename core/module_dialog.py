@@ -24,8 +24,9 @@ class ModuleDialog(QtWidgets.QDialog):
         self.setWindowTitle(str(module))
 
         # state widget
-        self._state_widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../resources/state_widget.ui"))
-        self.layout().addWidget(self._state_widget)
+        if self.module_manager.use_state_machine_and_process:
+            self._state_widget = uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../resources/state_widget.ui"))
+            self.layout().addWidget(self._state_widget)
 
         # setup module-specific widget
         self.module_widget = uic.loadUi(module.ui_file)
