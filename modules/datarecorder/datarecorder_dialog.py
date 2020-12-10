@@ -48,6 +48,7 @@ class DataRecorderDialog(ModuleDialog):
         self.module_manager.state_machine.add_state_change_listener(self.handle_state_change)
 
         self.module_widget.treeWidget.itemClicked.connect(self.apply_settings)
+        self.module_widget.checkAppendTimestamp.stateChanged.connect(self.apply_settings)
         self.handle_state_change()
 
     def update_trajectory_groupbox(self):
@@ -57,6 +58,7 @@ class DataRecorderDialog(ModuleDialog):
         file_path = self.module_manager.module_settings.path_to_save_file
         self.module_widget.lbl_data_filename.setText(os.path.basename(file_path))
         self.module_widget.lbl_data_directoryname.setText(os.path.dirname(file_path))
+        self.module_widget.checkAppendTimestamp.setChecked(self.module_manager.module_settings.append_timestamp_to_filename)
 
         variables_to_save = self.module_manager.module_settings.variables_to_be_saved
         self._set_all_checked_items(variables_to_save)
@@ -78,8 +80,8 @@ class DataRecorderDialog(ModuleDialog):
         Sets the path to datalog and let users create folders
         When selecting is cancelled, the previous path is used
         """
-        date_string = datetime.datetime.now().strftime('%Y%m%d_%Hh%Mm%Ss')
-        file_path, _ = QtWidgets.QFileDialog.getSaveFileName(self, 'select save destination', date_string, filter='*.csv')
+        filename_suggestion = 'joan_data'
+        file_path, _ = QtWidgets.QFileDialog.getSaveFileName(self, 'select save destination', filename_suggestion, filter='*.csv')
 
         if file_path:
             self.module_widget.lbl_data_filename.setText(os.path.basename(file_path))
@@ -91,6 +93,7 @@ class DataRecorderDialog(ModuleDialog):
             self.module_widget.check_trajectory.setEnabled(False)
             self.module_widget.treeWidget.setEnabled(True)
             self.module_widget.browsePathPushButton.setEnabled(True)
+            self.module_widget.checkAppendTimestamp.setEnabled(True)
             self._fill_tree_widget()
             self.update_dialog()
         elif self.module_manager.state_machine.current_state == State.RUNNING:
@@ -105,11 +108,13 @@ class DataRecorderDialog(ModuleDialog):
             self.module_widget.lbl_message_recorder.setText("not recording")
             self.module_widget.lbl_message_recorder.setStyleSheet('color: orange')
             self.module_widget.browsePathPushButton.setEnabled(True)
+            self.module_widget.checkAppendTimestamp.setEnabled(True)
             self.module_widget.treeWidget.setEnabled(False)
         else:
             self.module_widget.lbl_message_recorder.setText("not recording")
             self.module_widget.lbl_message_recorder.setStyleSheet('color: orange')
             self.module_widget.browsePathPushButton.setEnabled(False)
+            self.module_widget.checkAppendTimestamp.setEnabled(False)
             self.module_widget.treeWidget.setEnabled(False)
             self.module_widget.check_trajectory.setEnabled(False)
 
@@ -120,6 +125,7 @@ class DataRecorderDialog(ModuleDialog):
     def apply_settings(self):
         self.module_manager.module_settings.variables_to_be_saved = self._get_all_checked_items()
         self.module_manager.module_settings.should_record_trajectory = self.module_widget.check_trajectory.isChecked()
+        self.module_manager.module_settings.append_timestamp_to_filename = self.module_widget.checkAppendTimestamp.isChecked()
 
     def _set_all_checked_items(self, variables_to_save):
         self._recursively_set_checked_items(self.module_widget.treeWidget.invisibleRootItem(), [], variables_to_save)

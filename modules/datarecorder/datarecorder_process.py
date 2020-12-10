@@ -1,4 +1,5 @@
 import math
+import datetime
 
 from core.module_process import ModuleProcess
 from modules.datarecorder.datarecorder_settings import DataRecorderSettings
@@ -32,7 +33,11 @@ class DataRecorderProcess(ModuleProcess):
         The super().get_ready() method converts the module_settings back to the appropriate settings object
         """
         self.variables_to_be_saved = self.settings.variables_to_be_saved
-        self.save_path = self.settings.path_to_save_file
+        if self.settings.append_timestamp_to_filename:
+            without_extension = self.settings.path_to_save_file.split('.csv')[0]
+            self.save_path = without_extension + datetime.datetime.now().strftime('_%Y%m%d_%Hh%Mm%Ss') + '.csv'
+        else:
+            self.save_path = self.settings.path_to_save_file
 
         if self.settings.should_record_trajectory:
             self.trajectory_save_path = self.settings.path_to_trajectory_save_file
