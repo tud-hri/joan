@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import QMessageBox, QApplication
 from core.module_manager import ModuleManager
 from modules.carlainterface.carlainterface_agenttypes import AgentTypes
 from modules.joanmodules import JOANModules
+from core.statesenum import State
 
 msg_box = QMessageBox()
 msg_box.setTextFormat(QtCore.Qt.RichText)
@@ -64,6 +65,11 @@ class CarlaInterfaceManager(ModuleManager):
         self.signals = signals
 
         self.connected = self.connect_carla()
+
+        self.state_machine.set_transition_condition(State.INITIALIZED, State.READY, self._check_connection)
+
+    def _check_connection(self):
+        return self.connected
 
     def initialize(self):
         """
