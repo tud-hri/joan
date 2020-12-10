@@ -25,6 +25,8 @@ class HQWindow(QtWidgets.QMainWindow):
 
         self.manager = manager
 
+        self.manager.central_state_monitor.add_combined_state_change_listener(self.update_central_control_buttons_enabled)
+
         # state, state handlers
         self.singleton_status = Status()
 
@@ -150,36 +152,45 @@ class HQWindow(QtWidgets.QMainWindow):
         self._module_cards[name] = widget
         self.handle_state_change(widget, module_manager)
 
+        self.update_central_control_buttons_enabled()
+
     def handle_state_change(self, widget, module_manager):
-        # disable all buttons first then activate the one you can press
         if module_manager.use_state_machine_and_process:
-            self.disable_all_buttons()
             current_state = module_manager.state_machine.current_state
             widget.lbl_state.setText(str(current_state))
             if current_state is State.RUNNING:
                 widget.lbl_state.setStyleSheet("background: lightgreen;")
-                self._main_widget.btn_stop.setEnabled(True)
             elif current_state is State.INITIALIZED:
                 widget.lbl_state.setStyleSheet("background: lightblue;")
-                self._main_widget.btn_get_ready.setEnabled(True)
             elif current_state is State.READY:
                 widget.lbl_state.setStyleSheet("background: yellow;")
-                self._main_widget.btn_start.setEnabled(True)
-            elif current_state is State.ERROR:  # an Error state
+            elif current_state is State.ERROR:
                 widget.lbl_state.setStyleSheet("background: red;")
-                self._main_widget.btn_stop.setEnabled(True)
             elif current_state is State.STOPPED:
                 widget.lbl_state.setStyleSheet("background: orange;")
-                self._main_widget.btn_initialize.setEnabled(True)
         else:
             widget.lbl_state.setText('-')
+
+    def update_central_control_buttons_enabled(self):
+        # disable all buttons first then activate the one you can press
+        self.disable_all_buttons()
+        combined_state = self.manager.central_state_monitor.combined_state
+
+        if combined_state is not State.STOPPED:
+            self._main_widget.btn_stop.setEnabled(True)
+
+        if combined_state is State.INITIALIZED:
+            self._main_widget.btn_get_ready.setEnabled(True)
+        elif combined_state is State.READY:
+            self._main_widget.btn_start.setEnabled(True)
+        elif combined_state is State.STOPPED:
+            self._main_widget.btn_initialize.setEnabled(True)
 
     def disable_all_buttons(self):
         self._main_widget.btn_initialize.setEnabled(False)
         self._main_widget.btn_get_ready.setEnabled(False)
         self._main_widget.btn_start.setEnabled(False)
-        # always be able to go back to stopped
-        self._main_widget.btn_stop.setEnabled(True)
+        self._main_widget.btn_stop.setEnabled(False)
 
     def closeEvent(self, event):
         """
