@@ -4,7 +4,7 @@ from PyQt5 import QtWidgets
 
 from core.module_manager import ModuleManager
 from modules.joanmodules import JOANModules
-from .condition import Condition
+from .condition import Condition, RemovedDictItem
 from .experiment import Experiment
 import copy
 from core.statesenum import State
@@ -83,10 +83,11 @@ class ExperimentManager(ModuleManager):
         :param condition_index: self-explanatory
         :return:
         """
-        for module, base_settings_dict in self.current_experiment.base_settings.items():
-            module_settings_dict = copy.deepcopy(base_settings_dict)
-            self._recursively_copy_dict(condition.diff[module], module_settings_dict)
-            self.singleton_settings.get_settings(module).load_from_dict({str(module): module_settings_dict})
+        condition_settings = copy.deepcopy(self.current_experiment.base_settings)
+        self._recursively_copy_dict(condition.diff, condition_settings)
+
+        for module in self.current_experiment.modules_included:
+            self.singleton_settings.get_settings(module).load_from_dict({str(module): condition_settings[module]})
 
         self.active_condition = condition
         self.active_condition_index = condition_index
@@ -146,6 +147,8 @@ class ExperimentManager(ModuleManager):
                 except KeyError:
                     destination[key] = {}
                     ExperimentManager._recursively_copy_dict(item, destination[key])
+            elif isinstance(item, RemovedDictItem):
+                del destination[key]
             else:
                 if item:  # check to avoid empty source list copying over filled destination list.
                     destination[key] = item

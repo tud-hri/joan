@@ -42,6 +42,10 @@ class HardwareManagerDialog(ModuleDialog):
         Updates the Dialog, this function is called at a rate of 10Hz.
         :return:
         """
+        difference_dict = {k: self._hardware_input_tabs_dict[k] for k in set(self._hardware_input_tabs_dict) - set(self.module_manager.module_settings.inputs)}
+        for key in difference_dict:
+            self.remove_hardware_input(key)
+
         for input_settings in self.module_manager.module_settings.inputs:
             if self.module_manager.module_settings.inputs[input_settings].identifier not in \
                     self._hardware_input_tabs_dict:

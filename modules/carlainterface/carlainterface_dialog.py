@@ -18,7 +18,8 @@ class CarlaInterfaceDialog(ModuleDialog):
 
         # setup dialogs
         self._agent_type_dialog = uic.loadUi(
-            os.path.join(os.path.dirname(os.path.realpath(__file__)), "carlainterface_agentclasses/ui/agent_select_ui.ui"))
+            os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                         "carlainterface_agentclasses/ui/agent_select_ui.ui"))
         self._agent_type_dialog.btns_agent_type_select.accepted.connect(self._agent_selected)
 
         # connect buttons
@@ -45,16 +46,22 @@ class CarlaInterfaceDialog(ModuleDialog):
         self._agent_type_dialog.show()
 
     def _agent_selected(self):
-        selected_agent = self._agent_type_dialog.combo_agent_type.itemData(self._agent_type_dialog.combo_agent_type.currentIndex())
+        selected_agent = self._agent_type_dialog.combo_agent_type.itemData(
+            self._agent_type_dialog.combo_agent_type.currentIndex())
         # module_manager manages adding a new hardware agent
         self.module_manager.add_agent(selected_agent, from_button=True)
 
     def update_dialog(self):
+        difference_dict = {k: self._agent_tabs_dict[k] for k in
+                           set(self._agent_tabs_dict) - set(self.module_manager.module_settings.agents)}
+        for key in difference_dict:
+            self.remove_agent(key)
         for agent_settings in self.module_manager.module_settings.agents:
-            if self.module_manager.module_settings.agents[agent_settings].identifier not in self._agent_tabs_dict:
+            if self.module_manager.module_settings.agents[
+                agent_settings].identifier not in self._agent_tabs_dict:
                 self.add_agent(self.module_manager.module_settings.agents[agent_settings], False)
-
-            self._agent_dialogs_dict[self.module_manager.module_settings.agents[agent_settings].identifier].display_values(
+            self._agent_dialogs_dict[
+                self.module_manager.module_settings.agents[agent_settings].identifier].display_values(
                 self.module_manager.module_settings.agents[agent_settings])
 
     def add_agent(self, settings, from_button):

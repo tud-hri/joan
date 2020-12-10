@@ -10,3 +10,6 @@ class ControllerPlotterSettings(ModuleSettings):
     """
     def __init__(self):
         super().__init__(JOANModules.CONTROLLER_PLOTTER)
+
+    def reset(self):
+        pass

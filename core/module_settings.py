@@ -1,4 +1,5 @@
 import inspect
+import abc
 import json
 from enum import Enum
 
@@ -19,6 +20,14 @@ class ModuleSettings:
         :param module: module type
         """
         self.module = module
+
+    @abc.abstractmethod
+    def reset(self):
+        """
+        This method should reset all settings to their defaults, exactly like in init. This is used when loading settings from a file or dict.
+        :return:
+        """
+        pass
 
     def save_to_file(self, file_path, keys_to_omit=()):
         """
@@ -54,6 +63,7 @@ class ModuleSettings:
         :param loaded_dict: dictionary with loaded settings (keys, values)
         :return:
         """
+        self.reset()
         try:
             self._copy_dict_to_class_dict(loaded_dict[str(self.module)], self.__dict__)
         except KeyError:
@@ -80,6 +90,7 @@ class ModuleSettings:
         :param destination (__dict__): class dict to restore
         :return: None
         """
+        keys_to_remove = []
         for key, value in source.items():
             try:
                 if isinstance(destination[key], Enum):  # reconstruct the enum from its value
@@ -93,6 +104,13 @@ class ModuleSettings:
                 print("WARNING: a saved setting called " + key + " was found to restore in " + str(
                     self.module) + " settings, but this setting did not exist. It was created.")
                 destination[key] = value
+
+        all_keys = list(destination.keys())
+        for key in all_keys:
+            if key not in source.keys():
+                keys_to_remove.append(key)
+                del destination[key]
+
 
     @staticmethod
     def _copy_dict_to_dict(source, destination):

@@ -3,6 +3,11 @@ import copy
 from modules.joanmodules import JOANModules
 
 
+class RemovedDictItem(str):
+    def __new__(cls, **kw):
+        return str.__new__(cls, "__This item was deleted__", **kw)
+
+
 class Condition:
     """
     a condition to be used in experiments. A condition can be set from the current settings of JOAN or from a saved file. The condition consists of a diff dict.
@@ -61,7 +66,9 @@ class Condition:
                     'Conditions can only add or change settings.')
 
         for key, value in base_dict.items():
-            if isinstance(value, dict):
+            if key not in specific_dict.keys():
+                diff_dict[key] = RemovedDictItem()
+            elif isinstance(value, dict):
                 diff_dict[key] = Condition._get_dict_diff(value, specific_dict[key], {})
             elif specific_dict[key] != value:
                 diff_dict[key] = specific_dict[key]

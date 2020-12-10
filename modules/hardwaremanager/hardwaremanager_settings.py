@@ -16,6 +16,9 @@ class HardwareManagerSettings(ModuleSettings):
 
         self.inputs = {}
 
+    def reset(self):
+        self.inputs = {}
+
     def load_from_dict(self, loaded_dict):
         """
         This method overrides the base implementation of loading settings from dicts. This is done because hardware ]
@@ -26,7 +29,9 @@ class HardwareManagerSettings(ModuleSettings):
         :param loaded_dict: (dict) dictionary containing the settings to load
         :return: None
         """
+        self.reset()
         module_settings_to_load = loaded_dict[str(self.module)]
+
         for identifier, settings_dict in module_settings_to_load['inputs'].items():
             if 'Keyboard' in identifier:
                 keyboard_settings = HardwareInputTypes.KEYBOARD.settings()
