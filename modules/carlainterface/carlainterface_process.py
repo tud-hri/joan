@@ -30,22 +30,29 @@ def connect_carla(host, port):
     :param port: portnumber of the host
     :return:
     """
-    vehicle_tags = []
+    vehicle_bp_library = []
+    spawn_point_objects = []
+    world = None
     spawn_points = []
-    client = carla.Client(host, port)  # connecting to server
-    client.set_timeout(2.0)
-    time.sleep(2)
-    world = client.get_world()  # get world object (contains everything)
-    blueprint_library = world.get_blueprint_library()
-    vehicle_bp_library = blueprint_library.filter('vehicle.*')
-    for items in vehicle_bp_library:
-        vehicle_tags.append(items.id[8:])
-    world_map = world.get_map()
-    spawn_point_objects = world_map.get_spawn_points()
-    for item in spawn_point_objects:
-        spawn_points.append("Spawnpoint " + str(spawn_point_objects.index(item)))
+    try:
+        vehicle_tags = []
+        spawn_points = []
+        client = carla.Client(host, port)  # connecting to server
+        client.set_timeout(2.0)
+        time.sleep(2)
+        world = client.get_world()  # get world object (contains everything)
+        blueprint_library = world.get_blueprint_library()
+        vehicle_bp_library = blueprint_library.filter('vehicle.*')
+        for items in vehicle_bp_library:
+            vehicle_tags.append(items.id[8:])
+        world_map = world.get_map()
+        spawn_point_objects = world_map.get_spawn_points()
+        for item in spawn_point_objects:
+            spawn_points.append("Spawnpoint " + str(spawn_point_objects.index(item)))
 
-    return vehicle_bp_library, spawn_point_objects, world, spawn_points
+        return vehicle_bp_library, spawn_point_objects, world, spawn_points
+    except RuntimeError:
+        return vehicle_bp_library, spawn_point_objects, world, spawn_points
 
 
 class CarlaInterfaceProcess(ModuleProcess):
