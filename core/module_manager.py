@@ -7,7 +7,6 @@ from PyQt5.QtWidgets import QApplication
 
 from core.module_exceptionmonitor import ModuleExceptionMonitor
 from core.module_process import ProcessEvents
-from core.settings import Settings
 from core.statemachine import StateMachine
 from core.statesenum import State
 from modules.joanmodules import JOANModules
@@ -16,11 +15,13 @@ from modules.joanmodules import JOANModules
 class ModuleManager(QtCore.QObject):
     loaded_signal = pyqtSignal()
 
-    def __init__(self, module: JOANModules, news, central_settings, signals, time_step_in_ms=100, use_state_machine_and_process=True, parent=None):
+    def __init__(self, module: JOANModules, news, central_settings, signals, central_state_monitor, time_step_in_ms=100, use_state_machine_and_process=True,
+                 parent=None):
         super(QtCore.QObject, self).__init__()
 
         self.module = module
         self.signals = signals
+        self.central_state_monitor = central_state_monitor
 
         self.module_path = os.path.dirname(os.path.abspath(sys.modules[self.__class__.__module__].__file__))
 

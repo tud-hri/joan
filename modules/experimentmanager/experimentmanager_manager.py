@@ -1,3 +1,4 @@
+import copy
 import os
 
 from PyQt5 import QtWidgets
@@ -6,8 +7,6 @@ from core.module_manager import ModuleManager
 from modules.joanmodules import JOANModules
 from .condition import Condition, RemovedDictItem
 from .experiment import Experiment
-import copy
-from core.statesenum import State
 
 
 class ExperimentManager(ModuleManager):
@@ -17,7 +16,7 @@ class ExperimentManager(ModuleManager):
     """
     current_experiment: Experiment
 
-    def __init__(self, news, central_settings, signals, time_step_in_ms=10, parent=None):
+    def __init__(self, news, central_settings, signals, central_state_monitor, time_step_in_ms=10, parent=None):
         """
 
         :param news:
@@ -25,8 +24,8 @@ class ExperimentManager(ModuleManager):
         :param time_step_in_ms:
         :param parent:
         """
-        super().__init__(module=JOANModules.EXPERIMENT_MANAGER, news=news, central_settings=central_settings, signals=signals, time_step_in_ms=time_step_in_ms,
-                         use_state_machine_and_process=False, parent=parent)
+        super().__init__(module=JOANModules.EXPERIMENT_MANAGER, news=news, central_settings=central_settings, signals=signals,
+                         central_state_monitor=central_state_monitor, time_step_in_ms=time_step_in_ms, use_state_machine_and_process=False, parent=parent)
         # create/get default experiment_settings
         self.current_experiment = None
 
@@ -36,6 +35,8 @@ class ExperimentManager(ModuleManager):
 
         self.active_condition = None
         self.active_condition_index = None
+
+        self.module_dialog.update_gui()
 
     def create_new_experiment(self, modules_to_include, save_path):
         """

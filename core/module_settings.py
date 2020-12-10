@@ -105,13 +105,6 @@ class ModuleSettings:
                     self.module) + " settings, but this setting did not exist. It was created.")
                 destination[key] = value
 
-        all_keys = list(destination.keys())
-        for key in all_keys:
-            if key not in source.keys():
-                keys_to_remove.append(key)
-                del destination[key]
-
-
     @staticmethod
     def _copy_dict_to_dict(source, destination):
         """

@@ -8,9 +8,9 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMessageBox, QApplication
 
 from core.module_manager import ModuleManager
+from core.statesenum import State
 from modules.carlainterface.carlainterface_agenttypes import AgentTypes
 from modules.joanmodules import JOANModules
-from core.statesenum import State
 
 msg_box = QMessageBox()
 msg_box.setTextFormat(QtCore.Qt.RichText)
@@ -38,15 +38,15 @@ class CarlaInterfaceManager(ModuleManager):
     CarlaInterfaceManager module, inherits from the ModuleManager
     """
 
-    def __init__(self, news, central_settings, signals, time_step_in_ms=10, parent=None):
+    def __init__(self, news, central_settings, signals, central_state_monitor, time_step_in_ms=10, parent=None):
         """
         :param news: contains all news from all modules
         :param signals: contains all signals
         :param time_step_in_ms: contains interval in ms
         :param parent: neede for Qt windows
         """
-        super().__init__(module=JOANModules.CARLA_INTERFACE, news=news, central_settings=central_settings, signals=signals, time_step_in_ms=time_step_in_ms,
-                         parent=parent)
+        super().__init__(module=JOANModules.CARLA_INTERFACE, news=news, central_settings=central_settings, signals=signals,
+                         central_state_monitor=central_state_monitor, time_step_in_ms=time_step_in_ms, parent=parent)
         self._agent_settingdialogs_dict = {}
         self.central_settings = central_settings
 
@@ -140,7 +140,6 @@ class CarlaInterfaceManager(ModuleManager):
                 spawn_point_objects = self.world_map.get_spawn_points()
                 for item in spawn_point_objects:
                     self.spawn_points.append("Spawnpoint " + str(spawn_point_objects.index(item)))
-
 
                 self.carla_waypoints = self.world_map.generate_waypoints(0.5)
                 QApplication.restoreOverrideCursor()

@@ -1,8 +1,8 @@
 import os
 
 from core.module_manager import ModuleManager
-from modules.joanmodules import JOANModules
 from core.statesenum import State
+from modules.joanmodules import JOANModules
 
 
 class DataRecorderManager(ModuleManager):
@@ -10,15 +10,15 @@ class DataRecorderManager(ModuleManager):
     Manages the datarecorder environment
     """
 
-    def __init__(self, news, central_settings, signals, time_step_in_ms=10, parent=None):
+    def __init__(self, news, central_settings, signals, central_state_monitor, time_step_in_ms=10, parent=None):
         """
         :param news: dict with all the news (shared variable) objects of other modules
         :param signals: dict with signals for inter-module communication
         :param time_step_in_ms:
         :param parent:
         """
-        super().__init__(module=JOANModules.DATA_RECORDER, news=news, central_settings=central_settings, signals=signals, time_step_in_ms=time_step_in_ms,
-                         parent=parent)
+        super().__init__(module=JOANModules.DATA_RECORDER, news=news, central_settings=central_settings, signals=signals,
+                         central_state_monitor=central_state_monitor, time_step_in_ms=time_step_in_ms, parent=parent)
 
         self.state_machine.set_exit_action(State.INITIALIZED, self.module_dialog.apply_settings)
         self.state_machine.set_transition_condition(State.INITIALIZED, State.READY, self._check_save_path)

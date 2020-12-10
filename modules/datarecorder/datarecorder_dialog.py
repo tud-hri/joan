@@ -46,6 +46,8 @@ class DataRecorderDialog(ModuleDialog):
         self.module_widget.browsePathPushButton.clicked.connect(self._browse_datalog_path)
         self.module_widget.btn_trajectory_path.clicked.connect(self._browse_trajectory_path)
         self.module_manager.state_machine.add_state_change_listener(self.handle_state_change)
+
+        self.module_widget.treeWidget.itemClicked.connect(self.apply_settings)
         self.handle_state_change()
 
     def update_trajectory_groupbox(self):

@@ -9,6 +9,7 @@ from colour import Color
 from core.module_dialog import ModuleDialog
 from core.module_manager import ModuleManager
 from modules.joanmodules import JOANModules
+from core.statesenum import State
 
 
 class ControllerPlotterDialog(ModuleDialog):
@@ -401,7 +402,8 @@ class ControllerPlotterDialog(ModuleDialog):
         for keys in self.module_manager.singleton_settings.all_settings_keys:
             self.data[keys] = self.module_manager.news.read_news(keys)
 
-        self.do()
+        if self.module_manager.state_machine.current_state is State.RUNNING:
+            self.do()
 
     def do(self):
         """

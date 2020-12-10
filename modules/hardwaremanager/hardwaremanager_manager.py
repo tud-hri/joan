@@ -22,10 +22,9 @@ class SensoDriveEvents:
 class HardwareManager(ModuleManager):
     """Hardwaremanager keeps track of which inputs are being used with what settings. """
 
-    def __init__(self, news, central_settings, signals, time_step_in_ms=10, parent=None):
+    def __init__(self, news, central_settings, signals, central_state_monitor, time_step_in_ms=10, parent=None):
         super().__init__(module=JOANModules.HARDWARE_MANAGER, news=news, central_settings=central_settings,
-                         signals=signals, time_step_in_ms=time_step_in_ms,
-                         parent=parent)
+                         signals=signals, central_state_monitor=central_state_monitor, time_step_in_ms=time_step_in_ms, parent=parent)
         self._hardware_inputs = {}
         self.hardware_input_type = None
         self.hardware_input_settings = None

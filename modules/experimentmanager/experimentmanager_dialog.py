@@ -23,6 +23,9 @@ class ExperimentManagerDialog(ModuleDialog):
         self.module_widget.btn_edit_experiment.setEnabled(False)
         self.module_widget.autoTransitionCheckBox.toggled.connect(self._update_enabled_buttons)
 
+        self.module_manager.central_state_monitor.add_combined_state_change_listener(self.update_gui)
+        self.module_manager.central_state_monitor.add_combined_state_change_listener(self._check_auto_transition)
+
         self.module_widget.btn_create_experiment.setToolTip("Create a new experiment with the current settings as base settings.")
         self.module_widget.btn_load_experiment.setToolTip("Load an experiment from a JSON file.")
         self.module_widget.btn_edit_experiment.setToolTip("Edit the current experiment.")
@@ -47,22 +50,39 @@ class ExperimentManagerDialog(ModuleDialog):
         if file_path:
             self.module_manager.load_experiment(file_path)
 
+    def _check_auto_transition(self):
+        """
+        An action that is called when the central state machine transitions. It checks if the central state is stopped and then auto transitions when needed.
+        :return:
+        """
+        if self.module_manager.central_state_monitor.combined_state is State.STOPPED and self.module_widget.autoTransitionCheckBox.isChecked():
+            self.transition_to_next_condition()
+
     def _update_enabled_buttons(self):
-        if self.module_manager.state_machine.current_state == State.STOPPED:
-            self.module_widget.btn_edit_experiment.setEnabled(True)
+        if self.module_manager.central_state_monitor.combined_state is State.INITIALIZED:
+            self.module_widget.btn_edit_experiment.setEnabled(bool(self.module_manager.current_experiment))
             self.module_widget.btn_create_experiment.setEnabled(True)
             self.module_widget.btn_load_experiment.setEnabled(True)
+            self.module_widget.btn_activate_condition.setEnabled(False)
+            self.module_widget.btn_transition_to_next.setEnabled(False)
+
+        elif self.module_manager.central_state_monitor.combined_state is State.STOPPED:
+            self.module_widget.btn_load_experiment.setEnabled(True)
+            self.module_widget.btn_edit_experiment.setEnabled(False)
+            self.module_widget.btn_create_experiment.setEnabled(False)
+
             if self.module_manager.current_experiment:
                 if bool(self.module_widget.condition_list.currentItem()):
                     selected_current_is_condition = isinstance(self.module_widget.condition_list.currentItem().data(QtCore.Qt.UserRole), Condition)
                 else:
                     selected_current_is_condition = False
                 self.module_widget.btn_activate_condition.setEnabled(selected_current_is_condition)
-                self.module_widget.btn_transition_to_next.setEnabled(
-                    bool(self.module_manager.current_experiment) and len(
-                        self.module_manager.current_experiment.active_condition_sequence) and self.module_manager.active_condition_index != len(
-                        self.module_manager.current_experiment.active_condition_sequence) - 1)
-
+                self.module_widget.btn_transition_to_next.setEnabled(len(
+                    self.module_manager.current_experiment.active_condition_sequence) and self.module_manager.active_condition_index != len(
+                    self.module_manager.current_experiment.active_condition_sequence) - 1)
+            else:
+                self.module_widget.btn_activate_condition.setEnabled(False)
+                self.module_widget.btn_transition_to_next.setEnabled(False)
         else:
             self.module_widget.btn_edit_experiment.setEnabled(False)
             self.module_widget.btn_create_experiment.setEnabled(False)
@@ -71,16 +91,11 @@ class ExperimentManagerDialog(ModuleDialog):
             self.module_widget.btn_transition_to_next.setEnabled(False)
 
     def update_gui(self):
-        self.module_widget.condition_list.clear()
+        self.update_condition_lists()
+        self._update_enabled_buttons()
 
         if self.module_manager.current_experiment:
             self.module_widget.lbl_loaded_experiment.setText(os.path.abspath(self.module_manager.experiment_save_path).split('\\')[-1])
-
-            for module in self.module_manager.current_experiment.modules_included:
-                module_state_machine = self.module_manager.state_machine
-                module_state_machine.add_state_change_listener(self._update_enabled_buttons)
-
-            self._update_enabled_buttons()
         else:
             self.module_widget.lbl_loaded_experiment.setText('-')
 
@@ -128,12 +143,12 @@ class ExperimentManagerDialog(ModuleDialog):
         """
         self.experiment_dialog = EditExperimentDialog(self.module_manager.current_experiment, self.module_manager.experiment_save_path,
                                                       self.module_manager.singleton_settings, parent=self)
-        self.experiment_dialog.parent()._module_widget.btn_edit_experiment.blockSignals(True)
-        self.experiment_dialog.parent()._module_widget.btn_edit_experiment.setEnabled(False)
+        self.module_widget.btn_edit_experiment.blockSignals(True)
+        self.module_widget.btn_edit_experiment.setEnabled(False)
 
         self.experiment_dialog.accepted.connect(self.update_condition_lists)
-        self.experiment_dialog.finished.connect(lambda: self.experiment_dialog.parent()._module_widget.btn_edit_experiment.blockSignals(False))
-        self.experiment_dialog.finished.connect(lambda: self.experiment_dialog.parent()._module_widget.btn_edit_experiment.setEnabled(True))
+        self.experiment_dialog.finished.connect(lambda: self.module_widget.btn_edit_experiment.blockSignals(False))
+        self.experiment_dialog.finished.connect(lambda: self.module_widget.btn_edit_experiment.setEnabled(True))
 
     def _update_highlighted_condition(self):
         if self.module_manager.current_experiment and self.module_manager.active_condition:
