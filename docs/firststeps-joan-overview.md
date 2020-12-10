@@ -30,8 +30,11 @@ into when, how and why certain communication elements are used.
 
 ### Settings
 As mentioned earlier every module has its own settings. These settings are made whenever a module is loaded and stored in the `Settings()` class. 
-Loading a module means nothing more than including the module in the main.py of the program via the headquarters. So whenever you have a module loaded it will
-have a settings object associated with it. The settings objects are dynamically created and destroyed depending on the state of the module. Basically the way
+Loading a module means nothing more than including the module in the main.py of the program via the headquarters. Whenever you have a module loaded it will
+have a settings object associated with it, this settings object can get filled with different other setting objects, for example the
+hardware manager module has a base settings object for the module: `HardwareManagerSettings()`, but inside this object we have a dictionary
+called `inputs` which contains the setting objects of different types of inputs. For example it can contain a 
+`KeyboardSettings()` object and 2 `JoystickSettings()` objects. These specific settings objects are dynamically created and destroyed depending on the state of the module. Basically the way
 it goes is as depicted below:
 
 [ ![](imgs/first-steps-settingsvsstates.png) ](imgs/first-steps-settingsvsstates.png)
