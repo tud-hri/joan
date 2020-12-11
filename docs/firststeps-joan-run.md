@@ -24,6 +24,11 @@ Or, if you use PyCharm, click the green play button or right-click on `main.py` 
 
 - To start CARLA, open the CarlaUE4, and open your map in CarlaUE4. 
 
+!!! Note
+    If you get a prompt by Unreal that says `Carla was build with a different engine version, would you like to make a copy`, please do not do this. But check whether you have Unreal Engine
+    4.24 as your active version, or open up the `epic games launcher` and in the right top select your engine version (4.24), launch this editor and launch your CarlaEU4 project
+    from there.
+
 - Hit the big play button in CarlaUE4
 
 See below the GIF for step 1 :
