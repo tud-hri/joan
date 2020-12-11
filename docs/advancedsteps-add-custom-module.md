@@ -1,5 +1,5 @@
 # How to use JOAN
-Here we will guide you through how the developers have thought up to use JOAN, this guide will consist of several different not completely related sections therefore it might be easier to just scroll to the part your interested in and read up on it instead of going through from beginning to the end.
+Here we will guide you through how the developers have thought up to use JOAN, this guide will consist of several different not completely related sections, therefore it might be easier to just scroll to the part your interested in and read up on it instead of going through from beginning to the end.
 
 ## Adding your own Modules
 
@@ -17,7 +17,7 @@ Not for all modules all classes are needed however every module will always need
 
 The `dialog` is the graphical user interface of the module and takes all the credit for the rest of the classes hard work. Here you can add your custom user interface file (`.ui`) such that you can control the module and more.
 
-The `module manager` you could see as a glorified accountant of the module, the manager keeps track of which settings, shared variables and will give the cue to start or stop the process.
+The `module manager` can be seen as a glorified accountant of the module, the manager keeps track of settings and shared variables, and will give the cue to start or stop the process.
 
 The `settings` class holds all settable parameters of your module. Examples of such parameters are gains for controllers but also key mappings for hardware interfaces. These settings can be loaded and saved, but can also be stored and altered from experiment designs in the experiment manager.
 
@@ -25,7 +25,7 @@ The `shared variables` class holds all your variables, so this can contain infor
 so if you want to use a variable you'll need to define a getter and setter in here, another thing about the shared variables is that we convert them to `c-types`, this is needed because 
 if you do not use `serializable` or `pickleable` variables you will not be able to share them over multiple processes.
 
-The `process` class, this class is what will actually loop once joan is running, an important thing with the `process` class is that it inherits from 
+The `process` class will actually loop once joan is running, an important thing with the `process` class is that it inherits from 
 `multiprocess.process`, meaning it is a multiprocess. There are all kinds of pros and cons to using multiprocessing which we will not go into here but
 the main advantage is that we can run our modules in parallel rather than sequential.
 
@@ -35,7 +35,7 @@ These classes in your new module inherit from an `manager` , `dialog`, `settings
 By inheriting these base classes, you should be good to go for most applications. It is possible to override all methods but in most cases it should not be necessary to do this to other methods than the examples in the `Template` module.  
 
 !!! Important
-    We set up the classes division with the dialog to keep functionality and UI separately. Please stick to this division. Do not do any calculations or other operations in the dialog that are not necessary there. Only use the dialog to connect to functions in the action class (like starting and stopping the module).
+    We set up the classes division with the dialog to keep functionality and UI separately. Please stick to this division. Do not do any calculations or other operations in the dialog that are not necessary there. Only use the dialog to connect to functions in the process class (like starting and stopping the module).
 
 Of course you can change the modules that come shipped with JOAN to your liking, but perhaps you want to build your own module. Go nuts! We will briefly explain how you can make your own module and include it. 
 
@@ -94,7 +94,7 @@ This one is a lot of work, but be precise! One little forgotten comma will rende
 This class serves multiple purposes. It serves a a unique key to reference a certain module in `dict`s and it provides access to a module's classes.
 This `Enum` also allows for easy iteration over all available JOAN  modules. Once you add your module here, it can be found by JOAN and it can be added to the main menu.
 
-Make sure to provide links to the modules action and widget classes in the Enums action and widget property functions. 
+Make sure to provide links of your modules to the corresponding classes in the Enums property functions. 
 Please also add your module to the \_\_\_str\_\_\_ function. This will return the string representation of your module,
 i.e. the name of your module for titles and save files.
 
@@ -145,7 +145,7 @@ The only purpose of the dialog class is to display the state of your module, and
  you want to see some examples, just browse the existing modules.
  
  Please note that the definition of the Qt objects should be done in the `*.ui` file. To view and alter these files you'll need a program called Qt creator, you
-  can download it [here](https://www.qt.io/offline-installers) (click Qt creator on the left). The `*.ui` file that is linked to, from the JoanModules enum is
+  can download it [here](https://www.qt.io/offline-installers){target="_blank"} (click Qt creator on the left). The `*.ui` file that is linked to, from the JoanModules enum is
    automatically loaded in the dialog.
    
 #### 4.3 The Settings class

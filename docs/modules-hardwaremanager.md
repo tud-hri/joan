@@ -54,20 +54,20 @@ Whenever adding a Joystick device it will automatically open up the joystick set
 
 In here the first thing you do is find your plugged in USB device in the list of `available HID devices`. In this example 
 we have a Xbox Controller connected and will try and preview the inputs. Also notice that there are presets available for
-both x-box and playstation controllers.
+both Xbox and PlayStation controllers.
 
 [ ![](gifs/modules-hardwaremanager-joysticksettings.gif) ](gifs/modules-hardwaremanager-joysticksettings.gif)
 
-Now if you have a Logitech Steering Wheel or for example some other sort of HID device which is not an Xbox or Playstation controller
+Now if you have a Logitech Steering Wheel or for example some other sort of HID device which is not an Xbox or PlayStation controller
 you will have to check which channel does what. So for example if you turn the steering wheel and see that both value #01 and value #02 
 are changing, you'll have to put the steering to channel 1 and 2 with a double resolution. This will take some trial and error
 but once you have your settings completed you can save them and re-use them. :)
 
 !!! Important
-    There is a bug where if you are using a newer generation X-box one controller it will not work with JOAN, this is due to the fact that
+    There is a bug where if you are using a newer generation Xbox one controller it will not work with JOAN, this is due to the fact that
     windows blocks any input from the controller if it is not used in the active process. And since we use multiprocessing this is 
     impossible to guarantee. The fix for this is using the `X-Input` library, which is still on our list. For now, it will just not work
-    with the later generation x-box controllers :(.
+    with the later generation Xbox controllers :(.
 
 ### SensoDrives
 This section is mainly important for TUD students who will have access to a SensoDrive wheel. Firstly, when you add a `sensodrive` as input 

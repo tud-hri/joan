@@ -1,8 +1,8 @@
 # Module: DataPlotter
 The DataPlotter module is quite self explanatory, it plots your data. This is quite an important feature 
 because it is almost the only way to get a bit of insight into what is going on, without having to log all data
-and then plotting it after.There are some things that have to be kept in mind when using this module, but before we go
-into that, below the module is shown as it should look like in the `STOPPED` state:
+and then plotting it after. There are some things that have to be kept in mind when using this module, but before we go
+into that, the module is shown below as it should look like in the `STOPPED` state:
  
 ![DataPlotter](imgs/modules-dataplotter-stopped.PNG)
  

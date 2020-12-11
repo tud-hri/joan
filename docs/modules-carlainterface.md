@@ -60,7 +60,7 @@ The last thing you can choose from is cruise control checkbox and a desired spee
 This section will describe, how you can go about to implement your own agent, so adding an agent other than `Ego Vehicle`. There are some things you need to keep in mind while doing this
 so therefore this section will go a bit more into detail. The steps below do not have to be followed in this particular order, however it might be easy to just follow them in this order anyway.
 
-### Step 1, getting informed
+### Step 1. Getting informed
 Check out the file 
 
     .../modules/carlainterface/carlainterface_agenttypes.py
@@ -76,7 +76,7 @@ the locations and needed files. You'll notice that the `EGO_VEHICLE` has the fol
 6. `agent_tab_ui_file`
 7. `__str__` representation
 
-### Step 2, adding/copying the classes. 
+### Step 2. Adding/copying the classes. 
 We would highly like to recommend by first creating your new agent_type file:
 
     .../modules/carlainterface/carlainterface_agentclasses/<YOUR_AGENT_TYPE_FILE>.py
@@ -92,14 +92,14 @@ If you are a well-versed python programmer you can just look at the ego_vehicle 
 be easier to (for now) copy these classes from the `ego_vehicle.py` file, make it error free and then start making your changes. Once you have these classes implemented
 you have 3/7 elements you need as mentioned earlier.
 
-### Step 3, adding/copying the ui files.
+### Step 3. Adding/copying the ui files.
 
 #### SettingsDialog ui file
 This step might be a bit difficult. We would recommend using some sort of UI generating program to create your dialogs (ui files). 
-We used [QtDesigner](https://build-system.fman.io/qt-designer-download) for JOAN. Just to begin its a good idea to find the `ego_vehicle` ui files, and open
+We used [QtDesigner](https://build-system.fman.io/qt-designer-download){target="_blank"} for JOAN. Just to begin its a good idea to find the `ego_vehicle` ui files, and open
 them in QtDesigner (click for enlargement):
 
-[ ![](imgs/modules-carlainterface-qtdesigner.PNG) ](imgs/modules-carlainterface-qtdesigner.PNG)
+[ ![](imgs/modules-carlainterface-qtdesigner.PNG) ](imgs/modules-carlainterface-qtdesigner.PNG){target="_blank"}
 
 In QtDesigner we can add groupboxes, buttons, labels etc. Anything you need to make a proper settings dialog. In the right top corner you must name your objects
 sensible names so you can easily distinguish what is what. 
@@ -123,7 +123,7 @@ However if you want more functionality in this tab you can add your ownly design
     `.../core/hq`
 
 
-### Step 4, adding/copying shared variables object
+### Step 4. Adding/copying shared variables object
 The sharedvariables object should contrain all the variables you'd like to do something with from the rest of JOAN, so if you want to record or plot anything or just do
 anything with the data at all outside of its own process it should be inside the sharedvariables class.
 
@@ -133,14 +133,14 @@ As you might have noticed this object is not contained within your new `<YOUR_AG
     
 You should add a class containing your desired variables `<YOUR_AGENT_TYPE_NAME>SharedVariables(SharedVariables)` here.
 
-### Step 5, linking it all together from the `carlainterface_agenttypes.py` enum
+### Step 5. Linking it all together from the `carlainterface_agenttypes.py` enum
 Now that you have all needed files its now a matter of adding them to the enum!
 
 !!! Important
     Make sure you link to the correct files in the enum, take the Ego Vehicle as a reference
     
     
-### Step 6, loading from dict update
+### Step 6. Loading from dict update
 If you want to load settings from a json file for your freshly new agent there is one thing you should still do:
 In the following file you should add the same lines but adjusted for your new vehicle:
 
@@ -157,7 +157,7 @@ In the function `load_from_dict` you will need to add:
 
 
 
-### Step 7, This guide wasnt useful at all I tried copying everything and it doesnt work!? What do I do?!
+### Step 7. This guide wasn't useful at all I tried copying everything and it doesn't work!? What do I do?!
 It is highly likely that you forgot a crucial part, you have to be verty meticulous! The error messages you get in the terminal should help you underway
 as to where things went wrong!
 

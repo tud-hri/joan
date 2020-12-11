@@ -3,9 +3,9 @@
 ## Default settings
 
 !!! Important
-Default settings will save you a lot of clicking
+    Default settings will save you a lot of clicking
 
-You can save your default JOAN setup per module as follows. Configure each module as you prefer (e.g. add and configure input devices, agents, etc). Then, click the Settings menu in the module, followed by 'Save settings'. In the save dialog, nam your settings `default_settings`. Next time you start JOAN, each module will try to load the default settings, if they are present.
+You can save your default JOAN setup per module as follows. Configure each module as you prefer (e.g. add and configure input devices, agents, etc). Then, click the Settings menu in the module, followed by 'Save settings'. In the save dialog, name your settings `default_settings`. Next time you start JOAN, each module will try to load the default settings, if they are present.
 
 ## How to work with settings, code your own settings, and more
 All JOAN modules have their own settings object. This is the place where settings are saved. The contents of this settings object can be saved in, and loaded
@@ -20,7 +20,7 @@ automatically stored and loaded from JSON files.
     stored in a custom child objects to Python base type data.
 
 The settings object is usually directly referenced when a setting is needed. If, for example, the settings object holds a limit it is oke to write:
-`if value > self.settings.limit: self.stop()` in your `do()` loop. If you want to prevent the value from being changed while the module is running, you could
+`if value > self.settings.limit: self.stop()` in your `do_while_running()` loop. If you want to prevent the value from being changed while the module is running, you could
 copy the value from the settings object to the module action in the initialize function. In this case please make sure to communicate this clearly to the user.
 
 The saving and loading of settings JSON files is backwards compatible by default since only the values that are present in the JSON file are overwritten. All

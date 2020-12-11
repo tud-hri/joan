@@ -12,8 +12,8 @@ How can I contribute?
 ---
 ## Reporting bugs and issues
 
-If you find bugs or have other issues, use our [Issue tracker][issueslink]. Before creating a new issue, please check if a similar issue has already been reported. Select the 'bug' template in the issue tracker and fill out as much as you can. Only then we can properly address the bug!
-Also check the [documentation][docslink]. <!--and FAQ-->
+If you find bugs or have other issues, use our [Issue tracker][issueslink]{target="_blank"}. Before creating a new issue, please check if a similar issue has already been reported. Select the 'bug' template in the issue tracker and fill out as much as you can. Only then we can properly address the bug!
+Also check the [documentation][docslink]{target="_blank"}. <!--and FAQ-->
 
 [issueslink]: https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan/issues
 [docslink]: http://joan.readthedocs.io
@@ -21,7 +21,7 @@ Also check the [documentation][docslink]. <!--and FAQ-->
 ---
 ## Feature requests
 
-Check the [issue tracker list][issueslink] and filter on the label `feature` to check if a similar feature has been already requested. If so, please add information in the already existing feature if something is missing. Please submit your request as a new issue and select the 'feature request' template in the issue tracker.
+Check the [issue tracker list][issueslink]{target="_blank"} and filter on the label `feature` to check if a similar feature has been already requested. If so, please add information in the already existing feature if something is missing. Please submit your request as a new issue and select the 'feature request' template in the issue tracker.
 
 [issueslink]: https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan/issues
 
@@ -30,7 +30,7 @@ Check the [issue tracker list][issueslink] and filter on the label `feature` to 
 
 Everyone can agree that good documentation is awesome to have. If you feel something is missing in the documentation, please don't hesitate to open an issue to let us know. Even better, if you think you can improve it yourself, it would be a great contribution!
 
-We build our documentation with [MkDocs](http://www.mkdocs.org/) based on the Markdown files inside the `docs` folder. You can either directly modify them on the GitLab repository or locally on your machine.
+We build our documentation with [MkDocs](http://www.mkdocs.org/){target="_blank"} based on the Markdown files inside the `docs` folder. You can either directly modify them on the GitLab repository or locally on your machine.
 
 Once you are done with your changes, please submit a pull-request.
 
@@ -48,7 +48,7 @@ Once you are done with your changes, please submit a pull-request.
 
 The code is never done, so if you want to help out, awesome!
 
-Before starting hands-on on coding, please check out our [issue board][issueboard] to see if we are already working on that particular issue. In case of doubt or to discuss how to proceed, please contact one of us.
+Before starting hands-on on coding, please check out our [issue board][issueboard]{target="_blank"} to see if we are already working on that particular issue. In case of doubt or to discuss how to proceed, please contact one of us.
 
 [issueboard]: https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan/issues
 

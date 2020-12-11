@@ -38,14 +38,14 @@ __merge__: a slightly more advanced action in `git` is merging incoming changes 
 
 ### git tutorials and documentation
 
-The official `git` [website](https://git-scm.com/doc) has a ton of useful information about `git` and how to use it. Scroll through the documentation section for more information and videos. However, the most important things you need to know are:
+The official `git` [website](https://git-scm.com/doc){target="_blank"} has a ton of useful information about `git` and how to use it. Scroll through the documentation section for more information and videos. However, the most important things you need to know are:
 
 - Make your changes to the code and test if they work.
 - Once you know your code works, commit the changes using git. 
 - Pull any new changes in the online repository to your computer. Check if no conflicts in files exist.
 - Then, push those commits (could be one or multiple commits) to the online repository
 
-There are a lot of useful git tutorials circulating on the internet, both in written and video form. A useful video tutorial can be found [here on YouTube](https://www.youtube.com/watch?v=xAAmje1H9YM&list=PLeo1K3hjS3usJuxZZUBdjAcilgfQHkRzW). 
+There are a lot of useful git tutorials circulating on the internet, both in written and video form. A useful video tutorial can be found [here on YouTube](https://www.youtube.com/watch?v=xAAmje1H9YM&list=PLeo1K3hjS3usJuxZZUBdjAcilgfQHkRzW){target="_blank"}. 
 It explains the use of git in 10 video's, for JOAN you can ignore the part on GitHub since we don't use GitHub. This tutorial series uses git terminal commands for all actions, this will help you understand the git basics. 
 PyCharm will allow you to use the git functionality directly, see the GIF's below. 
 
