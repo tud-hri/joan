@@ -5,28 +5,44 @@ Here we will guide you through how the developers have thought up to use JOAN, t
 
 As we have explained earlier, JOAN consists of modules, basically building blocks that have their own function in JOAN. The core idea of JOAN is that everyone can create and add their own modules.
 
-A module consists of two or three classes: 
+A module typically consists five classes: 
 
-- an `action` class
-- a `dialog` class
-- optionally, a `settings` class
+- a `module manager` class (essential)
+- a `dialog` class (essential)
+- a `shared variables class`
+- a `process` class 
+- a `settings` class 
 
-The `action` class takes care of most of the module's functionality in the background, it does all the hard work. It executes the `do` function every timer time step, it handles any JOAN state changes and communicates with other modules through JOAN `News` channels. 
+Not for all modules all classes are needed however every module will always need a `dialog` and a `module manager`.
 
-The `dialog` is the graphical user interface of the module and takes all the credit for the `action`'s hard work. Here you can add your custom user interface file (`.ui`) such that you can control the module and more.
+The `dialog` is the graphical user interface of the module and takes all the credit for the rest of the classes hard work. Here you can add your custom user interface file (`.ui`) such that you can control the module and more.
 
-The `settings` class is optional, and holds all settable parameters of your module. Examples of such parameters are gains for controllers but also key mappings for hardware interfaces. These settings can be loaded and saved, but can also be stored and altered from experiment designs in the experiment manager.
+The `module manager` you could see as a glorified accountant of the module, the manager keeps track of which settings, shared variables and will give the cue to start or stop the process.
 
-These classes in your new module inherit from an `action`, `dialog` and `settings` base class (if you're not sure what inheriting means, or you want to know more about it, check [this page](https://www.python-course.eu/python3_inheritance.php){target="_blank"} or [wikipedia](https://en.wikipedia.org/wiki/Inheritance_(object-oriented_programming) ){target="_blank"}). You can find these base classes in the `process` folder, if you want to have a look. The base classes are designed to handle all basic functionality a module needs to function in Joan. 
+The `settings` class holds all settable parameters of your module. Examples of such parameters are gains for controllers but also key mappings for hardware interfaces. These settings can be loaded and saved, but can also be stored and altered from experiment designs in the experiment manager.
+
+The `shared variables` class holds all your variables, so this can contain information from your simulation, or the actual inputs from your hardware. The class itself is basically just a collection of getters and setters of these particular variables,
+so if you want to use a variable you'll need to define a getter and setter in here, another thing about the shared variables is that we convert them to `c-types`, this is needed because 
+if you do not use `serializable` or `pickleable` variables you will not be able to share them over multiple processes.
+
+The `process` class, this class is what will actually loop once joan is running, an important thing with the `process` class is that it inherits from 
+`multiprocess.process`, meaning it is a multiprocess. There are all kinds of pros and cons to using multiprocessing which we will not go into here but
+the main advantage is that we can run our modules in parallel rather than sequential.
+
+
+
+These classes in your new module inherit from an `manager` , `dialog`, `settings`, `sharedvariables` and `process` base class (if you're not sure what inheriting means, or you want to know more about it, check [this page](https://www.python-course.eu/python3_inheritance.php){target="_blank"} or [wikipedia](https://en.wikipedia.org/wiki/Inheritance_(object-oriented_programming) ){target="_blank"}). You can find these base classes in the `process` folder, if you want to have a look. The base classes are designed to handle all basic functionality a module needs to function in Joan. 
 By inheriting these base classes, you should be good to go for most applications. It is possible to override all methods but in most cases it should not be necessary to do this to other methods than the examples in the `Template` module.  
 
 !!! Important
-    We set up the action and dialog division to keep functionality and UI separately. Please stick to this division. Do not do any calculations or other operations in the dialog that are not necessary there. Only use the dialog to connect to functions in the action class (like starting and stopping the module).
+    We set up the classes division with the dialog to keep functionality and UI separately. Please stick to this division. Do not do any calculations or other operations in the dialog that are not necessary there. Only use the dialog to connect to functions in the action class (like starting and stopping the module).
 
-Of course you can change the modules that come shipped with JOAN to your liking, but perhaps you want to build your own module, for example to plot data in real-time. Go nuts! We will briefly explain how you can make your own module and include it. 
+Of course you can change the modules that come shipped with JOAN to your liking, but perhaps you want to build your own module. Go nuts! We will briefly explain how you can make your own module and include it. 
 
 !!! Important
-    We included a template module that you can use to create your own modules. Check it out and see if you understand it.
+    We included a template module that you can use to create your own modules. Check it out and see if you understand it, this is a very important step since we will not go 
+    into all the nitty gritty of the code down below. Rather make sure you have the template module next to this as you read it, read the comments in there 
+    and make sure you understand what is going on! This will make your life of adding a module significantly easier!
 
 ### Creating your own module
 
