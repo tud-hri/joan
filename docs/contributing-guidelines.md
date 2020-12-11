@@ -64,7 +64,7 @@ Try to be as descriptive as possible when filling the pull-request description. 
 features.
 
 <!-- Please note that there are some checks that the new code is required to pass
-before we can do_while_running the merge. The checks are automatically run by the continuous
+before we can do the merge. The checks are automatically run by the continuous
 integration system, you will see a green tick mark if all the checks succeeded.
 If you see a red mark, please correct your code accordingly. -->
 
