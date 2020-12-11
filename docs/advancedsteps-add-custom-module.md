@@ -132,11 +132,11 @@ What follows is a summary on what you should do in which class. Also have a look
 
 #### 4.1 The Manager class
 
-All calculations for your module should be done in the action class. The action class has 4 methods you should override. As explained above, the `do` method is 
-called every time step and is the place to do you main calculations. The `initialze` method is called once when the method transitions to the initialized state. 
-This is the place to do calculations that are only needed before starting the module. Like copying settings or opening a new file to write data to. The `start`
- and `stop` methods start and stop the loops. If you want to override them (to do something just before you start or just before you stop) please make sure
-  to call the super method when you're done. This is what actually starts and stops the timers.
+As mentioned earlier `Manager` class acts as a kind of bookkeeping mechanism for the module, its main purpose is to keep track of what classes should be created
+and deleted. Furthermore the module's `Statemachine` is included in the module manager, this means you can set your state transition conditions for that particular
+module in here as well as link state change handling to a particular function. More info about the workings of the statemachine can be found in the [statemchine documentation](advancedsteps-state-machine.md)
+One last thing that is important to mention regarding the `Manager` class is that has access to the `News`, which means that via the manager you can also
+access other modules `Shared Variables` if they are available.
 
 #### 4.2 The Dialog class
 
@@ -166,5 +166,6 @@ When adding attributes to your settings class, think about what should be a sett
     on every boot.
 
 #### 4.4 The Shared Variables Class
+
 
 #### 4.5 The Process Class
