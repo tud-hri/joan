@@ -49,6 +49,10 @@ depend on the States as shown below:
     Shared Variables have to be pickleable (serializable)!!
 
 ### Signals
+The Signals class in the Default JOAN is a bit obscure, so far it is only used in the `activate condition` function in the 
+experiment manager. This triggers signals so that whenever a condition is activated it updates all dialogs of all included modules.
+The Signals class uses the built in signals & slots functionality from PyQt, so for a deeper understanding please refer to [this 
+tutorial on signals and slots](https://www.tutorialspoint.com/pyqt/pyqt_signals_and_slots.htm)
 
 
 ### News
