@@ -44,7 +44,7 @@ Of course you can change the modules that come shipped with JOAN to your liking,
     into all the nitty gritty of the code down below. Rather make sure you have the template module next to this as you read it, read the comments in there 
     and make sure you understand what is going on! This will make your life of adding a module significantly easier!
 
-### Creating your own module
+## Creating your own module
 
 Creating your module consists of the following steps:
 
@@ -71,7 +71,7 @@ __Example of a good name__
 
 - hapticpedalcontroller
    
-#### 1. Copy the template and rename the module
+### 1. Copy the template and rename the module
 
 Copy the `template` folder in the modules folder.
 
@@ -79,27 +79,20 @@ Copy the `template` folder in the modules folder.
 (i.e. don't use a \_ or \-). Hence, we rename `template` to `joaniscool`
 
 !!! Tip
-    PyCharm has a build in renaming functionality that automatically renames all occurrences in your project. You can use it by selecting a variable, class or method and pressing `shift + F6`.
+    PyCharm has a build in renaming functionality that automatically renames all occurrences in your project. You can use it by selecting a variable, class or method and pressing `shift + F6`, you can also rename
+    files this way by right clicking and going to the `refactor` tab.
 
-So, if you are using PyCharm:
+An example, if you are using PyCharm:
 
-- In your new `joaniscool` folder open `action` and then open the file `templateaction.py`. Put your cursor on TemplateAction (behind class) and press `shift+F6`. Now rename this class to JoanIsCoolAction, make sure the checkbox `rename containing file` is checked, and click refactor.  
-- Open `states.py` and use `shift+F6` to rename the class `TemplateStates` to `JoanIsCoolStates` and the variable `TEMPLATE` to `JOAN_IS_COOL`. (Notice that with the last oke, you've changed the whole list of variables at once. How cool is that!)
-- Open  `templatedialog.py` in `joaniscool\dialog` and use `shift+F6` to rename the class `TemplateDialog` to `JoanIsCoolDialog`
-- Finally rename the file `templatewidget.ui` to `joaniscoolwidget.ui`, if you do this using PyCharm please deselect the checkbox `search for references`. PyCharm can not distinguish between this file and the original `templatewidget.ui` because it is referenced to from strings, so it will mess up the old references.
+- In your new `joaniscool` folder open `template_manager.py`. Put your cursor on TemplateManager (behind class) and press `shift+F6`. Now rename this class to JoanIsCoolManager, make sure the checkbox `rename containing file` is checked, and click refactor.  
 
-If not, you'll have to do it manually: 
+If not, you'll have to do it manually. Note that you'll have to do this for all classes and files that you copied from the template.
 
-- go into your folder, go to the `action` folder, and rename `templateaction.py` to `joaniscoolaction.py`
-- open `joaniscoolaction.py` and replace all 'Template' with 'JoanIsCool' (note, this is camelCase; words are capitalized in class names). You can use a replace function in PyCharm, but make sure to check that the case is matched. 
-- do the same for 'TEMPLATE', replace it with your _capitalized_ module name.
-- open the file `states.py` and perform the same two steps.
-- now, go into the `dialog` folder, and rename `templatedialog.py` to `joaniscooldialog.py` and `templatewidget.ui` to `joaniscoolwidget.ui`. If you do this using PyCharm please deselect the checkbox `search for references`. PyCharm can not distinguish between this file and the original `templatewidget.ui` because it is referenced to from strings, so it will mess up the old references.
-- open `joaniscooldialog.py` and replace all 'Template' and 'TEMPLATE', as we did in its `action` partner.
+### 2. Add the new module to JOANModules.py
 
-#### 2. Add the new module to JOANModules.py
-
-This one is a lot of work, but be precise! One little forgotten comma will render everything unfunctional. In the `modules` folder you can find a file named `joanmodules.py`. This contains an `Enum` class which holds all available modules. This class serves multiple purposes. It serves a a unique key to reference a certain module in `dict`s. And it provides access to a module's `dialog` and `action` classes. This `Enum` also allows for easy iteration over all available JOAN  modules. Once you add your module here, it can be found by JOAN and it can be added to the main menu.
+This one is a lot of work, but be precise! One little forgotten comma will render everything unfunctional. In the `modules` folder you can find a file named `joanmodules.py`. This contains an `Enum` class which holds all available modules. 
+This class serves multiple purposes. It serves a a unique key to reference a certain module in `dict`s and it provides access to a module's classes.
+This `Enum` also allows for easy iteration over all available JOAN  modules. Once you add your module here, it can be found by JOAN and it can be added to the main menu.
 
 Make sure to provide links to the modules action and widget classes in the Enums action and widget property functions. 
 Please also add your module to the \_\_\_str\_\_\_ function. This will return the string representation of your module,
@@ -109,19 +102,19 @@ i.e. the name of your module for titles and save files.
 - add your new module to everything. Basically, copy every line with 'template' in it, paste it on the next line, and replace every 'template' in that new line with your module name
 - check, double check and triple check if you copied every line with template in it.
 
-#### 3. Add the module to JOANHQ
+### 3. Add the module to JOANHQ
 This step is easy! Add your new module to JOANHQ in `main.py`, this instantiates your module:
 
-    JOANHQACTION.add_module(JOANMODULES.JOANISCOOL, millis=200)
+    JOANHQACTION.add_module(JOANMODULES.JOANISCOOL, time_step_in_ms=200)
 
-Note that the parameter `millis=200` sets the timer interval in milliseconds.
+Note that the parameter `time_step_in_ms=200` sets the timer interval in milliseconds.
 
 Run JOAN; if everything works (you'll see error tracebacks in the terminal if it does not), you will see your own module in the JOANHQ module list!
 
 !!! Note
     Make sure to commit and push your changes every once in a while, especially after you copied the template module, renamed it, and added it to JOANHQ. This way you have a point in time in which your module is clean. 
 
-#### 4. Start coding in your module
+### 4. Start coding in your module
 
  Now you can start adding your own code. For our example, for instance, we would add a line with 
 
@@ -129,11 +122,15 @@ Run JOAN; if everything works (you'll see error tracebacks in the terminal if it
 print("JOAN is the best")
 ```
 
-in the `do` function of your JoanIsCoolAction class. Once you hit the start button of the JoanIsCool module, it will start printing this message at a frequency of 5 Hz.
+in the `do_while_running` function of your JoanIsCoolProcess class. Once you transition to the running state from headquarters, it will start printing this message at a frequency of 5 Hz.
 
 What follows is a summary on what you should do in which class. Also have a look at the comments in the Template module, they also indicate what to do where.
 
-#### 4.1 the action class
+!!! Important
+    These little sections should really be seen as summaries and as a means to find the appropriate references, not as a full fledged explanation of the classes. For 
+    full understanding please also take a look at the several links included in these sections.
+
+#### 4.1 The Manager class
 
 All calculations for your module should be done in the action class. The action class has 4 methods you should override. As explained above, the `do` method is 
 called every time step and is the place to do you main calculations. The `initialze` method is called once when the method transitions to the initialized state. 
@@ -141,7 +138,7 @@ This is the place to do calculations that are only needed before starting the mo
  and `stop` methods start and stop the loops. If you want to override them (to do something just before you start or just before you stop) please make sure
   to call the super method when you're done. This is what actually starts and stops the timers.
 
-#### 4.2 the dialog class
+#### 4.2 The Dialog class
 
 The only purpose of the dialog class is to display the state of your module, and to let the user make changes to it. No calculations should be done here
 . Other than this disclaimer; there is no recipe for what you should do here and how you should do it since all modules and their widgets differ too much. If
@@ -151,7 +148,7 @@ The only purpose of the dialog class is to display the state of your module, and
   can download it [here](https://www.qt.io/offline-installers) (click Qt creator on the left). The `*.ui` file that is linked to, from the JoanModules enum is
    automatically loaded in the dialog.
    
-#### 4.3 the settings class
+#### 4.3 The Settings class
 
 All attributes of the settings class can be saved or loaded from and to JSON files. This is not only used to save and load settings for your module, but also
  by the experiment manager to save and load sets of options for all modules. You can save and load settings by respectively calling the `save_to_file` and
@@ -167,3 +164,7 @@ When adding attributes to your settings class, think about what should be a sett
   In the example of the hardware connection; an address or id number for the piece of hardware which uniquely defines the connection object would be
    a good setting to save. This will not change on every startup but will vary between users. From this setting, the connection object can be reconstructed
     on every boot.
+
+#### 4.4 The Shared Variables Class
+
+#### 4.5 The Process Class
