@@ -131,7 +131,7 @@ What follows is a summary on what happens in what class. Also have a look at the
 
 As mentioned earlier `Manager` class acts as a kind of bookkeeping mechanism for the module, its main purpose is to keep track of what classes should be created
 and deleted. Furthermore the module's `Statemachine` is included in the module manager, this means you can set your state transition conditions for that particular
-module in here as well as link state change handling to a particular function. More info about the workings of the statemachine can be found in the [statemchine documentation](advancedsteps-state-machine.md)
+module in here as well as link state change handling to a particular function. More info about the workings of the statemachine can be found in the [statemachine documentation](advancedsteps-state-machine.md)
 One last thing that is important to mention regarding the `Manager` class is that has access to the `News`, which means that via the manager you can also
 access other modules `Shared Variables` if they are available.
 
