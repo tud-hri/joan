@@ -16,6 +16,15 @@ as it says in the name already JOAN has a `Modular structure`. It is important t
 JOAN Module, it is summarized in the image below:
 [ ![](imgs/first-steps-module.png) ](imgs/first-steps-module.png){target="_blank"}
 
+The descriptions in the above image are of course a very short summary, for a deeper understanding of what each element
+does, and a bit more context please refer to the following explanations:
+
+- [Module Manager](advancedsteps-add-custom-module.md#manager_class){target="_blank"}
+- [Module Dialog](advancedsteps-add-custom-module.md#dialog_class){target="_blank"}
+- [Module Settings](advancedsteps-add-custom-module.md#settings_class){target="_blank"}
+- [Module Shared Variables](advancedsteps-add-custom-module.md#shared_variables_class){target="_blank"}
+- [Module Process](advancedsteps-add-custom-module.md#process_class){target="_blank"}
+
 ## Data flow & Communication
 Because of multiprocessing and the modular structure of JOAN the dataflow can be a bit difficult to grasp. In this
 section we try to shed some light on these topics. A graphic overview is given in the image below, this image is an arbitrary

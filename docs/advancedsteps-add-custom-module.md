@@ -21,13 +21,10 @@ The `module manager` can be seen as a glorified accountant of the module, the ma
 
 The `settings` class holds all settable parameters of your module. Examples of such parameters are gains for controllers but also key mappings for hardware interfaces. These settings can be loaded and saved, but can also be stored and altered from experiment designs in the experiment manager.
 
-The `shared variables` class holds all your variables, so this can contain information from your simulation, or the actual inputs from your hardware. The class itself is basically just a collection of getters and setters of these particular variables,
-so if you want to use a variable you'll need to define a getter and setter in here, another thing about the shared variables is that we convert them to `c-types`, this is needed because 
-if you do not use `serializable` or `pickleable` variables you will not be able to share them over multiple processes.
+The `shared variables` class holds all your variables, so this can contain information from your simulation, or the actual inputs from your hardware.
 
 The `process` class will actually loop once joan is running, an important thing with the `process` class is that it inherits from 
-`multiprocess.process`, meaning it is a multiprocess. There are all kinds of pros and cons to using multiprocessing which we will not go into here but
-the main advantage is that we can run our modules in parallel rather than sequential.
+`multiprocess.process`, meaning it is a multiprocess. 
 
 
 
@@ -124,13 +121,13 @@ print("JOAN is the best")
 
 in the `do_while_running` function of your JoanIsCoolProcess class. Once you transition to the running state from headquarters, it will start printing this message at a frequency of 5 Hz.
 
-What follows is a summary on what you should do in which class. Also have a look at the comments in the Template module, they also indicate what to do where.
+What follows is a summary on what happens in what class. Also have a look at the comments in the Template module, they also indicate what to do where.
 
 !!! Important
     These little sections should really be seen as summaries and as a means to find the appropriate references, not as a full fledged explanation of the classes. For 
     full understanding please also take a look at the several links included in these sections.
 
-#### 4.1 The Manager class
+#### <a name="manager_class"></a>4.1 The Manager class
 
 As mentioned earlier `Manager` class acts as a kind of bookkeeping mechanism for the module, its main purpose is to keep track of what classes should be created
 and deleted. Furthermore the module's `Statemachine` is included in the module manager, this means you can set your state transition conditions for that particular
@@ -138,7 +135,7 @@ module in here as well as link state change handling to a particular function. M
 One last thing that is important to mention regarding the `Manager` class is that has access to the `News`, which means that via the manager you can also
 access other modules `Shared Variables` if they are available.
 
-#### 4.2 The Dialog class
+#### <a name="dialog_class"></a>4.2 The Dialog class
 
 The only purpose of the dialog class is to display the state of your module, and to let the user make changes to it. No calculations should be done here
 . Other than this disclaimer; there is no recipe for what you should do here and how you should do it since all modules and their widgets differ too much. If
@@ -148,7 +145,7 @@ The only purpose of the dialog class is to display the state of your module, and
   can download it [here](https://www.qt.io/offline-installers){target="_blank"} (click Qt creator on the left). The `*.ui` file that is linked to, from the JoanModules enum is
    automatically loaded in the dialog.
    
-#### 4.3 The Settings class
+#### <a name="settings_class"></a>4.3 The Settings class
 
 All attributes of the settings class can be saved or loaded from and to JSON files. This is not only used to save and load settings for your module, but also
  by the experiment manager to save and load sets of options for all modules. You can save and load settings by respectively calling the `save_to_file` and
@@ -165,7 +162,51 @@ When adding attributes to your settings class, think about what should be a sett
    a good setting to save. This will not change on every startup but will vary between users. From this setting, the connection object can be reconstructed
     on every boot.
 
-#### 4.4 The Shared Variables Class
+#### <a name="shared_variables_class"></a>4.4 The Shared Variables Class
 
+ The class itself is basically just a collection of getters and setters of the particular variables that have been defined. If you want to use a variable you'll need to define a getter and setter in here, another thing about the shared variables is that we convert them to `c-types`, this is needed because 
+if you do not use `serializable` or `pickleable` variables you will not be able to share them over multiple processes. You can find more on 
+`Python object serialization` [here](https://docs.python.org/3/library/pickle.html?highlight=pickle#module-pickle){target="_blank"}. The last thing we'd
+like to say about the Shared Variable class is quite essential:
 
-#### 4.5 The Process Class
+Whenever you want to do something with a Shared Variable value in a module do the following:
+
+1. First create a copy of the variable to a newly defined variable:
+   
+        my_new_variable = self.shared_variables.my_variable
+   
+2. Then do whatever you want to calculate with this newly created `my_new_variable` for example:
+        
+        my_new_variable = (my_new_variable * my_new_variable) * 2
+        
+   
+3. As a last step (if you've changed something to the variable) set the actual shared variable again so:
+   
+        self.shared_variables.my_variable = my_new_variable
+
+!!! Important
+    The above is very important because this makes sure we only get and set the actual shared variable once. If we keep using the actual shared variable
+    this means we have to access this variable every single time, and whenever you access this variable it gets `locked` for a tiny amount of time.
+    This usually isnt a problem but if we start doing this every loop and a lot of times per loop, we could get into trouble due to the variable 
+    being locked. On top of that it could happen that somewhere else a module needs the same variable, and we cannot guarantee that it is not one of the
+    intermediate value assignments that is being used there. If we just set and get it once, it is either the value at the beginning of the loop or the one 
+    at the end, this makes things a lot easier to grasp.
+
+#### <a name="process_class"></a>4.5 The Process class
+
+The last thing that `almost` every module contains is a Process Class, it says `almost` because a seperate process is not always necessary, for example
+the `DataPloter` module does not run its own process. However a Process class is nearly a must when you want to do some (heavy) computational stuff for exapmle making 
+a model predictive controller. You might ask why this should be run in its own process, the main advantage is that we can run our modules in parallel rather than sequentially.
+Just to be a bit more clear lets think of an example, you might have 3 modules running; `Hardware Manager`, `Haptic Controller Manager` and `Carla Interface`. 
+Imagine that you have made a beautiful controller that does some heavy calculations but outputs the best haptic feedback you could think of. If JOAN
+runs sequentially this means the following could happen:
+
+1. You get your car data from CARLA
+2. You calculate your epic torque that goes to the hardware
+3. You set the torque.
+
+Now imagine that step 2 here takes about 500ms, this will hold up the rest of the program, worst case scenario: the Hardware shuts off because it didnt
+get a message in time, meaning the watchdog turned on.
+
+Our solution to this problem are `Multiprocesses` meaning we run all the above steps in parallel! For more information about multiprocessing
+please consult the very extensive and elaborate documentation [here](https://docs.python.org/3/library/multiprocessing.html){target="_blank"}
