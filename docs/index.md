@@ -57,8 +57,9 @@ Several modules are included with JOAN by default, the way to use them is descri
     shared variables.
 
 * __[Data Recorder](modules-datarecorder.md)__ - The data recorder is a module which can record data.
-* __[CARLA Interface](modules-carlainterface.md)__ - The experiment manager is a useful tool for performing experiments
-* __[Experiment Manager](modules-hardwaremanager.md)__ - The hardware manager is a module which manages hardware inptus
+* __[CARLA Interface](modules-carlainterface.md)__ - CarlaInterface manages the different agents you can add in simulation.
+* __[Hardware Manager](modules-hardwaremanager.md)__ - The hardware manager is a module which manages hardware inputs.
+* __[Experiment Manager](modules-experimentmanager.md)__ - The experiment manager is a useful tool for performing experiments
 * __[Haptic Controller Manager](modules-hapticcontrollermanager.md)__ - The haptic controller manager is a module which manages haptic (steering wheel) controllers.
 * __[Data Plotter](modules-dataplotter.md)__ - The data plotter is a module which easily makes data insightful at runtime.
 
