@@ -205,7 +205,10 @@ class EgoVehicleProcess:
                 self._control.throttle = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].throttle
 
             self.spawned_vehicle.apply_control(self._control)
-            self.calculate_plotter_road_arrays()
+            try:
+                self.calculate_plotter_road_arrays()
+            except IndexError:
+                pass
 
         self.set_shared_variables()
 
