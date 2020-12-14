@@ -158,6 +158,6 @@ In the function `load_from_dict` you will need to add:
 
 
 ### Step 7. This guide wasn't useful at all I tried copying everything and it doesn't work!? What do I do?!
-It is highly likely that you forgot a crucial part, you have to be verty meticulous! The error messages you get in the terminal should help you underway
+It is highly likely that you forgot a crucial part, you have to be very meticulous! The error messages you get in the terminal should help you underway
 as to where things went wrong!
 
