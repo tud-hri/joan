@@ -37,8 +37,7 @@ class HardwareManager(ModuleManager):
         super().initialize()
         for hw_input in self.module_settings.inputs.values():
             self.shared_variables.inputs[hw_input.identifier] = HardwareInputTypes(hw_input.input_type).shared_variables()
-            if hw_input.input_type == HardwareInputTypes.SENSODRIVE.value:
-                hw_input.events = SensoDriveEvents()
+
 
     def get_ready(self):
         """
@@ -46,6 +45,10 @@ class HardwareManager(ModuleManager):
         timer that also checks the state of a sensodrive (if there are any)
         :return:
         """
+        for hw_input in self.module_settings.inputs.values():
+            if hw_input.input_type == HardwareInputTypes.SENSODRIVE.value:
+                hw_input.events = SensoDriveEvents()
+
         for inputs in self.module_settings.inputs.values():
             if inputs.input_type == HardwareInputTypes.SENSODRIVE.value:
                 self.module_dialog.update_timer.timeout.connect(self.module_dialog.update_sensodrive_state)
@@ -76,9 +79,10 @@ class HardwareManager(ModuleManager):
          """
         for inputs in self.module_settings.inputs.values():
             if inputs.input_type == HardwareInputTypes.SENSODRIVE.value:
-                inputs.events.turn_off_event.set()
-                inputs.events.close_event.set()
-                del inputs.events
+                if hasattr(inputs,'events'):
+                    inputs.events.turn_off_event.set()
+                    inputs.events.close_event.set()
+                    del inputs.events
         super().stop()
 
     def load_from_file(self, settings_file_to_load):
