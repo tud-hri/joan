@@ -8,11 +8,14 @@ from modules.experimentmanager.experiment import Experiment
 from modules.experimentmanager.transitions import TransitionsList
 from .edit_experiment_dialog_ui import Ui_ExperimentManagerWidget
 from .previewconditiondialog import PreviewConditionDialog
-
+from core.statesenum import State
 
 class EditExperimentDialog(QtWidgets.QDialog):
     def __init__(self, experiment: Experiment, experiment_save_path, settings_singleton, parent=None):
         super().__init__(parent)
+
+        self.manager = parent.module_manager
+        self.manager.central_state_monitor.add_combined_state_change_listener(self._update_enabled_buttons)
         self.experiment = experiment
         self.experiment_save_path = experiment_save_path
         self.singleton_settings = settings_singleton
@@ -56,6 +59,8 @@ class EditExperimentDialog(QtWidgets.QDialog):
         self.update_condition_lists()
 
         self.show()
+
+
 
     def accept(self):
         self.experiment.all_conditions = self._all_conditions
@@ -129,6 +134,11 @@ class EditExperimentDialog(QtWidgets.QDialog):
         PreviewConditionDialog(condition, self)
 
     def _update_enabled_buttons(self):
+        if self.manager.central_state_monitor.combined_state == State.INITIALIZED:
+            self.ui.createConditionPushButton.setEnabled(True)
+        else:
+            self.ui.createConditionPushButton.setEnabled(False)
+
         if bool(self.ui.currentConditionsListWidget.currentItem()):
             selected_current_is_condition = isinstance(self.ui.currentConditionsListWidget.currentItem().data(QtCore.Qt.UserRole), Condition)
             selected_current_is_transition = not selected_current_is_condition
