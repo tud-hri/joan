@@ -93,7 +93,17 @@ The SensoDrive can in be 1 of three states:
 - Error (red)
 
 Depending on the state of the SensoDrive you can click the buttons. So if its off, you can turn it on, on to off and you can clear the error if it is in 
-error. 
+error:
+
+SensoDrive in the `off` state:
+![SensoDrive off](imgs/modules-hardwaremanager-sensodrive-off.PNG)
+
+SensoDrive in the `on` state:
+![SensoDrive on](imgs/modules-hardwaremanager-sensodrive-on.PNG)
+
+SensoDrive in the `error` state:
+![SensoDrive error](imgs/modules-hardwaremanager-sensodrive-error.PNG)
+
 
 !!! Note 
     You can use these buttons in both the `ready` and `running` states. For more information on the exact workings of a SensoDrive please
