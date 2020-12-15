@@ -21,7 +21,7 @@ class DataRecorderManager(ModuleManager):
                          central_state_monitor=central_state_monitor, time_step_in_ms=time_step_in_ms, parent=parent)
 
         self.state_machine.set_exit_action(State.INITIALIZED, self.module_dialog.apply_settings)
-        self.state_machine.set_transition_condition(State.INITIALIZED, State.READY, self._check_save_path)
+        self.state_machine.set_transition_condition(State.STOPPED, State.INITIALIZED, self._check_save_path)
 
         self.module_dialog.update_dialog()
 
