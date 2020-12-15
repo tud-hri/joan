@@ -176,8 +176,7 @@ class HQWindow(QtWidgets.QMainWindow):
         self.disable_all_buttons()
         combined_state = self.manager.central_state_monitor.combined_state
 
-        if combined_state is not State.STOPPED:
-            self._main_widget.btn_stop.setEnabled(True)
+        self._main_widget.btn_stop.setEnabled(True)
 
         if combined_state is State.INITIALIZED:
             self._main_widget.btn_get_ready.setEnabled(True)
