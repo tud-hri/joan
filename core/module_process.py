@@ -128,7 +128,7 @@ class ModuleProcess(mp.Process):
             except ZeroDivisionError:
                 self._running_frequency = 1e9 / 1
 
-            self._time = t0
+            self._time = time.time_ns()
 
             # read shared values here, store in local variables
             self.read_from_shared_variables()
