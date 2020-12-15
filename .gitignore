@@ -53,6 +53,7 @@ pip-delete-this-directory.txt
 
 # ignore settings files
 *.json
+!Demo_FDCA.json
 
 # ignore crash logs
 /crash_logs/*.txt

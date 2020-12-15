@@ -1,0 +1,91 @@
+{
+    "modules_included": [
+        "Hardware Manager",
+        "Carla Interface",
+        "Haptic Controller Manager",
+        "Controller Plotter"
+    ],
+    "base_settings": {
+        "Hardware Manager": {
+            "inputs": {
+                "SensoDrive_1": {
+                    "endstops": 6.28,
+                    "torque_limit_between_endstops": 200,
+                    "torque_limit_beyond_endstops": 200,
+                    "friction": 0.0,
+                    "damping": 0.1,
+                    "spring_stiffness": 1.0,
+                    "torque": 0,
+                    "identifier": "SensoDrive_1",
+                    "input_type": 2,
+                    "current_state": 0,
+                    "settings_dict": {
+                        "mp_endstops": 6.283185307179586,
+                        "mp_torque_limit_between_endstops": 200,
+                        "mp_torque_limit_beyond_endstops": 200,
+                        "mp_friction": 0,
+                        "mp_damping": 0.1,
+                        "mp_spring_stiffness": 1,
+                        "mp_torque": 0,
+                        "mp_identifier": ""
+                    }
+                }
+            }
+        },
+        "Carla Interface": {
+            "agents": {
+                "Ego Vehicle_1": {
+                    "selected_input": "SensoDrive_1",
+                    "selected_controller": "FDCA_1",
+                    "selected_spawnpoint": "Spawnpoint 0",
+                    "selected_car": "hapticslab.audi",
+                    "velocity": 80,
+                    "set_velocity": false,
+                    "identifier": "Ego Vehicle_1",
+                    "agent_type": 0
+                }
+            }
+        },
+        "Haptic Controller Manager": {
+            "haptic_controllers": {
+                "FDCA_1": {
+                    "t_lookahead": 0.0,
+                    "k_y": 0.15,
+                    "k_psi": 2.5,
+                    "lohs": 1.0,
+                    "sohf": 1.0,
+                    "loha": 0.0,
+                    "trajectory_name": "MiddleRoadTVRecord_filtered_ffswang_heading_3hz.csv",
+                    "identifier": "FDCA_1",
+                    "haptic_controller_type": 0
+                }
+            }
+        },
+        "Controller Plotter": {}
+    },
+    "conditions": {
+        "FDCA": {
+            "Hardware Manager": {
+                "inputs": {
+                    "SensoDrive_1": {
+                        "settings_dict": {}
+                    }
+                }
+            },
+            "Carla Interface": {
+                "agents": {
+                    "Ego Vehicle_1": {}
+                }
+            },
+            "Haptic Controller Manager": {
+                "haptic_controllers": {
+                    "FDCA_1": {}
+                }
+            },
+            "Controller Plotter": {}
+        }
+    },
+    "active_condition_sequence": [
+        "FDCA"
+    ]
+}
