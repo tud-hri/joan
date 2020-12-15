@@ -38,6 +38,7 @@ class ModuleProcess(mp.Process):
         self.module = module
         self._time_step_in_ns = time_step_in_ms * 1e6
         self._time = 0.0
+        self._last_t0 = 0.0
         self._last_execution_time = 0.0
         self._running_frequency = 0.0
 
@@ -122,6 +123,13 @@ class ModuleProcess(mp.Process):
                 running = False
 
             t0 = time.perf_counter_ns()
+
+            try:
+                self._running_frequency = 1e9 / (t0 - self._last_t0)
+            except ZeroDivisionError:
+                self._running_frequency = 1e9 / 1
+
+            self._last_t0 = t0
             self._time = time.time_ns()
 
             # read shared values here, store in local variables
@@ -138,11 +146,6 @@ class ModuleProcess(mp.Process):
                 running = False
 
             self._last_execution_time = time.perf_counter_ns() - t0
-
-            try:
-                self._running_frequency = 1e9 / self._last_execution_time
-            except ZeroDivisionError:
-                self._running_frequency = 1e9 / 1
 
             # sleep for time step, taking the execution time into account
             if (self._time_step_in_ns - self._last_execution_time) * 1e-9 > 0:
