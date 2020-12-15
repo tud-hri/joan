@@ -211,6 +211,13 @@ class FDCAControllerProcess:
         else:
             index_closest_waypoint_next = index_closest_waypoint + 1
 
+            # Some trajectories have multiple subsequent waypoints at the same position, this while loop increments the next index until a new waypoint is found
+            while (self._trajectory[index_closest_waypoint, 1:3] == self._trajectory[index_closest_waypoint_next, 1:3]).all():
+                index_closest_waypoint_next += 1
+                if index_closest_waypoint >= len(self._trajectory):
+                    break
+
+
         # calculate lateral error
         pos_ref = self._trajectory[index_closest_waypoint, 1:3]
         pos_ref_next = self._trajectory[index_closest_waypoint_next, 1:3]
