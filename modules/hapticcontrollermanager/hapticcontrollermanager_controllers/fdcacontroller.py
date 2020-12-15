@@ -225,6 +225,14 @@ class FDCAControllerProcess:
         vec_car = pos_car - pos_ref
         vec_dir = pos_ref_next - pos_ref
 
+        if not vec_dir.any():
+            print(index_closest_waypoint, index_closest_waypoint_next, pos_ref, pos_ref_next)
+            return np.array([0,0])
+
+        # if not vec_dir.any():
+        #     error_heading = 0
+        #     error_lat = 0
+        #     return np.array([error_lat, error_heading])
         # find the lateral error. Project vec_car on the reference trajectory direction vector
         vec_error_lat = vec_car - (np.dot(vec_car, vec_dir) / np.dot(vec_dir, vec_dir)) * vec_dir
         error_lat = np.sqrt(np.dot(vec_error_lat, vec_error_lat))
@@ -270,6 +278,7 @@ class FDCAControllerProcess:
         :param carla_interface_settings:
         :return:
         """
+
         for agent_settings in carla_interface_settings.agents.values():
             if agent_settings.selected_controller == self.settings.__str__():
                 if 'SensoDrive' in agent_settings.selected_input:
