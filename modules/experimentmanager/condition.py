@@ -59,12 +59,6 @@ class Condition:
         :return:
         """
 
-        for key in base_dict.keys():
-            if key not in specific_dict.keys():
-                raise ValueError(
-                    'It is not possible to remove_input_device settings that are present in the base of in experiment in a certain condition. '
-                    'Conditions can only add or change settings.')
-
         for key, value in base_dict.items():
             if key not in specific_dict.keys():
                 diff_dict[key] = RemovedDictItem()
