@@ -7,6 +7,9 @@ from modules.hardwaremanager.hardwaremanager_inputtypes import HardwareInputType
 
 
 class JOANJoystickProcess:
+    """
+    Contains the seperate process of the joystick input, reads the device input and communicates it to the rest of JOAN
+    """
     def __init__(self, settings, shared_variables):
         # Initialize Variables
         self.brake = 0
@@ -32,7 +35,7 @@ class JOANJoystickProcess:
             self._joystick.open(self.settings.device_vendor_id, self.settings.device_product_id)
             self._joystick_open = True
         except OSError:
-            print('Connection to USB Joystick failed')  # TODO: move to messagebox
+            print('Connection to USB Joystick failed')
             self._joystick_open = False
 
     def do(self):
@@ -206,7 +209,7 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
         self.value_preview_labels = []
         self.value_preview_check_boxes = []
 
-        self._display_settings()
+        self.display_values()
 
     def preview_joystick_values(self):
         """
@@ -269,10 +272,11 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
         :return:
         """
         if self.presetsComboBox.currentText().lower() != 'custom':
-            preset_settings = HardwareInputTypes.JOYSTICK.settings.get_preset_settings(self.presetsComboBox.currentText().lower())
-            self._display_settings(settings_to_display=preset_settings, only_keymap=True)
+            preset_settings = HardwareInputTypes.JOYSTICK.settings.get_preset_settings(
+                self.presetsComboBox.currentText().lower())
+            self.display_values(settings_to_display=preset_settings, only_keymap=True)
 
-    def _display_settings(self, settings_to_display=None, only_keymap=False):
+    def display_values(self, settings_to_display=None, only_keymap=False):
         """
         Displays the settings that are currently being used (internally)
         :param settings_to_display:
@@ -312,7 +316,7 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
         Sets the settings as they are described in 'HardwaremanagerSettings => JoystickSettings)
         :return:
         """
-        self._display_settings(HardwareInputTypes.JOYSTICK.settings(identifier=self.joystick_settings.identifier))
+        self.display_values(HardwareInputTypes.JOYSTICK.settings(identifier=self.joystick_settings.identifier))
 
     def _update_brake_channel_enabled(self, value):
         """

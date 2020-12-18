@@ -4,14 +4,17 @@ import json
 from core import Settings
 from modules.experimentmanager.transitions import TransitionsList
 from modules.joanmodules import JOANModules
-from .condition import Condition
+from .condition import Condition, RemovedDictItem
 
 
 class Experiment:
     """
     Experiment class
-    Contains all conditions, and transitions in the experiment
-    Allows for loading and saving to user-readable json files
+    An experiment consists of base settings, conditions, and transitions. The base settings represent the general state of all modules in the experiment.
+    Conditions hold the differences in settings with respect to the base settings. The experiment has an active sequence the holds the conditions in the
+    sequence in which they are used. A single condition can be used multiple times in the experiments sequence. Transitions hold actions that are executed when
+    a new condition is activated. This can be anything from saving files to re-initializing objects.
+    An experiment can be loaded from and saved to user-readable json files.
     """
 
     def __init__(self, modules_included: list):
@@ -22,6 +25,11 @@ class Experiment:
         self.active_condition_sequence = []
 
     def set_from_current_settings(self, settings_singleton: Settings):
+        """
+        Set the base settings
+        :param settings_singleton:
+        :return:
+        """
         if self.all_conditions:
             raise RuntimeError("The base settings of an experiment can only be modified when no conditions exist.")
 
@@ -44,10 +52,20 @@ class Experiment:
             json.dump(dict_to_save, settings_file, indent=4)
 
     @staticmethod
+    def _find_deleted_dict_items_in_diff(dictionary):
+        for key, item in dictionary.items():
+            if item == RemovedDictItem():
+                dictionary[key] = RemovedDictItem()
+            elif isinstance(item, dict):
+                Experiment._find_deleted_dict_items_in_diff(item)
+
+    @staticmethod
     def load_from_file(file_path):
         transitions_list = TransitionsList()
         with open(file_path, 'r') as settings_file:
             loaded_dict = json.load(settings_file)
+
+        Experiment._find_deleted_dict_items_in_diff(loaded_dict)
 
         modules_included = [JOANModules.from_string_representation(string) for string in loaded_dict['modules_included']]
         new_experiment = Experiment(modules_included)

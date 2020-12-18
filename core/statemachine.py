@@ -18,9 +18,11 @@ class StateMachine:
                 if departing_state is not target_state:
                     self._transition_conditions[departing_state][target_state] = lambda: True
 
-        # declare state changes that are illegal by default
-        # allowed state order: STOPPED -> INITIALIZED -> READY -> RUNNING -> STOPPED
-        # from any state, allow transition to STOPPED
+        """
+        Declare state changes that are illegal by default
+        allowed state order: STOPPED -> INITIALIZED -> READY -> RUNNING -> STOPPED
+        from any state, allow transition to STOPPED.
+        """
         self._transition_conditions[State.STOPPED][State.READY] = lambda: False
         self._transition_conditions[State.STOPPED][State.RUNNING] = lambda: False
         self._transition_conditions[State.INITIALIZED][State.RUNNING] = lambda: False
@@ -123,7 +125,6 @@ class StateMachine:
                     "A transition condition function should return a boolean indicating if a transition is legal. Or a tuple containing a "
                     "boolean and a (error) message to display. Received object was of type: " + str(type(condition_evaluation)))
 
-            # TODO check if the exit and entry actions are successful, else move to error?
             if state_change_is_legal:
                 if self._exit_actions[self.current_state]:
                     self._exit_actions[self.current_state]()
@@ -135,7 +136,8 @@ class StateMachine:
                     self._entry_actions[target_state]()
             else:
                 self.state_message = 'State change from ' + str(self.current_state) + ' to ' + str(
-                    target_state) + ' is illegal for ' + str(self._module_enum) + ' module. Will remain in current state'
+                    target_state) + ' is illegal for ' + str(self._module_enum) + ' module. Transitioned to Error.'
+                self.current_state = State.ERROR
                 if error_message:
                     self.state_message += 'Error: ' + error_message
 

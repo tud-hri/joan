@@ -26,7 +26,18 @@ PEDAL_MESSAGE_LENGTH = 2
 
 
 class JOANSensoDriveProcess:
+    """
+    Seperate process which will communicate with the sensodrive, please note that this is one of the only classes
+    that will itself start another multiprocess. This is te reason why the DAEMON is set to false.
+
+    """
+
     def __init__(self, settings, shared_variables):
+        """
+        Initializes the process class
+        :param settings: sensodrive settings
+        :param shared_variables: sensodrive shared variables
+        """
         super().__init__()
 
         # We define our settings list which contains only picklable objects
@@ -39,8 +50,10 @@ class JOANSensoDriveProcess:
         self.parent_pipe, child_pipe = mp.Pipe(duplex=True)
 
         # Create the sensodrive communication object with needed events and pipe
-        comm = SensoDriveComm(turn_on_event=settings.events.turn_on_event, turn_off_event=settings.events.turn_off_event,
-                              close_event=settings.events.close_event, clear_error_event=settings.events.clear_error_event,
+        comm = SensoDriveComm(turn_on_event=settings.events.turn_on_event,
+                              turn_off_event=settings.events.turn_off_event,
+                              close_event=settings.events.close_event,
+                              clear_error_event=settings.events.clear_error_event,
                               child_pipe=child_pipe, state_queue=settings.events.state_queue)
 
         # Start the communication process when it is created
@@ -53,17 +66,28 @@ class JOANSensoDriveProcess:
         self.parent_pipe.send(self.settings_dict)
 
     def update_variables(self):
+        """
+        Updates the variables in the settings dictionary sent to the communication process
+        :return: None
+        """
         # 'variable settings' (can be changed at runtime through the shared variables)
         self.settings_dict['mp_friction'] = self.shared_variables.friction
         self.settings_dict['mp_damping'] = self.shared_variables.damping
-        self.settings_dict['mp_spring_stiffness'] = self.shared_variables.loha_stiffness + self.shared_variables.auto_center_stiffness
+        self.settings_dict['mp_spring_stiffness'] = self.shared_variables.loha_stiffness + \
+            self.shared_variables.auto_center_stiffness
 
     def do(self):
+        """
+        Function that gets called upon every iteration of the hardware manager process. Thus also reads out the values
+        from the seperate sensodrive communication process
+        :return:
+        """
         # 'variable settings' (can be changed at runtime through the shared variables)
         self.settings_dict['mp_torque'] = self.shared_variables.torque
         self.settings_dict['mp_friction'] = self.shared_variables.friction
         self.settings_dict['mp_damping'] = self.shared_variables.damping
-        self.settings_dict['mp_spring_stiffness'] = self.shared_variables.loha_stiffness + self.shared_variables.auto_center_stiffness
+        self.settings_dict['mp_spring_stiffness'] = self.shared_variables.loha_stiffness + \
+            self.shared_variables.auto_center_stiffness
 
         self.parent_pipe.send(self.settings_dict)
         values_from_sensodrive = self.parent_pipe.recv()
@@ -102,12 +126,20 @@ class SensoDriveSettings:
                               'mp_identifier': self.identifier}
 
     def as_dict(self):
+        """
+        :return: object as dictionary
+        """
         return self.__dict__
 
     def __str__(self):
         return str(self.identifier)
 
     def set_from_loaded_dict(self, loaded_dict):
+        """
+        Makes an object with attributes out of a dictionary
+        :param loaded_dict:
+        :return:
+        """
         for key, value in loaded_dict.items():
             self.__setattr__(key, value)
 
@@ -141,7 +173,7 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
 
         self.btn_apply.clicked.connect(self.update_parameters)
 
-        self._display_values()
+        self.display_values()
 
     def update_parameters(self):
         """
@@ -168,7 +200,7 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
 
         super().accept()
 
-    def _display_values(self, settings_to_display=None):
+    def display_values(self, settings_to_display=None):
         """
         Displays the currently used settings in the settings dialog.
         :param settings_to_display:
@@ -189,10 +221,15 @@ class SensoDriveSettingsDialog(QtWidgets.QDialog):
         Sets the settings as they are described in hardwarempsettings ->SensodriveSettings().
         :return:
         """
-        self._display_values(SensoDriveSettings())
+        self.display_values(SensoDriveSettings())
 
 
 def clear_queue(q):
+    """
+    Will clear the (multiprocess) queue.
+    :param q:
+    :return:
+    """
     try:
         while True:
             q.get_nowait()
@@ -202,8 +239,8 @@ def clear_queue(q):
 
 class SensoDriveComm(mp.Process):
     """
-    This class is a seperate mp.Process which will start when it is created. It loops at approximately 10ms to keep the sensodrive from shutting off due to
-    the watchdog.
+    This class is a seperate mp.Process which will start when it is created. It loops at approximately 10ms to keep the
+    sensodrive from shutting off due to the watchdog.
     """
 
     def __init__(self, turn_on_event, turn_off_event, close_event, clear_error_event, child_pipe, state_queue):
@@ -235,6 +272,12 @@ class SensoDriveComm(mp.Process):
         self.pedal_message = TPCANMsg()
         self.sensodrive_initialization_message = TPCANMsg()
         self.state_change_message = TPCANMsg()
+        self._pcan_channel = None
+        self._time_step_in_ns = None
+        self._time = None
+        self.settings_dict = None
+        self.pcan_object = None
+        self.pcan_initialization_result = None
 
         self.state_change_message.ID = INITIALIZATION_MESSAGE_ID
         self.state_change_message.LEN = INITIALIZATION_MESSAGE_LENGTH
@@ -252,13 +295,18 @@ class SensoDriveComm(mp.Process):
         self._current_state_hex = 0x00
 
     def run(self):
+        """
+        Overwrites the standard run function of a multiprocess. This will actually start the process.
+        :return:
+        """
         self.settings_dict = self.child_pipe.recv()
         if self.settings_dict['mp_identifier'] == 'SensoDrive_1':
             self._pcan_channel = PCAN_USBBUS1
         else:
             self._pcan_channel = PCAN_USBBUS2
         self._time_step_in_ns = 10000000
-        # Here we can initialize our PCAN Communication (WE HAVE TO DO THIS HERE ELSE WE WONT HAVE THE PCAN OBJECT IN OUR DESIRED PROCESS
+        # Here we can initialize our PCAN Communication (WE HAVE TO DO THIS HERE ELSE WE WONT HAVE THE PCAN
+        # OBJECT IN OUR DESIRED PROCESS
         self.initialize()
 
         while True:
@@ -270,17 +318,19 @@ class SensoDriveComm(mp.Process):
                 self.settings_dict = self.child_pipe.recv()
                 self.child_pipe.send(self.values_from_sensodrive)
 
-            # convert SI units to Sensowheel units
+            # convert SI units to SensoDrive appropriate units
             self.steering_wheel_parameters = self._map_si_to_sensodrive(self.settings_dict)
 
             # send steering wheel data
-            self.write_message_steering_wheel(self.pcan_object, self.steering_wheel_message, self.steering_wheel_parameters)
+            self.write_message_steering_wheel(self.pcan_object, self.steering_wheel_message,
+                                              self.steering_wheel_parameters)
 
             # receive data from Sensodrive (wheel, pedals)
             received = self.pcan_object.Read(self._pcan_channel)
 
             # request state data
-            endstops_bytes = int.to_bytes(int(math.degrees(self.settings_dict['mp_endstops'])), 2, byteorder='little', signed=True)
+            endstops_bytes = int.to_bytes(int(math.degrees(self.settings_dict['mp_endstops'])), 2, byteorder='little',
+                                          signed=True)
             self.state_message.DATA[2] = endstops_bytes[0]
             self.state_message.DATA[3] = endstops_bytes[1]
 
@@ -310,7 +360,7 @@ class SensoDriveComm(mp.Process):
                 self.clear_error(self.state_message)
                 self.clear_error_event.clear()
 
-            # properly uninitialize the pcan dongle if sensodrive is removed
+            # properly un-initialize the pcan dongle if sensodrive is removed
             if self.close_event.is_set():
                 self.close_event.clear()
                 # send last known values over the pipe
@@ -330,12 +380,12 @@ class SensoDriveComm(mp.Process):
             # sleep for time step, taking the execution time into account
             time.sleep(max(0.0, (self._time_step_in_ns - execution_time) * 1e-9))
 
-    def write_message_steering_wheel(self, pcan_object, pcanmessage, data):
+    def write_message_steering_wheel(self, pcan_object, pcan_message, data):
         """
         Writes a CAN message to the sensodrive containing information regarding torque, friction and damping. Also
         returns the current state of the wheel (angle, force etc).
         :param pcan_object:
-        :param pcanmessage:
+        :param pcan_message:
         :param data:
         :return:
         """
@@ -344,35 +394,35 @@ class SensoDriveComm(mp.Process):
         damping_bytes = int.to_bytes(data['damping'], 2, byteorder='little', signed=True)
         spring_stiffness_bytes = int.to_bytes(data['spring_stiffness'], 2, byteorder='little', signed=True)
 
-        pcanmessage.ID = STEERINGWHEEL_MESSAGE_SEND_ID
-        pcanmessage.LEN = STEERINGWHEEL_MESSAGE_LENGTH
-        pcanmessage.TYPE = PCAN_MESSAGE_STANDARD
-        pcanmessage.DATA[0] = torque_bytes[0]
-        pcanmessage.DATA[1] = torque_bytes[1]
-        pcanmessage.DATA[2] = friction_bytes[0]
-        pcanmessage.DATA[3] = friction_bytes[1]
-        pcanmessage.DATA[4] = damping_bytes[0]
-        pcanmessage.DATA[5] = damping_bytes[1]
-        pcanmessage.DATA[6] = spring_stiffness_bytes[0]
-        pcanmessage.DATA[7] = spring_stiffness_bytes[1]
+        pcan_message.ID = STEERINGWHEEL_MESSAGE_SEND_ID
+        pcan_message.LEN = STEERINGWHEEL_MESSAGE_LENGTH
+        pcan_message.TYPE = PCAN_MESSAGE_STANDARD
+        pcan_message.DATA[0] = torque_bytes[0]
+        pcan_message.DATA[1] = torque_bytes[1]
+        pcan_message.DATA[2] = friction_bytes[0]
+        pcan_message.DATA[3] = friction_bytes[1]
+        pcan_message.DATA[4] = damping_bytes[0]
+        pcan_message.DATA[5] = damping_bytes[1]
+        pcan_message.DATA[6] = spring_stiffness_bytes[0]
+        pcan_message.DATA[7] = spring_stiffness_bytes[1]
 
-        pcan_object.Write(self._pcan_channel, pcanmessage)
+        pcan_object.Write(self._pcan_channel, pcan_message)
 
-    def write_message_pedals(self, pcan_object, pcanmessage):
+    def write_message_pedals(self, pcan_object, pcan_message):
         """
         Writes a correctly structured CAN message to the sensodrive which will return a message containing the
         inputs of the pedals.
         :param pcan_object:
-        :param pcanmessage:
+        :param pcan_message:
         :return:
         """
-        pcanmessage.ID = 0x20C
-        pcanmessage.LEN = 1
-        pcanmessage.MSGTYPE = PCAN_MESSAGE_STANDARD
+        pcan_message.ID = 0x20C
+        pcan_message.LEN = 1
+        pcan_message.MSG_TYPE = PCAN_MESSAGE_STANDARD
 
-        pcanmessage.DATA[0] = 0x1
+        pcan_message.DATA[0] = 0x1
 
-        pcan_object.Write(self._pcan_channel, pcanmessage)
+        pcan_object.Write(self._pcan_channel, pcan_message)
 
     def off_to_on(self, message):
         """
@@ -410,14 +460,21 @@ class SensoDriveComm(mp.Process):
         self.pcan_object.Write(self._pcan_channel, message)
 
     def initialize(self):
+        """
+        Initializes the PCAN Dongle and sends appropriate initialization messages to the SensoDrive.
+        :return:
+        """
         self.pcan_object = PCANBasic()
         self.pcan_initialization_result = self.pcan_object.Initialize(self._pcan_channel, PCAN_BAUD_1M)
 
         # Convert our shared settings to bytes
-        endstops_bytes = int.to_bytes(int(math.degrees(self.settings_dict['mp_endstops'])), 2, byteorder='little', signed=True)
-        torque_limit_between_endstops_bytes = int.to_bytes(self.settings_dict['mp_torque_limit_between_endstops'], 1, byteorder='little',
+        endstops_bytes = int.to_bytes(int(math.degrees(self.settings_dict['mp_endstops'])), 2, byteorder='little',
+                                      signed=True)
+        torque_limit_between_endstops_bytes = int.to_bytes(self.settings_dict['mp_torque_limit_between_endstops'], 1,
+                                                           byteorder='little',
                                                            signed=False)
-        torque_limit_beyond_endstops_bytes = int.to_bytes(self.settings_dict['mp_torque_limit_beyond_endstops'], 1, byteorder='little',
+        torque_limit_beyond_endstops_bytes = int.to_bytes(self.settings_dict['mp_torque_limit_beyond_endstops'], 1,
+                                                          byteorder='little',
                                                           signed=False)
 
         # We need to have our init message here as well
@@ -459,8 +516,13 @@ class SensoDriveComm(mp.Process):
         self.state_message = self.sensodrive_initialization_message
         self.state_message.DATA[0] = 0x11
 
-    def _map_si_to_sensodrive(self, settings):
-        # convert SI units to Sensowheel units
+    @staticmethod
+    def _map_si_to_sensodrive(settings):
+        """
+        Converts settings to sensodrive units
+        :param settings:
+        :return: converted settings
+        """
 
         out = {
             'torque': int(settings['mp_torque'] * 1000.0),
@@ -472,16 +534,23 @@ class SensoDriveComm(mp.Process):
         return out
 
     def _sensodrive_data_to_si(self, received):
+        """
+        Converts sensodrive data to actual SI Units
+        :param received: sensodrive unit filled dictionary
+        :return:
+        """
         if received[1].ID == STEERINGWHEEL_MESSAGE_RECEIVE_ID:
             # steering wheel
 
             # steering angle
             increments = int.from_bytes(received[1].DATA[0:4], byteorder='little', signed=True)
-            self.values_from_sensodrive['steering_angle'] = math.radians(float(increments) * 0.009)  # we get increments, convert to deg, convert to rad
+            self.values_from_sensodrive['steering_angle'] = math.radians(
+                float(increments) * 0.009)  # we get increments, convert to deg, convert to rad
 
             # steering rate
             steering_rate = int.from_bytes(received[1].DATA[4:6], byteorder='little', signed=True)
-            self.values_from_sensodrive['steering_rate'] = float(steering_rate) * (2.0 * math.pi) / 60.0  # we get rev/min, convert to rad/s
+            self.values_from_sensodrive['steering_rate'] = float(steering_rate) * (
+                    2.0 * math.pi) / 60.0  # we get rev/min, convert to rad/s
 
             # torque
             torque = int.from_bytes(received[1].DATA[6:], byteorder='little', signed=True)
@@ -489,8 +558,10 @@ class SensoDriveComm(mp.Process):
 
         elif received[1].ID == PEDAL_MESSAGE_RECEIVE_ID:
             # pedals
-            self.values_from_sensodrive['throttle'] = float(int.from_bytes(received[1].DATA[2:4], byteorder='little') - 1100) / 2460.0
-            self.values_from_sensodrive['brake'] = float(int.from_bytes(received[1].DATA[4:6], byteorder='little') - 1) / 500
+            self.values_from_sensodrive['throttle'] = float(
+                int.from_bytes(received[1].DATA[2:4], byteorder='little') - 1100) / 2460.0
+            self.values_from_sensodrive['brake'] = float(
+                int.from_bytes(received[1].DATA[4:6], byteorder='little') - 1) / 500
 
         elif received[1].ID == STATE_MESSAGE_RECEIVE_ID:
             #
@@ -498,10 +569,17 @@ class SensoDriveComm(mp.Process):
             self.values_from_sensodrive['sensodrive_motorstate'] = received[1].DATA[0]
 
     def update_settings(self):
-        endstops_bytes = int.to_bytes(int(math.degrees(self.settings_dict['endstops'])), 2, byteorder='little', signed=True)
-        torque_limit_between_endstops_bytes = int.to_bytes(self.settings_dict['torque_limit_between_endstops'], 1, byteorder='little',
+        """
+        Updates the SensoDrive Settings
+        :return:
+        """
+        endstops_bytes = int.to_bytes(int(math.degrees(self.settings_dict['endstops'])), 2, byteorder='little',
+                                      signed=True)
+        torque_limit_between_endstops_bytes = int.to_bytes(self.settings_dict['torque_limit_between_endstops'], 1,
+                                                           byteorder='little',
                                                            signed=False)
-        torque_limit_beyond_endstops_bytes = int.to_bytes(self.settings_dict['torque_limit_beyond_endstops'], 1, byteorder='little',
+        torque_limit_beyond_endstops_bytes = int.to_bytes(self.settings_dict['torque_limit_beyond_endstops'], 1,
+                                                          byteorder='little',
                                                           signed=False)
 
         # We need to have our init message here as well

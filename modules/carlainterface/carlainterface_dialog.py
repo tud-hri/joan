@@ -10,19 +10,20 @@ from modules.joanmodules import JOANModules
 
 class CarlaInterfaceDialog(ModuleDialog):
     def __init__(self, module_manager: ModuleManager, parent=None):
+        """
+        :param module_manager: see JOANModules
+        :param parent: Needed for Qt windows
+        """
         super().__init__(module=JOANModules.CARLA_INTERFACE, module_manager=module_manager, parent=parent)
-        """
-        Initializes the class
-        :param module_manager:
-        :param parent:
-        """
+
         # setup dialogs
         self._agent_type_dialog = uic.loadUi(
-            os.path.join(os.path.dirname(os.path.realpath(__file__)), "carlainterface_agentclasses/ui/agent_select_ui.ui"))
+            os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                         "carlainterface_agentclasses/ui/agent_select_ui.ui"))
         self._agent_type_dialog.btns_agent_type_select.accepted.connect(self._agent_selected)
 
         # connect buttons
-        self._module_widget.btn_add_agent.clicked.connect(self._select_agent_type)
+        self.module_widget.btn_add_agent.clicked.connect(self._select_agent_type)
         self._agent_tabs_dict = {}
         self._agent_dialogs_dict = {}
 
@@ -32,11 +33,11 @@ class CarlaInterfaceDialog(ModuleDialog):
         """
         super()._handle_state_change()
         if self.module_manager.state_machine.current_state == State.STOPPED:
-            self._module_widget.groupbox_agents.setEnabled(True)
-            self._module_widget.btn_add_agent.setEnabled(True)
+            self.module_widget.groupbox_agents.setEnabled(True)
+            self.module_widget.btn_add_agent.setEnabled(True)
         else:
-            self._module_widget.groupbox_agents.setEnabled(False)
-            self._module_widget.btn_add_agent.setEnabled(False)
+            self.module_widget.groupbox_agents.setEnabled(False)
+            self.module_widget.btn_add_agent.setEnabled(False)
 
     def _select_agent_type(self):
         self._agent_type_dialog.combo_agent_type.clear()
@@ -45,23 +46,33 @@ class CarlaInterfaceDialog(ModuleDialog):
         self._agent_type_dialog.show()
 
     def _agent_selected(self):
-        selected_agent = self._agent_type_dialog.combo_agent_type.itemData(self._agent_type_dialog.combo_agent_type.currentIndex())
+        selected_agent = self._agent_type_dialog.combo_agent_type.itemData(
+            self._agent_type_dialog.combo_agent_type.currentIndex())
         # module_manager manages adding a new hardware agent
         self.module_manager.add_agent(selected_agent, from_button=True)
 
     def update_dialog(self):
+        difference_dict = {k: self._agent_tabs_dict[k] for k in
+                           set(self._agent_tabs_dict) - set(self.module_manager.module_settings.agents)}
+        for key in difference_dict:
+            self.remove_agent(key)
         for agent_settings in self.module_manager.module_settings.agents:
-            if self.module_manager.module_settings.agents[agent_settings].identifier not in self._agent_tabs_dict:
+            if self.module_manager.module_settings.agents[
+                agent_settings].identifier not in self._agent_tabs_dict:
                 self.add_agent(self.module_manager.module_settings.agents[agent_settings], False)
-
-            self._agent_dialogs_dict[self.module_manager.module_settings.agents[agent_settings].identifier].display_values(
+            self._agent_dialogs_dict[
+                self.module_manager.module_settings.agents[agent_settings].identifier].display_values(
                 self.module_manager.module_settings.agents[agent_settings])
 
     def add_agent(self, settings, from_button):
+        """
+        :param setting: contains all settings
+        :param from_button: boolean to prevent showing more than one window
+        """
         agent_type = AgentTypes(settings.agent_type)
 
         # Adding tab
-        agent_tab = uic.loadUi(agent_type.hardware_tab_ui_file)
+        agent_tab = uic.loadUi(agent_type.agent_tab_ui_file)
         agent_tab.group_agent.setTitle(settings.identifier)
 
         # Adding dialog
@@ -74,7 +85,7 @@ class CarlaInterfaceDialog(ModuleDialog):
         # add to module_dialog widget
         self._agent_tabs_dict[settings.identifier] = agent_tab
         self._agent_dialogs_dict[settings.identifier] = agent_dialog
-        self._module_widget.agent_list_layout.addWidget(agent_tab)
+        self.module_widget.agent_list_layout.addWidget(agent_tab)
 
         if from_button:
             agent_dialog.show()

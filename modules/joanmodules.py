@@ -66,7 +66,6 @@ class JOANModules(Enum):
         from modules.hapticcontrollermanager.hapticcontrollermanager_settings import HapticControllerManagerSettings
         from modules.controllerplotter.controllerplotter_settings import ControllerPlotterSettings
         from modules.datarecorder.datarecorder_settings import DataRecorderSettings
-        from modules.experimentmanager.experimentmanager_settings import ExperimentManagerSettings
         from modules.dataplotter.dataplotter_settings import DataPlotterSettings
 
         return {JOANModules.TEMPLATE: TemplateSettings,
@@ -75,7 +74,7 @@ class JOANModules(Enum):
                 JOANModules.HAPTIC_CONTROLLER_MANAGER: HapticControllerManagerSettings,
                 JOANModules.DATA_RECORDER: DataRecorderSettings,
                 JOANModules.CONTROLLER_PLOTTER: ControllerPlotterSettings,
-                JOANModules.EXPERIMENT_MANAGER: ExperimentManagerSettings,
+                JOANModules.EXPERIMENT_MANAGER: None,
                 JOANModules.DATA_PLOTTER: DataPlotterSettings
                 }[self]
 
@@ -95,7 +94,7 @@ class JOANModules(Enum):
                 JOANModules.HAPTIC_CONTROLLER_MANAGER: HapticControllerManagerSharedVariables,
                 JOANModules.CONTROLLER_PLOTTER: ModuleSharedVariables,
                 JOANModules.DATA_RECORDER: DataRecorderSharedVariables,
-                JOANModules.EXPERIMENT_MANAGER: ModuleSharedVariables,
+                JOANModules.EXPERIMENT_MANAGER: None,
                 JOANModules.DATA_PLOTTER: DataPlotterSharedVariables}[self]
 
     @property
@@ -113,7 +112,7 @@ class JOANModules(Enum):
                 JOANModules.HAPTIC_CONTROLLER_MANAGER: HapticControllerManagerProcess,
                 JOANModules.CONTROLLER_PLOTTER: ModuleProcess,
                 JOANModules.DATA_RECORDER: DataRecorderProcess,
-                JOANModules.EXPERIMENT_MANAGER: ModuleProcess,
+                JOANModules.EXPERIMENT_MANAGER: None,
                 JOANModules.DATA_PLOTTER: ModuleProcess}[self]
 
     @property

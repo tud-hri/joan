@@ -3,8 +3,17 @@ import copy
 from modules.joanmodules import JOANModules
 
 
-class Condition:
+class RemovedDictItem(str):
+    def __new__(cls, **kw):
+        return str.__new__(cls, "__This item was deleted__", **kw)
 
+
+class Condition:
+    """
+    a condition to be used in experiments. A condition can be set from the current settings of JOAN or from a saved file. The condition consists of a diff dict.
+    This dict holds the differences in settings with respect to the base settings of an experiment. When activated, the base settings are applied first, after
+    which the differences are applied.
+    """
     def __init__(self, modules_included: list, name):
         self.name = name
         self.diff = {}
@@ -14,13 +23,19 @@ class Condition:
 
     @staticmethod
     def set_from_current_settings(condition_name, parent_experiment, settings_singleton):
+        """
+        Creates a new condition based on the current settings of the modules in JOAN.
+        :param condition_name:
+        :param parent_experiment:
+        :param settings_singleton:
+        :return:
+        """
         condition = Condition(parent_experiment.modules_included, condition_name)
         for module in parent_experiment.modules_included:
             condition.diff[module] = Condition._get_dict_diff(parent_experiment.base_settings[module],
                                                               copy.deepcopy(settings_singleton.get_settings(module).as_dict())[
                                                                   str(module)], {})
 
-        # return deepcopy of the condition dictionary; else changing a module setting will change the setting across all conditions.
         return condition
 
     def get_savable_dict(self):
@@ -44,16 +59,10 @@ class Condition:
         :return:
         """
 
-        for key in base_dict.keys():
-            if key not in specific_dict.keys():
-                raise ValueError(
-                    'It is not possible to remove_input_device settings that are present in the base of in experiment in a certain condition. '
-                    'Conditions can only add or change settings.')
-
-        # TODO: list handling here is pretty inefficient have a look later
-        # TODO: if a value is a list (e.g. SW controller), then the complete dict is copied (which is fine, I guess)
         for key, value in base_dict.items():
-            if isinstance(value, dict):
+            if key not in specific_dict.keys():
+                diff_dict[key] = RemovedDictItem()
+            elif isinstance(value, dict):
                 diff_dict[key] = Condition._get_dict_diff(value, specific_dict[key], {})
             elif specific_dict[key] != value:
                 diff_dict[key] = specific_dict[key]

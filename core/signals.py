@@ -16,7 +16,7 @@ class Signals(QtCore.QObject):
         """
         Write data to News for a module
         :param module: used as an identifier
-        :param news_dict: dictionary (keys, values) with the new data
+        :param signal_dict: dictionary (keys, values) with the new data
         """
         self._signals.update({module: signal_dict})
 

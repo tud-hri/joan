@@ -38,6 +38,7 @@ class ModuleProcess(mp.Process):
         self.module = module
         self._time_step_in_ns = time_step_in_ms * 1e6
         self._time = 0.0
+        self._last_t0 = 0.0
         self._last_execution_time = 0.0
         self._running_frequency = 0.0
 
@@ -124,11 +125,12 @@ class ModuleProcess(mp.Process):
             t0 = time.perf_counter_ns()
 
             try:
-                self._running_frequency = 1e9 / (t0 - self._time)
+                self._running_frequency = 1e9 / (t0 - self._last_t0)
             except ZeroDivisionError:
                 self._running_frequency = 1e9 / 1
 
-            self._time = t0
+            self._last_t0 = t0
+            self._time = time.time_ns()
 
             # read shared values here, store in local variables
             self.read_from_shared_variables()

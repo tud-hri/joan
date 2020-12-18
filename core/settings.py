@@ -6,18 +6,8 @@ Holds settings of every module to be used by the experimentmanager
 
 
 class Settings:
-    """
-    The Settings class is a singleton that holds settings of all modules,
-    so they can be used from Experiment classes, using the module_key
-    """
-    instance = None
-
-    def __new__(cls):
-        if not cls.instance:
-            cls.instance = object.__new__(Settings)
-            cls._settings = {}
-
-        return cls.instance
+    def __init__(self):
+        self._settings = {}
 
     def update_settings(self, module: JOANModules, module_settings):
         """

@@ -16,7 +16,7 @@ def exception_log_and_kill_hook(exctype, value, tb, joan_module, exception_event
     #  save log
     try:
         log_dir = os.path.join(os.getcwd(), 'crash_logs')
-        if not os.path.isdir(os.path.dirname(log_dir)):
+        if not os.path.isdir(log_dir):
             os.makedirs(log_dir)
 
         file_path = log_dir + os.path.sep + str(joan_module).replace(' ', '_') + '_' + time.strftime('%d-%m-%Y_%Hh%Mm%Ss') + '.txt'

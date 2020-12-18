@@ -4,8 +4,17 @@ from modules.joanmodules import JOANModules
 
 
 class CarlaInterfaceSettings(ModuleSettings):
+    """
+    CarlaInterfaceSettings module, inherits from the ModuleSettings
+    """
     def __init__(self):
+        """
+        Initialize
+        """
         super().__init__(JOANModules.CARLA_INTERFACE)
+        self.agents = {}
+
+    def reset(self):
         self.agents = {}
 
     def load_from_dict(self, loaded_dict):
@@ -17,7 +26,7 @@ class CarlaInterfaceSettings(ModuleSettings):
         :param loaded_dict: (dict) dictionary containing the settings to load
         :return: None
         """
-
+        self.reset()
         module_settings_to_load = loaded_dict[str(self.module)]
 
         for identifier, settings_dict in module_settings_to_load['agents'].items():
@@ -27,15 +36,21 @@ class CarlaInterfaceSettings(ModuleSettings):
                 self.agents.update({identifier: ego_vehicle_settings})
 
     def add_agent(self, agent_type: AgentTypes, agent_settings=None):
+        """
+        Add agents to class attribute
+        :param agent_type: agent type, see enum AgentTypes
+        :param agent_settings: settings for this agent
+        :return: renewed agent settings
+        """
         # create empty settings object
         if not agent_settings:
             agent_settings = agent_type.settings()
 
-            nr = 1
-            name = '{0!s}_{1}'.format(agent_type, nr)
+            number = 1
+            name = '{0!s}_{1}'.format(agent_type, number)
             while name in self.agents.keys():
-                nr += 1
-                name = '{0!s}_{1}'.format(agent_type, nr)
+                number += 1
+                name = '{0!s}_{1}'.format(agent_type, number)
 
             agent_settings.identifier = name
 
@@ -46,8 +61,15 @@ class CarlaInterfaceSettings(ModuleSettings):
         return agent_settings
 
     def all_agents(self):
+        """
+        :return: all agents
+        """
         return {**self.agents}
 
     def remove_agent(self, identifier):
+        """
+        Removes an agent
+        :param identifier: identifies an agent
+        """
         key, _ = find_settings_by_identifier(self.agents, identifier)
         self.agents.pop(key)

@@ -4,6 +4,10 @@ from core.modulesharedvariables import ModuleSharedVariables
 
 
 class TemplateSharedVariables(ModuleSharedVariables):
+    """
+    Example module for JOAN
+    Can also be used as a template for your own modules.
+    """
     def __init__(self):
         super().__init__()
         self._overwrite_with_current_time = mp.Array('c', 30)  # 30=length of string

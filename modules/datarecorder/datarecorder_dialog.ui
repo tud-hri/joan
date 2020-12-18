@@ -39,17 +39,10 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="lblCurrentDataFile">
+      <item row="2" column="0">
+       <widget class="QPushButton" name="browsePathPushButton">
         <property name="text">
-         <string>Current data file: </string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QLabel" name="lbl_message_recorder">
-        <property name="text">
-         <string>&lt;Message&gt;</string>
+         <string>Change save path...</string>
         </property>
        </widget>
       </item>
@@ -60,17 +53,31 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="0">
-       <widget class="QPushButton" name="browsePathPushButton">
-        <property name="text">
-         <string>Change save path...</string>
-        </property>
-       </widget>
-      </item>
       <item row="0" column="1">
        <widget class="QLabel" name="lbl_data_directoryname">
         <property name="text">
          <string>&lt; none &gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLabel" name="lbl_message_recorder">
+        <property name="text">
+         <string>&lt;Message&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="lblCurrentDataFile">
+        <property name="text">
+         <string>Current data file: </string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QCheckBox" name="checkAppendTimestamp">
+        <property name="text">
+         <string>Append timestamp to filename</string>
         </property>
        </widget>
       </item>
@@ -131,11 +138,11 @@
        <height>500</height>
       </size>
      </property>
-     <attribute name="headerDefaultSectionSize">
-      <number>200</number>
-     </attribute>
      <attribute name="headerMinimumSectionSize">
       <number>100</number>
+     </attribute>
+     <attribute name="headerDefaultSectionSize">
+      <number>200</number>
      </attribute>
      <column>
       <property name="text">

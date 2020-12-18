@@ -13,41 +13,52 @@ from modules.joanmodules import JOANModules
 
 
 class DataRecorderDialog(ModuleDialog):
+    """
+    DataRecorder dialog class
+    """
+
     def __init__(self, module_manager: ModuleManager, parent=None):
+        """
+        :param module_manager: manager object (datarecorder_manager)
+        :param parent: parent object
+        """
         super().__init__(module=JOANModules.DATA_RECORDER, module_manager=module_manager, parent=parent)
         self._module_manager = module_manager
         # set current data file name
-        self._module_widget.lbl_data_filename.setText("< none >")
+        self.module_widget.lbl_data_filename.setText("< none >")
 
         # set message text
-        self._module_widget.lbl_message_recorder.setText("not recording")
-        self._module_widget.lbl_message_recorder.setStyleSheet('color: orange')
+        self.module_widget.lbl_message_recorder.setText("not recording")
+        self.module_widget.lbl_message_recorder.setStyleSheet('color: orange')
 
         # get news items
         self.news = self.module_manager.news
 
-        #make sure you can only record a trajectory if carlainterface is loaded
+        # make sure you can only record a trajectory if carlainterface is loaded
         if JOANModules.CARLA_INTERFACE in self.news.all_news:
             self.carla_interface_present = True
         else:
             self.carla_interface_present = False
-            self._module_widget.check_trajectory.blockSignals(True)
-
+            self.module_widget.check_trajectory.blockSignals(True)
 
         # set gui functionality
-        self._module_widget.check_trajectory.stateChanged.connect(self.update_trajectory_groupbox)
-        self._module_widget.browsePathPushButton.clicked.connect(self._browse_datalog_path)
-        self._module_widget.btn_trajectory_path.clicked.connect(self._browse_trajectory_path)
+        self.module_widget.check_trajectory.stateChanged.connect(self.update_trajectory_groupbox)
+        self.module_widget.browsePathPushButton.clicked.connect(self._browse_datalog_path)
+        self.module_widget.btn_trajectory_path.clicked.connect(self._browse_trajectory_path)
         self.module_manager.state_machine.add_state_change_listener(self.handle_state_change)
+
+        self.module_widget.treeWidget.itemClicked.connect(self.apply_settings)
+        self.module_widget.checkAppendTimestamp.stateChanged.connect(self.apply_settings)
         self.handle_state_change()
 
     def update_trajectory_groupbox(self):
-        self._module_widget.group_traj.setEnabled(self._module_widget.check_trajectory.isChecked())
+        self.module_widget.group_traj.setEnabled(self.module_widget.check_trajectory.isChecked())
 
     def update_dialog(self):
         file_path = self.module_manager.module_settings.path_to_save_file
-        self._module_widget.lbl_data_filename.setText(os.path.basename(file_path))
-        self._module_widget.lbl_data_directoryname.setText(os.path.dirname(file_path))
+        self.module_widget.lbl_data_filename.setText(os.path.basename(file_path))
+        self.module_widget.lbl_data_directoryname.setText(os.path.dirname(file_path))
+        self.module_widget.checkAppendTimestamp.setChecked(self.module_manager.module_settings.append_timestamp_to_filename)
 
         variables_to_save = self.module_manager.module_settings.variables_to_be_saved
         self._set_all_checked_items(variables_to_save)
@@ -61,7 +72,7 @@ class DataRecorderDialog(ModuleDialog):
         file_path, _ = QtWidgets.QFileDialog.getSaveFileName(self, 'select save destination', date_string, filter='*.csv')
 
         if file_path:
-            self._module_widget.label_trajectory_path.setText(file_path)
+            self.module_widget.label_trajectory_path.setText(file_path)
             self.module_manager.module_settings.path_to_trajectory_save_file = os.path.normpath(file_path)
 
     def _browse_datalog_path(self):
@@ -69,40 +80,43 @@ class DataRecorderDialog(ModuleDialog):
         Sets the path to datalog and let users create folders
         When selecting is cancelled, the previous path is used
         """
-        date_string = datetime.datetime.now().strftime('%Y%m%d_%Hh%Mm%Ss')
-        file_path, _ = QtWidgets.QFileDialog.getSaveFileName(self, 'select save destination', date_string, filter='*.csv')
+        filename_suggestion = 'joan_data'
+        file_path, _ = QtWidgets.QFileDialog.getSaveFileName(self, 'select save destination', filename_suggestion, filter='*.csv')
 
         if file_path:
-            self._module_widget.lbl_data_filename.setText(os.path.basename(file_path))
-            self._module_widget.lbl_data_directoryname.setText(os.path.dirname(file_path))
+            self.module_widget.lbl_data_filename.setText(os.path.basename(file_path))
+            self.module_widget.lbl_data_directoryname.setText(os.path.dirname(file_path))
             self.module_manager.module_settings.path_to_save_file = os.path.normpath(file_path)
 
     def handle_state_change(self):
         if self.module_manager.state_machine.current_state == State.INITIALIZED:
-            self._module_widget.check_trajectory.setEnabled(False)
-            self._module_widget.treeWidget.setEnabled(True)
-            self._module_widget.browsePathPushButton.setEnabled(True)
+            self.module_widget.check_trajectory.setEnabled(False)
+            self.module_widget.treeWidget.setEnabled(True)
+            self.module_widget.browsePathPushButton.setEnabled(True)
+            self.module_widget.checkAppendTimestamp.setEnabled(True)
             self._fill_tree_widget()
             self.update_dialog()
         elif self.module_manager.state_machine.current_state == State.RUNNING:
-            self._module_widget.check_trajectory.setEnabled(False)
-            self._module_widget.lbl_message_recorder.setText("recording")
-            self._module_widget.lbl_message_recorder.setStyleSheet('color: green')
+            self.module_widget.check_trajectory.setEnabled(False)
+            self.module_widget.lbl_message_recorder.setText("recording")
+            self.module_widget.lbl_message_recorder.setStyleSheet('color: green')
         elif self.module_manager.state_machine.current_state == State.STOPPED:
             if self.carla_interface_present:
-                self._module_widget.check_trajectory.setEnabled(True)
+                self.module_widget.check_trajectory.setEnabled(True)
             else:
-                self._module_widget.check_trajectory.setEnabled(False)
-            self._module_widget.lbl_message_recorder.setText("not recording")
-            self._module_widget.lbl_message_recorder.setStyleSheet('color: orange')
-            self._module_widget.browsePathPushButton.setEnabled(True)
-            self._module_widget.treeWidget.setEnabled(False)
+                self.module_widget.check_trajectory.setEnabled(False)
+            self.module_widget.lbl_message_recorder.setText("not recording")
+            self.module_widget.lbl_message_recorder.setStyleSheet('color: orange')
+            self.module_widget.browsePathPushButton.setEnabled(True)
+            self.module_widget.checkAppendTimestamp.setEnabled(True)
+            self.module_widget.treeWidget.setEnabled(False)
         else:
-            self._module_widget.lbl_message_recorder.setText("not recording")
-            self._module_widget.lbl_message_recorder.setStyleSheet('color: orange')
-            self._module_widget.browsePathPushButton.setEnabled(False)
-            self._module_widget.treeWidget.setEnabled(False)
-            self._module_widget.check_trajectory.setEnabled(False)
+            self.module_widget.lbl_message_recorder.setText("not recording")
+            self.module_widget.lbl_message_recorder.setStyleSheet('color: orange')
+            self.module_widget.browsePathPushButton.setEnabled(False)
+            self.module_widget.checkAppendTimestamp.setEnabled(False)
+            self.module_widget.treeWidget.setEnabled(False)
+            self.module_widget.check_trajectory.setEnabled(False)
 
     def _save_settings(self):
         self.apply_settings()
@@ -110,10 +124,11 @@ class DataRecorderDialog(ModuleDialog):
 
     def apply_settings(self):
         self.module_manager.module_settings.variables_to_be_saved = self._get_all_checked_items()
-        self.module_manager.module_settings.should_record_trajectory = self._module_widget.check_trajectory.isChecked()
+        self.module_manager.module_settings.should_record_trajectory = self.module_widget.check_trajectory.isChecked()
+        self.module_manager.module_settings.append_timestamp_to_filename = self.module_widget.checkAppendTimestamp.isChecked()
 
     def _set_all_checked_items(self, variables_to_save):
-        self._recursively_set_checked_items(self._module_widget.treeWidget.invisibleRootItem(), [], variables_to_save)
+        self._recursively_set_checked_items(self.module_widget.treeWidget.invisibleRootItem(), [], variables_to_save)
 
     def _recursively_set_checked_items(self, parent, path_to_parent, list_of_checked_items):
         for index in range(parent.childCount()):
@@ -132,7 +147,7 @@ class DataRecorderDialog(ModuleDialog):
 
     def _get_all_checked_items(self):
         checked_items = []
-        self._recursively_get_checked_items(self._module_widget.treeWidget.invisibleRootItem(), [], checked_items)
+        self._recursively_get_checked_items(self.module_widget.treeWidget.invisibleRootItem(), [], checked_items)
         return checked_items
 
     def _recursively_get_checked_items(self, parent, path_to_parent, list_of_checked_items):
@@ -153,14 +168,13 @@ class DataRecorderDialog(ModuleDialog):
         Reads, or creates default settings when starting the module
         By pretending that a click event has happened, Datarecorder settings will be written
         """
-        self._module_widget.treeWidget.clear()
+        self.module_widget.treeWidget.clear()
 
         for module in JOANModules:
             if module is not JOANModules.DATA_RECORDER:
                 shared_variables = self.news.read_news(module)
-                print(shared_variables)
                 if shared_variables:
-                    self._create_tree_item(self._module_widget.treeWidget, str(module), shared_variables)
+                    self._create_tree_item(self.module_widget.treeWidget, str(module), shared_variables)
 
     @staticmethod
     def _create_tree_item(parent, key, value):

@@ -9,20 +9,29 @@ class HardwareManagerSettings(ModuleSettings):
     """
 
     def __init__(self):
+        """
+        Initializes the inputs dictionary
+        """
         super().__init__(JOANModules.HARDWARE_MANAGER)
 
         self.inputs = {}
 
+    def reset(self):
+        self.inputs = {}
+
     def load_from_dict(self, loaded_dict):
         """
-        This method overrides the base implementation of loading settings from dicts. This is done because hardware manager has the unique property that
-        multiple custom settings classes are combined in a list. This behavior is not supported by the normal joan module settings, so it an specific solution
+        This method overrides the base implementation of loading settings from dicts. This is done because hardware ]
+        manager has the unique property that multiple custom settings classes are combined in a list. This behavior is
+        not supported by the normal joan module settings, so it an specific solution
         to loading is implemented here.
 
         :param loaded_dict: (dict) dictionary containing the settings to load
         :return: None
         """
+        self.reset()
         module_settings_to_load = loaded_dict[str(self.module)]
+
         for identifier, settings_dict in module_settings_to_load['inputs'].items():
             if 'Keyboard' in identifier:
                 keyboard_settings = HardwareInputTypes.KEYBOARD.settings()
@@ -38,9 +47,19 @@ class HardwareManagerSettings(ModuleSettings):
                 self.inputs[identifier] = sensodrive_settings
 
     def all_inputs(self):
+        """
+        Returns all input objects
+        :return: all current objects in the inputs dictionary
+        """
         return {**self.inputs}
 
     def add_hardware_input(self, input_type: HardwareInputTypes, input_settings=None):
+        """
+        Adds the hardware input settings
+        :param input_type:
+        :param input_settings:
+        :return:
+        """
         # create empty settings object
         if not input_settings:
             input_settings = input_type.settings()
@@ -60,5 +79,10 @@ class HardwareManagerSettings(ModuleSettings):
         return input_settings
 
     def remove_hardware_input(self, identifier):
+        """
+        Removes the hardware input settings
+        :param identifier:
+        :return:
+        """
         key, _ = find_settings_by_identifier(self.inputs, identifier)
         self.inputs.pop(key)

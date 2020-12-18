@@ -8,6 +8,9 @@ class HapticControllerManagerSettings(ModuleSettings):
         super().__init__(JOANModules.HAPTIC_CONTROLLER_MANAGER)
         self.haptic_controllers = {}
 
+    def reset(self):
+        self.haptic_controllers = {}
+
     def load_from_dict(self, loaded_dict):
         """
         This method overrides the base implementation of loading settings from dicts. This is done because hardware manager has the unique property that
@@ -17,7 +20,7 @@ class HapticControllerManagerSettings(ModuleSettings):
         :param loaded_dict: (dict) dictionary containing the settings to load
         :return: None
         """
-
+        self.reset()
         module_settings_to_load = loaded_dict[str(self.module)]
 
         for identifier, settings_dict in module_settings_to_load['haptic_controllers'].items():
@@ -27,6 +30,11 @@ class HapticControllerManagerSettings(ModuleSettings):
                 self.haptic_controllers.update({identifier: ego_vehicle_settings})
 
     def add_haptic_controller(self, haptic_controller_type: HapticControllerTypes, haptic_controller_settings=None):
+        """
+        :param haptic_controller_type: enum, see hapticcontrollertypes.py
+        :param haptic_controller_settings: settings objects
+        :return:
+        """
         # create empty settings object
         if not haptic_controller_settings:
             haptic_controller_settings = haptic_controller_type.settings()

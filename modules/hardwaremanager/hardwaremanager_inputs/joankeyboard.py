@@ -8,8 +8,8 @@ from modules.hardwaremanager.hardwaremanager_inputtypes import HardwareInputType
 
 class JOANKeyboardProcess:
     """
-    Main class for the Keyboard input in a seperate multiprocess, this will loop!. Make sure that the things you do in this class are serializable, else
-    it will fail.
+    Main class for the Keyboard input in a seperate multiprocess, this will loop!. Make sure that the things you do
+    in this class are serializable, else it will fail.
     """
 
     def __init__(self, settings, shared_variables):
@@ -56,8 +56,8 @@ class JOANKeyboardProcess:
 
     def do(self):
         """
-        Processes all the inputs of the keyboardinput and writes them to self._data which is then written to the news in the
-        action class
+        Processes all the inputs of the keyboard input and writes them to self._data which is then written to the news
+        in the action class
         :return: self._data a dictionary containing :
             self.shared_variables.brake = self.brake
             self.shared_variables.throttle = self.throttle
@@ -162,7 +162,7 @@ class KeyBoardSettingsDialog(QtWidgets.QDialog):
     def __init__(self, module_manager=None, settings=None, parent=None):
         """
         Initializes the settings dialog with the appropriate keyboardinput settings
-        :param keyboard_settings:
+        :param settings:
         :param parent:
         """
         super().__init__(parent)
@@ -170,9 +170,12 @@ class KeyBoardSettingsDialog(QtWidgets.QDialog):
         self.keyboard_settings = settings
         uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/keyboard_settings_ui.ui"), self)
 
-        self.slider_steer_sensitivity.valueChanged.connect(lambda new_value: self.label_steer_sensitivity.setText(str(new_value)))
-        self.slider_throttle_sensitivity.valueChanged.connect(lambda new_value: self.label_throttle_sensitivity.setText(str(new_value)))
-        self.slider_brake_sensitivity.valueChanged.connect(lambda new_value: self.label_brake_sensitivity.setText(str(new_value)))
+        self.slider_steer_sensitivity.valueChanged.connect(
+            lambda new_value: self.label_steer_sensitivity.setText(str(new_value)))
+        self.slider_throttle_sensitivity.valueChanged.connect(
+            lambda new_value: self.label_throttle_sensitivity.setText(str(new_value)))
+        self.slider_brake_sensitivity.valueChanged.connect(
+            lambda new_value: self.label_brake_sensitivity.setText(str(new_value)))
 
         self._set_key_counter = 0
 
@@ -184,7 +187,7 @@ class KeyBoardSettingsDialog(QtWidgets.QDialog):
                                         self.label_brake, self.label_reverse,
                                         self.label_handbrake]
 
-        self._display_values()
+        self.display_values()
 
     def accept(self):
         """
@@ -197,7 +200,8 @@ class KeyBoardSettingsDialog(QtWidgets.QDialog):
                             self.label_reverse.text(), self.label_handbrake.text()]
         if len(all_desired_keys) != len(set(all_desired_keys)):
             answer = QtWidgets.QMessageBox.warning(self, 'Warning',
-                                                   'So are trying to set the same key for two command, this may lead to undesired behavior. Are you sure?',
+                                                   'So are trying to set the same key for two command, this may lead '
+                                                   'to undesired behavior. Are you sure?',
                                                    buttons=QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)
             if answer == QtWidgets.QMessageBox.Cancel:
                 return
@@ -217,7 +221,7 @@ class KeyBoardSettingsDialog(QtWidgets.QDialog):
         self.keyboard_settings.handbrake_key = QtGui.QKeySequence(self.label_handbrake.text())[0]
         super().accept()
 
-    def _display_values(self, settings=None):
+    def display_values(self, settings=None):
         """
         Displays the settings that are currently being used (internally)
         :param settings:
@@ -247,7 +251,7 @@ class KeyBoardSettingsDialog(QtWidgets.QDialog):
         Sets the settings as they are described in 'hardwarempSettings => KeyboardSettings)
         :return:
         """
-        self._display_values(HardwareInputTypes.KEYBOARD.settings(self.keyboard_settings.identifier))
+        self.display_values(HardwareInputTypes.KEYBOARD.settings(self.keyboard_settings.identifier))
 
     def _start_key_setting_sequence(self):
         """
@@ -263,8 +267,8 @@ class KeyBoardSettingsDialog(QtWidgets.QDialog):
 
     def keyPressEvent(self, event):
         """
-        Overwrites the built in 'keyPressEvent' function of PyQt with this function. Checks which key is pressed and handles
-        it accordingly.
+        Overwrites the built in 'keyPressEvent' function of PyQt with this function. Checks which key is pressed
+        and handles it accordingly.
         :param event:
         :return:
         """

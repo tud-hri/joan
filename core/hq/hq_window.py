@@ -9,6 +9,7 @@ from .performancemonitordialog import PerformanceMonitorDialog
 from .settingsoverviewdialog import SettingsOverviewDialog
 from modules.joanmodules import JOANModules
 
+
 def button_show_close_checked(button):
     if button.isChecked():
         button.setText("Close")
@@ -23,6 +24,8 @@ class HQWindow(QtWidgets.QMainWindow):
         super().__init__(parent)
 
         self.manager = manager
+
+        self.manager.central_state_monitor.add_combined_state_change_listener(self.update_central_control_buttons_enabled)
 
         # state, state handlers
         self.singleton_status = Status()
@@ -45,8 +48,8 @@ class HQWindow(QtWidgets.QMainWindow):
         self._main_widget.btn_quit.clicked.connect(self.close)
 
         self._main_widget.btn_initialize.setIcon(QtGui.QIcon(QtGui.QPixmap(os.path.join(self._path_resources, "Init.png"))))
-        self._main_widget.btn_initialize.setIconSize(QSize(100,100))
-        self._main_widget.btn_initialize.setFixedSize(QSize(110,110))
+        self._main_widget.btn_initialize.setIconSize(QSize(100, 100))
+        self._main_widget.btn_initialize.setFixedSize(QSize(110, 110))
         self._main_widget.btn_initialize.clicked.connect(self.initialize)
         self._main_widget.btn_get_ready.setIcon(QtGui.QIcon(QtGui.QPixmap(os.path.join(self._path_resources, "GetReady.png"))))
         self._main_widget.btn_get_ready.setIconSize(QSize(100, 100))
@@ -119,7 +122,7 @@ class HQWindow(QtWidgets.QMainWindow):
         widget.btn_showclose.toggled.connect(lambda: button_show_close_checked(widget.btn_showclose))  # change text in the button, based toggle status
         module_dialog.closed.connect(lambda: widget.btn_showclose.setChecked(False))  # if the user closes the dialog, uncheck the button
 
-        #Attach connect and disconnect buttons for the carla interface module_card
+        # Attach connect and disconnect buttons for the carla interface module_card
         if module_manager.module == JOANModules.CARLA_INTERFACE:
             widget.btn_connect.setEnabled(not module_manager.connected)
             widget.btn_disconnect.setEnabled(module_manager.connected)
@@ -131,7 +134,6 @@ class HQWindow(QtWidgets.QMainWindow):
             widget.btn_connect.clicked.connect(lambda: widget.btn_disconnect.setEnabled(module_manager.connected))
             widget.btn_disconnect.clicked.connect(lambda: widget.btn_connect.setEnabled(not module_manager.connected))
             widget.btn_disconnect.clicked.connect(lambda: widget.btn_disconnect.setEnabled(module_manager.connected))
-
 
         # with state_machine
         try:
@@ -150,33 +152,44 @@ class HQWindow(QtWidgets.QMainWindow):
         self._module_cards[name] = widget
         self.handle_state_change(widget, module_manager)
 
+        self.update_central_control_buttons_enabled()
+
     def handle_state_change(self, widget, module_manager):
+        if module_manager.use_state_machine_and_process:
+            current_state = module_manager.state_machine.current_state
+            widget.lbl_state.setText(str(current_state))
+            if current_state is State.RUNNING:
+                widget.lbl_state.setStyleSheet("background: lightgreen;")
+            elif current_state is State.INITIALIZED:
+                widget.lbl_state.setStyleSheet("background: lightblue;")
+            elif current_state is State.READY:
+                widget.lbl_state.setStyleSheet("background: yellow;")
+            elif current_state is State.ERROR:
+                widget.lbl_state.setStyleSheet("background: red;")
+            elif current_state is State.STOPPED:
+                widget.lbl_state.setStyleSheet("background: orange;")
+        else:
+            widget.lbl_state.setText('-')
+
+    def update_central_control_buttons_enabled(self):
         # disable all buttons first then activate the one you can press
         self.disable_all_buttons()
-        current_state = module_manager.state_machine.current_state
-        widget.lbl_state.setText(str(current_state))
-        if current_state is State.RUNNING:
-            widget.lbl_state.setStyleSheet("background: lightgreen;")
-            self._main_widget.btn_stop.setEnabled(True)
-        elif current_state is State.INITIALIZED:
-            widget.lbl_state.setStyleSheet("background: lightblue;")
+        combined_state = self.manager.central_state_monitor.combined_state
+
+        self._main_widget.btn_stop.setEnabled(True)
+
+        if combined_state is State.INITIALIZED:
             self._main_widget.btn_get_ready.setEnabled(True)
-        elif current_state is State.READY:
-            widget.lbl_state.setStyleSheet("background: yellow;")
+        elif combined_state is State.READY:
             self._main_widget.btn_start.setEnabled(True)
-        elif current_state is State.ERROR:  # an Error state
-            widget.lbl_state.setStyleSheet("background: red;")
-            self._main_widget.btn_stop.setEnabled(True)
-        elif current_state is State.STOPPED:
-            widget.lbl_state.setStyleSheet("background: orange;")
+        elif combined_state is State.STOPPED:
             self._main_widget.btn_initialize.setEnabled(True)
 
     def disable_all_buttons(self):
         self._main_widget.btn_initialize.setEnabled(False)
         self._main_widget.btn_get_ready.setEnabled(False)
         self._main_widget.btn_start.setEnabled(False)
-        #always be able to go back to stopped
-        self._main_widget.btn_stop.setEnabled(True)
+        self._main_widget.btn_stop.setEnabled(False)
 
     def closeEvent(self, event):
         """
@@ -199,7 +212,7 @@ class HQWindow(QtWidgets.QMainWindow):
             event.ignore()
 
     def show_settings_overview(self):
-        SettingsOverviewDialog(manager =self.manager, parent=self)
+        SettingsOverviewDialog(manager=self.manager, parent=self)
 
     def show_performance_monitor(self):
         PerformanceMonitorDialog(self.manager.instantiated_modules, parent=self)

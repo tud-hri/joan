@@ -8,8 +8,9 @@ class TemplateManager(ModuleManager):
     Can also be used as a template for your own modules.
     """
 
-    def __init__(self, news, signals, time_step_in_ms=10, parent=None):
-        super().__init__(module=JOANModules.TEMPLATE, news=news, signals=signals, time_step_in_ms=time_step_in_ms, parent=parent)
+    def __init__(self, news, central_settings, signals, central_state_monitor, time_step_in_ms=10, parent=None):
+        super().__init__(module=JOANModules.TEMPLATE, news=news, central_settings=central_settings, signals=signals,
+                         central_state_monitor=central_state_monitor, time_step_in_ms=time_step_in_ms, parent=parent)
 
     def update_shared_variables_adjustable_settings(self):
         # update value in self.shared_variables with the value in settings
