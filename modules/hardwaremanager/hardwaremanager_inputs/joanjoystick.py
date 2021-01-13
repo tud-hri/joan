@@ -43,10 +43,6 @@ class JOANJoystickProcess:
         Processes all the inputs of the joystick and writes them to self._data which is then written to the news in the
         action class
         :return: self._data a dictionary containing :self._data['brake'] = self.brake
-            self._data['throttle'] = self.throttle
-            self._data['steering_angle'] = self.steer
-            self._data['Handbrake'] = self.handbrake
-            self._data['Reverse'] = self.reverse
         """
         if self._joystick_open:
             joystick_data = self._joystick.read(self.settings.degrees_of_freedom, 1)
@@ -55,8 +51,15 @@ class JOANJoystickProcess:
 
         if joystick_data:
             if self.settings.use_separate_brake_channel:
-                self.throttle = ((joystick_data[self.settings.gas_channel]) / 255)
-                self.brake = - ((joystick_data[self.settings.brake_channel]) / 255)
+                #self.throttle = ((joystick_data[self.settings.gas_channel]) / 255)
+                #self.brake = - ((joystick_data[self.settings.brake_channel]) / 255)
+
+                #Thrustmaster settings
+                self.throttle = 1 - ((joystick_data[self.settings.gas_channel]+1) + (joystick_data[6]*256)) / 1024  #4*256 = 1020
+                self.brake = 1 - ((joystick_data[self.settings.brake_channel]+1) + (joystick_data[4]*256)) / 1024
+                #print(joystick_data[6])
+                #print(joystick_data[self.settings.gas_channel])
+                print(self.throttle)
             else:
                 input_value = 1 - ((joystick_data[self.settings.gas_channel]) / 128)
                 if input_value > 0:
@@ -81,6 +84,8 @@ class JOANJoystickProcess:
             else:
                 self.steer = ((joystick_data[self.settings.first_steer_channel]) / 255) * (
                         self.settings.max_steer - self.settings.min_steer) - self.settings.max_steer
+
+
 
         self.shared_variables.brake = self.brake
         self.shared_variables.throttle = self.throttle
