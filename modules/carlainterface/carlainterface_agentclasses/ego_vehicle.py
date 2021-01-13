@@ -153,46 +153,28 @@ class EgoVehicleProcess:
             self._BP = random.choice(self.carlainterface_mp.vehicle_blueprint_library.filter("vehicle." + self.settings.selected_car))
         self._control = carla.VehicleControl()
         self.world_map = self.carlainterface_mp.world.get_map()
-        self.weather = self.carlainterface_mp.world.get_weather()
-
         torque_curve = []
         gears = []
 
-        # JG
         torque_curve.append(carla.Vector2D(x=0, y=600))
         torque_curve.append(carla.Vector2D(x=14000, y=600))
         gears.append(carla.GearPhysicsControl(ratio=7.73, down_ratio=0.5, up_ratio=1))
-
-        #TM Same as peter
-        torque_curve_TM = []
-        gears_TM = []
-        torque_curve_TM.append(carla.Vector2D(x=0, y=600))
-        torque_curve_TM.append(carla.Vector2D(x=6000, y=600))
-        torque_curve_TM.append(carla.Vector2D(x=8000, y=0))
-        gears_TM.append(carla.GearPhysicsControl(ratio=7.73, down_ratio=0.5, up_ratio=1))
 
         if self.settings.selected_spawnpoint != 'None':
             if self.settings.selected_car != 'None':
                 self.spawned_vehicle = self.carlainterface_mp.world.spawn_actor(self._BP, self.carlainterface_mp.spawn_point_objects[
                     self.carlainterface_mp.spawn_points.index(self.settings.selected_spawnpoint)])
-
                 physics = self.spawned_vehicle.get_physics_control()
-                physics.torque_curve = torque_curve_TM
+                physics.torque_curve = torque_curve
                 physics.max_rpm = 14000
-                physics.moi = 0.06 # 1.5
-                physics.clutch_strength = 1000 # very big no clutch
+                physics.moi = 1.5
+                physics.final_ratio = 1
+                physics.clutch_strength = 1000  # very big no clutch
                 physics.final_ratio = 1  # ratio from transmission to wheels
-                physics.forward_gears = gears_TM
-                physics.gear_switch_time = 0
+                physics.forward_gears = gears
                 physics.mass = 2316
                 physics.drag_coefficient = 0.24
-                physics.damping_rate_zero_throttle_clutch_engaged = True
-                physics.damping_rate_full_throttle = True
-
-                # TM added:
-                physics.use_gear_autobox = True
-                physics.damping_rate_full_throttle = 0.0
-                # TM added end
+                physics.gear_switch_time = 0
                 self.spawned_vehicle.apply_physics_control(physics)
 
     def do(self):
@@ -201,11 +183,6 @@ class EgoVehicleProcess:
             self._control.reverse = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].reverse
             self._control.hand_brake = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].handbrake
             self._control.brake = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].brake
-
-            self.weather.cloudiness = self._control.brake*100
-            self.carlainterface_mp.world.set_weather(self.weather)
-
-
             if self.settings.set_velocity:
                 vel_error = self.settings.velocity - (math.sqrt(
                     self.spawned_vehicle.get_velocity().x ** 2 + self.spawned_vehicle.get_velocity().y ** 2 + self.spawned_vehicle.get_velocity().z ** 2) * 3.6)
