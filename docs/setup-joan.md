@@ -86,11 +86,14 @@ In the terminal type the following commands in this order (or copy it, and right
 
     git remote add upstream-joan https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan.git
     git fetch upstream-joan
-    git pull upstream-joan master
+    git pull upstream-joan develop-joan2.0
 
-The last command pulls the latest version of JOAN's master branch. Check out your PyCharm editor: you will find all folders and files of the latest JOAN version there: 
+The last command pulls the latest version of JOAN's `develop-joan2.0` branch. Check out your PyCharm editor: you will find all folders and files of the latest JOAN version there: 
 
 ![pycharm-first-joan](imgs/setup-joan-pycharm-first-project.png)
+
+!!!Note
+   The branch develop-joan2.0 contains the latest version of JOAN 2.0!
 
 You also need to set your user name and email address for your repository (replace NETID and TUDELFT EMAIL ADDRESS, but lead the quotation marks):
 
