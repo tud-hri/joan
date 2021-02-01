@@ -4,6 +4,10 @@ import os
 
 
 class TransitionsList(list):
+    """
+    a list object that is automatically filled with all available transitions in the transitions folder. This list makes your custom transition available in
+    JOAN automatically if you've added it to the transitions folder.
+    """
 
     def __init__(self):
         super().__init__()
@@ -11,7 +15,7 @@ class TransitionsList(list):
         python_modules_in_transitions = glob.glob(os.path.join(os.path.dirname(__file__), '*.py'))
 
         for path_to_module in python_modules_in_transitions:
-            module_name = path_to_module.split('\\')[-1].replace('.py', '')
+            module_name = path_to_module.split(os.sep)[-1].replace('.py', '')
 
             if module_name not in ['__init__', 'transition', 'transitionslist']:
 

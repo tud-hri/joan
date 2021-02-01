@@ -34,7 +34,7 @@ Please follow the following steps:
 4. __Retrieve the Python libraries__
 5. __Include the CARLA .*egg file in your JOAN project__
 
-Step 1 you need to do only once per project. Step 2, cloning your project, is something you need to do on every computer that you use for working with JOAN. Suppose you move from one PC to another and you have not cloned your project on that computer, you need to do step 2. Similarly, you need to do steps 3 and 4 when setting up your project for the first time. 
+Step 1 you need to do_while_running only once per project. Step 2, cloning your project, is something you need to do_while_running on every computer that you use for working with JOAN. Suppose you move from one PC to another and you have not cloned your project on that computer, you need to do_while_running step 2. Similarly, you need to do_while_running steps 3 and 4 when setting up your project for the first time. 
 
 Finally, you need to update your project with the latest version of JOAN. We try to update JOAN regularly, based on the issues we all find and features we want to include. It is good practice to regularly update your project. See the final step below for more info.
 
@@ -44,7 +44,7 @@ Finally, you need to update your project with the latest version of JOAN. We try
 JOAN is maintained in a GitLab repository by a team of contributors. There are a couple of ways though which you can download JOAN:
 
 - You can download a __zipped copy__ of the repository (note: you not receive any updates when we change the code)
-- You can __clone__ the repository using the command `git clone . However, if you do not have write permission to the repository, you can't make your own changes and store them on a repository (well, not easily).
+- You can __clone__ the repository using the command `git clone . However, if you do_while_running not have write permission to the repository, you can't make your own changes and store them on a repository (well, not easily).
 - (_recommended for TU Delft students_) You can follow our instructions below to create your own repository and connect to JOAN to receive any updates. This allows you to receive any updates in the JOAN code, make your own research-specific changes and commit (e.g. store) them in your own repository! Awesome!
 
 We will explain how to setup your own project repository and how to connect it to JOAN. This explanation will be tailored to TUDelft students who have access to the TUDelft GitLab server. However, you can also use GitHub, create your own project there and take similar steps. We will explain these steps using PyCharm IDE.
@@ -52,14 +52,14 @@ We will explain how to setup your own project repository and how to connect it t
 ### Make your own JOAN project on gitlab.tudelft.nl (TU Delft students and employees only)
 
 - Log in to the TUDelft's GitLab server at [gitlab.tudelft.nl](https://gitlab.tudelft.nl/) using your `netid`
-- Go to the JOAN repository. You can either search for it, or use this [link](https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan). Welcome! But do nothing - for now.
+- Go to the JOAN repository. You can either search for it, or use this [link](https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan). Welcome! But do_while_running nothing - for now.
 - Open a new browser tab, and navigate to the [JOAN-students group](https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan-students). If you don't have access, you can request access through the "Request access" link (see the image below) Note: this group is visible to anyone with a TUDelft `netid`.
   ![joan-students-access](imgs/setup-joan-gitlab-request-access-joanstudents.png)
     - For PhD researchers, please use the JOAN-projects group.
 - Make a new project using the green 'New project' button. Please name your repository starting with JOAN, followed by your name and any other project description. Use hyphens. Example project name: `JOAN-niek-myfirstjoanproject`. Click on 'Create project'. You will be redirected to your empty repository page. 
 
 !!!Note
-    When asked, do not automatically create a readme file on gitlab
+    When asked, do_while_running not automatically create a readme file on gitlab
 
 - Do not close this webpage, we will need it in a moment.
 
@@ -79,7 +79,7 @@ We will explain how to setup your own project repository and how to connect it t
 - If everything goes to plan, you should see something like this (a new project, with the name you gave it online):
   ![pycharm-empty](imgs/setup-joan-pycharm-repo-firsttime.png)
 
-Now we need to connect the JOAN repository to your own repository, so that you are able to pull any changes we made and merge them into your own JOAN project. To do so, we will use PyCharm's terminal, which you can open by clicking the `Terminal` button in the button. It should show this: 
+Now we need to connect the JOAN repository to your own repository, so that you are able to pull any changes we made and merge them into your own JOAN project. To do_while_running so, we will use PyCharm's terminal, which you can open by clicking the `Terminal` button in the button. It should show this: 
 ![pycharm terminal](imgs/setup-joan-pycharm-terminal.png)
 
 In the terminal type the following commands in this order (or copy it, and right-click paste in the terminal, `ctrl+v` does not work). Perform these commands one-by-one. Do not continue to the next command if the previous one returned errors!
@@ -147,7 +147,7 @@ Using PyCharm, open the terminal again (in PyCharm), check if the directory is s
     python -m venv venv
 
 !!! Note
-    If you don't use PyCharm, just use any other terminal to do these steps.
+    If you don't use PyCharm, just use any other terminal to do_while_running these steps.
 
 This will create a folder called `venv` containing a new and clean virtual environment. To start working in this environment, we have to activate it first. 
 
@@ -167,7 +167,7 @@ To install all requirements from the command prompt, make sure you are in the pr
     pip install -r requirements.txt 
 
 !!! Note
-    Every time you clone your project on a new computer, you need to do this step
+    Every time you clone your project on a new computer, you need to do_while_running this step
 
 
 ---
@@ -181,7 +181,7 @@ The only dependency not in the `requirements.txt` is the CARLA PythonAPI which w
 --- 
 ## Updating your project with the latest JOAN version
 
-Finally, you need to update your project with the latest version of JOAN. We try to update JOAN regularly, based on the issues we all find and features we want to include. It is good practice to regularly update your project. To do this: 
+Finally, you need to update your project with the latest version of JOAN. We try to update JOAN regularly, based on the issues we all find and features we want to include. It is good practice to regularly update your project. To do_while_running this: 
 
     git fetch upstream-joan
     git pull upstream-joan master

@@ -10,86 +10,133 @@ class JOANModules(Enum):
     """
 
     TEMPLATE = auto()
-    DATA_RECORDER = auto()
     HARDWARE_MANAGER = auto()
     CARLA_INTERFACE = auto()
-    STEERING_WHEEL_CONTROL = auto()
+    HAPTIC_CONTROLLER_MANAGER = auto()
+    DATA_RECORDER = auto()
+    CONTROLLER_PLOTTER = auto()
     EXPERIMENT_MANAGER = auto()
     DATA_PLOTTER = auto()
-    SCENARIOS = auto()
-
 
     @property
-    def action(self):
-        from modules.template.action.templateaction import TemplateAction
-        from modules.datarecorder.action.datarecorderaction import DataRecorderAction
-        from modules.steeringwheelcontrol.action.steeringwheelcontrolaction import SteeringWheelControlAction
-        from modules.hardwaremanager.action.hardwaremanageraction import HardwareManagerAction
-        from modules.dataplotter.action.dataplotteraction import DataplotterAction
-        from modules.carlainterface.action.carlainterfaceaction import CarlaInterfaceAction
-        from modules.experimentmanager.action.experimentmanageraction import ExperimentManagerAction
-        from modules.scenarios.action.scenariosaction import ScenariosAction
+    def manager(self):
+        from modules.hardwaremanager.hardwaremanager_manager import HardwareManager
+        from modules.template.template_manager import TemplateManager
+        from modules.carlainterface.carlainterface_manager import CarlaInterfaceManager
+        from modules.hapticcontrollermanager.hapticcontrollermanager_manager import HapticControllerManager
+        from modules.controllerplotter.controllerplotter_manager import ControllerPlotterManager
+        from modules.datarecorder.datarecorder_manager import DataRecorderManager
+        from modules.experimentmanager.experimentmanager_manager import ExperimentManager
+        from modules.dataplotter.dataplotter_manager import DataPlotterManager
 
-        return {JOANModules.TEMPLATE: TemplateAction,
-                JOANModules.DATA_RECORDER: DataRecorderAction,
-                JOANModules.STEERING_WHEEL_CONTROL: SteeringWheelControlAction,
-                JOANModules.HARDWARE_MANAGER: HardwareManagerAction,
-                JOANModules.CARLA_INTERFACE: CarlaInterfaceAction,
-                JOANModules.DATA_PLOTTER: DataplotterAction,
-                JOANModules.EXPERIMENT_MANAGER: ExperimentManagerAction,
-                JOANModules.SCENARIOS: ScenariosAction
-                }[self]
-
+        return {JOANModules.HARDWARE_MANAGER: HardwareManager,
+                JOANModules.TEMPLATE: TemplateManager,
+                JOANModules.CARLA_INTERFACE: CarlaInterfaceManager,
+                JOANModules.HAPTIC_CONTROLLER_MANAGER: HapticControllerManager,
+                JOANModules.CONTROLLER_PLOTTER: ControllerPlotterManager,
+                JOANModules.DATA_RECORDER: DataRecorderManager,
+                JOANModules.EXPERIMENT_MANAGER: ExperimentManager,
+                JOANModules.DATA_PLOTTER: DataPlotterManager}[self]
 
     @property
     def dialog(self):
-        from modules.template.dialog.templatedialog import TemplateDialog
-        from modules.datarecorder.dialog.datarecorderdialog import DataRecorderDialog
-        from modules.steeringwheelcontrol.dialog.steeringwheelcontroldialog import SteeringWheelControlDialog
-        from modules.hardwaremanager.dialog.hardwaremanagerdialog import HardwareManagerDialog
-        from modules.dataplotter.dialog.dataplotterdialog import DataplotterDialog
-        from modules.carlainterface.dialog.carlainterfacedialog import CarlaInterfaceDialog
-        from modules.experimentmanager.dialog.experimentmanagerdialog import ExperimentManagerDialog
-        from modules.scenarios.dialog.scenariosdialog import ScenariosDialog
+        from modules.hardwaremanager.hardwaremanager_dialog import HardwareManagerDialog
+        from modules.template.template_dialog import TemplateDialog
+        from modules.carlainterface.carlainterface_dialog import CarlaInterfaceDialog
+        from modules.hapticcontrollermanager.hapticcontrollermanager_dialog import HapticControllerManagerDialog
+        from modules.controllerplotter.controllerplotter_dialog import ControllerPlotterDialog
+        from modules.datarecorder.datarecorder_dialog import DataRecorderDialog
+        from modules.experimentmanager.experimentmanager_dialog import ExperimentManagerDialog
+        from modules.dataplotter.dataplotter_dialog import DataPlotterDialog
 
-        return {JOANModules.TEMPLATE: TemplateDialog,
-                JOANModules.DATA_RECORDER: DataRecorderDialog,
-                JOANModules.STEERING_WHEEL_CONTROL: SteeringWheelControlDialog,
-                JOANModules.HARDWARE_MANAGER: HardwareManagerDialog,
+        return {JOANModules.HARDWARE_MANAGER: HardwareManagerDialog,
+                JOANModules.TEMPLATE: TemplateDialog,
                 JOANModules.CARLA_INTERFACE: CarlaInterfaceDialog,
-                JOANModules.DATA_PLOTTER: DataplotterDialog,
+                JOANModules.HAPTIC_CONTROLLER_MANAGER: HapticControllerManagerDialog,
+                JOANModules.DATA_RECORDER: DataRecorderDialog,
+                JOANModules.CONTROLLER_PLOTTER: ControllerPlotterDialog,
                 JOANModules.EXPERIMENT_MANAGER: ExperimentManagerDialog,
-                JOANModules.SCENARIOS: ScenariosDialog
+                JOANModules.DATA_PLOTTER: DataPlotterDialog}[self]
+
+    @property
+    def settings(self):
+        from modules.template.template_settings import TemplateSettings
+        from modules.hardwaremanager.hardwaremanager_settings import HardwareManagerSettings
+        from modules.carlainterface.carlainterface_settings import CarlaInterfaceSettings
+        from modules.hapticcontrollermanager.hapticcontrollermanager_settings import HapticControllerManagerSettings
+        from modules.controllerplotter.controllerplotter_settings import ControllerPlotterSettings
+        from modules.datarecorder.datarecorder_settings import DataRecorderSettings
+        from modules.dataplotter.dataplotter_settings import DataPlotterSettings
+
+        return {JOANModules.TEMPLATE: TemplateSettings,
+                JOANModules.HARDWARE_MANAGER: HardwareManagerSettings,
+                JOANModules.CARLA_INTERFACE: CarlaInterfaceSettings,
+                JOANModules.HAPTIC_CONTROLLER_MANAGER: HapticControllerManagerSettings,
+                JOANModules.DATA_RECORDER: DataRecorderSettings,
+                JOANModules.CONTROLLER_PLOTTER: ControllerPlotterSettings,
+                JOANModules.EXPERIMENT_MANAGER: None,
+                JOANModules.DATA_PLOTTER: DataPlotterSettings
                 }[self]
 
+    @property
+    def shared_variables(self):
+        from modules.hardwaremanager.hardwaremanager_sharedvariables import HardwareManagerSharedVariables
+        from modules.template.template_sharedvalues import TemplateSharedVariables
+        from modules.carlainterface.carlainterface_sharedvariables import CarlaInterfaceSharedVariables
+        from modules.hapticcontrollermanager.hapticcontrollermanager_sharedvariables import HapticControllerManagerSharedVariables
+        from core.modulesharedvariables import ModuleSharedVariables
+        from modules.datarecorder.datarecorder_sharedvariables import DataRecorderSharedVariables
+        from modules.dataplotter.dataplotter_sharedvariables import DataPlotterSharedVariables
+
+        return {JOANModules.HARDWARE_MANAGER: HardwareManagerSharedVariables,
+                JOANModules.TEMPLATE: TemplateSharedVariables,
+                JOANModules.CARLA_INTERFACE: CarlaInterfaceSharedVariables,
+                JOANModules.HAPTIC_CONTROLLER_MANAGER: HapticControllerManagerSharedVariables,
+                JOANModules.CONTROLLER_PLOTTER: ModuleSharedVariables,
+                JOANModules.DATA_RECORDER: DataRecorderSharedVariables,
+                JOANModules.EXPERIMENT_MANAGER: None,
+                JOANModules.DATA_PLOTTER: DataPlotterSharedVariables}[self]
+
+    @property
+    def process(self):
+        from modules.hardwaremanager.hardwaremanager_process import HardwareManagerProcess
+        from modules.template.template_process import TemplateProcess
+        from modules.carlainterface.carlainterface_process import CarlaInterfaceProcess
+        from modules.hapticcontrollermanager.hapticcontrollermanager_process import HapticControllerManagerProcess
+        from core.module_process import ModuleProcess
+        from modules.datarecorder.datarecorder_process import DataRecorderProcess
+
+        return {JOANModules.HARDWARE_MANAGER: HardwareManagerProcess,
+                JOANModules.TEMPLATE: TemplateProcess,
+                JOANModules.CARLA_INTERFACE: CarlaInterfaceProcess,
+                JOANModules.HAPTIC_CONTROLLER_MANAGER: HapticControllerManagerProcess,
+                JOANModules.CONTROLLER_PLOTTER: ModuleProcess,
+                JOANModules.DATA_RECORDER: DataRecorderProcess,
+                JOANModules.EXPERIMENT_MANAGER: None,
+                JOANModules.DATA_PLOTTER: ModuleProcess}[self]
 
     @property
     def ui_file(self):
         path_to_modules = os.path.dirname(os.path.realpath(__file__))
-        return {JOANModules.TEMPLATE: os.path.join(path_to_modules, "template/dialog/templatewidget.ui"),
-                JOANModules.DATA_RECORDER: os.path.join(path_to_modules, "datarecorder/dialog/datarecorder.ui"),
-                JOANModules.CARLA_INTERFACE: os.path.join(path_to_modules, "carlainterface/dialog/carlainterface.ui"),
-                JOANModules.STEERING_WHEEL_CONTROL: os.path.join(path_to_modules,
-                                                                 "steeringwheelcontrol/dialog/steeringwheelcontrol.ui"),
-                JOANModules.HARDWARE_MANAGER: os.path.join(path_to_modules, "hardwaremanager/dialog/hardwaremanager.ui"),
-                JOANModules.DATA_PLOTTER: os.path.join(path_to_modules, "dataplotter/dialog/dataplotter.ui"),
-                JOANModules.EXPERIMENT_MANAGER: os.path.join(path_to_modules,
-                                                             "experimentmanager/dialog/experimentmanager_widget.ui"),
-                JOANModules.SCENARIOS: os.path.join(path_to_modules, "scenarios/dialog/scenarios.ui")
+        return {JOANModules.HARDWARE_MANAGER: os.path.join(path_to_modules, "hardwaremanager/hardwaremanager_dialog.ui"),
+                JOANModules.TEMPLATE: os.path.join(path_to_modules, "template/template_dialog.ui"),
+                JOANModules.CARLA_INTERFACE: os.path.join(path_to_modules, "carlainterface/carlainterface_dialog.ui"),
+                JOANModules.HAPTIC_CONTROLLER_MANAGER: os.path.join(path_to_modules, "hapticcontrollermanager/hapticcontrollermanager_dialog.ui"),
+                JOANModules.CONTROLLER_PLOTTER: os.path.join(path_to_modules, "controllerplotter/controllerplotter_dialog.ui"),
+                JOANModules.DATA_RECORDER: os.path.join(path_to_modules, "datarecorder/datarecorder_dialog.ui"),
+                JOANModules.EXPERIMENT_MANAGER: os.path.join(path_to_modules, "experimentmanager/experimentmanager.ui",),
+                JOANModules.DATA_PLOTTER: os.path.join(path_to_modules, "dataplotter/dataplotter.ui")
                 }[self]
-
 
     def __str__(self):
-        return {JOANModules.TEMPLATE: 'Template',
-                JOANModules.DATA_RECORDER: 'Data Recorder',
-                JOANModules.STEERING_WHEEL_CONTROL: 'Steering Wheel Controller Manager',
-                JOANModules.HARDWARE_MANAGER: 'Hardware Manager',
-                JOANModules.EXPERIMENT_MANAGER: 'Experiment Manager',
+        return {JOANModules.HARDWARE_MANAGER: 'Hardware Manager',
+                JOANModules.TEMPLATE: 'Template',
                 JOANModules.CARLA_INTERFACE: 'Carla Interface',
-                JOANModules.DATA_PLOTTER: 'Data Plotter',
-                JOANModules.SCENARIOS: 'Scenarios'
-                }[self]
-
+                JOANModules.HAPTIC_CONTROLLER_MANAGER: 'Haptic Controller Manager',
+                JOANModules.CONTROLLER_PLOTTER: 'Controller Plotter',
+                JOANModules.DATA_RECORDER: 'Data Recorder',
+                JOANModules.EXPERIMENT_MANAGER: 'Experiment Manager',
+                JOANModules.DATA_PLOTTER: 'Data Plotter'}[self]
 
     @staticmethod
     def from_string_representation(string):

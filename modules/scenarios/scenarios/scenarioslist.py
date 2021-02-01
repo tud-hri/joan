@@ -1,6 +1,7 @@
 import glob
 import importlib
 import os
+from pathlib import Path
 
 
 class ScenariosList(list):
@@ -11,7 +12,7 @@ class ScenariosList(list):
         python_modules_in_scenarios = glob.glob(os.path.join(os.path.dirname(__file__), '*.py'))
 
         for path_to_module in python_modules_in_scenarios:
-            module_name = path_to_module.split('\\')[-1].replace('.py', '')
+            module_name = Path(path_to_module).parts[-1].replace('.py', '')
 
             if module_name not in ['__init__', 'scenario', 'scenarioslist']:
 

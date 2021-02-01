@@ -86,7 +86,7 @@ Not all the nitty gritty of the sensodrive has been explained yet but I think it
 small program here that communicates with the sensodrive and has functionality for turning it off and on.
 
 !!! Note
-    Please read all included comments carefully since they do explain some crucial information about the sensodrive's functionality,
+    Please read all included comments carefully since they do_while_running explain some crucial information about the sensodrive's functionality,
     however if you really want to know the exact workings I refer you to the previously stated Software Manual by SensoDrive
     themselves. [LINK](https://www.dropbox.com/s/zzh1kauwl3apl50/SoftwareManual_SENSO-Wheel_v3p20p0.pdf?dl=0)
     

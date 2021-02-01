@@ -23,7 +23,7 @@ This step is easy, just add the following piece of code to the main.py file (or 
     JOANHQACTION.add_module(JOANModules.HARDWARE_MANAGER, millis=5)
 
 ### Step 2. Start CARLA in Unreal Editor
-To do this select the map you'd like to drive in, the CARLA default map is town03. However (for now) the JOAN default map is 'Debugmap'. Starting the level is easy just press the play button on the top bar see the figure below:
+To do_while_running this select the map you'd like to drive in, the CARLA default map is town03. However (for now) the JOAN default map is 'Debugmap'. Starting the level is easy just press the play button on the top bar see the figure below:
 
 ![Carla Start](imgs/joan-workflow-CARLA-default.png)
 
@@ -33,7 +33,7 @@ Make sure you also have 'vehicle spawn points' in your level. You can check this
 This is the exact same step as described in __[Run JOAN](firststeps-joan-run.md)__.
 
 ### Step 4. Setup and run Hardware Manager
-To do this in the JOAN main menu show the 'HardwareManager' module. Now click the 'add new hardware button', this will open a selection menu in which you can choose what sort of input you'd like to add. For now only Keyboard and Joystick work. In this guide we will add a keyboard input.
+To do_while_running this in the JOAN main menu show the 'HardwareManager' module. Now click the 'add new hardware button', this will open a selection menu in which you can choose what sort of input you'd like to add. For now only Keyboard and Joystick work. In this guide we will add a keyboard input.
 So select keyboard, which will open a settings section of the keyboard. Default keys are:
 
 * W = Throttle

@@ -13,11 +13,11 @@ Log in with your TU Delft NETID.
 If correct, CARLA (see `C:\carla`), python 3.8.5 (64 bit; type `python` in a command terminal, you should see a python version > 3.8), and PyCharm are already installed. 
 
 !!! Note
-    If you need to do a fresh install (CARLA, python, PyCharm, ...) on the computer, follow the steps in both the [Build CARLA on Windows](setup-carla-windows.md) and [Install JOAN](setup-joan.md). This needs to be done as an administrator to make CARLA, python and PyCharm available for everyone. Ask your supervisor first.
+    If you need to do_while_running a fresh install (CARLA, python, PyCharm, ...) on the computer, follow the steps in both the [Build CARLA on Windows](setup-carla-windows.md) and [Install JOAN](setup-joan.md). This needs to be done as an administrator to make CARLA, python and PyCharm available for everyone. Ask your supervisor first.
 
 ## Step 2: clone your JOAN project
 
-You can run your JOAN and CARLA project on any TUD computer that we prepared for you. For each PC, you need to clone and setup your JOAN project. Follow the steps in the [Install JOAN](setup-joan.md): do step 1 only when you first create your JOAN project, else, only do steps 2-5. 
+You can run your JOAN and CARLA project on any TUD computer that we prepared for you. For each PC, you need to clone and setup your JOAN project. Follow the steps in the [Install JOAN](setup-joan.md): do_while_running step 1 only when you first create your JOAN project, else, only do_while_running steps 2-5. 
 
 
 ## Step 3: setup your own CARLA map

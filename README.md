@@ -121,7 +121,7 @@ Datarecorder consist of a moduleWidget called DatarecorderWidget and a moduleAct
 ```
 ## Directories
 
-## process
+## core
 
 * control.py <br>
 holds the Control class that takes care of loading widgets<br>
@@ -135,8 +135,8 @@ holds the class MasterStates and an __init__ method that handles the (attribute)
 ## signals
 
 * pulsar.py <br>
-purpose is to use 2 threads, beside the main process.<br>
-It turns out that the QTimer object are running in seperate threads but the methods (acting as 'pyqSlots') that should do something (depending on the widget), are part of the main thread. This is something to look at if this is turns out to be a problem.
+purpose is to use 2 threads, beside the main core.<br>
+It turns out that the QTimer object are running in seperate threads but the methods (acting as 'pyqSlots') that should do_while_running something (depending on the widget), are part of the main thread. This is something to look at if this is turns out to be a problem.
 1. communication with input devices (Sensodrive Steering wheel through PCAN) (as fast as possible, hopefully 1 msec)
 2. spread data around to whatever module want to listen; datarecorder, plotter, GUI (200msec or so)
 
@@ -148,7 +148,7 @@ definition of the gui
 ### modules.datarecorder.action.datarecorder.py
 does all the action to get the datarecorder initializing and working
 ### modules.datarecorder.action.datawriter.py
-actually writes data (from News), every time a pulse calls the do-method in datarecorderWidget
+actually writes data (from News), every time a pulse calls the do_while_running-method in datarecorderWidget
 ### modules.datarecorder.action.datarecordersettings.py
 reads and writes settings in json format which items should be recorded (default: all)
 
@@ -164,7 +164,7 @@ over the news channel
 ### modules.carlainterface.widget.interface.ui
 definition of the gui
 
-### modules.template.widget.template.py
+### modules.template.widget.controllerplotter_manager.py
 Template to create other widgets, has predefined connection with the Control class
 reads the corresponding .ui file and does all the action needed for this widget
 ### modules.template.widget.template.ui

@@ -40,7 +40,7 @@ This schematic shows the overall structure of JOAN as it is at the moment of wri
 ![alt text](imgs/joan-structure-schematic.png "Modules Schematic")
 
 As shown in the figure the main modules you'll probably always use are 'carlainterface', 'hardwaremanager' and the 'datarecorder'. 
-These module titles sort of giveaway what they do however I will also attempt to give a short explanation of each of these modules, why they are there
+These module titles sort of giveaway what they do_while_running however I will also attempt to give a short explanation of each of these modules, why they are there
 and what they accomplish. 
 
 !!! Note
@@ -70,7 +70,7 @@ Examples of what can be done in this module are:
 This module is quite self explanatory, it deals with any sort of input you wish to use with JOAN. The standard inputs that it can handle are
 - `Keyboard`
 - `Any sort of HID (human interface device) joystick`
-- `SensoDrive` This will be the input you use if you want to do anything with forces on the steeringwheel
+- `SensoDrive` This will be the input you use if you want to do_while_running anything with forces on the steeringwheel
 
 The hardware manager is build up in such a way that you will be able to add your own inputs if they inherit from the 'baseinput' class
 
