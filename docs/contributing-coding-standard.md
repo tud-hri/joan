@@ -3,7 +3,7 @@
 ---
 ## General
 
-We follow the coding standard as outlined in [PEP8][pep8link], with one exception the maximum column length for code is increased to 160 since we all use 19:6 screens. 
+We follow the coding standard as outlined in [PEP8][pep8link]{target="_blank"}, with one exception the maximum column length for code is increased to 160 since we all use 19:6 screens. 
 To make your life a bit easier, use linters. We recommend `flake8` or `pylint`, or the build-in functionality of pycharm
 
 Use in editors:
@@ -31,8 +31,8 @@ Use in editors:
   * Functions or variables that are only for use within a class (private members) should start with an underscore (e.g. self._my_variable)
   * Use _informative_ variable names, not `self.bla = 1` or `self.whatever`. 
   * Remove any commented code once you are done with coding. 
-  * [Pylint][pylintlink] or [flake8][flake8link] should not give any error or warning (few exceptions apply with external classes like `numpy` and `pygame`, etcetera).
-  * Python code follows [PEP8 style guide][pep8link].
+  * [Pylint][pylintlink]{target="_blank"} or [flake8][flake8link]{target="_blank"} should not give any error or warning (few exceptions apply with external classes like `numpy` and `pygame`, etcetera).
+  * Python code follows [PEP8 style guide][pep8link]{target="_blank"}.
 
 [pylintlink]: https://www.pylint.org/
 [flake8link]: https://flake8.pycqa.org/en/latest/
@@ -40,15 +40,15 @@ Use in editors:
 
 ## Git flow
 
-We try to use the Git flow workflow in terms of branching, feature implementation and testing and releases. For more information, visit this [link](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) and [this branching model](https://nvie.com/posts/a-successful-git-branching-model/)
+We try to use the Git flow workflow in terms of branching, feature implementation and testing and releases. For more information, visit this [link](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow){target="_blank"} and [this branching model](https://nvie.com/posts/a-successful-git-branching-model/){target="_blank"}
 
 ### Versioning
 
-I propose to use the [Semantic Versioning](https://semver.org/) convention for versions. Our first beta release will be v0.9.0. Each patch increases the last digit: v0.9.1. Every major version (no backwards compatibility) increases the first digit (v1.0.0); though I am not too sure about this one. Every minor version increases the second digit and resets the last: v0.10.0.
+I propose to use the [Semantic Versioning](https://semver.org/){target="_blank"} convention for versions. Our first beta release will be v0.9.0. Each patch increases the last digit: v0.9.1. Every major version (no backwards compatibility) increases the first digit (v1.0.0); though I am not too sure about this one. Every minor version increases the second digit and resets the last: v0.10.0.
 
 ## mkdocs
 
-We are using `mkdocs` and ReadTheDocs for our documentation. For more information on `mkdocs`, visit [this link](https://www.mkdocs.org). We have a branch for the documentation: `docs`. 
+We are using `mkdocs` and ReadTheDocs for our documentation. For more information on `mkdocs`, visit [this link](https://www.mkdocs.org){target="_blank"}. We have a branch for the documentation: `docs`. 
 
 To install `mkdocs`, run:
 ```

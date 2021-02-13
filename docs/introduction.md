@@ -9,8 +9,9 @@ JOAN mainly consists of modules, which communicate with each other through a New
 - CARLA interface
 - Hardware Manager
 - Data recorder
-- Steering Wheel Controller
+- Data Plotter
 - Experiment Manager
+- Haptic Controller Manager
 
 See [JOAN overview](firststeps-joan-overview.md) for more information, or read the module-specific documentation.
 

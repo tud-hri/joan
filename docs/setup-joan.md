@@ -1,6 +1,6 @@
 # Setting up JOAN
 
-Once you have CARLA running, the hard part is over. JOAN is a relative walk in the park, except perhaps for setting up a project repository. TU Delft students need to follow all steps in the 'less-quick start' guide.
+Once you have CARLA running, the hard part is over. JOAN is a relative walk in the park, except perhaps for setting up a project repository. TU Delft students need to follow all steps in the 'Less-quick start' guide.
 
 ## Quick start
 
@@ -34,7 +34,7 @@ Please follow the following steps:
 4. __Retrieve the Python libraries__
 5. __Include the CARLA .*egg file in your JOAN project__
 
-Step 1 you need to do_while_running only once per project. Step 2, cloning your project, is something you need to do_while_running on every computer that you use for working with JOAN. Suppose you move from one PC to another and you have not cloned your project on that computer, you need to do_while_running step 2. Similarly, you need to do_while_running steps 3 and 4 when setting up your project for the first time. 
+Step 1 you need to do only once per project. Step 2, cloning your project, is something you need to do on every computer that you use for working with JOAN. Suppose you move from one PC to another and you have not cloned your project on that computer, you need to do step 2. Similarly, you need to do steps 3 and 4 when setting up your project for the first time. 
 
 Finally, you need to update your project with the latest version of JOAN. We try to update JOAN regularly, based on the issues we all find and features we want to include. It is good practice to regularly update your project. See the final step below for more info.
 
@@ -43,23 +43,23 @@ Finally, you need to update your project with the latest version of JOAN. We try
 
 JOAN is maintained in a GitLab repository by a team of contributors. There are a couple of ways though which you can download JOAN:
 
-- You can download a __zipped copy__ of the repository (note: you not receive any updates when we change the code)
-- You can __clone__ the repository using the command `git clone . However, if you do_while_running not have write permission to the repository, you can't make your own changes and store them on a repository (well, not easily).
+- You can download a __zipped copy__ of the repository (note: you don't receive any updates when we change the code)
+- You can __clone__ the repository using the command `git clone . However, if you do not have write permission to the repository, you can't make your own changes and store them on a repository (well, not easily).
 - (_recommended for TU Delft students_) You can follow our instructions below to create your own repository and connect to JOAN to receive any updates. This allows you to receive any updates in the JOAN code, make your own research-specific changes and commit (e.g. store) them in your own repository! Awesome!
 
 We will explain how to setup your own project repository and how to connect it to JOAN. This explanation will be tailored to TUDelft students who have access to the TUDelft GitLab server. However, you can also use GitHub, create your own project there and take similar steps. We will explain these steps using PyCharm IDE.
 
 ### Make your own JOAN project on gitlab.tudelft.nl (TU Delft students and employees only)
 
-- Log in to the TUDelft's GitLab server at [gitlab.tudelft.nl](https://gitlab.tudelft.nl/) using your `netid`
-- Go to the JOAN repository. You can either search for it, or use this [link](https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan). Welcome! But do_while_running nothing - for now.
-- Open a new browser tab, and navigate to the [JOAN-students group](https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan-students). If you don't have access, you can request access through the "Request access" link (see the image below) Note: this group is visible to anyone with a TUDelft `netid`.
+- Log in to the TUDelft's GitLab server at [gitlab.tudelft.nl](https://gitlab.tudelft.nl/){target="_blank"} using your `netid`
+- Go to the JOAN repository. You can either search for it, or use this [link](https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan){target="_blank"}. Welcome! But do nothing - for now.
+- Open a new browser tab, and navigate to the [JOAN-students group](https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan-students){target="_blank"}. If you don't have access, you can request access through the "Request access" link (see the image below) Note: this group is visible to anyone with a TUDelft `netid`.
   ![joan-students-access](imgs/setup-joan-gitlab-request-access-joanstudents.png)
     - For PhD researchers, please use the JOAN-projects group.
 - Make a new project using the green 'New project' button. Please name your repository starting with JOAN, followed by your name and any other project description. Use hyphens. Example project name: `JOAN-niek-myfirstjoanproject`. Click on 'Create project'. You will be redirected to your empty repository page. 
 
 !!!Note
-    When asked, do_while_running not automatically create a readme file on gitlab
+    When asked, do not automatically create a readme file on gitlab
 
 - Do not close this webpage, we will need it in a moment.
 
@@ -79,18 +79,21 @@ We will explain how to setup your own project repository and how to connect it t
 - If everything goes to plan, you should see something like this (a new project, with the name you gave it online):
   ![pycharm-empty](imgs/setup-joan-pycharm-repo-firsttime.png)
 
-Now we need to connect the JOAN repository to your own repository, so that you are able to pull any changes we made and merge them into your own JOAN project. To do_while_running so, we will use PyCharm's terminal, which you can open by clicking the `Terminal` button in the button. It should show this: 
+Now we need to connect the JOAN repository to your own repository, so that you are able to pull any changes we made and merge them into your own JOAN project. To do so, we will use PyCharm's terminal, which you can open by clicking the `Terminal` button in the button. It should show this: 
 ![pycharm terminal](imgs/setup-joan-pycharm-terminal.png)
 
 In the terminal type the following commands in this order (or copy it, and right-click paste in the terminal, `ctrl+v` does not work). Perform these commands one-by-one. Do not continue to the next command if the previous one returned errors!
 
     git remote add upstream-joan https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan.git
     git fetch upstream-joan
-    git pull upstream-joan master
+    git pull upstream-joan develop-joan2.0
 
-The last command pulls the latest version of JOAN's master branch. Check out your PyCharm editor: you will find all folders and files of the latest JOAN version there: 
+The last command pulls the latest version of JOAN's `develop-joan2.0` branch. Check out your PyCharm editor: you will find all folders and files of the latest JOAN version there: 
 
 ![pycharm-first-joan](imgs/setup-joan-pycharm-first-project.png)
+
+!!!Note
+   The branch develop-joan2.0 contains the latest version of JOAN 2.0!
 
 You also need to set your user name and email address for your repository (replace NETID and TUDELFT EMAIL ADDRESS, but lead the quotation marks):
 
@@ -118,7 +121,7 @@ The first two labeled `origin` are the URLs to your own project. The ones labele
     git remote set-url origin https://<NETID>@gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan-students/<YOUR PROJECT NAME>.git
 
 !!! Important
-    Replace `<NETID>` and `<YOUR PROJECT NAME>` with your 
+    Replace `<NETID>` and `<YOUR PROJECT NAME>` with your NetID and project name
 
 Check if the URL is changed properly:
 
@@ -140,14 +143,14 @@ We now need to make sure that you `push` your first version of your own JOAN pro
 
 ---
 ## Step 3. Set up a Python Virtual Environment
-If this is the first time setting up the project on your pc, you need to create a Python virtual environment. This will help keeping your JOAN project separated from your other projects. If you are interested and would like more information on virtual environments, please read [this](https://docs.python.org/3/tutorial/venv.html). But for now you can also just follow these steps.
+If this is the first time setting up the project on your pc, you need to create a Python virtual environment. This will help keeping your JOAN project separate from your other projects. If you are interested and would like more information on virtual environments, please read [this](https://docs.python.org/3/tutorial/venv.html){target="_blank"}. But for now you can also just follow these steps.
 
 Using PyCharm, open the terminal again (in PyCharm), check if the directory is still correct (of your repository) and type:
 
     python -m venv venv
 
 !!! Note
-    If you don't use PyCharm, just use any other terminal to do_while_running these steps.
+    If you don't use PyCharm, just use any other terminal to do these steps.
 
 This will create a folder called `venv` containing a new and clean virtual environment. To start working in this environment, we have to activate it first. 
 
@@ -167,7 +170,7 @@ To install all requirements from the command prompt, make sure you are in the pr
     pip install -r requirements.txt 
 
 !!! Note
-    Every time you clone your project on a new computer, you need to do_while_running this step
+    Every time you clone your project on a new computer, you need to do this step
 
 
 ---
@@ -181,7 +184,7 @@ The only dependency not in the `requirements.txt` is the CARLA PythonAPI which w
 --- 
 ## Updating your project with the latest JOAN version
 
-Finally, you need to update your project with the latest version of JOAN. We try to update JOAN regularly, based on the issues we all find and features we want to include. It is good practice to regularly update your project. To do_while_running this: 
+Finally, you need to update your project with the latest version of JOAN. We try to update JOAN regularly, based on the issues we all find and features we want to include. It is good practice to regularly update your project. To do this: 
 
     git fetch upstream-joan
     git pull upstream-joan master

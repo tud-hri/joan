@@ -1,10 +1,17 @@
 # Running JOAN and CARLA
 
-These are the steps required from executing JOAN to driving your vehicle in CARLA. Note that with the development of JOAN, we might automate some of these steps for you.
+These are the steps required from executing JOAN to driving your vehicle in CARLA. This quick guide will include a lot of 
+references to more detailed documentation for the modules themselves. If you cannot seem to grasp what is going on in the GIFS
+below then please look at that documentation. Other than that, the text descriptions in this section will be minimal, and mostly
+GIFs and pictures! :)
+
+!!! Note
+    This quick setup guide only shows the usage of 3 basic modules namely, `Hardware Manager`, `DataRecorder` and `CarlaInterface`, please refer to the 
+    actual documentation of the seperate modules if you want more info on how to setup the remaining default ones.
 
 ### 1. Run JOAN and CARLA
 
-Out-of-the-box, JOAN has a couple of modules included (for example CarlaInterface, HardwareManager, DataRecorder, SWController). These should show up in JOAN HQ, JOAN's headquarters.
+Out-of-the-box, JOAN has a couple of modules included (`CarlaInterface, HardwareManager, DataRecorder, Haptic Controller Manager , DataPlotter and  the Experiment Manager`). These should show up in JOAN HQ, JOAN's headquarters.
 
 - To run JOAN, either execute (in a terminal):
 ```
@@ -17,54 +24,64 @@ Or, if you use PyCharm, click the green play button or right-click on `main.py` 
 
 - To start CARLA, open the CarlaUE4, and open your map in CarlaUE4. 
 
+!!! Note
+    If you get a prompt by Unreal that says `Carla was build with a different engine version, would you like to make a copy`, please do not do this. But check whether you have Unreal Engine
+    4.24 as your active version, or open up the `epic games launcher` and in the right top select your engine version (4.24), launch this editor and launch your CarlaEU4 project
+    from there.
+
 - Hit the big play button in CarlaUE4
 
-### 2. Connect JOAN to CARLA
+See below the GIF for step 1 :
+[ ![](gifs/joan-run-firststep.gif) ](gifs/joan-run-firststep.gif){target="_blank"}
 
-We need to establish a connection with CARLA before we can receive data from CARLA or send data to CARLA.
+### 2. Add an input device
+Open up the `hardware manager` and click the `add hardware button` select your input, put in the appropriate settings and save. (For more details please
+go to [using the hardware manager](modules-hardwaremanager.md#using_hw_manager).
 
-- Open CarlaInterface (click `show`) in JOAN HQ.
+In the example below we use a Keyboard.
+[ ![](gifs/joan-run-add-input.gif) ](gifs/joan-run-add-input.gif){target="_blank"}
 
-- Click the 'Connect' button. This will take a few seconds
+### 3. Add an agent
+Open up `carlainterface` and click the `add agent` button, select your agent, apply the appropriate settings (for this example we use
+a keyboard as input) and save. For more details please visit [using the Carlainterface module](modules-carlainterface.md/#using_carlainterface).
+See the gif below for this step:
 
-### 3. Add an input device and start Hardware Manager
+[ ![](gifs/joan-run-add-agent.gif) ](gifs/joan-run-add-agent.gif){target="_blank"}
 
-- Open Hardware Manager
+### 4. Initialize
+Now that we have our basic driving setup completed its time to initialize the modules. In the example below we still have
+our included module windows open, this is not necessary but included here to show that the modules change to 
+the `initialized` (blue color) state accordingly. Going to that state is easily done by clicking the `initialize` button in the main JOAN window:
+[ ![](gifs/joan-run-initialize.gif) ](gifs/joan-run-initialize.gif){target="_blank"}
 
-- Click 'Add input' and select your input of choice from the drop down menu (for example, a keyboard). 
+!!! Note
+    If any code errors are found the module will go into the error state and save a log file
 
-- Check the settings; you can change and save them, if you want.
+### 5. Setup the variables you'd like to record and where to save them in the DataRecorder
+Whenever you want to record some data you'll have to setup the DataRecorder after initializing. First we open up the DataRecorder
+module dialog, then we specify our save path (where we want the `.csv` file to go) and lastly we check the variables we would like
+to record:
 
-- Initialize and Start the hardware manager by using the corresponding buttons
+[ ![](gifs/joan-run-setup-datarecorder.gif) ](gifs/joan-run-setup-datarecorder.gif){target="_blank"}
 
-<!-- ![Hardware Setup](gifs/joan-workflow-hardware-setup.gif) -->
+### 6. Get Ready
+Next step is to transition to the next state, `ready`, as you will see in the gif below this process takes
+a little while because JOAN has to create and setup all the multiprocesses and will only continue if they are 
+all done. This can take up to 15 seconds or so, so please be patient. You'll see the cursor also being a 
+circle during this time.
+If everything went well you'll notice the state change from the blue `initialized` to the yellow `ready`.
+[ ![](gifs/joan-run-setup-getready.gif) ](gifs/joan-run-setup-getready.gif){target="_blank"}
+### 7. Run and Drive!
+Now the only thing left to do is to click `run` to go to the `running` state and start driving around:
+[ ![](gifs/joan-run-setup-rundrive.gif)](gifs/joan-run-setup-rundrive.gif){target="_blank"}
+If you press the `stop` button, JOAN Will handle everything accordingly and properly shut down
+your session. (Also destroyign any spawned objects in CARLA)
 
-### 4. Create an ego vehicle and start CARLA interface
+### 8. Have a look at your CSV file full of data.
+Just to check whether we have really recorded something we can look at the generated CSV file:
+[ ![](gifs/joan-run-lookatdata.gif)](gifs/joan-run-lookatdata.gif){target="_blank"}
 
-To drive a car in CARLA, you need to create an 'ego vehicle'. You can do_while_running this in CARLA Interface.
-
-- Click 'Add vehicle' and select 'ego vehicle' from the drop down list.
-
-- Check all the settings of the ego vehicle.
-
-    - In the inputs list, select the input device you just created (Keyboard)
-    - Leave the steering wheel controller option blank for now
-    - Select your car (the Audi is great)
-    - You can select cruise control (and set your own speed)
-    
-- Initialize and start CARLA interface (click the button)
-
-### 5. Drive! and collect data
-
-If you want, you can also record data using the data recorder.
-
-- In Data Recorder, select the data that you want to store (check/uncheck the boxes)
-
-- Click initialize and start; you are recording!
 
 
 ---
 
-We've also put this in a flow diagram:
-
-![workflow](imgs/joan-workflow-JOAN-workflow.png)

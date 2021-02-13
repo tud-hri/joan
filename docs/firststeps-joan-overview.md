@@ -1,86 +1,71 @@
-## Structure of main JOAN components
+# JOAN Overview
+In this section we try to explain the overall high level overview of the JOAN framework. Please note that if you are interested
+in adding your own modules you need a more thorough understanding than just this section, if that is the case please
+also consult the [Advanced Steps Section](advancedsteps-add-custom-module.md) for more information.
 
-JOAN components are used in modules that you can add.
+## High Level JOAN Structure
+[ ![](imgs/first-steps-highlevel-structure.png) ](imgs/first-steps-highlevel-structure.png){target="_blank"}
 
-They are loaded through the Main window as they are defined in `JOANModules.py`.
-
-Your modules, which should consist of an action- and a dialog-part inherit JOAN components to make building and using modules easier for you.
-
-Using the `JOANModuleAction` let your module work with:
-
-- `Status`, containing the State and the StateMachine
-- `News`, your module may write to it's own news-channel using a time interval
-- `Settings`, containing settings in json format
-- `performance monitor` (optional) on the current module
-
-Using the `JOANModuleDialog` gives your module a base dialog window with buttons (see picture below):
-
-- `Start`
-- `Stop`
-- `Initialize`
-
-And a menu bar with the options:
-
-- `File`
-- `Settings`
-
-It also has an input field for setting a timer interval used when writing news (= latest data).
-
-![alt text](imgs/joan-structure-template-dialog.png "Template Dialog")
+In the image above you'll notice that JOAN consists mainly of 2 groups, namely the `core` and the `modules`. For now
+ we'll leave the core be, however we will go into the modules here. 
 
 
-## Main Components of JOAN
-This schematic shows the overall structure of JOAN as it is at the moment of writing (11/08/2020):
+## Module
+Modules can be anything you want, because 
+as it says in the name already JOAN has a `Modular structure`. It is important to know what exactly is contained in a
+JOAN Module, it is summarized in the image below:
+[ ![](imgs/first-steps-module.png) ](imgs/first-steps-module.png){target="_blank"}
 
-!!! Note
-    JOAN will work with only 1 module as well or as many as you like. The structure shown here is a 'barebones' version of driving
-    a car around and recording some data. 
-    
+The descriptions in the above image are of course a very short summary, for a deeper understanding of what each element
+does, and a bit more context please refer to the following explanations:
 
-![alt text](imgs/joan-structure-schematic.png "Modules Schematic")
+- [Module Manager](advancedsteps-add-custom-module.md#manager_class){target="_blank"}
+- [Module Dialog](advancedsteps-add-custom-module.md#dialog_class){target="_blank"}
+- [Module Settings](advancedsteps-add-custom-module.md#settings_class){target="_blank"}
+- [Module Shared Variables](advancedsteps-add-custom-module.md#shared_variables_class){target="_blank"}
+- [Module Process](advancedsteps-add-custom-module.md#process_class){target="_blank"}
 
-As shown in the figure the main modules you'll probably always use are 'carlainterface', 'hardwaremanager' and the 'datarecorder'. 
-These module titles sort of giveaway what they do_while_running however I will also attempt to give a short explanation of each of these modules, why they are there
-and what they accomplish. 
+## Data flow & Communication
+Because of multiprocessing and the modular structure of JOAN the dataflow can be a bit difficult to grasp. In this
+section we try to shed some light on these topics. A graphic overview is given in the image below, this image is an arbitrary
+example where we use 2 seperate modules, `module 1` and `module 2`.
+[ ![](imgs/first-steps-communication.png) ](imgs/first-steps-communication.png){target="_blank"}
+Please keep the above image in mind when going through the text below, there we will explain the flow of data and JOAN in more detail.
 
-!!! Note
-    This explanation will only scratch the surface of how exactly these modules work, we have tried to document the code itself really well
-    so if you want to know the knitty gritty of what exactly happens in the modules please have a look at the individual code and especially
-    the docstrings/comments! :)
-   
-### Carla Interface
-This module basically acts as the bridge between python and the CARLA environment in unreal. Almost all of the communication between carla and JOAN
-is done here. In this module the documentation of the pythonAPI of carla is crucial to understand and get a grasp of, you can find it [here](https://carla.readthedocs.io/en/latest/python_api/).
-Examples of what can be done in this module are:
+### States
+The first thing you'll notice is that we have 4 columns of almost the same thing, these represent the different states
+JOAN can be in during expected operation; `STOPPED`, `IDLE`, `READY` and `RUNNING`. This is important because it will give you more insight
+into when, how and why certain communication elements are used. 
 
-- `Spawn and destroy 'actors' (cars, pedestrians etc)`
-- `Retrieve waypoints of the loaded map`
-- `Change a vehicle's physics characteristics`
-- `Any functionality you can find in the CARLA pythonAPI`[link](https://carla.readthedocs.io/en/latest/python_api/)
+### Settings
+As mentioned earlier every module has its own settings. These settings are made whenever a module is loaded and stored in the `Settings()` class. 
+Loading a module means nothing more than including the module in the main.py of the program via the headquarters. Whenever you have a module loaded it will
+have a settings object associated with it, this settings object can get filled with different other setting objects, for example the
+hardware manager module has a base settings object for the module: `HardwareManagerSettings()`, but inside this object we have a dictionary
+called `inputs` which contains the setting objects of different types of inputs. For example it can contain a 
+`KeyboardSettings()` object and 2 `JoystickSettings()` objects. These specific settings objects are dynamically created and destroyed depending on the state of the module. Basically the way
+it goes is as depicted below:
+
+[ ![](imgs/first-steps-settingsvsstates.png) ](imgs/first-steps-settingsvsstates.png){target="_blank"}
+
+### Shared Variables
+The `Shared Variables` are one of the most essential classes of JOAN. As with the `Settings()` the creation and removal of these classes
+depend on the States as shown below:
+
+[ ![](imgs/first-steps-settingsvsharedvariables.png) ](imgs/first-steps-settingsvsharedvariables.png){target="_blank"}
 
 !!! Important
-    A good understanding of python is needed to grasp the functionality that can be implemented. It is therefore strongly recommended to take a good look
-    at the documentation before you try and play with the module.
-    
-!!! Note
-    Please note that it is only possible to initialize this module if CARLA is running in Unreal.
+    Shared Variables have to be pickleable (serializable)!!
 
-![alt text](imgs/joan-structure-carlainterface.PNG "Carla Interface")
-### Hardware Manager
-This module is quite self explanatory, it deals with any sort of input you wish to use with JOAN. The standard inputs that it can handle are
-- `Keyboard`
-- `Any sort of HID (human interface device) joystick`
-- `SensoDrive` This will be the input you use if you want to do_while_running anything with forces on the steeringwheel
-
-The hardware manager is build up in such a way that you will be able to add your own inputs if they inherit from the 'baseinput' class
-
-![alt text](imgs/joan-structure-hardwaremanager.PNG "Hardware Manager")
-### Datarecorder
-This module is also self explanatory, when initializing the module the current items that are in the news channel will be shown in the
-window. You can check and uncheck the variables you'd wish to save, it will then save these variables in a csv file. 
+### Signals
+The Signals class in the Default JOAN is a bit obscure, so far it is only used in the `activate condition` function in the 
+experiment manager. This triggers signals so that whenever a condition is activated it updates all dialogs of all included modules.
+The Signals class uses the built in signals & slots functionality from PyQt, so for a deeper understanding please refer to [this 
+tutorial on signals and slots](https://www.tutorialspoint.com/pyqt/pyqt_signals_and_slots.htm){target="_blank"}
 
 
-![alt text](imgs/joan-structure-datarecorder.PNG "Data Recorder")
+### News
+The `News()` class is used throughout all modules and serves as a sort of message pipe to all modules. It mainly contains the seperate `shared_variables` objects
+of all the modules. This is needed because then we can access our shared variables from all modules. For example if I'd like to calculate something in a seperate
+`calculator` module, and for this I need the input values of a `keyboard` from the `hardwaremanager` I can easily access this info in my new module! 
 
-In the example above we will record the data of 'Car 1', but we have decided we are not interested in the angular velocities or accelerations of the vehicle, so we have
-unchecked these. The result will be that these variables are not saved in the file 'data_20200811_142027.csv'

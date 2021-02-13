@@ -14,12 +14,12 @@ The SensoDrive's hardware mainly consists of three necessary parts.
 - `Steering wheel` Self explanatory, can be removed and switched for other wheels
 - `PCAN USB Dongle` This is the bridge between the internal controller of the sensodrive and your PC
 
-## Setting up your PC for a sensodrive
+## Setting up your PC for a SensoDrive
 Before you can plug and play the SensoDrive with JOAN (on a new PC, all pc's that we use on the university are already 
 prepared) you need to get:
 
-1. The drivers for the PEAK systems PCAN USB. You can find them here: [link](https://www.peak-system.com/PCAN-USB.199.0.html?&L=1)
-2. The DLL's (Dynamic Linker Libraries) for PCAN-Basic-API. These can also be found here:  [link](https://www.peak-system.com/PCAN-USB.199.0.html?&L=1)
+1. The drivers for the PEAK systems PCAN USB. You can find them here: [link](https://www.peak-system.com/PCAN-USB.199.0.html?&L=1){target="_blank"}
+2. The DLL's (Dynamic Linker Libraries) for PCAN-Basic-API. These can also be found here:  [link](https://www.peak-system.com/PCAN-USB.199.0.html?&L=1){target="_blank"}
 
 !!! Note
     Make sure you copy the appropriate DLL's to your windows system folders. So for the 32 bit version put it in System32 for the 64 bit version
@@ -39,7 +39,7 @@ to know all about CAN communication protocols and how the PCAN API works please 
 provided by PEAK Systems. (Same link as the drivers)
 
 The main document of reference for this section is the 'Software manual Version 3.10.0 SENSO-wheel' by the SensoDrive company
-itself. [LINK](https://www.dropbox.com/s/zzh1kauwl3apl50/SoftwareManual_SENSO-Wheel_v3p20p0.pdf?dl=0) This explains all relevant info regarding the messages you can send and receive and what the messages
+itself. [LINK](https://www.dropbox.com/s/zzh1kauwl3apl50/SoftwareManual_SENSO-Wheel_v3p20p0.pdf?dl=0){target="_blank"} This explains all relevant info regarding the messages you can send and receive and what the messages
 should look like that you send. For the rest of this section we will explain the different steps to communicate over 
 PCAN in python.
 
@@ -75,19 +75,14 @@ api can return an error, this is not the sensowheel itself (obviously)
 
 - `Make sure you initialize the Dongle with appropriate USB channel and BAUDRATE`
 
-We will show this in the example later but just to emphasize that you should initialize the dongle.
-
 - `Make sure you read all the messages you send, else a buffer will fill up and you introduce lag`
 
-Self explanatory
 
-## Code Example
-Not all the nitty gritty of the sensodrive has been explained yet but I think its more productive to just show a 
-small program here that communicates with the sensodrive and has functionality for turning it off and on.
+### Actual Code
 
-!!! Note
-    Please read all included comments carefully since they do_while_running explain some crucial information about the sensodrive's functionality,
-    however if you really want to know the exact workings I refer you to the previously stated Software Manual by SensoDrive
-    themselves. [LINK](https://www.dropbox.com/s/zzh1kauwl3apl50/SoftwareManual_SENSO-Wheel_v3p20p0.pdf?dl=0)
-    
-    (UNDER CONSTRUCTION)
+If you are really insisting on getting how the SensoDrive works within JOAN, we'd like to refer you to the specific file 
+
+    joan/modules/hardwaremanager/hardwaremanager_inputs/joansensodrive.py
+
+Within this file the most important class is the `SensoDriveComm` (which is a multi-process) class. In here all the above mentioned tips and tricks are used.
+So please dig your teeth in there!
