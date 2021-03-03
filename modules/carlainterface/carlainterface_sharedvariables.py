@@ -14,7 +14,7 @@ class CarlaInterfaceSharedVariables(ModuleSharedVariables):
         self.agents = {}
 
 
-class EgoVehicleSharedVariables(SharedVariables):
+class VehicleSharedVariables(SharedVariables):
     """
     Holds shared variables
     """
