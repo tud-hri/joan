@@ -38,7 +38,6 @@ class HardwareManager(ModuleManager):
         for hw_input in self.module_settings.inputs.values():
             self.shared_variables.inputs[hw_input.identifier] = HardwareInputTypes(hw_input.input_type).shared_variables()
 
-
     def get_ready(self):
         """
         Gets the module manager ready, executes after transitioning from the Initialized State. Will start the periodic

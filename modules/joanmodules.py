@@ -17,6 +17,7 @@ class JOANModules(Enum):
     CONTROLLER_PLOTTER = auto()
     EXPERIMENT_MANAGER = auto()
     DATA_PLOTTER = auto()
+    NPC_CONTROLLER_MANAGER = auto()
 
     @property
     def manager(self):
