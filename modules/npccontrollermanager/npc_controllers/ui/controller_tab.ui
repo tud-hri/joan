@@ -41,7 +41,7 @@
       </font>
      </property>
      <property name="title">
-      <string>hardware_name</string>
+      <string>controller_name</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="0" column="1" rowspan="2">
@@ -52,7 +52,7 @@
        </widget>
       </item>
       <item row="0" column="2" rowspan="2">
-       <widget class="QPushButton" name="btn_remove_hardware">
+       <widget class="QPushButton" name="btn_remove_controller">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -66,7 +66,7 @@
          </font>
         </property>
         <property name="text">
-         <string>Remove Hardware</string>
+         <string>Remove Controller</string>
         </property>
        </widget>
       </item>

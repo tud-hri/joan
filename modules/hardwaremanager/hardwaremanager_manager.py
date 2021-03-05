@@ -112,10 +112,10 @@ class HardwareManager(ModuleManager):
         :return:
         """
         # add to module_settings
-        input_settings = self.module_settings.add_hardware_input(input_type, input_settings)
+        input_settings = self.module_settings.add_controller(input_type, input_settings)
 
         # add to module_dialog
-        self.module_dialog.add_hardware_input(input_settings, from_button)
+        self.module_dialog.add_controller(input_settings, from_button)
 
     def remove_hardware_input(self, identifier):
         """
@@ -124,10 +124,10 @@ class HardwareManager(ModuleManager):
         :return:
         """
         # remove from settings
-        self.module_settings.remove_hardware_input(identifier)
+        self.module_settings.remove_controller(identifier)
 
         # remove settings from dialog
-        self.module_dialog.remove_hardware_input(identifier)
+        self.module_dialog.remove_controller(identifier)
 
     def turn_on_sensodrive(self, identifier):
         """

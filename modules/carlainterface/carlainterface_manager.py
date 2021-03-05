@@ -67,6 +67,7 @@ class CarlaInterfaceManager(ModuleManager):
         self.connected = self.connect_carla()
 
         self.state_machine.set_transition_condition(State.INITIALIZED, State.READY, self._check_connection)
+        # TODO implement check to see if multiple NPC vehicles are not connected to the same controller
 
     def _check_connection(self):
         return self.connected

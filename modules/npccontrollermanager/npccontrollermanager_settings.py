@@ -42,7 +42,8 @@ class NPCControllerManagerSettings(ModuleSettings):
             nr += 1
             identifier = '{0!s}_{1}'.format(controller_type, nr)
 
-        return controller_settings
+        self.controllers[identifier] = controller_settings
+        return identifier, controller_settings
 
     def remove_controller(self, identifier):
         self.controllers.pop(identifier)

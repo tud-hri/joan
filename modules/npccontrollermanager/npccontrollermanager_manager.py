@@ -12,8 +12,6 @@ class NPCControllerManager(ModuleManager):
                          signals=signals, central_state_monitor=central_state_monitor, time_step_in_ms=time_step_in_ms, parent=parent)
         self.controller_identifiers = []
 
-        # TODO: implement check when transitioning to ready to see if controllers are not connected to multiple vehicles
-
     def initialize(self):
         """
         Initializes the manager, executes when transitioning from the Stopped State.
@@ -34,9 +32,9 @@ class NPCControllerManager(ModuleManager):
         for controller_settings in self.module_settings.all_controllers().values():
             self.module_dialog.add_controller(controller_settings)
 
-    def add_hardware_input(self, controller_type: NPCControllerTypes):
-        input_settings = self.module_settings.add_new_controller(controller_type)
-        self.module_dialog.add_controller(input_settings)
+    def add_controller(self, controller_type: NPCControllerTypes, show_settings_dialog=False):
+        identifier, controller_settings = self.module_settings.add_new_controller(controller_type)
+        self.module_dialog.add_controller(identifier, controller_settings, show_settings_dialog)
 
     def remove_controller(self, identifier):
         self.module_settings.remove_controller(identifier)

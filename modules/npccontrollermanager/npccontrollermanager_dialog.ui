@@ -33,7 +33,7 @@
     <number>0</number>
    </property>
    <item row="1" column="1">
-    <widget class="QGroupBox" name="hardware_groupbox">
+    <widget class="QGroupBox" name="controller_groupbox">
      <property name="font">
       <font>
        <pointsize>11</pointsize>
@@ -42,7 +42,7 @@
       </font>
      </property>
      <property name="title">
-      <string>Hardware Input List:</string>
+      <string>NPC Controller List:</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="0" column="0">
@@ -61,7 +61,7 @@
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
-           <layout class="QVBoxLayout" name="hardware_list_layout"/>
+           <layout class="QVBoxLayout" name="controller_list_layout"/>
           </item>
           <item>
            <spacer name="verticalSpacer">
@@ -84,7 +84,7 @@
     </widget>
    </item>
    <item row="0" column="1">
-    <widget class="QPushButton" name="btn_add_hardware">
+    <widget class="QPushButton" name="btn_add_controller">
      <property name="font">
       <font>
        <pointsize>11</pointsize>
@@ -93,7 +93,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Add Hardware Input</string>
+      <string>Add Controller Input</string>
      </property>
     </widget>
    </item>

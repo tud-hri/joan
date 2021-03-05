@@ -55,19 +55,7 @@ class NPCVehicleSettingsDialog(QtWidgets.QDialog):
         self.display_values()
 
     def accept(self):
-        self.settings.selected_npc_controller = self.combo_controller.currentText()
-        self.settings.selected_car = self.combo_car_type.currentText()
-        self.settings.selected_spawnpoint = self.combo_spawnpoints.currentText()
-        for settings in self.carla_interface_overall_settings.agents.values():
-            if settings.identifier != self.settings.identifier:  # exlude own settings
-                if settings.selected_spawnpoint == self.combo_spawnpoints.currentText() and settings.selected_spawnpoint != 'None':
-                    self.msg_box.setText('This spawnpoint was already chosen for another agent \n'
-                                         'resetting spawnpoint to None')
-                    self.msg_box.exec()
-                    self.settings.selected_spawnpoint = 'None'
-                    break
-            else:
-                self.settings.selected_spawnpoint = self.combo_spawnpoints.currentText()
+        self.update_parameters()
         super().accept()
 
     def display_values(self, settings_to_display=None):
@@ -86,38 +74,32 @@ class NPCVehicleSettingsDialog(QtWidgets.QDialog):
         self.display_values(AgentTypes.NPC_VEHICLE.settings())
 
     def update_settings(self, settings):
-        try:
-            # update available vehicles
-            self.combo_car_type.clear()
-            self.combo_car_type.addItem('None')
-            self.combo_car_type.addItems(self.module_manager.vehicle_tags)
-            idx = self.combo_car_type.findText(settings.selected_car)
-            if idx != -1:
-                self.combo_car_type.setCurrentIndex(idx)
+        # update available vehicles
+        self.combo_car_type.clear()
+        self.combo_car_type.addItem('None')
+        self.combo_car_type.addItems(self.module_manager.vehicle_tags)
+        idx = self.combo_car_type.findText(settings.selected_car)
+        if idx != -1:
+            self.combo_car_type.setCurrentIndex(idx)
 
-            # update available spawn_points:
-            self.combo_spawnpoints.clear()
-            self.combo_spawnpoints.addItem('None')
-            self.combo_spawnpoints.addItems(self.module_manager.spawn_points)
-            idx = self.combo_spawnpoints.findText(
-                settings.selected_spawnpoint)
-            if idx != -1:
-                self.combo_spawnpoints.setCurrentIndex(idx)
+        # update available spawn_points:
+        self.combo_spawnpoints.clear()
+        self.combo_spawnpoints.addItem('None')
+        self.combo_spawnpoints.addItems(self.module_manager.spawn_points)
+        idx = self.combo_spawnpoints.findText(
+            settings.selected_spawnpoint)
+        if idx != -1:
+            self.combo_spawnpoints.setCurrentIndex(idx)
 
-            # update available controllers according to current settings:
-            # TODO add update part for driving controllers
-            # self.combo_haptic_controllers.clear()
-            # self.combo_haptic_controllers.addItem('None')
-            # HapticControllerManagerSettings = self.module_manager.central_settings.get_settings(JOANModules.HAPTIC_CONTROLLER_MANAGER)
-            # for haptic_controller in HapticControllerManagerSettings.haptic_controllers.values():
-            #     self.combo_haptic_controllers.addItem(str(haptic_controller))
-            # idx = self.combo_haptic_controllers.findText(
-            #     settings.selected_npc_controller)
-            # if idx != -1:
-            #     self.combo_haptic_controllers.setCurrentIndex(idx)
-        except AttributeError:
-            # Catching attribute error when using default car settings
-            pass
+        # update available controllers according to current settings:
+        self.combo_controller.clear()
+        self.combo_controller.addItem('None')
+        npc_controller_manager_settings = self.module_manager.central_settings.get_settings(JOANModules.NPC_CONTROLLER_MANAGER)
+        for controller_identifier, controller_settings in npc_controller_manager_settings.controllers.items():
+            self.combo_controller.addItem(controller_identifier)
+        idx = self.combo_controller.findText(settings.selected_npc_controller)
+        if idx != -1:
+            self.combo_controller.setCurrentIndex(idx)
 
 
 class NPCVehicleProcess:
@@ -125,6 +107,7 @@ class NPCVehicleProcess:
         self.settings = settings
         self.shared_variables = shared_variables
         self.carlainterface_mp = carla_mp
+        self.npc_controller_shared_variables = carla_mp.npc_controller_shared_variables
 
         if self.settings.selected_car != 'None':
             self._BP = random.choice(self.carlainterface_mp.vehicle_blueprint_library.filter("vehicle." + self.settings.selected_car))
@@ -156,12 +139,12 @@ class NPCVehicleProcess:
 
     def do(self):
         if self.settings.selected_npc_controller != 'None' and hasattr(self, 'spawned_vehicle'):
-            # TODO set control from controller
-            # self._control.steer = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].steering_angle / math.radians(450)
-            # self._control.reverse = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].reverse
-            # self._control.hand_brake = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].handbrake
-            # self._control.brake = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].brake
-            # self._control.throttle = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].throttle
+
+            self._control.steer = self.npc_controller_shared_variables.controllers[self.settings.selected_npc_controller].steering_angle / math.radians(450)
+            self._control.reverse = self.npc_controller_shared_variables.controllers[self.settings.selected_input].reverse
+            self._control.hand_brake = self.npc_controller_shared_variables.controllers[self.settings.selected_input].handbrake
+            self._control.brake = self.npc_controller_shared_variables.controllers[self.settings.selected_input].brake
+            self._control.throttle = self.npc_controller_shared_variables.controllers[self.settings.selected_input].throttle
 
             self.spawned_vehicle.apply_control(self._control)
 
