@@ -161,3 +161,15 @@ In the function `load_from_dict` you will need to add:
 It is highly likely that you forgot a crucial part, you have to be very meticulous! The error messages you get in the terminal should help you underway
 as to where things went wrong!
 
+---
+
+## CARLA time step 
+
+CARLA's time step is fixed to 1. / 60. seconds (so 60Hz) when you run JOAN. If you'd like to change the fixed time step, in `carlainterface.settings.py` change 
+
+```python
+self.fixed_time_step = 1. / 60.  # set to None if variable time step
+```
+to the desired value. If you prefer CARLA to run with a variable time step (e.g. CARLA figures out by itself how fast to run), set `self.fixed_time_step` to `None`. 
+
+Check whether CARLA indeed runs at approximately the fixed time step by displaying the FPS counter in CarlaUE4. You can check the box in the dropdown menu in the viewport (top-left, arrow pointing down, only visible when CARLA is not running).

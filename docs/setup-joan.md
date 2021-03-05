@@ -6,14 +6,14 @@ Once you have CARLA running, the hard part is over. JOAN is a relative walk in t
 
 1. Clone JOAN in the directory of your choice
 ```
-git clone https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan.git
+git clone https://github.com/tud-hri/joan.git
+cd joan
 ```
 
-2. We recommend setting up a python virtual environment (see step 3 below)
+2. We recommend setting up a python virtual environment for JOAN (note: use python > 3.6). In a terminal, check whether you are in the joan repository, and execute:
 ```
 python -m venv venv
 ```
-
 3. Install the dependencies using `pip` (see step 4) 
 ```
 pip install -r requirements.txt
@@ -21,6 +21,12 @@ pip install -r requirements.txt
 4. Include the CARLA `.egg` file in the JOAN project (see step 5)
 
 5. If you want to use `git` for your own project, set up your own remote project (see step 2).
+
+6. Check what modules you want to include in `main.py`, and execute `main.py`.
+
+```python
+python main.py
+```
 
 ---
 
@@ -84,16 +90,13 @@ Now we need to connect the JOAN repository to your own repository, so that you a
 
 In the terminal type the following commands in this order (or copy it, and right-click paste in the terminal, `ctrl+v` does not work). Perform these commands one-by-one. Do not continue to the next command if the previous one returned errors!
 
-    git remote add upstream-joan https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan.git
+    git remote add upstream-joan https://github.com/tud-hri/joan.git
     git fetch upstream-joan
-    git pull upstream-joan develop-joan2.0
+    git pull upstream-joan master
 
-The last command pulls the latest version of JOAN's `develop-joan2.0` branch. Check out your PyCharm editor: you will find all folders and files of the latest JOAN version there: 
+The last command pulls the latest version of JOAN's `master` branch. Check out your PyCharm editor: you will find all folders and files of the latest JOAN version there: 
 
 ![pycharm-first-joan](imgs/setup-joan-pycharm-first-project.png)
-
-!!!Note
-   The branch develop-joan2.0 contains the latest version of JOAN 2.0!
 
 You also need to set your user name and email address for your repository (replace NETID and TUDELFT EMAIL ADDRESS, but lead the quotation marks):
 
@@ -112,8 +115,8 @@ You should see something like this:
     C:\Users\<NETID>\joan-projects\<YOUR PROJECT NAME> git remote -v
     origin  https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan-students/<YOUR PROJECT NAME>.git (fetch)
     origin  https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan-students/<YOUR PROJECT NAME>.git (push)
-    upstream-joan        https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan.git (fetch)
-    upstream-joan        https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan.git (push)
+    upstream-joan        https://github.com/tud-hri/joan.git (fetch)
+    upstream-joan        https://github.com/tud-hri/joan.git (push)
     C:\Users\<NETID>\joan-projects\<YOUR PROJECT NAME>
 
 The first two labeled `origin` are the URLs to your own project. The ones labeled `upstream-joan` are for the JOAN repository. We need the `origin` one for the next step. We are going to add your NetID to the `origin` URL as follows (replace NETID with your own NetID, note the '@' and make sure to copy your own origin URL):
@@ -158,7 +161,7 @@ If you are using PyCharm, you might need to add your virtual environment as a Py
 
 Then type in the terminal:
 
-    venv\Scripts\activate
+    venv\Scripts\activate # windows
 
 If this succeeds, (`venv`) should have appeared in your command line trailing your current location. This indicates that the Python command points to the virtual environment. 
 

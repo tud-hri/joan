@@ -31,7 +31,7 @@ Below a video of some of the capabilities of JOAN is shown, one of the main soft
 - Because JOAN depends heavily on CARLA, we strongly recommend you to check out the [CARLA documentation](https://carla.readthedocs.io/en/latest/){target="_blank"}. 
 - You can find the JOAN repository [here][repolink]{target="_blank"}. Note that JOAN is still under development, so core functionality may change over time. We'll post releases as soon as we think we are ready :-)
 
-[repolink]: https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan
+[repolink]: https://github.com/tud-hri/joan
 
 --- 
 
