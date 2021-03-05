@@ -13,6 +13,9 @@ class CarlaInterfaceSettings(ModuleSettings):
         """
         super().__init__(JOANModules.CARLA_INTERFACE)
         self.agents = {}
+        self.fixed_time_step = 1. / 60.
+        self.host = 'localhost'
+        self.port = 2000
 
     def reset(self):
         self.agents = {}

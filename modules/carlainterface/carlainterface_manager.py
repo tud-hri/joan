@@ -130,8 +130,10 @@ class CarlaInterfaceManager(ModuleManager):
                 QApplication.setOverrideCursor(Qt.WaitCursor)
                 self.client = carla.Client(self.host, self.port)  # connecting to server
                 self.client.set_timeout(2.0)
-                time.sleep(2)
-                self._world = self.client.get_world()  # get world object (contains everything)
+                time.sleep(2)  # wait for 2 seconds for the connection to establish
+
+                # get world objects (vehicles and waypoints)
+                self._world = self.client.get_world()
                 blueprint_library = self._world.get_blueprint_library()
                 self._vehicle_bp_library = blueprint_library.filter('vehicle.*')
                 for items in self._vehicle_bp_library:
@@ -142,6 +144,12 @@ class CarlaInterfaceManager(ModuleManager):
                     self.spawn_points.append("Spawnpoint " + str(spawn_point_objects.index(item)))
 
                 self.carla_waypoints = self.world_map.generate_waypoints(0.5)
+
+                # set time step to fixed
+                settings = self._world.get_settings()
+                settings.fixed_delta_seconds = 1./60.
+                self._world.apply_settings(settings)
+
                 QApplication.restoreOverrideCursor()
                 self.connected = True
 
@@ -165,8 +173,10 @@ class CarlaInterfaceManager(ModuleManager):
         This function will try and disconnect from the carla server, if the module was running it will transition into
         an error state
         """
+
         self.client = None
         self.connected = False
+
         return self.connected
 
     def _open_settings_dialog(self, agent_name):
