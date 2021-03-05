@@ -217,7 +217,6 @@ class FDCAControllerProcess:
                 if index_closest_waypoint >= len(self._trajectory):
                     break
 
-
         # calculate lateral error
         pos_ref = self._trajectory[index_closest_waypoint, 1:3]
         pos_ref_next = self._trajectory[index_closest_waypoint_next, 1:3]
