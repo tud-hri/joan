@@ -141,10 +141,10 @@ class NPCVehicleProcess:
         if self.settings.selected_npc_controller != 'None' and hasattr(self, 'spawned_vehicle'):
 
             self._control.steer = self.npc_controller_shared_variables.controllers[self.settings.selected_npc_controller].steering_angle / math.radians(450)
-            self._control.reverse = self.npc_controller_shared_variables.controllers[self.settings.selected_input].reverse
-            self._control.hand_brake = self.npc_controller_shared_variables.controllers[self.settings.selected_input].handbrake
-            self._control.brake = self.npc_controller_shared_variables.controllers[self.settings.selected_input].brake
-            self._control.throttle = self.npc_controller_shared_variables.controllers[self.settings.selected_input].throttle
+            self._control.reverse = self.npc_controller_shared_variables.controllers[self.settings.selected_npc_controller].reverse
+            self._control.hand_brake = self.npc_controller_shared_variables.controllers[self.settings.selected_npc_controller].handbrake
+            self._control.brake = self.npc_controller_shared_variables.controllers[self.settings.selected_npc_controller].brake
+            self._control.throttle = self.npc_controller_shared_variables.controllers[self.settings.selected_npc_controller].throttle
 
             self.spawned_vehicle.apply_control(self._control)
 

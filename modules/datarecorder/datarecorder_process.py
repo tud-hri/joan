@@ -48,7 +48,7 @@ class DataRecorderProcess(ModuleProcess):
             except KeyError:  # means there is no egovehicle 1
                 pass
 
-        header = ', '.join(['.'.join(v) for v in self.variables_to_be_saved])
+        header = '; '.join(['.'.join(v) for v in self.variables_to_be_saved])
         with open(self.save_path, 'w') as self.file:
             self.file.write(header + '\n')
 
@@ -86,7 +86,7 @@ class DataRecorderProcess(ModuleProcess):
 
             row.append(str(last_object))
 
-        return ', '.join(row)
+        return '; '.join(row)
 
     def _write_trajectory_row(self):
         try:
