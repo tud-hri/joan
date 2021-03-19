@@ -1,0 +1,150 @@
+{
+    "modules_included": [
+        "Hardware Manager",
+        "Carla Interface",
+        "Data Recorder"
+    ],
+    "base_settings": {
+        "Hardware Manager": {
+            "inputs": {
+                "Keyboard_1": {
+                    "steer_left_key": 65,
+                    "steer_right_key": 68,
+                    "throttle_key": 87,
+                    "brake_key": 83,
+                    "reverse_key": 82,
+                    "handbrake_key": 32,
+                    "identifier": "Keyboard_1",
+                    "input_type": 0,
+                    "min_steer": -1.5708,
+                    "max_steer": 1.5708,
+                    "auto_center": true,
+                    "steer_sensitivity": 50,
+                    "throttle_sensitivity": 50,
+                    "brake_sensitivity": 50
+                },
+                "Keyboard_2": {
+                    "steer_left_key": 74,
+                    "steer_right_key": 76,
+                    "throttle_key": 73,
+                    "brake_key": 75,
+                    "reverse_key": 44,
+                    "handbrake_key": 46,
+                    "identifier": "Keyboard_2",
+                    "input_type": 0,
+                    "min_steer": -1.5708,
+                    "max_steer": 1.5708,
+                    "auto_center": true,
+                    "steer_sensitivity": 50,
+                    "throttle_sensitivity": 50,
+                    "brake_sensitivity": 50
+                }
+            }
+        },
+        "Carla Interface": {
+            "agents": {
+                "Ego Vehicle_1": {
+                    "selected_input": "Keyboard_1",
+                    "selected_controller": "None",
+                    "selected_spawnpoint": "Spawnpoint 0",
+                    "selected_car": "hapticslab.audi",
+                    "velocity": 80,
+                    "set_velocity": false,
+                    "identifier": "Ego Vehicle_1",
+                    "agent_type": 0
+                }
+            },
+            "fixed_time_step": 0.016666666666666666,
+            "host": "localhost",
+            "port": 2000
+        },
+        "Data Recorder": {
+            "path_to_save_file": "C:\\Repositories\\joan\\joan_data.csv",
+            "append_timestamp_to_filename": true,
+            "variables_to_be_saved": [],
+            "path_to_trajectory_save_file": "",
+            "should_record_trajectory": false
+        }
+    },
+    "conditions": {
+        "base": {
+            "Hardware Manager": {
+                "inputs": {
+                    "Keyboard_1": {},
+                    "Keyboard_2": {}
+                }
+            },
+            "Carla Interface": {
+                "agents": {
+                    "Ego Vehicle_1": {}
+                }
+            },
+            "Data Recorder": {}
+        },
+        "condition1": {
+            "Hardware Manager": {
+                "inputs": {
+                    "Keyboard_1": {},
+                    "Keyboard_2": {}
+                }
+            },
+            "Carla Interface": {
+                "agents": {
+                    "Ego Vehicle_1": {}
+                }
+            },
+            "Data Recorder": {}
+        },
+        "condition2": {
+            "Hardware Manager": {
+                "inputs": {
+                    "Keyboard_1": {},
+                    "Keyboard_2": {}
+                }
+            },
+            "Carla Interface": {
+                "agents": {
+                    "Ego Vehicle_1": {
+                        "selected_input": "Keyboard_2"
+                    }
+                }
+            },
+            "Data Recorder": {}
+        },
+        "condition3": {
+            "Hardware Manager": {
+                "inputs": {
+                    "Keyboard_1": {},
+                    "Keyboard_2": {}
+                }
+            },
+            "Carla Interface": {
+                "agents": {
+                    "Ego Vehicle_1": {
+                        "selected_input": "Keyboard_2"
+                    },
+                    "Ego Vehicle_2": {
+                        "selected_input": "Keyboard_1",
+                        "selected_controller": "None",
+                        "selected_spawnpoint": "Spawnpoint 4",
+                        "selected_car": "volkswagen.t2",
+                        "velocity": 80,
+                        "set_velocity": true,
+                        "identifier": "Ego Vehicle_2",
+                        "agent_type": 0
+                    }
+                }
+            },
+            "Data Recorder": {}
+        }
+    },
+    "active_condition_sequence": [
+        "base",
+        "Simple print transition",
+        "condition1",
+        "Simple print transition",
+        "condition3",
+        "Simple print transition",
+        "condition2"
+    ]
+}
