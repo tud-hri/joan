@@ -15,7 +15,7 @@ The Experiment Manager has two main components: __conditions__ and __transitions
 
 ## How does the Experiment Manager work?
 
-The Experiment Manager stores and sets the [settings of all modules](advancedsteps-settings.md) that are relevant for your experiment. Each modules has its own 
+The Experiment Manager stores and sets the [settings of all modules](advanced-settings.md) that are relevant for your experiment. Each modules has its own 
 settings. For example, the settings of the steering wheel controller module contain the current values of the controller gains. 
 
 When running and experiment, per condition, you may want to change these settings. The Experiment Manager checks the current settings of the controller module and 

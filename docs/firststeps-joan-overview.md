@@ -1,7 +1,7 @@
 # JOAN Overview
 In this section we try to explain the overall high level overview of the JOAN framework. Please note that if you are interested
 in adding your own modules you need a more thorough understanding than just this section, if that is the case please
-also consult the [Advanced Steps Section](advancedsteps-add-custom-module.md) for more information.
+also consult the [Advanced Steps Section](advanced-add-custom-module.md) for more information.
 
 ## High Level JOAN Structure
 [ ![](imgs/first-steps-highlevel-structure.png) ](imgs/first-steps-highlevel-structure.png){target="_blank"}
@@ -11,19 +11,20 @@ In the image above you'll notice that JOAN consists mainly of 2 groups, namely t
 
 
 ## Module
-Modules can be anything you want, because 
-as it says in the name already JOAN has a `Modular structure`. It is important to know what exactly is contained in a
+A module executes a certain function, like recording data or communicating with CARLA. The modules are set up to run in their own process (using the `multiprocessing` toolbox) to distribute the computational load. For more info on how we set up multiprocessing in JOAN, check out below.
+
+Modules can be anything you want, because as it says in the name already JOAN has a modular structure. It is important to know what exactly is contained in a
 JOAN Module, it is summarized in the image below:
 [ ![](imgs/first-steps-module.png) ](imgs/first-steps-module.png){target="_blank"}
 
 The descriptions in the above image are of course a very short summary, for a deeper understanding of what each element
 does, and a bit more context please refer to the following explanations:
 
-- [Module Manager](advancedsteps-add-custom-module.md#manager_class){target="_blank"}
-- [Module Dialog](advancedsteps-add-custom-module.md#dialog_class){target="_blank"}
-- [Module Settings](advancedsteps-add-custom-module.md#settings_class){target="_blank"}
-- [Module Shared Variables](advancedsteps-add-custom-module.md#shared_variables_class){target="_blank"}
-- [Module Process](advancedsteps-add-custom-module.md#process_class){target="_blank"}
+- [Module Manager](advanced-add-custom-module.md#manager_class){target="_blank"}
+- [Module Dialog](advanced-add-custom-module.md#dialog_class){target="_blank"}
+- [Module Settings](advanced-add-custom-module.md#settings_class){target="_blank"}
+- [Module Shared Variables](advanced-add-custom-module.md#shared_variables_class){target="_blank"}
+- [Module Process](advanced-add-custom-module.md#process_class){target="_blank"}
 
 ## Data flow & Communication
 Because of multiprocessing and the modular structure of JOAN the dataflow can be a bit difficult to grasp. In this
@@ -68,4 +69,14 @@ tutorial on signals and slots](https://www.tutorialspoint.com/pyqt/pyqt_signals_
 The `News()` class is used throughout all modules and serves as a sort of message pipe to all modules. It mainly contains the seperate `shared_variables` objects
 of all the modules. This is needed because then we can access our shared variables from all modules. For example if I'd like to calculate something in a seperate
 `calculator` module, and for this I need the input values of a `keyboard` from the `hardwaremanager` I can easily access this info in my new module! 
+
+### Modules multiprocessing
+
+JOAN modules are set up to run in their own process using the `multiprocessing` toolbox. In short, this means that each module will create its own process and communication with that process once the user hits "Get ready" and "Run" buttons. The module's functionality (everything that happens in `do_while_running(self)`) is then executed in a separate process. Communicating with a different process is not trivial, and we encourage you to check out the [multiprocessing documentation](https://docs.python.org/3/library/multiprocessing.html). 
+
+We use shared variable objects to enable communication between the module processes. These shared variables objects only allow you to specify simple data types (ints, floats, a byte array). If you need to add parameters in a module's shared variables object, check out the existing SharedVariables classes of the existing modules. 
+
+If you want to use an object both in the module manager class and in the module process class, the object needs to be pickable. Check out how we convert a module settings class to a dictionary and back to a settings objects such that we can also use it in the process itself. 
+
+![](imgs/joan-structure-multiprocessing-communication.png)
 
