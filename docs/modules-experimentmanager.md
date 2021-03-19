@@ -7,9 +7,9 @@ in which you can:
 - add conditions to the experiment,
 - select the conditions you actually want to run in your experiment,
 - set the order of the conditions, and
-- customize each transition between conditions (such as respawning cars and traffic)
+- customize each transition between conditions (such as respawning cars and traffic).
 
-The Experiment Manager has two main components: __conditions__ and __transitions__. We will describe how to use them below.
+The Experiment Manager has two main components: __conditions__ and __transitions__ between the conditions. We will describe how to use them below. 
 
 ---
 
@@ -18,7 +18,7 @@ The Experiment Manager has two main components: __conditions__ and __transitions
 The Experiment Manager stores and sets the [settings of all modules](advancedsteps-settings.md) that are relevant for your experiment. Each modules has its own 
 settings. For example, the settings of the steering wheel controller module contain the current values of the controller gains. 
 
-When running and experiment, per condition, you want to change these settings. The Experiment Manager checks the current settings of the controller module and 
+When running and experiment, per condition, you may want to change these settings. The Experiment Manager checks the current settings of the controller module and 
 sets the value that corresponds to the condition you want to activate and run next in your experiment. The opposite happens when you are defining your 
 experiment: you change the settings of each module that you want to change for each condition. The Experiment Manager recognized which settings you changed and 
 stores these changes. 
@@ -27,14 +27,20 @@ An `Experiment` consists of a set of base settings, and every `Condition` stores
 condition.  
 
 The experiments are stored in a `json` file, which you can open in any text editor to check whether your experiment and conditions are to your liking. You can 
-also alter these files to make changes to your experiment. 
+also alter these files to make changes to your experiment in a text editor. 
 
-In contrary to all other modules, the Experiment manager has no state machine and own process. This is because the Experiment Manager does not run anything, it
-merely sets all setting for you to streamline your experiment.  
+In contrary to all other modules, the Experiment Manager has no state machine and own process. This is because the Experiment Manager does not run anything, it
+merely sets all setting for you to streamline your experiment. 
+
+We've prepared a `example_experiment.json` file, which contains an example experiment. We added three conditions in which we change the hardware input controlling a car in CARLA, change the settings of the hardware input (a keyboard's sensitivities to steering) and we add another vehicle in CARLA. 
 
 ---
 
 ## How do I use the Experiment Manager?
+
+### 0. Loading an existing experiment
+Once you are done creating your experiment, you can save it and load it at a later stage (hit the `Load experiment` button).
+
 ### 1. Creating a new experiment
 
 Creating and editing experiments can only be done if all modules are in the initialized state. This is because in that state all module settings are fixed. So
@@ -72,16 +78,18 @@ moving elements up and down with the buttons below.
 
 ### 5. Running the experiment.
 To run the experiment, close the edit experiment dialog and make sure all modules are in the stopped state. You can manually select and activate a condition by 
-clicking the `Activate condition` button. Once the condition is active, you can cycle the state machine like you normally would. When you click the stop button,
+clicking the `Activate condition` button (only when JOAN is in "IDLE") Once the condition is active, you can cycle the state machine like you normally would. When you click the stop button,
  the experiment manager will automatically transition the the next condition if the `Auto transition after stop` checkbox is checked. You can also manually 
 transition to the next condition by clicking the `Transition to next condition` button. Transitions are called when moving between subsequent conditions. 
 Transition at the end and at the beginning of the experiment are also called.
 
+### 6. Changing the condition order for different participants
+Often you want to change the order of the conditions for different sets of participants to account for order effects in the data. The best way to do this is to copy the experiment `json` you just created (rename them accordingly). Then, open the `.json` file in the text editor of choice and change the order of the conditions and transitions under `"active_condition_sequence`.
 
 ![Data recorder in stopped state](imgs/modules-experimentmanager-edit_experiment.png)
 
-## Using the Data Recorder with the experiment manager
-You can include the data recorder in your experiment to make sure the right variables are saved in every condition. Remember that the data sile name is also 
+## Using the DataRecorder with the ExperimentManager
+You can include the data recorder in your experiment to make sure the right variables are saved in every condition. Remember that the data name is also 
 stored as a setting so it can, and should, be different for every condition. Otherwise you have to reverse engineer which file is which condition by the 
 timestamps. You can either change the name of the file depending on the condition or make separate folders for every condition.
 
