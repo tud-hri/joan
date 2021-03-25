@@ -307,12 +307,12 @@ class EgoVehicleProcess:
                                                self.spawned_vehicle.get_transform().rotation.yaw,
                                                self.spawned_vehicle.get_transform().rotation.pitch,
                                                self.spawned_vehicle.get_transform().rotation.roll]
-            self.shared_variables.velocities = [self.spawned_vehicle.get_velocity().x,
-                                                self.spawned_vehicle.get_velocity().y,
-                                                self.spawned_vehicle.get_velocity().z,
-                                                self.spawned_vehicle.get_angular_velocity().x,
-                                                self.spawned_vehicle.get_angular_velocity().y,
-                                                self.spawned_vehicle.get_angular_velocity().z]
+            self.shared_variables.velocities_in_world_frame = [self.spawned_vehicle.get_velocity().x,
+                                                               self.spawned_vehicle.get_velocity().y,
+                                                               self.spawned_vehicle.get_velocity().z,
+                                                               self.spawned_vehicle.get_angular_velocity().x,
+                                                               self.spawned_vehicle.get_angular_velocity().y,
+                                                               self.spawned_vehicle.get_angular_velocity().z]
             self.shared_variables.accelerations = [self.spawned_vehicle.get_acceleration().x,
                                                    self.spawned_vehicle.get_acceleration().y,
                                                    self.spawned_vehicle.get_acceleration().z]

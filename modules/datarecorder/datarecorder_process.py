@@ -91,7 +91,7 @@ class DataRecorderProcess(ModuleProcess):
     def _write_trajectory_row(self):
         try:
             self.transform = self.carla_interface_variables.agents['Ego Vehicle_1'].transform
-            velocities = self.carla_interface_variables.agents['Ego Vehicle_1'].velocities
+            velocities = self.carla_interface_variables.agents['Ego Vehicle_1'].velocities_in_world_frame
             applied_inputs = self.carla_interface_variables.agents['Ego Vehicle_1'].applied_input
 
             travelled_distance_tick_x = self.transform[0] - self.temp[0]

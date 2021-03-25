@@ -20,7 +20,8 @@ class VehicleSharedVariables(SharedVariables):
     """
     def __init__(self):
         self._transform = mp.Array(c_float, 6)
-        self._velocities = mp.Array(c_float, 6)
+        self._velocities_in_world_frame = mp.Array(c_float, 6)
+        self._velocities_in_vehicle_frame = mp.Array(c_float, 6)
         self._accelerations = mp.Array(c_float, 3)
         self._applied_input = mp.Array(c_float, 5)
 
@@ -43,12 +44,20 @@ class VehicleSharedVariables(SharedVariables):
         self._transform[:] = val
 
     @property
-    def velocities(self):
-        return self._velocities[:]
+    def velocities_in_world_frame(self):
+        return self._velocities_in_world_frame[:]
 
-    @velocities.setter
-    def velocities(self, val):
-        self._velocities[:] = val
+    @velocities_in_world_frame.setter
+    def velocities_in_world_frame(self, val):
+        self._velocities_in_world_frame[:] = val
+
+    @property
+    def velocities_in_vehicle_frame(self):
+        return self._velocities_in_vehicle_frame[:]
+
+    @velocities_in_vehicle_frame.setter
+    def velocities_in_vehicle_frame(self, val):
+        self._velocities_in_vehicle_frame[:] = val
 
     @property
     def accelerations(self):
