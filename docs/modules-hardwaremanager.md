@@ -54,7 +54,7 @@ Whenever adding a Joystick device it will automatically open up the joystick set
 
 In here the first thing you do is find your plugged in USB device in the list of `available HID devices`. In this example 
 we have a Xbox Controller connected and will try and preview the inputs. Also notice that there are presets available for
-both Xbox and PlayStation controllers.
+both Xbox and PlayStation controllers (if you want to use a playstation controller on Windows, install [DS4Windows](http://ds4windows.com/).)
 
 [ ![](gifs/modules-hardwaremanager-joysticksettings.gif) ](gifs/modules-hardwaremanager-joysticksettings.gif)
 
