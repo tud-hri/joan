@@ -2,6 +2,7 @@ from core.module_manager import ModuleManager
 from modules.joanmodules import JOANModules
 from modules.npccontrollermanager.npccontrollermanager_settings import NPCControllerManagerSettings
 from modules.npccontrollermanager.npccontrollertypes import NPCControllerTypes
+from modules.carlainterface.carlainterface_agentclasses.npc_vehicle import NPCVehicleSettings
 
 
 class NPCControllerManager(ModuleManager):
@@ -19,6 +20,13 @@ class NPCControllerManager(ModuleManager):
         """
         super().initialize()
         for identifier, controller_settings in self.module_settings.controllers.items():
+
+            # loop trough all vehicles in carla interface to find if an NPC vehicle is connected to this controller
+            for vehicle_id, vehicle_settings in self.singleton_settings.get_settings(JOANModules.CARLA_INTERFACE).agents.items():
+                if isinstance(vehicle_settings, NPCVehicleSettings):
+                    if vehicle_settings.selected_npc_controller == identifier:
+                        controller_settings.vehicle_id = vehicle_id
+
             self.shared_variables.controllers[identifier] = controller_settings.controller_type.shared_variables()
 
     def load_from_file(self, settings_file_to_load):

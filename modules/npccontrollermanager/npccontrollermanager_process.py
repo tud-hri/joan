@@ -22,6 +22,7 @@ class NPCControllerManagerProcess(ModuleProcess):
                                                                                shared_variables=self._module_shared_variables.controllers[key],
                                                                                carla_interface_shared_variables=self.news.read_news(JOANModules.CARLA_INTERFACE)
                                                                                )
+            self.controller_sub_processes[key].get_ready()
 
     def do_while_running(self):
         """

@@ -136,6 +136,7 @@ class NPCVehicleProcess:
                 physics.drag_coefficient = 0.24
                 physics.gear_switch_time = 0
                 self.spawned_vehicle.apply_physics_control(physics)
+                self.shared_variables.max_steering_angle = np.radians(physics.wheels[0].max_steer_angle)
 
     def do(self):
         if self.settings.selected_npc_controller != 'None' and hasattr(self, 'spawned_vehicle'):
@@ -156,18 +157,25 @@ class NPCVehicleProcess:
 
     def set_shared_variables(self):
         if hasattr(self, 'spawned_vehicle'):
+            rotation = self.spawned_vehicle.get_transform().rotation
             self.shared_variables.transform = [self.spawned_vehicle.get_transform().location.x,
                                                self.spawned_vehicle.get_transform().location.y,
                                                self.spawned_vehicle.get_transform().location.z,
-                                               self.spawned_vehicle.get_transform().rotation.yaw,
-                                               self.spawned_vehicle.get_transform().rotation.pitch,
-                                               self.spawned_vehicle.get_transform().rotation.roll]
-            self.shared_variables.velocities_in_world_frame = [self.spawned_vehicle.get_velocity().x,
-                                                               self.spawned_vehicle.get_velocity().y,
-                                                               self.spawned_vehicle.get_velocity().z,
+                                               rotation.yaw,
+                                               rotation.pitch,
+                                               rotation.roll]
+            linear_velocity = self.spawned_vehicle.get_velocity()
+            self.shared_variables.velocities_in_world_frame = [linear_velocity.x,
+                                                               linear_velocity.y,
+                                                               linear_velocity.z,
                                                                self.spawned_vehicle.get_angular_velocity().x,
                                                                self.spawned_vehicle.get_angular_velocity().y,
                                                                self.spawned_vehicle.get_angular_velocity().z]
+
+            rotation_matrix = self.get_rotation_matrix_from_carla(rotation.roll, rotation.pitch, rotation.yaw)
+            velocities_in_vehicle_frame = np.linalg.inv(rotation_matrix) @ np.array([linear_velocity.x, linear_velocity.y, linear_velocity.z])
+            self.shared_variables.velocities_in_vehicle_frame = velocities_in_vehicle_frame
+
             self.shared_variables.accelerations = [self.spawned_vehicle.get_acceleration().x,
                                                    self.spawned_vehicle.get_acceleration().y,
                                                    self.spawned_vehicle.get_acceleration().z]
@@ -177,6 +185,33 @@ class NPCVehicleProcess:
                                                    float(latest_applied_control.hand_brake),
                                                    float(latest_applied_control.brake),
                                                    float(latest_applied_control.throttle)]
+
+    @staticmethod
+    def get_rotation_matrix_from_carla(roll, pitch, yaw, degrees=True):
+        """ calculation based on this github issue: https://github.com/carla-simulator/carla/issues/58 because carla uses some rather unconventional conventions."""
+        if degrees:
+            roll, pitch, yaw = np.radians([roll, pitch, yaw])
+
+        yaw_matrix = np.array([
+            [math.cos(yaw), -math.sin(yaw), 0],
+            [math.sin(yaw), math.cos(yaw), 0],
+            [0, 0, 1]
+        ])
+
+        pitch_matrix = np.array([
+            [math.cos(pitch), 0, -math.sin(pitch)],
+            [0, 1, 0],
+            [math.sin(pitch), 0, math.cos(pitch)]
+        ])
+
+        roll_matrix = np.array([
+            [1, 0, 0],
+            [0, math.cos(roll), math.sin(roll)],
+            [0, -math.sin(roll), math.cos(roll)]
+        ])
+
+        rotation_matrix = yaw_matrix @ pitch_matrix @ roll_matrix
+        return rotation_matrix
 
 
 class NPCVehicleSettings:
