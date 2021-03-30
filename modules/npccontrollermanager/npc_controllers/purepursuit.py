@@ -1,17 +1,16 @@
-import math
 import os
-import numpy as np
 
+import numpy as np
 from PyQt5 import QtWidgets
-from modules.npccontrollermanager.npccontrollertypes import NPCControllerTypes
-from modules.npccontrollermanager.npccontrollermanager_sharedvariables import NPCControllerSharedVariables
+
 from modules.carlainterface.carlainterface_sharedvariables import CarlaInterfaceSharedVariables
+from modules.npccontrollermanager.npccontrollermanager_sharedvariables import NPCControllerSharedVariables
+from modules.npccontrollermanager.npccontrollertypes import NPCControllerTypes
 
 
 class PurePursuitControllerProcess:
-    """
-    Main class for the Keyboard input in a separate multiprocess, this will loop!. Make sure that the things you do
-    in this class are serializable, else it will fail.
+    """ This is a simple implementation of a pure pursuit vehicle controller. For more information on this type of controller please use Google, it is pretty common.
+    This simple implementation does not use the back axle as the origin of the vehicle frame as it should, so it should not be used when high precision is required.
     """
 
     def __init__(self, settings, shared_variables: NPCControllerSharedVariables, carla_interface_shared_variables: CarlaInterfaceSharedVariables):
@@ -19,18 +18,7 @@ class PurePursuitControllerProcess:
         self.shared_variables = shared_variables
         self.carla_interface_shared_variables = carla_interface_shared_variables
 
-        # Initialize needed variables:
-        self._throttle = False
-        self._brake = False
-        self._steer_left = False
-        self._steer_right = False
-        self._handbrake = False
-        self._reverse = False
-        self._data = {}
-        self.index = 0
-
         self._trajectory = None
-
         self._max_steering_angle = self.carla_interface_shared_variables.agents[self.settings.vehicle_id].max_steering_angle
 
     def get_ready(self):
@@ -38,17 +26,16 @@ class PurePursuitControllerProcess:
 
     def do(self):
         """
-        Processes all the inputs of the keyboard input and writes them to self._data which is then written to the news
-        in the action class
-        :return: self._data a dictionary containing :
-            self.shared_variables.brake = self.brake
-            self.shared_variables.throttle = self.throttle
-            self.shared_variables.steering_angle = self.steer
-            self.shared_variables.handbrake = self.handbrake
-            self.shared_variables.reverse = self.reverse
+        Calculates the vehicle steering angle, throttle and brake based on the current state and desired trajectory.
+        At the end of this do function, the calculated values need to be written to shared variables. From there they are automatically used by the connected vehicle.
+        Variable to write:
+            self.shared_variables.brake = calculated brake between (0.0 , 1.0)
+            self.shared_variables.throttle = calculated throttle between (0.0 , 1.0)
+            self.shared_variables.steering_angle = calculated steering between (-1.0 , 1.0)
+            self.shared_variables.handbrake = False
+            self.shared_variables.reverse = False
         """
         vehicle_transform, vehicle_velocity = self._get_current_state()
-        # TODO: this velocity is in world frame, transform it to local frame
 
         if vehicle_transform.any():
             closest_way_point_index = self._find_closest_way_point(vehicle_transform)
@@ -57,30 +44,33 @@ class PurePursuitControllerProcess:
                 raise RuntimeError('Pure Pursuit controller to far from path, distance = ' + str(
                     np.linalg.norm(self._trajectory[closest_way_point_index, 1:3] - vehicle_transform[0:2])))
 
-            # calculate steering angle
+            # calculate steering angle using the look ahead distance and trajectory. Steer point is defined as the point where the two intersect.
             first_way_point_outside_look_ahead_circle = self._find_first_way_point_outside_look_ahead_circle(vehicle_transform, closest_way_point_index)
             steer_point_in_vehicle_frame = self._calculate_steer_point(vehicle_transform, first_way_point_outside_look_ahead_circle)
 
             steering_angle = np.arctan2(steer_point_in_vehicle_frame[1], steer_point_in_vehicle_frame[0])
 
-            # determine throttle based on velocity at closest way point
+            # calculate throttle with pid controller based on velocity at closest way point
             desired_velocity = self._trajectory[closest_way_point_index, 7]
 
             velocity_error = desired_velocity - vehicle_velocity[0]
             throttle = self.settings.kp * velocity_error
-            # TODO: calculate steering angle, throttle and brake
 
+            # write calculated values to shared
             if throttle > 0.:
                 self.shared_variables.throttle = throttle
             else:
                 self.shared_variables.throttle = 0.
 
-            self.shared_variables.handbrake = 0.
             if throttle < 0.:
                 self.shared_variables.brake = -throttle
             else:
                 self.shared_variables.brake = 0.
+
+            # steering_angle in shared velocities is normalized with respect to the maximum steering angle
             self.shared_variables.steering_angle = steering_angle / self._max_steering_angle
+            self.shared_variables.handbrake = False
+            self.shared_variables.reverse = False
 
     def _find_closest_way_point(self, vehicle_transform):
         closest_way_point_index = np.argmin(np.linalg.norm(self._trajectory[:, 1:3] - vehicle_transform[0:2], axis=1))
@@ -116,7 +106,7 @@ class PurePursuitControllerProcess:
         c1 = dy / dx
         c2 = way_point_outside[1] - c1 * way_point_outside[0]
 
-        # solve 'y=c1 * x + c2' and 'lookahead distance = x^2 + y^2' to find steer point. use abc formula to find solutions for x
+        # solve 'y=c1 * x + c2' and 'lookahead distance^2 = x^2 + y^2' to find steer point. use abc formula to find solutions for x
         a = 1 + c1 ** 2
         b = 2 * c2 * c1
         c = c2 ** 2 - self.settings.look_ahead_distance ** 2
@@ -132,12 +122,13 @@ class PurePursuitControllerProcess:
             x = x2
             y = c1 * x2 + c2
         else:
-            raise RuntimeError('NPC controller failed to calculate steering point')
+            raise RuntimeError('NPC controller failed to calculate steer point')
 
         return np.array([x, y])
 
     def load_trajectory(self):
-        """Load HCR trajectory
+        """
+        Load trajectory from csv file
         format = [index, x, y, steering_wheel_angle, throttle, brake, heading, velocity]
         """
 
@@ -158,7 +149,6 @@ class PurePursuitSettings:
         self.controller_type = NPCControllerTypes.PURE_PURSUIT
 
         self.look_ahead_distance = 15.0
-
         self.kp = 0.1
 
         # reference trajectory
