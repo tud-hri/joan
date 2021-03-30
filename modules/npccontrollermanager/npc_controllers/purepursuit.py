@@ -8,7 +8,7 @@ from modules.npccontrollermanager.npccontrollermanager_sharedvariables import NP
 from modules.carlainterface.carlainterface_sharedvariables import CarlaInterfaceSharedVariables
 
 
-class PIDControllerProcess:
+class PurePursuitControllerProcess:
     """
     Main class for the Keyboard input in a separate multiprocess, this will loop!. Make sure that the things you do
     in this class are serializable, else it will fail.
@@ -153,9 +153,9 @@ class PIDControllerProcess:
         return np.array(vehicle_transform), np.array(vehicle_velocity)
 
 
-class PIDSettings:
+class PurePursuitSettings:
     def __init__(self):
-        self.controller_type = NPCControllerTypes.PID
+        self.controller_type = NPCControllerTypes.PURE_PURSUIT
 
         self.look_ahead_distance = 15.0
 
@@ -171,14 +171,14 @@ class PIDSettings:
         return self.__dict__
 
     def __str__(self):
-        return str('PID Controller Settings')
+        return str('Pure Pursuit Controller Settings')
 
     def set_from_loaded_dict(self, loaded_dict):
         for key, value in loaded_dict.items():
             self.__setattr__(key, value)
 
 
-class PIDSettingsDialog(QtWidgets.QDialog):
+class PurePursuitSettingsDialog(QtWidgets.QDialog):
     def __init__(self, module_manager, settings, parent=None):
         super().__init__(parent=parent)
-        # TODO: implement a dialog to change pid settings
+        # TODO: implement a dialog to change pure pursuit settings

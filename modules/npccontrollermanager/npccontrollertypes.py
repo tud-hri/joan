@@ -15,27 +15,27 @@ class NPCControllerTypes(enum.Enum):
 
     """
 
-    PID = 0
+    PURE_PURSUIT = 0
 
     @property
     def process(self):
-        from modules.npccontrollermanager.npc_controllers.pid import PIDControllerProcess
+        from modules.npccontrollermanager.npc_controllers.purepursuit import PurePursuitControllerProcess
 
-        return {NPCControllerTypes.PID: PIDControllerProcess,
+        return {NPCControllerTypes.PURE_PURSUIT: PurePursuitControllerProcess,
                 }[self]
 
     @property
     def settings_dialog(self):
-        from modules.npccontrollermanager.npc_controllers.pid import PIDSettingsDialog
+        from modules.npccontrollermanager.npc_controllers.purepursuit import PurePursuitSettingsDialog
 
-        return {NPCControllerTypes.PID: PIDSettingsDialog,
+        return {NPCControllerTypes.PURE_PURSUIT: PurePursuitSettingsDialog,
                 }[self]
 
     @property
     def shared_variables(self):
         from modules.npccontrollermanager.npccontrollermanager_sharedvariables import NPCControllerSharedVariables
 
-        return {NPCControllerTypes.PID: NPCControllerSharedVariables,
+        return {NPCControllerTypes.PURE_PURSUIT: NPCControllerSharedVariables,
                 }[self]
 
     @property
@@ -46,11 +46,11 @@ class NPCControllerTypes(enum.Enum):
 
     @property
     def settings(self):
-        from modules.npccontrollermanager.npc_controllers.pid import PIDSettings
+        from modules.npccontrollermanager.npc_controllers.purepursuit import PurePursuitSettings
 
-        return {NPCControllerTypes.PID: PIDSettings,
+        return {NPCControllerTypes.PURE_PURSUIT: PurePursuitSettings,
                 }[self]
 
     def __str__(self):
-        return {NPCControllerTypes.PID: "PID",
+        return {NPCControllerTypes.PURE_PURSUIT: "Pure Pursuit",
                 }[self]
