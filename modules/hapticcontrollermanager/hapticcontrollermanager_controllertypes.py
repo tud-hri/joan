@@ -55,5 +55,5 @@ class HapticControllerTypes(enum.Enum):
 
     def __str__(self):
         return {HapticControllerTypes.FDCA: 'FDCA',
-                HapticControllerTypes.FDCA_DUECA: 'FDCA_Dueca'
+                HapticControllerTypes.FDCA_DUECA: 'FDCA_Dueca' # TODO: remove
                 }[self]

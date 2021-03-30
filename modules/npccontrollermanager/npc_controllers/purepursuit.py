@@ -21,6 +21,9 @@ class PurePursuitControllerProcess:
         self.carla_interface_shared_variables = carla_interface_shared_variables
 
         self._trajectory = None
+        self.vehicle_transform = None
+        self.vehicle_velocity = None
+
         self._max_steering_angle = self.carla_interface_shared_variables.agents[self.settings.vehicle_id].max_steering_angle
 
     def get_ready(self):
@@ -37,25 +40,25 @@ class PurePursuitControllerProcess:
             self.shared_variables.handbrake = False
             self.shared_variables.reverse = False
         """
-        vehicle_transform, vehicle_velocity = self._get_current_state()
+        self.vehicle_transform, self.vehicle_velocity = self._get_current_state()
 
-        if vehicle_transform.any():
-            closest_way_point_index = self._find_closest_way_point(vehicle_transform)
+        if self.vehicle_transform.any():
+            closest_way_point_index = self._find_closest_way_point(self.vehicle_transform)
 
-            if np.linalg.norm(self._trajectory[closest_way_point_index, 1:3] - vehicle_transform[0:2]) > self.settings.static_look_ahead_distance:
+            if np.linalg.norm(self._trajectory[closest_way_point_index, 1:3] - self.vehicle_transform[0:2]) > self.look_ahead_distance:
                 raise RuntimeError('Pure Pursuit controller to far from path, distance = ' + str(
-                    np.linalg.norm(self._trajectory[closest_way_point_index, 1:3] - vehicle_transform[0:2])))
+                    np.linalg.norm(self._trajectory[closest_way_point_index, 1:3] - self.vehicle_transform[0:2])))
 
             # calculate steering angle using the look ahead distance and trajectory. Steer point is defined as the point where the two intersect.
-            first_way_point_outside_look_ahead_circle = self._find_first_way_point_outside_look_ahead_circle(vehicle_transform, closest_way_point_index)
-            steer_point_in_vehicle_frame = self._calculate_steer_point(vehicle_transform, first_way_point_outside_look_ahead_circle)
+            first_way_point_outside_look_ahead_circle = self._find_first_way_point_outside_look_ahead_circle(self.vehicle_transform, closest_way_point_index)
+            steer_point_in_vehicle_frame = self._calculate_steer_point(self.vehicle_transform, first_way_point_outside_look_ahead_circle)
 
             steering_angle = np.arctan2(steer_point_in_vehicle_frame[1], steer_point_in_vehicle_frame[0])
 
             # calculate throttle with pid controller based on velocity at closest way point
             desired_velocity = self._trajectory[closest_way_point_index, 7]
 
-            velocity_error = desired_velocity - vehicle_velocity[0]
+            velocity_error = desired_velocity - self.vehicle_velocity[0]
             throttle = self.settings.kp * velocity_error
 
             # write calculated values to shared
@@ -74,6 +77,13 @@ class PurePursuitControllerProcess:
             self.shared_variables.handbrake = False
             self.shared_variables.reverse = False
 
+    @property
+    def look_ahead_distance(self):
+        if self.settings.use_dynamic_look_ahead_distance:
+            return self.settings.dynamic_lad_a * self.vehicle_velocity[0] + self.settings.dynamic_lad_b
+        else:
+            return self.settings.static_look_ahead_distance
+
     def _find_closest_way_point(self, vehicle_transform):
         closest_way_point_index = np.argmin(np.linalg.norm(self._trajectory[:, 1:3] - vehicle_transform[0:2], axis=1))
         return closest_way_point_index
@@ -81,7 +91,7 @@ class PurePursuitControllerProcess:
     def _find_first_way_point_outside_look_ahead_circle(self, vehicle_transform, closest_way_point_index):
         current_way_point_index = closest_way_point_index
         current_way_point = self._trajectory[current_way_point_index, 1:3]
-        while np.linalg.norm(current_way_point - vehicle_transform[0:2]) < self.settings.static_look_ahead_distance:
+        while np.linalg.norm(current_way_point - vehicle_transform[0:2]) < self.look_ahead_distance:
             current_way_point_index += 1
             current_way_point = self._trajectory[current_way_point_index, 1:3]
 
@@ -111,7 +121,7 @@ class PurePursuitControllerProcess:
         # solve 'y=c1 * x + c2' and 'lookahead distance^2 = x^2 + y^2' to find steer point. use abc formula to find solutions for x
         a = 1 + c1 ** 2
         b = 2 * c2 * c1
-        c = c2 ** 2 - self.settings.static_look_ahead_distance ** 2
+        c = c2 ** 2 - self.look_ahead_distance ** 2
 
         d = (b ** 2) - (4 * a * c)
         x1 = (-b - np.sqrt(d)) / (2 * a)
@@ -157,8 +167,8 @@ class PurePursuitSettings:
         self.static_look_ahead_distance = 15.0
 
         # a dynamic look ahead distance is calculated as LAD = a * v + b where v is velocity
-        self.dynamic_lad_a = 1.0
-        self.dynamic_lad_b = 15.0
+        self.dynamic_lad_a = 0.5
+        self.dynamic_lad_b = 7.0
 
         # reference trajectory
         self.reference_trajectory_name = 'demo_map_human_trajectory.csv'
