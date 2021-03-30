@@ -91,18 +91,16 @@ class NPCControllerManagerDialog(ModuleDialog):
         controller_tab.groupBox.setTitle(identifier)
 
         # Connecting buttons
-        controller_dialog = controller_type.settings_dialog(module_manager=self.module_manager, settings=controller_settings, parent=self)
-        controller_tab.btn_settings.clicked.connect(controller_dialog.show)
+        controller_tab.btn_settings.clicked.connect(lambda: controller_type.settings_dialog(module_manager=self.module_manager, settings=controller_settings, parent=self))
         controller_tab.btn_remove_controller.clicked.connect(lambda: self.module_manager.remove_controller(identifier))
 
         # add to module_dialog widget
         self._controller_tabs_dict[identifier] = controller_tab
         self.module_widget.controller_list_layout.addWidget(controller_tab)
-        self._controller_dialogs_dict[identifier] = controller_dialog
 
         # open dialog when adding hardware
         if show_settings_dialog:
-            controller_dialog.show()
+            controller_type.settings_dialog(module_manager=self.module_manager, settings=controller_settings, parent=self)
 
     def remove_controller(self, identifier):
         """
@@ -113,4 +111,3 @@ class NPCControllerManagerDialog(ModuleDialog):
         # remove input tab
         self._controller_tabs_dict[identifier].setParent(None)
         del self._controller_tabs_dict[identifier]
-        del self._controller_dialogs_dict[identifier]

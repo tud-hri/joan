@@ -1,7 +1,8 @@
 import os
+import glob
 
 import numpy as np
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, uic
 
 from modules.carlainterface.carlainterface_sharedvariables import CarlaInterfaceSharedVariables
 from modules.npccontrollermanager.npccontrollermanager_sharedvariables import NPCControllerSharedVariables
@@ -11,6 +12,7 @@ from modules.npccontrollermanager.npccontrollertypes import NPCControllerTypes
 class PurePursuitControllerProcess:
     """ This is a simple implementation of a pure pursuit vehicle controller. For more information on this type of controller please use Google, it is pretty common.
     This simple implementation does not use the back axle as the origin of the vehicle frame as it should, so it should not be used when high precision is required.
+    TODO: implement rear axle position in vehicle shared variables and rewrite this. This position can be extracted from wheel positions.
     """
 
     def __init__(self, settings, shared_variables: NPCControllerSharedVariables, carla_interface_shared_variables: CarlaInterfaceSharedVariables):
@@ -40,7 +42,7 @@ class PurePursuitControllerProcess:
         if vehicle_transform.any():
             closest_way_point_index = self._find_closest_way_point(vehicle_transform)
 
-            if np.linalg.norm(self._trajectory[closest_way_point_index, 1:3] - vehicle_transform[0:2]) > self.settings.look_ahead_distance:
+            if np.linalg.norm(self._trajectory[closest_way_point_index, 1:3] - vehicle_transform[0:2]) > self.settings.static_look_ahead_distance:
                 raise RuntimeError('Pure Pursuit controller to far from path, distance = ' + str(
                     np.linalg.norm(self._trajectory[closest_way_point_index, 1:3] - vehicle_transform[0:2])))
 
@@ -79,7 +81,7 @@ class PurePursuitControllerProcess:
     def _find_first_way_point_outside_look_ahead_circle(self, vehicle_transform, closest_way_point_index):
         current_way_point_index = closest_way_point_index
         current_way_point = self._trajectory[current_way_point_index, 1:3]
-        while np.linalg.norm(current_way_point - vehicle_transform[0:2]) < self.settings.look_ahead_distance:
+        while np.linalg.norm(current_way_point - vehicle_transform[0:2]) < self.settings.static_look_ahead_distance:
             current_way_point_index += 1
             current_way_point = self._trajectory[current_way_point_index, 1:3]
 
@@ -109,7 +111,7 @@ class PurePursuitControllerProcess:
         # solve 'y=c1 * x + c2' and 'lookahead distance^2 = x^2 + y^2' to find steer point. use abc formula to find solutions for x
         a = 1 + c1 ** 2
         b = 2 * c2 * c1
-        c = c2 ** 2 - self.settings.look_ahead_distance ** 2
+        c = c2 ** 2 - self.settings.static_look_ahead_distance ** 2
 
         d = (b ** 2) - (4 * a * c)
         x1 = (-b - np.sqrt(d)) / (2 * a)
@@ -148,8 +150,15 @@ class PurePursuitSettings:
     def __init__(self):
         self.controller_type = NPCControllerTypes.PURE_PURSUIT
 
-        self.look_ahead_distance = 15.0
         self.kp = 0.1
+        self.kd = 0.0
+
+        self.use_dynamic_look_ahead_distance = False
+        self.static_look_ahead_distance = 15.0
+
+        # a dynamic look ahead distance is calculated as LAD = a * v + b where v is velocity
+        self.dynamic_lad_a = 1.0
+        self.dynamic_lad_b = 15.0
 
         # reference trajectory
         self.reference_trajectory_name = 'demo_map_human_trajectory.csv'
@@ -169,6 +178,60 @@ class PurePursuitSettings:
 
 
 class PurePursuitSettingsDialog(QtWidgets.QDialog):
-    def __init__(self, module_manager, settings, parent=None):
+    def __init__(self, module_manager, settings: PurePursuitSettings, parent=None):
         super().__init__(parent=parent)
-        # TODO: implement a dialog to change pure pursuit settings
+        self.module_manager = module_manager
+        self.pure_pursuit_settings = settings
+        uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/pure_pursuit_settings_ui.ui"), self)
+
+        self.button_box_settings.button(self.button_box_settings.RestoreDefaults).clicked.connect(self._set_default_values)
+        self.dynamicLADCheckBox.stateChanged.connect(self._update_static_dynamic_look_ahead_distance)
+        self._fill_trajectory_combobox()
+        self.display_values()
+
+        self.show()
+
+    def accept(self):
+        self.pure_pursuit_settings.reference_trajectory_name = self.trajectoryComboBox.currentText()
+        self.pure_pursuit_settings.static_look_ahead_distance = self.staticLADDoubleSpinBox.value()
+        self.pure_pursuit_settings.use_dynamic_look_ahead_distance = self.dynamicLADCheckBox.isChecked()
+        self.pure_pursuit_settings.dynamic_lad_a = self.aDoubleSpinBox.value()
+        self.pure_pursuit_settings.dynamic_lad_b = self.bDoubleSpinBox.value()
+        self.pure_pursuit_settings.kp = self.kpDoubleSpinBox.value()
+        self.pure_pursuit_settings.kd = self.kdDoubleSpinBox.value()
+
+        super().accept()
+
+    def display_values(self, settings=None):
+        if not settings:
+            settings = self.pure_pursuit_settings
+
+        self.trajectoryComboBox.setCurrentIndex(self.trajectoryComboBox.findText(settings.reference_trajectory_name))
+        self.staticLADDoubleSpinBox.setValue(settings.static_look_ahead_distance)
+        self.dynamicLADCheckBox.setChecked(settings.use_dynamic_look_ahead_distance)
+        self.aDoubleSpinBox.setValue(settings.dynamic_lad_a)
+        self.bDoubleSpinBox.setValue(settings.dynamic_lad_b)
+        self.kpDoubleSpinBox.setValue(settings.kp)
+        self.kdDoubleSpinBox.setValue(settings.kd)
+
+    def _update_static_dynamic_look_ahead_distance(self):
+        use_dynamic = self.dynamicLADCheckBox.isChecked()
+
+        self.staticLADLabel.setEnabled(not use_dynamic)
+        self.staticLADDoubleSpinBox.setEnabled(not use_dynamic)
+        self.LADExplanationLabel.setEnabled(use_dynamic)
+        self.aLabel.setEnabled(use_dynamic)
+        self.bLabel.setEnabled(use_dynamic)
+        self.aDoubleSpinBox.setEnabled(use_dynamic)
+        self.bDoubleSpinBox.setEnabled(use_dynamic)
+
+    def _set_default_values(self):
+        self.display_values(NPCControllerTypes.PURE_PURSUIT.settings())
+
+    def _fill_trajectory_combobox(self):
+        self.trajectoryComboBox.addItem(' ')
+
+        path_trajectory_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'trajectories')
+        file_names = glob.glob(os.path.join(path_trajectory_directory, '*.csv'))
+        for file in file_names:
+            self.trajectoryComboBox.addItem(os.path.basename(file))
