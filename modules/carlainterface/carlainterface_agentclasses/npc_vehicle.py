@@ -1,5 +1,7 @@
 import random, os, sys, glob, math
 import numpy as np
+from enum import Enum
+import copy
 
 sys.path.append(glob.glob('carla_pythonapi/carla-*%d.%d-%s.egg' % (
     sys.version_info.major,
@@ -228,14 +230,22 @@ class NPCVehicleSettings:
         self.selected_car = 'hapticslab.audi'
         self.identifier = identifier
 
-        self.agent_type = AgentTypes.NPC_VEHICLE.value
+        self.agent_type = AgentTypes.NPC_VEHICLE
 
     def as_dict(self):
-        return self.__dict__
+        return_dict = copy.copy(self.__dict__)
+        for key, item in self.__dict__.items():
+            if isinstance(item, Enum):
+                return_dict[key] = item.value
+
+        return return_dict
 
     def set_from_loaded_dict(self, loaded_dict):
         for key, value in loaded_dict.items():
-            self.__setattr__(key, value)
+            if key == 'agent_type':
+                self.__setattr__(key, AgentTypes(value))
+            else:
+                self.__setattr__(key, value)
 
     def __str__(self):
         return self.identifier

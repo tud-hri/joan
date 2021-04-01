@@ -1,5 +1,7 @@
 import os
 import glob
+import copy
+from enum import Enum
 
 import numpy as np
 from PyQt5 import QtWidgets, uic
@@ -177,14 +179,21 @@ class PurePursuitSettings:
         self.vehicle_id = ''
 
     def as_dict(self):
-        return self.__dict__
+        return_dict = copy.copy(self.__dict__)
+        for key, item in self.__dict__.items():
+            if isinstance(item, Enum):
+                return_dict[key] = item.value
+        return return_dict
 
     def __str__(self):
         return str('Pure Pursuit Controller Settings')
 
     def set_from_loaded_dict(self, loaded_dict):
         for key, value in loaded_dict.items():
-            self.__setattr__(key, value)
+            if key == 'controller_type':
+                self.__setattr__(key, NPCControllerTypes(value))
+            else:
+                self.__setattr__(key, value)
 
 
 class PurePursuitSettingsDialog(QtWidgets.QDialog):
