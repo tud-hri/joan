@@ -35,7 +35,6 @@ class HapticControllerTypes(enum.Enum):
         path_to_uis = os.path.join(os.path.dirname(os.path.realpath(__file__)), "hapticcontrollermanager_controllers/ui/")
 
         return {HapticControllerTypes.FDCA: os.path.join(path_to_uis, "fdca_settings_ui.ui"),
-                HapticControllerTypes.FDCA_DUECA: os.path.join(path_to_uis, "fdcadueca_settings_ui.ui")
                 }[self]
 
     @property
@@ -43,7 +42,6 @@ class HapticControllerTypes(enum.Enum):
         path_to_uis = os.path.join(os.path.dirname(os.path.realpath(__file__)), "hapticcontrollermanager_controllers/ui/")
 
         return {HapticControllerTypes.FDCA: os.path.join(path_to_uis, "haptic_controller_tab.ui"),
-                HapticControllerTypes.FDCA_DUECA: os.path.join(path_to_uis, "haptic_controller_tab.ui")
                 }[self]
 
     @property
@@ -54,6 +52,5 @@ class HapticControllerTypes(enum.Enum):
                 }[self]
 
     def __str__(self):
-        return {HapticControllerTypes.FDCA: 'FDCA',
-                HapticControllerTypes.FDCA_DUECA: 'FDCA_Dueca' # TODO: remove
+        return {HapticControllerTypes.FDCA: 'FDCA'
                 }[self]
