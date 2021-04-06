@@ -9,12 +9,12 @@ from PyQt5 import QtWidgets, uic
 from modules.carlainterface.carlainterface_sharedvariables import CarlaInterfaceSharedVariables
 from modules.npccontrollermanager.npccontrollermanager_sharedvariables import NPCControllerSharedVariables
 from modules.npccontrollermanager.npccontrollertypes import NPCControllerTypes
+from tools import AveragedFloat
 
 
 class PurePursuitControllerProcess:
     """ This is a simple implementation of a pure pursuit vehicle controller. For more information on this type of controller please use Google, it is pretty common.
     This simple implementation does not use the back axle as the origin of the vehicle frame as it should, so it should not be used when high precision is required.
-    TODO: implement rear axle position in vehicle shared variables and rewrite this. This position can be extracted from wheel positions.
     """
 
     def __init__(self, settings, shared_variables: NPCControllerSharedVariables, carla_interface_shared_variables: CarlaInterfaceSharedVariables):
@@ -26,6 +26,9 @@ class PurePursuitControllerProcess:
         self.rear_axle_position = None
         self.vehicle_velocity = None
         self.vehicle_orientation = None
+        self.last_velocity_error = 0.
+        self.last_control_time_stamp = 0
+        self.error_rate = AveragedFloat()
 
         self._max_steering_angle = self.carla_interface_shared_variables.agents[self.settings.vehicle_id].max_steering_angle
 
@@ -43,9 +46,11 @@ class PurePursuitControllerProcess:
             self.shared_variables.handbrake = False
             self.shared_variables.reverse = False
         """
-        self.rear_axle_position, self.vehicle_velocity, self.vehicle_orientation = self._get_current_state()
+        self.rear_axle_position, self.vehicle_velocity, self.vehicle_orientation, time_stamp = self._get_current_state()
+        dt = (time_stamp - self.last_control_time_stamp) * 1e-9
 
-        if self.rear_axle_position.any():
+        if self.rear_axle_position.any() and dt:
+            self.last_control_time_stamp = time_stamp
             closest_way_point_index = self._find_closest_way_point(self.rear_axle_position)
 
             if np.linalg.norm(self._trajectory[closest_way_point_index, 1:3] - self.rear_axle_position[0:2]) > self.look_ahead_distance:
@@ -62,7 +67,11 @@ class PurePursuitControllerProcess:
             desired_velocity = self._trajectory[closest_way_point_index, 7]
 
             velocity_error = desired_velocity - self.vehicle_velocity[0]
-            throttle = self.settings.kp * velocity_error
+
+            self.error_rate.value = (velocity_error - self.last_velocity_error) / dt
+            self.last_velocity_error = velocity_error
+
+            throttle = self.settings.kp * velocity_error + self.settings.kd * self.error_rate.value
 
             # write calculated values to shared
             if throttle > 0.:
@@ -79,6 +88,7 @@ class PurePursuitControllerProcess:
             self.shared_variables.steering_angle = steering_angle / self._max_steering_angle
             self.shared_variables.handbrake = False
             self.shared_variables.reverse = False
+            self.shared_variables.desired_velocity = desired_velocity
 
     @property
     def look_ahead_distance(self):
@@ -155,23 +165,24 @@ class PurePursuitControllerProcess:
         rear_axle_position = self.carla_interface_shared_variables.agents[self.settings.vehicle_id].rear_axle_position
         vehicle_velocity = self.carla_interface_shared_variables.agents[self.settings.vehicle_id].velocities_in_vehicle_frame
         vehicle_orientation = self.carla_interface_shared_variables.agents[self.settings.vehicle_id].transform[3:6]
+        time_stamp = self.carla_interface_shared_variables.time
 
-        return np.array(rear_axle_position), np.array(vehicle_velocity), np.array(vehicle_orientation)
+        return np.array(rear_axle_position), np.array(vehicle_velocity), np.array(vehicle_orientation), time_stamp
 
 
 class PurePursuitSettings:
     def __init__(self):
         self.controller_type = NPCControllerTypes.PURE_PURSUIT
 
-        self.kp = 0.2
-        self.kd = 0.0  # TODO: hook up
+        self.kp = 1.5
+        self.kd = 0.0
 
         self.use_dynamic_look_ahead_distance = True
         self.static_look_ahead_distance = 15.0
 
         # a dynamic look ahead distance is calculated as LAD = a * v + b where v is velocity
         self.dynamic_lad_a = 0.5
-        self.dynamic_lad_b = 7.0
+        self.dynamic_lad_b = 8.0
 
         # reference trajectory
         self.reference_trajectory_name = 'demo_map_human_trajectory.csv'

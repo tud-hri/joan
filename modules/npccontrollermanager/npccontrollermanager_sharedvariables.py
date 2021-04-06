@@ -25,6 +25,7 @@ class NPCControllerSharedVariables(SharedVariables):
         self._brake = mp.Value(c_float, -9.9)
         self._reverse = mp.Value(c_bool, False)
         self._handbrake = mp.Value(c_bool, False)
+        self._desired_velocity = mp.Value(c_float, 0.0)
 
     @property
     def steering_angle(self):
@@ -65,3 +66,11 @@ class NPCControllerSharedVariables(SharedVariables):
     @handbrake.setter
     def handbrake(self, val):
         self._handbrake.value = val
+
+    @property
+    def desired_velocity(self):
+        return self._desired_velocity.value
+
+    @desired_velocity.setter
+    def desired_velocity(self, val):
+        self._desired_velocity.value = val
