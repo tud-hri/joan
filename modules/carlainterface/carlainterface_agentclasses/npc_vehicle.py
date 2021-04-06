@@ -114,6 +114,7 @@ class NPCVehicleProcess:
         if self.settings.selected_car != 'None':
             self._BP = random.choice(self.carlainterface_mp.vehicle_blueprint_library.filter("vehicle." + self.settings.selected_car))
         self._control = carla.VehicleControl()
+        self._rear_axle_in_vehicle_frame = np.array([0., 0., 0.])
         self.world_map = self.carlainterface_mp.world.get_map()
         torque_curve = []
         gears = []
@@ -138,11 +139,22 @@ class NPCVehicleProcess:
                 physics.drag_coefficient = 0.24
                 physics.gear_switch_time = 0
                 self.spawned_vehicle.apply_physics_control(physics)
-                self.shared_variables.max_steering_angle = np.radians(physics.wheels[0].max_steer_angle)
+                wheels = physics.wheels
+                self.shared_variables.max_steering_angle = np.radians(wheels[0].max_steer_angle)
+
+                rotation = self.spawned_vehicle.get_transform().rotation
+                rotation_matrix = self.get_rotation_matrix_from_carla(rotation.roll, rotation.pitch, rotation.yaw)
+
+                physics = self.spawned_vehicle.get_physics_control()
+                wheels = physics.wheels
+                rear_axle_in_world_frame = (((wheels[3].position - wheels[2].position) / 2) + wheels[2].position) / 100.
+                position_difference = rear_axle_in_world_frame - self.spawned_vehicle.get_transform().location
+                position_difference = np.array([position_difference.x, position_difference.y, position_difference.z])
+
+                self._rear_axle_in_vehicle_frame = np.linalg.inv(rotation_matrix) @ position_difference
 
     def do(self):
         if self.settings.selected_npc_controller != 'None' and hasattr(self, 'spawned_vehicle'):
-
             self._control.steer = self.npc_controller_shared_variables.controllers[self.settings.selected_npc_controller].steering_angle / math.radians(450)
             self._control.reverse = self.npc_controller_shared_variables.controllers[self.settings.selected_npc_controller].reverse
             self._control.hand_brake = self.npc_controller_shared_variables.controllers[self.settings.selected_npc_controller].handbrake
@@ -160,9 +172,10 @@ class NPCVehicleProcess:
     def set_shared_variables(self):
         if hasattr(self, 'spawned_vehicle'):
             rotation = self.spawned_vehicle.get_transform().rotation
-            self.shared_variables.transform = [self.spawned_vehicle.get_transform().location.x,
-                                               self.spawned_vehicle.get_transform().location.y,
-                                               self.spawned_vehicle.get_transform().location.z,
+            center_location = self.spawned_vehicle.get_transform().location
+            self.shared_variables.transform = [center_location.x,
+                                               center_location.y,
+                                               center_location.z,
                                                rotation.yaw,
                                                rotation.pitch,
                                                rotation.roll]
@@ -177,6 +190,9 @@ class NPCVehicleProcess:
             rotation_matrix = self.get_rotation_matrix_from_carla(rotation.roll, rotation.pitch, rotation.yaw)
             velocities_in_vehicle_frame = np.linalg.inv(rotation_matrix) @ np.array([linear_velocity.x, linear_velocity.y, linear_velocity.z])
             self.shared_variables.velocities_in_vehicle_frame = velocities_in_vehicle_frame
+
+            center_location_as_np = np.array([center_location.x, center_location.y, center_location.z])
+            self.shared_variables.rear_axle_position = center_location_as_np + rotation_matrix @ self._rear_axle_in_vehicle_frame
 
             self.shared_variables.accelerations = [self.spawned_vehicle.get_acceleration().x,
                                                    self.spawned_vehicle.get_acceleration().y,
