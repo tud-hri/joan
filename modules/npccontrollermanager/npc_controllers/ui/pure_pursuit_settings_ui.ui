@@ -116,7 +116,7 @@
          <bool>false</bool>
         </property>
         <property name="text">
-         <string>In a dynamic Look Ahead Distance it is calculated as 
+         <string>A dynamic Look Ahead Distance is calculated as 
  LAD = a * v + b where v is the velocity </string>
         </property>
         <property name="wordWrap">
