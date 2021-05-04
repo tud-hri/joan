@@ -53,7 +53,7 @@ If you want to build up an understanding of JOAN the sections below are a good p
 Several modules are included with JOAN by default, the way to use them is described in their separate sections:
 
 !!! Important
-    Please check the documentation on [the usage of the shared variables](advancedsteps-add-custom-module.md#shared_variables_class), a very important step is described there pertaining to the setting and getting of the 
+    Please check the documentation on [the usage of the shared variables](advanced-add-custom-module.md#shared_variables_class), a very important step is described there pertaining to the setting and getting of the 
     shared variables.
 
 * __[Data Recorder](modules-datarecorder.md)__ - The data recorder is a module which can record data.
@@ -66,9 +66,9 @@ Several modules are included with JOAN by default, the way to use them is descri
 ## Advanced steps
 If you want to know more and add to JOAN yourself you can have a look at these sections:
 
-* __[How to create a custom JOAN module](advancedsteps-add-custom-module.md)__ - Guide on how to create your own JOAN modules
-* __[JOAN module settings](advancedsteps-settings.md)__ - JOAN uses Settings to save you to set up every module
-* __[JOAN state machine](advancedsteps-state-machine.md)__ - Info on JOAN's state machine
+* __[How to create a custom JOAN module](advanced-add-custom-module.md)__ - Guide on how to create your own JOAN modules
+* __[JOAN module settings](advanced-settings.md)__ - JOAN uses Settings to save you to set up every module
+* __[JOAN state machine](advanced-state-machine.md)__ - Info on JOAN's state machine
 
 
 ## Other documentation

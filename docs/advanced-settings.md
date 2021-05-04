@@ -1,4 +1,4 @@
-# JOAN settings
+# Advanced - JOAN settings
 
 ## Default settings
 
