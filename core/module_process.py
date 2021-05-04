@@ -116,6 +116,8 @@ class ModuleProcess(mp.Process):
         if self._module_shared_variables.state == State.STOPPED.value:
             running = False
 
+        t_start = time.perf_counter_ns()
+
         while running:
 
             # check if state is stopped; if so, stop!
@@ -127,10 +129,10 @@ class ModuleProcess(mp.Process):
             try:
                 self._running_frequency = 1e9 / (t0 - self._last_t0)
             except ZeroDivisionError:
-                self._running_frequency = 1e9 / 1
+                self._running_frequency = 1e9 / 1.
 
             self._last_t0 = t0
-            self._time = time.time_ns()
+            self._time = time.time_ns() - t_start
 
             # read shared values here, store in local variables
             self.read_from_shared_variables()
