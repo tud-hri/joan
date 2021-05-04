@@ -116,7 +116,7 @@ class ModuleProcess(mp.Process):
         if self._module_shared_variables.state == State.STOPPED.value:
             running = False
 
-        t_start = time.perf_counter_ns()
+        t_start = time.time_ns()
 
         while running:
 
