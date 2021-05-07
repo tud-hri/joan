@@ -13,5 +13,5 @@ JOAN is developed by a team of the Human-Robot Interaction group of Cognitive Ro
 Please see our license if you want to use our framework.
 
 Please use the following citation:
-> Beckers, N., Siebinga, O. Giltay, J., van der Kraan, A., *JOAN, a human-automated vehicle experiment framework*, https://github.com/tud-hri/joan
+> Beckers, N., Siebinga, O., Giltay, J., & Van der Kraan, A. (2021). JOAN, a human-automated vehicle experiment framework. Retrieved from https://github.com/tud-hri/joan
 
