@@ -2,7 +2,7 @@
 
 Welcome to the JOAN human-automated vehicle interaction simulator documentation! This documentation should get you up and running with JOAN and [CARLA](http://carla.org){target="_blank"}.
 
-JOAN is a software framework that builds upon CARLA, a simulator made to study automated driving, by making CARLA also useful for human-in-the-loop experiments of human drivers and other road users interacting with automated vehicles. 
+JOAN is an open-source software framework that builds upon CARLA, a simulator made to study automated driving, by making CARLA also useful for human-in-the-loop experiments of human drivers and other road users interacting with automated vehicles. 
 
 Among others, we build JOAN to enable you to 
 
@@ -17,6 +17,10 @@ Have fun!
     For students at TU Delft, please start reading __[Setup JOAN on a TUD computer](setup-on-tud-shared-hardware.md)__
 
 JOAN is developed by members of the [Human-Robot Interaction group](https://delfthapticslab.nl){target="_blank"} at Cognitive Robotics of Delft University of Technology.
+
+Please use the following reference if you end up using JOAN for your work (and do not forget to reference CARLA too!)
+
+> Beckers, N., Siebinga, O., Giltay, J., & Van der Kraan, A. (2021). JOAN, a human-automated vehicle experiment framework. Retrieved from https://github.com/tud-hri/joan
 
 Below a video of some of the capabilities of JOAN is shown, one of the main software components of the Symbiotic Driving Demonstrator was JOAN :)!
 
