@@ -16,7 +16,7 @@ class ExamplePrintScenario(Scenario):
         self.keyboard_message_sent = False
 
     def do_function(self, carla_interface_process: CarlaInterfaceProcess):
-        if not self.keyboard_message_send:
+        if not self.keyboard_message_sent:
             for hardware_name in carla_interface_process.shared_variables_hardware.inputs:
                 if 'Keyboard' in hardware_name:
                     print('A keyboard is active')

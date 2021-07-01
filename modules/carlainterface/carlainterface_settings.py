@@ -31,7 +31,9 @@ class CarlaInterfaceSettings(ModuleSettings):
         """
 
         scenario_object = self.current_scenario
-        self.current_scenario = scenario_object.name
+        if scenario_object is not None:
+            self.current_scenario = scenario_object.name
+
         settings_as_dict = super().as_dict()
         self.current_scenario = scenario_object
 
