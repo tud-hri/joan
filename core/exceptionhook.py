@@ -6,9 +6,13 @@ import traceback
 from PyQt5 import QtWidgets, QtCore
 
 
-def exception_log_and_kill_hook(exctype, value, tb, joan_module, exception_event):
+def exception_log_and_kill_hook(exctype, value, tb, joan_module, events):
     # trigger the event to transition the module to ERROR state
-    exception_event.set()
+    events.exception.set()
+
+    # trigger the "process_is_ready" event to prevent a dead-lock if the exception occurred during the get ready phase.
+    # In that phase the module manager will wait until this event is set, potentially causing an infinite wait.
+    events.process_is_ready.set()
 
     print('exception occurred in run process of the %s module' % str(joan_module))
     traceback.print_exception(exctype, value, tb)
