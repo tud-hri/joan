@@ -100,7 +100,7 @@ class ModuleProcess(mp.Process):
                 self._run_loop()
         except:
             # sys.excepthook is not called from within processes so can't be overridden. instead, catch all exceptions here and call the new excepthook manually
-            exception_log_and_kill_hook(*sys.exc_info(), self.module, self._events.exception)
+            exception_log_and_kill_hook(*sys.exc_info(), self.module, self._events)
 
     def _run_loop(self):
         """

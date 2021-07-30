@@ -128,7 +128,7 @@ class CarlaInterfaceProcess(ModuleProcess):
                 self._run_loop()
         except:
             # sys.excepthook is not called from within processes so can't be overridden. instead, catch all exceptions here and call the new excepthook manually
-            exception_log_and_kill_hook(*sys.exc_info(), self.module, self._events.exception)
+            exception_log_and_kill_hook(*sys.exc_info(), self.module, self._events)
 
     def destroy_agents(self):
         """
@@ -146,6 +146,9 @@ class CarlaInterfaceProcess(ModuleProcess):
         for agents in self.agent_objects:
             # will perform the mp input class for eaach available input
             self.agent_objects[agents].do()
+
+        if self._settings_as_object.current_scenario is not None:
+            self._settings_as_object.current_scenario.do_function(self)
 
         if self._module_shared_variables.state == State.STOPPED.value:
             for agents in self.agent_objects:
