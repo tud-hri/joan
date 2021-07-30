@@ -1,6 +1,6 @@
 # Setting up JOAN
 
-Once you have CARLA running, the hard part is over. JOAN is a relative walk in the park, except perhaps for setting up a project repository. TU Delft students need to follow all steps in the 'Less-quick start' guide.
+Once you have CARLA running, the hard part is over. JOAN is a relative walk in the park, except perhaps for setting up a project repository.
 
 ## Quick start
 
@@ -18,7 +18,7 @@ python -m venv venv
 ```
 pip install -r requirements.txt
 ```
-4. Include the CARLA `.egg` file in the JOAN project (see step 5)
+4. Include the CARLA `.egg` file in the JOAN project (see steps 4 and 5 [here](setup-carla-windows.md))
 
 5. If you want to use `git` for your own project, set up your own remote project (see step 2).
 
@@ -47,7 +47,7 @@ Finally, you need to update your project with the latest version of JOAN. We try
 ---
 ## Step 1. Create your own JOAN project
 
-JOAN is maintained in a GitLab repository by a team of contributors. There are a couple of ways though which you can download JOAN:
+JOAN is maintained in a [GitHub repository](https://github.com/tud-hri/joan) by a team of contributors. There are a couple of ways though which you can download JOAN:
 
 - You can download a __zipped copy__ of the repository (note: you don't receive any updates when we change the code)
 - You can __clone__ the repository using the command `git clone . However, if you do not have write permission to the repository, you can't make your own changes and store them on a repository (well, not easily).
@@ -58,8 +58,8 @@ We will explain how to setup your own project repository and how to connect it t
 ### Make your own JOAN project on gitlab.tudelft.nl (TU Delft students and employees only)
 
 - Log in to the TUDelft's GitLab server at [gitlab.tudelft.nl](https://gitlab.tudelft.nl/){target="_blank"} using your `netid`
-- Go to the JOAN repository. You can either search for it, or use this [link](https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan){target="_blank"}. Welcome! But do nothing - for now.
-- Open a new browser tab, and navigate to the [JOAN-students group](https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan-students){target="_blank"}. If you don't have access, you can request access through the "Request access" link (see the image below) Note: this group is visible to anyone with a TUDelft `netid`.
+<!-- - Go to the JOAN repository. You can either search for it, or use this [link](https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan){target="_blank"}. Welcome! But do nothing - for now.-->
+- Open a new browser tab, and navigate to the [JOAN-students group](https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan-students){target="_blank"}. If you do not have access, you can request access through the "Request access" link (see the image below) Note: this group is visible to anyone with a TUDelft `netid`.
   ![joan-students-access](imgs/setup-joan-gitlab-request-access-joanstudents.png)
     - For PhD researchers, please use the JOAN-projects group.
 - Make a new project using the green 'New project' button. Please name your repository starting with JOAN, followed by your name and any other project description. Use hyphens. Example project name: `JOAN-niek-myfirstjoanproject`. Click on 'Create project'. You will be redirected to your empty repository page. 

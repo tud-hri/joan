@@ -23,7 +23,7 @@ via the main JOAN window you can still connect to CARLA by pressing the connect 
 
 If JOAN is already connected the connect button will not be available but the disconnect button is enabled. One last thing remains to be said about the CARLA
 connection. Due to the fact that we use multiprocessing we need to connect to CARLA again when the module process is created (this is done after
-clicking `get ready`). This makes sure we have acces to our CARLA pythonapi function within this process. There is however a big note to this:
+clicking `get ready`). This makes sure we have access to the CARLA pythonapi function within this process. There is however a big note to this:
 
 !!! Important Whenever you are already in the `READY` state, and you stop CARLA from the unreal side, this will lead to erratic behaviour in JOAN. So never stop
 your experiments via the quit button in Unreal. Ideally you use the 'play' button in unreal once before starting up JOAN and stop it again after you quit JOAN.
@@ -47,11 +47,11 @@ As can be seen in the image above we need to set some settings before we can act
 controller will only be available if these have been added in that particular module. If the other options are not showing but you did add them in the
 appropriate module, try and click the update button at the top, this will update the groupboxes. `Spawnpoints` and `CarType` are directly communicated from
 CARLA, therefore if you have no connection to CARLA these will be empty (another hint that you should connect to CARLA first). If you add 2 vehicles and they
-have the same spawnpoint an message will pop-up saying that there is a spawnpoint conflict and the spawnpoint will reset to `None`:
+have the same spawn point an message will pop-up saying that there is a spawn point conflict and the spawn point will reset to `None`:
 
 ![Double spawnpoint message](imgs/modules-carlainterface-double-spawnpoint.PNG)
 
-!!! Note If you choose None for spawnpoint it will just not spawn any car, same goes for the CarType.
+!!! Note If you choose None for spawn point it will just not spawn any car, same goes for the CarType.
 
 The last thing you can choose from is cruise control checkbox and a desired speed. Please note that this will use a PD controller on the throttle and brake and
 does not set the velocity instantly.
@@ -131,7 +131,7 @@ Luckily this one is easier, assuming that you only want to have the buttons `set
 
     .../modules/carlainterface/carlainterface_agentclasses/ui/agent_tab.ui
 
-However if you want more functionality in this tab you can add your ownly designed tab ofcourse!
+However if you want more functionality in this tab you can add your only designed tab of course!
 
 !!! Note For reference, this has also been done for the `module_card.ui` and `module_card_carlainterface.ui`, so if you're interested please take a inside
 `.../core/hq`
@@ -139,7 +139,7 @@ However if you want more functionality in this tab you can add your ownly design
 ### Step 4. Adding/copying shared variables object
 
 The shared variables object should contain all the variables you'd like to do something with from the rest of JOAN, so if you want to record or plot anything or
-just do anything with the data at all outside of its own process it should be inside the sharedvariables class.
+just do anything with the data at all outside of its own process it should be inside the shared variables class.
 
 As you might have noticed this object is not contained within your new `<YOUR_AGENT_TYPE_FILE>.py1`, so it should come from somewhere else, namely:
 
@@ -168,7 +168,7 @@ In the function `load_from_dict` you will need to add:
             <YOUR_AGENT>_settings.set_from_loaded_dict(settings_dict)
             self.agents.update({identifier: <YOUR_AGENT>_settings})
 
-### Step 7. This guide wasn't useful at all I tried copying everything and it doesn't work!? What do I do?!
+### Step 7. This guide was not useful at all I tried copying everything and it does not work!? What do I do?!
 
 It is highly likely that you forgot a crucial part, you have to be very meticulous! The error messages you get in the terminal should help you underway as to
 where things went wrong!

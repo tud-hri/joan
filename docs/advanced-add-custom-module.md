@@ -37,9 +37,7 @@ By inheriting these base classes, you should be good to go for most applications
 Of course you can change the modules that come shipped with JOAN to your liking, but perhaps you want to build your own module. Go nuts! We will briefly explain how you can make your own module and include it. 
 
 !!! Important
-    We included a template module that you can use to create your own modules. Check it out and see if you understand it, this is a very important step since we will not go 
-    into all the nitty gritty of the code down below. Rather make sure you have the template module next to this as you read it, read the comments in there 
-    and make sure you understand what is going on! This will make your life of adding a module significantly easier!
+    We included a template module that you can use to create your own modules. Check it out and see if you understand it, this is a very important step since we will not go into all the nitty gritty of the code down below. Rather make sure you have the template module next to this as you read it, read the comments in there and make sure you understand what is going on! This will make your life of adding a module significantly easier!
 
 ## Creating your own module
 
@@ -76,8 +74,7 @@ Copy the `template` folder in the modules folder.
 (i.e. don't use a \_ or \-). Hence, we rename `template` to `joaniscool`
 
 !!! Tip
-    PyCharm has a build in renaming functionality that automatically renames all occurrences in your project. You can use it by selecting a variable, class or method and pressing `shift + F6`, you can also rename
-    files this way by right clicking and going to the `refactor` tab.
+    PyCharm has a build in renaming functionality that automatically renames all occurrences in your project. You can use it by selecting a variable, class or method and pressing `shift + F6`, you can also rename files this way by right clicking and going to the `refactor` tab.
 
 An example, if you are using PyCharm:
 
@@ -194,8 +191,8 @@ Whenever you want to do something with a Shared Variable value in a module do th
 
 #### <a name="process_class"></a>4.5 The Process class
 
-The last thing that `almost` every module contains is a Process Class, it says `almost` because a seperate process is not always necessary, for example
-the `DataPloter` module does not run its own process. However a Process class is nearly a must when you want to do some (heavy) computational stuff for exapmle making 
+The last thing that 'almost' every module contains is a Process Class, it says 'almost' because a separate process is not always necessary, for example
+the `DataPloter` module does not run its own process. However a Process class is nearly a must when you want to do some (heavy) computational stuff for example making 
 a model predictive controller. You might ask why this should be run in its own process, the main advantage is that we can run our modules in parallel rather than sequentially.
 Just to be a bit more clear lets think of an example, you might have 3 modules running; `Hardware Manager`, `Haptic Controller Manager` and `Carla Interface`. 
 Imagine that you have made a beautiful controller that does some heavy calculations but outputs the best haptic feedback you could think of. If JOAN

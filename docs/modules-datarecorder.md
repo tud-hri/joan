@@ -41,6 +41,4 @@ There are some important things to consider when selecting variables to save, pl
 
 
 ### storing trajectories with the data recoder
-The data recorder can also store trajectories of ego vehicle 1 when carla interface is used. These trajectories are for use with the haptic controllers only
-and should not be used as general logging of an experiment. The trajectory saving is a beta feature and you should manually verify that the stored trajectory 
-is actually correct before you use it for anything.    
+The data recorder can also store trajectories of ego vehicle 1 when carla interface is used. These trajectories are for use with the haptic controllers only and should not be used as general logging of an experiment. The trajectory saving is a beta feature and you should manually verify that the stored trajectory is actually correct before you use it for anything.    

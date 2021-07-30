@@ -7,11 +7,11 @@ GIFs and pictures! :)
 
 !!! Note
     This quick setup guide only shows the usage of 3 basic modules namely, `Hardware Manager`, `DataRecorder` and `CarlaInterface`, please refer to the 
-    actual documentation of the seperate modules if you want more info on how to setup the remaining default ones.
+    actual documentation of the separate modules if you want more info on how to setup the remaining default ones.
 
 ### 1. Run JOAN and CARLA
 
-Out-of-the-box, JOAN has a couple of modules included (`CarlaInterface, HardwareManager, DataRecorder, Haptic Controller Manager , DataPlotter and  the Experiment Manager`). These should show up in JOAN HQ, JOAN's headquarters.
+Out-of-the-box, JOAN has a couple of modules included (`CarlaInterface, HardwareManager, DataRecorder, Haptic Controller Manager, DataPlotter, ScenarioManager, and the Experiment Manager`). These should show up in JOAN HQ, JOAN's headquarters.
 
 - To run JOAN, either execute (in a terminal):
 ```
@@ -31,8 +31,8 @@ Or, if you use PyCharm, click the green play button or right-click on `main.py` 
 
 - Hit the big play button in CarlaUE4
 
-See below the GIF for step 1 :
-[ ![](gifs/joan-run-firststep.gif) ](gifs/joan-run-firststep.gif){target="_blank"}
+<!--see below the GIF for step 1 :
+[ ![](gifs/joan-run-firststep.gif) ](gifs/joan-run-firststep.gif){target="_blank"}-->
 
 ### 2. Add an input device
 Open up the `hardware manager` and click the `add hardware button` select your input, put in the appropriate settings and save. (For more details please
@@ -70,18 +70,17 @@ a little while because JOAN has to create and setup all the multiprocesses and w
 all done. This can take up to 15 seconds or so, so please be patient. You'll see the cursor also being a 
 circle during this time.
 If everything went well you'll notice the state change from the blue `initialized` to the yellow `ready`.
-[ ![](gifs/joan-run-setup-getready.gif) ](gifs/joan-run-setup-getready.gif){target="_blank"}
+<!-- [ ![](gifs/joan-run-setup-getready.gif) ](gifs/joan-run-setup-getready.gif){target="_blank"} -->
+
 ### 7. Run and Drive!
 Now the only thing left to do is to click `run` to go to the `running` state and start driving around:
-[ ![](gifs/joan-run-setup-rundrive.gif)](gifs/joan-run-setup-rundrive.gif){target="_blank"}
+<!--[ ![](gifs/joan-run-setup-rundrive.gif)](gifs/joan-run-setup-rundrive.gif){target="_blank"}-->
 If you press the `stop` button, JOAN Will handle everything accordingly and properly shut down
-your session. (Also destroyign any spawned objects in CARLA)
+your session. (Also destroying any spawned objects in CARLA)
 
 ### 8. Have a look at your CSV file full of data.
 Just to check whether we have really recorded something we can look at the generated CSV file:
 [ ![](gifs/joan-run-lookatdata.gif)](gifs/joan-run-lookatdata.gif){target="_blank"}
-
-
 
 ---
 

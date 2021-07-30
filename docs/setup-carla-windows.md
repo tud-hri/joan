@@ -1,13 +1,12 @@
 # Setting up CARLA for Windows
 
 !!! Note
-    If you are a TU Delft student working on one of the TUD computers with CARLA installed, you can skip these instructions. Go to the [setup guide for installing on TUD shared hardware](setup-on-tud-shared-hardware.md) instead.
+    If you are a TU Delft student working on one of the TUD computers with CARLA installed, you can skip these instructions. Go to the [setup guide for installing on TUD shared hardware](setup-on-tud-shared-hardware.md).
 
 !!! Note
     If you want to do a clean install of CARLA, Python etc. on a TUD PC (if it's a new PC, or when you want to upgrade Python or Unreal Engine), first ask one of the JOAN developer team on Slack or your supervisor. Next, you need to do all the installations on the `localadmin` account to make everything available for all users.
     
-   
-These instructions are are heavily based on the awesome documentation provided by the CARLA team. If you get stuck somewhere or you want to know more, you could have a look at [their documentation](https://carla.readthedocs.io/en/latest/){target="_blank"}.
+These instructions are are based on the awesome documentation provided by the CARLA team. If you get stuck somewhere or you want to know more, you could have a look at [their documentation](https://carla.readthedocs.io/en/0.9.10/){target="_blank"}.
 
 ---
 
@@ -20,7 +19,7 @@ In order to properly setup the simulation software on Windows several packages a
 ## Hardware Requirements
 
 * __x64 system__: The simulator should run in any 64 bits Windows system.  
-* __50GB disk space__: Installing all the software needed and CARLA will require quite a lot of space. Make sure to have about 50GB of space (especially since you will also need a visual studio 2017 install)
+* __50GB disk space__: Installing all the software needed (Unreal, VS 2017, CARLA, and more) will require quite a lot of space. Make sure to have about 50GB of space (especially since you will also need a Visual Studio 2017 install)
 * __An adequate GPU__: CARLA aims for realistic simulations, so the server needs at least a 4GB GPU. If VR is required a Turing based GPU (for example the RTX branch of NVIDIA is highly recommended!)
 * __Two TCP ports and good internet connection__: 2000 and 2001 by default. Be sure neither the firewall nor any other application are blocking these. 
 
@@ -75,7 +74,7 @@ Download Unreal Engine 4.24.x and use the default install settings. Make sure to
     
 ### Python3 x64
 
-Install python 3 and __make sure you get the x64 version__ else it will not work, there is even some speculation that if you have a x32 version installed it can cause conflicts so its best to only have x64. At the time of writing this guide the working version of python is __[Python 3.8.5](https://www.python.org/downloads/release/python-385/)__
+Install python 3 and __make sure you get the x64 version__ else it will not work, there is even some speculation that if you have a x32 version installed it can cause conflicts so its best to only have x64. At the time of writing this guide the working version of python is __[Python 3.8.5](https://www.python.org/downloads/release/python-385/)__, though 3.9 has been shown to work too. 
 
 !!! Note
     If you are installing Python as `localadmin` on a shared TUD PC, 
@@ -133,9 +132,9 @@ The steps will be explained 1 step at the time with screenshots and command line
 
 ### Step 1: Cloning the CARLA repository
 
-JOAN was tested with Carla version 0.9.9, other versions might work but no guarantees are given. To clone version 0.9.9 of the repository open a command window and navigate to the folder where you want to clone carla (if you don't know how to use the `cd` command to navigate in a terminal, check out [this page](https://www.computerhope.com/issues/chusedos.htm){target="_blank"} first). Please remember that the `git clone` command will also create a project folder named carla at the current location. Now type the following command:
+JOAN was tested with Carla version 0.9.10, other versions might work but no guarantees are given. To clone version 0.9.10 of the repository open a command window and navigate to the folder where you want to clone carla (if you don't know how to use the `cd` command to navigate in a terminal, check out [this page](https://www.computerhope.com/issues/chusedos.htm){target="_blank"} first). Please remember that the `git clone` command will also create a project folder named carla at the current location. Now type the following command:
 
-    git clone https://github.com/carla-simulator/carla --branch 0.9.9
+    git clone https://github.com/carla-simulator/carla --branch 0.9.10
 
 !!! Important 
     The CARLA build will fail if the path to CARLA contains spaces, so please clone CARLA to a folder without spaces in the path. If in doubt; use `C:\carla`. To do this navigate to `C:\` in a command prompt and call `git clone` from there, the `carla` folder will be created automatically. 
@@ -234,6 +233,6 @@ Usually when you install a software package the option to add to the `PATH` is a
 
 ![alt text](imgs/setup-carla-windows-python-path.png "Python add to `PATH` example")
 
-However when this is not an available option, for example with make (gnuwin32), you can do the following:
+However when this is not an available option, for example with make (`gnuwin32`), you can do the following:
 
 ![alt text](gifs/setup-carla-windows-system-path.gif "Adding to path")

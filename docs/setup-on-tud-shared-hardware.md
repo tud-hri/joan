@@ -2,30 +2,28 @@
 
 These instructions are specifically for students at TU Delft, but they may be useful for others too. 
 
-If you are a student at the TUD, you will share our limited hardware (computers, steering wheels) with your fellow students. To make sure we keep everything organized, you need to follow the next steps for every computer you want to install your project on.
+If you are a student at the TUD, you will share hardware (computers, steering wheels) with your fellow students. To make sure we keep everything organized, you need to follow the next steps for every computer you want to install your project on.
 
 ---
 
 ## Step 1: preparations
 
-Log in with your TU Delft NetID.
-
-If correct, CARLA (see `C:\carla`), python 3.8.5 (64 bit; type `python` in a command terminal, you should see a python version > 3.8), and PyCharm are already installed. 
+- Log in with your TU Delft NetID.
+- If correct, CARLA (see `C:\carla`), python 3.8.5 (64 bit; type `python` in a command terminal, you should see a python version > 3.8), and PyCharm are already installed. 
 
 !!! Note
-    If you need to do a fresh install (CARLA, python, PyCharm, ...) on the computer, follow the steps in both the [Build CARLA on Windows](setup-carla-windows.md) and [Install JOAN](setup-joan.md). This needs to be done as an administrator to make CARLA, python and PyCharm available for everyone. Ask your supervisor first.
+    If you need to do a fresh install (CARLA, python, PyCharm, ...) on the computer, follow the steps in both the [Build CARLA on Windows](setup-carla-windows.md) and [Install JOAN](setup-joan.md) pages. This needs to be done as an administrator to make CARLA, python and PyCharm available for everyone. Ask your supervisor first.
 
 ## Step 2: clone your JOAN project
 
-You can run your JOAN and CARLA project on any TUD computer that we prepared for you. For each PC, you need to clone and setup your JOAN project. Follow the steps in the [Install JOAN](setup-joan.md): do step 1 only when you first create your JOAN project, else, only do steps 2-5. 
-
+You can run your JOAN and CARLA project on any TUD computer that we prepared for you. For each PC, you need to clone and setup your JOAN project. Follow the steps in [Install JOAN](setup-joan.md): do step 1 only when you first create your JOAN project, else, only do steps 2-5. 
 
 ## Step 3: setup your own CARLA map
 
 You will probably need to build your own map with a road in CARLA for your own project.
 
 !!! Important
-    Maps need to be in the `C:\carla` directory. You need to be very careful not to tamper with another student's CARLA project or the CARLA installation itself. Therefore, please be cautious when working in the `C:\carla` folder. __You can screw up your fellow students' projects if you don't.__
+    Maps need to be in the `C:\carla` directory. You need to be very careful not to tamper with another student's CARLA project or the CARLA installation itself. Therefore, please be cautious when working in the `C:\carla` folder. __You can screw up your fellow students' projects if you do not!__
 
 We prepared a template map (`DebugMap`), which you can find in `C:\carla\Unreal\CarlaUE4\Content\Carla\Maps`.
 
@@ -47,4 +45,4 @@ To create your own map:
     
 ## Reserving and sharing the TUD computers
 
-We have limited hardware at the TUD for you to work on. Please share the PCs fairly among your fellow students. You can coordinate through Slack (joan-forum, for example). Furthermore, you can reserve the computers through a shared calendar. Ask Timo Melman to add you to the calendar. Be nice to each other :-)
+We have limited hardware at the TUD for you to work on. Please share the PCs fairly among your fellow students. You can coordinate through Slack (joan-forum, for example).
