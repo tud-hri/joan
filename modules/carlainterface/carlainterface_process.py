@@ -139,6 +139,9 @@ class CarlaInterfaceProcess(ModuleProcess):
             # will perform the mp input class for eaach available input
             self.agent_objects[agents].do()
 
+        if self._settings_as_object.current_scenario is not None:
+            self._settings_as_object.current_scenario.do_function(self)
+
         if self._module_shared_variables.state == State.STOPPED.value:
             for agents in self.agent_objects:
                 self.agent_objects[agents].destroy()

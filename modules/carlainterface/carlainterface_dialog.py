@@ -5,6 +5,7 @@ from core.module_dialog import ModuleDialog
 from core.module_manager import ModuleManager
 from core.statesenum import State
 from modules.carlainterface.carlainterface_agenttypes import AgentTypes
+from modules.carlainterface.scenarios.scenarioslist import ScenariosList
 from modules.joanmodules import JOANModules
 
 
@@ -27,17 +28,31 @@ class CarlaInterfaceDialog(ModuleDialog):
         self._agent_tabs_dict = {}
         self._agent_dialogs_dict = {}
 
+        self._fill_scenarios_combo_box()
+        self.module_widget.scenariosComboBox.currentIndexChanged.connect(self.update_scenario)
+
+    def _fill_scenarios_combo_box(self):
+        self.module_widget.scenariosComboBox.addItem('', None)
+        all_scenarios = ScenariosList()
+
+        for scenario in all_scenarios:
+            self.module_widget.scenariosComboBox.addItem(scenario.name, scenario)
+
+    def update_scenario(self):
+        selected_scenario = self.module_widget.scenariosComboBox.currentData()
+        self.module_manager.module_settings.current_scenario = selected_scenario
+
     def _handle_state_change(self):
         """"
         This function handles the enabling and disabling of the carla interface change
         """
         super()._handle_state_change()
-        if self.module_manager.state_machine.current_state == State.STOPPED:
-            self.module_widget.groupbox_agents.setEnabled(True)
-            self.module_widget.btn_add_agent.setEnabled(True)
-        else:
-            self.module_widget.groupbox_agents.setEnabled(False)
-            self.module_widget.btn_add_agent.setEnabled(False)
+
+        is_in_stopped_state = self.module_manager.state_machine.current_state == State.STOPPED
+
+        self.module_widget.groupbox_agents.setEnabled(is_in_stopped_state)
+        self.module_widget.btn_add_agent.setEnabled(is_in_stopped_state)
+        self.module_widget.scenariosComboBox.setEnabled(is_in_stopped_state)
 
     def _select_agent_type(self):
         self._agent_type_dialog.combo_agent_type.clear()
