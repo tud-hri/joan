@@ -72,23 +72,27 @@ JOAN, and an illustrative example. For detailed documentation on how to install,
 repository\footnote{\url{https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan}}.
 
 # Software Functionality
+JOAN was developed to combine the potential of an existing simulation environment for autonomous vehicles (the CARLA simulator) with human driver inputs in 
+scientific experiments. We set the following requirements for JOAN based on the needs of a typical human-in-the-loop driving experiment:
 
-We set the following requirements for JOAN based on the needs of a typical human-in-the-loop driving experiment:
-\begin{enumerate}[noitemsep, label=R\arabic*]
-\item Facilitate the interaction with CARLA (connecting to CARLA's server, creating agents, exchanging data, etc.)\label{req:carlainterface} \item Enable
-researchers to connect multiple types of user input devices (steering wheels, etc.) with agents in CARLA\label{req:hardware} \item Facilitate the design and
-execution of experiment protocols\label{req:experiment} \item Provide reliable data acquisition\label{req:datarecorder} \item Allow researchers to create
-repeatable traffic scenarios involving multiple agents (humans, AVs, etc.) in CARLA\label{req:trafficscenarios} \item Include support for haptic feedback on a
-haptic steering wheel to study haptic human-AV interaction\label{req:hscsupport} \item JOAN's user interface should be intuitive to use\label{req:intuitive}
-\item Be extensible by design, to support customization\label{req:modular} \end{enumerate} These requirements are implemented in the framework as described in
-the software architecture below.
+- Provide reliable data acquisition
+- Enable researchers to connect multiple types of user input devices (steering wheels, etc.) with agents in CARLA
+- Facilitate the design and execution of experiment protocols; allow researchers to create repeatable traffic scenarios involving multiple agents (humans, 
+  AVs, etc.) in CARLA
+- Provide an easy way to design simple experiments by providing access to most functionality from a graphical user interface
+- Be flexible and extensible by design, to support customization both within current functionality and for new functionality
+- Include support for haptic feedback on a haptic steering wheel to study haptic human-AV interaction
 
-Python is the main programming language for JOAN, as it is an accessible programming language and because CARLA provides an extensive Python API. Furthermore,
-JOAN uses the Qt framework \footnote{\url{https://www.qt.io/}} through PyQt under the GPL license, primarily for Qt's Graphical User Interface, cross-platform
-compatibility, and its core communication functionalities.
+To address the flexibility and extensibility requirements, JOAN is designed as a set of modules. Each module inherits from abstract base classes and has 
+its own specific purpose. These modules can be added or removed based on the needs of a researcher, if needed they can easily be adapted or extended, and 
+researchers can create their own modules to implement new functionality in JOAN. The standard modules included with JOAN can: log and plot experiment data, 
+handle hardware inputs, design and execute experiments with multiple conditions, implement traffic scenarios with dynamic triggers for events and provide a 
+human with haptic feedback.
 
-Every aspect of JOAN has been designed with the goal of serving a wide range of users. To help users who have little to no programming experience, we emphasized
-on making JOAN intuitive to use through Graphical User Interfaces. We also made JOAN flexible and extensible for more proficient programmers.
+Each module has its own graphical user interface dialog which appears in the JOAN main menu if the module is being used. These dialogs provide access to 
+all standard functionality of the modules. A researcher can design and perform a simple human-in-the-loop experiment without writing a single line of code. 
+The documentation provides more information for researchers who want to extend current modules e.g. to create their own hardware input for custom setups, or 
+who want to write new module e.g. to implement specific vehicle controllers or other forms of feedback to the human.
 
 # Usage in Science and Education
 
