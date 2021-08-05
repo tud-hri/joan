@@ -14,15 +14,18 @@ class CarlaInterfaceSharedVariables(ModuleSharedVariables):
         self.agents = {}
 
 
-class EgoVehicleSharedVariables(SharedVariables):
+class VehicleSharedVariables(SharedVariables):
     """
     Holds shared variables
     """
     def __init__(self):
         self._transform = mp.Array(c_float, 6)
-        self._velocities = mp.Array(c_float, 6)
+        self._rear_axle_position = mp.Array(c_float, 3)
+        self._velocities_in_world_frame = mp.Array(c_float, 6)
+        self._velocities_in_vehicle_frame = mp.Array(c_float, 3)
         self._accelerations = mp.Array(c_float, 3)
         self._applied_input = mp.Array(c_float, 5)
+        self._max_steering_angle = mp.Value(c_float)
 
         # road data for controller plotter
         self._data_road_x = mp.Array(c_float, 50)
@@ -43,12 +46,28 @@ class EgoVehicleSharedVariables(SharedVariables):
         self._transform[:] = val
 
     @property
-    def velocities(self):
-        return self._velocities[:]
+    def rear_axle_position(self):
+        return self._rear_axle_position[:]
 
-    @velocities.setter
-    def velocities(self, val):
-        self._velocities[:] = val
+    @rear_axle_position.setter
+    def rear_axle_position(self, val):
+        self._rear_axle_position[:] = val
+
+    @property
+    def velocities_in_world_frame(self):
+        return self._velocities_in_world_frame[:]
+
+    @velocities_in_world_frame.setter
+    def velocities_in_world_frame(self, val):
+        self._velocities_in_world_frame[:] = val
+
+    @property
+    def velocities_in_vehicle_frame(self):
+        return self._velocities_in_vehicle_frame[:]
+
+    @velocities_in_vehicle_frame.setter
+    def velocities_in_vehicle_frame(self, val):
+        self._velocities_in_vehicle_frame[:] = val
 
     @property
     def accelerations(self):
@@ -65,6 +84,14 @@ class EgoVehicleSharedVariables(SharedVariables):
     @applied_input.setter
     def applied_input(self, val):
         self._applied_input[:] = val
+
+    @property
+    def max_steering_angle(self):
+        return self._max_steering_angle.value
+
+    @max_steering_angle.setter
+    def max_steering_angle(self, val):
+        self._max_steering_angle.value = val
 
     @property
     def data_road_x(self):

@@ -80,6 +80,7 @@ class CarlaInterfaceProcess(ModuleProcess):
         # it is possible to read from other modules
         # do_while_running NOT WRITE to other modules' news to prevent spaghetti-code
         self.shared_variables_hardware = news.read_news(JOANModules.HARDWARE_MANAGER)
+        self.npc_controller_shared_variables = news.read_news(JOANModules.NPC_CONTROLLER_MANAGER)
         self.vehicle_blueprint_library = None
         self.spawn_point_objects = None
         self.spawn_points = None

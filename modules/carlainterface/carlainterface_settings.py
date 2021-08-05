@@ -65,6 +65,10 @@ class CarlaInterfaceSettings(ModuleSettings):
                 ego_vehicle_settings = AgentTypes.EGO_VEHICLE.settings()
                 ego_vehicle_settings.set_from_loaded_dict(settings_dict)
                 self.agents.update({identifier: ego_vehicle_settings})
+            elif str(AgentTypes.NPC_VEHICLE) in identifier:
+                npc_vehicle_settings = AgentTypes.NPC_VEHICLE.settings()
+                npc_vehicle_settings.set_from_loaded_dict(settings_dict)
+                self.agents.update({identifier: npc_vehicle_settings})
 
     def add_agent(self, agent_type: AgentTypes, agent_settings=None):
         """

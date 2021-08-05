@@ -48,7 +48,7 @@ class DataRecorderProcess(ModuleProcess):
             except KeyError:  # means there is no egovehicle 1
                 pass
 
-        header = ', '.join(['.'.join(v) for v in self.variables_to_be_saved])
+        header = '; '.join(['.'.join(v) for v in self.variables_to_be_saved])
         with open(self.save_path, 'w') as self.file:
             self.file.write(header + '\n')
 
@@ -86,12 +86,12 @@ class DataRecorderProcess(ModuleProcess):
 
             row.append(str(last_object))
 
-        return ', '.join(row)
+        return '; '.join(row)
 
     def _write_trajectory_row(self):
         try:
             self.transform = self.carla_interface_variables.agents['Ego Vehicle_1'].transform
-            velocities = self.carla_interface_variables.agents['Ego Vehicle_1'].velocities
+            velocities = self.carla_interface_variables.agents['Ego Vehicle_1'].velocities_in_world_frame
             applied_inputs = self.carla_interface_variables.agents['Ego Vehicle_1'].applied_input
 
             travelled_distance_tick_x = self.transform[0] - self.temp[0]
