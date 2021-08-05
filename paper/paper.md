@@ -1,21 +1,28 @@
 --- 
-title: 'JOAN: a framework for human-automated vehicle interaction experiments in a virtual reality driving simulator' tags:
-
+title: 'JOAN: a framework for human-automated vehicle interaction experiments in a virtual reality driving simulator' 
+tags:
 - Human-automated vehicle interaction
 - Automated driving
 - Human factors experiments
 - Simulation
 - Virtual Reality
-- CARLA authors:
+- CARLA 
+authors:
 - name: Niek Beckers^[co-first author]
-  orcid: 0000-0001-7077-9812 affiliation: 1
+  orcid: 0000-0001-7077-9812 
+  affiliation: 1
 - name: Olger Siebinga^[co-first author]
-  orcid: 0000-0002-5614-1262 affiliation: 1
-- name: Joris Giltay affiliation: 1
-- name: Andre van der Kraan affiliation: 1 affiliations:
-- name: Human-Robot Interaction group, Department of Cognitive Robotics, Faculty 3mE, Delft University of Technology, Mekelweg 2, 2628 CD Delft, the Netherlands
-  index: 1 date: 05 August 2021 bibliography: paper.bib
-
+  orcid: 0000-0002-5614-1262 
+  affiliation: 1
+- name: Joris Giltay 
+  affiliation: 1
+- name: Andre van der Kraan 
+  affiliation: 1 
+affiliations:
+  - name: Human-Robot Interaction group, Department of Cognitive Robotics, Faculty 3mE, Delft University of Technology, Mekelweg 2, 2628 CD Delft, the Netherlands
+  index: 1 
+date: 05 August 2021 
+bibliography: paper.bib
 --- 
 
 # Summary
