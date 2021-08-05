@@ -19,7 +19,7 @@ authors:
 - name: Andre van der Kraan 
   affiliation: 1 
 affiliations:
-  - name: Human-Robot Interaction group, Department of Cognitive Robotics, Faculty 3mE, Delft University of Technology, Mekelweg 2, 2628 CD Delft, the Netherlands
+  - name: Human-Robot Interaction group, Department of Cognitive Robotics, Faculty 3mE, Delft University of Technology, Mekelweg 2, 2628 CD Delft, The Netherlands
   index: 1 
 date: 05 August 2021 
 bibliography: paper.bib
@@ -31,29 +31,29 @@ bibliography: paper.bib
 
 The traffic scene is rapidly changing; vehicles with increasing levels of automation are emerging on the roads interacting with other road users. It is likely
 that traffic will be mixed in the future, with manually driven vehicles, automated vehicles in various automation levels, and vulnerable road users such as
-pedestrians and cyclists sharing the road \cite{di2020_survey}. Hence, investigating human behavior in understanding how humans interact with automated
+pedestrians and cyclists sharing the road [@di2020_survey]. Hence, investigating human behavior in understanding how humans interact with automated
 vehicles (AVs) and using this knowledge develop better technology remain major challenges, which requires extensive human factors and human-AV interaction
 research. Driving simulators are invaluable tools to study such human-AV interactions. They enable researchers to create repeatable test scenarios that may not
 be practical to implement in the real world, for example, due to safety concerns. Furthermore, they allow us to test human-AV interaction algorithms (on human
 behavior) before they are deployed.
 
-State-of-the-art driving simulators for studying human behavior are able to create driving scenarios with high levels of realism \cite{slob2008_stateoftheart}.
-For example, driving simulators use motion platforms, immersive graphics, are able to simulate realistic traffic scenarios \cite{wivw-scilab}, or have high
-fidelity haptic feedback on the steering wheel and pedals \cite{mulder2012_sharing}. However, such driving simulators require dedicated (and expensive)
+State-of-the-art driving simulators for studying human behavior are able to create driving scenarios with high levels of realism [@slob2008_stateoftheart].
+For example, driving simulators use motion platforms, immersive graphics, are able to simulate realistic traffic scenarios [@wivw-scilab], or have high
+fidelity haptic feedback on the steering wheel and pedals [@mulder2012_sharing]. However, such driving simulators require dedicated (and expensive)
 hardware, possibly limiting their availability, Furthermore, they require a steep programming learning curve, or lack the support or flexibility to quickly
 implement customized experiments.
 
 Virtual reality driving simulators based on video game development platforms offer reasonable levels of realism, require relatively low-cost hardware, and are
-able to simulate complex traffic scenarios involving multiple actors. For example, Bazilinskyy et al. \cite{bazilinskyy2020_coupled} developed an open-source
+able to simulate complex traffic scenarios involving multiple actors. For example, Bazilinskyy et al. [@bazilinskyy2020_coupled] developed an open-source
 virtual reality simulator for investigating human-human interaction in traffic scenarios based on the Unity game engine. Their simulator supports human user
-input from different types of hardware interfaces, such as USB steering wheels or motion capture suits. Similarly, Kearney et al. \cite{kearney2018_multimodal}
+input from different types of hardware interfaces, such as USB steering wheels or motion capture suits. Similarly, Kearney et al. [@kearney2018_multimodal]
 also developed a Unity-based driving simulator in which multiple human participants can be coupled in the same simulator environment. These simulators are
 specifically developed for human-human interaction experiments and can simulate human-AV interactions by having a human pretending to be an AV (`Wizard of Oz'
 experiment), but they lack the framework to implement automated vehicle driving models, which is necessary to simulate complex multi-actor mixed traffic
 scenarios.
 
 Several game engine-based reality driving simulators have been developed specifically for the development of fully automated driving models. Examples include
-AirSim \cite{airsim2017fsr}, LGSVL simulator \cite{lgsvlsim}, and CARLA \cite{dosovitskiy2017_carla}. These simulators provide support for implementing,
+AirSim [@airsim2017fsr], LGSVL simulator [@lgsvlsim], and CARLA [@dosovitskiy2017_carla]. These simulators provide support for implementing,
 training, and validating fully automated driving models and are able to simulate various traffic scenarios, ranging from a single automated vehicle driving
 around a country road to complex scenarios involving multiple automated vehicles and other road users. CARLA is a popular open-source simulator; it provides a
 flexible and well-documented API, pre-trained automated driving models, supports common roadmap standards such as OpenDrive, is actively maintained and further
@@ -97,11 +97,11 @@ who want to write new module e.g. to implement specific vehicle controllers or o
 # Usage in Science and Education
 
 A core research focus of our department is on haptic interaction between human drivers and their automated vehicles, mainly through haptic interaction torques
-on the steering wheel (see \cite{abbink2018_topology, mulder2012_sharing}). We, therefore, enabled users to connect a haptic force-feedback steering wheel to
+on the steering wheel (see [@abbink2018_topology], [@mulder2012_sharing]). We, therefore, enabled users to connect a haptic force-feedback steering wheel to
 JOAN, which is able to generate feedback torques based on the state of the vehicle (e.g., position on the road, velocity), the state of the driver, and the
 environment (e.g., road, obstacles, other road users, etc.). We created the \textbf{SteeringWheelController} module in which users are able to implement the
 controller algorithms for calculating these torques (\ref{req:hscsupport}). We provide two controllers: a standard PD controller (used by
-\cite{mulder2012_sharing}) and a Four Design Choice Architecture controller (FDCA, see \cite{vanpaassen2017_four}). The torques are sent to the haptic feedback
+[@mulder2012_sharing]) and a Four Design Choice Architecture controller (FDCA, see [@vanpaassen2017_four]). The torques are sent to the haptic feedback
 steering wheel through the HardwareManager (i.e. the HardwareManager reads the desired torque through News of SteeringWheelController, and sends it to the
 steering wheel).
 
