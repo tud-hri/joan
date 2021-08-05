@@ -66,10 +66,26 @@ class CarlaInterfaceManager(ModuleManager):
 
         self.connected = self.connect_carla()
 
+        self.state_machine.set_transition_condition(State.STOPPED, State.INITIALIZED, self._check_controller_connections)
         self.state_machine.set_transition_condition(State.INITIALIZED, State.READY, self._check_connection)
 
     def _check_connection(self):
         return self.connected
+
+    def _check_controller_connections(self):
+        used_controllers = []
+        for agent in self.module_settings.agents.values():
+            if agent.agent_type is AgentTypes.NPC_VEHICLE:
+                if agent.selected_npc_controller in used_controllers:
+                    return False, 'Multiple NPC vehicle are connected to the same controller'
+                else:
+                    used_controllers.append(agent.selected_npc_controller)
+
+        npc_controller_manager_settings = self.singleton_settings.get_settings(JOANModules.NPC_CONTROLLER_MANAGER)
+        for controller in used_controllers:
+            if controller not in npc_controller_manager_settings.controllers.keys():
+                return False, 'An NPC vehicle is connected to a controller that does not exist'
+        return True
 
     def initialize(self):
         """

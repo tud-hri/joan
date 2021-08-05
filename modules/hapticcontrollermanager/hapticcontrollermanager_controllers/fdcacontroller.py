@@ -217,7 +217,6 @@ class FDCAControllerProcess:
                 if index_closest_waypoint >= len(self._trajectory):
                     break
 
-
         # calculate lateral error
         pos_ref = self._trajectory[index_closest_waypoint, 1:3]
         pos_ref_next = self._trajectory[index_closest_waypoint_next, 1:3]
@@ -298,8 +297,8 @@ class FDCAControllerProcess:
 
                     pos_car = np.array([carlainterface_shared_variables.agents[agent_settings.__str__()].transform[0],
                                         carlainterface_shared_variables.agents[agent_settings.__str__()].transform[1]])
-                    vel_car = np.array([carlainterface_shared_variables.agents[agent_settings.__str__()].velocities[0],
-                                        carlainterface_shared_variables.agents[agent_settings.__str__()].velocities[1]])
+                    vel_car = np.array([carlainterface_shared_variables.agents[agent_settings.__str__()].velocities_in_world_frame[0],
+                                        carlainterface_shared_variables.agents[agent_settings.__str__()].velocities_in_world_frame[1]])
 
                     heading_car = carlainterface_shared_variables.agents[agent_settings.__str__()].transform[3]
 

@@ -431,51 +431,51 @@ class DataPlotterDialog(ModuleDialog):
         :param variable_name:
         :return:
         """
+        try:
+            return int(variable_name)
+        except ValueError:
 
-        if variable_name == 'X Acceleration':
-            return 0
-        elif variable_name == 'Y Acceleration':
-            return 1
-        elif variable_name == 'Z Acceleration':
-            return 2
+            if variable_name == 'X Acceleration':
+                return 0
+            elif variable_name == 'Y Acceleration':
+                return 1
+            elif variable_name == 'Z Acceleration':
+                return 2
 
-        elif variable_name == 'X Position':
-            return 0
-        elif variable_name == 'Y Position':
-            return 1
-        elif variable_name == 'Z Position':
-            return 2
+            elif variable_name == 'X Position':
+                return 0
+            elif variable_name == 'Y Position':
+                return 1
+            elif variable_name == 'Z Position':
+                return 2
 
-        elif variable_name == 'Yaw':
-            return 3
-        elif variable_name == 'Pitch':
-            return 4
-        elif variable_name == 'Roll':
-            return 5
+            elif variable_name == 'Yaw':
+                return 3
+            elif variable_name == 'Pitch':
+                return 4
+            elif variable_name == 'Roll':
+                return 5
 
-        elif variable_name == 'X Velocity':
-            return 0
-        elif variable_name == 'X Velocity':
-            return 1
-        elif variable_name == 'X Velocity':
-            return 2
-        elif variable_name == 'Angular Velocity X':
-            return 3
-        elif variable_name == 'Angular Velocity Y':
-            return 4
-        elif variable_name == 'Angular Velocity Z':
-            return 5
+            elif variable_name == 'X Velocity':
+                return 0
+            elif variable_name == 'X Velocity':
+                return 1
+            elif variable_name == 'X Velocity':
+                return 2
+            elif variable_name == 'Angular Velocity X':
+                return 3
+            elif variable_name == 'Angular Velocity Y':
+                return 4
+            elif variable_name == 'Angular Velocity Z':
+                return 5
 
-        elif variable_name == 'Steering':
-            return 0
-        elif variable_name == 'Reverse':
-            return 1
-        elif variable_name == 'Handbrake':
-            return 2
-        elif variable_name == 'Brake':
-            return 3
-        elif variable_name == 'Throttle':
-            return 4
-
-        else:
-            return 0
+            elif variable_name == 'Steering':
+                return 0
+            elif variable_name == 'Reverse':
+                return 1
+            elif variable_name == 'Handbrake':
+                return 2
+            elif variable_name == 'Brake':
+                return 3
+            elif variable_name == 'Throttle':
+                return 4
