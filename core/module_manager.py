@@ -2,8 +2,9 @@ import os
 import sys
 
 from PyQt5 import QtCore
-from PyQt5.QtCore import pyqtSignal, Qt
+from PyQt5.QtCore import pyqtSignal, Qt, QTimer
 from PyQt5.QtWidgets import QApplication
+import multiprocessing as mp
 
 from core.module_exceptionmonitor import ModuleExceptionMonitor
 from core.module_process import ProcessEvents
@@ -78,6 +79,12 @@ class ModuleManager(QtCore.QObject):
 
         self.module_dialog._handle_state_change()
 
+        # create a pipe for communication of messages to/from
+        self.pipe_manager, self.pipe_process = mp.Pipe()
+        self.pipe_poller = QTimer()
+        self.pipe_poller.setInterval(1000)  # check every second
+        self.pipe_poller.timeout.connect(self.check_pipe_messages)
+
         self.signals.write_signal(self.module, self.loaded_signal)
         self.signals.all_signals[self.module].connect(self.module_dialog.update_dialog)
 
@@ -99,12 +106,14 @@ class ModuleManager(QtCore.QObject):
     def get_ready(self):
         if self.use_state_machine_and_process:
             QApplication.setOverrideCursor(Qt.WaitCursor)
+            self.pipe_poller.start()
             self._process = self.module.process(self.module,
                                                 time_step_in_ms=self._time_step_in_ms,
                                                 news=self.news,
                                                 settings=self.module_settings,
                                                 events=self._events,
-                                                settings_singleton=self.singleton_settings)
+                                                settings_singleton=self.singleton_settings,
+                                                pipe_comm=self.pipe_comm)
 
             # Start the process, run() will wait until start_event is set
             if self._process and not self._process.is_alive():
@@ -134,6 +143,8 @@ class ModuleManager(QtCore.QObject):
             # send stop state to process and wait for the process to stop
             self.stop_dialog_timer()
 
+            self.pipe_poller.stop()
+
             # wait for the process to stop
             if self._process:
                 if self._process.is_alive():
@@ -161,3 +172,17 @@ class ModuleManager(QtCore.QObject):
 
     def load_from_file(self, settings_file_to_load):
         self.module_settings.load_from_file(settings_file_to_load)
+
+    def check_pipe_messages(self):
+        if self.pipe_manager.poll():
+            message = self.pipe_manager.recv()
+            # expects a dict
+            if message["stop_all_modules"]:
+                self.signals.read_signal("stop_all_modules").emit()
+
+    def check_pipe_messages(self):
+        if self.pipe_manager.poll():
+            message = self.pipe_manager.recv()
+            # expects a dict
+            if message["stop_all_modules"]:
+                self.signals.read_signal("stop_all_modules").emit()

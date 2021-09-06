@@ -2,6 +2,7 @@
 import os
 
 from PyQt5 import QtCore
+from PyQt5.QtCore import pyqtSignal
 
 from core import News
 from core import Settings
@@ -16,6 +17,7 @@ class HQManager(QtCore.QObject):
     """
     Action class for JoanHQ
     """
+    signal_stop_all_modules = pyqtSignal()
 
     def __init__(self):
         """
@@ -41,6 +43,10 @@ class HQManager(QtCore.QObject):
         # create window, show it
         self.window = HQWindow(self)
         self.window.show()
+
+        # connect signals: signal_stop_all_modules, which can be called from the modules to stop all other modules
+        self.signal_stop_all_modules.connect(self.stop_modules)
+        self.signals.write_signal("stop_all_modules", self.signal_stop_all_modules)
 
     def initialize_modules(self):
         """

@@ -1,7 +1,5 @@
 from PyQt5 import QtCore
 
-from modules.joanmodules import JOANModules
-
 
 class Signals(QtCore.QObject):
     """
@@ -12,22 +10,22 @@ class Signals(QtCore.QObject):
         super().__init__()
         self._signals = {}
 
-    def write_signal(self, module: JOANModules, signal_dict):
+    def write_signal(self, key, signal_dict):
         """
         Write data to News for a module
-        :param module: used as an identifier
+        :param key: used as an identifier
         :param signal_dict: dictionary (keys, values) with the new data
         """
-        self._signals.update({module: signal_dict})
+        self._signals.update({key: signal_dict})
 
-    def read_signal(self, module: JOANModules):
+    def read_signal(self, key):
         """
         Read new data from a module
-        :param module:
+        :param key:
         :return: requested data
         """
         try:
-            return self._signals[module]
+            return self._signals[key]
         except KeyError:
             return {}
 
