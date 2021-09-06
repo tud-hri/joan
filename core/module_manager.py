@@ -113,7 +113,7 @@ class ModuleManager(QtCore.QObject):
                                                 settings=self.module_settings,
                                                 events=self._events,
                                                 settings_singleton=self.singleton_settings,
-                                                pipe_comm=self.pipe_comm)
+                                                pipe_comm=self.pipe_process)
 
             # Start the process, run() will wait until start_event is set
             if self._process and not self._process.is_alive():
