@@ -112,6 +112,8 @@ class CarlaInterfaceManager(ModuleManager):
         for agent_settings in self.module_settings.all_agents().values():
             self.add_agent(AgentTypes(agent_settings.agent_type), from_button, agent_settings)
 
+        self.module_dialog.update_dialog()
+
     def add_agent(self, agent_type: AgentTypes, from_button, agent_settings=None):
         """
         Add an agent

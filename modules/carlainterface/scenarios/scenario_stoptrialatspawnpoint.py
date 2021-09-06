@@ -38,4 +38,4 @@ class ScenarioStopTrialAtLocation:
 
     @property
     def name(self):
-        return "Stop trial at start location"
+        return "Stop trial at spawnpoint"
