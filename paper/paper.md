@@ -19,8 +19,7 @@ authors:
   - name: Andre van der Kraan 
     affiliation: 1 
 affiliations:
-  - name: Human-Robot Interaction group, Department of Cognitive Robotics, Faculty 3mE, Delft University of Technology, Mekelweg 2, 2628 CD Delft, The
-    Netherlands 
+  - name: Human-Robot Interaction group, Department of Cognitive Robotics, Faculty 3mE, Delft University of Technology, Mekelweg 2, 2628 CD Delft, The Netherlands 
     index: 1 
 date: 28 January 2022 
 bibliography: paper.bib
