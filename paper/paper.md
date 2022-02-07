@@ -16,7 +16,7 @@ authors:
     affiliation: 1
   - name: Joris Giltay 
     affiliation: 1
-  - name: Andre van der Kraan 
+  - name: André van der Kraan 
     affiliation: 1 
 affiliations:
   - name: Human-Robot Interaction group, Department of Cognitive Robotics, Faculty 3mE, Delft University of Technology, Mekelweg 2, 2628 CD Delft, The Netherlands 
@@ -28,6 +28,7 @@ bibliography: paper.bib
 # Summary
 
 With the rapid development of automated driving systems, human drivers will soon have to share the road, and interact with, autonomous vehicles (AVs). To design AVs that can be safely introduced in our mixed traffic, research into human-AV interaction is needed. Driving simulators are invaluable tools, however, existing driving simulators are expensive, implementing new functionalities (e.g., AV control algorithms) can be difficult, and setting up new experiments can be tedious. To address these issues, we present JOAN, a framework for human-AV interaction experiments. JOAN connects to the open-source AV-simulation program Carla and enables quick and easy implementation of simple driving experiments. It supports experiments in VR, a variety of human input devices, and haptic feedback. JOAN is easy to use, flexible, and enables researchers to design, store, and perform human-factors experiments without writing a single line of code.
+
 
 # Statement of need
 
