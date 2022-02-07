@@ -16,7 +16,7 @@ authors:
     affiliation: 1
   - name: Joris Giltay 
     affiliation: 1
-  - name: Andre van der Kraan 
+  - name: André van der Kraan 
     affiliation: 1 
 affiliations:
   - name: Human-Robot Interaction group, Department of Cognitive Robotics, Faculty 3mE, Delft University of Technology, Mekelweg 2, 2628 CD Delft, The Netherlands 
@@ -31,7 +31,7 @@ In the coming decades, traffic on the roads will no longer only consist of human
 autonomous vehicles (AVs). To design AVs that can safely handle such interactions, research into human-AV interaction is needed. This research can partly be
 done in driving simulators. However, existing driving simulators are expensive, implementing new functionality (e.g., AV controllers)
 can be difficult, and setting up new experiments can be tedious. To address these issues, we present JOAN, a framework for human-AV interaction experiments.
-JOAN connects to the open-source AV-simulation program Carla and enables quick and easy implementation of simple driving experiments using a GUI. It supports
+JOAN connects to the open-source AV-simulation program CARLA and enables quick and easy implementation of simple driving experiments using a GUI. It supports
 experiments in VR, a variety of human input devices, and haptic feedback. JOAN is easy to use, flexible, and enables researchers to perform simple experiments
 without writing a single line of code.
 
@@ -57,11 +57,11 @@ On the other hand, there are several game engine-based simulators, designed spec
 fully automated driving. One of the popular open-source simulators is CARLA (based on the Unreal-Engine); it provides a flexible and well-documented API,
 pre-trained automated driving models, common roadmap standards (OpenDrive), and is actively maintained.
 
-Silvera et al. extended Carla to support human-in-the-loop experiments [@Silvera2022]. They created an affordable driving simulator that can be used for
+Silvera et al. extended CARLA to support human-in-the-loop experiments [@Silvera2022]. They created an affordable driving simulator that can be used for
 human-AV interaction experiments which leverages the benefits of CARLA (for AV development). However, their software is restricted to specific hardware (both
 for human input and VR), and requires extensive programming to implement customized experiments because it lacks a general experiment framework.
 
-To address these issues, we introduce JOAN, an open-source framework for conducting human-in-the-loop driving experiments. JOAN interfaces with Carla, is
+To address these issues, we introduce JOAN, an open-source framework for conducting human-in-the-loop driving experiments. JOAN interfaces with CARLA, is
 written in Python, and can be fully controlled with a GUI. JOAN can be used with a variety of human input devices, among which game console controller (e.g.,
 Xbox or PlayStation), a SensoDrive steering wheel [@sensodrive] (for including haptic feedback), or generic USB controllers (e.g., Logitech G920). JOAN includes
 a framework for experiment design to create and execute experiments, and provides reliable data acquisition. These features can be accessed through a
