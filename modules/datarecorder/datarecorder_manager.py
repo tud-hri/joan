@@ -37,6 +37,6 @@ class DataRecorderManager(ModuleManager):
 
     def _set_default_save_path(self):
         default_data_path = os.path.join(os.path.expanduser('~'), 'JOAN_data', 'joan_data.csv')
-        os.makedirs(default_data_path, exist_ok=True)
+        os.makedirs(os.path.dirname(default_data_path), exist_ok=True)
 
         self.module_settings.path_to_save_file = default_data_path
