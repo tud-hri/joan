@@ -1,18 +1,5 @@
-import glob
-import os
-import sys
-
 from modules.carlainterface.carlainterface_process import CarlaInterfaceProcess
-
-try:
-    sys.path.append(glob.glob('carla_pythonapi/carla-*%d.%d-%s.egg' % (
-        sys.version_info.major,
-        sys.version_info.minor,
-        'win-amd64' if os.name == 'nt' else 'linux-x86_64'))[0])
-    import carla
-except IndexError as inst:
-    print("ScenarioStopTrialAtLocation: CarlaAPI could not be loaded:", inst)
-
+from tools.carlaimporter import carla
 
 class ScenarioStopTrialAtLocation:
 
