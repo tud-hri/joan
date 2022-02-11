@@ -1,10 +1,12 @@
 # JOAN documentation
 
-Welcome to the JOAN human-automated vehicle interaction simulator documentation! This documentation should get you up and running with JOAN and [CARLA](http://carla.org){target="_blank"}.
+Welcome to the JOAN human-automated vehicle interaction simulator documentation! This documentation should get you up and running with JOAN and [Carla](http://carla.org){target="_
+blank"}.
 
-JOAN is a software framework that builds upon CARLA, a simulator made to study automated driving, by making CARLA also useful for human-in-the-loop experiments of human drivers and other road users interacting with automated vehicles. 
+JOAN is a software framework that extends Carla, a simulator made to study automated driving, by making Carla also useful for human-in-the-loop experiments of human drivers and
+other road users interacting with automated vehicles.
 
-Among others, we build JOAN to enable you to 
+Among others, we build JOAN to enable you to
 
 - Quickly set up (human-in-the-loop) experiments 
 - Define traffic scenarios
@@ -18,7 +20,7 @@ Have fun!
 
 JOAN is developed by members of the [Human-Robot Interaction group](https://delfthapticslab.nl){target="_blank"} at Cognitive Robotics of Delft University of Technology.
 
-Below a video of some of the capabilities of JOAN is shown, one of the main software components of the Symbiotic Driving Demonstrator was JOAN :)!
+Below we show a video with some of JOAN's features of JOAN!
 
 ---
 
@@ -28,10 +30,11 @@ Below a video of some of the capabilities of JOAN is shown, one of the main soft
 
 ## Useful links
 
-- Because JOAN depends heavily on CARLA, we strongly recommend you to check out the [CARLA documentation](https://carla.readthedocs.io/en/latest/){target="_blank"}. 
-- You can find the JOAN repository [here][repolink]{target="_blank"}. Note that JOAN is still under development, so core functionality may change over time. We'll post releases as soon as we think we are ready :-)
+- Because JOAN depends heavily on Carla, we strongly recommend you to check out the [CARLA documentation](https://carla.readthedocs.io/en/latest/){target="_blank"}.
+- You can find the JOAN repository [here][repolink]{target="_blank"}. Note that JOAN is still under development, so core functionality may change over time. We'll post releases as
+  soon as we think we are ready :-)
 
-[repolink]: https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan
+[repolink]: https://github.tudelft.nl/tud-hri/joan
 
 --- 
 
@@ -41,7 +44,7 @@ Thorough guide on setting up JOAN and CARLA:
 * __[Setting up CARLA on Windows](setup-carla-windows.md)__ - The most important steps from the CARLA documentation
 * __[Setting up JOAN](setup-joan.md)__ -- Install JOAN
 * __[Setup JOAN on a TUD computer](setup-on-tud-shared-hardware.md)__ - guide on how to install your project on TUD shared hardware (probably your first step)
-* __[Example usage and test](example-usage-and-testing.md)__ - example of JOAN usage and test whether everything works
+* __[Example usage and testing](example-usage-and-testing.md)__ - example of JOAN usage and test whether everything works
 
 ## First steps
 If you want to build up an understanding of JOAN the sections below are a good place to start:
