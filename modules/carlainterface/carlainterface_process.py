@@ -1,5 +1,3 @@
-import glob
-import os
 import platform
 import sys
 import time
@@ -13,14 +11,7 @@ from modules.joanmodules import JOANModules
 if platform.system() == 'Windows':
     import wres
 
-try:
-    sys.path.append(glob.glob('carla_pythonapi/carla-*%d.%d-%s.egg' % (
-        sys.version_info.major,
-        sys.version_info.minor,
-        'win-amd64' if os.name == 'nt' else 'linux-x86_64'))[0])
-    import carla
-except IndexError as inst:
-    print("CarlaAPI could not be loaded:", inst)
+from tools.carlaimporter import carla
 
 
 def connect_carla(host, port):

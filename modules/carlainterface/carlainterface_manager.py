@@ -1,36 +1,15 @@
-import glob
-import os
-import sys
 import time
 
-from PyQt5 import QtCore
+from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QMessageBox, QApplication
+from PyQt5.QtWidgets import QApplication
 
 from core.module_manager import ModuleManager
 from core.statesenum import State
 from modules.carlainterface.carlainterface_agenttypes import AgentTypes
 from modules.joanmodules import JOANModules
 
-msg_box = QMessageBox()
-msg_box.setTextFormat(QtCore.Qt.RichText)
-
-try:
-    sys.path.append(glob.glob('carla_pythonapi/carla-*%d.%d-%s.egg' % (
-        sys.version_info.major,
-        sys.version_info.minor,
-        'win-amd64' if os.name == 'nt' else 'linux-x86_64'))[0])
-    import carla
-
-except IndexError:
-    msg_box.setText("""
-                <h3> Could not find the carla python API! </h3>
-                <h3> Check whether you copied the egg file correctly, reference:
-            <a href=\"https://joan.readthedocs.io/en/latest/setup-run-joan/#getting-necessary-python3-libraries-to-run-joan\">https://joan.readthedocs.io/en/latest/setup-run-joan/#getting-necessary-python3-libraries-to-run-joan</a>
-            </h3>
-            """)
-    msg_box.exec()
-    pass
+from tools.carlaimporter import carla
 
 
 class CarlaInterfaceManager(ModuleManager):
@@ -166,6 +145,9 @@ class CarlaInterfaceManager(ModuleManager):
                 print('JOAN connected to CARLA Server!')
 
             except RuntimeError:
+                msg_box = QtWidgets.QMessageBox()
+                msg_box.setTextFormat(QtCore.Qt.RichText)
+
                 QApplication.restoreOverrideCursor()
                 msg_box.setText('Could not connect to CARLA. Check if CARLA is running in Unreal Engine')
                 msg_box.exec()
