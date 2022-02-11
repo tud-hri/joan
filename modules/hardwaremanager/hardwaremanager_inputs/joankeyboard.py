@@ -92,15 +92,16 @@ class JOANKeyboardProcess:
 
         # Steering:
         if self._steer_left and self.settings.max_steer >= steer_temp >= self.settings.min_steer:
-            steer_temp = steer_temp - (self.settings.steer_sensitivity / 10000)
+            steer_temp -= (self.settings.steer_sensitivity / 2500)
         elif self._steer_right and self.settings.min_steer <= steer_temp <= self.settings.max_steer:
-            steer_temp = steer_temp + (self.settings.steer_sensitivity / 10000)
-        elif steer_temp > 0 and self.settings.auto_center:
-            steer_temp = steer_temp - (self.settings.steer_sensitivity / 10000)
-        elif steer_temp < 0 and self.settings.auto_center:
-            steer_temp = steer_temp + (self.settings.steer_sensitivity / 10000)
+            steer_temp += (self.settings.steer_sensitivity / 2500)
 
-        if abs(steer_temp) < self.settings.steer_sensitivity / 10000:
+        if steer_temp > 0 and self.settings.auto_center:
+            steer_temp -= .25 * (self.settings.steer_sensitivity / 2500)
+        elif steer_temp < 0 and self.settings.auto_center:
+            steer_temp += .25 * (self.settings.steer_sensitivity / 2500)
+
+        if abs(steer_temp) < 0.5 * self.settings.steer_sensitivity / 2500:
             steer_temp = 0
 
         # Reverse

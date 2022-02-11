@@ -8,7 +8,7 @@ class HardwareManagerProcess(ModuleProcess):
     Overall process that inherits from ModuleProcess (will loop at the desired frequency)
     """
 
-    def __init__(self, module: JOANModules, time_step_in_ms, news, settings, events, settings_singleton):
+    def __init__(self, module: JOANModules, time_step_in_ms, news, settings, events, settings_singleton, pipe_comm):
         """
         Initializes the class
         :param module:
@@ -19,7 +19,7 @@ class HardwareManagerProcess(ModuleProcess):
         :param settings_singleton:
         """
         super().__init__(module, time_step_in_ms=time_step_in_ms, news=news, settings=settings, events=events,
-                         settings_singleton=settings_singleton)
+                         settings_singleton=settings_singleton, pipe_comm=pipe_comm)
         self.daemon = False
         self.input_objects = {}
 

@@ -1,5 +1,3 @@
-import glob
-import os
 import platform
 import sys
 import time
@@ -13,14 +11,7 @@ from modules.joanmodules import JOANModules
 if platform.system() == 'Windows':
     import wres
 
-try:
-    sys.path.append(glob.glob('carla_pythonapi/carla-*%d.%d-%s.egg' % (
-        sys.version_info.major,
-        sys.version_info.minor,
-        'win-amd64' if os.name == 'nt' else 'linux-x86_64'))[0])
-    import carla
-except IndexError as inst:
-    print("CarlaAPI could not be loaded:", inst)
+from tools.carlaimporter import carla
 
 
 def connect_carla(host='localhost', port=2000, fixed_time_step=1./60.):
@@ -66,7 +57,7 @@ class CarlaInterfaceProcess(ModuleProcess):
     Processes CarlaInterface, inherits from ModuleProcess
     """
 
-    def __init__(self, module: JOANModules, time_step_in_ms, news, settings, events, settings_singleton):
+    def __init__(self, module: JOANModules, time_step_in_ms, news, settings, events, settings_singleton, pipe_comm):
         """
         :param module: CarlaInterfaceProcess module as defined in JOANModules
         :param time_step_in_ms: contains the process-interval time in ms
@@ -75,7 +66,8 @@ class CarlaInterfaceProcess(ModuleProcess):
         :param events: contains multiprocess events
         :param settings_singleton:
         """
-        super().__init__(module, time_step_in_ms=time_step_in_ms, news=news, settings=settings, events=events, settings_singleton=settings_singleton)
+        super().__init__(module, time_step_in_ms=time_step_in_ms, news=news, settings=settings, events=events, settings_singleton=settings_singleton,
+                         pipe_comm=pipe_comm)
 
         # it is possible to read from other modules
         # do_while_running NOT WRITE to other modules' news to prevent spaghetti-code

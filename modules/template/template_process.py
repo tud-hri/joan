@@ -8,8 +8,10 @@ class TemplateProcess(ModuleProcess):
     Example module for JOAN
     Can also be used as a template for your own modules.
     """
-    def __init__(self, module: JOANModules, time_step_in_ms, news, settings, events, settings_singleton):
-        super().__init__(module, time_step_in_ms=time_step_in_ms, news=news, settings=settings, events=events, settings_singleton=settings_singleton)
+
+    def __init__(self, module: JOANModules, time_step_in_ms, news, settings, events, settings_singleton, pipe_comm):
+        super().__init__(module, time_step_in_ms=time_step_in_ms, news=news, settings=settings, events=events, settings_singleton=settings_singleton,
+                         pipe_comm=pipe_comm)
 
         # it is possible to read from other modules
         # do_while_running NOT WRITE to other modules' news to prevent spaghetti-code

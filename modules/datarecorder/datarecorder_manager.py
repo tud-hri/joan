@@ -23,6 +23,8 @@ class DataRecorderManager(ModuleManager):
         self.state_machine.set_exit_action(State.INITIALIZED, self.module_dialog.apply_settings)
         self.state_machine.set_transition_condition(State.STOPPED, State.INITIALIZED, self._check_save_path)
 
+        self._set_default_save_path()
+
         self.module_dialog.update_dialog()
 
     def _check_save_path(self):
@@ -32,3 +34,9 @@ class DataRecorderManager(ModuleManager):
             return False, "Directory of save path does not exist."
         else:
             return True
+
+    def _set_default_save_path(self):
+        default_data_path = os.path.join(os.path.expanduser('~'), 'JOAN_data', 'joan_data.csv')
+        os.makedirs(os.path.dirname(default_data_path), exist_ok=True)
+
+        self.module_settings.path_to_save_file = default_data_path

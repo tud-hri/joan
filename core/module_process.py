@@ -29,7 +29,7 @@ class ModuleProcess(mp.Process):
     Base class for the module process.
     """
 
-    def __init__(self, module: JOANModules, time_step_in_ms, news, settings, events: ProcessEvents, settings_singleton):
+    def __init__(self, module: JOANModules, time_step_in_ms, news, settings, events: ProcessEvents, settings_singleton, pipe_comm):
         super().__init__(daemon=True)
 
         if time_step_in_ms < 10:
@@ -41,6 +41,8 @@ class ModuleProcess(mp.Process):
         self._last_t0 = 0.0
         self._last_execution_time = 0.0
         self._running_frequency = 0.0
+        self.running_time_seconds = 0.0
+        self.pipe_comm = pipe_comm  # Pipe() for communication between module_process and module_manager
 
         self._settings_as_dict = settings.as_dict()
         self._settings_as_object = None
@@ -116,7 +118,7 @@ class ModuleProcess(mp.Process):
         if self._module_shared_variables.state == State.STOPPED.value:
             running = False
 
-        t_start = time.time_ns()
+        t_start = time.perf_counter_ns()
 
         while running:
 
@@ -125,6 +127,8 @@ class ModuleProcess(mp.Process):
                 running = False
 
             t0 = time.perf_counter_ns()
+
+            self.running_time_seconds = (t0 - t_start) * 1e-9
 
             try:
                 self._running_frequency = 1e9 / (t0 - self._last_t0)

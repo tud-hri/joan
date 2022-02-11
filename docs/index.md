@@ -6,7 +6,7 @@ Welcome to the JOAN human-automated vehicle interaction simulator documentation!
 
 JOAN is an open-source software framework that builds upon CARLA, a simulator made to study automated driving, by making CARLA also useful for human-in-the-loop experiments of human drivers and other road users interacting with automated vehicles. 
 
-Among others, we build JOAN to enable you to 
+Among others, we build JOAN to enable you to
 
 - quickly set up (human-in-the-loop) experiments with repeatable conditions
 - define repeatable traffic scenarios
@@ -19,7 +19,7 @@ Check out the table of content below for installation instruction and more infor
     For students at TU Delft, please start reading __[Setup JOAN on a TUD computer](setup-on-tud-shared-hardware.md)__
 
 !!! Note
-    We use CARLA 0.9.10, not the latest version due to several issues we have not worked out yet.
+    We tested JOAN with CARLA 0.9.10, not (yet) with the latest version due to several issues we have not worked out yet.
     
 ---
 
@@ -54,6 +54,7 @@ Thorough guide on setting up JOAN and CARLA:
 * __[Setting up CARLA on Windows](setup-carla-windows.md)__ - The most important steps from the CARLA documentation
 * __[Setting up JOAN](setup-joan.md)__ -- Install JOAN
 * __[Setup JOAN on a TUD computer](setup-on-tud-shared-hardware.md)__ - guide on how to install your project on TUD shared hardware (probably your first step)
+* __[Example usage and testing](example-usage-and-testing.md)__ - example of JOAN usage and test whether everything works
 
 ### First steps
 If you want to build up an understanding of JOAN the sections below are a good place to start:

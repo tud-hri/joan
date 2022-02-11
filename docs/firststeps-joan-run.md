@@ -31,9 +31,6 @@ Or, if you use PyCharm, click the green play button or right-click on `main.py` 
 
 - Hit the big play button in CarlaUE4
 
-<!--see below the GIF for step 1 :
-[ ![](gifs/joan-run-firststep.gif) ](gifs/joan-run-firststep.gif){target="_blank"}-->
-
 ### 2. Add an input device
 Open up the `hardware manager` and click the `add hardware button` select your input, put in the appropriate settings and save. (For more details please
 go to [using the hardware manager](modules-hardwaremanager.md#using_hw_manager).
@@ -70,11 +67,8 @@ a little while because JOAN has to create and setup all the multiprocesses and w
 all done. This can take up to 15 seconds or so, so please be patient. You'll see the cursor also being a 
 circle during this time.
 If everything went well you'll notice the state change from the blue `initialized` to the yellow `ready`.
-<!-- [ ![](gifs/joan-run-setup-getready.gif) ](gifs/joan-run-setup-getready.gif){target="_blank"} -->
-
 ### 7. Run and Drive!
 Now the only thing left to do is to click `run` to go to the `running` state and start driving around:
-<!--[ ![](gifs/joan-run-setup-rundrive.gif)](gifs/joan-run-setup-rundrive.gif){target="_blank"}-->
 If you press the `stop` button, JOAN Will handle everything accordingly and properly shut down
 your session. (Also destroying any spawned objects in CARLA)
 

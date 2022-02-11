@@ -1,6 +1,7 @@
 import os
 
 from PyQt5 import uic
+
 from core.module_dialog import ModuleDialog
 from core.module_manager import ModuleManager
 from core.statesenum import State
@@ -72,12 +73,15 @@ class CarlaInterfaceDialog(ModuleDialog):
         for key in difference_dict:
             self.remove_agent(key)
         for agent_settings in self.module_manager.module_settings.agents:
-            if self.module_manager.module_settings.agents[
-                agent_settings].identifier not in self._agent_tabs_dict:
+            if self.module_manager.module_settings.agents[agent_settings].identifier not in self._agent_tabs_dict:
                 self.add_agent(self.module_manager.module_settings.agents[agent_settings], False)
             self._agent_dialogs_dict[
                 self.module_manager.module_settings.agents[agent_settings].identifier].display_values(
                 self.module_manager.module_settings.agents[agent_settings])
+
+        selected_scenario = self.module_manager.module_settings.current_scenario
+        if selected_scenario:
+            self.module_widget.scenariosComboBox.setCurrentText(selected_scenario.name)
 
     def add_agent(self, settings, from_button):
         """

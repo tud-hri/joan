@@ -1,11 +1,7 @@
-import random, os, sys, glob, math
+import random, os, math
 import numpy as np
 
-sys.path.append(glob.glob('carla_pythonapi/carla-*%d.%d-%s.egg' % (
-    sys.version_info.major,
-    sys.version_info.minor,
-    'win-amd64' if os.name == 'nt' else 'linux-x86_64'))[0])
-import carla
+from tools.carlaimporter import carla
 
 from PyQt5 import uic, QtWidgets
 from modules.carlainterface.carlainterface_agenttypes import AgentTypes
