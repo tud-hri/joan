@@ -43,9 +43,9 @@ def connect_carla(host='localhost', port=2000, fixed_time_step=1./60.):
             spawn_points.append("Spawnpoint " + str(spawn_point_objects.index(item)))
 
         # set time step to fixed
-        settings = world.get_settings()
-        settings.fixed_delta_seconds = fixed_time_step
-        world.apply_settings(settings)
+        # settings = world.get_settings()
+        # settings.fixed_delta_seconds = fixed_time_step
+        # world.apply_settings(settings)
 
         return vehicle_bp_library, spawn_point_objects, world, spawn_points
     except RuntimeError:
@@ -135,7 +135,6 @@ class CarlaInterfaceProcess(ModuleProcess):
         """
         do_while_running something and write the result in a shared_variable
         """
-        self.world.tick()
         for agents in self.agent_objects:
             # will perform the mp input class for eaach available input
             self.agent_objects[agents].do()

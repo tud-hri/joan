@@ -143,9 +143,9 @@ class CarlaInterfaceManager(ModuleManager):
                 self.carla_waypoints = self.world_map.generate_waypoints(0.5)
 
                 # set time step to fixed
-                settings = self._world.get_settings()
-                settings.fixed_delta_seconds = 1./60.
-                self._world.apply_settings(settings)
+                # settings = self._world.get_settings()
+                # settings.fixed_delta_seconds = 1./60.
+                # self._world.apply_settings(settings)
 
                 QApplication.restoreOverrideCursor()
                 self.connected = True

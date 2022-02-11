@@ -10,7 +10,7 @@ class DataRecorderSettings(ModuleSettings):
         self.append_timestamp_to_filename = True
         self.variables_to_be_saved = []
 
-        self.path_to_trajectory_save_file = ''
+        self.path_to_trajectory_save_file = './trajectory_test.csv'
         self.should_record_trajectory = False
 
     def reset(self):
