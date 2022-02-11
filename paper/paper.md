@@ -79,7 +79,11 @@ want to adapt existing modules (e.g. to implement new hardware), or who want to 
 
 # Usage in Science and Education
 
-JOAN was used to quickly develop and perform several human-in-the-loop experiments (for a published example, see [@Melman2021]), illustrating that JOAN provides a framework that is flexible and quick to implement (most projects are completed in 6 months). Furthermore, a core research focus of our department is the haptic interaction between human drivers and their vehicles (e.g., [@abbink2018_topology; @mulder2012_sharing]), for which we implemented a module to control a haptic force-feedback steering wheel. The \textbf{SteeringWheelController} module enables implementation of control algorithms for force feedback and comes with two example implementations: a standard PD controller [@mulder2012_sharing] and a Four Design Choice Architecture controller (FDCA) [@vanpaassen2017_four].
+JOAN was used to quickly develop and perform several human-in-the-loop experiments (including various MSc students, for a published example, see [@Melman2021]), illustrating that
+JOAN provides a framework that is flexible and quick to implement (most projects are completed in 6 months). Furthermore, a core research focus of our department is the haptic
+interaction between human drivers and their vehicles (e.g., [@abbink2018_topology; @mulder2012_sharing]), for which we implemented a module to control a haptic force-feedback
+steering wheel. The `SteeringWheelController` module enables implementation of control algorithms for force feedback and comes with two example implementations: a standard PD
+controller [@mulder2012_sharing] and a Four Design Choice Architecture controller (FDCA) [@vanpaassen2017_four].
 
 # Acknowledgements
 
