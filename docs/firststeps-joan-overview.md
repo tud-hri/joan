@@ -58,14 +58,14 @@ depend on the States as shown below:
     Shared Variables have to be pickleable (serializable)!!
 
 ### Signals
-The Signals class in the Default JOAN is a bit obscure, so far it is only used in the `activate condition` function in the 
-experiment manager. This triggers signals so that whenever a condition is activated it updates all dialogs of all included modules.
-The Signals class uses the built in signals & slots functionality from PyQt, so for a deeper understanding please refer to [this 
-tutorial on signals and slots](https://www.tutorialspoint.com/pyqt/pyqt_signals_and_slots.htm){target="_blank"}
+The Signals class in the Default JOAN is a bit obscure, so far it is only used in the `activate condition` function in the experiment manager. This triggers signals so that
+whenever a condition is activated it updates all dialogs of all included modules. The Signals class uses the built-in signals & slots functionality from PyQt, so for a deeper
+understanding please refer to [this tutorial on signals and slots](https://www.tutorialspoint.com/pyqt/pyqt_signals_and_slots.htm){target="_blank"}
 
 
 ### News
-The `News()` class is used throughout all modules and serves as a sort of message pipe to all modules. It mainly contains the seperate `shared_variables` objects
-of all the modules. This is needed because then we can access our shared variables from all modules. For example if I'd like to calculate something in a seperate
+
+The `News()` class is used throughout all modules and serves as a sort of message pipe to all modules. It mainly contains the separate `shared_variables` objects of all the
+modules. This is needed because then we can access our shared variables from all modules. For example if I'd like to calculate something in a separate
 `calculator` module, and for this I need the input values of a `keyboard` from the `hardwaremanager` I can easily access this info in my new module! 
 

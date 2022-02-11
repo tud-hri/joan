@@ -41,6 +41,7 @@ Thorough guide on setting up JOAN and CARLA:
 * __[Setting up CARLA on Windows](setup-carla-windows.md)__ - The most important steps from the CARLA documentation
 * __[Setting up JOAN](setup-joan.md)__ -- Install JOAN
 * __[Setup JOAN on a TUD computer](setup-on-tud-shared-hardware.md)__ - guide on how to install your project on TUD shared hardware (probably your first step)
+* __[Example usage and test](example-usage-and-testing.md)__ - example of JOAN usage and test whether everything works
 
 ## First steps
 If you want to build up an understanding of JOAN the sections below are a good place to start:
