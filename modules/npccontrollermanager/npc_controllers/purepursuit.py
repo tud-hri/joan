@@ -17,7 +17,8 @@ class PurePursuitControllerProcess:
     This simple implementation does not use the back axle as the origin of the vehicle frame as it should, so it should not be used when high precision is required.
     """
 
-    def __init__(self, settings, shared_variables: NPCControllerSharedVariables, carla_interface_shared_variables: CarlaInterfaceSharedVariables):
+    def __init__(self, settings, shared_variables: NPCControllerSharedVariables,
+                 carla_interface_shared_variables: CarlaInterfaceSharedVariables):
         self.settings = settings
         self.shared_variables = shared_variables
         self.carla_interface_shared_variables = carla_interface_shared_variables
@@ -30,7 +31,8 @@ class PurePursuitControllerProcess:
         self.last_control_time_stamp = 0
         self.error_rate = AveragedFloat()
 
-        self._max_steering_angle = self.carla_interface_shared_variables.agents[self.settings.vehicle_id].max_steering_angle
+        self._max_steering_angle = self.carla_interface_shared_variables.agents[
+            self.settings.vehicle_id].max_steering_angle
 
     def get_ready(self):
         self.load_trajectory()
@@ -53,13 +55,17 @@ class PurePursuitControllerProcess:
             self.last_control_time_stamp = time_stamp
             closest_way_point_index = self._find_closest_way_point(self.rear_axle_position)
 
-            if np.linalg.norm(self._trajectory[closest_way_point_index, 1:3] - self.rear_axle_position[0:2]) > self.look_ahead_distance:
+            if np.linalg.norm(self._trajectory[closest_way_point_index, 1:3] - self.rear_axle_position[
+                                                                               0:2]) > self.look_ahead_distance:
                 raise RuntimeError('Pure Pursuit controller to far from path, distance = ' + str(
                     np.linalg.norm(self._trajectory[closest_way_point_index, 1:3] - self.rear_axle_position[0:2])))
 
             # calculate steering angle using the look ahead distance and trajectory. Steer point is defined as the point where the two intersect.
-            first_way_point_outside_look_ahead_circle = self._find_first_way_point_outside_look_ahead_circle(self.rear_axle_position, closest_way_point_index)
-            steer_point_in_vehicle_frame = self._calculate_steer_point(self.rear_axle_position, self.vehicle_orientation, first_way_point_outside_look_ahead_circle)
+            first_way_point_outside_look_ahead_circle = self._find_first_way_point_outside_look_ahead_circle(
+                self.rear_axle_position, closest_way_point_index)
+            steer_point_in_vehicle_frame = self._calculate_steer_point(self.rear_axle_position,
+                                                                       self.vehicle_orientation,
+                                                                       first_way_point_outside_look_ahead_circle)
 
             steering_angle = np.arctan2(steer_point_in_vehicle_frame[1], steer_point_in_vehicle_frame[0])
 
@@ -85,7 +91,7 @@ class PurePursuitControllerProcess:
                 self.shared_variables.brake = 0.
 
             # steering_angle in shared velocities is normalized with respect to the maximum steering angle
-            self.shared_variables.steering_angle = steering_angle / self._max_steering_angle
+            self.shared_variables.steering_angle = self.settings.steering_gain * steering_angle / self._max_steering_angle
             self.shared_variables.handbrake = False
             self.shared_variables.reverse = False
             self.shared_variables.desired_velocity = desired_velocity
@@ -110,14 +116,19 @@ class PurePursuitControllerProcess:
 
         return current_way_point_index
 
-    def _calculate_steer_point(self, rear_axle_position, vehicle_orientation, first_way_point_outside_look_ahead_circle):
+    def _calculate_steer_point(self, rear_axle_position, vehicle_orientation,
+                               first_way_point_outside_look_ahead_circle):
         # select the two waypoint that span a line that intersects with the look ahead circle and convert them to vehicle frame
         yaw = np.radians(vehicle_orientation[0])
         rotation_matrix = np.array([[np.cos(yaw), -np.sin(yaw)],
                                     [np.sin(yaw), np.cos(yaw)]])
 
-        way_point_inside = np.dot(np.linalg.inv(rotation_matrix), self._trajectory[first_way_point_outside_look_ahead_circle - 1, 1:3] - rear_axle_position[0:2])
-        way_point_outside = np.dot(np.linalg.inv(rotation_matrix), self._trajectory[first_way_point_outside_look_ahead_circle, 1:3] - rear_axle_position[0:2])
+        way_point_inside = np.dot(np.linalg.inv(rotation_matrix),
+                                  self._trajectory[first_way_point_outside_look_ahead_circle - 1,
+                                  1:3] - rear_axle_position[0:2])
+        way_point_outside = np.dot(np.linalg.inv(rotation_matrix),
+                                   self._trajectory[first_way_point_outside_look_ahead_circle,
+                                   1:3] - rear_axle_position[0:2])
 
         # determine the line y=c1 * x + c2 spanned by the two points
 
@@ -125,7 +136,8 @@ class PurePursuitControllerProcess:
         dy = way_point_outside[1] - way_point_inside[1]
 
         if abs(dx) <= 1e-2:
-            print('WARNING: steering point calculation in pure pursuit controller reached singular point, approximation is used instead')
+            print(
+                'WARNING: steering point calculation in pure pursuit controller reached singular point, approximation is used instead')
             return way_point_inside + (way_point_outside - way_point_inside) / 2.
 
         c1 = dy / dx
@@ -158,12 +170,14 @@ class PurePursuitControllerProcess:
         """
 
         path_trajectory_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'trajectories')
-        self._trajectory = np.loadtxt(os.path.join(path_trajectory_directory, self.settings.reference_trajectory_name), delimiter=',')
+        self._trajectory = np.loadtxt(os.path.join(path_trajectory_directory, self.settings.reference_trajectory_name),
+                                      delimiter=',')
         print('Loaded trajectory = ', self.settings.reference_trajectory_name)
 
     def _get_current_state(self):
         rear_axle_position = self.carla_interface_shared_variables.agents[self.settings.vehicle_id].rear_axle_position
-        vehicle_velocity = self.carla_interface_shared_variables.agents[self.settings.vehicle_id].velocities_in_vehicle_frame
+        vehicle_velocity = self.carla_interface_shared_variables.agents[
+            self.settings.vehicle_id].velocities_in_vehicle_frame
         vehicle_orientation = self.carla_interface_shared_variables.agents[self.settings.vehicle_id].transform[3:6]
         time_stamp = self.carla_interface_shared_variables.time
 
@@ -179,6 +193,7 @@ class PurePursuitSettings:
 
         self.use_dynamic_look_ahead_distance = True
         self.static_look_ahead_distance = 15.0
+        self.steering_gain = 4.
 
         # a dynamic look ahead distance is calculated as LAD = a * v + b where v is velocity
         self.dynamic_lad_a = 0.5
@@ -215,7 +230,8 @@ class PurePursuitSettingsDialog(QtWidgets.QDialog):
         self.pure_pursuit_settings = settings
         uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/pure_pursuit_settings_ui.ui"), self)
 
-        self.button_box_settings.button(self.button_box_settings.RestoreDefaults).clicked.connect(self._set_default_values)
+        self.button_box_settings.button(self.button_box_settings.RestoreDefaults).clicked.connect(
+            self._set_default_values)
         self.dynamicLADCheckBox.stateChanged.connect(self._update_static_dynamic_look_ahead_distance)
         self._fill_trajectory_combobox()
         self.display_values()
@@ -226,6 +242,7 @@ class PurePursuitSettingsDialog(QtWidgets.QDialog):
         self.pure_pursuit_settings.reference_trajectory_name = self.trajectoryComboBox.currentText()
         self.pure_pursuit_settings.static_look_ahead_distance = self.staticLADDoubleSpinBox.value()
         self.pure_pursuit_settings.use_dynamic_look_ahead_distance = self.dynamicLADCheckBox.isChecked()
+        self.pure_pursuit_settings.steering_gain = self.steeringGainDoubleSpinBox.value()
         self.pure_pursuit_settings.dynamic_lad_a = self.aDoubleSpinBox.value()
         self.pure_pursuit_settings.dynamic_lad_b = self.bDoubleSpinBox.value()
         self.pure_pursuit_settings.kp = self.kpDoubleSpinBox.value()
@@ -240,6 +257,7 @@ class PurePursuitSettingsDialog(QtWidgets.QDialog):
         self.trajectoryComboBox.setCurrentIndex(self.trajectoryComboBox.findText(settings.reference_trajectory_name))
         self.staticLADDoubleSpinBox.setValue(settings.static_look_ahead_distance)
         self.dynamicLADCheckBox.setChecked(settings.use_dynamic_look_ahead_distance)
+        self.steeringGainDoubleSpinBox.setValue(settings.steering_gain)
         self.aDoubleSpinBox.setValue(settings.dynamic_lad_a)
         self.bDoubleSpinBox.setValue(settings.dynamic_lad_b)
         self.kpDoubleSpinBox.setValue(settings.kp)

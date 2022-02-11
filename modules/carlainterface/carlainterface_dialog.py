@@ -80,7 +80,8 @@ class CarlaInterfaceDialog(ModuleDialog):
                 self.module_manager.module_settings.agents[agent_settings])
 
         selected_scenario = self.module_manager.module_settings.current_scenario
-        self.module_widget.scenariosComboBox.setCurrentText(selected_scenario.name)
+        if selected_scenario:
+            self.module_widget.scenariosComboBox.setCurrentText(selected_scenario.name)
 
     def add_agent(self, settings, from_button):
         """
