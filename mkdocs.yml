@@ -7,7 +7,6 @@ nav:
     - Introduction: introduction.md
 
     - Setup JOAN and CARLA:
-
         - Build CARLA on Windows: setup-carla-windows.md
         - Install JOAN: setup-joan.md
         - Example usage and functionality testing: example-usage-and-testing.md
