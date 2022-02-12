@@ -7,10 +7,9 @@ nav:
     - Introduction: introduction.md
 
     - Setup JOAN and CARLA:
-      - Build CARLA on Windows: setup-carla-windows.md
+        - Build CARLA on Windows: setup-carla-windows.md
       - Install JOAN: setup-joan.md
-      - Setup JOAN on a TUD computer: setup-on-tud-shared-hardware.md
-      - Example usage and test: example-usage-and-testing.md
+      - Example usage and functionality testing: example-usage-and-testing.md
 
     - First steps:
       - JOAN Overview: firststeps-joan-overview.md

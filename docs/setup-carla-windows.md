@@ -1,26 +1,26 @@
 # Setting up CARLA for Windows
 
-!!! Note
-    If you are a TU Delft student working on one of the TUD computers with CARLA installed, you can skip these instructions. Go to the [setup guide for installing on TUD shared hardware](setup-on-tud-shared-hardware.md).
+!!! Note If you are a TU Delft student working on one of the TUD computers with CARLA installed, you can skip these instructions. Go to
+the [setup guide for installing on TUD shared hardware](setup-on-tud-shared-hardware.md).
 
-!!! Note
-    If you want to do a clean install of CARLA, Python etc. on a TUD PC (if it's a new PC, or when you want to upgrade Python or Unreal Engine), first ask one of the JOAN developer team on Slack or your supervisor. Next, you need to do all the installations on the `localadmin` account to make everything available for all users.
-    
-These instructions are are based on the awesome documentation provided by the CARLA team. If you get stuck somewhere or you want to know more, you could have a look at [their documentation](https://carla.readthedocs.io/en/0.9.10/){target="_blank"}.
+These instructions are based on the awesome documentation provided by the CARLA team. We tried to describe the steps a bit for our specific use. However, feel free to follow the
+CARLA installation notes (select the right version). If you get stuck somewhere or you want to learn more, you could have a look
+at [their documentation](https://carla.readthedocs.io/en/latest/){target="_blank"} (make sure to select the correct version that corresponds to the CARLA version you want to use.
+
+!!! note For the most up to date installation instructions for CARLA, check out [their documentation](https://carla.readthedocs.io/en/latest/){target="_blank"}. The instruction
+below are from [CARLA 0.9.10](https://carla.readthedocs.io/en/0.9.10/){target="_blank"} (the last version we tested JOAN with).
 
 ---
 
 ## Introduction
 
-In order to properly setup the simulation software on Windows several packages and steps are required.
-
----    
-
 ## Hardware Requirements
 
-* __x64 system__: The simulator should run in any 64 bits Windows system.  
-* __50GB disk space__: Installing all the software needed (Unreal, VS 2017, CARLA, and more) will require quite a lot of space. Make sure to have about 50GB of space (especially since you will also need a Visual Studio 2017 install)
-* __An adequate GPU__: CARLA aims for realistic simulations, so the server needs at least a 4GB GPU. If VR is required a Turing based GPU (for example the RTX branch of NVIDIA is highly recommended!)
+* __x64 system__: The simulator should run in any 64 bits Windows system.
+* __50GB disk space__: Installing all the software needed (Unreal, VS 2017, CARLA, and more) will require quite a lot of space. Make sure to have about 50GB of space (especially
+  since you will also need a Visual Studio 2017 install)
+* __An adequate GPU__: CARLA aims for realistic simulations, so the server needs at least a 4GB GPU. If VR is required a Turing based GPU (for example the RTX branch of NVIDIA is
+  highly recommended!)
 * __Two TCP ports and good internet connection__: 2000 and 2001 by default. Be sure neither the firewall nor any other application are blocking these. 
 
 ---
@@ -36,8 +36,8 @@ Please make sure you have the following programs installed before continuing. If
 * __[Make](http://gnuwin32.sourceforge.net/packages/make.htm){target="_blank"}__: Generates the executables. Please follow the link and download the "Complete package, except sources" setup. Install it and after installing add the binary folder (C:\Program Files (x86)\GnuWin32\bin by default) the the system `PATH` variable. follow the link in the info box below if you're not sure how to do this.
 * __[PowerShell 5.0 or newer](https://www.microsoft.com/en-us/download/details.aspx?id=54616){target="_blank"}__: If you have Windows 10, it already includes this. If however you are still using Windows 7, you need to update PowerShell to version 5.0 or newer to be able to use out-of-the-box build scripts provided with carla. Follow steps 1 to 3 [here](https://www.csoonline.com/article/3343048/how-to-install-powershell-5-on-windows-7.html){target="_blank"}
 
-!!! Important
-    When you already have installed versions of the above mentioned software please make sure that the bin folders are added to the system's `PATH` variable! If you don't know how to do so, check ['Adding to System Variables'](https://www.architectryan.com/2018/03/17/add-to-the-path-on-windows-10/){target="_blank"}.
+!!! Important When you already have installed versions of these tools, please make sure that the bin folders are added to the system's `PATH` variable! If you don't know how to do
+so, check ['Adding to System Variables'](https://www.architectryan.com/2018/03/17/add-to-the-path-on-windows-10/){target="_blank"}.
 
 ### Visual Studio 2017
 
@@ -87,7 +87,6 @@ followed above instructions) is the only version in your system and user `PATH` 
 
 To make sure the correct version of Python is used you can open a command line window and type:
 
-
     python
 
 This should give a response similar to the one below. Please make sure that you are running the Python version you have just installed.
@@ -111,7 +110,7 @@ or
 
 ### Python editors
 
-We recommend installing __[PyCharm](https://www.jetbrains.com/pycharm/download){target="_blank"}__ as your python editor (The Community version is free and open-source). 
+We recommend installing __[PyCharm](https://www.jetbrains.com/pycharm/download){target="_blank"}__ as your Python editor (The Community version is free).
 
 ---
 
@@ -142,20 +141,23 @@ JOAN was tested with Carla version 0.9.10, other versions might work but no guar
 After cloning, verify that you have actually cloned the repository, it should look like this:
 ![alt text](imgs/setup-carla-windows-git-carla-clone.png "cloned repository")
 
-### Step 2: Getting latest CARLA assets
+### Step 2: Getting the latest CARLA assets
 
 To get the latest CARLA assets open up the folder `Util` in the `carla` folder that you have just created in step 1, and open the file `contentversions.txt`, see below:
 ![alt text](imgs/setup-carla-windows-util-screenshot.png "cloned repository")
 
-This text file contains the instructions of what to do to download the latest assets, for now get the 0.9.9 version. You can also click this
-[link](http://carla-assets.s3.amazonaws.com/20200422_ea5179a.tar.gz){target="_blank"}. <span style="color:red">Note: this file is almost 10GB</span>. To extract the compressed file, you can use
+This text file contains the instructions of what to do to download the latest assets, get the 0.9.10 version. You can also click this
+[link](http://carla-assets.s3.amazonaws.com/20200422_ea5179a.tar.gz){target="_blank"}. <span style="color:red">Note: this file is almost 10GB</span>. To extract the compressed
+file, you can use
 [7-zip](https://www.7-zip.org/){target="_blank"}, for example.
 
 Unpack these assets in `C:\carla\Unreal\CarlaUE4\Content\Carla`. If the directory does not exist, create it.
 
 ### Step 3: Get specific JOAN Assets
-To have a nice car interior which also turns the steering wheel when you turn your physical steering wheel, some extra assets are required. You can download them [here](https://www.dropbox.com/s/yhbf59t7i5iu6rw/JOAN_Assets.zip?dl=0){target="_blank"}.
-This folder contains the assets which are needed to accomplish this. The file structure is exactly the same as it should be in the carla content folder. Before you do that please unzip the folder and copy the contents of this folder to:
+
+To have a nice car interior which also turns the steering wheel when you turn your physical steering wheel, some extra assets are required. You can download
+them [here](https://www.dropbox.com/s/6v35q307dosin55/120222_JOAN_Assets.zip?dl=0){target="_blank"}. This folder contains the assets which are needed to accomplish this. The file
+structure is exactly the same as it should be in the CARLA content folder. Before you do that please unzip the folder and copy the contents of this folder to:
 
     C:\carla\Unreal\CarlaUE4\Content
     
