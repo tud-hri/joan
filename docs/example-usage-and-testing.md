@@ -3,10 +3,12 @@
 We provide an example experiment and a checklist to test your installation and the functionality of JOAN. We tested JOAN with Carla version 0.9.10. You can only run these checks
 when Carla is installed. These tests check the functionality of the HardwareManager, CarlaInterface, DataRecorder, DataPlotter, NPCccontrollerManager, and ExperimentManager.
 
+!!! note We also have a bit more info on running JOAN [here](firststeps-joan-run.md).
+
 Steps:
 
-- If you haven't already done so: download the example experiment map [(link)](https://www.dropbox.com/s/34g6ln1up7azssp/120222_DebugMap.zip?dl=0){target="_blank"} and unpack it in
-  Carla's Maps folder (for us `C:\carla\Unreal\CarlaUE4\Content\Maps\`)
+- If you haven't already done so: download the example experiment assets [(link)](https://www.dropbox.com/s/6v35q307dosin55/120222_JOAN_Assets.zip?dl=0){target="_blank"} and unpack
+  it in Carla's Content folder (for us `C:\carla\Unreal\CarlaUE4\Content\`). Note; make sure you also have the CARLA assets (step in the CARLA install process)
 - Run CarlaUE4 and open `DebugMap.umap` level: File &rarr; Open level &rarr; open `DebugMap.umap`.
 - If you open the map for the first time, give Carla some time to prepare it (compiling shaders, etc).
 - Run CarlaUE4 (hit the play button); if you want to go full-screen, hit F11
