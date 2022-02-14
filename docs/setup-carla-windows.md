@@ -222,7 +222,8 @@ After the Unreal editor has been launched and compiled the shaders from step 6 g
 
 ![alt text](imgs/setup-carla-windows-vehicle-factory.png "Vehicle Factory")
 
-Open up this 'Blueprint' and then click on the array variable 'vehicles'. Now add to the array and select the vehicle blueprints you have selected. Give it a name you want to call it as from the PythonAPI, as a default use the ones shown here:
+Open up this 'Blueprint' and then click on the array variable 'vehicles'. Now add to the array  (click the plus icon); a new entry should open. Under 'Make', type 'HapticsLab' and
+Model, type 'Audi'. Select the 'BP_EpicAudi2' blueprint (and it has 4 wheels):
 
 ![alt text](imgs/setup-carla-windows-add-vehicles.png "Adding Audi")
 

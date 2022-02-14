@@ -13,12 +13,10 @@ JOAN is maintained in a [GitHub repository](https://github.com/tud-hri/joan) by 
   store them on a repository (well, not easily).
 
 We will explain how to create your own project using PyCharm.
-
-1. Fork JOAN on GitHub (fork gives you more independence in changing JOAN for your particular project).
-   See [these instructions on how to fork JOAN on github](https://docs.github.com/en/get-started/quickstart/fork-a-repo).
-2. Once you forked JOAN, you still need to clone your own forked JOAN project); just make sure to change the URL of your forked repo. You can either use the command line or through
-   PyCharm (when creating a new project):
-
++ Fork JOAN on GitHub (fork gives you more independence in changing JOAN for your particular project).
+  See [these instructions on how to fork JOAN on github](https://docs.github.com/en/get-started/quickstart/fork-a-repo).
++ Once you forked JOAN, you still need to clone your own forked JOAN project); just make sure to change the URL of your forked repo. You can either use the command line or through
+  PyCharm (when creating a new project):
 ```commandline
 git clone <URL TO YOUR GITHUB JOAN REPOSITORY>
 cd <DIRECTORY OF YOUR REPOSITORY>
@@ -26,13 +24,14 @@ cd <DIRECTORY OF YOUR REPOSITORY>
 
 When using PyCharm: If PyCharm automatically opens an existing project that is not yours, close the project (`File` &rarr; `Close project`). A welcome screen should appear. In
 the 'Welcome to PyCharm' window, click on `Get from Version Control`. A new window appears:
-![new repo pycharm](imgs/setup-joan-pycharm-repo-directory.png) Go to your own repository's webpage (on GitHub), click `clone` and copy the URL under 'Clone with HTTPS':
+![new repo pycharm](imgs/setup-joan-pycharm-repo-directory.png)
+Go to your own repository's webpage (on GitHub), click `clone` and copy the URL under 'Clone with HTTPS':
 ![clone-https](imgs/setup-joan-pycharm-repo-clone-button.png)
 **TU Delft students**: Paste the repository URL in the field that says URL in the PyCharm window. Change the directory to `C:\\Users\<YOUR NETID>\joan-projects\<YOUR PROJECT NAME>`
 . Replace `<NETID>` with your NETID if you are on a TUD computer or your Windows username and `<YOUR PROJECT NAME>` with the __EXACT__ name of your gitlab repository project.
 
-3. In the terminal type the following commands in this order (or copy it, and right-click paste in the terminal, `ctrl+v` does not work). This adds the original JOAN repository as
-   upstream, enabling you to pull the latest version of JOAN.
++ In the terminal type the following commands in this order (or copy it, and right-click paste in the terminal, `ctrl+v` does not work). This adds the original JOAN repository as
+  upstream, enabling you to pull the latest version of JOAN.
 
 ```commandline
 git remote add upstream-joan https://github.com/tud-hri/joan.git
@@ -40,37 +39,39 @@ git fetch upstream-joan
 git pull upstream-joan master
 ```
 
-4. You also need to set your user name and email address for your repository:
++ You also need to set your user name and email address for your repository:
 
 ```commandline
 git config --local user.name "YOUR NAME"
 git config --local user.email "YOUR EMAIL ADDRESS"  
 ```
 
-5. We prepared a map to test CARLA + JOAN functionality. Download the template map [here](https://www.dropbox.com/s/34g6ln1up7azssp/120222_DebugMap.zip?dl=0){target="_blank"},
-   extract it, and copy the contents to `C:\carla\Unreal\CarlaUE4\Content\Maps`.
++ We prepared a map and other assets to test CARLA + JOAN functionality. Download the
+  assets [here](https://www.dropbox.com/s/6v35q307dosin55/120222_JOAN_Assets.zip?dl=0){target="_blank"}, extract it, and copy the contents
+  to `C:\carla\Unreal\CarlaUE4\Content\Carla`. Check whether you added the vehicle 'hapticslab.audi' to CARLA's vehicle
+  factory [(see here for instruction, under ### Step 7: Adding vehicle assets to CARLA in Unreal)](setup-carla-windows.md)
 
-6. We recommend setting up a python virtual environment for JOAN (note: use python > 3.6). In a terminal, navigate to the joan directory, and execute:
++ We recommend setting up a python virtual environment for JOAN (note: use python > 3.6). In a terminal, navigate to the joan directory, and execute:
 
 ```commandline
 python -m venv venv
 ```
 
-5. If the environment is active, you'll likely see `(venv)` before each command line. If not, run the following command (assuming Windows):
++ If the environment is active, you'll likely see `(venv)` before each command line. If not, run the following command (assuming Windows):
 
 ```commandline
 venv\Scripts\activate.bat
 ```
 
-6. Install the dependencies using `pip` (see step 4)
++ Install the dependencies using `pip` (see step 4)
 
 ```commandline
 pip install -r requirements.txt
 ```
 
-7. Include the CARLA `.egg` file in the JOAN project (see steps 4 and 5 [here](setup-carla-windows.md))
++ Include the CARLA `.egg` file in the JOAN project (see steps 4 and 5 [here](setup-carla-windows.md))
 
-8. Check what modules you want to include in `main.py`, and execute `main.py`.
++ Check what modules you want to include in `main.py`, and execute `main.py`.
 
 ```python
 python
