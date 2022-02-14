@@ -5,6 +5,8 @@ when Carla is installed. These tests check the functionality of the HardwareMana
 
 !!! note We also have a bit more info on running JOAN [here](firststeps-joan-run.md).
 
+The example experiment assets (see first step) include a folder called ExpectedTestResults. This folder contains a screen capture of what the complete test process should look like.
+
 Steps:
 
 - If you haven't already done so: download the example experiment assets [(link)](https://www.dropbox.com/s/6v35q307dosin55/120222_JOAN_Assets.zip?dl=0){target="_blank"} and unpack
@@ -21,15 +23,14 @@ Steps:
   - Open the DataRecorder GUI
   - Select the parameters you would like to log, but for now check the boxes: HardwareManager, CarlaInterface, and NPCControllerManager)
   - Close the DataRecorder GUI
-- Click the 'Get Ready' button (and wait for JOAN to get ready)
+- Click the 'Get Ready' button in JOAN (and wait for JOAN to get ready)
 - Your vehicle should spawn in Carla (and you're behind the wheel)
-- Click 'Run' button and drive!
-- Once you're done, click 'Stop'. The ExperimentManager should automatically transition to the next condition (note the checkbox 'Auto transition after stop')
-- Let's test the next condition, hit 'Initialize', 'Get ready' and 'Run'
+- Click JOAN's 'Run' button and drive! (Use the W, A, S, and D keys)
+- Once you're done, click 'Stop' in JOAN. The ExperimentManager should automatically transition to the next condition (note the checkbox 'Auto transition after stop')
+- Let's test the next condition, hit 'Initialize', 'Get ready' and 'Run' again
 - Another car (a non-player character) should spawn in front of you and start driving along the same route (controlled by the NPCControllerManager module)
 - Once you're done, click Stop.
-- Check that your data (.csv) files correspond to the example `.csv` files. You should see rows of data samples, and column names corresponding to the parameters you selected in
-  the DataRecorder step.
+- Check that your data (.csv) files correspond to the example `.csv` file (provided with the downloaded map in the folder ExpectedTestResults). You should see rows of data samples, and column names corresponding to the parameters you selected in the DataRecorder step.
 
 Lastly, to test the DataPlotter,
 
