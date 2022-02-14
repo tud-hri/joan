@@ -25,8 +25,8 @@ If JOAN is already connected the connect button will not be available but the di
 connection. Due to the fact that we use multiprocessing we need to connect to CARLA again when the module process is created (this is done after
 clicking `get ready`). This makes sure we have access to the CARLA pythonapi function within this process. There is however a big note to this:
 
-!!! Important Whenever you are already in the `READY` state, and you stop CARLA from the unreal side, this will lead to erratic behaviour in JOAN. So never stop
-your experiments via the quit button in Unreal. Ideally you use the 'play' button in unreal once before starting up JOAN and stop it again after you quit JOAN.
+!!! Important 
+    Whenever you are already in the `READY` state, and you stop CARLA from the unreal side, this will lead to erratic behaviour in JOAN. So never stop your experiments via the quit button in Unreal. Ideally you use the 'play' button in unreal once before starting up JOAN and stop it again after you quit JOAN.
 
 ### Adding Agents
 
@@ -51,7 +51,8 @@ have the same spawn point an message will pop-up saying that there is a spawn po
 
 ![Double spawnpoint message](imgs/modules-carlainterface-double-spawnpoint.PNG)
 
-!!! Note If you choose None for spawn point it will just not spawn any car, same goes for the CarType.
+!!! Note 
+    If you choose None for spawn point it will just not spawn any car, same goes for the CarType.
 
 The last thing you can choose from is cruise control checkbox and a desired speed. Please note that this will use a PD controller on the throttle and brake and
 does not set the velocity instantly.
@@ -133,8 +134,8 @@ Luckily this one is easier, assuming that you only want to have the buttons `set
 
 However if you want more functionality in this tab you can add your only designed tab of course!
 
-!!! Note For reference, this has also been done for the `module_card.ui` and `module_card_carlainterface.ui`, so if you're interested please take a inside
-`.../core/hq`
+!!! Note 
+    For reference, this has also been done for the `module_card.ui` and `module_card_carlainterface.ui`, so if you're interested please take a inside `.../core/hq`
 
 ### Step 4. Adding/copying shared variables object
 
@@ -151,7 +152,8 @@ You should add a class containing your desired variables `<YOUR_AGENT_TYPE_NAME>
 
 Now that you have all needed files its now a matter of adding them to the enum!
 
-!!! Important Make sure you link to the correct files in the enum, take the Ego Vehicle as a reference
+!!! Important 
+    Make sure you link to the correct files in the enum, take the Ego Vehicle as a reference
 
 ### Step 6. Loading from dict update
 

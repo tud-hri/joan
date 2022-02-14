@@ -77,12 +77,12 @@ python
 main.py
 ```
 
-!!! Tip To retrieve the latest version of JOAN:
-```commandline git fetch upstream-joan git pull upstream-joan master
-```
-!!! Important It is possible that conflicts occur when pulling the latest JOAN version. These conflicts are between changes you made and changes in the main JOAN code. Often, these
-conflicts can be resolved through PyCharm, but sometimes it is more difficult than this. If you're used to git, resolve all conflicts by yourself. Else, perhaps good to ask your
-supervisor.
+!!! Tip 
+    To retrieve the latest version of JOAN:
+    ```commandline git fetch upstream-joan git pull upstream-joan master
+    ```
+!!! Important 
+    It is possible that conflicts occur when pulling the latest JOAN version. These conflicts are between changes you made and changes in the main JOAN code. Often, these conflicts can be resolved through PyCharm, but sometimes it is more difficult than this. If you're used to git, resolve all conflicts by yourself. Else, perhaps good to ask your supervisor.
 
 ## Adding your own CARLA map
 
@@ -101,4 +101,5 @@ These instructions are specifically written for TU Delft students, but are usefu
 - Your level will load, but this may take some time.
 - To run the Unreal Engine, hit the play button.
 
-!!! Warning Make sure to load your own map, so double check that you are in the right directory when opening your level!
+!!! Warning 
+    Make sure to load your own map, so double check that you are in the right directory when opening your level!

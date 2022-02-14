@@ -1,14 +1,14 @@
 # Setting up CARLA for Windows
 
-!!! Note If you are a TU Delft student working on one of the TUD computers with CARLA installed, you can skip these instructions. Go to
-the [setup guide for installing on TUD shared hardware](setup-on-tud-shared-hardware.md).
+!!! Note 
+    If you are a TU Delft student working on one of the TUD computers with CARLA installed, you can skip these instructions. Go to the [setup guide for installing on TUD shared hardware](setup-on-tud-shared-hardware.md).
 
 These instructions are based on the awesome documentation provided by the CARLA team. We tried to describe the steps a bit for our specific use. However, feel free to follow the
 CARLA installation notes (select the right version). If you get stuck somewhere or you want to learn more, you could have a look
 at [their documentation](https://carla.readthedocs.io/en/latest/){target="_blank"} (make sure to select the correct version that corresponds to the CARLA version you want to use.
 
-!!! note For the most up to date installation instructions for CARLA, check out [their documentation](https://carla.readthedocs.io/en/latest/){target="_blank"}. The instruction
-below are from [CARLA 0.9.10](https://carla.readthedocs.io/en/0.9.10/){target="_blank"} (the last version we tested JOAN with).
+!!! Note 
+    For the most up to date installation instructions for CARLA, check out [their documentation](https://carla.readthedocs.io/en/latest/){target="_blank"}. The instruction below are from [CARLA 0.9.10](https://carla.readthedocs.io/en/0.9.10/){target="_blank"} (the last version we tested JOAN with).
 
 ---
 
@@ -36,8 +36,8 @@ Please make sure you have the following programs installed before continuing. If
 * __[Make](http://gnuwin32.sourceforge.net/packages/make.htm){target="_blank"}__: Generates the executables. Please follow the link and download the "Complete package, except sources" setup. Install it and after installing add the binary folder (C:\Program Files (x86)\GnuWin32\bin by default) the the system `PATH` variable. follow the link in the info box below if you're not sure how to do this.
 * __[PowerShell 5.0 or newer](https://www.microsoft.com/en-us/download/details.aspx?id=54616){target="_blank"}__: If you have Windows 10, it already includes this. If however you are still using Windows 7, you need to update PowerShell to version 5.0 or newer to be able to use out-of-the-box build scripts provided with carla. Follow steps 1 to 3 [here](https://www.csoonline.com/article/3343048/how-to-install-powershell-5-on-windows-7.html){target="_blank"}
 
-!!! Important When you already have installed versions of these tools, please make sure that the bin folders are added to the system's `PATH` variable! If you don't know how to do
-so, check ['Adding to System Variables'](https://www.architectryan.com/2018/03/17/add-to-the-path-on-windows-10/){target="_blank"}.
+!!! Important 
+    When you already have installed versions of these tools, please make sure that the bin folders are added to the system's `PATH` variable! If you don't know how to do so, check ['Adding to System Variables'](https://www.architectryan.com/2018/03/17/add-to-the-path-on-windows-10/){target="_blank"}.
 
 ### Visual Studio 2017
 

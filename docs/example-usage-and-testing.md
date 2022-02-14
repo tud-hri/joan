@@ -3,7 +3,8 @@
 We provide an example experiment and a checklist to test your installation and the functionality of JOAN. We tested JOAN with Carla version 0.9.10. You can only run these checks
 when Carla is installed. These tests check the functionality of the HardwareManager, CarlaInterface, DataRecorder, DataPlotter, NPCccontrollerManager, and ExperimentManager.
 
-!!! note We also have a bit more info on running JOAN [here](firststeps-joan-run.md).
+!!! Note 
+    We also have a bit more info on running JOAN [here](firststeps-joan-run.md).
 
 The example experiment assets (see first step) include a folder called ExpectedTestResults. This folder contains a screen capture of what the complete test process should look like.
 

@@ -16,8 +16,8 @@ Among others, we build JOAN to enable you to
 Check out the table of content below for installation instruction and more information on JOAN. Also check out the [repository][repolink]{target="_blank"} for current issues, etc. 
 
 
-!!! Note We tested JOAN with CARLA 0.9.10, not (yet) with the latest version. If you tested JOAN with the latest CARLA build (and it works), awesome! Please let us know through the
-issue tracker!
+!!! Note 
+    We tested JOAN with CARLA 0.9.10, not (yet) with the latest version. If you tested JOAN with the latest CARLA build (and it works), awesome! Please let us know through the issue tracker!
     
 ---
 

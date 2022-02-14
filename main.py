@@ -1,8 +1,3 @@
-"""Main script
-    Intantiates classes by name. The classes, however MUST already exist in globals.
-    That is why classes have already been imported using a wildcard (*)
-    Make sure that the requested class are also in widgets/__init__.py 
-"""
 import sys
 
 from PyQt5 import QtWidgets
