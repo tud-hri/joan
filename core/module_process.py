@@ -136,7 +136,7 @@ class ModuleProcess(mp.Process):
                 self._running_frequency = 1e9 / 1.
 
             self._last_t0 = t0
-            self._time = time.time_ns() - t_start
+            self._time = time.time_ns()
 
             # read shared values here, store in local variables
             self.read_from_shared_variables()
@@ -176,7 +176,3 @@ class ModuleProcess(mp.Process):
         self._module_shared_variables.running_frequency = self._running_frequency
         self._module_shared_variables.execution_time = self._last_execution_time
         self._module_shared_variables.time = self._time
-
-    @property
-    def running_time_seconds(self):
-        return float(self._time / 1e9)

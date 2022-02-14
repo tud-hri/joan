@@ -141,12 +141,6 @@ class CarlaInterfaceManager(ModuleManager):
                     self.spawn_points.append("Spawnpoint " + str(spawn_point_objects.index(item)))
 
                 self.carla_waypoints = self.world_map.generate_waypoints(0.5)
-
-                # set time step to fixed
-                # settings = self._world.get_settings()
-                # settings.fixed_delta_seconds = 1./60.
-                # self._world.apply_settings(settings)
-
                 QApplication.restoreOverrideCursor()
                 self.connected = True
 
@@ -173,15 +167,7 @@ class CarlaInterfaceManager(ModuleManager):
         This function will try and disconnect from the carla server, if the module was running it will transition into
         an error state
         """
-
         self.client = None
         self.connected = False
 
         return self.connected
-
-    def _open_settings_dialog(self, agent_name):
-        """
-        :param agent_name: name of the agent
-        """
-        self._agent_settingdialogs_dict[agent_name].show()
-        self._get_update_from_other_modules(agent_name)
