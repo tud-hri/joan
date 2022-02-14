@@ -7,8 +7,8 @@ These instructions are based on the awesome documentation provided by the CARLA 
 CARLA installation notes (select the right version). If you get stuck somewhere or you want to learn more, you could have a look
 at [their documentation](https://carla.readthedocs.io/en/latest/){target="_blank"} (make sure to select the correct version that corresponds to the CARLA version you want to use.
 
-!!! Note 
-    For the most up to date installation instructions for CARLA, check out [their documentation](https://carla.readthedocs.io/en/latest/){target="_blank"}. The instruction below are from [CARLA 0.9.10](https://carla.readthedocs.io/en/0.9.10/){target="_blank"} (the last version we tested JOAN with).
+!!! Note For the most up to date installation instructions for CARLA, check out [their documentation](https://carla.readthedocs.io/en/latest/){target="_blank"}. The instruction
+below are from [CARLA 0.9.9](https://carla.readthedocs.io/en/0.9.9/){target="_blank"} (the last version we tested JOAN with).
 
 ---
 
@@ -131,9 +131,12 @@ The steps will be explained 1 step at the time with screenshots and command line
 
 ### Step 1: Cloning the CARLA repository
 
-JOAN was tested with Carla version 0.9.10, other versions might work but no guarantees are given. To clone version 0.9.10 of the repository open a command window and navigate to the folder where you want to clone carla (if you don't know how to use the `cd` command to navigate in a terminal, check out [this page](https://www.computerhope.com/issues/chusedos.htm){target="_blank"} first). Please remember that the `git clone` command will also create a project folder named carla at the current location. Now type the following command:
+JOAN was tested with Carla version 0.9.9, other versions might work but no guarantees are given. To clone version 0.9.9 of the repository open a command window and navigate to the
+folder where you want to clone carla (if you don't know how to use the `cd` command to navigate in a terminal, check
+out [this page](https://www.computerhope.com/issues/chusedos.htm){target="_blank"} first). Please remember that the `git clone` command will also create a project folder named
+carla at the current location. Now type the following command:
 
-    git clone https://github.com/carla-simulator/carla --branch 0.9.10
+    git clone https://github.com/carla-simulator/carla --branch 0.9.9
 
 !!! Important 
     The CARLA build will fail if the path to CARLA contains spaces, so please clone CARLA to a folder without spaces in the path. If in doubt; use `C:\carla`. To do this navigate to `C:\` in a command prompt and call `git clone` from there, the `carla` folder will be created automatically. 
@@ -146,7 +149,7 @@ After cloning, verify that you have actually cloned the repository, it should lo
 To get the latest CARLA assets open up the folder `Util` in the `carla` folder that you have just created in step 1, and open the file `contentversions.txt`, see below:
 ![alt text](imgs/setup-carla-windows-util-screenshot.png "cloned repository")
 
-This text file contains the instructions of what to do to download the latest assets, get the 0.9.10 version. You can also click this
+This text file contains the instructions of what to do to download the latest assets, get the 0.9.9 version. You can also click this
 [link](http://carla-assets.s3.amazonaws.com/20200422_ea5179a.tar.gz){target="_blank"}. <span style="color:red">Note: this file is almost 10GB</span>. To extract the compressed
 file, you can use
 [7-zip](https://www.7-zip.org/){target="_blank"}, for example.

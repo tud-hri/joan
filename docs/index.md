@@ -13,11 +13,10 @@ Among others, we build JOAN to enable you to
 - easily log data
 - implement haptic driver-automated vehicle interaction
 
-Check out the table of content below for installation instruction and more information on JOAN. Also check out the [repository][repolink]{target="_blank"} for current issues, etc. 
+Check out the table of content below for installation instruction and more information on JOAN. Also check out the [repository][repolink]{target="_blank"} for current issues, etc.
 
-
-!!! Note 
-    We tested JOAN with CARLA 0.9.10, not (yet) with the latest version. If you tested JOAN with the latest CARLA build (and it works), awesome! Please let us know through the issue tracker!
+!!! Note We tested JOAN with CARLA 0.9.9, not (yet) with the latest version. If you tested JOAN with the latest CARLA build (and it works), awesome! Please let us know through the
+issue tracker!
     
 ---
 
@@ -37,8 +36,9 @@ We created a video showcasing JOAN and CARLA for the Symbiotic Driving Simulator
 
 ### Useful links
 
-- Because JOAN depends heavily on CARLA, we strongly recommend you to check out the [CARLA documentation](https://carla.readthedocs.io/en/0.9.10/){target="_blank"}. 
-- You can find the JOAN repository [here][repolink]{target="_blank"}. The underlying framework of JOAN is finished, so that core functionality will not change to ensure backward compatibility.
+- Because JOAN depends heavily on CARLA, we strongly recommend you to check out the [CARLA documentation](https://carla.readthedocs.io/en/0.9.9/){target="_blank"}.
+- You can find the JOAN repository [here][repolink]{target="_blank"}. The underlying framework of JOAN is finished, so that core functionality will not change to ensure backward
+  compatibility.
 
 [repolink]: https://github.com/tud-hri/joan
 
