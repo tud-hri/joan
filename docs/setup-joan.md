@@ -69,7 +69,7 @@ venv\Scripts\activate.bat
 pip install -r requirements.txt
 ```
 
-+ Include the CARLA `.egg` file in the JOAN project (see steps 4 and 5 [here](setup-carla-windows.md))
++ Copy the CARLA `.egg` file to the folder `joan/carla_pythonapi` (see steps 4 and 5 [here](setup-carla-windows.md))
 
 + Check what modules you want to include in `main.py`, and execute `main.py`.
 
