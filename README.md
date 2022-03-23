@@ -31,7 +31,7 @@ For the most up-to-date documentation, visit [https://joan.readthedocs.io/en/lat
 
 ## Licensing and reference
 
-JOAN is developed by a team of the Human-Robot Interaction group of Cognitive Robotics at Delft University of Technology.
+JOAN is developed by a team (Joris, Olger, Andre, and Niek -> JOAN) of the Human-Robot Interaction group of Cognitive Robotics at Delft University of Technology.
 
 
 Please see our license if you want to use our framework.
