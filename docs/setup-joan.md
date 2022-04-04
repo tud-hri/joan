@@ -47,7 +47,7 @@ git config --local user.email "YOUR EMAIL ADDRESS"
 ```
 
 + We prepared a map and other assets to test CARLA + JOAN functionality. Download the
-  assets [here](https://www.dropbox.com/s/6v35q307dosin55/120222_JOAN_Assets.zip?dl=0){target="_blank"}, extract it, and copy the contents
+  assets [here](https://doi.org/10.4121/19419923){target="_blank"}, extract it, and copy the contents
   to `C:\carla\Unreal\CarlaUE4\Content\Carla`. Check whether you added the vehicle 'hapticslab.audi' to CARLA's vehicle
   factory [(see here for instruction, under ### Step 7: Adding vehicle assets to CARLA in Unreal)](setup-carla-windows.md)
 
