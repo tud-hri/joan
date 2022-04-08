@@ -1,7 +1,7 @@
 # Module: Haptic Controller Manager
-The Haptic Controller Manager is a module which was specifically created to make different sort of controllers for haptic interactions. The 
-example that is included is the `Four Design Choice Architecture (FDCA)` controller for haptic feedback on the steering wheel. However
-the main idea behind this module is that students can make their own sort of controller for haptic feedback. In this section
+The Haptic Controller Manager is a module which was specifically created to make different sorts of controllers for haptic interactions. The 
+example that is included is the `Four Design Choice Architecture (FDCA)` controller for haptic feedback on the steering wheel. However,
+the main idea behind this module is that user can make their own sort of controller for haptic feedback. In this section
 we'll explain the usage of the module, which will be strikingly similar to other modules, so if you understand the basic module
 architecture you should be easily able to expand on this one.
 

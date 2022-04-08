@@ -1,9 +1,5 @@
 # Module: Hardware Manager
-The HardwareManager module is quite an essential one, it does what you would expect it to do: it manages the hardware. In the default version of the hardware manager it handles Hardware Inputs. Ofcourse you could implement any other code in python to link other sorts of devices to JOAN if you wish. However in this section we will mainly focus on the 3 main default inputs you can choose:
-
-- Keyboard
-- Joystick
-- SensoDrive
+The Hardware Manager allows hardware inputs to be connected to JOAN. In this module, the connection with the hardware is established and the raw input data is converted to vehicle commands. For example, this is the place where an 8 bit joystick axis value is converted to a steering angle. Hardware inputs are connected to specific vehicles in the Carla interface module. We provide three base classes for hardware inputs: Keyboard, USB Joystick, and SensoDrive. These will be explained on this page. If you want to connect other hardware to JOAN, you will need to modify an existing, or completely write you own, input class.
  
 In the image below the HardwareManager module is shown how it should look like if you open it up in the 
 `STOPPED` state. (without default settings)

@@ -1,7 +1,8 @@
 # Module: CARLA Interface
 
-Depending on whether you want to use the CARLA simulation environment with JOAN, the CARLA interface module is one of the core modules. If you want to do
-anything with CARLA it is advised to use this module. An example screenshot of the module dialog layout in the `READY` state is shown below:
+The CARLA interface module is one of the core modules, it establishes the connection between JOAN and CARLA. This module is where you can spawn new vehicles (either human driven of NPC) and connect them to control methods (human inputs or NPC controllers). This is also the module that retrieves data from Carla. This data is shared on the modules News channel and can therefore be used in other modules (e.g., current velocity in a controller module), or it can be stored to a csv file in the data recorder. Finally, this module allows you to create _scenarios_. A scenario is an event triggered by a condition in the Carla environment being met. For example, you can use a scenario that starts the movement of an NPC vehicle if the ego vehicle passes a specific point in the scene. 
+
+An example screenshot of the module dialog layout in the `READY` state is shown below:
 
 ![carlainterface_dialog](imgs/modules-carlainterface-dialog_ready.PNG)
 

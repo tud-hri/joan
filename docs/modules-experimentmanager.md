@@ -1,7 +1,6 @@
 # Module: Experiment Manager
 
-To run experiments, you need to define your conditions and run them in the order you want. To make your life a bit easier, we built an Experiment Manager module, 
-in which you can:
+The Experiment Manager is used to define experiments consisting of experimental conditions. Once these are defined, the Experiment Managers can automatically transition between conditions, it thereby automizes the process of running the experiment. This prevents manual errors in resetting the driving simulator and in loading the correct settings for a specific condition. All conditions consist of a specific set of settings for the included modules. Examples of these settings (and thus parameters that you can vary in conditions) are the spawn points of vehicles, the gains of a haptic shared controller, or the velocity in cruise control mode. In summary, with the Experiment manager you can:
 
 - create or modify an experiment,
 - add conditions to the experiment,

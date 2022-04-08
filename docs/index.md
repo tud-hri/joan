@@ -1,7 +1,5 @@
 # JOAN documentation
 
-## Introduction
-
 Welcome to the JOAN human-automated vehicle interaction simulator documentation! This documentation should get you up and running with JOAN and [CARLA](http://carla.org){target="_blank"}.
 
 JOAN is an open-source software framework that builds upon CARLA, a simulator made to study automated driving, by making CARLA also useful for human-in-the-loop experiments of human drivers and other road users interacting with automated vehicles. 

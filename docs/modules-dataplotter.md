@@ -1,8 +1,5 @@
 # Module: DataPlotter
-The DataPlotter module is quite self explanatory, it plots your data. This is quite an important feature 
-because it is almost the only way to get a bit of insight into what is going on, without having to log all data
-and then plotting it after. There are some things that have to be kept in mind when using this module, but before we go
-into that, the module is shown below as it should look like in the `STOPPED` state:
+The DataPlotter module was created for debugging purposes. It can provide live insight into what is going on, without having to log all data and then plotting it after. For data analysis we do recommend using the data recorder and plotting the data afterwards. This module automatically has acces to all variables stored in the News channels of all active modules. If you want to plot a variable here, the only thing you have to do is make sure it is shared in the News channel. There are some things that have to be kept in mind when using this module, but before we go into that, the module is shown below as it should look like in the `STOPPED` state:
  
 ![DataPlotter](imgs/modules-dataplotter-stopped.PNG)
  

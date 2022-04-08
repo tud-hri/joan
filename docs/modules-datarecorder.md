@@ -1,8 +1,8 @@
 # Module: DataRecorder
 
-The data recorder module can be used to record the data of your experiment. It automatically sees all shared variables from all other modules. You can select 
-which variables to store and where you want them to be stored. below is a screen shot of the data recorder dialog, the next section explains how to use the 
-data recorder.
+The data recorder module is used to record data from an experiment in JOAN to CSV files. It automatically sees all shared variables (News) from all other modules. This means that the raw data from Carla, such as positions and velocities of the vehicles, can be stored (since it is shared by the Carla interface module). But you can also store internal signal used in modules, such as the current controller error in an NPC controller. You can select which variables to store and where you want them to be stored in the modules GUI. 
+
+Below is a screenshot of the data recorder dialog, the next section explains how to use the data recorder.
 
 ![Data recorder in stopped state](imgs/modules-datarecorder-initialized.png)
 
@@ -41,4 +41,4 @@ There are some important things to consider when selecting variables to save, pl
 
 
 ### storing trajectories with the data recoder
-The data recorder can also store trajectories of ego vehicle 1 when carla interface is used. These trajectories are for use with the haptic controllers only and should not be used as general logging of an experiment. The trajectory saving is a beta feature and you should manually verify that the stored trajectory is actually correct before you use it for anything.    
+The data recorder can also store trajectories of ego vehicle 1 for use with the haptic controllers by checking the 'generate trajectory' checkbox. These trajectories contain waypoints with position, heading, and velocity information. This format is specifically meant for use with controllers, not for general logging. You can store the same information in a regular data file by selecting the correct variables. If you want to do data analysis, we recommend saving the data in regular files. Trajectory saving is a beta feature, you should manually verify that the stored trajectory is actually correct before you use it in a haptic shared controller. Using incorrect trajectories for haptic feedback rendering could be dangerous!    
