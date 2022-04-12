@@ -5,7 +5,8 @@
 
 This guide explains how to build CARLA on Windows, a pre-packaged version of CARLA is also available from their website but that version does not allow advanced customization and development. These instructions are based on the awesome documentation provided by the CARLA team. We tried to describe the steps a bit for our specific use. However, feel free to follow the CARLA installation notes (select the right version). If you get stuck somewhere, or you want to learn more, you could have a look at [their documentation](https://carla.readthedocs.io/en/latest/){target="_blank"} (make sure to select the correct version that corresponds to the CARLA version you want to use).
 
-!!! Note For the most up-to-date installation instructions for CARLA, check out [their documentation](https://carla.readthedocs.io/en/latest/){target="_blank"}. The instructions
+!!! Note 
+    For the most up-to-date installation instructions for CARLA, check out [their documentation](https://carla.readthedocs.io/en/latest/){target="_blank"}. The instructions
 below are from [CARLA 0.9.9](https://carla.readthedocs.io/en/0.9.9/){target="_blank"} (the last version we tested JOAN with).
 
 ---
