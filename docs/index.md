@@ -11,7 +11,7 @@ Among others, we build JOAN to enable you to
 - easily log data
 - implement haptic driver-automated vehicle interaction
 
-Check out the table of content below for installation instruction and more information on JOAN. Also check out the [repository][repolink]{target="_blank"} for current issues, etc.
+Check out the table of content below for installation instructions and more information on JOAN. Also check out the [repository][repolink]{target="_blank"} for current issues, etc.
 
 !!! Note 
     We tested JOAN with CARLA 0.9.9, not (yet) with the latest version. If you tested JOAN with the latest CARLA build (and it works), awesome! Please let us know through the
@@ -46,11 +46,11 @@ We created a video showcasing JOAN and CARLA for the Symbiotic Driving Simulator
 ## Table of content
 
 ### Setup JOAN and CARLA
-Thorough guide on setting up JOAN and CARLA:
+A thorough guide on setting up JOAN and CARLA:
 
 * __[Setting up CARLA on Windows](setup-carla-windows.md)__ - The most important steps from the CARLA documentation
 * __[Setting up JOAN](setup-joan.md)__ -- Install JOAN
-* __[Setup JOAN on a TUD computer](setup-on-tud-shared-hardware.md)__ - guide on how to install your project on TUD shared hardware (probably your first step)
+* __[Setup JOAN on a TUD computer](setup-on-tud-shared-hardware.md)__ - a guide on how to install your project on TUD shared hardware (probably your first step)
 * __[Example usage and testing](example-usage-and-testing.md)__ - example of JOAN usage and test whether everything works
 
 ### First steps
@@ -64,14 +64,14 @@ If you want to build up an understanding of JOAN the sections below are a good p
 Several modules are included with JOAN by default, the way to use them is described in their separate sections:
 
 !!! Important
-    Please check the documentation on [the usage of the shared variables](advanced-add-custom-module.md#shared_variables_class), a very important step is described there concerning to setting and getting of the shared variables.
+    Please check the documentation on [the usage of the shared variables](advanced-add-custom-module.md#shared_variables_class), a very important step is described there concerning setting and getting shared variables.
 
-* __[Data Recorder](modules-datarecorder.md)__ - The data recorder is a module which can record data.
+* __[Data Recorder](modules-datarecorder.md)__ - The data recorder is a module that can record data.
 * __[CARLA Interface](modules-carlainterface.md)__ - CarlaInterface manages the different agents you can add in simulation.
-* __[Hardware Manager](modules-hardwaremanager.md)__ - The hardware manager is a module which manages hardware inputs.
+* __[Hardware Manager](modules-hardwaremanager.md)__ - The hardware manager is a module that manages hardware inputs.
 * __[Experiment Manager](modules-experimentmanager.md)__ - The experiment manager is a useful tool for performing experiments
-* __[Haptic Controller Manager](modules-hapticcontrollermanager.md)__ - The haptic controller manager is a module which manages haptic (steering wheel) controllers.
-* __[Data Plotter](modules-dataplotter.md)__ - The data plotter is a module which easily makes data insightful at runtime.
+* __[Haptic Controller Manager](modules-hapticcontrollermanager.md)__ - The haptic controller manager is a module that manages haptic (steering wheel) controllers.
+* __[Data Plotter](modules-dataplotter.md)__ - The data plotter is a module that easily makes data insightful at runtime.
 
 ### Advanced steps
 If you want to know more and add to JOAN yourself you can have a look at these sections:
@@ -83,7 +83,7 @@ If you want to know more and add to JOAN yourself you can have a look at these s
 
 ### Other documentation
 * __[Quick start source control (git)](other-git.md)__ - Quick start guide for source control with git.
-* __[SensoDrive explanation](other-sensodrive.md)__ - Some remarks/explanation and 'best practices' for working with a SENSOWheel SD-LC
+* __[SensoDrive explanation](other-sensodrive.md)__ - Some remarks, explanations, and 'best practices' for working with a SENSOWheel SD-LC
 
 ### Want to contribute?
 * __[Guidelines](contributing-guidelines.md)__ - Guidelines if you want to add to JOAN

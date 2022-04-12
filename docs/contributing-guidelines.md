@@ -21,7 +21,7 @@ Also check the [documentation][docslink].
 ---
 ## Feature requests
 
-Check the [issue tracker list][issueslink] and filter on the label `feature` to check if a similar feature has been already requested. If so, please add information in the already existing feature if something is missing. Please submit your request as a new issue and select the 'feature request' template in the issue tracker.
+Check the [issue tracker list][issueslink] and filter on the label `feature` to check if a similar feature has been already requested. If so, please add information to the already existing feature if something is missing. Please submit your request as a new issue and select the 'feature request' template in the issue tracker.
 
 [issueslink]: https://github.com/tud-hri/joan/issues
 
@@ -32,7 +32,7 @@ Everyone can agree that good documentation is awesome to have. If you feel somet
 
 We build our documentation with [MkDocs](http://www.mkdocs.org/) based on the Markdown files inside the `docs` folder. You can either directly modify them on the GitLab repository or locally on your machine.
 
-Once you are done with your changes, please submit a pull-request.
+Once you are done with your changes, please submit a pull request.
 
 !!! tip
     You can build and serve it locally (at <http://127.0.0.1:8000>) by running `mkdocs`
@@ -48,7 +48,7 @@ Once you are done with your changes, please submit a pull-request.
 
 The code is never done, so if you want to help out, awesome!
 
-Before starting hands-on on coding, please check out our [issue board][issueboard] to see if we are already working on that particular issue. In case of doubt or to discuss how to proceed, please contact one of us.
+Before starting hands-on coding, please check out our [issue board][issueboard] to see if we are already working on that particular issue. In case of doubt or to discuss how to proceed, please contact one of us.
 
 [issueboard]: https://github.com/tud-hri/joan/issues
 
@@ -58,7 +58,7 @@ Please follow the current [coding standard](https://joan.readthedocs.io/en/lates
 
 #### Pull-requests
 
-Once you think your contribution is ready to be added to JOAN, please submit a pull-request.
+Once you think your contribution is ready to be added to JOAN, please submit a pull request.
 
 Try to be as descriptive as possible when filling the pull-request description. Adding images and gifs may help people to understand your changes or new
 features.

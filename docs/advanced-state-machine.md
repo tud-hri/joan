@@ -1,8 +1,8 @@
 # JOAN state machine
 
-All JOAN modules have there own state machine. There are five possible states: Stopped, Initialized, Ready, Running and Error.
+All JOAN modules have a state machine. There are five possible states: Stopped, Initialized, Ready, Running, and Error.
 
-Besides these states, the state machine can also handle state messages. These messages can be used to incorporate module specific messages. Please use these
+Besides these states, the state machine can also handle state messages. These messages can be used to incorporate module-specific messages. Please use these
 messages if you want to convey information to the user, do not add extra states since this will affect all state machines of all modules.
 
 State changes can be requested at the state machine by calling the `request_state_change` function with the desired target state and an optional message. If the

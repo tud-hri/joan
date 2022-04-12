@@ -16,7 +16,7 @@ Use in editors:
     4. Change the first option (hard wrap) from 120 (default) to 160 and click oke
 
 !!! Note
-    To auto format your code in PyCharm use ctrl + alt + L
+    To auto-format your code in PyCharm use ctrl + alt + L
 
 [pep8link]: https://www.python.org/dev/peps/pep-0008/
 [pycharmlinterlink]: https://www.google.com
@@ -44,7 +44,7 @@ We try to use the Git flow workflow in terms of branching, feature implementatio
 
 ### Versioning
 
-I propose to use the [Semantic Versioning](https://semver.org/){target="_blank"} convention for versions. Our first beta release will be v0.9.0. Each patch increases the last digit: v0.9.1. Every major version (no backwards compatibility) increases the first digit (v1.0.0); though I am not too sure about this one. Every minor version increases the second digit and resets the last: v0.10.0.
+I propose to use the [Semantic Versioning](https://semver.org/){target="_blank"} convention for versions. Our first beta release will be v0.9.0. Each patch increases the last digit: v0.9.1. Every major version (no backward compatibility) increases the first digit (v1.0.0); though I am not too sure about this one. Every minor version increases the second digit and resets the last: v0.10.0.
 
 ## mkdocs
 

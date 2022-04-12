@@ -6,8 +6,8 @@ below then please look at that documentation. Other than that, the text descript
 GIFs and pictures! :)
 
 !!! Note
-    This quick setup guide only shows the usage of 3 basic modules namely, `Hardware Manager`, `DataRecorder` and `CarlaInterface`, please refer to the 
-    actual documentation of the separate modules if you want more info on how to setup the remaining default ones.
+    This quick setup guide only shows the usage of 3 basic modules namely, `Hardware Manager`, `DataRecorder`, and `CarlaInterface`, please refer to the 
+    actual documentation of the separate modules if you want more info on how to set up the remaining default ones.
 
 ### 1. Run JOAN and CARLA
 
@@ -25,14 +25,14 @@ Or, if you use PyCharm, click the green play button or right-click on `main.py` 
 - To start CARLA, open the CarlaUE4, and open your map in CarlaUE4. 
 
 !!! Note
-    If you get a prompt by Unreal that says `Carla was build with a different engine version, would you like to make a copy`, please do not do this. But check whether you have Unreal Engine
-    4.24 as your active version, or open up the `epic games launcher` and in the right top select your engine version (4.24), launch this editor and launch your CarlaEU4 project
+    If you get a prompt by Unreal that says `Carla was built with a different engine version, would you like to make a copy`, please do not do this. But check whether you have Unreal Engine
+    4.24 as your active version, or open up the `epic games launcher` and in the top-right corner select your engine version (4.24), launch this editor and launch your CarlaEU4 project
     from there.
 
 - Hit the big play button in CarlaUE4
 
 ### 2. Add an input device
-Open up the `hardware manager` and click the `add hardware button` select your input, put in the appropriate settings and save. (For more details please
+Open up the `hardware manager` and click the `add hardware button` select your input, put in the appropriate settings, and save. (For more details, please
 go to [using the hardware manager](modules-hardwaremanager.md#using_hw_manager).
 
 In the example below we use a Keyboard.
@@ -46,7 +46,7 @@ See the gif below for this step:
 [ ![](gifs/joan-run-add-agent.gif) ](gifs/joan-run-add-agent.gif){target="_blank"}
 
 ### 4. Initialize
-Now that we have our basic driving setup completed its time to initialize the modules. In the example below we still have
+Now that we have our basic driving setup completed it’s time to initialize the modules. In the example below we still have
 our included module windows open, this is not necessary but included here to show that the modules change to 
 the `initialized` (blue color) state accordingly. Going to that state is easily done by clicking the `initialize` button in the main JOAN window:
 [ ![](gifs/joan-run-initialize.gif) ](gifs/joan-run-initialize.gif){target="_blank"}
@@ -55,15 +55,15 @@ the `initialized` (blue color) state accordingly. Going to that state is easily 
     If any code errors are found the module will go into the error state and save a log file
 
 ### 5. Setup the variables you'd like to record and where to save them in the DataRecorder
-Whenever you want to record some data you'll have to setup the DataRecorder after initializing. First we open up the DataRecorder
-module dialog, then we specify our save path (where we want the `.csv` file to go) and lastly we check the variables we would like
+Whenever you want to record some data you'll have to set up the DataRecorder after initializing. First, we open up the DataRecorder
+module dialog, then we specify our save path (where we want the `.csv` file to go), and lastly, we check the variables we would like
 to record:
 
 [ ![](gifs/joan-run-setup-datarecorder.gif) ](gifs/joan-run-setup-datarecorder.gif){target="_blank"}
 
 ### 6. Get Ready
-Next step is to transition to the next state, `ready`, as you will see in the gif below this process takes
-a little while because JOAN has to create and setup all the multiprocesses and will only continue if they are 
+The next step is to transition to the next state, `ready`, as you will see in the gif below this process takes
+a little while because JOAN has to create and set up all the multiprocesses and will only continue if they are 
 all done. This can take up to 15 seconds or so, so please be patient. You'll see the cursor also being a 
 circle during this time.
 If everything went well you'll notice the state change from the blue `initialized` to the yellow `ready`.
