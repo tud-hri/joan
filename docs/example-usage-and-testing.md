@@ -10,7 +10,7 @@ The example experiment assets (see first steps) include a folder called Expected
 
 Steps:
 
-- If you haven't already done so: download the example experiment assets [(link)](https://www.dropbox.com/s/6v35q307dosin55/120222_JOAN_Assets.zip?dl=0){target="_blank"} and unpack
+- If you haven't already done so: download the example experiment assets [(link)](https://doi.org/10.4121/19419923){target="_blank"} and unpack
   it in Carla's Content folder (for us `C:\carla\Unreal\CarlaUE4\Content\`). Note; make sure you also have the CARLA assets (step in the CARLA install process) and added the
   vehicle 'hapticslab.audi' to CARLA's vehicle factory [(see here for instruction, under ### Step 7: Adding vehicle assets to CARLA in Unreal)](setup-carla-windows.md)
 - Run CarlaUE4 and open `DebugMap.umap` level: File &rarr; Open level &rarr; open `DebugMap.umap`.
