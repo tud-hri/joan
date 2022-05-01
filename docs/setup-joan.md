@@ -90,7 +90,7 @@ supervisor.
 These instructions are specifically written for TU Delft students but are useful for others too.
 
 - Create a folder with the name `<YEAR>_<NETID>` in the directory `C:\carla\Unreal\CarlaUE4\Content\Research\` (create the folder `Research` if it does not exist).
-- Download the template map [here](https://www.dropbox.com/s/34g6ln1up7azssp/120222_DebugMap.zip?dl=0){target="_blank"}, extract it, and copy the folder called `Maps` it in your
+- Download the template map [here](https://doi.org/10.4121/19419923){target="_blank"}, extract it, and copy the folder called `Maps` it in your
   own folder under `C:\carla\Unreal\CarlaUE4\Content\Research\<YEAR>_<NETID>\`.
 - Open the Epic Game Launcher (you might need to log in; use your login of choice).
 - Launch Unreal Engine, top-right corner (Unreal should be installed; if not, restart the Epic Game Launcher or reboot the computer, this normally works).
