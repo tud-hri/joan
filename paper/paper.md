@@ -39,8 +39,8 @@ State-of-the-art driving simulators use motion platforms, immersive graphics [@w
 Alternatively, virtual-reality-based driving simulators offer reasonable levels of realism, require relatively low-cost hardware, and are generally more
 flexible in terms of rapid algorithm development or experiment evaluation. Traffic simulators based on the Unity game engine have been developed for studying human-human interaction in mixed traffic [@bazilinskyy2020_coupled; @kearney2018_multimodal]. However, both lack the framework to implement AV driving models, which is necessary to simulate mixed-traffic scenarios.
 
-Several game engine-based simulators exist that only specifically focus on AV algorithm development  (e.g., [@airsim2017fsr; @lgsvlsim;
-@dosovitskiy2017_carla]). While such simulators provide possibilities for implementing, training, and evaluating fully automated driving algorithm, they do not support human-in-the-loop experiments. A popular open-source simulators is CARLA (based on the Unreal-Engine); it provides a flexible and well-documented API,
+Several game engine-based simulators exist that only specifically focus on AV algorithm development  (e.g., @airsim2017fsr, @lgsvlsim,
+@dosovitskiy2017_carla). While such simulators provide possibilities for implementing, training, and evaluating fully automated driving algorithm, they do not support human-in-the-loop experiments. A popular open-source simulators is CARLA (based on the Unreal-Engine); it provides a flexible and well-documented API,
 pre-trained automated driving models, common roadmap standards (OpenDrive), and is actively maintained.
 
 Silvera et al. extended Carla to support human-in-the-loop experiments [@Silvera2022]. They created an affordable driving simulator primarily implemented in C++ and python that can be used for human-AV interaction experiments which leverages the benefits of CARLA for AV development. However, because their software is not set up with a more general experiment framework that allows customizability, their software is restricted to specific hardware (both for human input and VR headsets) and requires extensive programming to implement customized experiments.
@@ -81,7 +81,7 @@ want to adapt existing modules (e.g. to implement new hardware), or who want to 
 
 JOAN was used to quickly develop and perform several human-in-the-loop experiments (including various MSc students, for a published example, see [@Melman2021]), illustrating that
 JOAN provides a framework that is flexible and quick to implement (most projects are completed in 6 months). Furthermore, a core research focus of our department is the haptic
-interaction between human drivers and their vehicles (e.g., [@abbink2018_topology; @mulder2012_sharing]), for which we implemented a module to control a haptic force-feedback
+interaction between human drivers and their vehicles (e.g., @abbink2018_topology, @mulder2012_sharing), for which we implemented a module to control a haptic force-feedback
 steering wheel. The `SteeringWheelController` module enables implementation of control algorithms for force feedback and comes with two example implementations: a standard PD
 controller [@mulder2012_sharing] and a Four Design Choice Architecture controller (FDCA) [@vanpaassen2017_four].
 
