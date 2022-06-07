@@ -1,5 +1,7 @@
 """Action class for JOAN menu"""
 import os
+import subprocess
+import time
 
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSignal
@@ -27,6 +29,9 @@ class HQManager(QtCore.QObject):
 
         self.central_state_monitor = CentralStateMonitor()
 
+        # Start Carla
+        self.start_Carla_if_closed()
+
         # News
         self.news = News()
 
@@ -47,6 +52,22 @@ class HQManager(QtCore.QObject):
         # connect signals: signal_stop_all_modules, which can be called from the modules to stop all other modules
         self.signal_stop_all_modules.connect(self.stop_modules)
         self.signals.write_signal("stop_all_modules", self.signal_stop_all_modules)
+
+    def start_Carla_if_closed(self):
+        carla_status = self.check_if_carla()
+        if not carla_status:
+            subprocess.Popen(["C:\\Program Files\\Epic Games\\UE_4.26_forked\\Engine\\Binaries\\Win64\\UE4Editor.exe", "C:\\carla_v9.13\\Unreal\\CarlaUE4\\CarlaUE4.uproject"])
+            time.sleep(10)
+
+    def check_if_carla(self):
+        process_name = "UE4Editor.exe"
+        call = 'TASKLIST', '/FI', 'imagename eq %s' % process_name
+        # use buildin check_output right away
+        output = subprocess.check_output(call).decode()
+        # check in last line for process name
+        last_line = output.strip().split('\r\n')[-1]
+        # because Fail message could be translated
+        return last_line.lower().startswith(process_name.lower())
 
     def initialize_modules(self):
         """

@@ -238,7 +238,11 @@ class FDCAControllerProcess:
 
         # calculate sign of error using the cross product
         e_sign = np.cross(vec_dir, vec_car)  # used to be e_sign = np.math.atan2(np.linalg.det([vec_dir, vec_car]), np.dot(vec_dir, vec_car))
-        e_sign = -1.0 * e_sign / np.abs(e_sign)
+        if np.abs(e_sign) < 0.0001:
+            e_sign = -1.0 * e_sign / np.abs(e_sign+0.001)
+        else:
+            e_sign = -1.0 * e_sign / np.abs(e_sign)
+        # e_sign = np.math.atan2(np.linalg.det([vec_dir, vec_car]), np.dot(vec_dir, vec_car))
         error_lat *= e_sign
 
         # calculate heading error: left-handed CW positive
@@ -349,6 +353,10 @@ class FDCAControllerProcess:
                     # total torque of FDCA, to be sent to SW controller in Nm
                     torque_fdca = torque_loha + torque_ff_fb
 
+                    if torque_fdca**2 > 100:
+                        # print("that's a high value")
+                        torque_fdca = min(max(torque_fdca, -10), 10)
+
                     # update variables
                     self._error_old = error
 
@@ -372,7 +380,7 @@ class FDCAControllerSettings:
         self.lohs = 1.0
         self.sohf = 1.0
         self.loha = 0.0
-        self.trajectory_name = "MiddleRoadTVRecord_filtered_ffswang_heading_3hz.csv"
+        self.trajectory_name = "hcr_trajectory.csv"
         self.identifier = identifier
 
         self.haptic_controller_type = HapticControllerTypes.FDCA.value
