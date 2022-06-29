@@ -9,7 +9,7 @@ class ModuleSharedVariables(SharedVariables):
         self._state = mp.Value(ctypes.c_int, -2)  # module state [initialized, running, error, stopped]
         self._execution_time = mp.Value(ctypes.c_double)
         self._running_frequency = mp.Value(ctypes.c_double)
-        self._time = mp.Value(ctypes.c_double)
+        self._time = mp.Value(ctypes.c_uint64)
 
     @property
     def execution_time(self):
