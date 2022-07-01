@@ -45,6 +45,10 @@ class HardwareManagerSettings(ModuleSettings):
                 sensodrive_settings = HardwareInputTypes.SENSODRIVE.settings()
                 sensodrive_settings.set_from_loaded_dict(settings_dict)
                 self.inputs[identifier] = sensodrive_settings
+            if 'Logitech Steering Wheel' in identifier:
+                steering_wheel_settings = HardwareInputTypes.LOGITECH_STEERING_WHEEL.settings()
+                steering_wheel_settings.set_from_loaded_dict(settings_dict)
+                self.inputs[identifier] = steering_wheel_settings
 
     def all_inputs(self):
         """

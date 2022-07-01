@@ -217,6 +217,8 @@ class HardwareManagerDialog(ModuleDialog):
             input_tab.btn_off.clicked.connect(lambda: self.module_manager.turn_off_sensodrive(settings.identifier))
             input_tab.btn_clear_error.clicked.connect(
                 lambda: self.module_manager.clear_error_sensodrive(settings.identifier))
+        elif str(HardwareInputTypes.LOGITECH_STEERING_WHEEL) in settings.identifier:
+            settings.window_id = int(self.winId())
 
         # add to module_dialog widget
         self._hardware_input_tabs_dict[settings.identifier] = input_tab
