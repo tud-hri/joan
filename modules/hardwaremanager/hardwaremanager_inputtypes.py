@@ -18,16 +18,19 @@ class HardwareInputTypes(enum.Enum):
     KEYBOARD = 0
     JOYSTICK = 1
     SENSODRIVE = 2
+    LOGITECH_STEERING_WHEEL = 3
 
     @property
     def process(self):
         from modules.hardwaremanager.hardwaremanager_inputs.joankeyboard import JOANKeyboardProcess
         from modules.hardwaremanager.hardwaremanager_inputs.joanjoystick import JOANJoystickProcess
         from modules.hardwaremanager.hardwaremanager_inputs.joansensodrive import JOANSensoDriveProcess
+        from modules.hardwaremanager.hardwaremanager_inputs.joanlogitech import JOANLogitechSteeringWheelProcess
 
         return {HardwareInputTypes.KEYBOARD: JOANKeyboardProcess,
                 HardwareInputTypes.JOYSTICK: JOANJoystickProcess,
-                HardwareInputTypes.SENSODRIVE: JOANSensoDriveProcess
+                HardwareInputTypes.SENSODRIVE: JOANSensoDriveProcess,
+                HardwareInputTypes.LOGITECH_STEERING_WHEEL: JOANLogitechSteeringWheelProcess,
                 }[self]
 
     @property
@@ -35,21 +38,23 @@ class HardwareInputTypes(enum.Enum):
         from modules.hardwaremanager.hardwaremanager_inputs.joankeyboard import KeyBoardSettingsDialog
         from modules.hardwaremanager.hardwaremanager_inputs.joanjoystick import JoystickSettingsDialog
         from modules.hardwaremanager.hardwaremanager_inputs.joansensodrive import SensoDriveSettingsDialog
+        from modules.hardwaremanager.hardwaremanager_inputs.joanlogitech import LogitechSteeringWheelSettingsDialog
 
         return {HardwareInputTypes.KEYBOARD: KeyBoardSettingsDialog,
                 HardwareInputTypes.JOYSTICK: JoystickSettingsDialog,
-                HardwareInputTypes.SENSODRIVE: SensoDriveSettingsDialog
+                HardwareInputTypes.SENSODRIVE: SensoDriveSettingsDialog,
+                HardwareInputTypes.LOGITECH_STEERING_WHEEL: LogitechSteeringWheelSettingsDialog
                 }[self]
 
     @property
     def shared_variables(self):
-        from modules.hardwaremanager.hardwaremanager_sharedvariables import KeyboardSharedVariables
-        from modules.hardwaremanager.hardwaremanager_sharedvariables import JoystickSharedVariables
+        from modules.hardwaremanager.hardwaremanager_sharedvariables import GenericHardwareSharedVariables
         from modules.hardwaremanager.hardwaremanager_sharedvariables import SensoDriveSharedVariables
 
-        return {HardwareInputTypes.KEYBOARD: KeyboardSharedVariables,
-                HardwareInputTypes.JOYSTICK: JoystickSharedVariables,
-                HardwareInputTypes.SENSODRIVE: SensoDriveSharedVariables
+        return {HardwareInputTypes.KEYBOARD: GenericHardwareSharedVariables,
+                HardwareInputTypes.JOYSTICK: GenericHardwareSharedVariables,
+                HardwareInputTypes.SENSODRIVE: SensoDriveSharedVariables,
+                HardwareInputTypes.LOGITECH_STEERING_WHEEL: GenericHardwareSharedVariables,
                 }[self]
 
     @property
@@ -58,7 +63,8 @@ class HardwareInputTypes(enum.Enum):
 
         return {HardwareInputTypes.KEYBOARD: os.path.join(path_to_uis, "hardware_tab.ui"),
                 HardwareInputTypes.JOYSTICK: os.path.join(path_to_uis, "hardware_tab.ui"),
-                HardwareInputTypes.SENSODRIVE: os.path.join(path_to_uis, "hardware_tab_sensodrive.ui")
+                HardwareInputTypes.SENSODRIVE: os.path.join(path_to_uis, "hardware_tab_sensodrive.ui"),
+                HardwareInputTypes.LOGITECH_STEERING_WHEEL: os.path.join(path_to_uis, "hardware_tab.ui"),
                 }[self]
 
     @property
@@ -66,14 +72,17 @@ class HardwareInputTypes(enum.Enum):
         from modules.hardwaremanager.hardwaremanager_inputs.joankeyboard import KeyBoardSettings
         from modules.hardwaremanager.hardwaremanager_inputs.joanjoystick import JoyStickSettings
         from modules.hardwaremanager.hardwaremanager_inputs.joansensodrive import SensoDriveSettings
+        from modules.hardwaremanager.hardwaremanager_inputs.joanlogitech import LogitechSteeringWheelSettings
 
         return {HardwareInputTypes.KEYBOARD: KeyBoardSettings,
                 HardwareInputTypes.JOYSTICK: JoyStickSettings,
-                HardwareInputTypes.SENSODRIVE: SensoDriveSettings
+                HardwareInputTypes.SENSODRIVE: SensoDriveSettings,
+                HardwareInputTypes.LOGITECH_STEERING_WHEEL: LogitechSteeringWheelSettings,
                 }[self]
 
     def __str__(self):
         return {HardwareInputTypes.KEYBOARD: 'Keyboard',
                 HardwareInputTypes.JOYSTICK: 'Joystick',
-                HardwareInputTypes.SENSODRIVE: 'SensoDrive'
+                HardwareInputTypes.SENSODRIVE: 'SensoDrive',
+                HardwareInputTypes.LOGITECH_STEERING_WHEEL: 'Logitech Steering Wheel',
                 }[self]
