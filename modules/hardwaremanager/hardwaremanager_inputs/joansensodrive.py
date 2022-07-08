@@ -262,6 +262,7 @@ class SensoDriveComm(mp.Process):
         self.clear_error_event = clear_error_event
         self.close_event = close_event
         self.values_from_sensodrive = {}
+        self.init_throttle = None
 
         # Create steering wheel parameters data structure
         self.steering_wheel_parameters = {}
@@ -389,7 +390,13 @@ class SensoDriveComm(mp.Process):
         :param data:
         :return:
         """
-        torque_bytes = int.to_bytes(data['torque'], 2, byteorder='little', signed=True)
+
+        # Limit torque to 2 Nm to prevent injuries
+        torque = data['torque']
+        max_torque = 2000
+        limited_torque = max(min(torque, max_torque), -max_torque)
+
+        torque_bytes = int.to_bytes(limited_torque, 2, byteorder='little', signed=True)
         friction_bytes = int.to_bytes(data['friction'], 2, byteorder='little', signed=True)
         damping_bytes = int.to_bytes(data['damping'], 2, byteorder='little', signed=True)
         spring_stiffness_bytes = int.to_bytes(data['spring_stiffness'], 2, byteorder='little', signed=True)
@@ -558,10 +565,17 @@ class SensoDriveComm(mp.Process):
 
         elif received[1].ID == PEDAL_MESSAGE_RECEIVE_ID:
             # pedals
-            self.values_from_sensodrive['throttle'] = float(
+
+            if self.init_throttle == None:
+                first_throttle = float(int.from_bytes(received[1].DATA[2:4], byteorder='little') - 1100) / 2460.0
+                self.init_throttle = first_throttle
+
+            throttle = float(
                 int.from_bytes(received[1].DATA[2:4], byteorder='little') - 1100) / 2460.0
+            self.values_from_sensodrive['throttle'] = 1.5*(throttle - self.init_throttle)
             self.values_from_sensodrive['brake'] = float(
                 int.from_bytes(received[1].DATA[4:6], byteorder='little') - 1) / 500
+
 
         elif received[1].ID == STATE_MESSAGE_RECEIVE_ID:
             #

@@ -1,7 +1,8 @@
 import random, os, math
 import numpy as np
 
-from tools.carlaimporter import carla
+# from tools.carlaimporter import carla
+import carla
 
 from PyQt5 import uic, QtWidgets
 from modules.carlainterface.carlainterface_agenttypes import AgentTypes
@@ -164,18 +165,22 @@ class EgoVehicleProcess:
                 physics.torque_curve = torque_curve
                 physics.max_rpm = 14000
                 physics.moi = 1.5
-                physics.final_ratio = 1
+                # physics.final_ratio = 1
                 physics.clutch_strength = 1000  # very big no clutch
                 physics.final_ratio = 1  # ratio from transmission to wheels
                 physics.forward_gears = gears
-                physics.mass = 2316
+                physics.mass = 1475  # kg (Audi S3)
                 physics.drag_coefficient = 0.24
-                physics.gear_switch_time = 0
+                physics.gear_switch_time = 0.5
                 self.spawned_vehicle.apply_physics_control(physics)
 
     def do(self):
         if self.settings.selected_input != 'None' and hasattr(self, 'spawned_vehicle'):
-            self._control.steer = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].steering_angle / math.radians(450)
+            # TODO: Bit of a hack like this
+            steering_ratio = 1/14  # Ratio between steer and wheels
+            max_angle_car = math.radians(70)  # Max steering angle is 70 degrees
+            max_angle_steering_wheel = max_angle_car * steering_ratio
+            self._control.steer = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].steering_angle / max_angle_steering_wheel
             self._control.reverse = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].reverse
             self._control.hand_brake = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].handbrake
             self._control.brake = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].brake
