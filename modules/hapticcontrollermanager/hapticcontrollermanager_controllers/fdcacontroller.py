@@ -29,6 +29,7 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
         # hardcode lookahead time if someone needs it
         self.t_lookahead = 0
 
+
         self._loha_resolution = 50
         self.slider_loha.setMaximum(self._loha_resolution)
         self.spin_loha.setMaximum(self._loha_resolution)
@@ -169,6 +170,8 @@ class FDCAControllerProcess:
         self.shared_variables.sohf = settings.sohf
         self.shared_variables.loha = settings.loha
 
+        self.time = 0
+
         # threshold to check if a trajectory is circular in meters; subsequent points need to be 1 m of each other
         self.threshold_circular_trajectory = 1.0
 
@@ -258,6 +261,7 @@ class FDCAControllerProcess:
 
         return np.array([error_lat, error_heading])
 
+    # TODO: I don't buy that this actually works!
     def _get_reference_sw_angle(self, t_ahead, location, velocity):
         future_location = location + velocity * t_ahead
 
@@ -355,7 +359,7 @@ class FDCAControllerProcess:
 
                     if torque_fdca**2 > 100:
                         # print("that's a high value")
-                        torque_fdca = min(max(torque_fdca, -10), 10)
+                        torque_fdca = min(max(torque_fdca, -3), 3)
 
                     # update variables
                     self._error_old = error
@@ -370,6 +374,8 @@ class FDCAControllerProcess:
                     self.shared_variables.fb_torque = sw_angle_fb * stiffness
                     self.shared_variables.loha_torque = torque_loha
                     self.shared_variables.req_torque = torque_fdca
+
+
 
 
 class FDCAControllerSettings:

@@ -3,7 +3,8 @@ import numpy as np
 from enum import Enum
 import copy
 
-from tools.carlaimporter import carla
+# from tools.carlaimporter import carla
+import carla
 
 from PyQt5 import uic, QtWidgets
 from modules.carlainterface.carlainterface_agenttypes import AgentTypes
