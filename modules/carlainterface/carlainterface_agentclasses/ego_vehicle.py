@@ -36,6 +36,7 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
 
     def update_parameters(self):
         self.settings.velocity = self.spin_velocity.value()
+        self.settings.keff = self.spin_keff.value()
         self.settings.selected_input = self.combo_input.currentText()
         self.settings.selected_controller = self.combo_haptic_controllers.currentText()
         self.settings.selected_car = self.combo_car_type.currentText()
@@ -56,6 +57,7 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
 
     def accept(self):
         self.settings.velocity = self.spin_velocity.value()
+        self.settings.keff = self.spin_keff.value()
         self.settings.selected_input = self.combo_input.currentText()
         self.settings.selected_controller = self.combo_haptic_controllers.currentText()
         self.settings.selected_car = self.combo_car_type.currentText()
@@ -89,6 +91,7 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
         self.combo_spawnpoints.setCurrentText(settings_to_display.selected_spawnpoint)
 
         self.spin_velocity.setValue(settings_to_display.velocity)
+        self.spin_keff.setValue(settings_to_display.keff)
         self.check_box_set_vel.setChecked(settings_to_display.set_velocity)
 
     def _set_default_values(self):
@@ -173,13 +176,12 @@ class EgoVehicleProcess:
                 physics.drag_coefficient = 0.24
                 physics.gear_switch_time = 0.5
                 self.spawned_vehicle.apply_physics_control(physics)
+                self.max_steering_angle = physics.wheels[0].max_steer_angle
 
     def do(self):
         if self.settings.selected_input != 'None' and hasattr(self, 'spawned_vehicle'):
-            # TODO: Bit of a hack like this
-            steering_ratio = 1/14  # Ratio between steer and wheels
-            max_angle_car = math.radians(70)  # Max steering angle is 70 degrees
-            max_angle_steering_wheel = max_angle_car * steering_ratio
+            max_angle_car = math.radians(self.max_steering_angle)
+            max_angle_steering_wheel = max_angle_car * self.settings.keff
             self._control.steer = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].steering_angle / max_angle_steering_wheel
             self._control.reverse = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].reverse
             self._control.hand_brake = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].handbrake
@@ -375,7 +377,7 @@ class EgoVehicleSettings:
         self.velocity = 80
         self.set_velocity = False
         self.identifier = identifier
-
+        self.keff = 13
         self.agent_type = AgentTypes.EGO_VEHICLE.value
 
     def as_dict(self):
