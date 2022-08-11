@@ -187,23 +187,7 @@ class EgoVehicleProcess:
             self._control.hand_brake = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].handbrake
             self._control.brake = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].brake
             if self.settings.set_velocity:
-                vel_error = self.settings.velocity - (math.sqrt(
-                    self.spawned_vehicle.get_velocity().x ** 2 + self.spawned_vehicle.get_velocity().y ** 2 + self.spawned_vehicle.get_velocity().z ** 2) * 3.6)
-                vel_error_rate = (math.sqrt(
-                    self.spawned_vehicle.get_acceleration().x ** 2 + self.spawned_vehicle.get_acceleration().y ** 2 + self.spawned_vehicle.get_acceleration().z ** 2) * 3.6)
-                error_velocity = [vel_error, vel_error_rate]
-
-                pd_vel_output = self.velocity_PD_controller(error_velocity)
-                if pd_vel_output < 0:
-                    self._control.brake = -pd_vel_output
-                    self._control.throttle = 0
-                    if pd_vel_output < -1:
-                        self._control.brake = 1
-                elif pd_vel_output > 0:
-                    if self._control.brake == 0:
-                        self._control.throttle = pd_vel_output
-                    else:
-                        self._control.throttle = 0
+                self._control.brake, self._control.throttle = self.cruise_control()
             else:
                 self._control.throttle = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].throttle
 
@@ -215,21 +199,33 @@ class EgoVehicleProcess:
 
         self.set_shared_variables()
 
+    def cruise_control(self):
+        velocity = math.sqrt(self.spawned_vehicle.get_velocity().x ** 2 + self.spawned_vehicle.get_velocity().y ** 2)
+        acceleration = math.sqrt(self.spawned_vehicle.get_acceleration().x ** 2 + self.spawned_vehicle.get_acceleration().y ** 2)
+        vel_error = self.settings.velocity / 3.6 - velocity
+        vel_error_rate = acceleration
+        kp = 150
+        kd = 10
+        temp = kp * vel_error + kd * vel_error_rate
+        if temp > 100:
+            temp = 100
+        output = temp / 100
+
+        if output < 0:
+            brake = -output
+            throttle = 0
+        elif output > 0:
+            brake = 0
+            throttle = output
+        else:
+            throttle = 0
+            brake = 0
+
+        return brake, throttle
+
     def destroy(self):
         if hasattr(self, 'spawned_vehicle') and self.spawned_vehicle.is_alive:
             self.spawned_vehicle.destroy()
-
-    def velocity_PD_controller(self, vel_error):
-        _kp_vel = 50
-        _kd_vel = 1
-        temp = _kp_vel * vel_error[0] + _kd_vel * vel_error[1]
-
-        if temp > 100:
-            temp = 100
-
-        output = temp / 100
-
-        return output
 
     def calculate_plotter_road_arrays(self):
         data_road_x = []
