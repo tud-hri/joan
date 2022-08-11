@@ -163,7 +163,7 @@ class NPCVehicleProcess:
         self.set_shared_variables()
 
     def destroy(self):
-        if hasattr(self, 'spawned_vehicle'):
+        if hasattr(self, 'spawned_vehicle') and self.spawned_vehicle.is_alive:
             self.spawned_vehicle.destroy()
 
     def set_shared_variables(self):
