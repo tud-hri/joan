@@ -7,6 +7,7 @@ from PyQt5 import QtWidgets, uic
 
 from core.statesenum import State
 from modules.hapticcontrollermanager.hapticcontrollermanager_controllertypes import HapticControllerTypes
+from modules.hapticcontrollermanager.hapticcontrollermanager_controllers.fdcacontroller import FDCAController
 from tools import LowPassFilterBiquad
 from tools.haptic_controller_tools import find_closest_node
 
@@ -22,10 +23,8 @@ class TradedControllerSettingsDialog(QtWidgets.QDialog):
         self._path_trajectory_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'trajectories')
         self.btn_apply_parameters.clicked.connect(self.update_parameters)
         self.module_manager.state_machine.add_state_change_listener(self.handle_state_change)
-
         self.update_trajectory_list()
         self._display_values()
-
         self.handle_state_change()
 
     def handle_state_change(self):
@@ -39,22 +38,27 @@ class TradedControllerSettingsDialog(QtWidgets.QDialog):
 
     def update_parameters(self):
         # self.slider_loha.setValue(self.spin_loha.value())
-        self.traded_controller_settings.k_y = float(self.edit_k_y.text())
-        self.traded_controller_settings.k_psi = float(self.edit_k_psi.text())
-        self.traded_controller_settings.kd_y = float(self.edit_kd_y.text())
-        self.traded_controller_settings.kd_psi = float(self.edit_kd_psi.text())
+        # self.traded_controller_settings.k_y = float(self.edit_k_y.text())
+        # self.traded_controller_settings.k_psi = float(self.edit_k_psi.text())
+        # self.traded_controller_settings.kd_y = float(self.edit_kd_y.text())
+        # self.traded_controller_settings.kd_psi = float(self.edit_kd_psi.text())
         self.traded_controller_settings.alpha = float(self.edit_alpha.text())
         self.traded_controller_settings.tau_th = float(self.edit_tau_th.text())
+        if self.checkInvert.isChecked():
+            self.traded_controller_settings.gamma = 1
+        else:
+            self.traded_controller_settings.gamma = -1
         self.traded_controller_settings.trajectory_name = self.cmbbox_hcr_selection.itemText(
             self.cmbbox_hcr_selection.currentIndex())
 
         try:
-            self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].k_y = self.traded_controller_settings.k_y
-            self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].k_psi = self.traded_controller_settings.k_psi
-            self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].kd_y = self.traded_controller_settings.kd_y
-            self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].kd_psi = self.traded_controller_settings.kd_psi
+            # self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].k_y = self.traded_controller_settings.k_y
+            # self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].k_psi = self.traded_controller_settings.k_psi
+            # self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].kd_y = self.traded_controller_settings.kd_y
+            # self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].kd_psi = self.traded_controller_settings.kd_psi
             self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].alpha = self.traded_controller_settings.alpha
             self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].tau_th = self.traded_controller_settings.tau_th
+            self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].gamma = self.traded_controller_settings.gamma
         except:
             pass
 
@@ -63,22 +67,27 @@ class TradedControllerSettingsDialog(QtWidgets.QDialog):
 
     def accept(self):
         # self.slider_loha.setValue(self.spin_loha.value())
-        self.traded_controller_settings.k_y = float(self.edit_k_y.text())
-        self.traded_controller_settings.k_psi = float(self.edit_k_psi.text())
-        self.traded_controller_settings.kd_y = float(self.edit_kd_y.text())
-        self.traded_controller_settings.kd_psi = float(self.edit_kd_psi.text())
+        # self.traded_controller_settings.k_y = float(self.edit_k_y.text())
+        # self.traded_controller_settings.k_psi = float(self.edit_k_psi.text())
+        # self.traded_controller_settings.kd_y = float(self.edit_kd_y.text())
+        # self.traded_controller_settings.kd_psi = float(self.edit_kd_psi.text())
         self.traded_controller_settings.alpha = float(self.edit_alpha.text())
         self.traded_controller_settings.tau_th = float(self.edit_tau_th.text())
+        if self.checkInvert.isChecked():
+            self.traded_controller_settings.gamma = 1
+        else:
+            self.traded_controller_settings.gamma = -1
         self.traded_controller_settings.trajectory_name = self.cmbbox_hcr_selection.itemText(
             self.cmbbox_hcr_selection.currentIndex())
 
         try:
-            self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].k_y = self.traded_controller_settings.k_y
-            self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].k_psi = self.traded_controller_settings.k_psi
-            self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].kd_y = self.traded_controller_settings.kd_y
-            self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].kd_psi = self.traded_controller_settings.kd_psi
+            # self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].k_y = self.traded_controller_settings.k_y
+            # self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].k_psi = self.traded_controller_settings.k_psi
+            # self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].kd_y = self.traded_controller_settings.kd_y
+            # self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].kd_psi = self.traded_controller_settings.kd_psi
             self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].alpha = self.traded_controller_settings.alpha
             self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].tau_th = self.traded_controller_settings.tau_th
+            self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].gamma = self.traded_controller_settings.gamma
         except:
             pass
 
@@ -89,17 +98,17 @@ class TradedControllerSettingsDialog(QtWidgets.QDialog):
             settings_to_display = self.traded_controller_settings
 
         # update the current controller settings
-        self.lbl_k_y.setText(str(settings_to_display.k_y))
-        self.lbl_k_psi.setText(str(settings_to_display.k_psi))
-        self.lbl_kd_y.setText(str(settings_to_display.kd_y))
-        self.lbl_kd_psi.setText(str(settings_to_display.kd_psi))
+        # self.lbl_k_y.setText(str(settings_to_display.k_y))
+        # self.lbl_k_psi.setText(str(settings_to_display.k_psi))
+        # self.lbl_kd_y.setText(str(settings_to_display.kd_y))
+        # self.lbl_kd_psi.setText(str(settings_to_display.kd_psi))
         self.lbl_alpha.setText(str(settings_to_display.alpha))
         self.lbl_tau_th.setText(str(settings_to_display.tau_th))
 
-        self.edit_k_y.setText(str(settings_to_display.k_y))
-        self.edit_k_psi.setText(str(settings_to_display.k_psi))
-        self.edit_kd_y.setText(str(settings_to_display.kd_y))
-        self.edit_kd_psi.setText(str(settings_to_display.kd_psi))
+        # self.edit_k_y.setText(str(settings_to_display.k_y))
+        # self.edit_k_psi.setText(str(settings_to_display.k_psi))
+        # self.edit_kd_y.setText(str(settings_to_display.kd_y))
+        # self.edit_kd_psi.setText(str(settings_to_display.kd_psi))
         self.edit_alpha.setText(str(settings_to_display.alpha))
         self.edit_tau_th.setText(str(settings_to_display.tau_th))
 
@@ -142,156 +151,43 @@ class TradedControllerProcess:
         self._path_trajectory_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'trajectories')
         self.load_trajectory()
 
+        # TODO: get wheelbase and keff from car
+        self.controller = FDCAController(wheel_base=2.406, effective_ratio=1 / 13, human_compatible_reference=self._trajectory)
+
         # filtering
         self.frequency = 100
         self._bq_filter_velocity = LowPassFilterBiquad(fc=25, fs=self.frequency)
         self._bq_filter_heading = LowPassFilterBiquad(fc=25, fs=self.frequency)
-        self._bq_filter_angle = LowPassFilterBiquad(fc=25, fs=self.frequency)
-        self._bq_filter_des = LowPassFilterBiquad(fc=25, fs=self.frequency)
-        self._bq_filter_acc = LowPassFilterBiquad(fc=10, fs=self.frequency)
+        self._bq_filter_rate = LowPassFilterBiquad(fc=25, fs=self.frequency)
 
-        # Error states
-        self._controller_error = np.array([[0.0, 0.0, 0.0, 0.0]])
-        self._error_old = np.array([0.0, 0.0])
-        self._sw_des_old = 0
+        # Controller states
+        self._old_steering_angle = 0
 
         # Observer dynamics
+        self.damping = 0
+        self.stiffness = 0
+        self.inertia = 0.04876200657888505
         self.Gamma = 20 * np.array([[2, 0], [0, 2]])
         self.alpha = 2.5
         self.kappa = 1
         self.human_estimated_torque = 0.0
         self.x_hat = np.array([[0.0], [0.0]])
-        self._old_sw_angle = 0.0
-        self._old_sw_rate = 0.0
 
         # Shared variables for Traded Control
         self.shared_variables.k_y = settings.k_y
         self.shared_variables.k_psi = settings.k_psi
-        self.shared_variables.kd_y = settings.kd_y
-        self.shared_variables.kd_psi = settings.kd_psi
+        self.shared_variables.lohs = settings.lohs
+        self.shared_variables.sohf = settings.sohf
+        self.shared_variables.loha = settings.loha
         self.shared_variables.alpha = settings.alpha
         self.shared_variables.tau_th = settings.tau_th
+        self.shared_variables.gamma = settings.gamma
         self.torque_threshold = self.shared_variables.tau_th
         self.alpha = self.shared_variables.alpha
-        self.controller_gains = np.array([[self.shared_variables.k_y],
-                                          [self.shared_variables.k_psi],
-                                          [self.shared_variables.kd_y],
-                                          [self.shared_variables.kd_psi]])
-
         self.time = 0
 
         # threshold to check if a trajectory is circular in meters; subsequent points need to be 1 m of each other
         self.threshold_circular_trajectory = 1.0
-
-    def do(self, time_step_in_ns, carlainterface_shared_variables, hardware_manager_shared_variables, carla_interface_settings):
-        """
-        :param time_step_in_ns:
-        :param carlainterface_shared_variables:
-        :param hardware_manager_shared_variables:
-        :param carla_interface_settings:
-        :return:
-        """
-
-        # Ensure good initialisation of time
-
-
-        for agent_settings in carla_interface_settings.agents.values():
-            if agent_settings.selected_controller == self.settings.__str__():
-                if 'SensoDrive' in agent_settings.selected_input:
-                    stiffness = hardware_manager_shared_variables.inputs[agent_settings.selected_input].auto_center_stiffness
-                    delta_t = time_step_in_ns / 1e9  # [s]
-                    self.time += delta_t
-
-                    # Steering Wheel Information
-                    sw_angle = hardware_manager_shared_variables.inputs[agent_settings.selected_input].steering_angle
-                    sw_rate_unf = (sw_angle - self._old_sw_angle) / delta_t
-                    sw_rate = self._bq_filter_angle.step(sw_rate_unf)
-                    sw_acc = self._bq_filter_acc.step((sw_rate - self._old_sw_rate) / delta_t)
-                    sw_state = np.array([sw_angle, sw_rate, sw_acc])
-                    self._old_sw_angle = sw_angle
-                    self._old_sw_rate = sw_rate_unf
-
-                    # TODO: Remove to init
-                    # Steering wheel dynamic model
-                    # Dynamics
-                    Jw = 0.04876200657888505
-                    Bw = hardware_manager_shared_variables.inputs[agent_settings.selected_input].damping
-                    Kw = hardware_manager_shared_variables.inputs[agent_settings.selected_input].auto_center_stiffness
-                    self.A = np.array([[0, 1], [- Kw / Jw, - Bw / Jw]])
-                    self.B = np.array([[0], [1 / Jw]])
-
-                    # Car information
-                    # extract data from CARLA
-                    # CARLA coordinate system (left-handed coordinate system)
-                    # X: forward
-                    # Y: right
-                    # Z: upward
-                    # Psi (heading): left-hand z-axis positive (yaw to the right is positive)
-                    # torque: rightward rotation is positive
-                    pos_car = np.array([carlainterface_shared_variables.agents[agent_settings.__str__()].transform[0],
-                                        carlainterface_shared_variables.agents[agent_settings.__str__()].transform[1]])
-                    vel_car = np.array([carlainterface_shared_variables.agents[agent_settings.__str__()].velocities_in_world_frame[0],
-                                        carlainterface_shared_variables.agents[agent_settings.__str__()].velocities_in_world_frame[1]])
-                    heading_car = carlainterface_shared_variables.agents[agent_settings.__str__()].transform[3]
-
-                    # find static error and error rate:
-                    error = self.calculate_error(pos_car, heading_car, vel_car)
-                    error_rate = (error - self._error_old) / delta_t
-
-                    # filter the error rate with biquad filter
-                    error_rate_filtered = np.array([0.0, 0.0])
-                    error_rate_filtered[0] = self._bq_filter_velocity.step(error_rate[0])
-                    error_rate_filtered[1] = self._bq_filter_heading.step(error_rate[1])
-
-                    # put errors in 1 variable
-                    self._controller_error[0, 0:2] = error
-                    self._controller_error[0, 2:4] = error_rate_filtered
-
-                    # check: the inherent SW stiffness should not be zero (div by 0)
-                    if abs(stiffness) < 0.001:
-                        stiffness = 0.001
-
-                    sw_des = self._get_reference_sw_angle(pos_car)
-                    sw_des_rate = self._bq_filter_des.step((sw_des - self._sw_des_old) / delta_t)
-                    self._sw_des_old = sw_des
-                    sw_des_state = np.array([sw_des, sw_des_rate])
-
-                    # Wait 1 sec to ensure good initalization
-                    # set initial values
-                    if self.time < 1:
-                        authority = 0
-                        feedforward_torque = 0
-                        feedback_torque = 0
-                        self.human_estimated_torque = 0
-                        self.x_hat = np.array([[sw_state[0] - sw_des], [sw_state[1] - sw_des_rate]])
-                    else:
-                        authority = self.compute_authority(delta_t)
-                        self.estimate_human_control(sw_state, sw_des_state, delta_t)
-                        feedback_torque = self.compute_torque(self._controller_error)
-
-                    if authority > 0.2:
-                        torque = authority * (feedback_torque + stiffness * sw_des)
-                    else:
-                        torque = 0
-                    x = np.array([[sw_angle], [sw_rate]])
-                    nonlin = self.nonlinear_term(x)
-                    self.torque = min(max(torque, -3), 3)
-                    # feedforward_torque = stiffness * sw_des
-                    feedforward_torque = 0
-
-                    # update variables
-                    self._error_old = error
-                    hardware_manager_shared_variables.inputs[agent_settings.selected_input].torque = self.torque - nonlin
-
-                    # set the shared variables
-                    self.shared_variables.lat_error = error[0]
-                    self.shared_variables.heading_error = error[1]
-                    self.shared_variables.sw_des = sw_des
-                    self.shared_variables.ff_torque = feedforward_torque
-                    self.shared_variables.fb_torque = feedback_torque
-                    self.shared_variables.req_torque = self.torque
-                    self.shared_variables.authority = authority
-                    self.shared_variables.estimated_human_torque = self.human_estimated_torque
 
     def load_trajectory(self):
         """Load HCR trajectory"""
@@ -304,8 +200,88 @@ class TradedControllerProcess:
         except OSError as err:
             print('Error loading HCR trajectory file: ', err)
 
-    def nonlinear_term(self, x):
+    def do(self, time_step_in_ns, carlainterface_shared_variables, hardware_manager_shared_variables, carla_interface_settings):
+        """
+        :param time_step_in_ns:
+        :param carlainterface_shared_variables:
+        :param hardware_manager_shared_variables:
+        :param carla_interface_settings:
+        :return:
+        """
 
+        for agent_settings in carla_interface_settings.agents.values():
+            # try:
+            if agent_settings.selected_controller == self.settings.__str__():
+                if 'SensoDrive' in agent_settings.selected_input:
+                    self.stiffness = hardware_manager_shared_variables.inputs[agent_settings.selected_input].auto_center_stiffness
+                    self.damping = hardware_manager_shared_variables.inputs[agent_settings.selected_input].damping
+                    delta_t = time_step_in_ns / 1e9  # [s]
+                    steering_angle = hardware_manager_shared_variables.inputs[agent_settings.selected_input].steering_angle
+
+                    # Compose a state containing the car information
+                    car_state = np.array([[carlainterface_shared_variables.agents[agent_settings.__str__()].transform[0]],
+                                          [carlainterface_shared_variables.agents[agent_settings.__str__()].transform[1]],
+                                          [math.radians(carlainterface_shared_variables.agents[agent_settings.__str__()].transform[3])]])
+
+                    # Compute control inputs using current position vector
+                    self.shared_variables, torque_fdca = self.controller.compute_input(self.stiffness, steering_angle, car_state, self.shared_variables)
+                    torque_tc = self.compute_tc(torque_fdca, steering_angle, delta_t)
+                    hardware_manager_shared_variables.inputs[agent_settings.selected_input].torque = torque_tc
+
+                    # set the shared variables
+                    self.shared_variables.estimated_human_torque = self.human_estimated_torque
+            # except:
+            #     pass
+
+    def compute_tc(self, torque_fdca, steering_angle, timestep):
+        steering_state = self._compute_steering_states(steering_angle, timestep)
+        nonlinear_component = self._nonlinear_term(steering_state)
+        self._estimate_human_control(steering_state, timestep)
+        authority = self._compute_authority(delta_t=timestep)
+        self.torque = torque_fdca * authority
+        return self.torque - nonlinear_component
+
+    def _compute_steering_states(self, steering_angle, timestep):
+        unfiltered_steering_rate = (steering_angle - self._old_steering_angle) / timestep
+        steering_rate = self._bq_filter_rate.step(unfiltered_steering_rate)
+        steering_state = np.array([[steering_angle], [steering_rate]])
+        self._old_steering_angle = steering_angle
+        return steering_state
+
+    def _system_matrices(self):
+        A = np.array([[0, 1], [- self.stiffness / self.inertia, - self.damping / self.inertia]])
+        B = np.array([[0], [1 / self.inertia]])
+        return A, B
+
+    def _estimate_human_control(self, steering_state, delta_t):
+        # # steering_state[0] = sw_angle, steering_state[1] = sw_rate, steering_state[2] = sw_acc
+        # # Compose states
+        A, B = self._system_matrices()
+        x = steering_state
+        xi_tilde = self.x_hat - x
+        x_hat_dot = np.matmul(A, self.x_hat) + B * (self.torque + self.human_estimated_torque) - np.matmul(self.Gamma, xi_tilde)
+
+        # self.human_estimated_torque = np.matmul(pseudo_B, xi_dot - np.matmul(self.A, xi) - np.matmul(self.B, np.array([[self.torque]])))
+        self.human_estimated_torque += - self.alpha * np.matmul(xi_tilde.transpose(), B) * delta_t
+        self.x_hat += x_hat_dot * delta_t
+
+        # print("estimated torque: ", self.human_estimated_torque)
+
+    def _compute_authority(self, delta_t):
+        # See if the threshold is crossed and if so increase authority
+        if self.human_estimated_torque ** 2 < self.torque_threshold ** 2:
+            direction = -1  # Increase authority
+        else:
+            direction = 1  # Decrease authority
+        self.x_ += delta_t * direction * self.shared_variables.gamma
+        self.x_ = min(max(self.x_, -0.5), 3)
+        c1 = 3
+        c2 = 0.5
+        authority = 1 - (1 + math.exp(-c1 * (self.x_ - c2))) ** -1
+        authority = min(max(authority, 0), 1)
+        return authority
+
+    def _nonlinear_term(self, x):
         g = 9.81
         m = 0.25577512040264017
         dh = 0.08868507357869222
@@ -316,173 +292,28 @@ class TradedControllerProcess:
         tau_fric = 0.031177592111752105
 
         # Gravity
-        tau_g = - m * g * dh * np.sin(x[0, 0]) - m * g * dl * np.cos(x[0, 0])
+        tau_g = - m * g * dh * np.sin(x[0]) - m * g * dl * np.cos(x[0])
 
         # Friction
-        v = x[1, 0]
+        v = x[1]
         gv = v / vsp * np.exp(-(v / (np.sqrt(2) * vsp)) ** 2 + 1 / 2)
         fc = tau_d * np.tanh(v / vt)
         tau_f = gv * tau_fric + fc
         return tau_f + tau_g
 
-    def calculate_error(self, pos_car, heading_car, vel_car=np.array([0.0, 0.0])):
-        """
-        Calculate the controller error
-        CARLA coordinate frame
-        X: forward
-        Y: right
-        Z: upward
-        Psi (heading): left-hand z-axis positive (yaw to the right is positive)
-        Torque: rightward rotation is positive
-        :param pos_car:
-        :param heading_car:
-        :param vel_car:
-        :return:
-        """
-        pos_car = pos_car + vel_car * self.t_lookahead  # linear extrapolation, should be updated
 
-        # Find waypoint index of the point that the car would be in the future (compared to own driven trajectory)
-        index_closest_waypoint = find_closest_node(pos_car, self._trajectory[:, 1:3])
-
-        # circular: if end of the trajectory, go back to the first one; note that this is risky, if the reference trajectory is not circular!
-        if index_closest_waypoint >= len(self._trajectory) - 1:
-            if np.linalg.norm(self._trajectory[0, 1:3] - self._trajectory[index_closest_waypoint, 1:3]) < self.threshold_circular_trajectory:
-                index_closest_waypoint_next = 0
-            else:
-                index_closest_waypoint_next = index_closest_waypoint
-        else:
-            index_closest_waypoint_next = index_closest_waypoint + 1
-
-            # Some trajectories have multiple subsequent waypoints at the same position, this while loop increments the next index until a new waypoint is found
-            while (self._trajectory[index_closest_waypoint, 1:3] == self._trajectory[index_closest_waypoint_next, 1:3]).all():
-                index_closest_waypoint_next += 1
-                if index_closest_waypoint >= len(self._trajectory):
-                    break
-
-        # calculate lateral error
-        pos_ref = self._trajectory[index_closest_waypoint, 1:3]
-        pos_ref_next = self._trajectory[index_closest_waypoint_next, 1:3]
-
-        vec_car = pos_car - pos_ref
-        vec_dir = pos_ref_next - pos_ref
-
-        if not vec_dir.any():
-            print(index_closest_waypoint, index_closest_waypoint_next, pos_ref, pos_ref_next)
-            return np.array([0, 0])
-
-        # if not vec_dir.any():
-        #     error_heading = 0
-        #     error_lat = 0
-        #     return np.array([error_lat, error_heading])
-        # find the lateral error. Project vec_car on the reference trajectory direction vector
-        vec_error_lat = vec_car - (np.dot(vec_car, vec_dir) / np.dot(vec_dir, vec_dir)) * vec_dir
-        error_lat = np.sqrt(np.dot(vec_error_lat, vec_error_lat))
-
-        # calculate sign of error using the cross product
-        e_sign = np.cross(vec_dir, vec_car)  # used to be e_sign = np.math.atan2(np.linalg.det([vec_dir, vec_car]), np.dot(vec_dir, vec_car))
-        if np.abs(e_sign) < 0.0001:
-            e_sign = -1.0 * e_sign / np.abs(e_sign + 0.001)
-        else:
-            e_sign = -1.0 * e_sign / np.abs(e_sign)
-        # e_sign = np.math.atan2(np.linalg.det([vec_dir, vec_car]), np.dot(vec_dir, vec_car))
-        error_lat *= e_sign
-
-        # calculate heading error: left-handed CW positive
-        heading_ref = self._trajectory[index_closest_waypoint, 6]
-
-        error_heading = math.radians(heading_ref) - math.radians(heading_car)  # in radians
-
-        # Make sure you dont get jumps (basically unwrap the angle with a threshold of pi radians (180 degrees))
-        if error_heading > math.pi:
-            error_heading = error_heading - 2.0 * math.pi
-        if error_heading < -math.pi:
-            error_heading = error_heading + 2.0 * math.pi
-
-        return np.array([error_lat, error_heading])
-
-    def estimate_human_control(self, sw_state, sw_des_state, delta_t):
-        # # sw_state[0] = sw_angle, sw_state[1] = sw_rate, sw_state[2] = sw_acc
-        # # Compose states
-        xi = np.array([[sw_state[0] - sw_des_state[0]], [sw_state[1] - sw_des_state[1]]])
-        x = np.array([[sw_state[0]], [sw_state[1]]])
-        xi_dot = np.array([[sw_state[1]], [sw_state[2]]])
-        xi_tilde = self.x_hat - x
-        x_hat_dot = np.matmul(self.A, self.x_hat) + self.B * (self.torque + self.human_estimated_torque) - np.matmul(self.Gamma, xi_tilde)
-        # # print("measured angle, estimated angle", sw_state[0], self.x_hat[0])
-        # # print("measured speed, estimated speed", sw_state[1], self.x_hat[1])
-        # # print("measured acc, estimated acc", sw_state[2], x_hat_dot[1])
-        # xi_tilde_dot = x_hat_dot - x_dot
-        # # print(xi_tilde, xi_tilde_dot)
-        #
-        # # Update law for observing human input
-        # # m_squared = 1 + self.kappa * np.matmul(xi.transpose(), xi)
-        # # Bu_tilde = xi_tilde_dot - (np.matmul((self.A - self.Gamma), xi_tilde))
-        # # print("butilde ", Bu_tilde)
-        # # print("error ", xi)
-        # # human_estimated_torque_update = self.alpha * np.matmul(xi.transpose(), Bu_tilde) / m_squared
-        #
-        # pseudo_B = 1 / (np.matmul(self.B.transpose(), self.B)) * self.B.transpose()
-        # u_h_tilde = np.matmul(pseudo_B, (xi_tilde_dot - (np.matmul((self.A - self.Gamma), xi_tilde))))
-        # m_squared = 1 + self.kappa * np.matmul(xi.transpose(), xi)
-        # Lhhat_dot = u_h_tilde / m_squared * xi.transpose() * self.alpha
-        # human_estimated_torque_update = np.matmul(-Lhhat_dot, xi)
-        #
-        # # human_estimated_torque_update = np.matmul(xi.transpose(), (xi_tilde_dot - (np.matmul((self.A - self.Gamma), xi_tilde)))) * self.alpha / m_squared
-        # self.human_estimated_torque += human_estimated_torque_update * delta_t
-        # self.x_hat += x_hat_dot * delta_t
-        # # print("xi, xi_hat, xi_tilde ", xi, self.xi_hat, xi_tilde)
-        # # print("update function: ", human_estimated_torque_update)
-
-        # self.human_estimated_torque = np.matmul(pseudo_B, xi_dot - np.matmul(self.A, xi) - np.matmul(self.B, np.array([[self.torque]])))
-        self.human_estimated_torque += - self.alpha * np.matmul(xi_tilde.transpose(), self.B) * delta_t
-        self.x_hat += x_hat_dot * delta_t
-
-        print("estimated torque: ", self.human_estimated_torque)
-        # print("measured error, measured error rate, current rate: ", xi[0], xi[1], xi_dot[0], xi_dot[1])
-        # print("estimated error, error rate and error acceleration: ", self.xi_hat[0], self.xi_hat[1], xi_hat_dot[0], xi_hat_dot[1])
-
-    def compute_torque(self, controller_error):
-        feedback_torque = np.matmul(controller_error, self.controller_gains)
-        return feedback_torque
-
-    def compute_authority(self, delta_t):
-        # See if the threshold is crossed and if so increase authority
-        # print("torque vs threshold ", self.estimated_human_torque, self.torque_threshold)
-        if self.human_estimated_torque ** 2 < self.torque_threshold ** 2:
-            direction = 2  # Increase authority
-        else:
-            direction = -2  # Decrease authority
-            # print("getting here ever?")
-        self.x_ += delta_t * direction
-        self.x_ = min(max(self.x_, -0.2), 3.2)
-        authority = 1 - math.tanh(self.x_)
-        authority = min(max(authority, 0), 1)
-        print("lambda = ", authority)
-        return authority
-
-    def _get_reference_sw_angle(self, location):
-        idx = find_closest_node(location, self._trajectory[:, 1:3])
-        if idx >= len(self._trajectory) - 20:
-            idx1 = 0
-        else:
-            idx1 = idx + 1
-
-        # the trajectory is recorded in unitless steering angles (verify this in the csv)
-        # so, we need to convert this to radians. First, multiply with 450 (1, -1) [-] = (450,-450) [deg]
-        sw_angle_ff_des = math.radians(self._trajectory[idx1, 3] * 450)
-
-        return sw_angle_ff_des
 
 
 class TradedControllerSettings:
     def __init__(self, identifier=''):
-        self.t_lookahead = 0.0
-        self.k_y = 0.15
-        self.k_psi = 2.5
-        self.kd_y = 0.05
-        self.kd_psi = 1.0
+        self.k_y = 0.2
+        self.k_psi = 2
+        self.lohs = 1
+        self.sohf = 1.0
+        self.loha = 1.0
         self.alpha = 2.0
         self.tau_th = 0.1
+        self.gamma = -1
         self.trajectory_name = "hcr_trajectory.csv"
         self.identifier = identifier
 

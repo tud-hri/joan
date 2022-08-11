@@ -216,7 +216,7 @@ class EgoVehicleProcess:
         self.set_shared_variables()
 
     def destroy(self):
-        if hasattr(self, 'spawned_vehicle'):
+        if hasattr(self, 'spawned_vehicle') and self.spawned_vehicle.is_alive:
             self.spawned_vehicle.destroy()
 
     def velocity_PD_controller(self, vel_error):
@@ -374,7 +374,7 @@ class EgoVehicleSettings:
         self.selected_controller = 'None'
         self.selected_spawnpoint = 'Spawnpoint 0'
         self.selected_car = 'hapticslab.audi'
-        self.velocity = 80
+        self.velocity = 50
         self.set_velocity = False
         self.identifier = identifier
         self.keff = 13

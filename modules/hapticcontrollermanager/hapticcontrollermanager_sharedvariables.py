@@ -29,6 +29,8 @@ class FDCASharedVariables(SharedVariables):
         self._fb_torque = mp.Value(c_float, 0)
         self._loha_torque = mp.Value(c_float, 0)
         self._req_torque = mp.Value(c_float, 0)
+        self._x_road = mp.Array(c_float, 50)
+        self._y_road = mp.Array(c_float, 50)
 
     @property
     def temp(self):
@@ -134,6 +136,22 @@ class FDCASharedVariables(SharedVariables):
     def req_torque(self, val):
         self._req_torque.value = val
 
+    @property
+    def x_road(self):
+        return self._x_road[:]
+
+    @x_road.setter
+    def x_road(self, val):
+        self._x_road[:] = val
+
+    @property
+    def y_road(self):
+        return self._y_road[:]
+
+    @y_road.setter
+    def y_road(self, val):
+        self._y_road[:] = val
+
 class TradedControllerSharedVariables(SharedVariables):
     def __init__(self):
         # controller parameters
@@ -153,6 +171,9 @@ class TradedControllerSharedVariables(SharedVariables):
         self._req_torque = mp.Value(c_float, 0)
         self._authority = mp.Value(c_float, 0)
         self._estimated_human_torque = mp.Value(c_float, 0)
+        self._x_road = mp.Array(c_float, 50)
+        self._y_road = mp.Array(c_float, 50)
+
 
 
     @property
@@ -266,6 +287,22 @@ class TradedControllerSharedVariables(SharedVariables):
     @estimated_human_torque.setter
     def estimated_human_torque(self, val):
         self._estimated_human_torque.value = val
+
+    @property
+    def x_road(self):
+        return self._x_road[:]
+
+    @x_road.setter
+    def x_road(self, val):
+        self._x_road[:] = val
+
+    @property
+    def y_road(self):
+        return self._y_road[:]
+
+    @y_road.setter
+    def y_road(self, val):
+        self._y_road[:] = val
 
 class FDCADuecaSharedVariables(SharedVariables):
     def __init__(self):
