@@ -25,15 +25,7 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
 
         self.btnbox_fdca_controller_settings.button(
             self.btnbox_fdca_controller_settings.RestoreDefaults).clicked.connect(self._set_default_values)
-        # self.slider_loha.valueChanged.connect(self._update_loha_slider_label)
         self.btn_apply_parameters.clicked.connect(self.update_parameters)
-
-        # hardcode lookahead time if someone needs it
-        self.t_lookahead = 0
-
-        # self._loha_resolution = 50
-        # self.slider_loha.setMaximum(self._loha_resolution)
-        # self.spin_loha.setMaximum(self._loha_resolution)
 
         self.module_manager.state_machine.add_state_change_listener(self.handle_state_change)
 
@@ -58,7 +50,6 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
         self.fdca_controller_settings.k_psi = float(self.edit_k_psi.text())
         self.fdca_controller_settings.lohs = float(self.edit_lohs.text())
         self.fdca_controller_settings.sohf = float(self.edit_sohf.text())
-        # self.fdca_controller_settings.loha = float(self.slider_loha.value())
         self.fdca_controller_settings.trajectory_name = self.cmbbox_hcr_selection.itemText(
             self.cmbbox_hcr_selection.currentIndex())
 
