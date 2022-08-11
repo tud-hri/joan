@@ -40,9 +40,9 @@ class TradedControllerSettingsDialog(QtWidgets.QDialog):
         self.traded_controller_settings.alpha = float(self.edit_alpha.text())
         self.traded_controller_settings.tau_th = float(self.edit_tau_th.text())
         if self.checkInvert.isChecked():
-            self.traded_controller_settings.gamma = 1
-        else:
             self.traded_controller_settings.gamma = -1
+        else:
+            self.traded_controller_settings.gamma = 1
         self.traded_controller_settings.trajectory_name = self.cmbbox_hcr_selection.itemText(
             self.cmbbox_hcr_selection.currentIndex())
 
@@ -237,9 +237,9 @@ class TradedControllerProcess:
     def _compute_authority(self, delta_t):
         # See if the threshold is crossed and if so increase authority
         if self.human_estimated_torque ** 2 < self.torque_threshold ** 2:
-            direction = -1  # Increase authority
+            direction = 1  # Increase authority
         else:
-            direction = 1  # Decrease authority
+            direction = -1  # Decrease authority
         self.x_ += delta_t * direction * self.shared_variables.gamma
         self.x_ = min(max(self.x_, -0.5), 3)
         c1 = 3

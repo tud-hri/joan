@@ -64,17 +64,6 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
 
         self._display_values()
 
-    # def _update_loha_slider_label(self):
-    #     self.spin_loha.setValue(self.slider_loha.value())
-    #     if self.checkbox_tuning_loha.isChecked():
-    #         self.fdca_controller_settings.loha = float(self.slider_loha.value())
-    #         self.lbl_loha.setText(str(self.fdca_controller_settings.loha))
-    #         self.lbl_loha_deg.setText(str(round(math.radians(self.fdca_controller_settings.loha), 3)))
-    #         try:
-    #             self.module_manager.shared_variables.haptic_controllers[self.fdca_controller_settings.identifier].loha = self.fdca_controller_settings.loha
-    #         except:
-    #             pass
-
     def accept(self):
         # self.slider_loha.setValue(self.spin_loha.value())
         self.fdca_controller_settings.loha = float(self.edit_loha.text())
