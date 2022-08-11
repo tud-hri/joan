@@ -201,10 +201,19 @@ class TradedControllerProcess:
                     torque_tc = self.compute_tc(torque_fdca, steering_angle, delta_t)
                     hardware_manager_shared_variables.inputs[agent_settings.selected_input].torque = torque_tc
 
-                    # set the shared variables
+                    # Set the shared variables
                     self.shared_variables.estimated_human_torque = self.human_estimated_torque
 
     def compute_tc(self, torque_fdca, steering_angle, timestep):
+        """
+        inputs
+            torque_fdca (float): torque computed using the FDCA controller which yields a stable trajectory
+            steering_angle (float): Steering angle of the SensoDrive
+            timestep (float): Time since last computations
+
+        outputs
+            torque (float): output steering torque, with nonlinear component compensation
+        """
         steering_state = self._compute_steering_states(steering_angle, timestep)
         nonlinear_component = self._nonlinear_term(steering_state)
         self._estimate_human_control(steering_state, timestep)
@@ -213,6 +222,7 @@ class TradedControllerProcess:
         return self.torque - nonlinear_component
 
     def _compute_steering_states(self, steering_angle, timestep):
+        # Compute steering wheel states, mainly just steering rate
         unfiltered_steering_rate = (steering_angle - self._old_steering_angle) / timestep
         steering_rate = self._bq_filter_rate.step(unfiltered_steering_rate)
         steering_state = np.array([[steering_angle], [steering_rate]])
@@ -220,13 +230,13 @@ class TradedControllerProcess:
         return steering_state
 
     def _system_matrices(self):
+        # Compute system matrices from steering wheel parameters
         A = np.array([[0, 1], [- self.stiffness / self.inertia, - self.damping / self.inertia]])
         B = np.array([[0], [1 / self.inertia]])
         return A, B
 
     def _estimate_human_control(self, steering_state, delta_t):
-        # # steering_state[0] = sw_angle, steering_state[1] = sw_rate, steering_state[2] = sw_acc
-        # # Compose states
+        # Compose states
         A, B = self._system_matrices()
         x = steering_state
         xi_tilde = self.x_hat - x
@@ -249,6 +259,7 @@ class TradedControllerProcess:
         return authority
 
     def _nonlinear_term(self, x):
+        # Compensate for a gravity and friction component in the steering wheel
         g = 9.81
         m = 0.25577512040264017
         dh = 0.08868507357869222
