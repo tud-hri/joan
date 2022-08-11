@@ -37,11 +37,6 @@ class TradedControllerSettingsDialog(QtWidgets.QDialog):
             self.cmbbox_hcr_selection.blockSignals(False)
 
     def update_parameters(self):
-        # self.slider_loha.setValue(self.spin_loha.value())
-        # self.traded_controller_settings.k_y = float(self.edit_k_y.text())
-        # self.traded_controller_settings.k_psi = float(self.edit_k_psi.text())
-        # self.traded_controller_settings.kd_y = float(self.edit_kd_y.text())
-        # self.traded_controller_settings.kd_psi = float(self.edit_kd_psi.text())
         self.traded_controller_settings.alpha = float(self.edit_alpha.text())
         self.traded_controller_settings.tau_th = float(self.edit_tau_th.text())
         if self.checkInvert.isChecked():
@@ -52,10 +47,6 @@ class TradedControllerSettingsDialog(QtWidgets.QDialog):
             self.cmbbox_hcr_selection.currentIndex())
 
         try:
-            # self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].k_y = self.traded_controller_settings.k_y
-            # self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].k_psi = self.traded_controller_settings.k_psi
-            # self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].kd_y = self.traded_controller_settings.kd_y
-            # self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].kd_psi = self.traded_controller_settings.kd_psi
             self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].alpha = self.traded_controller_settings.alpha
             self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].tau_th = self.traded_controller_settings.tau_th
             self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].gamma = self.traded_controller_settings.gamma
@@ -66,25 +57,16 @@ class TradedControllerSettingsDialog(QtWidgets.QDialog):
 
 
     def accept(self):
-        # self.slider_loha.setValue(self.spin_loha.value())
-        # self.traded_controller_settings.k_y = float(self.edit_k_y.text())
-        # self.traded_controller_settings.k_psi = float(self.edit_k_psi.text())
-        # self.traded_controller_settings.kd_y = float(self.edit_kd_y.text())
-        # self.traded_controller_settings.kd_psi = float(self.edit_kd_psi.text())
         self.traded_controller_settings.alpha = float(self.edit_alpha.text())
         self.traded_controller_settings.tau_th = float(self.edit_tau_th.text())
         if self.checkInvert.isChecked():
-            self.traded_controller_settings.gamma = 1
-        else:
             self.traded_controller_settings.gamma = -1
+        else:
+            self.traded_controller_settings.gamma = 1
         self.traded_controller_settings.trajectory_name = self.cmbbox_hcr_selection.itemText(
             self.cmbbox_hcr_selection.currentIndex())
 
         try:
-            # self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].k_y = self.traded_controller_settings.k_y
-            # self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].k_psi = self.traded_controller_settings.k_psi
-            # self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].kd_y = self.traded_controller_settings.kd_y
-            # self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].kd_psi = self.traded_controller_settings.kd_psi
             self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].alpha = self.traded_controller_settings.alpha
             self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].tau_th = self.traded_controller_settings.tau_th
             self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].gamma = self.traded_controller_settings.gamma
@@ -98,17 +80,9 @@ class TradedControllerSettingsDialog(QtWidgets.QDialog):
             settings_to_display = self.traded_controller_settings
 
         # update the current controller settings
-        # self.lbl_k_y.setText(str(settings_to_display.k_y))
-        # self.lbl_k_psi.setText(str(settings_to_display.k_psi))
-        # self.lbl_kd_y.setText(str(settings_to_display.kd_y))
-        # self.lbl_kd_psi.setText(str(settings_to_display.kd_psi))
         self.lbl_alpha.setText(str(settings_to_display.alpha))
         self.lbl_tau_th.setText(str(settings_to_display.tau_th))
 
-        # self.edit_k_y.setText(str(settings_to_display.k_y))
-        # self.edit_k_psi.setText(str(settings_to_display.k_psi))
-        # self.edit_kd_y.setText(str(settings_to_display.kd_y))
-        # self.edit_kd_psi.setText(str(settings_to_display.kd_psi))
         self.edit_alpha.setText(str(settings_to_display.alpha))
         self.edit_tau_th.setText(str(settings_to_display.tau_th))
 
@@ -210,7 +184,6 @@ class TradedControllerProcess:
         """
 
         for agent_settings in carla_interface_settings.agents.values():
-            # try:
             if agent_settings.selected_controller == self.settings.__str__():
                 if 'SensoDrive' in agent_settings.selected_input:
                     self.stiffness = hardware_manager_shared_variables.inputs[agent_settings.selected_input].auto_center_stiffness
@@ -230,8 +203,6 @@ class TradedControllerProcess:
 
                     # set the shared variables
                     self.shared_variables.estimated_human_torque = self.human_estimated_torque
-            # except:
-            #     pass
 
     def compute_tc(self, torque_fdca, steering_angle, timestep):
         steering_state = self._compute_steering_states(steering_angle, timestep)
@@ -260,12 +231,8 @@ class TradedControllerProcess:
         x = steering_state
         xi_tilde = self.x_hat - x
         x_hat_dot = np.matmul(A, self.x_hat) + B * (self.torque + self.human_estimated_torque) - np.matmul(self.Gamma, xi_tilde)
-
-        # self.human_estimated_torque = np.matmul(pseudo_B, xi_dot - np.matmul(self.A, xi) - np.matmul(self.B, np.array([[self.torque]])))
         self.human_estimated_torque += - self.alpha * np.matmul(xi_tilde.transpose(), B) * delta_t
         self.x_hat += x_hat_dot * delta_t
-
-        # print("estimated torque: ", self.human_estimated_torque)
 
     def _compute_authority(self, delta_t):
         # See if the threshold is crossed and if so increase authority
@@ -300,9 +267,6 @@ class TradedControllerProcess:
         fc = tau_d * np.tanh(v / vt)
         tau_f = gv * tau_fric + fc
         return tau_f + tau_g
-
-
-
 
 class TradedControllerSettings:
     def __init__(self, identifier=''):
