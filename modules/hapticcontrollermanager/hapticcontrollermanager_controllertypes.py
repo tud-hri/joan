@@ -8,26 +8,33 @@ class HapticControllerTypes(enum.Enum):
     """
 
     FDCA = 0
+    TradedControl = 1
 
     @property
     def process(self):
         from modules.hapticcontrollermanager.hapticcontrollermanager_controllers.fdcacontroller import FDCAControllerProcess
+        from modules.hapticcontrollermanager.hapticcontrollermanager_controllers.tradedcontroller import TradedControllerProcess
 
         return {HapticControllerTypes.FDCA: FDCAControllerProcess,
+                HapticControllerTypes.TradedControl: TradedControllerProcess,
                 }[self]
 
     @property
     def settings_dialog(self):
         from modules.hapticcontrollermanager.hapticcontrollermanager_controllers.fdcacontroller import FDCAControllerSettingsDialog
+        from modules.hapticcontrollermanager.hapticcontrollermanager_controllers.tradedcontroller import TradedControllerSettingsDialog
 
         return {HapticControllerTypes.FDCA: FDCAControllerSettingsDialog,
+                HapticControllerTypes.TradedControl: TradedControllerSettingsDialog,
                 }[self]
 
     @property
     def shared_variables(self):
         from modules.hapticcontrollermanager.hapticcontrollermanager_sharedvariables import FDCASharedVariables
+        from modules.hapticcontrollermanager.hapticcontrollermanager_sharedvariables import TradedControllerSharedVariables
 
         return {HapticControllerTypes.FDCA: FDCASharedVariables,
+                HapticControllerTypes.TradedControl: TradedControllerSharedVariables,
                 }[self]
 
     @property
@@ -35,6 +42,7 @@ class HapticControllerTypes(enum.Enum):
         path_to_uis = os.path.join(os.path.dirname(os.path.realpath(__file__)), "hapticcontrollermanager_controllers/ui/")
 
         return {HapticControllerTypes.FDCA: os.path.join(path_to_uis, "fdca_settings_ui.ui"),
+                HapticControllerTypes.TradedControl: os.path.join(path_to_uis, "tradedcontroller_settings_ui.ui"),
                 }[self]
 
     @property
@@ -42,15 +50,19 @@ class HapticControllerTypes(enum.Enum):
         path_to_uis = os.path.join(os.path.dirname(os.path.realpath(__file__)), "hapticcontrollermanager_controllers/ui/")
 
         return {HapticControllerTypes.FDCA: os.path.join(path_to_uis, "haptic_controller_tab.ui"),
+                HapticControllerTypes.TradedControl: os.path.join(path_to_uis, "traded_controller_tab.ui"),
                 }[self]
 
     @property
     def settings(self):
         from modules.hapticcontrollermanager.hapticcontrollermanager_controllers.fdcacontroller import FDCAControllerSettings
+        from modules.hapticcontrollermanager.hapticcontrollermanager_controllers.tradedcontroller import TradedControllerSettings
 
         return {HapticControllerTypes.FDCA: FDCAControllerSettings,
+                HapticControllerTypes.TradedControl: TradedControllerSettings,
                 }[self]
 
     def __str__(self):
-        return {HapticControllerTypes.FDCA: 'FDCA'
+        return {HapticControllerTypes.FDCA: 'FDCA',
+                HapticControllerTypes.TradedControl: 'Traded Control'
                 }[self]
