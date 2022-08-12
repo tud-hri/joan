@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>A short Sensodrive SENSO Wheel explanation - JOAN documentation</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+        <link href="https://unpkg.com/mermaid@8.6.0/dist/mermaid.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "A short Sensodrive SENSO Wheel explanation";
+        var mkdocs_page_input_path = "other-sensodrive.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <script src="../js/jquery-3.6.0.min.js" defer></script>
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> JOAN documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../introduction/">Introduction</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Setup JOAN and CARLA</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../setup-carla-windows/">Build CARLA on Windows</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../setup-joan/">Install JOAN</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../example-usage-and-testing/">Example usage and functionality testing</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">First steps</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../firststeps-joan-overview/">JOAN Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../firststeps-joan-run/">Run JOAN and CARLA</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../firststeps-carle-ue4/">Quick start CARLA</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Using the JOAN core modules</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../modules-datarecorder/">Data Recorder</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../modules-carlainterface/">CARLA interface</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../modules-hardwaremanager/">Hardware Manager</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../modules-experimentmanager/">Experiment Manager</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../modules-hapticcontrollermanager/">Haptic Controller Manager</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../modules-dataplotter/">Data Plotter</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Advanced</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../advanced-add-custom-module/">Create custom JOAN modules</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../advanced-settings/">Using JOAN Settings</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../advanced-state-machine/">JOAN State Machine</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Other stuff</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../other-git/">Quick start on using source control (git)</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">A short Sensodrive SENSO Wheel explanation</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#hardware">Hardware</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#setting-up-your-pc-for-a-sensodrive">Setting up your PC for a SensoDrive</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#system-overview">System overview</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#software-explanation">Software Explanation</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#can-messages">CAN Messages</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#pcan-basic-api">PCAN BASIC API</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#actual-code">Actual Code</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Want to contribute?</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../contributing-guidelines/">Guidelines</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../contributing-coding-standard/">Coding Standard</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">JOAN documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li>
+          <li>Other stuff &raquo;</li><li>A short Sensodrive SENSO Wheel explanation</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="sensodrive-explanation">SensoDrive Explanation</h1>
+<p>The SensoDrive is a powerful/professional actuated steering wheel for simulation purposes, it communicates over CAN bus and 
+can be used with JOAN. This section of the documentation mainly explains how to set and get parameters from the wheel
+and what has been done in JOAN to make it work.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Please be careful if you are going to work with the SensoDrive, it can deliver up to 20Nm of torque, which is quite a lot
+if you are testing with it ALWAYS KEEP YOUR THUMBS OUT OF THE WHEEL!</p>
+</div>
+<h2 id="hardware">Hardware</h2>
+<p>The SensoDrive's hardware mainly consists of three necessary parts.</p>
+<ul>
+<li><code>SensoWheel</code> This is the biggest part, where the BLDC motor is attached to the frame</li>
+<li><code>Steering wheel</code> This part is self-explanatory, it can be removed and switched for other wheels</li>
+<li><code>PCAN USB Dongle</code> This is the bridge between the internal controller of the SensoDrive and your PC</li>
+</ul>
+<h2 id="setting-up-your-pc-for-a-sensodrive">Setting up your PC for a SensoDrive</h2>
+<p>Before you can plug and play the SensoDrive with JOAN (on a new PC, all PCs that we use at the university are already 
+prepared) you need to get:</p>
+<ol>
+<li>The drivers for the PEAK systems PCAN USB. You can find them here: <a href="https://www.peak-system.com/PCAN-USB.199.0.html?&amp;L=1" target="_blank">link</a></li>
+<li>The DLLs (Dynamic Linker Libraries) for PCAN-Basic-API. These can also be found here:  <a href="https://www.peak-system.com/PCAN-USB.199.0.html?&amp;L=1" target="_blank">link</a></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Make sure you copy the appropriate DLLs to your windows system folders. So for the 32-bit version put it in System32 for the 64-bit version
+put it in Syswow64.</p>
+</div>
+<p>Now you should be all set to use the PCAN-Basic API with the SensoDrive. </p>
+<h2 id="system-overview">System overview</h2>
+<p>The total system is shown in a simplified version below. The main thing we will focus on furthermore in this documentation is the
+'CAN' piece. This contains all the information we can send and receive from the SensoWheel system.</p>
+<p><img alt="System Overview" src="../imgs/other-sensodrive-setup.png" /></p>
+<h2 id="software-explanation">Software Explanation</h2>
+<p>This section will describe how the current communication with the SensoDrive with PCAN is done. If you really want to know all about CAN communication protocols and how the PCAN API works please read the extensive documentation
+provided by PEAK Systems. (Same link as the drivers)</p>
+<p>The main document of reference for this section is the 'Software manual Version 3.10.0 SENSO-wheel' by the SensoDrive company
+itself. <a href="https://www.dropbox.com/s/zzh1kauwl3apl50/SoftwareManual_SENSO-Wheel_v3p20p0.pdf?dl=0" target="_blank">LINK</a> This explains all relevant info regarding the messages you can send and receive and what the messages should look like that you send. For the rest of this section, we will explain the different steps to communicate over PCAN in python.</p>
+<p>Before giving an example we first need to know what a CAN (Controller Area Network) message is and a short introduction to the PCAN-BASIC API.</p>
+<h3 id="can-messages">CAN Messages</h3>
+<p>In this case, the CAN message is just a collection of bytes we send to the SensoDrive.
+<img alt="CAN message layout" src="../imgs/other-sensodrive-canmessage-layout.png" /></p>
+<p>As can be seen from the image the CAN Message typically contains:</p>
+<ul>
+<li><code>Identifier (CAN-ID)</code></li>
+<li><code>DLC</code> This is a 'Data Length Code' and contains info as to how many bytes are in the message.</li>
+<li><code>Data</code> These are 0 to 8 bytes of data.</li>
+</ul>
+<p>Now a bit more on the 'Data' part, as with many applications the data that can be set in bytes is often done by using
+hexadecimal numbers (as is evident by the 0h's shown in the picture). It is therefore recommended to at least have some understanding of how this works. However 
+because we are using python it is (luckily) also very easy to just convert your integers into bytes that you can send.</p>
+<h3 id="pcan-basic-api">PCAN BASIC API</h3>
+<p>The PCAN Basic API is a C library for Python, there is a 'wrapper' that makes this C library available to us. There are however a couple of things that you have to keep in mind when working with this library, they are listed here:</p>
+<ul>
+<li><code>Be aware that you are not directly sending CAN messages to the SensoDrive but first to the PCAN Basic Dongle</code></li>
+</ul>
+<p>This is a very important concept to understand because the SensoDrive itself is capable (and does) of sending info about its current state. The state can be <code>error</code> for example. However, the PCAN Basic library has the same functionality. So DO NOT CONFUSE THESE FOR EACHOTHER. The status of the SensoDrive is only included in the actual data it sends back. However, the status of the PCAN Basic library is only the dongle. So for example if you yank out the USB cable the PCAN Basic 
+API can return an error, this is not the SensoWheel itself (obviously)</p>
+<ul>
+<li>
+<p><code>Make sure you initialize the Dongle with the appropriate USB channel and BAUDRATE</code></p>
+</li>
+<li>
+<p><code>Make sure you read all the messages you send, else a buffer will fill up and you introduce lag</code></p>
+</li>
+</ul>
+<h3 id="actual-code">Actual Code</h3>
+<p>If you are insisting on getting how the SensoDrive works within JOAN, we'd like to refer you to the specific file </p>
+<pre><code>joan/modules/hardwaremanager/hardwaremanager_inputs/joansensodrive.py
+</code></pre>
+<p>Within this file, the most important class is the <code>SensoDriveComm</code> (which is a multi-process) class. Here all the above-mentioned tips and tricks are used.
+So please dig your teeth in there!</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../other-git/" class="btn btn-neutral float-left" title="Quick start on using source control (git)"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../contributing-guidelines/" class="btn btn-neutral float-right" title="Guidelines">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../other-git/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../contributing-guidelines/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="https://unpkg.com/mermaid@8.6.0/dist/mermaid.min.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>
