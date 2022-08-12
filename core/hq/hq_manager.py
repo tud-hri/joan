@@ -1,5 +1,7 @@
 """Action class for JOAN menu"""
 import os
+import subprocess
+import time
 
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSignal
@@ -26,6 +28,9 @@ class HQManager(QtCore.QObject):
         super(QtCore.QObject, self).__init__()
 
         self.central_state_monitor = CentralStateMonitor()
+
+        # Start Carla
+        # self.start_Carla_if_closed()
 
         # News
         self.news = News()
