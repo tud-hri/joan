@@ -3,9 +3,7 @@ import os
 
 import numpy as np
 import pandas as pd
-import scipy as cp
 from PyQt5 import QtWidgets, uic
-import matplotlib.pyplot as plt
 
 from core.statesenum import State
 from modules.hapticcontrollermanager.hapticcontrollermanager_controllertypes import HapticControllerTypes
@@ -25,7 +23,15 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
 
         self.btnbox_fdca_controller_settings.button(
             self.btnbox_fdca_controller_settings.RestoreDefaults).clicked.connect(self._set_default_values)
+        self.slider_loha.valueChanged.connect(self._update_loha_slider_label)
         self.btn_apply_parameters.clicked.connect(self.update_parameters)
+
+        # hardcode lookahead time if someone needs it
+        self.t_lookahead = 0
+
+        self._loha_resolution = 50
+        self.slider_loha.setMaximum(self._loha_resolution)
+        self.spin_loha.setMaximum(self._loha_resolution)
 
         self.module_manager.state_machine.add_state_change_listener(self.handle_state_change)
 
@@ -44,12 +50,12 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
             self.cmbbox_hcr_selection.blockSignals(False)
 
     def update_parameters(self):
-        # self.slider_loha.setValue(self.spin_loha.value())
-        self.fdca_controller_settings.loha = float(self.edit_loha.text())
+        self.slider_loha.setValue(self.spin_loha.value())
         self.fdca_controller_settings.k_y = float(self.edit_k_y.text())
         self.fdca_controller_settings.k_psi = float(self.edit_k_psi.text())
         self.fdca_controller_settings.lohs = float(self.edit_lohs.text())
         self.fdca_controller_settings.sohf = float(self.edit_sohf.text())
+        self.fdca_controller_settings.loha = float(self.slider_loha.value())
         self.fdca_controller_settings.trajectory_name = self.cmbbox_hcr_selection.itemText(
             self.cmbbox_hcr_selection.currentIndex())
 
@@ -64,14 +70,24 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
 
         self._display_values()
 
+    def _update_loha_slider_label(self):
+        self.spin_loha.setValue(self.slider_loha.value())
+        if self.checkbox_tuning_loha.isChecked():
+            self.fdca_controller_settings.loha = float(self.slider_loha.value())
+            self.lbl_loha.setText(str(self.fdca_controller_settings.loha))
+            self.lbl_loha_deg.setText(str(round(math.radians(self.fdca_controller_settings.loha), 3)))
+            try:
+                self.module_manager.shared_variables.haptic_controllers[self.fdca_controller_settings.identifier].loha = self.fdca_controller_settings.loha
+            except:
+                pass
+
     def accept(self):
-        # self.slider_loha.setValue(self.spin_loha.value())
-        self.fdca_controller_settings.loha = float(self.edit_loha.text())
+        self.slider_loha.setValue(self.spin_loha.value())
         self.fdca_controller_settings.k_y = float(self.edit_k_y.text())
         self.fdca_controller_settings.k_psi = float(self.edit_k_psi.text())
         self.fdca_controller_settings.lohs = float(self.edit_lohs.text())
         self.fdca_controller_settings.sohf = float(self.edit_sohf.text())
-        self.fdca_controller_settings.loha = float(self.edit_loha.text())
+        self.fdca_controller_settings.loha = float(self.slider_loha.value())
         self.fdca_controller_settings.trajectory_name = self.cmbbox_hcr_selection.itemText(
             self.cmbbox_hcr_selection.currentIndex())
 
@@ -103,9 +119,8 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
         self.edit_k_psi.setText(str(settings_to_display.k_psi))
         self.edit_lohs.setText(str(settings_to_display.lohs))
         self.edit_sohf.setText(str(settings_to_display.sohf))
-        self.edit_loha.setText(str(settings_to_display.loha))
-        # self.slider_loha.setValue(settings_to_display.loha)
-        # self.spin_loha.setValue(settings_to_display.loha)
+        self.slider_loha.setValue(settings_to_display.loha)
+        self.spin_loha.setValue(settings_to_display.loha)
 
         idx_traj = self.cmbbox_hcr_selection.findText(settings_to_display.trajectory_name)
         self.cmbbox_hcr_selection.setCurrentIndex(idx_traj)
@@ -139,16 +154,12 @@ class FDCAControllerProcess:
         self.carla_interface_settings = carla_interface_settings
         self.shared_variables = shared_variables
         self._trajectory = None
-        self.t_lookahead = 0.8
+        self.t_lookahead = 0
         self._path_trajectory_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'trajectories')
         self.load_trajectory()
 
-        # TODO: get wheelbase and keff from car
-        self.controller = FDCAController(wheel_base=2.406, effective_ratio=1 / 13, human_compatible_reference=self._trajectory)
-
         self._bq_filter_velocity = LowPassFilterBiquad(fc=30, fs=100)
         self._bq_filter_heading = LowPassFilterBiquad(fc=30, fs=100)
-
         self._controller_error = np.array([0.0, 0.0, 0.0, 0.0])
         self._error_old = np.array([0.0, 0.0])
 
@@ -157,13 +168,6 @@ class FDCAControllerProcess:
         self.shared_variables.lohs = settings.lohs
         self.shared_variables.sohf = settings.sohf
         self.shared_variables.loha = settings.loha
-
-        self.x_road_old = 0
-        self.y_road_old = 0
-        self.xdot_road_old = 0
-        self.ydot_road_old = 0
-
-        self.time = 0
 
         # threshold to check if a trajectory is circular in meters; subsequent points need to be 1 m of each other
         self.threshold_circular_trajectory = 1.0
@@ -179,6 +183,92 @@ class FDCAControllerProcess:
         except OSError as err:
             print('Error loading HCR trajectory file: ', err)
 
+    def calculate_error(self, pos_car, heading_car, vel_car=np.array([0.0, 0.0])):
+        """
+        Calculate the controller error
+        CARLA coordinate frame
+        X: forward
+        Y: right
+        Z: upward
+        Psi (heading): left-hand z-axis positive (yaw to the right is positive)
+        Torque: rightward rotation is positive
+        :param pos_car:
+        :param heading_car:
+        :param vel_car:
+        :return:
+        """
+        pos_car = pos_car + vel_car * self.t_lookahead  # linear extrapolation, should be updated
+
+        # Find waypoint index of the point that the car would be in the future (compared to own driven trajectory)
+        index_closest_waypoint = find_closest_node(pos_car, self._trajectory[:, 1:3])
+
+        # circular: if end of the trajectory, go back to the first one; note that this is risky, if the reference trajectory is not circular!
+        if index_closest_waypoint >= len(self._trajectory) - 1:
+            if np.linalg.norm(self._trajectory[0, 1:3] - self._trajectory[index_closest_waypoint, 1:3]) < self.threshold_circular_trajectory:
+                index_closest_waypoint_next = 0
+            else:
+                index_closest_waypoint_next = index_closest_waypoint
+        else:
+            index_closest_waypoint_next = index_closest_waypoint + 1
+
+            # Some trajectories have multiple subsequent waypoints at the same position, this while loop increments the next index until a new waypoint is found
+            while (self._trajectory[index_closest_waypoint, 1:3] == self._trajectory[index_closest_waypoint_next, 1:3]).all():
+                index_closest_waypoint_next += 1
+                if index_closest_waypoint >= len(self._trajectory):
+                    break
+
+        # calculate lateral error
+        pos_ref = self._trajectory[index_closest_waypoint, 1:3]
+        pos_ref_next = self._trajectory[index_closest_waypoint_next, 1:3]
+
+        vec_car = pos_car - pos_ref
+        vec_dir = pos_ref_next - pos_ref
+
+        if not vec_dir.any():
+            print(index_closest_waypoint, index_closest_waypoint_next, pos_ref, pos_ref_next)
+            return np.array([0,0])
+
+        # if not vec_dir.any():
+        #     error_heading = 0
+        #     error_lat = 0
+        #     return np.array([error_lat, error_heading])
+        # find the lateral error. Project vec_car on the reference trajectory direction vector
+        vec_error_lat = vec_car - (np.dot(vec_car, vec_dir) / np.dot(vec_dir, vec_dir)) * vec_dir
+        error_lat = np.sqrt(np.dot(vec_error_lat, vec_error_lat))
+
+        # calculate sign of error using the cross product
+        e_sign = np.cross(vec_dir, vec_car)  # used to be e_sign = np.math.atan2(np.linalg.det([vec_dir, vec_car]), np.dot(vec_dir, vec_car))
+        e_sign = -1.0 * e_sign / np.abs(e_sign)
+        error_lat *= e_sign
+
+        # calculate heading error: left-handed CW positive
+        heading_ref = self._trajectory[index_closest_waypoint, 6]
+
+        error_heading = math.radians(heading_ref) - math.radians(heading_car)  # in radians
+
+        # Make sure you dont get jumps (basically unwrap the angle with a threshold of pi radians (180 degrees))
+        if error_heading > math.pi:
+            error_heading = error_heading - 2.0 * math.pi
+        if error_heading < -math.pi:
+            error_heading = error_heading + 2.0 * math.pi
+
+        return np.array([error_lat, error_heading])
+
+    def _get_reference_sw_angle(self, t_ahead, location, velocity):
+        future_location = location + velocity * t_ahead
+
+        idx = find_closest_node(future_location, self._trajectory[:, 1:3])
+        if idx >= len(self._trajectory) - 20:
+            idx1 = 0
+        else:
+            idx1 = idx + 1
+
+        # the trajectory is recorded in unitless steering angles (verify this in the csv)
+        # so, we need to convert this to radians. First, multiply with 450 (1, -1) [-] = (450,-450) [deg]
+        sw_angle_ff_des = math.radians(self._trajectory[idx1, 3] * 450)
+
+        return sw_angle_ff_des
+
     def do(self, time_step_in_ns, carlainterface_shared_variables, hardware_manager_shared_variables, carla_interface_settings):
         """
         :param time_step_in_ns:
@@ -189,33 +279,102 @@ class FDCAControllerProcess:
         """
 
         for agent_settings in carla_interface_settings.agents.values():
-            # try:
             if agent_settings.selected_controller == self.settings.__str__():
                 if 'SensoDrive' in agent_settings.selected_input:
                     stiffness = hardware_manager_shared_variables.inputs[agent_settings.selected_input].auto_center_stiffness
-                    steering_angle = hardware_manager_shared_variables.inputs[agent_settings.selected_input].steering_angle
 
-                    # Compose a state containing the car information
-                    car_state = np.array([[carlainterface_shared_variables.agents[agent_settings.__str__()].transform[0]],
-                                          [carlainterface_shared_variables.agents[agent_settings.__str__()].transform[1]],
-                                          [math.radians(carlainterface_shared_variables.agents[agent_settings.__str__()].transform[3])]])
+                    delta_t = time_step_in_ns / 1e9  # [s]
 
-                    # Compute control inputs using current position vector
-                    self.shared_variables, torque_fdca = self.controller.compute_input(stiffness, steering_angle, car_state, self.shared_variables)
+                    sw_angle = hardware_manager_shared_variables.inputs[agent_settings.selected_input].steering_angle
+
+                    # extract data from CARLA
+                    # CARLA coordinate system (left-handed coordinate system)
+                    # X: forward
+                    # Y: right
+                    # Z: upward
+                    # Psi (heading): left-hand z-axis positive (yaw to the right is positive)
+                    # torque: rightward rotation is positive
+
+                    pos_car = np.array([carlainterface_shared_variables.agents[agent_settings.__str__()].transform[0],
+                                        carlainterface_shared_variables.agents[agent_settings.__str__()].transform[1]])
+                    vel_car = np.array([carlainterface_shared_variables.agents[agent_settings.__str__()].velocities_in_world_frame[0],
+                                        carlainterface_shared_variables.agents[agent_settings.__str__()].velocities_in_world_frame[1]])
+
+                    heading_car = carlainterface_shared_variables.agents[agent_settings.__str__()].transform[3]
+
+                    # find static error and error rate:
+                    error = self.calculate_error(pos_car, heading_car, vel_car)
+                    error_rate = (error - self._error_old) / delta_t
+
+                    # filter the error rate with biquad filter
+                    error_rate_filtered = np.array([0.0, 0.0])
+                    error_rate_filtered[0] = self._bq_filter_velocity.step(error_rate[0])
+                    error_rate_filtered[1] = self._bq_filter_heading.step(error_rate[1])
+
+                    # put errors in 1 variable
+                    self._controller_error[0:2] = error
+                    self._controller_error[2:4] = error_rate_filtered
+
+                    # FDCA specific calculations here
+                    # strength of haptic feedback
+                    sw_angle_fb = self.shared_variables.sohf * (
+                                self.shared_variables.k_y * self._controller_error[0] + self.shared_variables.k_psi * self._controller_error[1])
+
+                    # get feedforward sw angle
+                    sw_angle_ff_des = self._get_reference_sw_angle(self.t_lookahead, pos_car, vel_car)
+
+                    # level of haptic support (feedforward); get sw angle needed for haptic support
+                    sw_angle_ff = self.shared_variables.lohs * sw_angle_ff_des
+
+                    # calculate torques
+
+                    # loha torque
+                    # calculate sw error; BASED ON BASTIAAN PETERMEIJER's SIMULINK IMPLEMENTATION OF THE FDCA
+                    # add fb and ff sw angles to get total desired sw angle; this is the sw angle the sw should get
+                    delta_sw = (sw_angle_fb + sw_angle_ff_des) - sw_angle
+
+                    torque_loha = delta_sw * self.shared_variables.loha  # loha should be [Nm/rad]
+
+                    # feedforward/feedback torque
+                    sw_angle_ff_fb = sw_angle_ff + sw_angle_fb
+
+                    # simplified inverse steering dynamics
+
+                    # check: the inherent SW stiffness should not be zero (div by 0)
+                    if abs(stiffness) < 0.001:
+                        stiffness = 0.001
+
+                    torque_ff_fb = sw_angle_ff_fb * 1.0 / (1.0 / stiffness)  # !!! stiffness should be in [Nm/rad]
+
+                    # total torque of FDCA, to be sent to SW controller in Nm
+                    torque_fdca = torque_loha + torque_ff_fb
+
+                    # update variables
+                    self._error_old = error
+
                     hardware_manager_shared_variables.inputs[agent_settings.selected_input].torque = torque_fdca
-            # except:
-            #     pass
+
+                    # set the shared variables
+                    self.shared_variables.lat_error = error[0]
+                    self.shared_variables.heading_error = error[1]
+                    self.shared_variables.sw_des = sw_angle_ff_des + sw_angle_fb
+                    self.shared_variables.ff_torque = sw_angle_ff * stiffness
+                    self.shared_variables.fb_torque = sw_angle_fb * stiffness
+                    self.shared_variables.loha_torque = torque_loha
+                    self.shared_variables.req_torque = torque_fdca
 
 
 class FDCAControllerSettings:
     def __init__(self, identifier=''):
-        self.k_y = 0.2
-        self.k_psi = 2
-        self.lohs = 1
+        self.t_lookahead = 0.0
+        self.k_y = 0.15
+        self.k_psi = 2.5
+        self.lohs = 1.0
         self.sohf = 1.0
-        self.loha = 1.0
-        self.trajectory_name = "hcr_trajectory.csv"
+        self.loha = 0.0
+        self.trajectory_name = "MiddleRoadTVRecord_filtered_ffswang_heading_3hz.csv"
         self.identifier = identifier
+
         self.haptic_controller_type = HapticControllerTypes.FDCA.value
 
     def __str__(self):
@@ -227,169 +386,3 @@ class FDCAControllerSettings:
     def set_from_loaded_dict(self, loaded_dict):
         for key, value in loaded_dict.items():
             self.__setattr__(key, value)
-
-
-class FDCAController:
-    def __init__(self, wheel_base=2.406, effective_ratio=1/13, human_compatible_reference=None):
-        self.wheel_base = wheel_base
-        self.effective_ratio = effective_ratio
-        self._trajectory = human_compatible_reference
-        self._bq_filter_curve = LowPassFilterBiquad(fc=30, fs=100)
-
-    def compute_input(self, stiffness, steering_angle, car_state, shared_variables):
-        """
-        Compute the control inputs for the FDCA Controller
-
-        Args:
-            stiffness (float): steering wheel stiffness
-            steering_angle (float): current steering wheel angle
-            car_state (numpy.ndarray): x, y and theta coordinates of car
-            shared_variables (params): contains all information to be shared
-
-        Returns:
-            shared_variables (params): contains all information to be shared
-            fdca_torque (float): computed control input
-        """
-        x_road, y_road, road_state, steering_reference = self._get_references(car_state)
-        error = self._calculate_error(car_state, road_state)
-
-        # Torques, 1. Feedforward torque with LOHS gain tuning, 2. Feedback torque with SOHF gain tuning, 3. Haptic authority (how much can I deviate from haptic system) with tunable LOHA stiffness
-        feedforward_torque = shared_variables.lohs * (stiffness * steering_reference)  # LOHS torque (feedforward)
-        feedback_torque = shared_variables.sohf * (shared_variables.k_y * error[0] + shared_variables.k_psi * error[1])  # SOHF torque (feedback)
-        loha_torque = shared_variables.loha * ((feedforward_torque + feedback_torque) / stiffness - steering_angle)  # LOHA torque
-        fdca_torque = feedforward_torque + feedback_torque + loha_torque
-
-        # set the shared variables
-        shared_variables.sw_des = (feedforward_torque + feedback_torque) / stiffness
-        shared_variables.ff_torque = feedforward_torque
-        shared_variables.fb_torque = feedback_torque
-        shared_variables.loha_torque = loha_torque
-        shared_variables.req_torque = fdca_torque
-        shared_variables.lat_error = error[0]
-        shared_variables.heading_error = error[1]
-        shared_variables.x_road = x_road
-        shared_variables.y_road = y_road
-
-        return shared_variables, fdca_torque
-
-    def _transform(self, x, theta):
-        """
-        Calculates rotation matrix and rotate vector x.
-
-        Args:
-            x (numpy.ndarray): vector to be rotated
-            theta (float): Rotation angle
-
-        Returns:
-            np.ndarray: vector rotated around angle theta
-        """
-        R = np.array([[math.cos(theta), math.sin(theta), 0],
-                      [-math.sin(theta), math.cos(theta), 0],
-                      [0, 0, 1]])
-        return np.matmul(R, x)
-
-    def _calculate_error(self, car_state, road_state):
-        """
-        Calculate the controller error
-        CARLA coordinate frame
-        X: forward
-        Y: right
-        Z: upward
-        Psi (heading): left-hand z-axis positive (yaw to the right is positive)
-        Torque: rightward rotation is positive
-        Args:
-            car_state (numpy.ndarray): x, y and theta coordinate of car
-            road_state (numpy.ndarray): x, y and theta coordinate of the road
-        Returns:
-            np.ndarray: vector containing the lateral error and heading error
-        """
-        error_state = road_state - car_state
-        error_local_frame = self._transform(error_state, road_state[2, 0])  # Calculate error in road local frame
-
-        # Make sure you dont get jumps (basically unwrap the angle with a threshold of pi radians (180 degrees))
-        if error_local_frame[2, 0] > math.pi:
-            error_local_frame[2, 0] = error_local_frame[2, 0] - 2.0 * math.pi
-        if error_local_frame[2, 0] < -math.pi:
-            error_local_frame[2, 0] = error_local_frame[2, 0] + 2.0 * math.pi
-
-        return np.array([error_local_frame[1, 0], error_local_frame[2, 0]])
-
-    def _heading(self, dx_dt, dy_dt):
-        """
-        Calculates the heading along a line.
-
-        Args:
-            dx_dt (numpy.ndarray): First derivative of x.
-            dy_dt (numpy.ndarray): First derivative of y.
-
-        Returns:
-            np.ndarray: Heading along line in radians with respect to the world frame.
-        """
-        return np.arctan2(dy_dt, dx_dt)
-
-    def _curvature(self, dx_dt, d2x_dt2, dy_dt, d2y_dt2):
-        """
-        Calculates the curvature along a line.
-
-        Args:
-            dx_dt (numpy.ndarray): First derivative of x.
-            d2x_dt2 (numpy.ndarray): Second derivative of x.
-            dy_dt (numpy.ndarray): First derivative of y.
-            d2y_dt2 (numpy.ndarray): Second derivative of y.
-
-        Returns:
-            np.ndarray: Curvature along line.
-        """
-        return (dx_dt ** 2 + dy_dt ** 2) ** -1.5 * (dx_dt * d2y_dt2 - dy_dt * d2x_dt2)
-
-    def _check_end(self, id):
-        idx = []
-        # Check if we are at the end of the trajectory
-        for i in id:
-            if i >= len(self._trajectory[:, 0]):
-                idx.append(i - len(self._trajectory[:, 0]))
-            else:
-                idx.append(i)
-        return idx
-
-    def _get_references(self, car_state):
-        """
-        Function to obtain geometric information from the road and subsequently obtain reference steering angle
-
-        Args:
-            location (numpy.ndarray): x and y position of the car
-
-        Returns:
-            x (np.ndarray): Vector containing x coordinates of the (local) road
-            y (np.ndarray): Vector containing y coordinates of the (local) road
-            road_state (np.ndarray): Vector containing x, y and theta coordinate of the closes road point
-            theta (float): Closest road point heading
-            steering_reference (float): Steering wheel reference for closest road point
-        """
-        # gather data
-        n = 50  # samples
-        pos_car = [car_state[0, 0], car_state[1, 0]]
-        id_now = find_closest_node(pos_car, self._trajectory[:, 1:3])
-        s = list(range(n))
-        id = s + id_now
-        idx = self._check_end(id)
-        x_road = self._trajectory[idx, 1]
-        y_road = self._trajectory[idx, 2]
-
-        data = np.array([x_road, y_road])
-        smoothing_factor = 0.5
-        # Cubic interpolation through generated midpoints to generate midline
-        tck, _ = cp.interpolate.splprep(data, u=s, s=smoothing_factor)
-        x, y = cp.interpolate.splev(s, tck, der=0)
-        x_now, y_now = cp.interpolate.splev(0, tck, der=0)
-        dx_dt, dy_dt = cp.interpolate.splev(20, tck, der=1)
-        d2x_dt2, d2y_dt2 = cp.interpolate.splev(20, tck, der=2)
-
-        theta = self._heading(dx_dt, dy_dt)
-        curvature = self._curvature(dx_dt, d2x_dt2, dy_dt, d2y_dt2)
-        curve_filtered = self._bq_filter_curve.step(curvature)
-        road_state = np.array([[x_now], [y_now], [theta]])
-        steering_reference = math.atan(self.wheel_base * curve_filtered) / self.effective_ratio
-
-        return x, y, road_state, steering_reference
-

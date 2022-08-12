@@ -73,8 +73,8 @@ class ControllerPlotterDialog(ModuleDialog):
         self.plot_data_loha_stiffness_x = [-160, 160]
         self.plot_data_loha_stiffness_shifted = []
         self.plot_data_loha_stiffness_y = [0, 0]
-        self.converted_x_road_outer = [0] * 50
-        self.converted_y_road_outer = [0] * 50
+        self.converted_x_road_outer = [] * 50
+        self.converted_y_road_outer = [] * 50
 
         # change labelfont
         self.labelfont = QtGui.QFont()
@@ -118,7 +118,6 @@ class ControllerPlotterDialog(ModuleDialog):
         self.hcr_plot_handle = None
         self.auto_position_plot_handle = None
         self.road_plot_handle = None
-        self.road_plot_handle_cubic = None
         self.road_outer_plot_handle = None
         self.road_inner_plot_handle = None
         self.topview_lat_error_plot_handle = None
@@ -169,12 +168,12 @@ class ControllerPlotterDialog(ModuleDialog):
             plot_data_hcr_x = tmp.values[:, 1]
             plot_data_hcr_y = tmp.values[:, 2]
 
-            # self.hcr_plot_handle = self.module_widget.top_view_graph.plot(x=plot_data_hcr_x, y=plot_data_hcr_y, shadowPen=pg.mkPen(10, 200, 0, 100, width=18),
-            #                                                               pen=pg.mkPen(0, 102, 0, 255, width=2))
+            self.hcr_plot_handle = self.module_widget.top_view_graph.plot(x=plot_data_hcr_x, y=plot_data_hcr_y, shadowPen=pg.mkPen(10, 200, 0, 100, width=18),
+                                                                          pen=pg.mkPen(0, 102, 0, 255, width=2))
         except IOError:
             print('Could not find HCR trajectory, please hardcode a name that is in your sw controller trajectory list ')
-            # self.hcr_plot_handle = self.module_widget.top_view_graph.plot(x=[0], y=[0], shadowPen=pg.mkPen(10, 200, 0, 100, width=18),
-            #                                                               pen=pg.mkPen(0, 102, 0, 255, width=2))
+            self.hcr_plot_handle = self.module_widget.top_view_graph.plot(x=[0], y=[0], shadowPen=pg.mkPen(10, 200, 0, 100, width=18),
+                                                                          pen=pg.mkPen(0, 102, 0, 255, width=2))
         self.car_symbol = QtGui.QPainterPath()
         self.car_symbol.addRect(-0.2, -0.4, 0.4, 0.8)
 
@@ -184,11 +183,6 @@ class ControllerPlotterDialog(ModuleDialog):
                                                                                 symbolPen=pg.mkPen((0, 0, 0, 255), width=2))
         self.road_plot_handle = self.module_widget.top_view_graph.plot(x=[0], y=[0], size=2,
                                                                        pen=pg.mkPen((0, 0, 0, 200), width=1, style=QtCore.Qt.DashLine),
-                                                                       brush='g', symbol=None,
-                                                                       symbolBrush=self.brushes,
-                                                                       symbolPen=self.pens, symbolSize=5)
-        self.road_plot_handle_cubic = self.module_widget.top_view_graph.plot(x=[0], y=[0], size=2,
-                                                                       pen=pg.mkPen((0, 0, 0, 100), width=2, style=QtCore.Qt.DashLine),
                                                                        brush='g', symbol=None,
                                                                        symbolBrush=self.brushes,
                                                                        symbolPen=self.pens, symbolSize=5)
@@ -298,10 +292,9 @@ class ControllerPlotterDialog(ModuleDialog):
         self.top_view_legend = pg.LegendItem(offset=(10, -10), horSpacing=30, verSpacing=2,
                                              pen=pg.mkPen(0, 0, 0, 0), brush=pg.mkBrush(255, 255, 255, 0))
         self.top_view_legend.setParentItem(top_view_viewbox)
-        # self.top_view_legend.addItem(self.hcr_plot_handle, name='HCR')
+        self.top_view_legend.addItem(self.hcr_plot_handle, name='HCR')
         self.top_view_legend.addItem(self.road_outer_plot_handle, name='Lane/Road Edge')
         self.top_view_legend.addItem(self.road_plot_handle, name='Lane/Road Center')
-        self.top_view_legend.addItem(self.road_plot_handle_cubic, name='Local HCR')
         self.top_view_legend.addItem(self.topview_lat_error_plot_handle, name='Lateral Error')
         self.top_view_legend.addItem(self.topview_heading_error_plot_handle, name='Heading Error')
 
@@ -444,9 +437,6 @@ class ControllerPlotterDialog(ModuleDialog):
             loha_torque = data_from_haptic_controller_manager.loha_torque
             req_torque = data_from_haptic_controller_manager.req_torque
             loha = data_from_haptic_controller_manager.loha
-            self.plot_data_road_x_cubic = data_from_haptic_controller_manager.x_road
-            self.plot_data_road_y_cubic = data_from_haptic_controller_manager.y_road
-            # print(self.plot_data_road_x_cubic)
 
         except AttributeError:
             lat_error = 0
@@ -457,8 +447,6 @@ class ControllerPlotterDialog(ModuleDialog):
             ff_torque = 0
             loha_torque = 0
             loha = 0
-            self.plot_data_road_x_cubic = [0] * 50
-            self.plot_data_road_y_cubic = [0] * 50
 
         try:
             actual_torque = data_from_hardware_manager.measured_torque
@@ -471,7 +459,6 @@ class ControllerPlotterDialog(ModuleDialog):
             vehicle_rotation = car_transform[3]
             vehicle_location_x = car_transform[0]
             vehicle_location_y = car_transform[1]
-
             self.plot_data_road_x = data_from_carla_interface.data_road_x
             self.plot_data_road_x_inner = data_from_carla_interface.data_road_x_inner
             self.plot_data_road_x_outer = data_from_carla_interface.data_road_x_outer
@@ -510,9 +497,6 @@ class ControllerPlotterDialog(ModuleDialog):
         self.road_plot_handle.setTransformOriginPoint(self.plot_data_road_x[24], self.plot_data_road_y[24])
         self.road_plot_handle.setRotation(math.degrees(self.plot_data_road_psi[24] - 0.5 * math.pi))
 
-        self.road_plot_handle_cubic.setTransformOriginPoint(self.plot_data_road_x[24], self.plot_data_road_y[24])
-        self.road_plot_handle_cubic.setRotation(math.degrees(self.plot_data_road_psi[24] - 0.5 * math.pi))
-
         self.auto_position_plot_handle.setTransformOriginPoint(self.plot_data_road_x[24], self.plot_data_road_y[24])
         self.auto_position_plot_handle.setRotation(math.degrees(self.plot_data_road_psi[24] - 0.5 * math.pi))
 
@@ -528,11 +512,8 @@ class ControllerPlotterDialog(ModuleDialog):
         self.topview_HCR_heading_line_plot_handle.setTransformOriginPoint(self.plot_data_road_x[24], self.plot_data_road_y[24])
         self.topview_HCR_heading_line_plot_handle.setRotation(math.degrees(self.plot_data_road_psi[24] - 0.5 * math.pi))
 
-        self.road_plot_handle_cubic.setTransformOriginPoint(self.plot_data_road_x[24], self.plot_data_road_y[24])
-        self.road_plot_handle_cubic.setRotation(math.degrees(self.plot_data_road_psi[24] - 0.5 * math.pi))
-
-        # self.hcr_plot_handle.setTransformOriginPoint(self.plot_data_road_x[24], self.plot_data_road_y[24])
-        # self.hcr_plot_handle.setRotation(math.degrees(self.plot_data_road_psi[24] - 0.5 * math.pi))
+        self.hcr_plot_handle.setTransformOriginPoint(self.plot_data_road_x[24], self.plot_data_road_y[24])
+        self.hcr_plot_handle.setRotation(math.degrees(self.plot_data_road_psi[24] - 0.5 * math.pi))
 
         tr = QtGui.QTransform()
         angle_rot = tr.rotate(vehicle_rotation + (math.degrees(self.plot_data_road_psi[24])))
@@ -567,7 +548,6 @@ class ControllerPlotterDialog(ModuleDialog):
         self.road_outer_plot_handle.setData(x=self.plot_data_road_x_outer[0:-2], y=self.plot_data_road_y_outer[0:-2])
         self.road_inner_plot_handle.setData(x=self.plot_data_road_x_inner[0:-2], y=self.plot_data_road_y_inner[0:-2])
         self.road_plot_handle.setData(x=self.plot_data_road_x[0:-2], y=self.plot_data_road_y[0:-2])
-        self.road_plot_handle_cubic.setData(x=self.plot_data_road_x_cubic[0:-2], y=self.plot_data_road_y_cubic[0:-2])
         self.topview_heading_error_plot_handle.setData(x=self.plot_data_heading_error_top_view_x, y=self.plot_data_heading_error_top_view_y)
         self.module_widget.top_view_graph.setXRange(min_plot_range_x, max_plot_range_x, padding=0)
         self.module_widget.top_view_graph.setYRange(min_plot_range_y, max_plot_range_y, padding=0)
@@ -575,8 +555,6 @@ class ControllerPlotterDialog(ModuleDialog):
         # Clear lists so we can append them again for the next loop
         self.plot_data_road_x = []
         self.plot_data_road_y = []
-        self.plot_data_road_x_cubic = []
-        self.plot_data_road_y_cubic = []
         self.plot_data_heading_error_top_view_x = []
         self.plot_data_heading_error_top_view_y = []
         self.plot_data_road_x_outer = []

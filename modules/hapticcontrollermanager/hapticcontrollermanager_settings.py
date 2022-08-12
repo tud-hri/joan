@@ -29,11 +29,6 @@ class HapticControllerManagerSettings(ModuleSettings):
                 ego_vehicle_settings.set_from_loaded_dict(settings_dict)
                 self.haptic_controllers.update({identifier: ego_vehicle_settings})
 
-            if 'Traded Control' in identifier:
-                ego_vehicle_settings = HapticControllerTypes.TradedControl.settings()
-                ego_vehicle_settings.set_from_loaded_dict(settings_dict)
-                self.haptic_controllers.update({identifier: ego_vehicle_settings})
-
     def add_haptic_controller(self, haptic_controller_type: HapticControllerTypes, haptic_controller_settings=None):
         """
         :param haptic_controller_type: enum, see hapticcontrollertypes.py
