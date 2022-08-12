@@ -393,7 +393,7 @@ class SensoDriveComm(mp.Process):
 
         # Limit torque to 2 Nm to prevent injuries
         torque = data['torque']
-        max_torque = 3000
+        max_torque = 2500
         limited_torque = max(min(torque, max_torque), -max_torque)
 
         torque_bytes = int.to_bytes(limited_torque, 2, byteorder='little', signed=True)
