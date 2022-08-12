@@ -1,6 +1,5 @@
 from modules.carlainterface.carlainterface_process import CarlaInterfaceProcess
-# from tools.carlaimporter import carla
-import carla
+from tools.carlaimporter import carla
 
 class ScenarioStopTrialAtLocation:
 

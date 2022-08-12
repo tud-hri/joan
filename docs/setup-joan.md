@@ -89,14 +89,6 @@ supervisor.
 
 These instructions are specifically written for TU Delft students but are useful for others too.
 
-!!! Note 
-    (Tested in June 2022) Some errors may occur when trying to compile your map. Make sure that the following steps are followed.
-    Go to Project Settings in Unreal. Then move over to `Project > Packaging`. In the `Packaging` tab, click on `Show advanced` and under `Directories to never cook` add `/Game/Carla/Blueprints/Lights`. 
-
-!!! Note 
-    To prevent errors with the weather settings, when adding your map to the maps folder, also add your map to `BP_Weather`. 
-    This can be done by opening `BP_Weather` in the folder `/Carla/Blueprints/Weather`. In the `Get Town` function, click on the `Default Weathers` block. Now click the plus (Add elements) and add the name of your map.
-
 - Create a folder with the name `<YEAR>_<NETID>` in the directory `C:\carla\Unreal\CarlaUE4\Content\Research\` (create the folder `Research` if it does not exist).
 - Download the template map [here](https://doi.org/10.4121/19419923){target="_blank"}, extract it, and copy the folder called `Maps` it in your
   own folder under `C:\carla\Unreal\CarlaUE4\Content\Research\<YEAR>_<NETID>\`.

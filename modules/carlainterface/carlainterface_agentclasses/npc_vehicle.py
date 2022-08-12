@@ -3,8 +3,7 @@ import numpy as np
 from enum import Enum
 import copy
 
-# from tools.carlaimporter import carla
-import carla
+from tools.carlaimporter import carla
 
 from PyQt5 import uic, QtWidgets
 from modules.carlainterface.carlainterface_agenttypes import AgentTypes
@@ -163,7 +162,7 @@ class NPCVehicleProcess:
         self.set_shared_variables()
 
     def destroy(self):
-        if hasattr(self, 'spawned_vehicle') and self.spawned_vehicle.is_alive:
+        if hasattr(self, 'spawned_vehicle'):
             self.spawned_vehicle.destroy()
 
     def set_shared_variables(self):
