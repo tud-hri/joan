@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Quick start on using source control (git) - JOAN documentation</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+        <link href="https://unpkg.com/mermaid@8.6.0/dist/mermaid.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Quick start on using source control (git)";
+        var mkdocs_page_input_path = "other-git.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <script src="../js/jquery-3.6.0.min.js" defer></script>
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> JOAN documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../introduction/">Introduction</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Setup JOAN and CARLA</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../setup-carla-windows/">Build CARLA on Windows</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../setup-joan/">Install JOAN</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../example-usage-and-testing/">Example usage and functionality testing</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">First steps</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../firststeps-joan-overview/">JOAN Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../firststeps-joan-run/">Run JOAN and CARLA</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../firststeps-carle-ue4/">Quick start CARLA</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Using the JOAN core modules</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../modules-datarecorder/">Data Recorder</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../modules-carlainterface/">CARLA interface</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../modules-hardwaremanager/">Hardware Manager</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../modules-experimentmanager/">Experiment Manager</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../modules-hapticcontrollermanager/">Haptic Controller Manager</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../modules-dataplotter/">Data Plotter</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Advanced</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../advanced-add-custom-module/">Create custom JOAN modules</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../advanced-settings/">Using JOAN Settings</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../advanced-state-machine/">JOAN State Machine</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Other stuff</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Quick start on using source control (git)</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#some-notes">Some notes</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#your-first-git-steps">Your first git steps</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#git-tutorials-and-documentation">git tutorials and documentation</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../other-sensodrive/">A short Sensodrive SENSO Wheel explanation</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Want to contribute?</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../contributing-guidelines/">Guidelines</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../contributing-coding-standard/">Coding Standard</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">JOAN documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li>
+          <li>Other stuff &raquo;</li><li>Quick start on using source control (git)</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="how-to-git-source-control">How to GIT (source control)</h1>
+<h2 id="some-notes">Some notes</h2>
+<p>This is a not-so-complete how-to for using <code>git</code> for your project. </p>
+<p><code>git</code> is a widely used versioning system for software projects. It allows you to keep track of all the changes you made in your project. This is great because when you changed something and your project crumbles before your eyes, you can easily revert to a previous version :-) Also, no more multiple .zip files with versions of your project (we are very allergic to things like receiving zipped projects like <code>myproject-v21-v2-evenbetterversion.zip</code>. Any decent programmer will not touch it, not even with a stick).</p>
+<p>Some pros of using <code>git</code>:</p>
+<ul>
+<li>you have a history of all changes you made</li>
+<li>in case things go wrong, you can easily go back to a previous, working version</li>
+<li>it is easy to share the latest version of your code with others</li>
+<li>you can work on your code on multiple computers. For example, you create and test your project at home, push those changes to the online repository, and pull them on your TU Delft computer to do experiments. No more USB sticks with crappy zip files! </li>
+<li>the TU provides us with a local <code>git</code> server, which is great for GDPR-reasons (not cloud-based like <code>GitHub</code>).</li>
+</ul>
+<p>However, using <code>git</code> requires a relatively steep learning curve. We will add some tutorials below. </p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>There are some ground rules for using our <code>git</code> servers. </p>
+<ul>
+<li>DO NOT UPLOAD DATA FILES TO THE REPOSITORY. Seriously, do not push big files or batches of files to the servers. Use <code>Surfdrive</code> instead for big data files. If the data file is of the greatest importance for your project, sure. DO NOT PUSH PARTICIPANT DATA TO THE GITLAB SERVER.</li>
+<li>Other stuff. We'll keep you posted.</li>
+</ul>
+</div>
+<h2 id="your-first-git-steps">Your first git steps</h2>
+<p>We will provide some more detailed instructions on how to use <code>git</code> with PyCharm or VS Code here in the future. </p>
+<p>For now, familiarize yourself with the following <code>git</code> things:</p>
+<ul>
+<li><strong>staging</strong> of files</li>
+<li><strong>committing</strong> files</li>
+<li><strong>pushing</strong> your commits</li>
+<li><strong>pulling</strong> latest commits from your own repository</li>
+</ul>
+<p>In addition, we will provide some instructions on how to retrieve the latest changes of JOAN. </p>
+<p><strong>merge</strong>: a slightly more advanced action in <code>git</code> is merging incoming changes to your current working version. PyCharm can help you to merge files. We are not going to give a full description of how to do this here. Google is your friend. If you really cannot figure it out, ask your supervisor.</p>
+<h3 id="git-tutorials-and-documentation">git tutorials and documentation</h3>
+<p>The official <code>git</code> <a href="https://git-scm.com/doc" target="_blank">website</a> has a ton of useful information about <code>git</code> and how to use it. Scroll through the documentation section for more information and videos. However, the most important things you need to know are:</p>
+<ul>
+<li>Make your changes to the code and test if they work.</li>
+<li>Once you know your code works, commit the changes using git. </li>
+<li>Pull any new changes in the online repository to your computer. Check if no conflicts in files exist.</li>
+<li>Then, push those commits (could be one or multiple commits) to the online repository</li>
+</ul>
+<p>There are a lot of useful git tutorials circulating on the internet, both in written and video form. A useful video tutorial can be found <a href="https://www.youtube.com/watch?v=xAAmje1H9YM&amp;list=PLeo1K3hjS3usJuxZZUBdjAcilgfQHkRzW" target="_blank">here on YouTube</a>. 
+It explains the use of git in 10 videos, for JOAN you can ignore the part on GitHub since we don't use GitHub. This tutorial series uses git terminal commands for all actions, this will help you understand the git basics. 
+PyCharm will allow you to use the git functionality directly, see the gifs below. </p>
+<p>In PyCharm, you could pull new changes in the online repo to your local copy as follows:</p>
+<p><img alt="pull-pycharm" src="../gifs/other-pull-own-repo.gif" /></p>
+<p>Here is an example of how to use PyCharm to commit and push the changes to the online repository (note, pushing and pulling can take some time, as you can see in the GIFs too):</p>
+<p><img alt="commit-push-pycharm" src="../gifs/other-commit-push.gif" /></p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../advanced-state-machine/" class="btn btn-neutral float-left" title="JOAN State Machine"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../other-sensodrive/" class="btn btn-neutral float-right" title="A short Sensodrive SENSO Wheel explanation">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../advanced-state-machine/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../other-sensodrive/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="https://unpkg.com/mermaid@8.6.0/dist/mermaid.min.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

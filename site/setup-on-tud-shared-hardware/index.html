@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Working with JOAN and CARLA on shared TU Delft hardware - JOAN documentation</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+        <link href="https://unpkg.com/mermaid@8.6.0/dist/mermaid.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Working with JOAN and CARLA on shared TU Delft hardware";
+        var mkdocs_page_input_path = "setup-on-tud-shared-hardware.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <script src="../js/jquery-3.6.0.min.js" defer></script>
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> JOAN documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../introduction/">Introduction</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Setup JOAN and CARLA</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../setup-carla-windows/">Build CARLA on Windows</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../setup-joan/">Install JOAN</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../example-usage-and-testing/">Example usage and functionality testing</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">First steps</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../firststeps-joan-overview/">JOAN Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../firststeps-joan-run/">Run JOAN and CARLA</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../firststeps-carle-ue4/">Quick start CARLA</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Using the JOAN core modules</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../modules-datarecorder/">Data Recorder</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../modules-carlainterface/">CARLA interface</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../modules-hardwaremanager/">Hardware Manager</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../modules-experimentmanager/">Experiment Manager</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../modules-hapticcontrollermanager/">Haptic Controller Manager</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../modules-dataplotter/">Data Plotter</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Advanced</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../advanced-add-custom-module/">Create custom JOAN modules</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../advanced-settings/">Using JOAN Settings</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../advanced-state-machine/">JOAN State Machine</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Other stuff</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../other-git/">Quick start on using source control (git)</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../other-sensodrive/">A short Sensodrive SENSO Wheel explanation</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Want to contribute?</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../contributing-guidelines/">Guidelines</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../contributing-coding-standard/">Coding Standard</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">JOAN documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li><li>Working with JOAN and CARLA on shared TU Delft hardware</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="working-with-joan-and-carla-on-shared-tu-delft-hardware">Working with JOAN and CARLA on shared TU Delft hardware</h1>
+<p>These instructions are specifically for students at TU Delft, but they may be useful for others too. </p>
+<p>If you are a student at the TUD, you will share hardware (computers, steering wheels) with your fellow students. To make sure we keep everything organized, you need to follow the next steps for every computer you want to install your project on.</p>
+<hr />
+<h2 id="step-1-preparations">Step 1: preparations</h2>
+<ul>
+<li>Log in with your TU Delft NetID.</li>
+<li>If correct, CARLA (see <code>C:\carla</code>), python 3.8.5 (64 bit; type <code>python</code> in a command terminal, you should see a python version &gt; 3.8), and PyCharm are already installed. </li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you need to do a fresh install (CARLA, python, PyCharm, ...) on the computer, follow the steps in both the <a href="../setup-carla-windows/">Build CARLA on Windows</a> and <a href="../setup-joan/">Install JOAN</a> pages. This needs to be done as an administrator to make CARLA, Python, and PyCharm available for everyone. Ask your supervisor first.</p>
+</div>
+<h2 id="step-2-clone-your-joan-project">Step 2: clone your JOAN project</h2>
+<p>You can run your JOAN and CARLA project on any TUD computer that we prepared for you. For each PC, you need to clone and set up your JOAN project. Follow the steps in <a href="../setup-joan/">Install JOAN</a>: do step 1 only when you first create your JOAN project, else, only do steps 2-5. </p>
+<h2 id="step-3-setup-your-own-carla-map">Step 3: setup your own CARLA map</h2>
+<p>You will probably need to build your own map with a road in CARLA for your project.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Maps need to be in the <code>C:\carla</code> directory. You need to be very careful not to tamper with another student's CARLA project or the CARLA installation itself. Therefore, please be cautious when working in the <code>C:\carla</code> folder. <strong>You can screw up your fellow students' projects if you do not!</strong></p>
+</div>
+<p>We prepared a template map (<code>DebugMap</code>), which you can find in <code>C:\carla\Unreal\CarlaUE4\Content\Carla\Maps</code>.</p>
+<p>To create your own map: </p>
+<ul>
+<li>Create a folder with the name <code>&lt;YEAR&gt;_&lt;NETID&gt;</code> in the directory <code>C:\carla\Unreal\CarlaUE4\Content\Research\</code> (create the folder <code>Research</code> if it does not exist).</li>
+<li>Download the template map <a href="https://doi.org/10.4121/19419923" target="_blank">here</a>, extract it, and copy the folder called <code>Maps</code> it in your
+  own folder under <code>C:\carla\Unreal\CarlaUE4\Content\Research\&lt;YEAR&gt;_&lt;NETID&gt;\</code>.</li>
+<li>Open the Epic Game Launcher (you might need to log in; use your login of choice).</li>
+<li>Launch Unreal Engine, top-right corner (Unreal should be installed; if not, restart the Epic Game Launcher or reboot the computer, this normally works).</li>
+<li>In Unreal Engine, CarlaUE4 should be listed under 'Recent projects'. If not, open the <code>CarlaUE4</code> project (browse to <code>C:\carla\Unreal\CarlaUE4\</code> and open <code>CarlaUE4.uproject</code>). </li>
+<li>The CarlaUE4 will now start; this may take a while if you start it for the first time.</li>
+<li>To open your own level, click <code>File</code> &rarr; <code>Open level</code> and select <code>DebugMap.umap</code> <strong>in your folder</strong> (navigate to your 'Research' folder!)</li>
+<li>If you want, you can rename your map to a more descriptive name (right-click on the map in the editor &rarr; <code>rename</code>, for example, <code>&lt;YEAR&gt;_Map_&lt;NAME&gt;_&lt;SHORT DESCRIPTION&gt;</code>, or use <code>File</code> &rarr; <code>Save as</code>).</li>
+<li>Your level will load, but this may take some time.</li>
+<li>To run the Unreal Engine, hit the play button.</li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Make sure to load your own map, so double-check that you are in the right directory when opening your level!</p>
+</div>
+<h2 id="reserving-and-sharing-the-tud-computers">Reserving and sharing the TUD computers</h2>
+<p>We have limited hardware at the TUD for you to work on. Please share the PCs fairly with your fellow students. You can coordinate through Slack (joan-forum, for example).</p>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="https://unpkg.com/mermaid@8.6.0/dist/mermaid.min.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

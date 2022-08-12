@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Coding Standard - JOAN documentation</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+        <link href="https://unpkg.com/mermaid@8.6.0/dist/mermaid.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Coding Standard";
+        var mkdocs_page_input_path = "contributing-coding-standard.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <script src="../js/jquery-3.6.0.min.js" defer></script>
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> JOAN documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../introduction/">Introduction</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Setup JOAN and CARLA</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../setup-carla-windows/">Build CARLA on Windows</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../setup-joan/">Install JOAN</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../example-usage-and-testing/">Example usage and functionality testing</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">First steps</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../firststeps-joan-overview/">JOAN Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../firststeps-joan-run/">Run JOAN and CARLA</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../firststeps-carle-ue4/">Quick start CARLA</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Using the JOAN core modules</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../modules-datarecorder/">Data Recorder</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../modules-carlainterface/">CARLA interface</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../modules-hardwaremanager/">Hardware Manager</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../modules-experimentmanager/">Experiment Manager</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../modules-hapticcontrollermanager/">Haptic Controller Manager</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../modules-dataplotter/">Data Plotter</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Advanced</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../advanced-add-custom-module/">Create custom JOAN modules</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../advanced-settings/">Using JOAN Settings</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../advanced-state-machine/">JOAN State Machine</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Other stuff</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../other-git/">Quick start on using source control (git)</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../other-sensodrive/">A short Sensodrive SENSO Wheel explanation</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Want to contribute?</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../contributing-guidelines/">Guidelines</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Coding Standard</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#general">General</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#python">Python</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#git-flow">Git flow</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#versioning">Versioning</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#mkdocs">mkdocs</a>
+    </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">JOAN documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li>
+          <li>Want to contribute? &raquo;</li><li>Coding Standard</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="coding-standard">Coding standard</h1>
+<hr />
+<h2 id="general">General</h2>
+<p>We follow the coding standard as outlined in <a href="https://www.python.org/dev/peps/pep-0008/" target="_blank">PEP8</a>, with one exception the maximum column length for code is increased to 160 since we all use 19:6 screens. 
+To make your life a bit easier, use linters. We recommend <code>flake8</code> or <code>pylint</code>, or the build-in functionality of pycharm</p>
+<p>Use in editors:</p>
+<ul>
+<li>
+<p>PyCharm checks the code according to PEP8 automatically. To change the maximum line length to 160 follow these steps:</p>
+<ol>
+<li>Click: file -&gt; settings</li>
+<li>In the navigation bar on the left go to: editor -&gt; code style -&gt; python  </li>
+<li>Open the line and wrapping tab </li>
+<li>Change the first option (hard wrap) from 120 (default) to 160 and click oke</li>
+</ol>
+</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To auto-format your code in PyCharm use ctrl + alt + L</p>
+</div>
+<hr />
+<h2 id="python">Python</h2>
+<ul>
+<li>Comments should not exceed 80 columns, code should not exceed 160 columns.</li>
+<li>All code must be compatible with Python 3.7.</li>
+<li>Use snake_case for methods, variables, attributes</li>
+<li>Use CamelCase for classes</li>
+<li>Functions or variables that are only for use within a class (private members) should start with an underscore (e.g. self._my_variable)</li>
+<li>Use <em>informative</em> variable names, not <code>self.bla = 1</code> or <code>self.whatever</code>. </li>
+<li>Remove any commented code once you are done with coding. </li>
+<li><a href="https://www.pylint.org/" target="_blank">Pylint</a> or <a href="https://flake8.pycqa.org/en/latest/" target="_blank">flake8</a> should not give any error or warning (few exceptions apply with external classes like <code>numpy</code> and <code>pygame</code>, etcetera).</li>
+<li>Python code follows <a href="https://www.python.org/dev/peps/pep-0008/" target="_blank">PEP8 style guide</a>.</li>
+</ul>
+<h2 id="git-flow">Git flow</h2>
+<p>We try to use the Git flow workflow in terms of branching, feature implementation and testing and releases. For more information, visit this <a href="https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow" target="_blank">link</a> and <a href="https://nvie.com/posts/a-successful-git-branching-model/" target="_blank">this branching model</a></p>
+<h3 id="versioning">Versioning</h3>
+<p>I propose to use the <a href="https://semver.org/" target="_blank">Semantic Versioning</a> convention for versions. Our first beta release will be v0.9.0. Each patch increases the last digit: v0.9.1. Every major version (no backward compatibility) increases the first digit (v1.0.0); though I am not too sure about this one. Every minor version increases the second digit and resets the last: v0.10.0.</p>
+<h2 id="mkdocs">mkdocs</h2>
+<p>We are using <code>mkdocs</code> and ReadTheDocs for our documentation. For more information on <code>mkdocs</code>, visit <a href="https://www.mkdocs.org" target="_blank">this link</a>. We have a branch for the documentation: <code>docs</code>. </p>
+<p>To install <code>mkdocs</code>, run:
+<pre class="highlight"><code>pip install mkdocs</code></pre></p>
+<p>You can build your documentation <em>locally</em> through:</p>
+<pre class="highlight"><code>mkdocs serve</code></pre>
+<p>This command builds your Markdown files into HTML and starts a development server to browse your documentation. Open up <a href="http://127.0.0.1:8000/">http://127.0.0.1:8000/</a> in your web browser to see your documentation. You can make changes to your Markdown files and your docs will automatically rebuild. </p>
+<p>Check whether your changes in the documentation work correctly before pushing them to the <code>docs</code> branch.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../contributing-guidelines/" class="btn btn-neutral float-left" title="Guidelines"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../contributing-guidelines/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="https://unpkg.com/mermaid@8.6.0/dist/mermaid.min.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

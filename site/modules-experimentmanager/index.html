@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Experiment Manager - JOAN documentation</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+        <link href="https://unpkg.com/mermaid@8.6.0/dist/mermaid.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Experiment Manager";
+        var mkdocs_page_input_path = "modules-experimentmanager.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <script src="../js/jquery-3.6.0.min.js" defer></script>
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> JOAN documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../introduction/">Introduction</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Setup JOAN and CARLA</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../setup-carla-windows/">Build CARLA on Windows</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../setup-joan/">Install JOAN</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../example-usage-and-testing/">Example usage and functionality testing</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">First steps</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../firststeps-joan-overview/">JOAN Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../firststeps-joan-run/">Run JOAN and CARLA</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../firststeps-carle-ue4/">Quick start CARLA</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Using the JOAN core modules</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../modules-datarecorder/">Data Recorder</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../modules-carlainterface/">CARLA interface</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../modules-hardwaremanager/">Hardware Manager</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Experiment Manager</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#how-does-the-experiment-manager-work">How does the Experiment Manager work?</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#how-do-i-use-the-experiment-manager">How do I use the Experiment Manager?</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#0-loading-an-existing-experiment">0. Loading an existing experiment</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#1-creating-a-new-experiment">1. Creating a new experiment</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#2-creating-conditions">2. Creating conditions</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#3-creating-transitions">3. Creating Transitions</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#4-define-the-flow-of-your-experiment">4. Define the flow of your experiment</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#5-running-the-experiment">5. Running the experiment.</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#6-changing-the-condition-order-for-different-participants">6. Changing the condition order for different participants</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#using-the-datarecorder-with-the-experimentmanager">Using the DataRecorder with the ExperimentManager</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../modules-hapticcontrollermanager/">Haptic Controller Manager</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../modules-dataplotter/">Data Plotter</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Advanced</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../advanced-add-custom-module/">Create custom JOAN modules</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../advanced-settings/">Using JOAN Settings</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../advanced-state-machine/">JOAN State Machine</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Other stuff</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../other-git/">Quick start on using source control (git)</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../other-sensodrive/">A short Sensodrive SENSO Wheel explanation</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Want to contribute?</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../contributing-guidelines/">Guidelines</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../contributing-coding-standard/">Coding Standard</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">JOAN documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li>
+          <li>Using the JOAN core modules &raquo;</li><li>Experiment Manager</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="module-experiment-manager">Module: Experiment Manager</h1>
+<p>The Experiment Manager is used to define experiments consisting of experimental conditions. Once these are defined, the Experiment Managers can automatically transition between conditions. It thereby automates the process of running the experiment. This prevents manual errors in resetting the driving simulator and in loading the correct settings for a specific condition. All conditions consist of a specific set of settings for the included modules. Examples of these settings (and thus parameters that you can vary in conditions) are the spawn points of vehicles, the gains of a haptic shared controller, or the velocity in cruise control mode. In summary, with the Experiment manager you can:</p>
+<ul>
+<li>create or modify an experiment,</li>
+<li>add conditions to the experiment,</li>
+<li>select the conditions you want to run in your experiment,</li>
+<li>set the order of the conditions, and</li>
+<li>customize each transition between conditions (such as respawning cars and traffic).</li>
+</ul>
+<p>The Experiment Manager has two main components: <strong>conditions</strong> and <strong>transitions</strong> between the conditions. We will describe how to use them below. </p>
+<hr />
+<h2 id="how-does-the-experiment-manager-work">How does the Experiment Manager work?</h2>
+<p>The Experiment Manager stores and sets the <a href="../advanced-settings/">settings of all modules</a> that are relevant for your experiment. Each module has its own 
+settings. For example, the settings of the steering wheel controller module contain the current values of the controller gains. </p>
+<p>When running an experiment, per condition, you may want to change these settings. The Experiment Manager checks the current settings of the controller module and 
+sets the value that corresponds to the condition you want to activate and run next in your experiment. The opposite happens when you are defining your 
+experiment: you change the settings of each module that you want to change for each condition. The Experiment Manager recognized which settings you changed and 
+stores these changes. </p>
+<p>An <code>Experiment</code> consists of a set of base settings, and every <code>Condition</code> stores the changes that have to be made to these base settings for that specific 
+condition.  </p>
+<p>The experiments are stored in a <code>JSON</code> file, which you can open in any text editor to check whether your experiment and conditions are to your liking. You can also alter these files to make changes to your experiment in a text editor. </p>
+<p>Contrary to all other modules, the Experiment Manager has no state machine and own process. This is because the Experiment Manager does not run anything, it
+merely sets all settings for you to streamline your experiment. </p>
+<p>We've prepared an <code>example_experiment.json</code> file, which contains an example experiment. We added three conditions in which we change the hardware input controlling a car in CARLA, change the settings of the hardware input (a keyboard's sensitivities to steering), and add another vehicle in CARLA. </p>
+<hr />
+<h2 id="how-do-i-use-the-experiment-manager">How do I use the Experiment Manager?</h2>
+<h3 id="0-loading-an-existing-experiment">0. Loading an existing experiment</h3>
+<p>Once you are done creating your experiment, you can save it and load it at a later stage (hit the <code>Load experiment</code> button).</p>
+<h3 id="1-creating-a-new-experiment">1. Creating a new experiment</h3>
+<p>Creating and editing experiments can only be done if all modules are in the initialized state. This is because in that state all module settings are fixed. So
+to create a new experiment, first set all modules to the settings you want to be the base settings of your experiment. Now click initialize in the JOAN main 
+window, after which the <code>Create Experiment</code> button in the Experiment manager becomes available. With this button, you can create your new experiment. You have to specify which modules to include in your experiment. Modules that are excluded will work but are not affected by the experiment manager. So you have to set their settings manually. Finally, you need to specify a name and save-path for the <code>*.json</code> file.</p>
+<h3 id="2-creating-conditions">2. Creating conditions</h3>
+<p>Now that you have your experiment, you'll need conditions. This works in the same way as creating the experiment. So the first step is to move all modules back 
+to the stopped state by clicking the stop button. Now alter the settings of the modules such that they represent your condition. Finally, click the initialize 
+button again to fix these settings and click the <code>create new condition for current settings</code> button in the edit experiment dialog. Repeat this process until you
+have created all conditions. Conditions cannot be altered once they have been made. You can delete them and create new ones. You can view the changes compared to the base settings of an experiment by double-clicking a condition in the edit experiment dialog. </p>
+<p>The only exception to this method of creating conditions is the data recorder, please see the note's on using the data recorder below.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Do not forget to click the save experiment button before closing the edit experiment dialog!</p>
+</div>
+<h3 id="3-creating-transitions">3. Creating Transitions</h3>
+<p>Transitions are used in-between conditions to execute any code you want. To create a new transition you have to create your transition class that inherits 
+from the <code>Transition</code> class. If you place it in the folder <code>modules\experimentmanager\transition</code>, it will be recognized by the experiment manager automatically
+. You can have a look at the <code>SimplePrintTransition</code> class as an example, if you want to you can copy, rename and alter it and start from there. <code>Transition</code> 
+classes have two implementable methods that are called before and after the new condition settings are applied.</p>
+<h3 id="4-define-the-flow-of-your-experiment">4. Define the flow of your experiment</h3>
+<p>Finally, you need to define the flow of your experiment, this is done in the edit experiment dialog which is shown below. An experiment consists of a sequence of
+ conditions. Transitions can be added in between optionally. All conditions and transitions can be used multiple times in one experiment. The center list in the lower part of the dialog shows the current experiment sequence. Add or remove conditions and transition with the buttons beside this list. Change the order by 
+moving elements up and down with the buttons below.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Do not forget to click the save experiment button before closing the edit experiment dialog!</p>
+</div>
+<h3 id="5-running-the-experiment">5. Running the experiment.</h3>
+<p>To run the experiment, close the edit experiment dialog and make sure all modules are in the stopped state. You can manually select and activate a condition by 
+clicking the <code>Activate condition</code> button (only when JOAN is in "IDLE") Once the condition is active, you can cycle the state machine like you normally would. When you click the stop button,
+ the experiment manager will automatically transition to the next condition if the <code>Auto transition after stop</code> checkbox is checked. You can also manually 
+transition to the next condition by clicking the <code>Transition to next condition</code> button. Transitions are called when moving between subsequent conditions. 
+Transitions at the end and the beginning of the experiment are also called.</p>
+<h3 id="6-changing-the-condition-order-for-different-participants">6. Changing the condition order for different participants</h3>
+<p>Often you want to change the order of the conditions for different sets of participants to account for order effects in the data. The best way to do this is to copy the experiment <code>JSON</code> you just created (rename them accordingly). Then, open the <code>.json</code> file in the text editor of choice and change the order of the conditions and transitions under <code>"active_condition_sequence</code>.</p>
+<p><img alt="Data recorder in stopped state" src="../imgs/modules-experimentmanager-edit_experiment.png" /></p>
+<h2 id="using-the-datarecorder-with-the-experimentmanager">Using the DataRecorder with the ExperimentManager</h2>
+<p>You can include the data recorder in your experiment to make sure the right variables are saved in every condition. Remember that the data name is also 
+stored as a setting so it can, and should, be different for every condition. Otherwise, you have to reverse engineer which file is which condition by the 
+timestamps. You can either change the name of the file depending on the condition or make separate folders for every condition.</p>
+<p>Remember that the data recorder save path is set in the stopped state, like all other settings. But the variables that are stored are selected in the 
+initialized state, this is different from the other modules. So the data recorder has to be set after transitioning to initialized and before creating the new 
+condition. Remember this when creating your conditions.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../modules-hardwaremanager/" class="btn btn-neutral float-left" title="Hardware Manager"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../modules-hapticcontrollermanager/" class="btn btn-neutral float-right" title="Haptic Controller Manager">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../modules-hardwaremanager/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../modules-hapticcontrollermanager/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="https://unpkg.com/mermaid@8.6.0/dist/mermaid.min.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

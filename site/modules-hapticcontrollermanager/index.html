@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Haptic Controller Manager - JOAN documentation</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+        <link href="https://unpkg.com/mermaid@8.6.0/dist/mermaid.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Haptic Controller Manager";
+        var mkdocs_page_input_path = "modules-hapticcontrollermanager.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <script src="../js/jquery-3.6.0.min.js" defer></script>
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> JOAN documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../introduction/">Introduction</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Setup JOAN and CARLA</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../setup-carla-windows/">Build CARLA on Windows</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../setup-joan/">Install JOAN</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../example-usage-and-testing/">Example usage and functionality testing</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">First steps</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../firststeps-joan-overview/">JOAN Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../firststeps-joan-run/">Run JOAN and CARLA</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../firststeps-carle-ue4/">Quick start CARLA</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Using the JOAN core modules</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../modules-datarecorder/">Data Recorder</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../modules-carlainterface/">CARLA interface</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../modules-hardwaremanager/">Hardware Manager</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../modules-experimentmanager/">Experiment Manager</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Haptic Controller Manager</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#using-the-module">Using the Module</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#adding-to-the-module">Adding to the Module</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../modules-dataplotter/">Data Plotter</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Advanced</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../advanced-add-custom-module/">Create custom JOAN modules</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../advanced-settings/">Using JOAN Settings</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../advanced-state-machine/">JOAN State Machine</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Other stuff</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../other-git/">Quick start on using source control (git)</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../other-sensodrive/">A short Sensodrive SENSO Wheel explanation</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Want to contribute?</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../contributing-guidelines/">Guidelines</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../contributing-coding-standard/">Coding Standard</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">JOAN documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li>
+          <li>Using the JOAN core modules &raquo;</li><li>Haptic Controller Manager</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="module-haptic-controller-manager">Module: Haptic Controller Manager</h1>
+<p>The Haptic Controller Manager is a module that was specifically created to make different sorts of controllers for haptic interactions. An example that is included, is the <code>Four Design Choice Architecture (FDCA)</code> controller for haptic feedback on the steering wheel. However,
+the main idea behind this module is that user can make their sort of controller for haptic feedback. In this section
+we'll explain the usage of the module, which will be strikingly similar to other modules, so if you understand the basic module architecture you should be easily able to expand on this one.</p>
+<p>In the image below the Haptic Controller Manager module is shown how it should look like if you open it up in the STOPPED state (without default settings).</p>
+<p><img alt="Haptic Controller Manager Dialog" src="../imgs/modules-hapticcontrollermanager-defaultdialog.PNG" /></p>
+<h2 id="using-the-module">Using the Module</h2>
+<p>Using the Haptic Controller Manager module is very similar to using the <code>Hardware Manager</code> and <code>Carla Interface</code> modules. You can add haptic controllers in the 
+<code>stopped</code> state and every controller has its settings which you have to set, for the default FDCA controller these are:</p>
+<p><img alt="FDCA Settings" src="../imgs/modules-hapticcontrollermanager-fdca-settings.PNG" /></p>
+<p>We will not go into detail here as to what these parameters mean, however, there is a difference with the previously mentioned similar modules 
+(<code>Hardware Manager</code> and <code>Carla Interface</code> ). The difference is that you are still able to change the settings of your controllers during the
+<code>running</code> and <code>ready</code> states, this is of importance because you want to be able to tune your controllers during operation. As we show in the GIF below
+we can tweak the settings during operation (click on the gif for a full-sized version):</p>
+<p><a href="../gifs/modules-hapticcontrollermanager-fdcatune.gif" target="_blank"> <img alt="" src="../gifs/modules-hapticcontrollermanager-fdcatune.gif" /></a></p>
+<p>This is the main difference from the other modules, of course, you can take the FDCA controller as a template to make your own awesome
+controllers! :)</p>
+<h2 id="adding-to-the-module">Adding to the Module</h2>
+<p>As said in the introduction adding to this module is quite similar to the other modules so please for a bit of a grasp refer to 
+<a href="../modules-carlainterface/#adding_own_agents">adding your own agent</a>.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../modules-experimentmanager/" class="btn btn-neutral float-left" title="Experiment Manager"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../modules-dataplotter/" class="btn btn-neutral float-right" title="Data Plotter">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../modules-experimentmanager/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../modules-dataplotter/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="https://unpkg.com/mermaid@8.6.0/dist/mermaid.min.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

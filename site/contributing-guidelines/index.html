@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Guidelines - JOAN documentation</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+        <link href="https://unpkg.com/mermaid@8.6.0/dist/mermaid.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Guidelines";
+        var mkdocs_page_input_path = "contributing-guidelines.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <script src="../js/jquery-3.6.0.min.js" defer></script>
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> JOAN documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../introduction/">Introduction</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Setup JOAN and CARLA</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../setup-carla-windows/">Build CARLA on Windows</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../setup-joan/">Install JOAN</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../example-usage-and-testing/">Example usage and functionality testing</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">First steps</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../firststeps-joan-overview/">JOAN Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../firststeps-joan-run/">Run JOAN and CARLA</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../firststeps-carle-ue4/">Quick start CARLA</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Using the JOAN core modules</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../modules-datarecorder/">Data Recorder</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../modules-carlainterface/">CARLA interface</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../modules-hardwaremanager/">Hardware Manager</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../modules-experimentmanager/">Experiment Manager</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../modules-hapticcontrollermanager/">Haptic Controller Manager</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../modules-dataplotter/">Data Plotter</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Advanced</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../advanced-add-custom-module/">Create custom JOAN modules</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../advanced-settings/">Using JOAN Settings</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../advanced-state-machine/">JOAN State Machine</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Other stuff</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../other-git/">Quick start on using source control (git)</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../other-sensodrive/">A short Sensodrive SENSO Wheel explanation</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Want to contribute?</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Guidelines</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#reporting-bugs-and-issues">Reporting bugs and issues</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#feature-requests">Feature requests</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#improving-documentation">Improving documentation</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#code-contributions">Code contributions</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#coding-standard">Coding standard</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#pull-requests">Pull-requests</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#checklist">Checklist</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../contributing-coding-standard/">Coding Standard</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">JOAN documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li>
+          <li>Want to contribute? &raquo;</li><li>Guidelines</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="contributing-to-joan">Contributing to JOAN</h1>
+<p>We are more than happy to accept contributions!</p>
+<p>How can I contribute?</p>
+<ul>
+<li>Reporting bugs and issues</li>
+<li>Feature requests</li>
+<li>Improving documentation</li>
+<li>Code contributions</li>
+</ul>
+<hr />
+<h2 id="reporting-bugs-and-issues">Reporting bugs and issues</h2>
+<p>If you find bugs or have other issues, use our <a href="https://github.com/tud-hri/joan/issues">Issue tracker</a>. Before creating a new issue, please check if a similar issue has already been reported. Select the 'bug' template in the issue tracker and fill out as much as you can. Only then we can properly address the bug!
+Also check the <a href="http://joan.readthedocs.io">documentation</a>. </p>
+<hr />
+<h2 id="feature-requests">Feature requests</h2>
+<p>Check the <a href="https://github.com/tud-hri/joan/issues">issue tracker list</a> and filter on the label <code>feature</code> to check if a similar feature has been already requested. If so, please add information to the already existing feature if something is missing. Please submit your request as a new issue and select the 'feature request' template in the issue tracker.</p>
+<hr />
+<h2 id="improving-documentation">Improving documentation</h2>
+<p>Everyone can agree that good documentation is awesome to have. If you feel something is missing in the documentation, please don't hesitate to open an issue to let us know. Even better, if you think you can improve it yourself, it would be a great contribution!</p>
+<p>We build our documentation with <a href="http://www.mkdocs.org/">MkDocs</a> based on the Markdown files inside the <code>docs</code> folder. You can either directly modify them on the GitLab repository or locally on your machine.</p>
+<p>Once you are done with your changes, please submit a pull request.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>You can build and serve it locally (at <a href="http://127.0.0.1:8000">http://127.0.0.1:8000</a>) by running <code>mkdocs</code>
+in the project's main folder.</p>
+</div>
+<pre class="highlight"><code class="language-sh">  &gt; sudo pip install mkdocs
+  &gt; mkdocs serve</code></pre>
+<hr />
+<h2 id="code-contributions">Code contributions</h2>
+<p>The code is never done, so if you want to help out, awesome!</p>
+<p>Before starting hands-on coding, please check out our <a href="https://github.com/tud-hri/joan/issues">issue board</a> to see if we are already working on that particular issue. In case of doubt or to discuss how to proceed, please contact one of us.</p>
+<h4 id="coding-standard">Coding standard</h4>
+<p>Please follow the current <a href="https://joan.readthedocs.io/en/latest/contributing-coding-standard/">coding standard</a> when submitting new code.</p>
+<h4 id="pull-requests">Pull-requests</h4>
+<p>Once you think your contribution is ready to be added to JOAN, please submit a pull request.</p>
+<p>Try to be as descriptive as possible when filling the pull-request description. Adding images and gifs may help people to understand your changes or new
+features.</p>
+<!-- Please note that there are some checks that the new code is required to pass
+before we can do the merge. The checks are automatically run by the continuous
+integration system, you will see a green tick mark if all the checks succeeded.
+If you see a red mark, please correct your code accordingly. -->
+
+<h6 id="checklist">Checklist</h6>
+<!--
+  If you modify this list please keep it up-to-date with pull_request_template.md
+-->
+
+<ul>
+<li>[ ] Your branch is up-to-date with the <code>master</code> branch and tested with latest changes</li>
+<li>[ ] Extended the README / documentation, if necessary</li>
+<li>[ ] The code adheres to PEP8, please use <code>flake8</code> or <code>pylint</code> to check the code for consistency (see <a href="https://joan.readthedocs.io/en/latest/contributing-coding-standard/">coding standard</a>)</li>
+<li>[ ] Code compiles correctly</li>
+</ul>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../other-sensodrive/" class="btn btn-neutral float-left" title="A short Sensodrive SENSO Wheel explanation"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../contributing-coding-standard/" class="btn btn-neutral float-right" title="Coding Standard">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../other-sensodrive/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../contributing-coding-standard/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="https://unpkg.com/mermaid@8.6.0/dist/mermaid.min.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>
