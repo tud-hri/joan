@@ -169,12 +169,12 @@ class ControllerPlotterDialog(ModuleDialog):
             plot_data_hcr_x = tmp.values[:, 1]
             plot_data_hcr_y = tmp.values[:, 2]
 
-            # self.hcr_plot_handle = self.module_widget.top_view_graph.plot(x=plot_data_hcr_x, y=plot_data_hcr_y, shadowPen=pg.mkPen(10, 200, 0, 100, width=18),
-            #                                                               pen=pg.mkPen(0, 102, 0, 255, width=2))
+            self.hcr_plot_handle = self.module_widget.top_view_graph.plot(x=plot_data_hcr_x, y=plot_data_hcr_y, shadowPen=pg.mkPen(10, 200, 0, 100, width=18),
+                                                                          pen=pg.mkPen(0, 102, 0, 255, width=2))
         except IOError:
             print('Could not find HCR trajectory, please hardcode a name that is in your sw controller trajectory list ')
-            # self.hcr_plot_handle = self.module_widget.top_view_graph.plot(x=[0], y=[0], shadowPen=pg.mkPen(10, 200, 0, 100, width=18),
-            #                                                               pen=pg.mkPen(0, 102, 0, 255, width=2))
+            self.hcr_plot_handle = self.module_widget.top_view_graph.plot(x=[0], y=[0], shadowPen=pg.mkPen(10, 200, 0, 100, width=18),
+                                                                          pen=pg.mkPen(0, 102, 0, 255, width=2))
         self.car_symbol = QtGui.QPainterPath()
         self.car_symbol.addRect(-0.2, -0.4, 0.4, 0.8)
 
@@ -298,7 +298,7 @@ class ControllerPlotterDialog(ModuleDialog):
         self.top_view_legend = pg.LegendItem(offset=(10, -10), horSpacing=30, verSpacing=2,
                                              pen=pg.mkPen(0, 0, 0, 0), brush=pg.mkBrush(255, 255, 255, 0))
         self.top_view_legend.setParentItem(top_view_viewbox)
-        # self.top_view_legend.addItem(self.hcr_plot_handle, name='HCR')
+        self.top_view_legend.addItem(self.hcr_plot_handle, name='HCR')
         self.top_view_legend.addItem(self.road_outer_plot_handle, name='Lane/Road Edge')
         self.top_view_legend.addItem(self.road_plot_handle, name='Lane/Road Center')
         self.top_view_legend.addItem(self.road_plot_handle_cubic, name='Local HCR')
@@ -446,7 +446,6 @@ class ControllerPlotterDialog(ModuleDialog):
             loha = data_from_haptic_controller_manager.loha
             self.plot_data_road_x_cubic = data_from_haptic_controller_manager.x_road
             self.plot_data_road_y_cubic = data_from_haptic_controller_manager.y_road
-            # print(self.plot_data_road_x_cubic)
 
         except AttributeError:
             lat_error = 0
@@ -471,7 +470,6 @@ class ControllerPlotterDialog(ModuleDialog):
             vehicle_rotation = car_transform[3]
             vehicle_location_x = car_transform[0]
             vehicle_location_y = car_transform[1]
-
             self.plot_data_road_x = data_from_carla_interface.data_road_x
             self.plot_data_road_x_inner = data_from_carla_interface.data_road_x_inner
             self.plot_data_road_x_outer = data_from_carla_interface.data_road_x_outer
@@ -531,8 +529,8 @@ class ControllerPlotterDialog(ModuleDialog):
         self.road_plot_handle_cubic.setTransformOriginPoint(self.plot_data_road_x[24], self.plot_data_road_y[24])
         self.road_plot_handle_cubic.setRotation(math.degrees(self.plot_data_road_psi[24] - 0.5 * math.pi))
 
-        # self.hcr_plot_handle.setTransformOriginPoint(self.plot_data_road_x[24], self.plot_data_road_y[24])
-        # self.hcr_plot_handle.setRotation(math.degrees(self.plot_data_road_psi[24] - 0.5 * math.pi))
+        self.hcr_plot_handle.setTransformOriginPoint(self.plot_data_road_x[24], self.plot_data_road_y[24])
+        self.hcr_plot_handle.setRotation(math.degrees(self.plot_data_road_psi[24] - 0.5 * math.pi))
 
         tr = QtGui.QTransform()
         angle_rot = tr.rotate(vehicle_rotation + (math.degrees(self.plot_data_road_psi[24])))
