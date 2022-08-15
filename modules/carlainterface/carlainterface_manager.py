@@ -37,7 +37,6 @@ class CarlaInterfaceManager(ModuleManager):
         self.connected = False
         self.vehicle_tags = []
         self.spawn_points = []
-        print("getting to the init?")
         self.client = None
         self.world_map = None
         self._vehicle_bp_library = None
@@ -142,9 +141,8 @@ class CarlaInterfaceManager(ModuleManager):
                 for item in spawn_point_objects:
                     self.spawn_points.append("Spawnpoint " + str(spawn_point_objects.index(item)))
 
-                print(self.spawn_points)
-
                 self.carla_waypoints = self.world_map.generate_waypoints(0.5)
+                print(self.spawn_points)
                 QApplication.restoreOverrideCursor()
                 self.connected = True
 
