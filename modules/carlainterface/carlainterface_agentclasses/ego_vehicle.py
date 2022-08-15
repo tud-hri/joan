@@ -103,13 +103,12 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
             self.combo_input.clear()
             self.combo_input.addItem('None')
             HardwareManagerSettings = self.module_manager.central_settings.get_settings(JOANModules.HARDWARE_MANAGER)
-            if HardwareManagerSettings != {}:
-                for inputs in HardwareManagerSettings.inputs.values():
-                    self.combo_input.addItem(str(inputs))
-                idx = self.combo_input.findText(
-                    settings.selected_input)
-                if idx != -1:
-                    self.combo_input.setCurrentIndex(idx)
+            for inputs in HardwareManagerSettings.inputs.values():
+                self.combo_input.addItem(str(inputs))
+            idx = self.combo_input.findText(
+                settings.selected_input)
+            if idx != -1:
+                self.combo_input.setCurrentIndex(idx)
 
             # update available vehicles
             self.combo_car_type.clear()

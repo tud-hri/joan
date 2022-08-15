@@ -67,6 +67,7 @@ class ModuleManager(QtCore.QObject):
         # create settings
         if module.settings:
             self.module_settings = module.settings()
+            self.singleton_settings.update_settings(self.module, self.module_settings)
         else:
             self.module_settings = None
 

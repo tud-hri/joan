@@ -94,12 +94,11 @@ class NPCVehicleSettingsDialog(QtWidgets.QDialog):
         self.combo_controller.clear()
         self.combo_controller.addItem('None')
         npc_controller_manager_settings = self.module_manager.central_settings.get_settings(JOANModules.NPC_CONTROLLER_MANAGER)
-        if npc_controller_manager_settings != {}:
-            for controller_identifier, controller_settings in npc_controller_manager_settings.controllers.items():
-                self.combo_controller.addItem(controller_identifier)
-            idx = self.combo_controller.findText(settings.selected_npc_controller)
-            if idx != -1:
-                self.combo_controller.setCurrentIndex(idx)
+        for controller_identifier, controller_settings in npc_controller_manager_settings.controllers.items():
+            self.combo_controller.addItem(controller_identifier)
+        idx = self.combo_controller.findText(settings.selected_npc_controller)
+        if idx != -1:
+            self.combo_controller.setCurrentIndex(idx)
 
 
 class NPCVehicleProcess:
