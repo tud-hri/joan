@@ -142,7 +142,6 @@ class CarlaInterfaceManager(ModuleManager):
                     self.spawn_points.append("Spawnpoint " + str(spawn_point_objects.index(item)))
 
                 self.carla_waypoints = self.world_map.generate_waypoints(0.5)
-                print(self.spawn_points)
                 QApplication.restoreOverrideCursor()
                 self.connected = True
 
