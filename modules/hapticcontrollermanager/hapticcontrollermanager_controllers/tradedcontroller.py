@@ -139,7 +139,7 @@ class TradedControllerProcess:
         self.damping = 0
         self.stiffness = 0
         self.inertia = 0.04876200657888505
-        self.Gamma = 20 * np.array([[2, 0], [0, 2]])
+        self.observer_matrix = 20 * np.array([[2, 0], [0, 2]])
         self.alpha = 2.5
         self.kappa = 1
         self.human_estimated_torque = 0.0
@@ -182,7 +182,7 @@ class TradedControllerProcess:
         """
 
         for agent_settings in carla_interface_settings.agents.values():
-            if agent_settings.selected_controller == self.settings.__str__():
+            if agent_settings.selected_controller == str(self.settings):
                 if 'SensoDrive' in agent_settings.selected_input:
                     self.stiffness = hardware_manager_shared_variables.inputs[agent_settings.selected_input].auto_center_stiffness
                     self.damping = hardware_manager_shared_variables.inputs[agent_settings.selected_input].damping
@@ -213,7 +213,7 @@ class TradedControllerProcess:
             torque (float): output steering torque, with nonlinear component compensation
         """
         steering_state = self._compute_steering_states(steering_angle, timestep)
-        nonlinear_component = self._nonlinear_term(steering_state)
+        nonlinear_component = self._compute_nonlinear_torques(steering_state)
         self._estimate_human_control(steering_state, timestep)
         authority = self._compute_authority(delta_t=timestep)
         self.torque = torque_fdca * authority
@@ -238,7 +238,7 @@ class TradedControllerProcess:
         A, B = self._system_matrices()
         x = steering_state
         xi_tilde = self.x_hat - x
-        x_hat_dot = np.matmul(A, self.x_hat) + B * (self.torque + self.human_estimated_torque) - np.matmul(self.Gamma, xi_tilde)
+        x_hat_dot = np.matmul(A, self.x_hat) + B * (self.torque + self.human_estimated_torque) - np.matmul(self.observer_matrix, xi_tilde)
         self.human_estimated_torque += - self.alpha * np.matmul(xi_tilde.transpose(), B) * delta_t
         self.x_hat += x_hat_dot * delta_t
 
@@ -256,8 +256,15 @@ class TradedControllerProcess:
         authority = min(max(authority, 0), 1)
         return authority
 
-    def _nonlinear_term(self, x):
-        # Compensate for a gravity and friction component in the steering wheel
+    def _compute_nonlinear_torques(self, x):
+        """
+        This function is used to do feedforward compensation of nonlinear torques due to gravity and friction, to use a linear system for computing human input torques.
+            inputs
+                x (np.array): System states composed of steering angle and steering rate
+
+            outputs
+                nonlinear_torques (float): output torque composed of gravity and friction torque.
+        """
         g = 9.81
         m = 0.25577512040264017
         dh = 0.08868507357869222
@@ -275,7 +282,8 @@ class TradedControllerProcess:
         gv = v / vsp * np.exp(-(v / (np.sqrt(2) * vsp)) ** 2 + 1 / 2)
         fc = tau_d * np.tanh(v / vt)
         tau_f = gv * tau_fric + fc
-        return tau_f + tau_g
+        nonlinear_torques = tau_f + tau_g
+        return nonlinear_torques
 
 class TradedControllerSettings:
     def __init__(self, identifier=''):
