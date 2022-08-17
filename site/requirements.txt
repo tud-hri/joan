@@ -1,3 +1,0 @@
-mkdocs >= 1.0
-pymdown-extensions
-markdown-inline-graphviz-extension>=1.1
