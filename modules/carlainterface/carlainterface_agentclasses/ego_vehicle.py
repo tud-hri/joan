@@ -326,6 +326,10 @@ class EgoVehicleProcess:
                                                    float(latest_applied_control.hand_brake),
                                                    float(latest_applied_control.brake),
                                                    float(latest_applied_control.throttle)]
+            if self.settings.set_velocity:
+                self.shared_variables.cruise_control_speed = self.settings.velocity / 3.6
+            else:
+                self.shared_variables.cruise_control_speed = -1  # Set to -1 when no cruise control is applied
 
     @staticmethod
     def get_rotation_matrix_from_carla(roll, pitch, yaw, degrees=True):
@@ -367,7 +371,7 @@ class EgoVehicleSettings:
         self.selected_input = 'None'
         self.selected_controller = 'None'
         self.selected_spawnpoint = 'Spawnpoint 0'
-        self.selected_car = 'hapticslab.audi'
+        self.selected_car = 'audi.hapticslab'
         self.velocity = 50
         self.set_velocity = False
         self.identifier = identifier

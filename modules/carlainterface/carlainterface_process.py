@@ -85,7 +85,6 @@ class CarlaInterfaceProcess(ModuleProcess):
 
         # Now we create our agents and directly spawn them
         for key, value in self._settings_as_object.agents.items():
-            print(value.agent_type)
             self.agent_objects[key] = AgentTypes(value.agent_type).process(self, settings=value, shared_variables=self._module_shared_variables.agents[key])
             time.sleep(0.1)  # short sleep, such that the camera in CARLA is attached properly to the first spawned car
 

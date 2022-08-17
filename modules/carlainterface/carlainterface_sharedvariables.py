@@ -26,6 +26,7 @@ class VehicleSharedVariables(SharedVariables):
         self._accelerations = mp.Array(c_float, 3)
         self._applied_input = mp.Array(c_float, 5)
         self._max_steering_angle = mp.Value(c_float)
+        self._cruise_control_speed = mp.Value(c_float)
 
         # road data for controller plotter
         self._data_road_x = mp.Array(c_float, 50)
@@ -156,3 +157,11 @@ class VehicleSharedVariables(SharedVariables):
     @data_road_lanewidth.setter
     def data_road_lanewidth(self, val):
         self._data_road_lanewidth[:] = val
+
+    @property
+    def cruise_control_speed(self):
+        return self._cruise_control_speed.value
+
+    @cruise_control_speed.setter
+    def cruise_control_speed(self, val):
+        self._cruise_control_speed.value = val
