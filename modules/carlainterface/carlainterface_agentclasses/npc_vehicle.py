@@ -3,7 +3,6 @@ import numpy as np
 from enum import Enum
 import copy
 
-# from tools.carlaimporter import carla
 import carla
 
 from PyQt5 import uic, QtWidgets
@@ -157,6 +156,7 @@ class NPCVehicleProcess:
             self._control.hand_brake = self.npc_controller_shared_variables.controllers[self.settings.selected_npc_controller].handbrake
             self._control.brake = self.npc_controller_shared_variables.controllers[self.settings.selected_npc_controller].brake
             self._control.throttle = self.npc_controller_shared_variables.controllers[self.settings.selected_npc_controller].throttle
+            # print(self._control.throttle)
 
             self.spawned_vehicle.apply_control(self._control)
 
