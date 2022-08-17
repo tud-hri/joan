@@ -298,7 +298,7 @@ class TradedControllerSettings:
         self.trajectory_name = "hcr_trajectory.csv"
         self.identifier = identifier
 
-        self.haptic_controller_type = HapticControllerTypes.TradedControl.value
+        self.haptic_controller_type = HapticControllerTypes.TRADED_CONTROL.value
 
     def __str__(self):
         return str(self.identifier)
