@@ -9,7 +9,6 @@ from core.statesenum import State
 from modules.carlainterface.carlainterface_agenttypes import AgentTypes
 from modules.joanmodules import JOANModules
 
-# from tools.carlaimporter import carla
 import carla
 
 

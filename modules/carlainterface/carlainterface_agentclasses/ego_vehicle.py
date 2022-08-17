@@ -1,7 +1,6 @@
 import random, os, math
 import numpy as np
 
-# from tools.carlaimporter import carla
 import carla
 
 from PyQt5 import uic, QtWidgets
