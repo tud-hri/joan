@@ -9,6 +9,7 @@ nav:
     - Setup JOAN and CARLA:
         - Build CARLA on Windows: setup-carla-windows.md
         - Install JOAN: setup-joan.md
+        - Set-up JOAN on a TUD-Computer: setup-on-tud-shared-hardware.md
         - Example usage and functionality testing: example-usage-and-testing.md
 
     - First steps:
@@ -33,6 +34,7 @@ nav:
     - Other stuff:
       - Quick start on using source control (git): other-git.md
       - A short Sensodrive SENSO Wheel explanation: other-sensodrive.md
+      - Common errors: some-notes.md
 
     - Want to contribute?:
       - Guidelines: contributing-guidelines.md

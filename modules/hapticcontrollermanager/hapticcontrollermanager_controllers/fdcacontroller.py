@@ -45,11 +45,11 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
 
     def update_parameters(self):
         # self.slider_loha.setValue(self.spin_loha.value())
-        self.fdca_controller_settings.loha = float(self.spinbox_loha.text())
-        self.fdca_controller_settings.k_y = float(self.spinbox_ky.text())
-        self.fdca_controller_settings.k_psi = float(self.spinbox_kpsi.text())
-        self.fdca_controller_settings.lohs = float(self.spinbox_lohs.text())
-        self.fdca_controller_settings.sohf = float(self.spinbox_sohf.text())
+        self.fdca_controller_settings.k_y = self.spinbox_ky.value()
+        self.fdca_controller_settings.k_psi = self.spinbox_kpsi.value()
+        self.fdca_controller_settings.lohs = self.spinbox_lohs.value()
+        self.fdca_controller_settings.sohf = self.spinbox_sohf.value()
+        self.fdca_controller_settings.loha = self.spinbox_loha.value()
         self.fdca_controller_settings.trajectory_name = self.cmbbox_hcr_selection.itemText(
             self.cmbbox_hcr_selection.currentIndex())
 
@@ -66,12 +66,11 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
 
     def accept(self):
         # self.slider_loha.setValue(self.spin_loha.value())
-        self.fdca_controller_settings.loha = float(self.spinbox_loha.text())
-        self.fdca_controller_settings.k_y = float(self.spinbox_ky.text())
-        self.fdca_controller_settings.k_psi = float(self.spinbox_kpsi.text())
-        self.fdca_controller_settings.lohs = float(self.spinbox_lohs.text())
-        self.fdca_controller_settings.sohf = float(self.spinbox_sohf.text())
-        self.fdca_controller_settings.loha = float(self.spinbox_loha.text())
+        self.fdca_controller_settings.k_y = self.spinbox_ky.value()
+        self.fdca_controller_settings.k_psi = self.spinbox_kpsi.value()
+        self.fdca_controller_settings.lohs = self.spinbox_lohs.value()
+        self.fdca_controller_settings.sohf = self.spinbox_sohf.value()
+        self.fdca_controller_settings.loha = self.spinbox_loha.value()
         self.fdca_controller_settings.trajectory_name = self.cmbbox_hcr_selection.itemText(
             self.cmbbox_hcr_selection.currentIndex())
 
@@ -189,22 +188,20 @@ class FDCAControllerProcess:
         """
 
         for agent_settings in carla_interface_settings.agents.values():
-            # try:
-            if agent_settings.selected_controller == self.settings.__str__():
-                if 'SensoDrive' in agent_settings.selected_input:
-                    stiffness = hardware_manager_shared_variables.inputs[agent_settings.selected_input].auto_center_stiffness
-                    steering_angle = hardware_manager_shared_variables.inputs[agent_settings.selected_input].steering_angle
+            if hasattr(agent_settings, 'selected_controller'):
+                if agent_settings.selected_controller == str(self.settings):
+                    if 'SensoDrive' in agent_settings.selected_input:
+                        stiffness = hardware_manager_shared_variables.inputs[agent_settings.selected_input].auto_center_stiffness
+                        steering_angle = hardware_manager_shared_variables.inputs[agent_settings.selected_input].steering_angle
 
-                    # Compose a state containing the car information
-                    car_state = np.array([[carlainterface_shared_variables.agents[agent_settings.__str__()].transform[0]],
-                                          [carlainterface_shared_variables.agents[agent_settings.__str__()].transform[1]],
-                                          [math.radians(carlainterface_shared_variables.agents[agent_settings.__str__()].transform[3])]])
+                        # Compose a state containing the car information
+                        car_state = np.array([[carlainterface_shared_variables.agents[agent_settings.__str__()].transform[0]],
+                                              [carlainterface_shared_variables.agents[agent_settings.__str__()].transform[1]],
+                                              [math.radians(carlainterface_shared_variables.agents[agent_settings.__str__()].transform[3])]])
 
-                    # Compute control inputs using current position vector
-                    self.shared_variables, torque_fdca = self.controller.compute_input(stiffness, steering_angle, car_state, self.shared_variables)
-                    hardware_manager_shared_variables.inputs[agent_settings.selected_input].torque = torque_fdca
-            # except:
-            #     pass
+                        # Compute control inputs using current position vector
+                        self.shared_variables, torque_fdca = self.controller.compute_input(stiffness, steering_angle, car_state, self.shared_variables)
+                        hardware_manager_shared_variables.inputs[agent_settings.selected_input].torque = torque_fdca
 
 
 class FDCAControllerSettings:

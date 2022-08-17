@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>268</width>
-    <height>417</height>
+    <width>273</width>
+    <height>440</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -190,7 +190,7 @@
        </widget>
       </item>
       <item row="10" column="0">
-       <widget class="QSpinBox" name="spin_keff"/>
+       <widget class="QSpinBox" name="spin_steering_ratio"/>
       </item>
      </layout>
     </widget>
