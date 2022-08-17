@@ -35,7 +35,7 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
 
     def update_parameters(self):
         self.settings.velocity = self.spin_velocity.value()
-        self.settings.keff = self.spin_keff.value()
+        self.settings.steering_ratio = self.spin_steering_ratio.value()
         self.settings.selected_input = self.combo_input.currentText()
         self.settings.selected_controller = self.combo_haptic_controllers.currentText()
         self.settings.selected_car = self.combo_car_type.currentText()
@@ -56,7 +56,7 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
 
     def accept(self):
         self.settings.velocity = self.spin_velocity.value()
-        self.settings.keff = self.spin_keff.value()
+        self.settings.steering_ratio = self.spin_steering_ratio.value()
         self.settings.selected_input = self.combo_input.currentText()
         self.settings.selected_controller = self.combo_haptic_controllers.currentText()
         self.settings.selected_car = self.combo_car_type.currentText()
@@ -90,7 +90,7 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
         self.combo_spawnpoints.setCurrentText(settings_to_display.selected_spawnpoint)
 
         self.spin_velocity.setValue(settings_to_display.velocity)
-        self.spin_keff.setValue(settings_to_display.keff)
+        self.spin_steering_ratio.setValue(settings_to_display.steering_ratio)
         self.check_box_set_vel.setChecked(settings_to_display.set_velocity)
 
     def _set_default_values(self):
@@ -167,7 +167,6 @@ class EgoVehicleProcess:
                 physics.torque_curve = torque_curve
                 physics.max_rpm = 14000
                 physics.moi = 1.5
-                # physics.final_ratio = 1
                 physics.clutch_strength = 1000  # very big no clutch
                 physics.final_ratio = 1  # ratio from transmission to wheels
                 physics.forward_gears = gears
@@ -180,13 +179,13 @@ class EgoVehicleProcess:
     def do(self):
         if self.settings.selected_input != 'None' and hasattr(self, 'spawned_vehicle'):
             max_angle_car = math.radians(self.max_steering_angle)
-            max_angle_steering_wheel = max_angle_car * self.settings.keff
+            max_angle_steering_wheel = max_angle_car * self.settings.steering_ratio
             self._control.steer = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].steering_angle / max_angle_steering_wheel
             self._control.reverse = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].reverse
             self._control.hand_brake = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].handbrake
             self._control.brake = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].brake
             if self.settings.set_velocity:
-                self._control.brake, self._control.throttle = self.cruise_control()
+                self._control.brake, self._control.throttle = self.apply_cruise_control()
             else:
                 self._control.throttle = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].throttle
 
@@ -198,7 +197,7 @@ class EgoVehicleProcess:
 
         self.set_shared_variables()
 
-    def cruise_control(self):
+    def apply_cruise_control(self):
         velocity = math.sqrt(self.spawned_vehicle.get_velocity().x ** 2 + self.spawned_vehicle.get_velocity().y ** 2)
         acceleration = math.sqrt(self.spawned_vehicle.get_acceleration().x ** 2 + self.spawned_vehicle.get_acceleration().y ** 2)
         vel_error = self.settings.velocity / 3.6 - velocity
@@ -372,7 +371,7 @@ class EgoVehicleSettings:
         self.velocity = 50
         self.set_velocity = False
         self.identifier = identifier
-        self.keff = 13
+        self.steering_ratio = 13
         self.agent_type = AgentTypes.EGO_VEHICLE.value
 
     def as_dict(self):
