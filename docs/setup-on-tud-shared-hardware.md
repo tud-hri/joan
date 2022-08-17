@@ -14,6 +14,9 @@ If you are a student at the TUD, you will share hardware (computers, steering wh
 !!! Note
     If you need to do a fresh install (CARLA, python, PyCharm, ...) on the computer, follow the steps in both the [Build CARLA on Windows](setup-carla-windows.md) and [Install JOAN](setup-joan.md) pages. This needs to be done as an administrator to make CARLA, Python, and PyCharm available for everyone. Ask your supervisor first.
 
+!!! Important
+    Make sure that [the windows build version CARLA 0.9.13](https://carla.readthedocs.io/en/0.9.13/build_windows){target="_blank"} is installed. Else, please go back to the [Build CARLA on Windows](setup-carla-windows.md) and [Install JOAN](setup-joan.md) pages. It may be a good idea to check out these installation pages anyhow!
+
 ## Step 2: clone your JOAN project
 
 You can run your JOAN and CARLA project on any TUD computer that we prepared for you. For each PC, you need to clone and set up your JOAN project. Follow the steps in [Install JOAN](setup-joan.md): do step 1 only when you first create your JOAN project, else, only do steps 2-5. 

@@ -1,6 +1,9 @@
 # Setting up CARLA for Windows
+!!! Note
+    If you are a TU Delft student, and are using one of the TUD computers with CARLA installed, you can skip these instructions. 
+    Go to the [setup guide for installing on TUD shared hardware](setup-on-tud-shared-hardware.md).
 
-!!! Note 
+!!! Important
     Make sure to use [the windows build version CARLA 0.9.13](https://carla.readthedocs.io/en/0.9.13/build_windows){target="_blank"}. 
     
 First, to install JOAN on Windows, Carla must be installed. This installation procedure is fully explained in the documentation [to build CARLA 0.9.13 for windows](https://carla.readthedocs.io/en/0.9.13/build_windows/){target="_blank"} (the last version we tested JOAN with).
@@ -26,10 +29,3 @@ First of all, this installation is a game of patience. Assume that installing ev
     ``` 
     an error occurs. This can be bypassed by searching in the file `<CARLA_ROOT_FOLDER>\Util\InstallersWin\install-zib.bat` (where `<CARLA_ROOT_FOLDER>` is the location where you installed Carla) for `zlib-1.2.11.zip`. Replace this by `zlib-1.2.12.zip` and this should solve the [issue](https://github.com/carla-simulator/carla/issues/5304){target="_blank"}.
 
-To install Carla, please make sure to use the `.whl` file (since the JOAN code assumes you do). This file is built after running the `make PythonAPI` command is successfully executed. 
-As the Carla documentation describes, make sure to locate this `.whl` file. and then install carla using:
-```commandline
-pip install <path/to/wheel>.whl
-``` 
-
-One error that may occur during compilation of you map
