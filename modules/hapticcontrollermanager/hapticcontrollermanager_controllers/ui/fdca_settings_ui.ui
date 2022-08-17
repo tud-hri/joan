@@ -110,21 +110,6 @@
           </property>
          </widget>
         </item>
-        <item row="4" column="1" colspan="2">
-         <widget class="QLineEdit" name="edit_k_psi">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-         </widget>
-        </item>
         <item row="4" column="0">
          <widget class="QLabel" name="lblKpsi">
           <property name="sizePolicy">
@@ -160,21 +145,23 @@
           </property>
          </widget>
         </item>
-        <item row="2" column="1" colspan="2">
-         <widget class="QLineEdit" name="edit_k_y">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
+        <item row="2" column="1">
+         <widget class="QDoubleSpinBox" name="spinbox_ky">
+          <property name="maximum">
+           <double>5.000000000000000</double>
           </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
+          <property name="singleStep">
+           <double>0.100000000000000</double>
           </property>
-          <property name="alignment">
-           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <widget class="QDoubleSpinBox" name="spinbox_kpsi">
+          <property name="maximum">
+           <double>10.000000000000000</double>
+          </property>
+          <property name="singleStep">
+           <double>0.100000000000000</double>
           </property>
          </widget>
         </item>
@@ -312,6 +299,20 @@
           </property>
          </widget>
         </item>
+        <item row="2" column="0" colspan="3">
+         <widget class="QLabel" name="lblKlohstitle">
+          <property name="font">
+           <font>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <bold>false</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Level of Haptic Support (Feedforward):</string>
+          </property>
+         </widget>
+        </item>
         <item row="0" column="0" colspan="3">
          <widget class="QLabel" name="lblKsohftitle">
           <property name="font">
@@ -329,20 +330,6 @@
           </property>
          </widget>
         </item>
-        <item row="2" column="0" colspan="3">
-         <widget class="QLabel" name="lblKlohstitle">
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-            <weight>50</weight>
-            <bold>false</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>Level of Haptic Support (Feedforward):</string>
-          </property>
-         </widget>
-        </item>
         <item row="4" column="0" colspan="3">
          <widget class="QLabel" name="lblKlohatitle">
           <property name="font">
@@ -357,38 +344,35 @@
           </property>
          </widget>
         </item>
-        <item row="3" column="1" colspan="3">
-         <widget class="QLineEdit" name="edit_lohs">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
+        <item row="1" column="1">
+         <widget class="QDoubleSpinBox" name="spinbox_sohf">
+          <property name="maximum">
+           <double>1.000000000000000</double>
           </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
+          <property name="singleStep">
+           <double>0.050000000000000</double>
           </property>
          </widget>
         </item>
-        <item row="1" column="1" colspan="3">
-         <widget class="QLineEdit" name="edit_sohf">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
+        <item row="3" column="1">
+         <widget class="QDoubleSpinBox" name="spinbox_lohs">
+          <property name="maximum">
+           <double>1.000000000000000</double>
           </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
+          <property name="singleStep">
+           <double>0.050000000000000</double>
           </property>
          </widget>
         </item>
         <item row="6" column="1">
-         <widget class="QLineEdit" name="edit_loha"/>
+         <widget class="QDoubleSpinBox" name="spinbox_loha">
+          <property name="maximum">
+           <double>10.000000000000000</double>
+          </property>
+          <property name="singleStep">
+           <double>0.100000000000000</double>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>
