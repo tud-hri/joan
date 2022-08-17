@@ -69,33 +69,33 @@ venv\Scripts\activate.bat
 pip install -r requirements.txt
 ```
 
-+ Copy the CARLA `.egg` file to the folder `joan/carla_pythonapi` (see steps 4 and 5 [here](setup-carla-windows.md))
++ To install Carla, please make sure to use the `.whl` file (since the JOAN code assumes you do). This file is built after running the `make PythonAPI` command (see [here](setup-carla-windows.md)) is successfully executed. 
+As the Carla documentation describes, make sure to locate this `.whl` file. and then install carla using:
+```commandline
+pip install <path/to/wheel>.whl
+``` 
 
 + Check what modules you want to include in `main.py`, and execute `main.py`.
 
-```python
+```
 python
 main.py
 ```
 
-!!! Tip To retrieve the latest version of JOAN:
-```commandline git fetch upstream-joan git pull upstream-joan master
-```
-!!! Important conflicts may occur when pulling the latest JOAN version. These conflicts are between changes you made and changes in the main JOAN code. Often, these
-conflicts can be resolved through PyCharm, but sometimes it is more difficult than this. If you're used to git, resolve all conflicts by yourself. Else, perhaps good to ask your
-supervisor.
+!!! Tip 
+    To retrieve the latest version of JOAN:
+    ```
+    commandline git fetch upstream-joan git pull upstream-joan master
+    ```
+
+!!! Important 
+    conflicts may occur when pulling the latest JOAN version. These conflicts are between changes you made and changes in the main JOAN code. Often, these
+    conflicts can be resolved through PyCharm, but sometimes it is more difficult than this. If you're used to git, resolve all conflicts by yourself. Else, perhaps good to ask your
+    supervisor.
 
 ## Adding your own CARLA map
 
 These instructions are specifically written for TU Delft students but are useful for others too.
-
-!!! Note 
-    (Tested in June 2022) Some errors may occur when trying to compile your map. Make sure that the following steps are followed.
-    Go to Project Settings in Unreal. Then move over to `Project > Packaging`. In the `Packaging` tab, click on `Show advanced` and under `Directories to never cook` add `/Game/Carla/Blueprints/Lights`. 
-
-!!! Note 
-    To prevent errors with the weather settings, when adding your map to the maps folder, also add your map to `BP_Weather`. 
-    This can be done by opening `BP_Weather` in the folder `/Carla/Blueprints/Weather`. In the `Get Town` function, click on the `Default Weathers` block. Now click the plus (Add elements) and add the name of your map.
 
 - Create a folder with the name `<YEAR>_<NETID>` in the directory `C:\carla\Unreal\CarlaUE4\Content\Research\` (create the folder `Research` if it does not exist).
 - Download the template map [here](https://doi.org/10.4121/19419923){target="_blank"}, extract it, and copy the folder called `Maps` it in your
