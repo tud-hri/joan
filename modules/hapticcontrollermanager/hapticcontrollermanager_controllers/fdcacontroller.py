@@ -45,11 +45,11 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
 
     def update_parameters(self):
         # self.slider_loha.setValue(self.spin_loha.value())
-        self.fdca_controller_settings.loha = float(self.edit_loha.text())
-        self.fdca_controller_settings.k_y = float(self.edit_k_y.text())
-        self.fdca_controller_settings.k_psi = float(self.edit_k_psi.text())
-        self.fdca_controller_settings.lohs = float(self.edit_lohs.text())
-        self.fdca_controller_settings.sohf = float(self.edit_sohf.text())
+        self.fdca_controller_settings.loha = float(self.spinbox_loha.text())
+        self.fdca_controller_settings.k_y = float(self.spinbox_ky.text())
+        self.fdca_controller_settings.k_psi = float(self.spinbox_kpsi.text())
+        self.fdca_controller_settings.lohs = float(self.spinbox_lohs.text())
+        self.fdca_controller_settings.sohf = float(self.spinbox_sohf.text())
         self.fdca_controller_settings.trajectory_name = self.cmbbox_hcr_selection.itemText(
             self.cmbbox_hcr_selection.currentIndex())
 
@@ -66,12 +66,12 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
 
     def accept(self):
         # self.slider_loha.setValue(self.spin_loha.value())
-        self.fdca_controller_settings.loha = float(self.edit_loha.text())
-        self.fdca_controller_settings.k_y = float(self.edit_k_y.text())
-        self.fdca_controller_settings.k_psi = float(self.edit_k_psi.text())
-        self.fdca_controller_settings.lohs = float(self.edit_lohs.text())
-        self.fdca_controller_settings.sohf = float(self.edit_sohf.text())
-        self.fdca_controller_settings.loha = float(self.edit_loha.text())
+        self.fdca_controller_settings.loha = float(self.spinbox_loha.text())
+        self.fdca_controller_settings.k_y = float(self.spinbox_ky.text())
+        self.fdca_controller_settings.k_psi = float(self.spinbox_kpsi.text())
+        self.fdca_controller_settings.lohs = float(self.spinbox_lohs.text())
+        self.fdca_controller_settings.sohf = float(self.spinbox_sohf.text())
+        self.fdca_controller_settings.loha = float(self.spinbox_loha.text())
         self.fdca_controller_settings.trajectory_name = self.cmbbox_hcr_selection.itemText(
             self.cmbbox_hcr_selection.currentIndex())
 
@@ -99,11 +99,11 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
         self.lbl_loha.setText(str(settings_to_display.loha))
         self.lbl_loha_deg.setText(str(round(math.radians(settings_to_display.loha), 3)))
 
-        self.edit_k_y.setText(str(settings_to_display.k_y))
-        self.edit_k_psi.setText(str(settings_to_display.k_psi))
-        self.edit_lohs.setText(str(settings_to_display.lohs))
-        self.edit_sohf.setText(str(settings_to_display.sohf))
-        self.edit_loha.setText(str(settings_to_display.loha))
+        self.spinbox_ky.setValue(settings_to_display.k_y)
+        self.spinbox_kpsi.setValue(settings_to_display.k_psi)
+        self.spinbox_lohs.setValue(settings_to_display.lohs)
+        self.spinbox_sohf.setValue(settings_to_display.sohf)
+        self.spinbox_loha.setValue(settings_to_display.loha)
         # self.slider_loha.setValue(settings_to_display.loha)
         # self.spin_loha.setValue(settings_to_display.loha)
 
@@ -210,8 +210,8 @@ class FDCAControllerProcess:
 class FDCAControllerSettings:
     def __init__(self, identifier=''):
         self.k_y = 0.2
-        self.k_psi = 2
-        self.lohs = 1
+        self.k_psi = 2.0
+        self.lohs = 1.0
         self.sohf = 1.0
         self.loha = 1.0
         self.trajectory_name = "hcr_demomap.csv"

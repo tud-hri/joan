@@ -226,32 +226,10 @@
      <layout class="QGridLayout" name="gridLayout_6">
       <item row="0" column="0">
        <layout class="QGridLayout" name="gridLayout_5">
-        <item row="1" column="0">
-         <widget class="QLabel" name="lblKtaut_th">
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>tau_th:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1" colspan="3">
-         <widget class="QLineEdit" name="edit_tau_th">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
+        <item row="3" column="1">
+         <widget class="QDoubleSpinBox" name="spinbox_alpha">
+          <property name="singleStep">
+           <double>1.000000000000000</double>
           </property>
          </widget>
         </item>
@@ -272,32 +250,27 @@
           </property>
          </widget>
         </item>
-        <item row="3" column="1" colspan="3">
-         <widget class="QLineEdit" name="edit_alpha">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
+        <item row="1" column="0">
+         <widget class="QLabel" name="lblKtaut_th">
           <property name="font">
            <font>
             <pointsize>10</pointsize>
-           </font>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0" colspan="3">
-         <widget class="QLabel" name="lblKalphatitle">
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-            <weight>50</weight>
-            <bold>false</bold>
+            <weight>75</weight>
+            <bold>true</bold>
            </font>
           </property>
           <property name="text">
-           <string>Estimator convergence rate</string>
+           <string>tau_th:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0" colspan="4">
+         <widget class="QCheckBox" name="checkInvert">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="text">
+           <string>Use positive feedback (invert controller)? </string>
           </property>
          </widget>
         </item>
@@ -315,13 +288,27 @@
           </property>
          </widget>
         </item>
-        <item row="4" column="0" colspan="4">
-         <widget class="QCheckBox" name="checkInvert">
-          <property name="enabled">
-           <bool>true</bool>
+        <item row="2" column="0" colspan="3">
+         <widget class="QLabel" name="lblKalphatitle">
+          <property name="font">
+           <font>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <bold>false</bold>
+           </font>
           </property>
           <property name="text">
-           <string>Use positive feedback (invert controller)? </string>
+           <string>Estimator convergence rate</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QDoubleSpinBox" name="spinbox_tau">
+          <property name="maximum">
+           <double>2.000000000000000</double>
+          </property>
+          <property name="singleStep">
+           <double>0.100000000000000</double>
           </property>
          </widget>
         </item>

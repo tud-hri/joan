@@ -37,8 +37,8 @@ class TradedControllerSettingsDialog(QtWidgets.QDialog):
             self.cmbbox_hcr_selection.blockSignals(False)
 
     def update_parameters(self):
-        self.traded_controller_settings.alpha = float(self.edit_alpha.text())
-        self.traded_controller_settings.tau_th = float(self.edit_tau_th.text())
+        self.traded_controller_settings.alpha = float(self.spinbox_alpha.text())
+        self.traded_controller_settings.tau_th = float(self.spinbox_tau.text())
         if self.checkInvert.isChecked():
             self.traded_controller_settings.gamma = -1
         else:
@@ -57,8 +57,8 @@ class TradedControllerSettingsDialog(QtWidgets.QDialog):
 
 
     def accept(self):
-        self.traded_controller_settings.alpha = float(self.edit_alpha.text())
-        self.traded_controller_settings.tau_th = float(self.edit_tau_th.text())
+        self.traded_controller_settings.alpha = float(self.spinbox_alpha.text())
+        self.traded_controller_settings.tau_th = float(self.spinbox_tau.text())
         if self.checkInvert.isChecked():
             self.traded_controller_settings.gamma = -1
         else:
@@ -66,12 +66,10 @@ class TradedControllerSettingsDialog(QtWidgets.QDialog):
         self.traded_controller_settings.trajectory_name = self.cmbbox_hcr_selection.itemText(
             self.cmbbox_hcr_selection.currentIndex())
 
-        try:
-            self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].alpha = self.traded_controller_settings.alpha
-            self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].tau_th = self.traded_controller_settings.tau_th
-            self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].gamma = self.traded_controller_settings.gamma
-        except:
-            pass
+        self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].alpha = self.traded_controller_settings.alpha
+        self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].tau_th = self.traded_controller_settings.tau_th
+        self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].gamma = self.traded_controller_settings.gamma
+
 
         super().accept()
 
@@ -83,8 +81,8 @@ class TradedControllerSettingsDialog(QtWidgets.QDialog):
         self.lbl_alpha.setText(str(settings_to_display.alpha))
         self.lbl_tau_th.setText(str(settings_to_display.tau_th))
 
-        self.edit_alpha.setText(str(settings_to_display.alpha))
-        self.edit_tau_th.setText(str(settings_to_display.tau_th))
+        self.spinbox_alpha.setValue(settings_to_display.alpha)
+        self.spinbox_tau.setValue(settings_to_display.tau_th)
 
         idx_traj = self.cmbbox_hcr_selection.findText(settings_to_display.trajectory_name)
         self.cmbbox_hcr_selection.setCurrentIndex(idx_traj)

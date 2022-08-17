@@ -89,9 +89,6 @@ class CarlaInterfaceProcess(ModuleProcess):
             self.agent_objects[key] = AgentTypes(value.agent_type).process(self, settings=value, shared_variables=self._module_shared_variables.agents[key])
             time.sleep(0.1)  # short sleep, such that the camera in CARLA is attached properly to the first spawned car
 
-    def start(self):
-        super().start()
-
     def run(self):
         """
         Run function, starts once start() is called.
