@@ -37,12 +37,12 @@ class TradedControllerSettingsDialog(QtWidgets.QDialog):
             self.cmbbox_hcr_selection.blockSignals(False)
 
     def update_parameters(self):
-        self.traded_controller_settings.alpha = float(self.spinbox_alpha.text())
-        self.traded_controller_settings.tau_th = float(self.spinbox_tau.text())
+        self.traded_controller_settings.alpha = self.spinbox_alpha.value()
+        self.traded_controller_settings.tau_th = self.spinbox_tau.value()
         if self.checkInvert.isChecked():
-            self.traded_controller_settings.gamma = -1
-        else:
             self.traded_controller_settings.gamma = 1
+        else:
+            self.traded_controller_settings.gamma = -1
         self.traded_controller_settings.trajectory_name = self.cmbbox_hcr_selection.itemText(
             self.cmbbox_hcr_selection.currentIndex())
 
@@ -50,26 +50,28 @@ class TradedControllerSettingsDialog(QtWidgets.QDialog):
             self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].alpha = self.traded_controller_settings.alpha
             self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].tau_th = self.traded_controller_settings.tau_th
             self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].gamma = self.traded_controller_settings.gamma
-        except:
+        except AttributeError:
             pass
 
         self._display_values()
 
 
     def accept(self):
-        self.traded_controller_settings.alpha = float(self.spinbox_alpha.text())
-        self.traded_controller_settings.tau_th = float(self.spinbox_tau.text())
+        self.traded_controller_settings.alpha = self.spinbox_alpha.value()
+        self.traded_controller_settings.tau_th = self.spinbox_tau.value()
         if self.checkInvert.isChecked():
-            self.traded_controller_settings.gamma = -1
-        else:
             self.traded_controller_settings.gamma = 1
+        else:
+            self.traded_controller_settings.gamma = -1
         self.traded_controller_settings.trajectory_name = self.cmbbox_hcr_selection.itemText(
             self.cmbbox_hcr_selection.currentIndex())
 
-        self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].alpha = self.traded_controller_settings.alpha
-        self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].tau_th = self.traded_controller_settings.tau_th
-        self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].gamma = self.traded_controller_settings.gamma
-
+        try:
+            self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].alpha = self.traded_controller_settings.alpha
+            self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].tau_th = self.traded_controller_settings.tau_th
+            self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].gamma = self.traded_controller_settings.gamma
+        except AttributeError:
+            pass
 
         super().accept()
 
@@ -88,7 +90,7 @@ class TradedControllerSettingsDialog(QtWidgets.QDialog):
         self.cmbbox_hcr_selection.setCurrentIndex(idx_traj)
 
     def _set_default_values(self):
-        self._display_values(HapticControllerTypes.TradedControl.settings())
+        self._display_values(HapticControllerTypes.TRADED_CONTROL.settings())
         self.update_parameters()
 
     def update_trajectory_list(self):
@@ -297,7 +299,6 @@ class TradedControllerSettings:
         self.gamma = -1
         self.trajectory_name = "hcr_trajectory.csv"
         self.identifier = identifier
-
         self.haptic_controller_type = HapticControllerTypes.TRADED_CONTROL.value
 
     def __str__(self):

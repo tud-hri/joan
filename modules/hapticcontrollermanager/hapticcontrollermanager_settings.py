@@ -30,7 +30,7 @@ class HapticControllerManagerSettings(ModuleSettings):
                 self.haptic_controllers.update({identifier: ego_vehicle_settings})
 
             if 'Traded Control' in identifier:
-                ego_vehicle_settings = HapticControllerTypes.TradedControl.settings()
+                ego_vehicle_settings = HapticControllerTypes.TRADED_CONTROL.settings()
                 ego_vehicle_settings.set_from_loaded_dict(settings_dict)
                 self.haptic_controllers.update({identifier: ego_vehicle_settings})
 

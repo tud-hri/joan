@@ -10,7 +10,6 @@ class HapticControllerManagerSharedVariables(ModuleSharedVariables):
         super().__init__()
         self.haptic_controllers = {}
 
-
 class FDCASharedVariables(SharedVariables):
     def __init__(self):
         # controller parameters
@@ -173,7 +172,6 @@ class TradedControllerSharedVariables(SharedVariables):
         self._estimated_human_torque = mp.Value(c_float, 0)
         self._x_road = mp.Array(c_float, 50)
         self._y_road = mp.Array(c_float, 50)
-
 
 
     @property
