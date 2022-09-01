@@ -52,20 +52,18 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
         self.fdca_controller_settings.loha = self.spinbox_loha.value()
         self.fdca_controller_settings.trajectory_name = self.cmbbox_hcr_selection.itemText(
             self.cmbbox_hcr_selection.currentIndex())
-
         try:
             self.module_manager.shared_variables.haptic_controllers[self.fdca_controller_settings.identifier].k_y = self.fdca_controller_settings.k_y
             self.module_manager.shared_variables.haptic_controllers[self.fdca_controller_settings.identifier].k_psi = self.fdca_controller_settings.k_psi
             self.module_manager.shared_variables.haptic_controllers[self.fdca_controller_settings.identifier].lohs = self.fdca_controller_settings.lohs
             self.module_manager.shared_variables.haptic_controllers[self.fdca_controller_settings.identifier].sohf = self.fdca_controller_settings.sohf
             self.module_manager.shared_variables.haptic_controllers[self.fdca_controller_settings.identifier].loha = self.fdca_controller_settings.loha
-        except:
+        except AttributeError:
             pass
 
         self._display_values()
 
     def accept(self):
-        # self.slider_loha.setValue(self.spin_loha.value())
         self.fdca_controller_settings.k_y = self.spinbox_ky.value()
         self.fdca_controller_settings.k_psi = self.spinbox_kpsi.value()
         self.fdca_controller_settings.lohs = self.spinbox_lohs.value()
@@ -73,14 +71,13 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
         self.fdca_controller_settings.loha = self.spinbox_loha.value()
         self.fdca_controller_settings.trajectory_name = self.cmbbox_hcr_selection.itemText(
             self.cmbbox_hcr_selection.currentIndex())
-
         try:
             self.module_manager.shared_variables.haptic_controllers[self.fdca_controller_settings.identifier].k_y = self.fdca_controller_settings.k_y
             self.module_manager.shared_variables.haptic_controllers[self.fdca_controller_settings.identifier].k_psi = self.fdca_controller_settings.k_psi
             self.module_manager.shared_variables.haptic_controllers[self.fdca_controller_settings.identifier].lohs = self.fdca_controller_settings.lohs
             self.module_manager.shared_variables.haptic_controllers[self.fdca_controller_settings.identifier].sohf = self.fdca_controller_settings.sohf
             self.module_manager.shared_variables.haptic_controllers[self.fdca_controller_settings.identifier].loha = self.fdca_controller_settings.loha
-        except:
+        except AttributeError:
             pass
 
         super().accept()
@@ -103,8 +100,6 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
         self.spinbox_lohs.setValue(settings_to_display.lohs)
         self.spinbox_sohf.setValue(settings_to_display.sohf)
         self.spinbox_loha.setValue(settings_to_display.loha)
-        # self.slider_loha.setValue(settings_to_display.loha)
-        # self.spin_loha.setValue(settings_to_display.loha)
 
         idx_traj = self.cmbbox_hcr_selection.findText(settings_to_display.trajectory_name)
         self.cmbbox_hcr_selection.setCurrentIndex(idx_traj)
@@ -170,7 +165,6 @@ class FDCAControllerProcess:
     def load_trajectory(self):
         """Load HCR trajectory"""
         try:
-
             tmp = pd.read_csv(os.path.join(self._path_trajectory_directory, self.settings.trajectory_name))
             if not np.array_equal(tmp.values, self._trajectory):
                 self._trajectory = tmp.values
@@ -203,7 +197,6 @@ class FDCAControllerProcess:
                         self.shared_variables, torque_fdca = self.controller.compute_input(stiffness, steering_angle, car_state, self.shared_variables)
                         hardware_manager_shared_variables.inputs[agent_settings.selected_input].torque = torque_fdca
 
-
 class FDCAControllerSettings:
     def __init__(self, identifier=''):
         self.k_y = 0.2
@@ -233,7 +226,7 @@ class FDCAController:
         self._trajectory = human_compatible_reference
         self._bq_filter_curve = LowPassFilterBiquad(fc=30, fs=100)
 
-    def compute_input(self, stiffness, steering_angle, car_state, shared_variables):
+    def compute_input(self, stiffness, steering_angle, car_state, car_velocity, shared_variables, carla_interface_shared_variables):
         """
         Compute the control inputs for the FDCA Controller
 
@@ -285,7 +278,7 @@ class FDCAController:
                       [0, 0, 1]])
         return np.matmul(R, x)
 
-    def _calculate_error(self, car_state, road_state):
+    def _calculate_error(self, car_state, car_velocity, road_state):
         """
         Calculate the controller error
         CARLA coordinate frame
@@ -345,6 +338,8 @@ class FDCAController:
         for i in id:
             if i >= len(self._trajectory[:, 0]):
                 idx.append(i - len(self._trajectory[:, 0]))
+            elif i < 0:
+                idx.append(i + len(self._trajectory[:, 0]))
             else:
                 idx.append(i)
         return idx

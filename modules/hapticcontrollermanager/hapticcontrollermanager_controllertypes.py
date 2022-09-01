@@ -64,6 +64,6 @@ class HapticControllerTypes(enum.Enum):
                 }[self]
 
     def __str__(self):
-        return {HapticControllerTypes.FDCA: 'FDCA',
+        return {HapticControllerTypes.FDCA: 'Four Design Choices Architecture',
                 HapticControllerTypes.TRADED_CONTROL: 'Traded Control'
                 }[self]
