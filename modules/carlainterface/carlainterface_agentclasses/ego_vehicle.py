@@ -1,5 +1,6 @@
 import random, os, math
 import numpy as np
+from playsound import playsound
 
 import carla
 
@@ -26,8 +27,13 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
         self.btn_apply_parameters.clicked.connect(self.update_parameters)
         self.btn_update.clicked.connect(lambda: self.update_settings(self.settings))
         self.display_values()
-
         self.update_settings(self.settings)
+
+        if self.settings.random_trajectory:
+            # print("random selecting trajectory")
+            self.settings.selected_trajectory = random.choice([1, 2, 3, 4])
+            print("selected ", self.settings.selected_trajectory)
+            self.settings.bikes = self._choose_bikes()
 
     def show(self):
         self.update_settings(self.settings)
@@ -52,6 +58,12 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
                     self.settings.selected_spawnpoint = self.combo_spawnpoints.currentText()
 
         self.settings.set_velocity = self.check_box_set_vel.isChecked()
+        self.settings.use_intention = self.check_box_intention.isChecked()
+        self.settings.takeover_requests = self.check_box_takeover.isChecked()
+        self.settings.random_trajectory = self.check_box_random_trajectory.isChecked()
+        if self.settings.random_trajectory:
+            self.settings.selected_trajectory = random.choice([1, 2, 3, 4])
+            self.settings.bikes = self._choose_bikes()
         self.display_values()
 
     def accept(self):
@@ -72,6 +84,12 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
             else:
                 self.settings.selected_spawnpoint = self.combo_spawnpoints.currentText()
         self.settings.set_velocity = self.check_box_set_vel.isChecked()
+        self.settings.use_intention = self.check_box_intention.isChecked()
+        self.settings.takeover_requests = self.check_box_takeover.isChecked()
+        self.settings.random_trajectory = self.check_box_random_trajectory.isChecked()
+        if self.settings.random_trajectory:
+            self.settings.selected_trajectory = random.choice([1, 2, 3, 4])
+            self.settings.bikes = self._choose_bikes()
         super().accept()
 
     def display_values(self, settings_to_display=None):
@@ -92,9 +110,25 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
         self.spin_velocity.setValue(settings_to_display.velocity)
         self.spin_steering_ratio.setValue(settings_to_display.steering_ratio)
         self.check_box_set_vel.setChecked(settings_to_display.set_velocity)
+        self.check_box_intention.setChecked(settings_to_display.use_intention)
+        self.check_box_takeover.setChecked(settings_to_display.takeover_requests)
+        self.check_box_random_trajectory.setChecked(settings_to_display.random_trajectory)
 
     def _set_default_values(self):
         self.display_values(AgentTypes.EGO_VEHICLE.settings())
+
+    def _choose_bikes(self):
+        npc = [1, 2, 3, 4, 5]
+        npc.remove(self.settings.selected_trajectory)
+        npc1 = random.choice(npc)
+        npc.remove(npc1)
+        npc2 = random.choice(npc)
+        bikes = [0, 0, 0, 0, 0]
+        bikes[self.settings.selected_trajectory - 1] = 1
+        bikes[npc1 - 1] = 1
+        bikes[npc2 - 1] = 1
+        return bikes
+
 
     def update_settings(self, settings):
         try:
@@ -146,12 +180,19 @@ class EgoVehicleProcess:
         self.settings = settings
         self.shared_variables = shared_variables
         self.carlainterface_mp = carla_mp
+        self.played_sound = False
+        self.bikes = ['harley-davidson.low_rider', 'yamaha.yzf', 'kawasaki.ninja', 'bh.crossbike']
+
+        if settings.random_trajectory:
+            settings.selected_trajectory = random.choice([1, 2, 3, 4])
+            settings.bikes = self._choose_bikes(settings)
 
         self._control = carla.VehicleControl()
         if self.settings.selected_car != 'None':
             self._BP = random.choice(self.carlainterface_mp.vehicle_blueprint_library.filter("vehicle." + self.settings.selected_car))
         self._control = carla.VehicleControl()
         self.world_map = self.carlainterface_mp.world.get_map()
+        self.timer = 0.0
         torque_curve = []
         gears = []
 
@@ -176,6 +217,18 @@ class EgoVehicleProcess:
                 self.spawned_vehicle.apply_physics_control(physics)
                 self.max_steering_angle = physics.wheels[0].max_steer_angle
 
+    def _choose_bikes(self, settings):
+        npc = [1, 2, 3, 4, 5]
+        npc.remove(settings.selected_trajectory)
+        npc1 = random.choice(npc)
+        npc.remove(npc1)
+        npc2 = random.choice(npc)
+        bikes = [0, 0, 0, 0, 0]
+        bikes[settings.selected_trajectory - 1] = 1
+        bikes[npc1 - 1] = 1
+        bikes[npc2 - 1] = 1
+        return bikes
+
     def do(self):
         if self.settings.selected_input != 'None' and hasattr(self, 'spawned_vehicle'):
             max_angle_car = math.radians(self.max_steering_angle)
@@ -195,7 +248,55 @@ class EgoVehicleProcess:
             except IndexError:
                 pass
 
+            if self.settings.takeover_requests:
+                self.check_takeover_request()
+
         self.set_shared_variables()
+
+    def check_takeover_request(self):
+        ego_agent_key = 'Ego Vehicle_1'
+        ego_position = self.carlainterface_mp.agent_objects[ego_agent_key].shared_variables.transform
+        ego_velocity = self.carlainterface_mp.agent_objects[ego_agent_key].shared_variables.velocities_in_world_frame
+        take_over = []
+
+        for agent_settings in self.carlainterface_mp.agent_objects.values():
+            # Find all cars named car_name
+            for bike in self.bikes:
+                if agent_settings.settings.selected_car == bike:
+                    # Fire a take-over request when getting too near
+                    car_position = self.carlainterface_mp.agent_objects[agent_settings.settings.identifier].shared_variables.transform
+                    distance_to_car = math.sqrt((ego_position[0] - car_position[0]) ** 2 + (ego_position[1] - car_position[1]) ** 2)
+                    position_vector = self._heading(ego_position[0] - car_position[0], ego_position[1] - car_position[1])
+                    velocity_vector = self._heading(ego_velocity[0], ego_velocity[1])
+                    # print(distance_to_car, position_vector * velocity_vector)
+
+                    if distance_to_car < 25.0 and position_vector * velocity_vector < 0:
+                        take_over.append(True)
+                        if not self.played_sound:
+                            print("please take over")
+                            self.played_sound = True
+                            playsound('C:\\Repositories\\demo\\joan\\resources\\chime.mp3', False)
+                    else:
+                        take_over.append(False)
+
+        if not any(take_over):
+            self.played_sound = False
+
+
+    def _heading(self, dx_dt, dy_dt):
+        """
+        Calculates the heading along a line.
+
+        Args:
+            dx_dt (numpy.ndarray): First derivative of x.
+            dy_dt (numpy.ndarray): First derivative of y.
+
+        Returns:
+            np.ndarray: Heading along line in radians with respect to the world frame.
+        """
+        return np.arctan2(dy_dt, dx_dt)
+
+
 
     def apply_cruise_control(self):
         velocity = math.sqrt(self.spawned_vehicle.get_velocity().x ** 2 + self.spawned_vehicle.get_velocity().y ** 2)
@@ -374,6 +475,10 @@ class EgoVehicleSettings:
         self.selected_car = 'audi.hapticslab'
         self.velocity = 50
         self.set_velocity = False
+        self.use_intention = False
+        self.takeover_requests = False
+        self.random_trajectory = False
+        self.selected_trajectory = None
         self.identifier = identifier
         self.steering_ratio = 13
         self.agent_type = AgentTypes.EGO_VEHICLE.value

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>268</width>
+    <width>273</width>
     <height>377</height>
    </rect>
   </property>
@@ -20,18 +20,18 @@
       <string>NPC Vehicle Parameters</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
-      <item row="3" column="0">
-       <widget class="QLabel" name="lblSpawnpoints">
+      <item row="6" column="0" colspan="2">
+       <widget class="QComboBox" name="combo_car_type">
         <property name="font">
          <font>
           <pointsize>8</pointsize>
-          <weight>50</weight>
-          <bold>false</bold>
          </font>
         </property>
-        <property name="text">
-         <string>Spawnpoints:</string>
-        </property>
+        <item>
+         <property name="text">
+          <string>None</string>
+         </property>
+        </item>
        </widget>
       </item>
       <item row="4" column="0" colspan="2">
@@ -61,32 +61,25 @@
         </item>
        </widget>
       </item>
-      <item row="6" column="0" colspan="2">
-       <widget class="QComboBox" name="combo_car_type">
-        <property name="font">
-         <font>
-          <pointsize>8</pointsize>
-         </font>
+      <item row="9" column="0" colspan="2">
+       <widget class="QPushButton" name="btn_apply_parameters">
+        <property name="text">
+         <string>Apply changes without closing dialog</string>
         </property>
-        <item>
-         <property name="text">
-          <string>None</string>
-         </property>
-        </item>
        </widget>
       </item>
-      <item row="2" column="0" colspan="2">
-       <widget class="QComboBox" name="combo_controller">
+      <item row="3" column="0">
+       <widget class="QLabel" name="lblSpawnpoints">
         <property name="font">
          <font>
           <pointsize>8</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
          </font>
         </property>
-        <item>
-         <property name="text">
-          <string>None</string>
-         </property>
-        </item>
+        <property name="text">
+         <string>Spawnpoints:</string>
+        </property>
        </widget>
       </item>
       <item row="1" column="0">
@@ -101,11 +94,18 @@
         </property>
        </widget>
       </item>
-      <item row="7" column="0" colspan="2">
-       <widget class="QPushButton" name="btn_apply_parameters">
-        <property name="text">
-         <string>Apply changes without closing dialog</string>
+      <item row="2" column="0" colspan="2">
+       <widget class="QComboBox" name="combo_controller">
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+         </font>
         </property>
+        <item>
+         <property name="text">
+          <string>None</string>
+         </property>
+        </item>
        </widget>
       </item>
       <item row="5" column="0">
@@ -130,6 +130,20 @@
         <property name="text">
          <string>Update Settings from other modules 
  (will also show currently applied settings)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="0">
+       <widget class="QCheckBox" name="check_box_cars">
+        <property name="text">
+         <string>Choose random car</string>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="0">
+       <widget class="QCheckBox" name="check_box_bikes">
+        <property name="text">
+         <string>Choose random bike</string>
         </property>
        </widget>
       </item>

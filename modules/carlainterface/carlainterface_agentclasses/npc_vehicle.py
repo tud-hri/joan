@@ -16,6 +16,7 @@ class NPCVehicleSettingsDialog(QtWidgets.QDialog):
     def __init__(self, settings, module_manager, parent=None):
         super().__init__(parent)
 
+
         self.settings = settings
         self.module_manager = module_manager
         self.carla_interface_overall_settings = self.module_manager.module_settings
@@ -39,6 +40,9 @@ class NPCVehicleSettingsDialog(QtWidgets.QDialog):
         self.settings.selected_npc_controller = self.combo_controller.currentText()
         self.settings.selected_car = self.combo_car_type.currentText()
         self.settings.selected_spawnpoint = self.combo_spawnpoints.currentText()
+        self.settings.random_car = self.check_box_cars.isChecked()
+        self.settings.random_bike = self.check_box_bikes.isChecked()
+
         for settings in self.carla_interface_overall_settings.agents.values():
             if settings.identifier != self.settings.identifier:  # exlude own settings
                 if settings.selected_spawnpoint == self.combo_spawnpoints.currentText() and settings.selected_spawnpoint != 'None':
@@ -67,6 +71,8 @@ class NPCVehicleSettingsDialog(QtWidgets.QDialog):
         self.combo_car_type.setCurrentIndex(idx_car)
 
         self.combo_spawnpoints.setCurrentText(settings_to_display.selected_spawnpoint)
+        self.check_box_cars.setChecked(settings_to_display.random_car)
+        self.check_box_bikes.setChecked(settings_to_display.random_bike)
 
     def _set_default_values(self):
         self.display_values(AgentTypes.NPC_VEHICLE.settings())
@@ -99,6 +105,11 @@ class NPCVehicleSettingsDialog(QtWidgets.QDialog):
         if idx != -1:
             self.combo_controller.setCurrentIndex(idx)
 
+        self.check_box_cars.setChecked(self.settings.random_car)
+        self.check_box_bikes.setChecked(self.settings.random_bike)
+
+
+
 
 class NPCVehicleProcess:
     def __init__(self, carla_mp, settings, shared_variables):
@@ -106,8 +117,29 @@ class NPCVehicleProcess:
         self.shared_variables = shared_variables
         self.carlainterface_mp = carla_mp
         self.npc_controller_shared_variables = carla_mp.npc_controller_shared_variables
+        self.bikes = ['harley-davidson.low_rider', 'yamaha.yzf', 'kawasaki.ninja' ]
+        self.cars = ['audi.a2', 'nissan.micra', 'audi.tt', 'ford.mustang', 'citroen.c3', 'seat.leon', 'toyota.prius', 'volkswagen.t2']
+        ego_vehicle = carla_mp.agent_objects["Ego Vehicle_1"]
 
-        if self.settings.selected_car != 'None':
+        # Really dirty hack
+        if ego_vehicle.settings.random_trajectory:
+            bikes = ego_vehicle.settings.bikes
+            npc_nr = self.settings.identifier[-1]
+            if bikes[int(npc_nr) - 1] == 1:
+                self.settings.random_bike = True
+                self.settings.random_car = False
+            else:
+                self.settings.random_bike = False
+                self.settings.random_car = True
+
+
+        if self.settings.random_bike:
+            self.settings.selected_car = random.choice(self.bikes)
+
+        elif self.settings.random_car:
+            self.settings.selected_car = random.choice(self.cars)
+
+        if self.settings.selected_car != 'None' and (not self.settings.random_bike or not self.settings.random_car):
             self._BP = random.choice(self.carlainterface_mp.vehicle_blueprint_library.filter("vehicle." + self.settings.selected_car))
         self._control = carla.VehicleControl()
         self._rear_axle_in_vehicle_frame = np.array([0., 0., 0.])
@@ -121,6 +153,7 @@ class NPCVehicleProcess:
 
         if self.settings.selected_spawnpoint != 'None':
             if self.settings.selected_car != 'None':
+
                 self.spawned_vehicle = self.carlainterface_mp.world.spawn_actor(self._BP, self.carlainterface_mp.spawn_point_objects[
                     self.carlainterface_mp.spawn_points.index(self.settings.selected_spawnpoint)])
                 physics = self.spawned_vehicle.get_physics_control()
@@ -156,7 +189,6 @@ class NPCVehicleProcess:
             self._control.hand_brake = self.npc_controller_shared_variables.controllers[self.settings.selected_npc_controller].handbrake
             self._control.brake = self.npc_controller_shared_variables.controllers[self.settings.selected_npc_controller].brake
             self._control.throttle = self.npc_controller_shared_variables.controllers[self.settings.selected_npc_controller].throttle
-
             self.spawned_vehicle.apply_control(self._control)
 
         self.set_shared_variables()
@@ -164,6 +196,13 @@ class NPCVehicleProcess:
     def destroy(self):
         if hasattr(self, 'spawned_vehicle') and self.spawned_vehicle.is_alive:
             self.spawned_vehicle.destroy()
+
+
+    def compute_angle(self, v1, v2):
+        arg1 = np.cross(v1, v2)
+        arg2 = np.dot(v1, v2)
+        angle = np.arctan2(arg1, arg2)
+        return angle
 
     def set_shared_variables(self):
         if hasattr(self, 'spawned_vehicle'):
@@ -199,6 +238,69 @@ class NPCVehicleProcess:
                                                    float(latest_applied_control.hand_brake),
                                                    float(latest_applied_control.brake),
                                                    float(latest_applied_control.throttle)]
+
+            data_road_x = []
+            data_road_x_inner = []
+            data_road_x_outer = []
+            data_road_y = []
+            data_road_y_inner = []
+            data_road_y_outer = []
+            data_road_psi = []
+            data_road_lanewidth = []
+
+            vehicle_location = self.spawned_vehicle.get_location()
+            closest_waypoint = self.world_map.get_waypoint(vehicle_location, project_to_road=True)
+
+            # previous points
+            previous_waypoints = []
+            for a in reversed(range(1, 26)):
+                previous_waypoints.append(closest_waypoint.previous(a))
+
+            # next
+            next_waypoints = []
+            for a in range(1, 26):
+                next_waypoints.append(closest_waypoint.next(a))
+
+            for waypoints in previous_waypoints:
+                data_road_x.append(waypoints[0].transform.location.x)
+                data_road_y.append(waypoints[0].transform.location.y)
+                data_road_lanewidth.append(waypoints[0].lane_width)
+
+            for waypoints in next_waypoints:
+                data_road_x.append(waypoints[0].transform.location.x)
+                data_road_y.append(waypoints[0].transform.location.y)
+                data_road_lanewidth.append(waypoints[0].lane_width)
+
+            pos_array = np.array([[data_road_x], [data_road_y]])
+            diff = np.transpose(np.diff(pos_array))
+
+            x_unit_vector = np.array([[1], [0]])
+            for row in diff:
+                data_road_psi.append(self.compute_angle(row.ravel(), x_unit_vector.ravel()))
+
+            data_road_psi.append(0)
+
+            iter_x = 0
+            for roadpoint_x in data_road_x:
+                data_road_x_outer.append(roadpoint_x - math.sin(data_road_psi[iter_x]) * data_road_lanewidth[iter_x] / 2)
+                data_road_x_inner.append(roadpoint_x + math.sin(data_road_psi[iter_x]) * data_road_lanewidth[iter_x] / 2)
+                iter_x = iter_x + 1
+
+            iter_y = 0
+            for roadpoint_y in data_road_y:
+                data_road_y_outer.append(roadpoint_y - math.cos(data_road_psi[iter_y]) * data_road_lanewidth[iter_y] / 2)
+                data_road_y_inner.append(roadpoint_y + math.cos(data_road_psi[iter_y]) * data_road_lanewidth[iter_y] / 2)
+                iter_y = iter_y + 1
+
+            # set shared road variables:
+            self.shared_variables.data_road_x = data_road_x
+            self.shared_variables.data_road_x_inner = data_road_x_inner
+            self.shared_variables.data_road_x_outer = data_road_x_outer
+            self.shared_variables.data_road_y = data_road_y
+            self.shared_variables.data_road_y_inner = data_road_y_inner
+            self.shared_variables.data_road_y_outer = data_road_y_outer
+            self.shared_variables.data_road_psi = data_road_psi
+            self.shared_variables.data_road_lanewidth = data_road_lanewidth
 
     @staticmethod
     def get_rotation_matrix_from_carla(roll, pitch, yaw, degrees=True):
@@ -241,6 +343,8 @@ class NPCVehicleSettings:
         self.selected_spawnpoint = 'Spawnpoint 0'
         self.selected_car = 'hapticslab.audi'
         self.identifier = identifier
+        self.random_car = False
+        self.random_bike = False
 
         self.agent_type = AgentTypes.NPC_VEHICLE
 

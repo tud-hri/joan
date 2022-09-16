@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>413</width>
-    <height>500</height>
+    <height>678</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -123,6 +123,40 @@
          <enum>Qt::Horizontal</enum>
         </property>
        </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="check_box_cruise_control">
+        <property name="text">
+         <string>Use constant speed</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <widget class="QLabel" name="label_5">
+          <property name="text">
+           <string>Velocity</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QDoubleSpinBox" name="spin_box_velocity">
+          <property name="suffix">
+           <string> km/h</string>
+          </property>
+          <property name="decimals">
+           <number>0</number>
+          </property>
+          <property name="maximum">
+           <double>100.000000000000000</double>
+          </property>
+          <property name="singleStep">
+           <double>1.000000000000000</double>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
       <item>
        <widget class="QCheckBox" name="dynamicLADCheckBox">

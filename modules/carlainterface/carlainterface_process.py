@@ -24,6 +24,7 @@ def connect_carla(host='localhost', port=2000):
     spawn_point_objects = []
     world = None
     spawn_points = []
+    game_bp_library = []
     try:
         vehicle_tags = []
         spawn_points = []

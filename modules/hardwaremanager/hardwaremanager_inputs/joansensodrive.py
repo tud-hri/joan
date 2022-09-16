@@ -86,8 +86,8 @@ class JOANSensoDriveProcess:
         self.settings_dict['mp_torque'] = self.shared_variables.torque
         self.settings_dict['mp_friction'] = self.shared_variables.friction
         self.settings_dict['mp_damping'] = self.shared_variables.damping
-        self.settings_dict['mp_spring_stiffness'] = self.shared_variables.loha_stiffness + \
-            self.shared_variables.auto_center_stiffness
+        self.settings_dict['mp_spring_stiffness'] = self.shared_variables.auto_center_stiffness # self.shared_variables.loha_stiffness + \
+
 
         self.parent_pipe.send(self.settings_dict)
         values_from_sensodrive = self.parent_pipe.recv()
@@ -108,8 +108,8 @@ class SensoDriveSettings:
         self.torque_limit_between_endstops = 200  # percent
         self.torque_limit_beyond_endstops = 200  # percent
         self.friction = 0  # Nm
-        self.damping = 0.1  # Nm * s / rad
-        self.spring_stiffness = 1  # Nm / rad
+        self.damping = 0.25  # Nm * s / rad
+        self.spring_stiffness = 0.4 # Nm / rad
         self.torque = 0  # Nm
         self.identifier = identifier
         self.input_type = HardwareInputTypes.SENSODRIVE.value

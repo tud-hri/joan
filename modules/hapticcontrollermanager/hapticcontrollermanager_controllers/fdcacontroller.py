@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 
 from core.statesenum import State
 from modules.hapticcontrollermanager.hapticcontrollermanager_controllertypes import HapticControllerTypes
+from modules.hapticcontrollermanager.hapticcontrollermanager_controllers.torque_sensor import TorqueSensor
 from tools import LowPassFilterBiquad
 from tools.haptic_controller_tools import find_closest_node
 
@@ -79,6 +80,8 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
             self.module_manager.shared_variables.haptic_controllers[self.fdca_controller_settings.identifier].loha = self.fdca_controller_settings.loha
         except AttributeError:
             pass
+        except KeyError:
+            pass
 
         super().accept()
 
@@ -139,9 +142,11 @@ class FDCAControllerProcess:
 
         # TODO: get wheelbase and keff from car
         self.controller = FDCAController(wheel_base=2.406, effective_ratio=1 / 13, human_compatible_reference=self._trajectory)
+        self.torque_sensor = TorqueSensor()
 
         self._bq_filter_velocity = LowPassFilterBiquad(fc=30, fs=100)
         self._bq_filter_heading = LowPassFilterBiquad(fc=30, fs=100)
+        self._bq_filter_torque = LowPassFilterBiquad(fc=5, fs=100)
 
         self._controller_error = np.array([0.0, 0.0, 0.0, 0.0])
         self._error_old = np.array([0.0, 0.0])
@@ -158,12 +163,30 @@ class FDCAControllerProcess:
         self.ydot_road_old = 0
 
         self.time = 0
+        self.torque_fdca = 0.0
+
+        self.first_time = False
 
         # threshold to check if a trajectory is circular in meters; subsequent points need to be 1 m of each other
         self.threshold_circular_trajectory = 1.0
 
     def load_trajectory(self):
         """Load HCR trajectory"""
+        print("loading HCR trajectory")
+        if self.carla_interface_settings.agents["Ego Vehicle_1"].random_trajectory:
+            trajectory_number = self.carla_interface_settings.agents["Ego Vehicle_1"].selected_trajectory
+            print("take trajectory ", trajectory_number)
+            if trajectory_number == 1:
+                self.settings.trajectory_name = "crash_npc2.csv"
+            elif trajectory_number == 2:
+                self.settings.trajectory_name = "crash_npc3.csv"
+            elif trajectory_number == 3:
+                self.settings.trajectory_name = "crash_npc4.csv"
+            elif trajectory_number == 4:
+                self.settings.trajectory_name = "crash_npc5.csv"
+            else:
+                print("this is odd")
+
         try:
             tmp = pd.read_csv(os.path.join(self._path_trajectory_directory, self.settings.trajectory_name))
             if not np.array_equal(tmp.values, self._trajectory):
@@ -180,6 +203,11 @@ class FDCAControllerProcess:
         :param carla_interface_settings:
         :return:
         """
+        if self.first_time:
+            print("first time, now loading trajectory")
+            self.load_trajectory()
+            self.first_time = False
+
 
         for agent_settings in carla_interface_settings.agents.values():
             if hasattr(agent_settings, 'selected_controller'):
@@ -193,13 +221,26 @@ class FDCAControllerProcess:
                                               [carlainterface_shared_variables.agents[agent_settings.__str__()].transform[1]],
                                               [math.radians(carlainterface_shared_variables.agents[agent_settings.__str__()].transform[3])]])
 
+                        car_velocity = np.array([carlainterface_shared_variables.agents[agent_settings.__str__()].velocities_in_world_frame[0],
+                                                 carlainterface_shared_variables.agents[agent_settings.__str__()].velocities_in_world_frame[1]])
+
+                        timestep = time_step_in_ns / 1e9  # [s]
+
                         # Compute control inputs using current position vector
-                        self.shared_variables, torque_fdca = self.controller.compute_input(stiffness, steering_angle, car_state, self.shared_variables)
-                        hardware_manager_shared_variables.inputs[agent_settings.selected_input].torque = torque_fdca
+                        self.shared_variables, nonlinear_component, estimated_human_input = self.controller.compute_input(stiffness, steering_angle, timestep,
+                                                                                                                                  car_state, car_velocity, self.torque_fdca,
+                                                                                                                                  self.shared_variables,
+                                                                                                                                  agent_settings.use_intention,
+                                                                                                                                  carlainterface_shared_variables.agents[
+                                                                                                                                      agent_settings.__str__()])
+
+                        self.torque_fdca = self._bq_filter_torque.step(self.shared_variables.req_torque - nonlinear_component)
+                        hardware_manager_shared_variables.inputs[agent_settings.selected_input].torque = self.torque_fdca
+
 
 class FDCAControllerSettings:
     def __init__(self, identifier=''):
-        self.k_y = 0.2
+        self.k_y = 0.15
         self.k_psi = 2.0
         self.lohs = 1.0
         self.sohf = 1.0
@@ -220,13 +261,19 @@ class FDCAControllerSettings:
 
 
 class FDCAController:
-    def __init__(self, wheel_base=2.406, effective_ratio=1/13, human_compatible_reference=None):
+    def __init__(self, wheel_base=2.406, effective_ratio=1 / 13, human_compatible_reference=None):
+        self.in_disagreement = False
         self.wheel_base = wheel_base
         self.effective_ratio = effective_ratio
         self._trajectory = human_compatible_reference
         self._bq_filter_curve = LowPassFilterBiquad(fc=30, fs=100)
+        self._bq_filter_theta = LowPassFilterBiquad(fc=15, fs=100)
 
-    def compute_input(self, stiffness, steering_angle, car_state, car_velocity, shared_variables, carla_interface_shared_variables):
+        self.torque_sensor = TorqueSensor()
+        self.torque = 0.0
+        self.timer = 0.0
+
+    def compute_input(self, stiffness, steering_angle, timestep, car_state, car_velocity, old_torque, shared_variables, intention_aware, carla_interface_shared_variables):
         """
         Compute the control inputs for the FDCA Controller
 
@@ -240,27 +287,55 @@ class FDCAController:
             shared_variables (params): contains all information to be shared
             fdca_torque (float): computed control input
         """
-        x_road, y_road, road_state, steering_reference = self._get_references(car_state)
-        error = self._calculate_error(car_state, road_state)
 
-        # Torques, 1. Feedforward torque with LOHS gain tuning, 2. Feedback torque with SOHF gain tuning, 3. Haptic authority (how much can I deviate from haptic system) with tunable LOHA stiffness
-        feedforward_torque = shared_variables.lohs * (stiffness * steering_reference)  # LOHS torque (feedforward)
-        feedback_torque = shared_variables.sohf * (shared_variables.k_y * error[0] + shared_variables.k_psi * error[1])  # SOHF torque (feedback)
-        loha_torque = shared_variables.loha * ((feedforward_torque + feedback_torque) / stiffness - steering_angle)  # LOHA torque
-        fdca_torque = feedforward_torque + feedback_torque + loha_torque
+        if car_state[0] == 0.0 and car_state[1] == 0.0:
+            # set the shared variables
+            shared_variables.sw_des = 0.0
+            shared_variables.ff_torque = 0.0
+            shared_variables.fb_torque = 0.0
+            shared_variables.loha_torque = 0.0
+            shared_variables.req_torque = 0.0
+            shared_variables.lat_error = 0.0
+            shared_variables.heading_error = 0.0
+            estimated_human_control_input = 0.0
+            nonlinear_component = 0.0
 
-        # set the shared variables
-        shared_variables.sw_des = (feedforward_torque + feedback_torque) / stiffness
-        shared_variables.ff_torque = feedforward_torque
-        shared_variables.fb_torque = feedback_torque
-        shared_variables.loha_torque = loha_torque
-        shared_variables.req_torque = fdca_torque
-        shared_variables.lat_error = error[0]
-        shared_variables.heading_error = error[1]
-        shared_variables.x_road = x_road
-        shared_variables.y_road = y_road
+        else:
+            estimated_human_control_input, nonlinear_component = self.torque_sensor.estimate_human_torque(steering_angle, old_torque, timestep)
+            variables_hcr = self._compute_torques(car_state, car_velocity, carla_interface_shared_variables, shared_variables, steering_angle, stiffness, use_current_lane=False)
+            variables_lane = self._compute_torques(car_state, car_velocity, carla_interface_shared_variables, shared_variables, steering_angle, stiffness, use_current_lane=True)
 
-        return shared_variables, fdca_torque
+            if self.in_disagreement and intention_aware:
+                variables = variables_lane
+                print("We are disagreeing now!")
+                # Follow the lane if necessary
+                self.timer += timestep
+                if 0.0 < estimated_human_control_input * variables_hcr['torque'] < 0.1 and self.timer > 2.0:
+                    self.in_disagreement = False
+
+            else:
+                # Else follow hcr
+                variables = variables_hcr
+
+            # When detecting a "high" force conflict, follow lane until conflict is dissolved
+            if estimated_human_control_input * variables_hcr['torque'] < -0.35:
+                self.in_disagreement = True
+                self.timer = 0
+            shared_variables = self._set_shared_variables(shared_variables, variables)
+
+        return shared_variables, nonlinear_component, estimated_human_control_input
+
+    def _set_shared_variables(self, shared_variables, variables):
+        shared_variables.sw_des = (variables['feedforward_torque'] + variables['feedback_torque']) / variables['stiffness']
+        shared_variables.ff_torque = variables['feedforward_torque']
+        shared_variables.fb_torque = variables['feedback_torque']
+        shared_variables.loha_torque = variables['loha_torque']
+        shared_variables.req_torque = variables['torque']
+        shared_variables.lat_error = variables['error[0]']
+        shared_variables.heading_error = variables['error[1]']
+        shared_variables.x_road = variables['x_road']
+        shared_variables.y_road = variables['y_road']
+        return shared_variables
 
     def _transform(self, x, theta):
         """
@@ -277,6 +352,28 @@ class FDCAController:
                       [-math.sin(theta), math.cos(theta), 0],
                       [0, 0, 1]])
         return np.matmul(R, x)
+
+    def _compute_torques(self, car_state, car_velocity, carla_interface_shared_variables, shared_variables, steering_angle, stiffness, use_current_lane):
+        x_road, y_road, road_state, steering_reference = self._get_references(car_state, car_velocity, carla_interface_shared_variables, use_current_lane)
+        error = self._calculate_error(car_state, car_velocity, road_state)
+        feedforward_torque = shared_variables.lohs * (stiffness * steering_reference)  # LOHS torque (feedforward)
+        feedback_torque = shared_variables.sohf * (shared_variables.k_y * error[0] + shared_variables.k_psi * error[1])  # SOHF torque (feedback)
+        loha_torque = shared_variables.loha * ((feedforward_torque + feedback_torque) / stiffness - steering_angle)  # LOHA torque
+        fdca_torque = feedforward_torque + feedback_torque + loha_torque
+        torque = fdca_torque
+
+        variables = {}
+        variables['feedforward_torque'] = feedforward_torque
+        variables['feedback_torque'] = feedback_torque
+        variables['loha_torque'] = loha_torque
+        variables['torque'] = torque
+        variables['error[0]'] = error[0]
+        variables['error[1]'] = error[1]
+        variables['x_road'] = x_road
+        variables['y_road'] = y_road
+        variables['stiffness'] = stiffness
+
+        return variables
 
     def _calculate_error(self, car_state, car_velocity, road_state):
         """
@@ -301,6 +398,11 @@ class FDCAController:
             error_local_frame[2, 0] = error_local_frame[2, 0] - 2.0 * math.pi
         if error_local_frame[2, 0] < -math.pi:
             error_local_frame[2, 0] = error_local_frame[2, 0] + 2.0 * math.pi
+
+        # Bug that when speed is very low, the reference steering angle is compute very badly
+        velocity_magnitude = math.sqrt(car_velocity[0] ** 2 + car_velocity[1] ** 2)
+        if velocity_magnitude < 3:
+            error_local_frame[2, 0] = 0
 
         return np.array([error_local_frame[1, 0], error_local_frame[2, 0]])
 
@@ -337,14 +439,50 @@ class FDCAController:
         # Check if we are at the end of the trajectory
         for i in id:
             if i >= len(self._trajectory[:, 0]):
-                idx.append(i - len(self._trajectory[:, 0]))
+                idx.append(len(self._trajectory[:, 0]) - 1)
             elif i < 0:
-                idx.append(i + len(self._trajectory[:, 0]))
+                idx.append(0)
             else:
                 idx.append(i)
         return idx
 
-    def _get_references(self, car_state):
+    def _get_road_state(self, carla_interface_shared_variables):
+        x_road = carla_interface_shared_variables.data_road_x
+        y_road = carla_interface_shared_variables.data_road_y
+        return x_road, y_road
+
+    def _compute_road_properties(self, data, s, history):
+        # Cubic interpolation through generated midpoints to generate midline
+        smoothing_factor = 0.5
+        look_ahead = 10
+        tck, _ = cp.interpolate.splprep(data, u=s, s=smoothing_factor)
+
+        dx_dt, dy_dt = cp.interpolate.splev(history + look_ahead, tck, der=1)
+        road_heading = self._heading(dx_dt, dy_dt)
+
+        d2x_dt2, d2y_dt2 = cp.interpolate.splev(history + look_ahead, tck, der=2)
+        road_curvature = self._curvature(dx_dt, d2x_dt2, dy_dt, d2y_dt2)
+
+        return road_heading, road_curvature
+
+    def _wrong_direction(self, car_velocity, road_heading):
+        car_heading = self._heading(car_velocity[0], car_velocity[1])
+        heading_difference = road_heading - car_heading
+        velocity = math.sqrt(car_velocity[0] ** 2 + car_velocity[1] ** 2)
+
+        if heading_difference > math.pi:
+            heading_difference -= 2.0 * math.pi
+        if heading_difference < -math.pi:
+            heading_difference += 2.0 * math.pi
+        if velocity > 2:
+            if abs(heading_difference) > 0.5 * math.pi:
+                return True
+            else:
+                return False
+        else:
+            return False
+
+    def _get_references(self, car_state, car_velocity, carla_interface_shared_variables, use_current_lane):
         """
         Function to obtain geometric information from the road and subsequently obtain reference steering angle
 
@@ -358,30 +496,46 @@ class FDCAController:
             theta (float): Closest road point heading
             steering_reference (float): Steering wheel reference for closest road point
         """
-        # gather data
+        # Are we getting data from a HCR?
         n = 50  # samples
-        pos_car = [car_state[0, 0], car_state[1, 0]]
-        id_now = find_closest_node(pos_car, self._trajectory[:, 1:3])
+        history = 25
         s = list(range(n))
-        id = s + id_now
-        idx = self._check_end(id)
-        x_road = self._trajectory[idx, 1]
-        y_road = self._trajectory[idx, 2]
+
+        # Just follow the road if at end of trajectory
+        end_of_trajectory = False
+        if self._trajectory is not None:
+            pos_car = [car_state[0, 0], car_state[1, 0]]
+            id_now = find_closest_node(pos_car, self._trajectory[:, 1:3])
+            if id_now > len(self._trajectory[:, 1]) - history:
+                end_of_trajectory = True
+                print("reached the end of the trajectory")
+
+        if self._trajectory is not None and not use_current_lane and not end_of_trajectory:
+            id = s + id_now - history
+            idx = self._check_end(id)
+            x_road = self._trajectory[idx, 1]
+            y_road = self._trajectory[idx, 2]
+        else:
+            x_road, y_road = self._get_road_state(carla_interface_shared_variables)
 
         data = np.array([x_road, y_road])
-        smoothing_factor = 0.5
-        # Cubic interpolation through generated midpoints to generate midline
-        tck, _ = cp.interpolate.splprep(data, u=s, s=smoothing_factor)
-        x, y = cp.interpolate.splev(s, tck, der=0)
-        x_now, y_now = cp.interpolate.splev(0, tck, der=0)
-        dx_dt, dy_dt = cp.interpolate.splev(20, tck, der=1)
-        d2x_dt2, d2y_dt2 = cp.interpolate.splev(20, tck, der=2)
+        road_heading, road_curvature = self._compute_road_properties(data, s, history)
+        if self._wrong_direction(car_velocity, road_heading):
+            x_road.reverse()
+            y_road.reverse()
+            data = np.array([x_road, y_road])
+            road_heading, road_curvature = self._compute_road_properties(data, s, history)
 
-        theta = self._heading(dx_dt, dy_dt)
-        curvature = self._curvature(dx_dt, d2x_dt2, dy_dt, d2y_dt2)
-        curve_filtered = self._bq_filter_curve.step(curvature)
-        road_state = np.array([[x_now], [y_now], [theta]])
+        if math.isnan(road_curvature):
+            road_curvature = 0
+            # road_heading = self._heading(car_velocity[0], car_velocity[1])
+            print("NaN value detected!!")
+        curve_filtered = self._bq_filter_curve.step(road_curvature)
+        road_heading_filtered = self._bq_filter_theta.step(road_heading)
+        road_state = np.array([[x_road[history]], [y_road[history]], [road_heading_filtered]])
         steering_reference = math.atan(self.wheel_base * curve_filtered) / self.effective_ratio
 
-        return x, y, road_state, steering_reference
+        return x_road, y_road, road_state, steering_reference
+
+
 
