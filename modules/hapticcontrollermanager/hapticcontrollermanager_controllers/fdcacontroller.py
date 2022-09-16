@@ -136,9 +136,9 @@ class FDCAControllerProcess:
         self.t_lookahead = 0.8
         self._path_trajectory_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'trajectories')
         self.load_trajectory()
+        ratio = carla_interface_settings.agents['Ego Vehicle_1'].steering_ratio
 
-        # TODO: get wheelbase and keff from car
-        self.controller = FDCAController(wheel_base=2.406, effective_ratio=1 / 13, human_compatible_reference=self._trajectory)
+        self.controller = FDCAController(wheel_base=2.406, effective_ratio=1/ratio, human_compatible_reference=self._trajectory)
 
         self._bq_filter_velocity = LowPassFilterBiquad(fc=30, fs=100)
         self._bq_filter_heading = LowPassFilterBiquad(fc=30, fs=100)
@@ -240,6 +240,9 @@ class FDCAController:
             shared_variables (params): contains all information to be shared
             fdca_torque (float): computed control input
         """
+        # Implementation is based on the four design choices architecture (Van Paassen 2017)
+        # link: https://www.researchgate.net/profile/Marinus-M-Van-Paassen/publication/318323318_Four_design_choices_for_haptic_shared_control/links/596395daaca2728c1124ea43/Four-design-choices-for-haptic-shared-control.pdf
+
         x_road, y_road, road_state, steering_reference = self._get_references(car_state)
         error = self._calculate_error(car_state, road_state)
 
