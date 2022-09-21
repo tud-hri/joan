@@ -222,7 +222,8 @@ class TradedControllerProcess:
                                                                                                                                        self.shared_variables, agent_settings.use_intention,
                                                                                                                                        carlainterface_shared_variables.agents[agent_settings.__str__()])
                         # print(estimated_human_input)
-                        self.torque_tc = self.compute_tc(self.shared_variables.req_torque, delta_t, estimated_human_input) - nonlinear_component#self._bq_filter_torque.step()
+                        self.torque_tc = self.compute_tc(self.shared_variables.req_torque, delta_t, estimated_human_input) - nonlinear_component
+                        # self.torque_tc = - nonlinear_component
                         hardware_manager_shared_variables.inputs[agent_settings.selected_input].torque = self.torque_tc
 
                         # Check for takeover requests
@@ -242,32 +243,35 @@ class TradedControllerProcess:
             torque (float): output steering torque, with nonlinear component compensation
         """
         authority = self._compute_authority(delta_t=timestep, estimated_human_torque=estimated_human_control_input)
-        self.torque = torque_fdca * authority
+        torque = torque_fdca * authority
+        max_torque = 2.5
+        self.torque = max(min(torque, max_torque), -max_torque)
         return self.torque
 
     def _compute_authority(self, delta_t, estimated_human_torque):
         # See if the threshold is crossed and if so increase authority
-        if estimated_human_torque ** 2 < self.torque_threshold ** 2:
-            direction = 1  # Increase authority
-        else:
+        if estimated_human_torque ** 2 > self.torque_threshold ** 2:
             direction = -1  # Decrease authority
+        else:
+            direction = 1  # Increase authority
         self.x_ += delta_t * direction * self.shared_variables.gamma
-        self.x_ = min(max(self.x_, -0.5), 4.0)
+        self.x_ = min(max(self.x_, -0.5), 3.5)
         c1 = 3
         c2 = 0.5
         authority = 1 - (1 + math.exp(-c1 * (self.x_ - c2))) ** -1
         authority = min(max(authority, 0), 1)
+        print(authority)
         return authority
 
 class TradedControllerSettings:
     def __init__(self, identifier=''):
-        self.k_y = 0.25
+        self.k_y = 0.1
         self.k_psi = 2.5
         self.lohs = 1.0
         self.sohf = 1.0
-        self.loha = 1.0
-        self.alpha = 8.0
-        self.tau_th = 0.25
+        self.loha = 2.0
+        self.alpha = 0.1
+        self.tau_th = 0.2
         self.gamma = -1
         self.trajectory_name = "hcr_trajectory.csv"
         self.identifier = identifier

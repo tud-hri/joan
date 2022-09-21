@@ -1,6 +1,7 @@
 import random, os, math
 import numpy as np
 from playsound import playsound
+import time
 
 import carla
 
@@ -181,6 +182,8 @@ class EgoVehicleProcess:
         self.shared_variables = shared_variables
         self.carlainterface_mp = carla_mp
         self.played_sound = False
+        self.warmed_up = False
+        self.take_over = [False, False, False]
         self.bikes = ['harley-davidson.low_rider', 'yamaha.yzf', 'kawasaki.ninja', 'bh.crossbike']
 
         if settings.random_trajectory:
@@ -192,7 +195,7 @@ class EgoVehicleProcess:
             self._BP = random.choice(self.carlainterface_mp.vehicle_blueprint_library.filter("vehicle." + self.settings.selected_car))
         self._control = carla.VehicleControl()
         self.world_map = self.carlainterface_mp.world.get_map()
-        self.timer = 0.0
+        self.timer = time.time()
         torque_curve = []
         gears = []
 
@@ -265,22 +268,27 @@ class EgoVehicleProcess:
                 if agent_settings.settings.selected_car == bike:
                     # Fire a take-over request when getting too near
                     car_position = self.carlainterface_mp.agent_objects[agent_settings.settings.identifier].shared_variables.transform
-                    distance_to_car = math.sqrt((ego_position[0] - car_position[0]) ** 2 + (ego_position[1] - car_position[1]) ** 2)
-                    position_vector = self._heading(ego_position[0] - car_position[0], ego_position[1] - car_position[1])
-                    velocity_vector = self._heading(ego_velocity[0], ego_velocity[1])
-                    # print(distance_to_car, position_vector * velocity_vector)
+                    position_delta = np.array([[ego_position[0] - car_position[0]], [ego_position[1] - car_position[1]]])
+                    ego_angle = ego_position[2]
+                    rotation_matrix = np.array([[math.cos(ego_angle), -math.sin(ego_angle)], [math.sin(ego_angle), math.cos(ego_angle)]])
+                    position_delta_body_fixed_frame = rotation_matrix @ position_delta
+                    distance_to_car = position_delta_body_fixed_frame[1]
+                    print(position_delta_body_fixed_frame)
 
-                    if distance_to_car < 25.0 and position_vector * velocity_vector < 0:
+                    if distance_to_car < 15.0:
                         take_over.append(True)
-                        if not self.played_sound:
-                            print("please take over")
-                            self.played_sound = True
-                            playsound('C:\\Repositories\\demo\\joan\\resources\\chime.mp3', False)
                     else:
                         take_over.append(False)
 
-        if not any(take_over):
-            self.played_sound = False
+        if not self.warmed_up:
+            if time.time() - self.timer > 1:
+                self.warmed_up = True
+        else:
+            if take_over != self.take_over:
+                self.take_over
+                self.take_over = take_over
+                playsound('C:\\Repositories\\demo\\joan\\resources\\chime.mp3', False)
+
 
 
     def _heading(self, dx_dt, dy_dt):

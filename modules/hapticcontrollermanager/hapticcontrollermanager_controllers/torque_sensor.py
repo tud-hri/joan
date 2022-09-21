@@ -13,13 +13,13 @@ from tools.haptic_controller_tools import find_closest_node
 class TorqueSensor:
     def __init__(self):
         self.frequency = 100
-        self._bq_filter_rate = LowPassFilterBiquad(fc=25, fs=self.frequency)
+        self._bq_filter_rate = LowPassFilterBiquad(fc=15, fs=self.frequency)
 
         # Observer dynamics
-        self.damping = 0
-        self.stiffness = 0
-        self.inertia = 0.04876200657888505
-        self.observer_matrix = 20 * np.array([[2, 0], [0, 2]])
+        self.damping = 0.25
+        self.stiffness = 0.4
+        self.inertia = 0.050542488894956494
+        self.observer_matrix = 8 * np.array([[2, 0], [0, 2]])
         self.alpha = 2.5
         self.kappa = 1
         self.estimated_human_torque = 0.0
@@ -66,13 +66,13 @@ class TorqueSensor:
                 nonlinear_torques (float): output torque composed of gravity and friction torque.
         """
         g = 9.81
-        m = 0.25577512040264017
-        dh = 0.08868507357869222
-        dl = 0.0207971806237164
-        vt = 0.3578151261152145
+        m = 0.498970137272351
+        dl = 0.008146703214514241
+        dh = 0.042651190037657924
+        vt = 0.2991305651849728
         vsp = 2 * vt
-        tau_d = -0.11322530785321677
-        tau_fric = 0.031177592111752105
+        tau_d = -0.08720280979209796
+        tau_fric = 0.023387092205098114
 
         # Gravity
         tau_g = - m * g * dh * np.sin(x[0]) - m * g * dl * np.cos(x[0])

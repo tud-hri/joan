@@ -22,6 +22,11 @@ class ScenarioStopAfterNPCVehicleFive:
             for key, value in carla_interface_process.agent_objects.items():
                 if 'NPC' in key:
                     distances[key] = self._compute_distance(carla_interface_process, key, ego_agent_key)
+                    if distances[key] < 3:
+                        self.close_to_followed_car = False
+                        self.time = None
+                        print("we collided?")
+                        carla_interface_process.pipe_comm.send({"stop_all_modules": True})
                     labels.append(key)
             labels.sort()
             if not labels:

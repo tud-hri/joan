@@ -310,7 +310,7 @@ class FDCAController:
                 print("We are disagreeing now!")
                 # Follow the lane if necessary
                 self.timer += timestep
-                if 0.0 < estimated_human_control_input * variables_hcr['torque'] < 0.1 and self.timer > 2.0:
+                if -0.2 < estimated_human_control_input * variables_hcr['torque'] < 0.2 and self.timer > 1.0:
                     self.in_disagreement = False
 
             else:
@@ -318,7 +318,7 @@ class FDCAController:
                 variables = variables_hcr
 
             # When detecting a "high" force conflict, follow lane until conflict is dissolved
-            if estimated_human_control_input * variables_hcr['torque'] < -0.35:
+            if estimated_human_control_input * variables_hcr['torque'] < -0.4:
                 self.in_disagreement = True
                 self.timer = 0
             shared_variables = self._set_shared_variables(shared_variables, variables)
