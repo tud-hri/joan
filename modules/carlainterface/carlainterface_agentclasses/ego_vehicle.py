@@ -30,11 +30,12 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
         self.display_values()
         self.update_settings(self.settings)
 
-        if self.settings.random_trajectory:
-            # print("random selecting trajectory")
-            self.settings.selected_trajectory = random.choice([1, 2, 3, 4])
-            print("selected ", self.settings.selected_trajectory)
-            self.settings.bikes = self._choose_bikes()
+        # if self.settings.random_trajectory:
+        #     print("random selecting trajectory")
+        #     self.settings.selected_trajectory = random.choice([1, 2, 3, 4])
+        #     print("selected ", self.settings.selected_trajectory)
+        #     self.settings.bikes = self._choose_bikes()
+        #     print("bikes ", self.settings.bikes)
 
     def show(self):
         self.update_settings(self.settings)
@@ -62,9 +63,13 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
         self.settings.use_intention = self.check_box_intention.isChecked()
         self.settings.takeover_requests = self.check_box_takeover.isChecked()
         self.settings.random_trajectory = self.check_box_random_trajectory.isChecked()
-        if self.settings.random_trajectory:
-            self.settings.selected_trajectory = random.choice([1, 2, 3, 4])
-            self.settings.bikes = self._choose_bikes()
+        # if self.settings.random_trajectory:
+        #     print("random selecting trajectory")
+        #     self.settings.selected_trajectory = random.choice([1, 2, 3, 4])
+        #     print("selected ", self.settings.selected_trajectory)
+        #     self.settings.bikes = self._choose_bikes()
+        #     print("bikes ", self.settings.bikes)
+
         self.display_values()
 
     def accept(self):
@@ -187,8 +192,11 @@ class EgoVehicleProcess:
         self.bikes = ['harley-davidson.low_rider', 'yamaha.yzf', 'kawasaki.ninja', 'bh.crossbike']
 
         if settings.random_trajectory:
-            settings.selected_trajectory = random.choice([1, 2, 3, 4])
-            settings.bikes = self._choose_bikes(settings)
+            print("random selecting trajectory")
+            self.settings.selected_trajectory = random.choice([2, 3, 4, 5])
+            print("selected ", self.settings.selected_trajectory)
+            self.settings.bikes = self._choose_bikes()
+            print("bikes ", self.settings.bikes)
 
         self._control = carla.VehicleControl()
         if self.settings.selected_car != 'None':
@@ -220,14 +228,14 @@ class EgoVehicleProcess:
                 self.spawned_vehicle.apply_physics_control(physics)
                 self.max_steering_angle = physics.wheels[0].max_steer_angle
 
-    def _choose_bikes(self, settings):
+    def _choose_bikes(self):
         npc = [1, 2, 3, 4, 5]
-        npc.remove(settings.selected_trajectory)
+        npc.remove(self.settings.selected_trajectory)
         npc1 = random.choice(npc)
         npc.remove(npc1)
         npc2 = random.choice(npc)
         bikes = [0, 0, 0, 0, 0]
-        bikes[settings.selected_trajectory - 1] = 1
+        bikes[self.settings.selected_trajectory - 1] = 1
         bikes[npc1 - 1] = 1
         bikes[npc2 - 1] = 1
         return bikes
@@ -273,7 +281,6 @@ class EgoVehicleProcess:
                     rotation_matrix = np.array([[math.cos(ego_angle), -math.sin(ego_angle)], [math.sin(ego_angle), math.cos(ego_angle)]])
                     position_delta_body_fixed_frame = rotation_matrix @ position_delta
                     distance_to_car = position_delta_body_fixed_frame[1]
-                    print(position_delta_body_fixed_frame)
 
                     if distance_to_car < 15.0:
                         take_over.append(True)
@@ -285,7 +292,6 @@ class EgoVehicleProcess:
                 self.warmed_up = True
         else:
             if take_over != self.take_over:
-                self.take_over
                 self.take_over = take_over
                 playsound('C:\\Repositories\\demo\\joan\\resources\\chime.mp3', False)
 
@@ -435,6 +441,11 @@ class EgoVehicleProcess:
                                                    float(latest_applied_control.hand_brake),
                                                    float(latest_applied_control.brake),
                                                    float(latest_applied_control.throttle)]
+            if self.settings.selected_trajectory:
+                self.shared_variables.selected_trajectory = self.settings.selected_trajectory
+            else:
+                self.shared_variables.selected_trajectory = 0
+
             if self.settings.set_velocity:
                 self.shared_variables.cruise_control_speed = self.settings.velocity / 3.6
             else:

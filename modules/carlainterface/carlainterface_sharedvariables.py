@@ -27,6 +27,7 @@ class VehicleSharedVariables(SharedVariables):
         self._applied_input = mp.Array(c_float, 5)
         self._max_steering_angle = mp.Value(c_float)
         self._cruise_control_speed = mp.Value(c_float)
+        self._selected_trajectory = mp.Value(c_int)
 
         # road data for controller plotter
         self._data_road_x = mp.Array(c_float, 50)
@@ -37,6 +38,7 @@ class VehicleSharedVariables(SharedVariables):
         self._data_road_y_outer = mp.Array(c_float, 50)
         self._data_road_psi = mp.Array(c_float, 50)
         self._data_road_lanewidth = mp.Array(c_float, 50)
+
 
     @property
     def transform(self):
@@ -85,6 +87,14 @@ class VehicleSharedVariables(SharedVariables):
     @applied_input.setter
     def applied_input(self, val):
         self._applied_input[:] = val
+
+    @property
+    def selected_trajectory(self):
+        return self._selected_trajectory.value
+
+    @selected_trajectory.setter
+    def selected_trajectory(self, val):
+        self._selected_trajectory.value = val
 
     @property
     def max_steering_angle(self):

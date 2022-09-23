@@ -108,30 +108,31 @@ class NPCVehicleSettingsDialog(QtWidgets.QDialog):
         self.check_box_cars.setChecked(self.settings.random_car)
         self.check_box_bikes.setChecked(self.settings.random_bike)
 
-
-
-
 class NPCVehicleProcess:
     def __init__(self, carla_mp, settings, shared_variables):
         self.settings = settings
         self.shared_variables = shared_variables
         self.carlainterface_mp = carla_mp
         self.npc_controller_shared_variables = carla_mp.npc_controller_shared_variables
-        self.bikes = ['harley-davidson.low_rider', 'yamaha.yzf', 'kawasaki.ninja' ]
-        self.cars = ['audi.a2', 'nissan.micra', 'audi.tt', 'ford.mustang', 'citroen.c3', 'seat.leon', 'toyota.prius', 'volkswagen.t2']
+        self.bikes = ['harley-davidson.low_rider', 'yamaha.yzf', 'kawasaki.ninja']
+        self.cars = ['audi.a2', 'nissan.micra', 'audi.tt', 'ford.mustang', 'citroen.c3', 'seat.leon', 'toyota.prius']
         ego_vehicle = carla_mp.agent_objects["Ego Vehicle_1"]
 
         # Really dirty hack
         if ego_vehicle.settings.random_trajectory:
             bikes = ego_vehicle.settings.bikes
             npc_nr = self.settings.identifier[-1]
-            if bikes[int(npc_nr) - 1] == 1:
-                self.settings.random_bike = True
-                self.settings.random_car = False
-            else:
+            if int(npc_nr) > 5:
                 self.settings.random_bike = False
                 self.settings.random_car = True
-
+            else:
+                print(bikes)
+                if bikes[int(npc_nr) - 1] == 1:
+                    self.settings.random_bike = True
+                    self.settings.random_car = False
+                else:
+                    self.settings.random_bike = False
+                    self.settings.random_car = True
 
         if self.settings.random_bike:
             self.settings.selected_car = random.choice(self.bikes)

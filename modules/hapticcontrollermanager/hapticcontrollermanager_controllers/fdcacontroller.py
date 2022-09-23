@@ -138,15 +138,15 @@ class FDCAControllerProcess:
         self._trajectory = None
         self.t_lookahead = 0.8
         self._path_trajectory_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'trajectories')
-        self.load_trajectory()
+        self.load_trajectory(selected_trajectory=0)
 
         # TODO: get wheelbase and keff from car
-        self.controller = FDCAController(wheel_base=2.406, effective_ratio=1 / 13, human_compatible_reference=self._trajectory)
+        self.controller = FDCAController(wheel_base=2.406, effective_ratio=1/13, human_compatible_reference=self._trajectory)
         self.torque_sensor = TorqueSensor()
 
-        self._bq_filter_velocity = LowPassFilterBiquad(fc=30, fs=100)
-        self._bq_filter_heading = LowPassFilterBiquad(fc=30, fs=100)
-        self._bq_filter_torque = LowPassFilterBiquad(fc=5, fs=100)
+        self._bq_filter_velocity = LowPassFilterBiquad(fc=25, fs=100)
+        self._bq_filter_heading = LowPassFilterBiquad(fc=25, fs=100)
+        # self._bq_filter_torque = LowPassFilterBiquad(fc=5, fs=100)
 
         self._controller_error = np.array([0.0, 0.0, 0.0, 0.0])
         self._error_old = np.array([0.0, 0.0])
@@ -165,35 +165,46 @@ class FDCAControllerProcess:
         self.time = 0
         self.torque_fdca = 0.0
 
-        self.first_time = False
+        self.first_time = True
+        self.trajectory_number = 0
 
         # threshold to check if a trajectory is circular in meters; subsequent points need to be 1 m of each other
         self.threshold_circular_trajectory = 1.0
 
-    def load_trajectory(self):
+    def load_trajectory(self, selected_trajectory):
         """Load HCR trajectory"""
         print("loading HCR trajectory")
         if self.carla_interface_settings.agents["Ego Vehicle_1"].random_trajectory:
-            trajectory_number = self.carla_interface_settings.agents["Ego Vehicle_1"].selected_trajectory
-            print("take trajectory ", trajectory_number)
-            if trajectory_number == 1:
+            if selected_trajectory > 0:
+                self.trajectory_number = selected_trajectory
+            else:
+                self.trajectory_number = self.carla_interface_settings.agents["Ego Vehicle_1"].selected_trajectory
+
+            print("take trajectory ", self.trajectory_number)
+            if self.trajectory_number == 2:
                 self.settings.trajectory_name = "crash_npc2.csv"
-            elif trajectory_number == 2:
+            elif self.trajectory_number == 3:
                 self.settings.trajectory_name = "crash_npc3.csv"
-            elif trajectory_number == 3:
+            elif self.trajectory_number == 4:
                 self.settings.trajectory_name = "crash_npc4.csv"
-            elif trajectory_number == 4:
+            elif self.trajectory_number == 5:
                 self.settings.trajectory_name = "crash_npc5.csv"
             else:
                 print("this is odd")
 
-        try:
-            tmp = pd.read_csv(os.path.join(self._path_trajectory_directory, self.settings.trajectory_name))
-            if not np.array_equal(tmp.values, self._trajectory):
-                self._trajectory = tmp.values
-            print('Loaded trajectory = ', self.settings.trajectory_name)
-        except OSError as err:
-            print('Error loading HCR trajectory file: ', err)
+        if selected_trajectory > 0:
+            try:
+                tmp = pd.read_csv(os.path.join(self._path_trajectory_directory, self.settings.trajectory_name))
+                # self._trajectory=None
+                if not np.array_equal(tmp.values, self._trajectory):
+                    self._trajectory = tmp.values
+                    print('Loaded trajectory = ', self.settings.trajectory_name)
+                else:
+                    print("goes wrong?")
+            except OSError as err:
+                print('Error loading HCR trajectory file: ', err)
+        else:
+            print("waiting to hand the correct trajectory")
 
     def do(self, time_step_in_ns, carlainterface_shared_variables, hardware_manager_shared_variables, carla_interface_settings):
         """
@@ -203,9 +214,11 @@ class FDCAControllerProcess:
         :param carla_interface_settings:
         :return:
         """
-        if self.first_time:
-            print("first time, now loading trajectory")
-            self.load_trajectory()
+        selected_trajectory = carlainterface_shared_variables.agents['Ego Vehicle_1'].selected_trajectory
+        if selected_trajectory != self.trajectory_number:
+            print("Trajectory has changed")
+            self.load_trajectory(selected_trajectory)
+            self.controller.update_reference(self._trajectory)
             self.first_time = False
 
 
@@ -234,17 +247,17 @@ class FDCAControllerProcess:
                                                                                                                                   carlainterface_shared_variables.agents[
                                                                                                                                       agent_settings.__str__()])
 
-                        self.torque_fdca = self._bq_filter_torque.step(self.shared_variables.req_torque - nonlinear_component)
+                        self.torque_fdca = self.shared_variables.req_torque # self._bq_filter_torque.step(self.shared_variables.req_torque)# - nonlinear_component)
                         hardware_manager_shared_variables.inputs[agent_settings.selected_input].torque = self.torque_fdca
 
 
 class FDCAControllerSettings:
     def __init__(self, identifier=''):
-        self.k_y = 0.15
-        self.k_psi = 2.0
-        self.lohs = 1.0
-        self.sohf = 1.0
-        self.loha = 1.0
+        self.k_y = 0.05
+        self.k_psi = 3.0
+        self.lohs = 0.85
+        self.sohf = 0.5
+        self.loha = 0.6
         self.trajectory_name = "hcr_trajectory.csv"
         self.identifier = identifier
         self.haptic_controller_type = HapticControllerTypes.FDCA.value
@@ -272,6 +285,9 @@ class FDCAController:
         self.torque_sensor = TorqueSensor()
         self.torque = 0.0
         self.timer = 0.0
+
+    def update_reference(self, trajectory):
+        self._trajectory = trajectory
 
     def compute_input(self, stiffness, steering_angle, timestep, car_state, car_velocity, old_torque, shared_variables, intention_aware, carla_interface_shared_variables):
         """
