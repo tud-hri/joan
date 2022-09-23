@@ -138,7 +138,7 @@ class FDCAControllerProcess:
         self._trajectory = None
         self.t_lookahead = 0.8
         self._path_trajectory_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'trajectories')
-        self.load_trajectory(selected_trajectory=0)
+        self.load_trajectory()
 
         # TODO: get wheelbase and keff from car
         self.controller = FDCAController(wheel_base=2.406, effective_ratio=1/13, human_compatible_reference=self._trajectory)
@@ -171,15 +171,11 @@ class FDCAControllerProcess:
         # threshold to check if a trajectory is circular in meters; subsequent points need to be 1 m of each other
         self.threshold_circular_trajectory = 1.0
 
-    def load_trajectory(self, selected_trajectory):
+    def load_trajectory(self):
         """Load HCR trajectory"""
         print("loading HCR trajectory")
         if self.carla_interface_settings.agents["Ego Vehicle_1"].random_trajectory:
-            if selected_trajectory > 0:
-                self.trajectory_number = selected_trajectory
-            else:
-                self.trajectory_number = self.carla_interface_settings.agents["Ego Vehicle_1"].selected_trajectory
-
+            self.trajectory_number = self.carla_interface_settings.agents["Ego Vehicle_1"].selected_trajectory
             print("take trajectory ", self.trajectory_number)
             if self.trajectory_number == 2:
                 self.settings.trajectory_name = "crash_npc2.csv"
@@ -192,19 +188,16 @@ class FDCAControllerProcess:
             else:
                 print("this is odd")
 
-        if selected_trajectory > 0:
-            try:
-                tmp = pd.read_csv(os.path.join(self._path_trajectory_directory, self.settings.trajectory_name))
-                # self._trajectory=None
-                if not np.array_equal(tmp.values, self._trajectory):
-                    self._trajectory = tmp.values
-                    print('Loaded trajectory = ', self.settings.trajectory_name)
-                else:
-                    print("goes wrong?")
-            except OSError as err:
-                print('Error loading HCR trajectory file: ', err)
-        else:
-            print("waiting to hand the correct trajectory")
+        try:
+            tmp = pd.read_csv(os.path.join(self._path_trajectory_directory, self.settings.trajectory_name))
+            if not np.array_equal(tmp.values, self._trajectory):
+                self._trajectory = tmp.values
+                print('Loaded trajectory = ', self.settings.trajectory_name)
+            else:
+                print("goes wrong?")
+        except OSError as err:
+            print('Error loading HCR trajectory file: ', err)
+
 
     def do(self, time_step_in_ns, carlainterface_shared_variables, hardware_manager_shared_variables, carla_interface_settings):
         """
@@ -214,13 +207,6 @@ class FDCAControllerProcess:
         :param carla_interface_settings:
         :return:
         """
-        selected_trajectory = carlainterface_shared_variables.agents['Ego Vehicle_1'].selected_trajectory
-        if selected_trajectory != self.trajectory_number:
-            print("Trajectory has changed")
-            self.load_trajectory(selected_trajectory)
-            self.controller.update_reference(self._trajectory)
-            self.first_time = False
-
 
         for agent_settings in carla_interface_settings.agents.values():
             if hasattr(agent_settings, 'selected_controller'):
@@ -253,11 +239,11 @@ class FDCAControllerProcess:
 
 class FDCAControllerSettings:
     def __init__(self, identifier=''):
-        self.k_y = 0.05
-        self.k_psi = 3.0
-        self.lohs = 0.85
-        self.sohf = 0.5
-        self.loha = 0.6
+        self.k_y = 0.03
+        self.k_psi = 2.5
+        self.lohs = 0.7
+        self.sohf = 0.85
+        self.loha = 0.5
         self.trajectory_name = "hcr_trajectory.csv"
         self.identifier = identifier
         self.haptic_controller_type = HapticControllerTypes.FDCA.value
@@ -315,6 +301,7 @@ class FDCAController:
             shared_variables.heading_error = 0.0
             estimated_human_control_input = 0.0
             nonlinear_component = 0.0
+            print("car state is empty")
 
         else:
             estimated_human_control_input, nonlinear_component = self.torque_sensor.estimate_human_torque(steering_angle, old_torque, timestep)
@@ -532,6 +519,7 @@ class FDCAController:
             x_road = self._trajectory[idx, 1]
             y_road = self._trajectory[idx, 2]
         else:
+
             x_road, y_road = self._get_road_state(carla_interface_shared_variables)
 
         data = np.array([x_road, y_road])

@@ -195,7 +195,7 @@ class PurePursuitControllerProcess:
                                           delimiter=',')
             print('Loaded trajectory = ', self.settings.reference_trajectory_name)
         except OSError as err:
-            print('Error loading HCR trajectory file: ', err)
+            pass
 
     def _get_current_state(self):
         rear_axle_position = self.carla_interface_shared_variables.agents[self.settings.vehicle_id].rear_axle_position

@@ -30,12 +30,7 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
         self.display_values()
         self.update_settings(self.settings)
 
-        # if self.settings.random_trajectory:
-        #     print("random selecting trajectory")
-        #     self.settings.selected_trajectory = random.choice([1, 2, 3, 4])
-        #     print("selected ", self.settings.selected_trajectory)
-        #     self.settings.bikes = self._choose_bikes()
-        #     print("bikes ", self.settings.bikes)
+        self.bikes = ['harley-davidson.low_rider', 'yamaha.yzf', 'kawasaki.ninja', 'bh.crossbike']
 
     def show(self):
         self.update_settings(self.settings)
@@ -63,12 +58,7 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
         self.settings.use_intention = self.check_box_intention.isChecked()
         self.settings.takeover_requests = self.check_box_takeover.isChecked()
         self.settings.random_trajectory = self.check_box_random_trajectory.isChecked()
-        # if self.settings.random_trajectory:
-        #     print("random selecting trajectory")
-        #     self.settings.selected_trajectory = random.choice([1, 2, 3, 4])
-        #     print("selected ", self.settings.selected_trajectory)
-        #     self.settings.bikes = self._choose_bikes()
-        #     print("bikes ", self.settings.bikes)
+
 
         self.display_values()
 
@@ -93,9 +83,6 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
         self.settings.use_intention = self.check_box_intention.isChecked()
         self.settings.takeover_requests = self.check_box_takeover.isChecked()
         self.settings.random_trajectory = self.check_box_random_trajectory.isChecked()
-        if self.settings.random_trajectory:
-            self.settings.selected_trajectory = random.choice([1, 2, 3, 4])
-            self.settings.bikes = self._choose_bikes()
         super().accept()
 
     def display_values(self, settings_to_display=None):
@@ -122,18 +109,6 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
 
     def _set_default_values(self):
         self.display_values(AgentTypes.EGO_VEHICLE.settings())
-
-    def _choose_bikes(self):
-        npc = [1, 2, 3, 4, 5]
-        npc.remove(self.settings.selected_trajectory)
-        npc1 = random.choice(npc)
-        npc.remove(npc1)
-        npc2 = random.choice(npc)
-        bikes = [0, 0, 0, 0, 0]
-        bikes[self.settings.selected_trajectory - 1] = 1
-        bikes[npc1 - 1] = 1
-        bikes[npc2 - 1] = 1
-        return bikes
 
 
     def update_settings(self, settings):
@@ -189,14 +164,7 @@ class EgoVehicleProcess:
         self.played_sound = False
         self.warmed_up = False
         self.take_over = [False, False, False]
-        self.bikes = ['harley-davidson.low_rider', 'yamaha.yzf', 'kawasaki.ninja', 'bh.crossbike']
 
-        if settings.random_trajectory:
-            print("random selecting trajectory")
-            self.settings.selected_trajectory = random.choice([2, 3, 4, 5])
-            print("selected ", self.settings.selected_trajectory)
-            self.settings.bikes = self._choose_bikes()
-            print("bikes ", self.settings.bikes)
 
         self._control = carla.VehicleControl()
         if self.settings.selected_car != 'None':
@@ -227,18 +195,6 @@ class EgoVehicleProcess:
                 physics.gear_switch_time = 0.5
                 self.spawned_vehicle.apply_physics_control(physics)
                 self.max_steering_angle = physics.wheels[0].max_steer_angle
-
-    def _choose_bikes(self):
-        npc = [1, 2, 3, 4, 5]
-        npc.remove(self.settings.selected_trajectory)
-        npc1 = random.choice(npc)
-        npc.remove(npc1)
-        npc2 = random.choice(npc)
-        bikes = [0, 0, 0, 0, 0]
-        bikes[self.settings.selected_trajectory - 1] = 1
-        bikes[npc1 - 1] = 1
-        bikes[npc2 - 1] = 1
-        return bikes
 
     def do(self):
         if self.settings.selected_input != 'None' and hasattr(self, 'spawned_vehicle'):
@@ -501,6 +457,13 @@ class EgoVehicleSettings:
         self.identifier = identifier
         self.steering_ratio = 13
         self.agent_type = AgentTypes.EGO_VEHICLE.value
+        self.bikes = ['harley-davidson.low_rider', 'yamaha.yzf', 'kawasaki.ninja', 'bh.crossbike']
+
+        print("random selecting trajectory")
+        self.selected_trajectory = random.choice([2, 3, 4, 5])
+        print("selected ", self.selected_trajectory)
+        self.bikes = self._choose_bikes()
+        print("bikes ", self.bikes)
 
     def as_dict(self):
         return self.__dict__
@@ -511,3 +474,15 @@ class EgoVehicleSettings:
 
     def __str__(self):
         return self.identifier
+
+    def _choose_bikes(self):
+        npc = [1, 2, 3, 4, 5]
+        npc.remove(self.selected_trajectory)
+        npc1 = random.choice(npc)
+        npc.remove(npc1)
+        npc2 = random.choice(npc)
+        bikes = [0, 0, 0, 0, 0]
+        bikes[self.selected_trajectory - 1] = 1
+        bikes[npc1 - 1] = 1
+        bikes[npc2 - 1] = 1
+        return bikes
