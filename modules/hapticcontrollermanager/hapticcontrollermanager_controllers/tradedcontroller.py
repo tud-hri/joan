@@ -125,7 +125,6 @@ class TradedControllerProcess:
         self._path_trajectory_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'trajectories')
         self.load_trajectory()
 
-        # TODO: get wheelbase and keff from car
         self.controller = FDCAController(wheel_base=2.406, effective_ratio=1 / 13, human_compatible_reference=self._trajectory)
 
         # filtering
