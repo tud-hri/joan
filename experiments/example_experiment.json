@@ -71,7 +71,7 @@
                     "Ego Vehicle_1": {},
                     "NPC Vehicle_1": {
                         "selected_npc_controller": "Pure Pursuit_1",
-                        "selected_spawnpoint": "Spawnpoint 1",
+                        "selected_spawnpoint": "Spawnpoint 3",
                         "selected_car": "audi.a2",
                         "identifier": "NPC Vehicle_1",
                         "agent_type": 1
