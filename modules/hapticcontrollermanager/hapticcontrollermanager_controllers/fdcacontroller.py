@@ -372,7 +372,7 @@ class FDCAControllerSettings:
         self.lohs = 1.0
         self.sohf = 1.0
         self.loha = 0.0
-        self.trajectory_name = "MiddleRoadTVRecord_filtered_ffswang_heading_3hz.csv"
+        self.trajectory_name = "hcr_demomap.csv"
         self.identifier = identifier
 
         self.haptic_controller_type = HapticControllerTypes.FDCA.value
