@@ -1,1 +1,0 @@
-Copy your own egg file in this folder, JOAN will automatically use the newest version of CARLA
