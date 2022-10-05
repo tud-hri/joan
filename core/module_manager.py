@@ -67,12 +67,6 @@ class ModuleManager(QtCore.QObject):
         # create settings
         if module.settings:
             self.module_settings = module.settings()
-
-            # try to load new
-            self.settings_filename = os.path.join(self.module_path, 'default_settings.json')
-            if os.path.exists(self.settings_filename):
-                self.load_from_file(self.settings_filename)
-
             self.singleton_settings.update_settings(self.module, self.module_settings)
         else:
             self.module_settings = None

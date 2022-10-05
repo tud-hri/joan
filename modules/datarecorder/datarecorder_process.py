@@ -94,6 +94,7 @@ class DataRecorderProcess(ModuleProcess):
             self.transform = self.carla_interface_variables.agents['Ego Vehicle_1'].transform
             velocities = self.carla_interface_variables.agents['Ego Vehicle_1'].velocities_in_world_frame
             applied_inputs = self.carla_interface_variables.agents['Ego Vehicle_1'].applied_input
+            cruise_control_speed = self.carla_interface_variables.agents['Ego Vehicle_1'].cruise_control_speed
 
             travelled_distance_tick_x = self.transform[0] - self.temp[0]
             travelled_distance_tick_y = self.transform[1] - self.temp[1]
@@ -103,7 +104,7 @@ class DataRecorderProcess(ModuleProcess):
             if self.travelled_distance > 0.0:
                 self.index += 1
                 trajectory_row = [self.index, self.transform[0], self.transform[1], applied_inputs[0], applied_inputs[4], applied_inputs[3], self.transform[3],
-                                  math.sqrt(velocities[0] ** 2 + velocities[1] ** 2 + velocities[2] ** 2)]
+                                  math.sqrt(velocities[0] ** 2 + velocities[1] ** 2 + velocities[2] ** 2), cruise_control_speed]
 
                 self.trajectory_file.write(", ".join(repr(e) for e in trajectory_row) + '\n')
                 self.travelled_distance = 0.0

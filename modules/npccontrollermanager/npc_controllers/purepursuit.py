@@ -70,7 +70,12 @@ class PurePursuitControllerProcess:
             steering_angle = np.arctan2(steer_point_in_vehicle_frame[1], steer_point_in_vehicle_frame[0])
 
             # calculate throttle with pid controller based on velocity at closest way point
-            desired_velocity = self._trajectory[closest_way_point_index, 7]
+            if self._trajectory[closest_way_point_index, 8] == -1:
+                desired_velocity = self._trajectory[closest_way_point_index, 7]
+            else:
+                desired_velocity = self._trajectory[closest_way_point_index, 8]
+
+
 
             velocity_error = desired_velocity - self.vehicle_velocity[0]
 
@@ -112,7 +117,8 @@ class PurePursuitControllerProcess:
         current_way_point = self._trajectory[current_way_point_index, 1:3]
         while np.linalg.norm(current_way_point - vehicle_transform[0:2]) < self.look_ahead_distance:
             current_way_point_index += 1
-            current_way_point = self._trajectory[current_way_point_index, 1:3]
+            if current_way_point_index < len(self._trajectory[:, 1]):
+                current_way_point = self._trajectory[current_way_point_index, 1:3]
 
         return current_way_point_index
 
@@ -188,8 +194,8 @@ class PurePursuitSettings:
     def __init__(self):
         self.controller_type = NPCControllerTypes.PURE_PURSUIT
 
-        self.kp = 1.5
-        self.kd = 0.0
+        self.kp = 150
+        self.kd = 10
 
         self.use_dynamic_look_ahead_distance = True
         self.static_look_ahead_distance = 15.0

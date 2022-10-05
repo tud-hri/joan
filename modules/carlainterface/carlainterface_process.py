@@ -11,8 +11,7 @@ from modules.joanmodules import JOANModules
 if platform.system() == 'Windows':
     import wres
 
-from tools.carlaimporter import carla
-
+import carla
 
 def connect_carla(host='localhost', port=2000):
     """

@@ -24,8 +24,13 @@ class HapticControllerManagerSettings(ModuleSettings):
         module_settings_to_load = loaded_dict[str(self.module)]
 
         for identifier, settings_dict in module_settings_to_load['haptic_controllers'].items():
-            if 'FDCA' in identifier:
+            if 'Four Design Choices Architecture' in identifier:
                 ego_vehicle_settings = HapticControllerTypes.FDCA.settings()
+                ego_vehicle_settings.set_from_loaded_dict(settings_dict)
+                self.haptic_controllers.update({identifier: ego_vehicle_settings})
+
+            if 'Traded Control' in identifier:
+                ego_vehicle_settings = HapticControllerTypes.TRADED_CONTROL.settings()
                 ego_vehicle_settings.set_from_loaded_dict(settings_dict)
                 self.haptic_controllers.update({identifier: ego_vehicle_settings})
 

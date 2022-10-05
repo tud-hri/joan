@@ -14,35 +14,36 @@ If you are a student at the TUD, you will share hardware (computers, steering wh
 !!! Note
     If you need to do a fresh install (CARLA, python, PyCharm, ...) on the computer, follow the steps in both the [Build CARLA on Windows](setup-carla-windows.md) and [Install JOAN](setup-joan.md) pages. This needs to be done as an administrator to make CARLA, Python, and PyCharm available for everyone. Ask your supervisor first.
 
+!!! Important
+    Make sure that [the windows build version CARLA 0.9.13](https://carla.readthedocs.io/en/0.9.13/build_windows){target="_blank"} is installed. Else, please go back to the [Build CARLA on Windows](setup-carla-windows.md) and [Install JOAN](setup-joan.md) pages. It may be a good idea to check out these installation pages anyhow!
+
 ## Step 2: clone your JOAN project
 
-You can run your JOAN and CARLA project on any TUD computer that we prepared for you. For each PC, you need to clone and set up your JOAN project. Follow the steps in [Install JOAN](setup-joan.md): do step 1 only when you first create your JOAN project, else, only do steps 2-5. 
+We will explain how to create your own git repository on GitLab and set the JOAN GitHub repository as the upstream project.
 
-## Step 3: setup your own CARLA map
-
-You will probably need to build your own map with a road in CARLA for your project.
-
-!!! Important
-    Maps need to be in the `C:\carla` directory. You need to be very careful not to tamper with another student's CARLA project or the CARLA installation itself. Therefore, please be cautious when working in the `C:\carla` folder. __You can screw up your fellow students' projects if you do not!__
-
-We prepared a template map (`DebugMap`), which you can find in `C:\carla\Unreal\CarlaUE4\Content\Carla\Maps`.
-
-To create your own map: 
-
-- Create a folder with the name `<YEAR>_<NETID>` in the directory `C:\carla\Unreal\CarlaUE4\Content\Research\` (create the folder `Research` if it does not exist).
-- Download the template map [here](https://doi.org/10.4121/19419923){target="_blank"}, extract it, and copy the folder called `Maps` it in your
-  own folder under `C:\carla\Unreal\CarlaUE4\Content\Research\<YEAR>_<NETID>\`.
-- Open the Epic Game Launcher (you might need to log in; use your login of choice).
-- Launch Unreal Engine, top-right corner (Unreal should be installed; if not, restart the Epic Game Launcher or reboot the computer, this normally works).
-- In Unreal Engine, CarlaUE4 should be listed under 'Recent projects'. If not, open the `CarlaUE4` project (browse to `C:\carla\Unreal\CarlaUE4\` and open `CarlaUE4.uproject`). 
-- The CarlaUE4 will now start; this may take a while if you start it for the first time.
-- To open your own level, click `File` &rarr; `Open level` and select `DebugMap.umap` __in your folder__ (navigate to your 'Research' folder!)
-- If you want, you can rename your map to a more descriptive name (right-click on the map in the editor &rarr; `rename`, for example, `<YEAR>_Map_<NAME>_<SHORT DESCRIPTION>`, or use `File` &rarr; `Save as`).
-- Your level will load, but this may take some time.
-- To run the Unreal Engine, hit the play button.
-  
-!!! Warning
-    Make sure to load your own map, so double-check that you are in the right directory when opening your level!
+1. Go to [gitlab.tudelft.nl](https://gitlab.tudelft.nl) and login with your NETID. This activates your gitlab account. For TU research and thesis projects, we use the gitlab server because it is hosted by TU Delft and allows for free private repositories. Besides that, this allows your supervisor to access your code during and after your project. Which in the end is helpful for you because your supervisor can easily help you.
+2. Ask your supervisor to create a gitlab repository for you on the TU Delft server. (Because students are not allowed to create projects.) 
+    * Instructions for supervisors: Create a new repo in the group TUD-CoR-HRI > JOAN framework > JOAN-students. Use the "import project" option (after clicking "new project") to copy the contents from the main JOAN repository on GitHub.
+3. Check you can access your repository on GitLab. This should contain the latest version of JOAN. 
+4. Create an access token for the project. Click `settings` -> `access tokens` in the left menu on the project page. Create a new token, this token will appear on top of the page after you clicked the `create button`. Make sure to copy and store it. 
+4. Clone your new personal JOAN project repository. 
+    * Open a commandline window and navigate to the folder where you want to create your project (e.g., `USER_HOME\PycharmProjects\`)
+    * Go to your own repository's webpage (on GitHub), click `clone`, and copy the URL under 'Clone with HTTPS':
+    ![clone-https](imgs/setup-joan-pycharm-repo-clone-button.png)
+    * Type the following command in your command line window:  
+        ```commandline
+        git clone <URL TO YOUR GITHUB JOAN REPOSITORY>
+        ```
+    * Use your NetID and access token in the following window to get access to your repository.
+    ![clone-token](imgs/GitLab-token.png)
+5. Finally, you'll need to add the original JOAN repository from GitHub as a second remote server. This will allow you to pull updates from the main JOAN repo if needed. To do this, use the following commands in your commandline:
+    ```commandline
+    cd <YOUR_PROJECT_FOLDER>
+    git remote add upstream-joan https://github.com/tud-hri/joan.git
+    git fetch upstream-joan
+    ```
+## Step 3: finish the JOAN installation
+Now that you have obtained your version of JOAN, you'll need to finish the installation. Go back to the page [setup JOAN](setup-joan.md), and resume the installation from the step 'Adding JOAN assets'. 
     
 ## Reserving and sharing the TUD computers
 

@@ -4,7 +4,6 @@ from modules.joanmodules import JOANModules
 Holds settings of every module to be used by the experimentmanager
 """
 
-
 class Settings:
     def __init__(self):
         self._settings = {}

@@ -9,7 +9,7 @@ from core.statesenum import State
 from modules.carlainterface.carlainterface_agenttypes import AgentTypes
 from modules.joanmodules import JOANModules
 
-from tools.carlaimporter import carla
+import carla
 
 
 class CarlaInterfaceManager(ModuleManager):
@@ -140,7 +140,7 @@ class CarlaInterfaceManager(ModuleManager):
                 for item in spawn_point_objects:
                     self.spawn_points.append("Spawnpoint " + str(spawn_point_objects.index(item)))
 
-                self.carla_waypoints = self.world_map.generate_waypoints(0.5)
+                self.carla_waypoints = self.world_map.generate_waypoints(1.0)
                 QApplication.restoreOverrideCursor()
                 self.connected = True
 

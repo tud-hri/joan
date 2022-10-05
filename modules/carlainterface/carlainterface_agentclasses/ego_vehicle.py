@@ -1,7 +1,7 @@
 import random, os, math
 import numpy as np
 
-from tools.carlaimporter import carla
+import carla
 
 from PyQt5 import uic, QtWidgets
 from modules.carlainterface.carlainterface_agenttypes import AgentTypes
@@ -35,6 +35,7 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
 
     def update_parameters(self):
         self.settings.velocity = self.spin_velocity.value()
+        self.settings.steering_ratio = self.spin_steering_ratio.value()
         self.settings.selected_input = self.combo_input.currentText()
         self.settings.selected_controller = self.combo_haptic_controllers.currentText()
         self.settings.selected_car = self.combo_car_type.currentText()
@@ -55,6 +56,7 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
 
     def accept(self):
         self.settings.velocity = self.spin_velocity.value()
+        self.settings.steering_ratio = self.spin_steering_ratio.value()
         self.settings.selected_input = self.combo_input.currentText()
         self.settings.selected_controller = self.combo_haptic_controllers.currentText()
         self.settings.selected_car = self.combo_car_type.currentText()
@@ -88,6 +90,7 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
         self.combo_spawnpoints.setCurrentText(settings_to_display.selected_spawnpoint)
 
         self.spin_velocity.setValue(settings_to_display.velocity)
+        self.spin_steering_ratio.setValue(settings_to_display.steering_ratio)
         self.check_box_set_vel.setChecked(settings_to_display.set_velocity)
 
     def _set_default_values(self):
@@ -164,39 +167,25 @@ class EgoVehicleProcess:
                 physics.torque_curve = torque_curve
                 physics.max_rpm = 14000
                 physics.moi = 1.5
-                physics.final_ratio = 1
                 physics.clutch_strength = 1000  # very big no clutch
                 physics.final_ratio = 1  # ratio from transmission to wheels
                 physics.forward_gears = gears
-                physics.mass = 2316
+                physics.mass = 1475  # kg (Audi S3)
                 physics.drag_coefficient = 0.24
-                physics.gear_switch_time = 0
+                physics.gear_switch_time = 0.5
                 self.spawned_vehicle.apply_physics_control(physics)
+                self.max_steering_angle = physics.wheels[0].max_steer_angle
 
     def do(self):
         if self.settings.selected_input != 'None' and hasattr(self, 'spawned_vehicle'):
-            self._control.steer = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].steering_angle / math.radians(450)
+            max_angle_car = math.radians(self.max_steering_angle)
+            max_angle_steering_wheel = max_angle_car * self.settings.steering_ratio
+            self._control.steer = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].steering_angle / max_angle_steering_wheel
             self._control.reverse = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].reverse
             self._control.hand_brake = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].handbrake
             self._control.brake = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].brake
             if self.settings.set_velocity:
-                vel_error = self.settings.velocity - (math.sqrt(
-                    self.spawned_vehicle.get_velocity().x ** 2 + self.spawned_vehicle.get_velocity().y ** 2 + self.spawned_vehicle.get_velocity().z ** 2) * 3.6)
-                vel_error_rate = (math.sqrt(
-                    self.spawned_vehicle.get_acceleration().x ** 2 + self.spawned_vehicle.get_acceleration().y ** 2 + self.spawned_vehicle.get_acceleration().z ** 2) * 3.6)
-                error_velocity = [vel_error, vel_error_rate]
-
-                pd_vel_output = self.velocity_PD_controller(error_velocity)
-                if pd_vel_output < 0:
-                    self._control.brake = -pd_vel_output
-                    self._control.throttle = 0
-                    if pd_vel_output < -1:
-                        self._control.brake = 1
-                elif pd_vel_output > 0:
-                    if self._control.brake == 0:
-                        self._control.throttle = pd_vel_output
-                    else:
-                        self._control.throttle = 0
+                self._control.brake, self._control.throttle = self.apply_cruise_control()
             else:
                 self._control.throttle = self.carlainterface_mp.shared_variables_hardware.inputs[self.settings.selected_input].throttle
 
@@ -208,21 +197,33 @@ class EgoVehicleProcess:
 
         self.set_shared_variables()
 
-    def destroy(self):
-        if hasattr(self, 'spawned_vehicle'):
-            self.spawned_vehicle.destroy()
-
-    def velocity_PD_controller(self, vel_error):
-        _kp_vel = 50
-        _kd_vel = 1
-        temp = _kp_vel * vel_error[0] + _kd_vel * vel_error[1]
-
+    def apply_cruise_control(self):
+        velocity = math.sqrt(self.spawned_vehicle.get_velocity().x ** 2 + self.spawned_vehicle.get_velocity().y ** 2)
+        acceleration = math.sqrt(self.spawned_vehicle.get_acceleration().x ** 2 + self.spawned_vehicle.get_acceleration().y ** 2)
+        vel_error = self.settings.velocity / 3.6 - velocity
+        vel_error_rate = acceleration
+        kp = 150
+        kd = 10
+        temp = kp * vel_error + kd * vel_error_rate
         if temp > 100:
             temp = 100
-
         output = temp / 100
 
-        return output
+        if output < 0:
+            brake = -output
+            throttle = 0
+        elif output > 0:
+            brake = 0
+            throttle = output
+        else:
+            throttle = 0
+            brake = 0
+
+        return brake, throttle
+
+    def destroy(self):
+        if hasattr(self, 'spawned_vehicle') and self.spawned_vehicle.is_alive:
+            self.spawned_vehicle.destroy()
 
     def calculate_plotter_road_arrays(self):
         data_road_x = []
@@ -325,6 +326,10 @@ class EgoVehicleProcess:
                                                    float(latest_applied_control.hand_brake),
                                                    float(latest_applied_control.brake),
                                                    float(latest_applied_control.throttle)]
+            if self.settings.set_velocity:
+                self.shared_variables.cruise_control_speed = self.settings.velocity / 3.6
+            else:
+                self.shared_variables.cruise_control_speed = -1  # Set to -1 when no cruise control is applied
 
     @staticmethod
     def get_rotation_matrix_from_carla(roll, pitch, yaw, degrees=True):
@@ -366,11 +371,11 @@ class EgoVehicleSettings:
         self.selected_input = 'None'
         self.selected_controller = 'None'
         self.selected_spawnpoint = 'Spawnpoint 0'
-        self.selected_car = 'hapticslab.audi'
-        self.velocity = 80
+        self.selected_car = 'audi.hapticslab'
+        self.velocity = 50
         self.set_velocity = False
         self.identifier = identifier
-
+        self.steering_ratio = 13
         self.agent_type = AgentTypes.EGO_VEHICLE.value
 
     def as_dict(self):
