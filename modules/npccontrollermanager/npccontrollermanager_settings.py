@@ -25,10 +25,11 @@ class NPCControllerManagerSettings(ModuleSettings):
         module_settings_to_load = loaded_dict[str(self.module)]
 
         for identifier, settings_dict in module_settings_to_load['controllers'].items():
-            if str(NPCControllerTypes.PURE_PURSUIT) in identifier:
-                pp_controller_settings = NPCControllerTypes.PURE_PURSUIT.settings()
-                pp_controller_settings.set_from_loaded_dict(settings_dict)
-                self.controllers[identifier] = pp_controller_settings
+            for controller_type in NPCControllerTypes:
+                if str(controller_type) in identifier:
+                    controller_settings = controller_type.settings()
+                    controller_settings.set_from_loaded_dict(settings_dict)
+                    self.controllers[identifier] = controller_settings
 
     def all_controllers(self):
         return {**self.controllers}

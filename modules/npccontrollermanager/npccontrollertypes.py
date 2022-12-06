@@ -16,19 +16,24 @@ class NPCControllerTypes(enum.Enum):
     """
 
     PURE_PURSUIT = 0
+    FULL_THROTTLE = 1
 
     @property
     def process(self):
         from modules.npccontrollermanager.npc_controllers.purepursuit import PurePursuitControllerProcess
+        from modules.npccontrollermanager.npc_controllers.full_throttle import FullThrottleControllerProcess
 
         return {NPCControllerTypes.PURE_PURSUIT: PurePursuitControllerProcess,
+                NPCControllerTypes.FULL_THROTTLE: FullThrottleControllerProcess,
                 }[self]
 
     @property
     def settings_dialog(self):
         from modules.npccontrollermanager.npc_controllers.purepursuit import PurePursuitSettingsDialog
+        from modules.npccontrollermanager.npc_controllers.full_throttle import FullThrottleSettingsDialog
 
         return {NPCControllerTypes.PURE_PURSUIT: PurePursuitSettingsDialog,
+                NPCControllerTypes.FULL_THROTTLE: FullThrottleSettingsDialog,
                 }[self]
 
     @property
@@ -36,6 +41,7 @@ class NPCControllerTypes(enum.Enum):
         from modules.npccontrollermanager.npccontrollermanager_sharedvariables import NPCControllerSharedVariables
 
         return {NPCControllerTypes.PURE_PURSUIT: NPCControllerSharedVariables,
+                NPCControllerTypes.FULL_THROTTLE: NPCControllerSharedVariables,
                 }[self]
 
     @property
@@ -47,10 +53,13 @@ class NPCControllerTypes(enum.Enum):
     @property
     def settings(self):
         from modules.npccontrollermanager.npc_controllers.purepursuit import PurePursuitSettings
+        from modules.npccontrollermanager.npc_controllers.full_throttle import FullThrottleSettings
 
         return {NPCControllerTypes.PURE_PURSUIT: PurePursuitSettings,
+                NPCControllerTypes.FULL_THROTTLE: FullThrottleSettings,
                 }[self]
 
     def __str__(self):
         return {NPCControllerTypes.PURE_PURSUIT: "Pure Pursuit",
+                NPCControllerTypes.FULL_THROTTLE: "Full Throttle",
                 }[self]

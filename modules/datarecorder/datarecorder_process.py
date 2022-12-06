@@ -1,6 +1,8 @@
 import math
 import datetime
 
+import pandas as pd
+
 from core.module_process import ModuleProcess
 from modules.datarecorder.datarecorder_settings import DataRecorderSettings
 from modules.joanmodules import JOANModules
@@ -60,6 +62,14 @@ class DataRecorderProcess(ModuleProcess):
                     super()._run_loop()
             else:
                 super()._run_loop()
+
+        settings_to_save = {}
+
+        for module, settings in self.singleton_settings.all_settings.items():
+            settings_to_save[str(module)] = settings.as_dict()
+
+        with open(self.save_path.replace('.csv', '_settings.csv'), 'w') as f:
+            pd.DataFrame(settings_to_save).to_csv(f)
 
     def do_while_running(self):
         """

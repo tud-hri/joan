@@ -13,6 +13,7 @@ if platform.system() == 'Windows':
 
 import carla
 
+
 def connect_carla(host='localhost', port=2000):
     """
     We also want a connection to carla in our multiprocess therefore we need this function here
@@ -40,9 +41,9 @@ def connect_carla(host='localhost', port=2000):
         for item in spawn_point_objects:
             spawn_points.append("Spawnpoint " + str(spawn_point_objects.index(item)))
 
-        return vehicle_bp_library, spawn_point_objects, world, spawn_points
+        return vehicle_bp_library, spawn_point_objects, world, spawn_points, client
     except RuntimeError:
-        return vehicle_bp_library, spawn_point_objects, world, spawn_points
+        return vehicle_bp_library, spawn_point_objects, world, spawn_points, client
 
 
 class CarlaInterfaceProcess(ModuleProcess):
@@ -70,6 +71,7 @@ class CarlaInterfaceProcess(ModuleProcess):
         self.spawn_point_objects = None
         self.spawn_points = None
         self.world = None
+        self.client = None
         self.agent_objects = {}
 
     def get_ready(self):
@@ -81,7 +83,7 @@ class CarlaInterfaceProcess(ModuleProcess):
         host = self._settings_as_object.host
         port = self._settings_as_object.port
 
-        [self.vehicle_blueprint_library, self.spawn_point_objects, self.world, self.spawn_points] = connect_carla(host=host, port=port)
+        [self.vehicle_blueprint_library, self.spawn_point_objects, self.world, self.spawn_points, self.client] = connect_carla(host=host, port=port)
 
         # Now we create our agents and directly spawn them
         for key, value in self._settings_as_object.agents.items():

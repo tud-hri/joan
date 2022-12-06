@@ -46,6 +46,7 @@ class DataRecorderDialog(ModuleDialog):
         self.module_widget.browsePathPushButton.clicked.connect(self._browse_datalog_path)
         self.module_widget.btn_trajectory_path.clicked.connect(self._browse_trajectory_path)
         self.module_manager.state_machine.add_state_change_listener(self.handle_state_change)
+        self.module_manager.central_state_monitor.add_combined_state_change_listener(self.handle_combined_state_change)
 
         self.module_widget.treeWidget.itemClicked.connect(self.apply_settings)
         self.module_widget.checkAppendTimestamp.stateChanged.connect(self.apply_settings)
@@ -88,14 +89,17 @@ class DataRecorderDialog(ModuleDialog):
             self.module_widget.lbl_data_directoryname.setText(os.path.dirname(file_path))
             self.module_manager.module_settings.path_to_save_file = os.path.normpath(file_path)
 
+    def handle_combined_state_change(self):
+        if self.module_manager.state_machine.current_state == State.INITIALIZED:
+            self._fill_tree_widget()
+            self.update_dialog()
+
     def handle_state_change(self):
         if self.module_manager.state_machine.current_state == State.INITIALIZED:
             self.module_widget.check_trajectory.setEnabled(False)
             self.module_widget.treeWidget.setEnabled(True)
             self.module_widget.browsePathPushButton.setEnabled(True)
             self.module_widget.checkAppendTimestamp.setEnabled(True)
-            self._fill_tree_widget()
-            self.update_dialog()
         elif self.module_manager.state_machine.current_state == State.RUNNING:
             self.module_widget.check_trajectory.setEnabled(False)
             self.module_widget.lbl_message_recorder.setText("recording")

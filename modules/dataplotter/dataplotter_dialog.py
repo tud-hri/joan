@@ -33,9 +33,6 @@ class DataPlotterDialog(ModuleDialog):
 
         background_color = pg.mkColor((240, 240, 240, 255))
 
-        pg.setConfigOption('background', 'k')
-        pg.setConfigOption('foreground', 'k')
-
         self.module_widget.plot_graph.setBackground(background_color)
         self.view_box = self.module_widget.plot_graph.getViewBox()
         self.view_box.setBorder(pen=pg.mkPen(0, 0, 0, 255))

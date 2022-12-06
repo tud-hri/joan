@@ -25,6 +25,7 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
             self._set_default_values)
         self.btn_apply_parameters.clicked.connect(self.update_parameters)
         self.btn_update.clicked.connect(lambda: self.update_settings(self.settings))
+        self.customSpawnpointCheckBox.stateChanged.connect(self.update_spinbox_enabled)
         self.display_values()
 
         self.update_settings(self.settings)
@@ -33,6 +34,10 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
         self.update_settings(self.settings)
         super().show()
 
+    def update_spinbox_enabled(self):
+        for spinbox in [self.spawnpointXSpinBox, self.spawnpointYSpinBox, self.spawnpointZSpinBox, self.spawnpointYawSpinBox]:
+            spinbox.setEnabled(self.customSpawnpointCheckBox.isChecked())
+
     def update_parameters(self):
         self.settings.velocity = self.spin_velocity.value()
         self.settings.steering_ratio = self.spin_steering_ratio.value()
@@ -40,6 +45,13 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
         self.settings.selected_controller = self.combo_haptic_controllers.currentText()
         self.settings.selected_car = self.combo_car_type.currentText()
         self.settings.selected_spawnpoint = self.combo_spawnpoints.currentText()
+
+        self.settings.use_custom_spawn_point = self.customSpawnpointCheckBox.isChecked()
+        self.settings.custom_spawn_point_location[0] = self.spawnpointXSpinBox.value()
+        self.settings.custom_spawn_point_location[1] = self.spawnpointYSpinBox.value()
+        self.settings.custom_spawn_point_location[2] = self.spawnpointZSpinBox.value()
+        self.settings.custom_spawn_point_rotation = self.spawnpointYawSpinBox.value()
+
         for settings in self.carla_interface_overall_settings.agents.values():
             if settings.identifier != self.settings.identifier:  # exlude own settings
                 if settings.selected_spawnpoint == self.combo_spawnpoints.currentText() and settings.selected_spawnpoint != 'None':
@@ -61,6 +73,13 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
         self.settings.selected_controller = self.combo_haptic_controllers.currentText()
         self.settings.selected_car = self.combo_car_type.currentText()
         self.settings.selected_spawnpoint = self.combo_spawnpoints.currentText()
+
+        self.settings.use_custom_spawn_point = self.customSpawnpointCheckBox.isChecked()
+        self.settings.custom_spawn_point_location[0] = self.spawnpointXSpinBox.value()
+        self.settings.custom_spawn_point_location[1] = self.spawnpointYSpinBox.value()
+        self.settings.custom_spawn_point_location[2] = self.spawnpointZSpinBox.value()
+        self.settings.custom_spawn_point_rotation = self.spawnpointYawSpinBox.value()
+
         for settings in self.carla_interface_overall_settings.agents.values():
             if settings.identifier != self.settings.identifier:  # exlude own settings
                 if settings.selected_spawnpoint == self.combo_spawnpoints.currentText() and settings.selected_spawnpoint != 'None':
@@ -78,6 +97,12 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
         if not settings_to_display:
             settings_to_display = self.settings
 
+        self.customSpawnpointCheckBox.setChecked(settings_to_display.use_custom_spawn_point)
+        self.spawnpointXSpinBox.setValue(settings_to_display.custom_spawn_point_location[0])
+        self.spawnpointYSpinBox.setValue(settings_to_display.custom_spawn_point_location[1])
+        self.spawnpointZSpinBox.setValue(settings_to_display.custom_spawn_point_location[2])
+        self.spawnpointYawSpinBox.setValue(settings_to_display.custom_spawn_point_rotation)
+
         idx_controller = self.combo_haptic_controllers.findText(settings_to_display.selected_controller)
         self.combo_haptic_controllers.setCurrentIndex(idx_controller)
 
@@ -92,6 +117,7 @@ class EgoVehicleSettingsDialog(QtWidgets.QDialog):
         self.spin_velocity.setValue(settings_to_display.velocity)
         self.spin_steering_ratio.setValue(settings_to_display.steering_ratio)
         self.check_box_set_vel.setChecked(settings_to_display.set_velocity)
+        self.update_spinbox_enabled()
 
     def _set_default_values(self):
         self.display_values(AgentTypes.EGO_VEHICLE.settings())
@@ -157,22 +183,30 @@ class EgoVehicleProcess:
 
         torque_curve.append(carla.Vector2D(x=0, y=600))
         torque_curve.append(carla.Vector2D(x=14000, y=600))
-        gears.append(carla.GearPhysicsControl(ratio=7.73, down_ratio=0.5, up_ratio=1))
+        gears.append(carla.GearPhysicsControl(ratio=7.73, down_ratio=0.0, up_ratio=100.))
 
-        if self.settings.selected_spawnpoint != 'None':
+        if self.settings.selected_spawnpoint != 'None' or self.settings.use_custom_spawn_point:
             if self.settings.selected_car != 'None':
-                self.spawned_vehicle = self.carlainterface_mp.world.spawn_actor(self._BP, self.carlainterface_mp.spawn_point_objects[
-                    self.carlainterface_mp.spawn_points.index(self.settings.selected_spawnpoint)])
+                if self.settings.use_custom_spawn_point:
+                    spawn_transform = carla.Transform(location=carla.Location(*self.settings.custom_spawn_point_location),
+                                                      rotation=carla.Rotation(yaw=self.settings.custom_spawn_point_rotation))
+                else:
+                    spawn_transform = self.carlainterface_mp.spawn_point_objects[self.carlainterface_mp.spawn_points.index(self.settings.selected_spawnpoint)]
+                self.spawned_vehicle = self.carlainterface_mp.world.spawn_actor(self._BP, spawn_transform)
                 physics = self.spawned_vehicle.get_physics_control()
                 physics.torque_curve = torque_curve
                 physics.max_rpm = 14000
                 physics.moi = 1.5
-                physics.clutch_strength = 1000  # very big no clutch
+                physics.damping_rate_full_throttle = 0.35
+                physics.damping_rate_zero_throttle_clutch_engaged = 0.35  # simulate that the clutch is always disengaged with no throttle
+                physics.damping_rate_zero_throttle_clutch_disengaged = 0.35
+                physics.clutch_strength = 1000
                 physics.final_ratio = 1  # ratio from transmission to wheels
                 physics.forward_gears = gears
                 physics.mass = 1475  # kg (Audi S3)
                 physics.drag_coefficient = 0.24
-                physics.gear_switch_time = 0.5
+                physics.gear_switch_time = 0.0
+                physics.use_gear_autobox = False
                 self.spawned_vehicle.apply_physics_control(physics)
                 self.max_steering_angle = physics.wheels[0].max_steer_angle
 
@@ -298,28 +332,40 @@ class EgoVehicleProcess:
 
     def set_shared_variables(self):
         if hasattr(self, 'spawned_vehicle'):
-            rotation = self.spawned_vehicle.get_transform().rotation
-            self.shared_variables.transform = [self.spawned_vehicle.get_transform().location.x,
-                                               self.spawned_vehicle.get_transform().location.y,
-                                               self.spawned_vehicle.get_transform().location.z,
+            actor_snap_shot = self.carlainterface_mp.world.get_snapshot().find(self.spawned_vehicle.id)
+
+            rotation = actor_snap_shot.get_transform().rotation
+            center_location = actor_snap_shot.get_transform().location
+            self.shared_variables.transform = [center_location.x,
+                                               center_location.y,
+                                               center_location.z,
                                                rotation.yaw,
                                                rotation.pitch,
                                                rotation.roll]
-            linear_velocity = self.spawned_vehicle.get_velocity()
+            linear_velocity = actor_snap_shot.get_velocity()
             self.shared_variables.velocities_in_world_frame = [linear_velocity.x,
                                                                linear_velocity.y,
                                                                linear_velocity.z,
-                                                               self.spawned_vehicle.get_angular_velocity().x,
-                                                               self.spawned_vehicle.get_angular_velocity().y,
-                                                               self.spawned_vehicle.get_angular_velocity().z]
+                                                               actor_snap_shot.get_angular_velocity().x,
+                                                               actor_snap_shot.get_angular_velocity().y,
+                                                               actor_snap_shot.get_angular_velocity().z]
 
             rotation_matrix = self.get_rotation_matrix_from_carla(rotation.roll, rotation.pitch, rotation.yaw)
             velocities_in_vehicle_frame = np.linalg.inv(rotation_matrix) @ np.array([linear_velocity.x, linear_velocity.y, linear_velocity.z])
             self.shared_variables.velocities_in_vehicle_frame = velocities_in_vehicle_frame
 
-            self.shared_variables.accelerations = [self.spawned_vehicle.get_acceleration().x,
-                                                   self.spawned_vehicle.get_acceleration().y,
-                                                   self.spawned_vehicle.get_acceleration().z]
+            self.shared_variables.accelerations_in_world_frame = [actor_snap_shot.get_acceleration().x,
+                                                                  actor_snap_shot.get_acceleration().y,
+                                                                  actor_snap_shot.get_acceleration().z]
+
+            accelerations = actor_snap_shot.get_acceleration()
+            self.shared_variables.accelerations_in_world_frame = [accelerations.x,
+                                                                  accelerations.y,
+                                                                  accelerations.z]
+
+            accelerations_in_vehicle_frame = np.linalg.inv(rotation_matrix) @ np.array([accelerations.x, accelerations.y, accelerations.z])
+            self.shared_variables.accelerations_in_vehicle_frame = accelerations_in_vehicle_frame
+
             latest_applied_control = self.spawned_vehicle.get_control()
             self.shared_variables.applied_input = [float(latest_applied_control.steer),
                                                    float(latest_applied_control.reverse),
@@ -377,6 +423,10 @@ class EgoVehicleSettings:
         self.identifier = identifier
         self.steering_ratio = 13
         self.agent_type = AgentTypes.EGO_VEHICLE.value
+
+        self.use_custom_spawn_point = False
+        self.custom_spawn_point_location = [0.0, 0.0, 0.0]
+        self.custom_spawn_point_rotation = 0.0
 
     def as_dict(self):
         return self.__dict__

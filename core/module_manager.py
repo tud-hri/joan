@@ -61,15 +61,15 @@ class ModuleManager(QtCore.QObject):
             self._events = None
             self._exception_monitor = None
 
-        # create the dialog
-        self.module_dialog = module.dialog(self, parent=parent)
-
         # create settings
         if module.settings:
             self.module_settings = module.settings()
             self.singleton_settings.update_settings(self.module, self.module_settings)
         else:
             self.module_settings = None
+
+        # create the dialog
+        self.module_dialog = module.dialog(self, parent=parent)
 
         self.module_dialog._handle_state_change()
 

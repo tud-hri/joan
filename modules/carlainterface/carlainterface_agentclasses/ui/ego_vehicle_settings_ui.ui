@@ -19,8 +19,93 @@
      <property name="title">
       <string>Ego Vehicle Parameters</string>
      </property>
-     <layout class="QGridLayout" name="gridLayout_2">
-      <item row="6" column="0" colspan="2">
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QPushButton" name="btn_update">
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Update Settings from other modules
+ (will also show currently applied settings)</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="lblInput">
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Input:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="combo_input">
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+         </font>
+        </property>
+        <item>
+         <property name="text">
+          <string>None</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_2">
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Haptic Controller:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="combo_haptic_controllers">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+         </font>
+        </property>
+        <item>
+         <property name="text">
+          <string>None</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="lblSpawnpoints">
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Spawnpoints:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QComboBox" name="combo_spawnpoints">
         <property name="minimumSize">
          <size>
@@ -47,73 +132,99 @@
         </item>
        </widget>
       </item>
-      <item row="12" column="0">
-       <widget class="QCheckBox" name="check_box_set_vel">
+      <item>
+       <widget class="QCheckBox" name="customSpawnpointCheckBox">
         <property name="text">
-         <string>Cruise Control:</string>
+         <string>Use Custom Spawn Point</string>
         </property>
        </widget>
       </item>
-      <item row="4" column="0" colspan="2">
-       <widget class="QComboBox" name="combo_haptic_controllers">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>8</pointsize>
-         </font>
-        </property>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
-         <property name="text">
-          <string>None</string>
-         </property>
+         <widget class="QLabel" name="label_5">
+          <property name="text">
+           <string>x:</string>
+          </property>
+         </widget>
         </item>
-       </widget>
-      </item>
-      <item row="0" column="0" colspan="2">
-       <widget class="QPushButton" name="btn_update">
-        <property name="font">
-         <font>
-          <pointsize>8</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Update Settings from other modules 
- (will also show currently applied settings)</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="lblInput">
-        <property name="font">
-         <font>
-          <pointsize>8</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Input:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0" colspan="2">
-       <widget class="QComboBox" name="combo_input">
-        <property name="font">
-         <font>
-          <pointsize>8</pointsize>
-         </font>
-        </property>
         <item>
-         <property name="text">
-          <string>None</string>
-         </property>
+         <widget class="QDoubleSpinBox" name="spawnpointXSpinBox">
+          <property name="minimum">
+           <double>-1000.000000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>1000.000000000000000</double>
+          </property>
+         </widget>
         </item>
-       </widget>
+        <item>
+         <widget class="QLabel" name="label_6">
+          <property name="text">
+           <string>y:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QDoubleSpinBox" name="spawnpointYSpinBox">
+          <property name="minimum">
+           <double>-1000.000000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>1000.000000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_7">
+          <property name="text">
+           <string>z:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QDoubleSpinBox" name="spawnpointZSpinBox">
+          <property name="minimum">
+           <double>-1000.000000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>1000.000000000000000</double>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
-      <item row="7" column="0">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QLabel" name="label_8">
+          <property name="text">
+           <string>Yaw:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QDoubleSpinBox" name="spawnpointYawSpinBox">
+          <property name="suffix">
+           <string> deg</string>
+          </property>
+          <property name="decimals">
+           <number>1</number>
+          </property>
+          <property name="minimum">
+           <double>-360.000000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>360.000000000000000</double>
+          </property>
+          <property name="value">
+           <double>0.000000000000000</double>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
        <widget class="QLabel" name="label">
         <property name="font">
          <font>
@@ -125,7 +236,7 @@
         </property>
        </widget>
       </item>
-      <item row="8" column="0" colspan="2">
+      <item>
        <widget class="QComboBox" name="combo_car_type">
         <property name="font">
          <font>
@@ -139,58 +250,39 @@
         </item>
        </widget>
       </item>
-      <item row="13" column="1">
-       <widget class="QLabel" name="label_3">
-        <property name="text">
-         <string>km/h</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="0">
-       <widget class="QLabel" name="lblSpawnpoints">
-        <property name="font">
-         <font>
-          <pointsize>8</pointsize>
-          <weight>50</weight>
-          <bold>false</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>Spawnpoints:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="14" column="0" colspan="2">
-       <widget class="QPushButton" name="btn_apply_parameters">
-        <property name="text">
-         <string>Apply changes without closing dialog</string>
-        </property>
-       </widget>
-      </item>
-      <item row="13" column="0">
-       <widget class="QSpinBox" name="spin_velocity"/>
-      </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="label_2">
-        <property name="font">
-         <font>
-          <pointsize>8</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Haptic Controller:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="9" column="0" colspan="2">
+      <item>
        <widget class="QLabel" name="label_4">
         <property name="text">
          <string>Ratio wheel angle and steering wheel angle</string>
         </property>
        </widget>
       </item>
-      <item row="10" column="0">
+      <item>
        <widget class="QSpinBox" name="spin_steering_ratio"/>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="check_box_set_vel">
+        <property name="text">
+         <string>Cruise Control:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSpinBox" name="spin_velocity"/>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>km/h</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btn_apply_parameters">
+        <property name="text">
+         <string>Apply changes without closing dialog</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>

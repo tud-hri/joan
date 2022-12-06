@@ -137,9 +137,8 @@ class CarlaInterfaceManager(ModuleManager):
                     self.vehicle_tags.append(items.id[8:])
                 self.world_map = self._world.get_map()
                 spawn_point_objects = self.world_map.get_spawn_points()
-                for item in spawn_point_objects:
-                    self.spawn_points.append("Spawnpoint " + str(spawn_point_objects.index(item)))
-
+                for index, item in enumerate(spawn_point_objects):
+                    self.spawn_points.append("Spawnpoint " + str(index))
                 self.carla_waypoints = self.world_map.generate_waypoints(1.0)
                 QApplication.restoreOverrideCursor()
                 self.connected = True

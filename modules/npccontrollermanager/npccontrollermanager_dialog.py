@@ -30,6 +30,7 @@ class NPCControllerManagerDialog(ModuleDialog):
         # Connect the add controller button to showing our just created controller type dialog
         self.module_widget.btn_add_controller.clicked.connect(self._select_controller_type)
         self._controller_tabs_dict = {}
+        self._controller_settings_dict = {}
         self._controller_dialogs_dict = {}
 
     def update_dialog(self):
@@ -37,9 +38,13 @@ class NPCControllerManagerDialog(ModuleDialog):
         Updates the Dialog, this function is called at a rate of 10Hz.
         :return:
         """
-        difference_dict = {k: self._controller_tabs_dict[k] for k in set(self._controller_tabs_dict) - set(self.module_manager.module_settings.controllers)}
-        for key in difference_dict:
-            self.remove_controller(key)
+
+        agents = list(self._controller_settings_dict.keys())
+        for key in agents:
+            if key not in self.module_manager.module_settings.agents.keys():
+                self.remove_controller(key)
+            elif self._controller_settings_dict[key] is not self.module_manager.module_settings.agents[key]:
+                self.remove_controller(key)
 
         for controller_identifier, controller_settings in self.module_manager.module_settings.controllers.items():
             if controller_identifier not in self._controller_tabs_dict.keys():
@@ -96,6 +101,7 @@ class NPCControllerManagerDialog(ModuleDialog):
 
         # add to module_dialog widget
         self._controller_tabs_dict[identifier] = controller_tab
+        self._controller_settings_dict[identifier] = controller_settings
         self.module_widget.controller_list_layout.addWidget(controller_tab)
 
         # open dialog when adding hardware
@@ -110,4 +116,5 @@ class NPCControllerManagerDialog(ModuleDialog):
         """
         # remove input tab
         self._controller_tabs_dict[identifier].setParent(None)
+        self._controller_settings_dict.pop(identifier)
         del self._controller_tabs_dict[identifier]

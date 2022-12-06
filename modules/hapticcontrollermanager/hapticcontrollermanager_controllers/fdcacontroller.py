@@ -226,7 +226,7 @@ class FDCAController:
         self._trajectory = human_compatible_reference
         self._bq_filter_curve = LowPassFilterBiquad(fc=30, fs=100)
 
-    def compute_input(self, stiffness, steering_angle, car_state, car_velocity, shared_variables, carla_interface_shared_variables):
+    def compute_input(self, stiffness, steering_angle, car_state, shared_variables):
         """
         Compute the control inputs for the FDCA Controller
 
@@ -281,7 +281,7 @@ class FDCAController:
                       [0, 0, 1]])
         return np.matmul(R, x)
 
-    def _calculate_error(self, car_state, car_velocity, road_state):
+    def _calculate_error(self, car_state, road_state):
         """
         Calculate the controller error
         CARLA coordinate frame

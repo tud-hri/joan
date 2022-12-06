@@ -21,7 +21,7 @@ class Settings:
         try:
             return self._settings[module]
         except KeyError:
-            return {}
+            return None
 
     def remove_settings(self, module: JOANModules):
         """

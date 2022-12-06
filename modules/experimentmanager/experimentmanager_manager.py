@@ -93,8 +93,8 @@ class ExperimentManager(ModuleManager):
         self.active_condition = condition
         self.active_condition_index = condition_index
 
-        for signal in self.signals.all_signals:
-            self.signals.all_signals[signal].emit()
+        for key, signal in self.signals.all_signals.items():
+            signal.emit()
 
         return True
 

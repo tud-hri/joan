@@ -32,7 +32,7 @@ class JOANJoystickProcess:
         and to false if it fails
         """
         try:
-            self._joystick.open(self.settings.device_vendor_id, self.settings.device_product_id)
+            self._joystick.open_path(self.settings.device_path)
             self._joystick_open = True
         except OSError:
             print('Connection to USB Joystick failed')
@@ -76,14 +76,14 @@ class JOANJoystickProcess:
 
             if self.settings.use_double_steering_resolution:
                 self.steer = (((joystick_data[self.settings.first_steer_channel]) + (
-                    joystick_data[self.settings.second_steer_channel]) * 256) / (256 * 256)) * (
+                    joystick_data[self.settings.second_steer_channel]) * 256) / (16383)) * (
                                      self.settings.max_steer - self.settings.min_steer) - self.settings.max_steer
             else:
                 self.steer = ((joystick_data[self.settings.first_steer_channel]) / 255) * (
                         self.settings.max_steer - self.settings.min_steer) - self.settings.max_steer
 
-        self.shared_variables.brake = self.brake
-        self.shared_variables.throttle = self.throttle
+        self.shared_variables.brake = - 1.0 - self.brake
+        self.shared_variables.throttle = 1 - self.throttle
         self.shared_variables.steering_angle = self.steer
         self.shared_variables.handbrake = self.handbrake
         self.shared_variables.reverse = self.reverse
@@ -97,8 +97,7 @@ class JoyStickSettings:
     def __init__(self, identifier=''):
         self.min_steer = -0.5 * math.pi
         self.max_steer = 0.5 * math.pi
-        self.device_vendor_id = 0
-        self.device_product_id = 0
+        self.device_path = b''
         self.identifier = identifier
         self.input_type = HardwareInputTypes.JOYSTICK.value
 
@@ -115,13 +114,17 @@ class JoyStickSettings:
         self.reverse_value = 8
 
     def as_dict(self):
-        return self.__dict__
+        return_dict = self.__dict__.copy()
+        return_dict['device_path'] = str(return_dict['device_path'], 'UTF-8')
+        return return_dict
 
     def __str__(self):
         return str(self.identifier)
 
     def set_from_loaded_dict(self, loaded_dict):
         for key, value in loaded_dict.items():
+            if key == 'device_path':
+                value = bytes(value, 'UTF-8')
             self.__setattr__(key, value)
 
     @staticmethod
@@ -180,7 +183,7 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
 
         self._joystick = hid.device()
         self.update_timer = QtCore.QTimer()
-        self.update_timer.setInterval(100)
+        self.update_timer.setInterval(1000)
         self.update_timer.timeout.connect(self.preview_joystick_values)
 
         self.useSeparateBrakeChannelCheckBox.stateChanged.connect(self._update_brake_channel_enabled)
@@ -239,11 +242,9 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
 
         selected_device = self.combo_available_devices.currentData()
         if selected_device:
-            self.joystick_settings.device_vendor_id = selected_device['vendor_id']
-            self.joystick_settings.device_product_id = selected_device['product_id']
+            self.joystick_settings.device_path = selected_device['path']
         else:
-            self.joystick_settings.device_vendor_id = 0
-            self.joystick_settings.device_product_id = 0
+            self.joystick_settings.device_path = b''
 
         self.joystick_settings.degrees_of_freedom = self.dofSpinBox.value()
         self.joystick_settings.gas_channel = self.gasChannelSpinBox.value()
@@ -292,8 +293,7 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
 
             for index in range(self.combo_available_devices.count()):
                 current_device = self.combo_available_devices.itemData(index)
-                if current_device and settings_to_display.device_vendor_id == current_device['vendor_id'] and \
-                        settings_to_display.device_product_id == current_device['product_id']:
+                if current_device and settings_to_display.device_path == current_device['path']:
                     self.combo_available_devices.setCurrentIndex(index)
                     break
                 else:
@@ -354,7 +354,7 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
         """
         if value:
             selected_device = self.combo_available_devices.currentData()
-            self._joystick.open(selected_device['vendor_id'], selected_device['product_id'])
+            self._joystick.open_path(selected_device['path'])
             self.update_timer.start()
         else:
             self.update_timer.stop()

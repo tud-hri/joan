@@ -23,9 +23,6 @@ class ControllerPlotterDialog(ModuleDialog):
 
         background_color = pg.mkColor((240, 240, 240, 255))
 
-        pg.setConfigOption('background', 'k')
-        pg.setConfigOption('foreground', 'k')
-
         self.module_widget.top_view_graph.setBackground(background_color)
         self.module_widget.sw_graph.setBackground(background_color)
         self.module_widget.errors_graph.setBackground(background_color)

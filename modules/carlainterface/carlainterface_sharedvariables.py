@@ -13,7 +13,6 @@ class CarlaInterfaceSharedVariables(ModuleSharedVariables):
         super().__init__()
         self.agents = {}
 
-
 class VehicleSharedVariables(SharedVariables):
     """
     Holds shared variables
@@ -23,7 +22,8 @@ class VehicleSharedVariables(SharedVariables):
         self._rear_axle_position = mp.Array(c_float, 3)
         self._velocities_in_world_frame = mp.Array(c_float, 6)
         self._velocities_in_vehicle_frame = mp.Array(c_float, 3)
-        self._accelerations = mp.Array(c_float, 3)
+        self._accelerations_in_world_frame = mp.Array(c_float, 3)
+        self._accelerations_in_vehicle_frame = mp.Array(c_float, 3)
         self._applied_input = mp.Array(c_float, 5)
         self._max_steering_angle = mp.Value(c_float)
         self._cruise_control_speed = mp.Value(c_float)
@@ -71,12 +71,20 @@ class VehicleSharedVariables(SharedVariables):
         self._velocities_in_vehicle_frame[:] = val
 
     @property
-    def accelerations(self):
-        return self._accelerations[:]
+    def accelerations_in_world_frame(self):
+        return self._accelerations_in_world_frame[:]
 
-    @accelerations.setter
-    def accelerations(self, val):
-        self._accelerations[:] = val
+    @accelerations_in_world_frame.setter
+    def accelerations_in_world_frame(self, val):
+        self._accelerations_in_world_frame[:] = val
+
+    @property
+    def accelerations_in_vehicle_frame(self):
+        return self._accelerations_in_vehicle_frame[:]
+
+    @accelerations_in_vehicle_frame.setter
+    def accelerations_in_vehicle_frame(self, val):
+        self._accelerations_in_vehicle_frame[:] = val
 
     @property
     def applied_input(self):
