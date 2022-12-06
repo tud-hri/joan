@@ -41,9 +41,9 @@ class NPCControllerManagerDialog(ModuleDialog):
 
         agents = list(self._controller_settings_dict.keys())
         for key in agents:
-            if key not in self.module_manager.module_settings.agents.keys():
+            if key not in self.module_manager.module_settings.controllers.keys():
                 self.remove_controller(key)
-            elif self._controller_settings_dict[key] is not self.module_manager.module_settings.agents[key]:
+            elif self._controller_settings_dict[key] is not self.module_manager.module_settings.controllers[key]:
                 self.remove_controller(key)
 
         for controller_identifier, controller_settings in self.module_manager.module_settings.controllers.items():
