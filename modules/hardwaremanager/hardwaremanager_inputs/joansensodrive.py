@@ -24,6 +24,10 @@ PEDAL_MESSAGE_SEND_ID = 0x20C
 PEDAL_MESSAGE_RECEIVE_ID = 0x21C
 PEDAL_MESSAGE_LENGTH = 2
 
+SENSOR_MESSAGE_SEND_ID = 0x20A
+SENSOR_MESSAGE_RECEIVE_ID = 0x21A
+SENSOR_MESSAGE_LENGTH = 2
+
 
 class JOANSensoDriveProcess:
     """
@@ -61,6 +65,7 @@ class JOANSensoDriveProcess:
         self.shared_variables.friction = settings.friction
         self.shared_variables.damping = settings.damping
         self.shared_variables.auto_center_stiffness = settings.spring_stiffness
+        self.no_torques_on_steering_wheel = 0
 
         comm.start()
         self.parent_pipe.send(self.settings_dict)
@@ -83,20 +88,35 @@ class JOANSensoDriveProcess:
         :return:
         """
         # 'variable settings' (can be changed at runtime through the shared variables)
-        self.settings_dict['mp_torque'] = self.shared_variables.torque
-        self.settings_dict['mp_friction'] = self.shared_variables.friction
-        self.settings_dict['mp_damping'] = self.shared_variables.damping
-        self.settings_dict['mp_spring_stiffness'] = self.shared_variables.loha_stiffness + \
-            self.shared_variables.auto_center_stiffness
 
+        self.set_settings()
         self.parent_pipe.send(self.settings_dict)
         values_from_sensodrive = self.parent_pipe.recv()
+        self.set_shared_variables(values_from_sensodrive)
+        self.capture_sensodrive_turned_off(values_from_sensodrive['measured_torque'])
+
+    def capture_sensodrive_turned_off(self, measured_torque):
+        if measured_torque == 0.0:
+            self.no_torques_on_steering_wheel += 1
+        else:
+            self.no_torques_on_steering_wheel = 0
+
+        if self.no_torques_on_steering_wheel > 25:
+            raise Exception("Steering wheel is not working. Redo the trial!")
+
+
+    def set_shared_variables(self, values_from_sensodrive):
         self.shared_variables.steering_angle = values_from_sensodrive['steering_angle']
         self.shared_variables.throttle = values_from_sensodrive['throttle']
         self.shared_variables.brake = values_from_sensodrive['brake']
         self.shared_variables.steering_rate = values_from_sensodrive['steering_rate']
         self.shared_variables.measured_torque = values_from_sensodrive['measured_torque']
 
+    def set_settings(self):
+        self.settings_dict['mp_torque'] = self.shared_variables.torque
+        self.settings_dict['mp_friction'] = self.shared_variables.friction
+        self.settings_dict['mp_damping'] = self.shared_variables.damping
+        self.settings_dict['mp_spring_stiffness'] = self.shared_variables.auto_center_stiffness
 
 class SensoDriveSettings:
     """
