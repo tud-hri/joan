@@ -78,8 +78,7 @@ class JOANSensoDriveProcess:
         # 'variable settings' (can be changed at runtime through the shared variables)
         self.settings_dict['mp_friction'] = self.shared_variables.friction
         self.settings_dict['mp_damping'] = self.shared_variables.damping
-        self.settings_dict['mp_spring_stiffness'] = self.shared_variables.loha_stiffness + \
-            self.shared_variables.auto_center_stiffness
+        self.settings_dict['mp_spring_stiffness'] = self.shared_variables.auto_center_stiffness
 
     def do(self):
         """
@@ -88,13 +87,14 @@ class JOANSensoDriveProcess:
         :return:
         """
         # 'variable settings' (can be changed at runtime through the shared variables)
-
         self.set_settings()
         self.parent_pipe.send(self.settings_dict)
         values_from_sensodrive = self.parent_pipe.recv()
         self.set_shared_variables(values_from_sensodrive)
-        self.capture_sensodrive_turned_off(values_from_sensodrive['measured_torque'])
-
+        try:
+            self.capture_sensodrive_turned_off(values_from_sensodrive['measured_torque'])
+        except KeyError:
+            pass
 
     def capture_sensodrive_turned_off(self, measured_torque):
         if measured_torque == 0.0:
@@ -103,15 +103,31 @@ class JOANSensoDriveProcess:
             self.no_torques_on_steering_wheel = 0
 
         if self.no_torques_on_steering_wheel > 25:
-            raise Exception("Steering wheel is not working. Redo the trial!")
-
+            raise Exception("Steering wheel is not working or turned off! Now stopping JOAN.")
 
     def set_shared_variables(self, values_from_sensodrive):
-        self.shared_variables.steering_angle = values_from_sensodrive['steering_angle']
-        self.shared_variables.throttle = values_from_sensodrive['throttle']
-        self.shared_variables.brake = values_from_sensodrive['brake']
-        self.shared_variables.steering_rate = values_from_sensodrive['steering_rate']
-        self.shared_variables.measured_torque = values_from_sensodrive['measured_torque']
+        try:
+            self.shared_variables.steering_angle = values_from_sensodrive['steering_angle']
+            self.shared_variables.steering_rate = values_from_sensodrive['steering_rate']
+            self.shared_variables.steering_acceleration = values_from_sensodrive['steering_acceleration']
+            self.shared_variables.throttle = values_from_sensodrive['throttle']
+            self.shared_variables.brake = values_from_sensodrive['brake']
+            self.shared_variables.measured_torque = values_from_sensodrive['measured_torque']
+            self.capture_sensodrive_turned_off(values_from_sensodrive['measured_torque'])
+        except KeyError:
+            self.shared_variables.steering_angle = 0.0
+            self.shared_variables.steering_rate = 0.0
+            self.shared_variables.steering_acceleration = 0.0
+            self.shared_variables.throttle = 0.0
+            self.shared_variables.brake = 0.0
+            self.shared_variables.measured_torque = 0.0
+
+        # If torque sensor is added, an additional exception is raised so this is to prevent all values going 0
+        try:
+            self.shared_variables.torque_sensor = values_from_sensodrive['torque_sensor']
+        except KeyError:
+            self.shared_variables.torque_sensor = 0.0
+
 
     def set_settings(self):
         self.settings_dict['mp_torque'] = self.shared_variables.torque
@@ -290,6 +306,7 @@ class SensoDriveComm(mp.Process):
 
         # Initialize message structures
         self.steering_wheel_message = TPCANMsg()
+        self.torque_message = TPCANMsg()
         self.state_message = TPCANMsg()
         self.pedal_message = TPCANMsg()
         self.sensodrive_initialization_message = TPCANMsg()
@@ -300,6 +317,13 @@ class SensoDriveComm(mp.Process):
         self.settings_dict = None
         self.pcan_object = None
         self.pcan_initialization_result = None
+
+        # Torque sensor values
+        self.steering_angle = 0.0
+        self.steering_rate = 0.0
+        self.steering_acceleration = 0.0
+        self.last_steering_rate = 0.0
+        self.inertia = 0.053
 
         self.state_change_message.ID = INITIALIZATION_MESSAGE_ID
         self.state_change_message.LEN = INITIALIZATION_MESSAGE_LENGTH
@@ -340,35 +364,21 @@ class SensoDriveComm(mp.Process):
                 self.settings_dict = self.child_pipe.recv()
                 self.child_pipe.send(self.values_from_sensodrive)
 
-            # convert SI units to SensoDrive appropriate units
-            self.steering_wheel_parameters = self._map_si_to_sensodrive(self.settings_dict)
+            # Here the fun stuff happens!
+                # convert SI units to SensoDrive appropriate units
+                self.steering_wheel_parameters = self._map_si_to_sensodrive(self.settings_dict)
 
-            # send steering wheel data
-            self.write_message_steering_wheel(self.pcan_object, self.steering_wheel_message,
-                                              self.steering_wheel_parameters)
+                # Read and write sensodrive data
+                received = self.read_and_write_message_steering_wheel()
+                received2 = self.read_and_write_state_message()
+                received3 = self.read_and_write_message_pedals()
+                received4 = self.read_and_write_message_torque_sensor()
 
-            # receive data from Sensodrive (wheel, pedals)
-            received = self.pcan_object.Read(self._pcan_channel)
-
-            # request state data
-            endstops_bytes = int.to_bytes(int(math.degrees(self.settings_dict['mp_endstops'])), 2, byteorder='little',
-                                          signed=True)
-            self.state_message.DATA[2] = endstops_bytes[0]
-            self.state_message.DATA[3] = endstops_bytes[1]
-
-            self.pcan_object.Write(self._pcan_channel, self.state_message)
-            received2 = self.pcan_object.Read(self._pcan_channel)
-
-            # request pedal data
-            self.write_message_pedals(self.pcan_object, self.pedal_message)
-            received3 = self.pcan_object.Read(self._pcan_channel)
-
-            if received[0] or received2[0] or received3[0] == PCAN_ERROR_OK:
-                self._sensodrive_data_to_si(received)
-
-                self._sensodrive_data_to_si(received2)
-
-                self._sensodrive_data_to_si(received3)
+                if received[0] or received2[0] or received3[0] == PCAN_ERROR_OK:
+                    self._sensodrive_data_to_si(received)
+                    self._sensodrive_data_to_si(received2)
+                    self._sensodrive_data_to_si(received3)
+                    self._sensodrive_data_to_si(received4)
 
             if self.turn_off_event.is_set():
                 self.on_to_off(self.state_message)
@@ -402,7 +412,16 @@ class SensoDriveComm(mp.Process):
             # sleep for time step, taking the execution time into account
             time.sleep(max(0.0, (self._time_step_in_ns - execution_time) * 1e-9))
 
-    def write_message_steering_wheel(self, pcan_object, pcan_message, data):
+    def read_and_write_state_message(self):
+        endstops_bytes = int.to_bytes(int(math.degrees(self.settings_dict['mp_endstops'])), 2, byteorder='little',
+                                      signed=True)
+        self.state_message.DATA[2] = endstops_bytes[0]
+        self.state_message.DATA[3] = endstops_bytes[1]
+
+        self.pcan_object.Write(self._pcan_channel, self.state_message)
+        return self.pcan_object.Read(self._pcan_channel)
+
+    def read_and_write_message_steering_wheel(self):
         """
         Writes a CAN message to the sensodrive containing information regarding torque, friction and damping. Also
         returns the current state of the wheel (angle, force etc).
@@ -413,30 +432,31 @@ class SensoDriveComm(mp.Process):
         """
 
         # Limit torque to 2 Nm to prevent injuries
-        torque = data['torque']
+        torque = self.steering_wheel_parameters['torque']
         max_torque = 2500
         limited_torque = max(min(torque, max_torque), -max_torque)
 
         torque_bytes = int.to_bytes(limited_torque, 2, byteorder='little', signed=True)
-        friction_bytes = int.to_bytes(data['friction'], 2, byteorder='little', signed=True)
-        damping_bytes = int.to_bytes(data['damping'], 2, byteorder='little', signed=True)
-        spring_stiffness_bytes = int.to_bytes(data['spring_stiffness'], 2, byteorder='little', signed=True)
+        friction_bytes = int.to_bytes(self.steering_wheel_parameters['friction'], 2, byteorder='little', signed=True)
+        damping_bytes = int.to_bytes(self.steering_wheel_parameters['damping'], 2, byteorder='little', signed=True)
+        spring_stiffness_bytes = int.to_bytes(self.steering_wheel_parameters['spring_stiffness'], 2, byteorder='little', signed=True)
 
-        pcan_message.ID = STEERINGWHEEL_MESSAGE_SEND_ID
-        pcan_message.LEN = STEERINGWHEEL_MESSAGE_LENGTH
-        pcan_message.TYPE = PCAN_MESSAGE_STANDARD
-        pcan_message.DATA[0] = torque_bytes[0]
-        pcan_message.DATA[1] = torque_bytes[1]
-        pcan_message.DATA[2] = friction_bytes[0]
-        pcan_message.DATA[3] = friction_bytes[1]
-        pcan_message.DATA[4] = damping_bytes[0]
-        pcan_message.DATA[5] = damping_bytes[1]
-        pcan_message.DATA[6] = spring_stiffness_bytes[0]
-        pcan_message.DATA[7] = spring_stiffness_bytes[1]
+        self.steering_wheel_message.ID = STEERINGWHEEL_MESSAGE_SEND_ID
+        self.steering_wheel_message.LEN = STEERINGWHEEL_MESSAGE_LENGTH
+        self.steering_wheel_message.TYPE = PCAN_MESSAGE_STANDARD
+        self.steering_wheel_message.DATA[0] = torque_bytes[0]
+        self.steering_wheel_message.DATA[1] = torque_bytes[1]
+        self.steering_wheel_message.DATA[2] = friction_bytes[0]
+        self.steering_wheel_message.DATA[3] = friction_bytes[1]
+        self.steering_wheel_message.DATA[4] = damping_bytes[0]
+        self.steering_wheel_message.DATA[5] = damping_bytes[1]
+        self.steering_wheel_message.DATA[6] = spring_stiffness_bytes[0]
+        self.steering_wheel_message.DATA[7] = spring_stiffness_bytes[1]
 
-        pcan_object.Write(self._pcan_channel, pcan_message)
+        self.pcan_object.Write(self._pcan_channel, self.steering_wheel_message)
+        return self.pcan_object.Read(self._pcan_channel)
 
-    def write_message_pedals(self, pcan_object, pcan_message):
+    def read_and_write_message_torque_sensor(self):
         """
         Writes a correctly structured CAN message to the sensodrive which will return a message containing the
         inputs of the pedals.
@@ -444,13 +464,29 @@ class SensoDriveComm(mp.Process):
         :param pcan_message:
         :return:
         """
-        pcan_message.ID = 0x20C
-        pcan_message.LEN = 1
-        pcan_message.MSG_TYPE = PCAN_MESSAGE_STANDARD
+        self.torque_message.ID = SENSOR_MESSAGE_SEND_ID
+        self.torque_message.LEN = SENSOR_MESSAGE_LENGTH
+        self.torque_message.MSG_TYPE = PCAN_MESSAGE_STANDARD
+        self.torque_message.DATA[0] = 0x0
+        self.torque_message.DATA[1] = 0x0
 
-        pcan_message.DATA[0] = 0x1
+        self.pcan_object.Write(self._pcan_channel, self.torque_message)
+        return self.pcan_object.Read(self._pcan_channel)
 
-        pcan_object.Write(self._pcan_channel, pcan_message)
+    def read_and_write_message_pedals(self):
+        """
+        Writes a correctly structured CAN message to the sensodrive which will return a message containing the
+        inputs of the pedals.
+        :param pcan_object:
+        :param pcan_message:
+        :return:
+        """
+        self.pedal_message.ID = 0x20C
+        self.pedal_message.LEN = 1
+        self.pedal_message.MSG_TYPE = PCAN_MESSAGE_STANDARD
+        self.pedal_message.DATA[0] = 0x1
+        self.pcan_object.Write(self._pcan_channel, self.pedal_message)
+        return self.pcan_object.Read(self._pcan_channel)
 
     def off_to_on(self, message):
         """
@@ -572,13 +608,15 @@ class SensoDriveComm(mp.Process):
 
             # steering angle
             increments = int.from_bytes(received[1].DATA[0:4], byteorder='little', signed=True)
-            self.values_from_sensodrive['steering_angle'] = math.radians(
-                float(increments) * 0.009)  # we get increments, convert to deg, convert to rad
+            self.steering_angle = math.radians(float(increments) * 0.009)  # we get increments, convert to deg, convert to rad
 
             # steering rate
             steering_rate = int.from_bytes(received[1].DATA[4:6], byteorder='little', signed=True)
-            self.values_from_sensodrive['steering_rate'] = float(steering_rate) * (
-                    2.0 * math.pi) / 60.0  # we get rev/min, convert to rad/s
+            self.steering_rate = float(steering_rate) * (2.0 * math.pi) / 60.0  # we get rev/min, convert to rad/s
+
+            self.values_from_sensodrive['steering_angle'] = self.steering_angle
+            self.values_from_sensodrive['steering_rate'] = self.steering_rate
+            self.values_from_sensodrive['steering_acceleration'] = self._compute_steering_acceleration()
 
             # torque
             torque = int.from_bytes(received[1].DATA[6:], byteorder='little', signed=True)
@@ -597,11 +635,35 @@ class SensoDriveComm(mp.Process):
             self.values_from_sensodrive['brake'] = float(
                 int.from_bytes(received[1].DATA[4:6], byteorder='little') - 1) / 500
 
-
         elif received[1].ID == STATE_MESSAGE_RECEIVE_ID:
-            #
+            # STATE MESSAGE
             self._current_state_hex = received[1].DATA[0]
             self.values_from_sensodrive['sensodrive_motorstate'] = received[1].DATA[0]
+
+        elif received[1].ID == SENSOR_MESSAGE_RECEIVE_ID:
+            # SENSOR (value of 2048 corresponds to 10 V)
+            factor = 10 / 2048
+            voltage_a = factor * int.from_bytes(received[1].DATA[4:6], byteorder='little', signed=True)
+            voltage_b = factor * int.from_bytes(received[1].DATA[2:4], byteorder='little', signed=True)
+            torque_sensor_value = self._convert_sensor_values_to_torques(voltage_a, voltage_b)
+            self.values_from_sensodrive['torque_sensor'] = self._compute_measured_torque(torque_sensor_value)
+
+    def _compute_measured_torque(self, torque_sensor_value):
+        return torque_sensor_value + self.inertia * self.steering_acceleration - self._compute_nonlinear_torques(self.steering_angle)
+
+    @staticmethod
+    def _convert_sensor_values_to_torques(U_a, U_b):
+        # Calculation as given in the manual for the torque sensor (SensoWheel LMS)
+        S_a = - 1 / 14.696
+        S_b = 1 / 14.832
+        U_v = 5
+        torque = (U_a - U_b) / ((S_a - S_b) * U_v / 5.0)
+        return torque
+
+    def _compute_steering_acceleration(self):
+        acceleration = (self.steering_rate - self.last_steering_rate) / (self._time_step_in_ns  * 1e-9)
+        self.last_steering_rate = self.steering_rate
+        return acceleration
 
     def update_settings(self):
         """
@@ -641,3 +703,25 @@ class SensoDriveComm(mp.Process):
         response = self.pcan_object.Read(self._pcan_channel)
 
         self._current_state_hex = response[1].DATA[0]
+
+    @staticmethod
+    def _compute_nonlinear_torques(steering_angle):
+        """
+        This function is used to do feedforward compensation of nonlinear torques due to gravity and friction, to use a linear system for computing human input torques.
+            inputs
+                x (np.array): System states composed of steering angle and steering rate
+
+            outputs
+                nonlinear_torques (float): output torque composed of gravity and friction torque.
+        """
+        g = 9.81
+        m = 0.498970137272351
+        dl = 0.008146703214514241
+        dh = 0.042651190037657924
+
+        # Gravity
+        nonlinear_torques = - m * g * dh * math.sin(steering_angle) - m * g * dl * math.cos(steering_angle)
+
+        # Friction
+
+        return nonlinear_torques
