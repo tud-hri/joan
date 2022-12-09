@@ -95,6 +95,7 @@ class JOANSensoDriveProcess:
         self.set_shared_variables(values_from_sensodrive)
         self.capture_sensodrive_turned_off(values_from_sensodrive['measured_torque'])
 
+
     def capture_sensodrive_turned_off(self, measured_torque):
         if measured_torque == 0.0:
             self.no_torques_on_steering_wheel += 1
