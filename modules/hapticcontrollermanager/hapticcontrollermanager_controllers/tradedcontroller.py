@@ -37,42 +37,22 @@ class TradedControllerSettingsDialog(QtWidgets.QDialog):
             self.cmbbox_hcr_selection.blockSignals(False)
 
     def update_parameters(self):
-        self.traded_controller_settings.alpha = self.spinbox_alpha.value()
         self.traded_controller_settings.tau_th = self.spinbox_tau.value()
         if self.checkInvert.isChecked():
             self.traded_controller_settings.gamma = 1
         else:
             self.traded_controller_settings.gamma = -1
-        self.traded_controller_settings.trajectory_name = self.cmbbox_hcr_selection.itemText(
-            self.cmbbox_hcr_selection.currentIndex())
 
-        try:
-            self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].alpha = self.traded_controller_settings.alpha
-            self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].tau_th = self.traded_controller_settings.tau_th
-            self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].gamma = self.traded_controller_settings.gamma
-        except AttributeError:
-            pass
-
+        self.traded_controller_settings.k_y = self.spinbox_ky.value()
+        self.traded_controller_settings.k_psi = self.spinbox_kpsi.value()
+        self.traded_controller_settings.lohs = self.spinbox_lohs.value()
+        self.traded_controller_settings.sohf = self.spinbox_sohf.value()
+        self.traded_controller_settings.loha = self.spinbox_loha.value()
+        self.traded_controller_settings.trajectory_name = self.cmbbox_hcr_selection.itemText(self.cmbbox_hcr_selection.currentIndex())
         self._display_values()
 
-
     def accept(self):
-        self.traded_controller_settings.alpha = self.spinbox_alpha.value()
-        self.traded_controller_settings.tau_th = self.spinbox_tau.value()
-        if self.checkInvert.isChecked():
-            self.traded_controller_settings.gamma = 1
-        else:
-            self.traded_controller_settings.gamma = -1
-        self.traded_controller_settings.trajectory_name = self.cmbbox_hcr_selection.itemText(
-            self.cmbbox_hcr_selection.currentIndex())
-
-        try:
-            self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].alpha = self.traded_controller_settings.alpha
-            self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].tau_th = self.traded_controller_settings.tau_th
-            self.module_manager.shared_variables.haptic_controllers[self.traded_controller_settings.identifier].gamma = self.traded_controller_settings.gamma
-        except AttributeError:
-            pass
-
+        self.update_parameters()
         super().accept()
 
     def _display_values(self, settings_to_display=None):
@@ -80,12 +60,20 @@ class TradedControllerSettingsDialog(QtWidgets.QDialog):
             settings_to_display = self.traded_controller_settings
 
         # update the current controller settings
-        self.lbl_alpha.setText(str(settings_to_display.alpha))
-        self.lbl_tau_th.setText(str(settings_to_display.tau_th))
+        self.lbl_k_y.setText(str(settings_to_display.k_y))
+        self.lbl_k_psi.setText(str(settings_to_display.k_psi))
+        self.lbl_k_psi_deg.setText(str(round(math.radians(settings_to_display.k_psi), 3)))
+        self.lbl_lohs.setText(str(settings_to_display.lohs))
+        self.lbl_sohf.setText(str(settings_to_display.sohf))
+        self.lbl_loha.setText(str(settings_to_display.loha))
+        self.lbl_loha_deg.setText(str(round(math.radians(settings_to_display.loha), 3)))
 
-        self.spinbox_alpha.setValue(settings_to_display.alpha)
+        self.spinbox_ky.setValue(settings_to_display.k_y)
+        self.spinbox_kpsi.setValue(settings_to_display.k_psi)
+        self.spinbox_lohs.setValue(settings_to_display.lohs)
+        self.spinbox_sohf.setValue(settings_to_display.sohf)
+        self.spinbox_loha.setValue(settings_to_display.loha)
         self.spinbox_tau.setValue(settings_to_display.tau_th)
-
         idx_traj = self.cmbbox_hcr_selection.findText(settings_to_display.trajectory_name)
         self.cmbbox_hcr_selection.setCurrentIndex(idx_traj)
 
@@ -113,7 +101,7 @@ class TradedControllerSettingsDialog(QtWidgets.QDialog):
 
 
 class TradedControllerProcess:
-    def __init__(self, settings, shared_variables, carla_interface_settings):
+    def __init__(self, settings, shared_variables, carla_interface_settings, hardware_manager_settings, time_step_in_ms):
         self.settings = settings
         self.carla_interface_settings = carla_interface_settings
         self.shared_variables = shared_variables
@@ -122,10 +110,16 @@ class TradedControllerProcess:
         self.x_ = 0
         self.estimated_human_torque = 0
         self.torque = 0
-        self._path_trajectory_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'trajectories')
+        self._path_trajectory_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../trajectories')
         self.load_trajectory()
 
-        self.controller = FDCAController(wheel_base=2.406, effective_ratio=1 / 13, human_compatible_reference=self._trajectory)
+        self.stiffness = hardware_manager_settings.inputs['SensoDrive_1'].spring_stiffness
+        self.damping = hardware_manager_settings.inputs['SensoDrive_1'].damping
+        self.inertia = 0.053
+        parameters = [self.inertia, self.damping, self.stiffness]
+        time_step = time_step_in_ms * 1000
+
+        self.controller = FDCAController(steering_parameters=parameters, time_step=time_step, wheel_base=2.406, effective_ratio=1 / 13, human_compatible_reference=self._trajectory)
 
         # filtering
         self.frequency = 100
