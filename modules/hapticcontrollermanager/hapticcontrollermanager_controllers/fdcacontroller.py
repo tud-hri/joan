@@ -5,7 +5,6 @@ import numpy as np
 import pandas as pd
 import scipy as cp
 from PyQt5 import QtWidgets, uic
-import matplotlib.pyplot as plt
 
 from core.statesenum import State
 from modules.hapticcontrollermanager.hapticcontrollermanager_controllertypes import HapticControllerTypes
@@ -21,7 +20,7 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
         self.module_manager = module_manager
 
         uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/fdca_settings_ui.ui"), self)
-        self._path_trajectory_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'trajectories')
+        self._path_trajectory_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../trajectories')
 
         self.btnbox_fdca_controller_settings.button(
             self.btnbox_fdca_controller_settings.RestoreDefaults).clicked.connect(self._set_default_values)
@@ -128,7 +127,7 @@ class FDCAControllerSettingsDialog(QtWidgets.QDialog):
 
 
 class FDCAControllerProcess:
-    def __init__(self, settings, shared_variables, carla_interface_settings):
+    def __init__(self, settings, shared_variables, carla_interface_settings, hardware_manager_settings, time_step_in_ms):
         self.settings = settings
         self.carla_interface_settings = carla_interface_settings
         self.shared_variables = shared_variables
@@ -138,7 +137,13 @@ class FDCAControllerProcess:
         self.load_trajectory()
         ratio = carla_interface_settings.agents['Ego Vehicle_1'].steering_ratio
 
-        self.controller = FDCAController(wheel_base=2.406, effective_ratio=1/ratio, human_compatible_reference=self._trajectory)
+        self.stiffness = hardware_manager_settings.inputs['SensoDrive_1'].spring_stiffness
+        self.damping = hardware_manager_settings.inputs['SensoDrive_1'].damping
+        self.inertia = 0.053
+        parameters = [self.inertia, self.damping, self.stiffness]
+        time_step = time_step_in_ms * 1000
+
+        self.controller = FDCAController(steering_parameters=parameters, time_step=time_step, wheel_base=2.406, effective_ratio=1/ratio, human_compatible_reference=self._trajectory)
 
         self._bq_filter_velocity = LowPassFilterBiquad(fc=30, fs=100)
         self._bq_filter_heading = LowPassFilterBiquad(fc=30, fs=100)
@@ -218,13 +223,34 @@ class FDCAControllerSettings:
         for key, value in loaded_dict.items():
             self.__setattr__(key, value)
 
+class FeedforwardFilter:
+    def __init__(self, steering_parameters, dt):
+        inertia = steering_parameters[0]
+        damping = steering_parameters[1]
+        stiffness = steering_parameters[2]
+        num = [inertia / 2, inertia, 1]
+        den = [inertia, damping, stiffness]
+        self.system = cp.signal.lti(num, den)
+        discete_system = self.system.to_discrete(dt=dt, method='foh', alpha=None)
+        self.num = np.array(discete_system.num)
+        self.den = np.array(discete_system.den)
+        self.z = cp.signal.lfilter_zi(self.num, self.den) * 0.0
+
+    def step(self, x):
+        y, self.z = cp.signal.lfilter(self.num, self.den, [x], zi=self.z)
+        return y[0]
+
+    def filter_all_data(self, x):
+        y = cp.signal.lfilter(self.num, self.den, x)
+        return y
 
 class FDCAController:
-    def __init__(self, wheel_base=2.406, effective_ratio=1/13, human_compatible_reference=None):
+    def __init__(self, steering_parameters, time_step, wheel_base=2.406, effective_ratio=1/13, human_compatible_reference=None):
         self.wheel_base = wheel_base
         self.effective_ratio = effective_ratio
         self._trajectory = human_compatible_reference
         self._bq_filter_curve = LowPassFilterBiquad(fc=30, fs=100)
+        self.feedforward_filter_lane = FeedforwardFilter(steering_parameters, time_step)
 
     def compute_input(self, stiffness, steering_angle, car_state, shared_variables):
         """
@@ -247,7 +273,7 @@ class FDCAController:
         error = self._calculate_error(car_state, road_state)
 
         # Torques, 1. Feedforward torque with LOHS gain tuning, 2. Feedback torque with SOHF gain tuning, 3. Haptic authority (how much can I deviate from haptic system) with tunable LOHA stiffness
-        feedforward_torque = shared_variables.lohs * (stiffness * steering_reference)  # LOHS torque (feedforward)
+        feedforward_torque = shared_variables.lohs * self.feedforward_filter_lane.step(steering_reference)  # LOHS torque (feedforward)
         feedback_torque = shared_variables.sohf * (shared_variables.k_y * error[0] + shared_variables.k_psi * error[1])  # SOHF torque (feedback)
         loha_torque = shared_variables.loha * ((feedforward_torque + feedback_torque) / stiffness - steering_angle)  # LOHA torque
         fdca_torque = feedforward_torque + feedback_torque + loha_torque

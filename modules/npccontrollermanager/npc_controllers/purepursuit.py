@@ -175,7 +175,7 @@ class PurePursuitControllerProcess:
         format = [index, x, y, steering_wheel_angle, throttle, brake, heading, velocity]
         """
 
-        path_trajectory_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'trajectories')
+        path_trajectory_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../trajectories')
         self._trajectory = np.loadtxt(os.path.join(path_trajectory_directory, self.settings.reference_trajectory_name),
                                       delimiter=',')
         print('Loaded trajectory = ', self.settings.reference_trajectory_name)

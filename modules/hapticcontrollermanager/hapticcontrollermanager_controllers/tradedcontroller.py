@@ -20,7 +20,7 @@ class TradedControllerSettingsDialog(QtWidgets.QDialog):
         self.module_manager = module_manager
 
         uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)), "ui/tradedcontroller_settings_ui.ui"), self)
-        self._path_trajectory_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'trajectories')
+        self._path_trajectory_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../trajectories')
         self.btn_apply_parameters.clicked.connect(self.update_parameters)
         self.module_manager.state_machine.add_state_change_listener(self.handle_state_change)
         self.update_trajectory_list()

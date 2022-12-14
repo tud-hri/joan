@@ -26,7 +26,9 @@ class HapticControllerManagerProcess(ModuleProcess):
             self.haptic_controller_objects[key] = \
                 HapticControllerTypes(value.haptic_controller_type).process(settings=value,
                                                                             shared_variables=self._module_shared_variables.haptic_controllers[key],
-                                                                            carla_interface_settings=self.settings_carla_interface)
+                                                                            carla_interface_settings=self.settings_carla_interface,
+                                                                            hardware_manager_settings=self.settings_hardware_manager,
+                                                                            time_step_in_ms=self.time_step_in_ms)
 
     def do_while_running(self):
         """
