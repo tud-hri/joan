@@ -45,6 +45,7 @@ class CarlaInterfaceManager(ModuleManager):
         self.carla_waypoints = None
         self.haptic_controllers = []
         self.signals = signals
+        self.map_name = None
 
         self.connected = self.connect_carla()
 
@@ -121,8 +122,8 @@ class CarlaInterfaceManager(ModuleManager):
 
     def save_road(self, path):
         world_map = self._world.get_map()
-        map_name = world_map.name.split('/')[-1]
-        path_name = path + map_name + '.csv'
+        self.map_name = world_map.name.split('/')[-1]
+        path_name = path + self.map_name + '.csv'
         if not exists(path_name):
             distance = 1.0
             waypoints = world_map.generate_waypoints(distance)

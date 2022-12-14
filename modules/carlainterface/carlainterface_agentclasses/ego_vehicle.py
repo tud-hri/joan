@@ -2,6 +2,7 @@ import random, os, math
 import numpy as np
 
 import carla
+from trajectories.trajectories import Track
 
 from PyQt5 import uic, QtWidgets
 from modules.carlainterface.carlainterface_agenttypes import AgentTypes
@@ -178,6 +179,9 @@ class EgoVehicleProcess:
             self._BP = random.choice(self.carlainterface_mp.vehicle_blueprint_library.filter("vehicle." + self.settings.selected_car))
         self._control = carla.VehicleControl()
         self.world_map = self.carlainterface_mp.world.get_map()
+        self.map_name = self.world_map.name.split('/')[-1]
+        self.trajectory_object = Track(self.map_name)
+
         torque_curve = []
         gears = []
 
@@ -333,6 +337,7 @@ class EgoVehicleProcess:
     def set_shared_variables(self):
         if hasattr(self, 'spawned_vehicle'):
             actor_snap_shot = self.carlainterface_mp.world.get_snapshot().find(self.spawned_vehicle.id)
+            self.shared_variables.map_name = self.map_name
 
             rotation = actor_snap_shot.get_transform().rotation
             center_location = actor_snap_shot.get_transform().location
@@ -403,7 +408,6 @@ class EgoVehicleProcess:
 
         rotation_matrix = yaw_matrix @ pitch_matrix @ roll_matrix
         return rotation_matrix
-
 
 class EgoVehicleSettings:
     """
