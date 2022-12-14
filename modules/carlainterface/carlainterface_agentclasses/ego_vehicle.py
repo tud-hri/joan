@@ -337,7 +337,6 @@ class EgoVehicleProcess:
     def set_shared_variables(self):
         if hasattr(self, 'spawned_vehicle'):
             actor_snap_shot = self.carlainterface_mp.world.get_snapshot().find(self.spawned_vehicle.id)
-            self.shared_variables.map_name = self.map_name
 
             rotation = actor_snap_shot.get_transform().rotation
             center_location = actor_snap_shot.get_transform().location

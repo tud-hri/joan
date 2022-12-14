@@ -133,7 +133,7 @@ class FDCAControllerProcess:
         self.shared_variables = shared_variables
         self._trajectory = None
         self.t_lookahead = 0.8
-        self._path_trajectory_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'trajectories')
+        self._path_trajectory_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../trajectories')
         self.load_trajectory()
         ratio = carla_interface_settings.agents['Ego Vehicle_1'].steering_ratio
 

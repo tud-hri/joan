@@ -14,6 +14,8 @@ class HapticControllerManagerProcess(ModuleProcess):
         self.shared_variables_hardware = news.read_news(JOANModules.HARDWARE_MANAGER)
         self.shared_variables_carla_interface = news.read_news(JOANModules.CARLA_INTERFACE)
         self.settings_carla_interface = settings_singleton.get_settings(JOANModules.CARLA_INTERFACE)
+        self.settings_hardware_manager = settings_singleton.get_settings(JOANModules.HARDWARE_MANAGER)
+        self.time_step_in_ms = time_step_in_ms
 
         self.haptic_controller_objects = {}
 
