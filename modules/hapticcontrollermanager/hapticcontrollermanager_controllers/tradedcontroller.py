@@ -183,6 +183,7 @@ class TradedControllerProcess:
                     self.damping = hardware_manager_shared_variables.inputs[agent_settings.selected_input].damping
                     delta_t = time_step_in_ns / 1e9  # [s]
                     steering_angle = hardware_manager_shared_variables.inputs[agent_settings.selected_input].steering_angle
+                    human_torque = hardware_manager_shared_variables.inputs[agent_settings.selected_input].torque_sensor
 
                     # Compose a state containing the car information
                     car_state = np.array([[carlainterface_shared_variables.agents[agent_settings.__str__()].transform[0]],
@@ -191,13 +192,13 @@ class TradedControllerProcess:
 
                     # Compute control inputs using current position vector
                     self.shared_variables, torque_fdca = self.controller.compute_input(self.stiffness, steering_angle, car_state, self.shared_variables)
-                    torque_tc = self.compute_tc(torque_fdca, steering_angle, delta_t)
+                    torque_tc = self.compute_tc(torque_fdca, human_torque, steering_angle, delta_t)
                     hardware_manager_shared_variables.inputs[agent_settings.selected_input].torque = torque_tc
 
                     # Set the shared variables
                     self.shared_variables.estimated_human_torque = self.human_estimated_torque
 
-    def compute_tc(self, torque_fdca, steering_angle, timestep):
+    def compute_tc(self, torque_fdca, human_torque, steering_angle, timestep):
         """
         inputs
             torque_fdca (float): torque computed using the FDCA controller which yields a stable trajectory
@@ -210,7 +211,10 @@ class TradedControllerProcess:
         steering_state = self._compute_steering_states(steering_angle, timestep)
         nonlinear_component = self._compute_nonlinear_torques(steering_state)
         self._estimate_human_control(steering_state, timestep)
-        authority = self._compute_authority(delta_t=timestep)
+        if human_torque:
+            authority = self._compute_authority(delta_t=timestep, human_torque=human_torque)
+        else:
+            authority = self._compute_authority(delta_t=timestep, human_torque=self.human_estimated_torque)
         self.torque = torque_fdca * authority
         return self.torque - nonlinear_component
 
@@ -237,9 +241,9 @@ class TradedControllerProcess:
         self.human_estimated_torque += - self.alpha * np.matmul(xi_tilde.transpose(), B) * delta_t
         self.x_hat += x_hat_dot * delta_t
 
-    def _compute_authority(self, delta_t):
+    def _compute_authority(self, delta_t, human_torque):
         # See if the threshold is crossed and if so increase authority
-        if self.human_estimated_torque ** 2 < self.torque_threshold ** 2:
+        if human_torque ** 2 < self.torque_threshold ** 2:
             direction = 1  # Increase authority
         else:
             direction = -1  # Decrease authority
