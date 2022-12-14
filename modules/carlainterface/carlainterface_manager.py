@@ -1,4 +1,7 @@
 import time
+import numpy as np
+import pandas as pd
+from os.path import exists
 
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import Qt
@@ -116,6 +119,34 @@ class CarlaInterfaceManager(ModuleManager):
         # remove settings from dialog
         self.module_dialog.remove_agent(identifier)
 
+    def save_road(self, path):
+        world_map = self._world.get_map()
+        map_name = world_map.name.split('/')[-1]
+        path_name = path + map_name + '.csv'
+        if not exists(path_name):
+            distance = 1.0
+            waypoints = world_map.generate_waypoints(distance)
+            lane = []
+            x = []
+            y = []
+            yaw = []
+            width = []
+
+            for waypoint in waypoints:
+                road_transform = waypoint.transform
+
+                lane.append(waypoint.lane_id)
+                x.append(road_transform.location.x)
+                y.append(road_transform.location.y)
+                yaw.append(road_transform.rotation.yaw)
+                width.append(waypoint.lane_width)
+
+            road = {'lane': lane, 'x': x, 'y': y, 'yaw': yaw, 'width': width}
+
+            pd_road = pd.DataFrame(road)
+            pd_road.to_csv(path_name)
+
+
     def connect_carla(self):
         """
         This function will try and connect to carla server if it is running in unreal
@@ -131,6 +162,7 @@ class CarlaInterfaceManager(ModuleManager):
 
                 # get world objects (vehicles and waypoints)
                 self._world = self.client.get_world()
+                self.save_road(path='trajectories\\')
                 blueprint_library = self._world.get_blueprint_library()
                 self._vehicle_bp_library = blueprint_library.filter('vehicle.*')
                 for items in self._vehicle_bp_library:
