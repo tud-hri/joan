@@ -103,8 +103,6 @@ class JOANSensoDriveProcess:
         else:
             self.no_torques_on_steering_wheel = 0
 
-        print(self.no_torques_on_steering_wheel)
-
         if self.no_torques_on_steering_wheel > 25:
             raise Exception("Steering wheel is not working or turned off! Now stopping JOAN.")
 
