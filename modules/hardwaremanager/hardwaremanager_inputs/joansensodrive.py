@@ -76,6 +76,7 @@ class JOANSensoDriveProcess:
         :return: None
         """
         # 'variable settings' (can be changed at runtime through the shared variables)
+        self.settings_dict['mp_torque'] = 0.0
         self.settings_dict['mp_friction'] = self.shared_variables.friction
         self.settings_dict['mp_damping'] = self.shared_variables.damping
         self.settings_dict['mp_spring_stiffness'] = self.shared_variables.auto_center_stiffness
@@ -102,6 +103,8 @@ class JOANSensoDriveProcess:
         else:
             self.no_torques_on_steering_wheel = 0
 
+        print(self.no_torques_on_steering_wheel)
+
         if self.no_torques_on_steering_wheel > 25:
             raise Exception("Steering wheel is not working or turned off! Now stopping JOAN.")
 
@@ -127,7 +130,6 @@ class JOANSensoDriveProcess:
             self.shared_variables.torque_sensor = values_from_sensodrive['torque_sensor']
         except KeyError:
             self.shared_variables.torque_sensor = 0.0
-
 
     def set_settings(self):
         self.settings_dict['mp_torque'] = self.shared_variables.torque
@@ -374,7 +376,7 @@ class SensoDriveComm(mp.Process):
                 received3 = self.read_and_write_message_pedals()
                 received4 = self.read_and_write_message_torque_sensor()
 
-                if received[0] or received2[0] or received3[0] == PCAN_ERROR_OK:
+                if received[0] or received2[0] or received3[0] or received4[0] == PCAN_ERROR_OK:
                     self._sensodrive_data_to_si(received)
                     self._sensodrive_data_to_si(received2)
                     self._sensodrive_data_to_si(received3)

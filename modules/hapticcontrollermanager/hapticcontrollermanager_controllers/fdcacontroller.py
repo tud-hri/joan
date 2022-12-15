@@ -279,7 +279,7 @@ class FDCAController:
         fdca_torque = feedforward_torque + feedback_torque + loha_torque
 
         # set the shared variables
-        shared_variables.sw_des = (feedforward_torque + feedback_torque) / stiffness
+        shared_variables.sw_des = steering_reference
         shared_variables.ff_torque = feedforward_torque
         shared_variables.fb_torque = feedback_torque
         shared_variables.loha_torque = loha_torque

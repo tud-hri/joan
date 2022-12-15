@@ -156,10 +156,11 @@ class TradedControllerSharedVariables(SharedVariables):
         # controller parameters
         self._k_y = mp.Value(c_float, 0)
         self._k_psi = mp.Value(c_float, 0)
-        self._kd_y = mp.Value(c_float, 0)
-        self._kd_psi = mp.Value(c_float, 0)
         self._alpha = mp.Value(c_float, 0)
         self._tau_th = mp.Value(c_float, 0)
+        self._lohs = mp.Value(c_float, 0)
+        self._sohf = mp.Value(c_float, 0)
+        self._loha = mp.Value(c_float, 0)
 
         # controller outputs
         self._lat_error = mp.Value(c_float, 0)
@@ -167,12 +168,12 @@ class TradedControllerSharedVariables(SharedVariables):
         self._heading_error = mp.Value(c_float, 0)
         self._ff_torque = mp.Value(c_float, 0)
         self._fb_torque = mp.Value(c_float, 0)
+        self._loha_torque = mp.Value(c_float, 0)
         self._req_torque = mp.Value(c_float, 0)
         self._authority = mp.Value(c_float, 0)
         self._estimated_human_torque = mp.Value(c_float, 0)
         self._x_road = mp.Array(c_float, 50)
         self._y_road = mp.Array(c_float, 50)
-
 
     @property
     def k_y(self):
@@ -191,20 +192,28 @@ class TradedControllerSharedVariables(SharedVariables):
         self._k_psi.value = val
 
     @property
-    def kd_y(self):
-        return self._kd_y.value
+    def lohs(self):
+        return self._lohs.value
 
-    @kd_y.setter
-    def kd_y(self, val):
-        self._kd_y.value = val
+    @lohs.setter
+    def lohs(self, val):
+        self._lohs.value = val
 
     @property
-    def kd_psi(self):
-        return self._kd_psi.value
+    def sohf(self):
+        return self._sohf.value
 
-    @kd_psi.setter
-    def kd_psi(self, val):
-        self._kd_psi.value = val
+    @sohf.setter
+    def sohf(self, val):
+        self._sohf.value = val
+
+    @property
+    def loha(self):
+        return self._loha.value
+
+    @loha.setter
+    def loha(self, val):
+        self._loha.value = val
 
     @property
     def alpha(self):
@@ -261,6 +270,14 @@ class TradedControllerSharedVariables(SharedVariables):
     @fb_torque.setter
     def fb_torque(self, val):
         self._fb_torque.value = val
+
+    @property
+    def loha_torque(self):
+        return self._loha_torque.value
+
+    @loha_torque.setter
+    def loha_torque(self, val):
+        self._loha_torque.value = val
 
     @property
     def req_torque(self):
