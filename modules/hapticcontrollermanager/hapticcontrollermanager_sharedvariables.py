@@ -276,7 +276,7 @@ class TradedControllerSharedVariables(SharedVariables):
 
     @authority.setter
     def authority(self, val):
-        self._req_torque.value = val
+        self._authority.value = val
 
     @property
     def estimated_human_torque(self):

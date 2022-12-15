@@ -108,6 +108,7 @@ class TradedControllerProcess:
         self._trajectory = None
         self.t_lookahead = 0
         self.x_ = 0
+        self.authority = 0
         self.estimated_human_torque = 0
         self.torque = 0
         self._path_trajectory_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../trajectories')
@@ -197,6 +198,7 @@ class TradedControllerProcess:
 
                     # Set the shared variables
                     self.shared_variables.estimated_human_torque = self.human_estimated_torque
+                    self.shared_variables.authority = self.authority
 
     def compute_tc(self, torque_fdca, human_torque, steering_angle, timestep):
         """
@@ -216,6 +218,7 @@ class TradedControllerProcess:
         else:
             authority = self._compute_authority(delta_t=timestep, human_torque=self.human_estimated_torque)
         self.torque = torque_fdca * authority
+        self.authority = authority
         return self.torque - nonlinear_component
 
     def _compute_steering_states(self, steering_angle, timestep):
@@ -244,9 +247,9 @@ class TradedControllerProcess:
     def _compute_authority(self, delta_t, human_torque):
         # See if the threshold is crossed and if so increase authority
         if human_torque ** 2 < self.torque_threshold ** 2:
-            direction = 1  # Increase authority
+            direction = 5  # Increase authority
         else:
-            direction = -1  # Decrease authority
+            direction = -5  # Decrease authority
         self.x_ += delta_t * direction * self.shared_variables.gamma
         self.x_ = min(max(self.x_, -0.5), 3)
         c1 = 3
