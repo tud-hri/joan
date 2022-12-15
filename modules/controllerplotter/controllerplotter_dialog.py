@@ -162,7 +162,7 @@ class ControllerPlotterDialog(ModuleDialog):
 
         # Top view graph
         try:
-            tmp = pd.read_csv(os.path.join('modules/hapticcontrollermanager/hapticcontrollermanager_controllers/trajectories', trajectory_name))
+            tmp = pd.read_csv(os.path.join('trajectories/', trajectory_name))
             plot_data_hcr_x = tmp.values[:, 1]
             plot_data_hcr_y = tmp.values[:, 2]
 
@@ -414,12 +414,21 @@ class ControllerPlotterDialog(ModuleDialog):
         This function is called every module dialog update tick of this module implement your main calculations here
         """
         try:
-            data_from_haptic_controller_manager = self.data[JOANModules.HAPTIC_CONTROLLER_MANAGER].haptic_controllers['FDCA_1']
+            data_from_haptic_controller_manager = self.data[JOANModules.HAPTIC_CONTROLLER_MANAGER].haptic_controllers['Four Design Choices Architecture_1']
+        except KeyError:
+            try:
+                data_from_haptic_controller_manager = self.data[JOANModules.HAPTIC_CONTROLLER_MANAGER].haptic_controllers['Traded Control_1']
+            except KeyError:
+                data_from_haptic_controller_manager = {}
+
+        try:
             data_from_hardware_manager = self.data[JOANModules.HARDWARE_MANAGER].inputs['SensoDrive_1']
+        except KeyError:
+            data_from_hardware_manage = {}
+
+        try:
             data_from_carla_interface = self.data[JOANModules.CARLA_INTERFACE].agents['Ego Vehicle_1']
         except KeyError:
-            data_from_haptic_controller_manager = {}
-            data_from_hardware_manager = {}
             data_from_carla_interface = {}
 
         try:
