@@ -19,7 +19,7 @@ JOAN mainly consists of modules, which communicate with each other through a New
 - Experiment Manager
 - Haptic Controller Manager
 
-See [JOAN overview](firststeps-joan-overview.md) for more information, or read the module-specific documentation.
+See [JOAN overview](docs/firststeps-joan-overview.md) for more information, or read the module-specific documentation.
 
 This documentation will help you in setting up CARLA and JOAN, guide you through your first steps, and provide more in depth information in how JOAN works and how you can tweak it to your preferences (which is highly encouraged!).
 
