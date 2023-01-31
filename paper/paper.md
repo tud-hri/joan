@@ -48,10 +48,10 @@ Silvera et al. extended Carla to support human-in-the-loop experiments [@Silvera
 To address these issues, we created JOAN, an open-source framework for conducting human-in-the-loop driving experiments. JOAN interfaces with Carla, is
 written in Python, is fully customizable through code and graphical user interfaces (GUI). JOAN can be used with a variety of human input devices, including game console controllers (e.g.,Xbox or PlayStation), generic USB controllers (e.g., Logitech G920), or a SensoDrive high-fidelity steering wheel [@sensodrive] (for including haptic feedback). JOAN includes a framework for experiment design to create and execute experiments, and provides reliable data acquisition. These features can be accessed through a user-friendly interface, which means no extensive (knowledge of) programming nor a lot of time is required to set up new experiments.
 
-For detailed instructions on how to install and use JOAN, see our online documentation[^1]. JOAN can be found in a GitLab repository[^2], a video with more information can be found on YouTube[^3].
+For detailed instructions on how to install and use JOAN, see our online documentation[^1]. JOAN can be found in a GitHub repository[^2], a video with more information can be found on YouTube[^3].
 
 [^1]: https://joan.readthedocs.io
-[^2]: https://gitlab.tudelft.nl/tud-cor-hri/joan-framework/joan
+[^2]: https://www.github.com/tud-hri/joan
 [^3]: https://www.youtube.com/watch?v=TLLw48isYJU
 
 # Software functionality
