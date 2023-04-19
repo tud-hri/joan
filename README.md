@@ -37,5 +37,5 @@ JOAN is developed by a team (Joris, Olger, Andre, and Niek -> JOAN) of the Human
 Please see our license if you want to use our framework.
 
 Please use the following citation:
-> Beckers, N., Siebinga, O., Giltay, J., & Van der Kraan, A. (2021). JOAN, a human-automated vehicle experiment framework. Retrieved from https://github.com/tud-hri/joan
+> Beckers et al., (2023). JOAN: a framework for human-automated vehicle interaction experiments in a virtual reality driving simulator. Journal of Open Source Software, 8(82), 4250, https://doi.org/10.21105/joss.04250
 
