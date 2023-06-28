@@ -155,7 +155,22 @@ class JoyStickSettings:
             settings_to_return.hand_brake_value = 40
             settings_to_return.reverse_channel = 6
             settings_to_return.reverse_value = 10
-
+        elif device == 'steeringwheel':
+            settings_to_return.min_steer = -1 * math.pi
+            settings_to_return.max_steer = 1 * math.pi
+            settings_to_return.degrees_of_freedom = 9
+            settings_to_return.gas_channel = 6
+            settings_to_return.use_separate_brake_channel = True
+            settings_to_return.brake_channel = 7
+            settings_to_return.first_steer_channel = 5
+            settings_to_return.use_double_steering_resolution = False
+            settings_to_return.second_steer_channel = -1
+            settings_to_return.hand_brake_channel = 1
+            settings_to_return.hand_brake_value = 1
+            settings_to_return.reverse_channel = 1
+            settings_to_return.reverse_value = 2
+            settings_to_return.min_steer = -1 * math.pi
+            settings_to_return.max_steer = 1 * math.pi
         return settings_to_return
 
 
@@ -183,7 +198,7 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
 
         self._joystick = hid.device()
         self.update_timer = QtCore.QTimer()
-        self.update_timer.setInterval(1000)
+        self.update_timer.setInterval(2000)
         self.update_timer.timeout.connect(self.preview_joystick_values)
 
         self.useSeparateBrakeChannelCheckBox.stateChanged.connect(self._update_brake_channel_enabled)
@@ -196,6 +211,7 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
         self.presetsComboBox.addItem("Custom")
         self.presetsComboBox.addItem("XBOX")
         self.presetsComboBox.addItem("PlayStation")
+        self.presetsComboBox.addItem("Logitech SteeringWheel")
 
         self.dofSpinBox.valueChanged.connect(self._set_preset_combo_box_to_custom)
         self.gasChannelSpinBox.valueChanged.connect(self._set_preset_combo_box_to_custom)
@@ -310,6 +326,8 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
         self.handBrakeValueSpinBox.setValue(settings_to_display.hand_brake_value)
         self.reverseChannelSpinBox.setValue(settings_to_display.reverse_channel)
         self.reverseValueSpinBox.setValue(settings_to_display.reverse_value)
+        self.spin_box_min_steer.setValue(settings_to_display.min_steer)
+        self.spin_box_max_steer.setValue(settings_to_display.max_steer)
 
     def _set_default_settings(self):
         """
