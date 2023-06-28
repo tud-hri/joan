@@ -172,7 +172,7 @@ class PurePursuitControllerProcess:
     def load_trajectory(self):
         """
         Load trajectory from csv file
-        format = [index, x, y, steering_wheel_angle, throttle, brake, heading, velocity]
+        format = [index, x, y, steering_wheel_angle, throttle, brake, heading, velocity, cruise control speed (-1 for disabled)]
         """
 
         path_trajectory_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../trajectories')
