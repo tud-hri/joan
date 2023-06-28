@@ -136,7 +136,6 @@ class NPCVehicleProcess:
         torque_curve = []
         gears = []
 
-        torque_curve.append(carla.Vector2D(x=0., y=0.))
         torque_curve.append(carla.Vector2D(x=10., y=600.))
         torque_curve.append(carla.Vector2D(x=14000., y=600.))
         gears.append(carla.GearPhysicsControl(ratio=5., down_ratio=0.0, up_ratio=100.))
