@@ -43,7 +43,6 @@ nav:
 markdown_extensions:
    - admonition
    - attr_list
-   - markdown_inline_graphviz
    - pymdownx.superfences:
         custom_fences:
           - name: mermaid

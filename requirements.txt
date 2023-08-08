@@ -7,7 +7,6 @@ PyQt5-sip>=12.7.1
 hidapi
 flake8
 keyboard~=0.13.5
-markdown_inline_graphviz_extension>=1.1
 pymdown-extensions
 pyqtgraph~=0.11.0
 mkdocs
