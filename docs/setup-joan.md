@@ -47,23 +47,18 @@ python -m venv venv
 ```commandline
 venv\Scripts\activate.bat
 ```
-+ Note: PowerShell users should use
++ Note: PowerShell users should use:
 ```commandline
 .\venv\Scripts\Activate.ps1
 ```
 
++ Next, we will install the dependencies. Before doing so, edit the final line in `requirements.txt` to point to the correct `.whl` file. The `.whl` file should be located in `carla\PythonAPI\carla\dist\`. If it is missing, the PythonAPI build likely failed.
 
-
-+ Install the dependencies using `pip` 
++ The dependencies can then be installed using:
 
 ```commandline
 pip install -r requirements.txt
 ```
-
-+ To install Carla, please make sure to use the `.whl` file (since the JOAN code assumes you do). This file is built after running the `make PythonAPI` command (see the carla documentation) is successfully executed. As the Carla documentation describes, make sure to locate this `.whl` file. and then install carla using:
-```commandline
-pip install <path/to/wheel>.whl
-``` 
 
 ### Test Your JOAN installation
 Now it is time to test if the JOAN installation worked. If you run the script `main.py` (from the command line or your favorite IDE) JOAN should start. To connect to Carla, you first need to click the play button in the Unreal Editor to start Carla.
