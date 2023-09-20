@@ -47,6 +47,12 @@ python -m venv venv
 ```commandline
 venv\Scripts\activate.bat
 ```
++ Note: PowerShell users should use
+```commandline
+.\venv\Scripts\Activate.ps1
+```
+
+
 
 + Install the dependencies using `pip` 
 
