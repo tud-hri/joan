@@ -14,4 +14,3 @@ colour~=0.1.5
 wres~=1.0.3
 pathlib~=1.0.1
 scipy
-C:\carla\PythonAPI\carla\dist\carla-0.9.13-cp38-cp38-win_amd64.whl # Change to correct directory!!
