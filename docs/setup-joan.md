@@ -17,7 +17,7 @@ JOAN is maintained in a [GitHub repository](https://github.com/tud-hri/joan) by 
 
 ### Adding JOAN assets 
 
-* We prepared a map and other assets to get you started with JOAN. Download the assets [here](https://doi.org/10.4121/19419923){target="_blank"}, extract it, and copy the contents to `C:\carla\Unreal\CarlaUE4\Content\Carla`.
+* We prepared a map and other assets to get you started with JOAN. Download the assets [here](https://doi.org/10.4121/19419923){target="_blank"}, extract it, and copy the contents of the `JOAN Assets` subdirectory to `C:\carla\Unreal\CarlaUE4\Content\Carla`.
 * Now, you need to manually add the downloaded JOAN assets to CARLA to make sure you can actually use them. 
     1.After the Unreal Editor has been launched and compiled the shaders, go to the content browser (lower half of the screen) and search for __'vehicle factory'__:
     ![alt text](imgs/setup-carla-windows-vehicle-factory.png "Vehicle Factory")
@@ -47,8 +47,12 @@ python -m venv venv
 ```commandline
 venv\Scripts\activate.bat
 ```
++ Note: PowerShell users should use:
+```commandline
+.\venv\Scripts\Activate.ps1
+```
 
-+ Install the dependencies using `pip` 
++ The dependencies can then be installed using:
 
 ```commandline
 pip install -r requirements.txt
