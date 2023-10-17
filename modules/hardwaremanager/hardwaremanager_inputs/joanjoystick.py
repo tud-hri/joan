@@ -66,13 +66,8 @@ class JOANJoystickProcess:
                     self.throttle = 0
                     self.brake = -input_value
 
-            if joystick_data[self.settings.hand_brake_channel] == self.settings.hand_brake_value:
-                self.handbrake = True
-            elif joystick_data[self.settings.reverse_channel] == self.settings.reverse_value:
-                self.reverse = True
-            else:
-                self.handbrake = False
-                self.reverse = False
+            self.handbrake = bool(joystick_data[self.settings.hand_brake_channel] & self.settings.hand_brake_value)
+            self.reverse = bool(joystick_data[self.settings.reverse_channel] & self.settings.reverse_value)
 
             if self.settings.use_double_steering_resolution:
                 self.steer = (((joystick_data[self.settings.first_steer_channel]) + (
@@ -198,7 +193,7 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
 
         self._joystick = hid.device()
         self.update_timer = QtCore.QTimer()
-        self.update_timer.setInterval(2000)
+        self.update_timer.setInterval(500)
         self.update_timer.timeout.connect(self.preview_joystick_values)
 
         self.useSeparateBrakeChannelCheckBox.stateChanged.connect(self._update_brake_channel_enabled)
@@ -237,7 +232,7 @@ class JoystickSettingsDialog(QtWidgets.QDialog):
         :return:
         """
         try:
-            joystick_data = self._joystick.read(self.dofSpinBox.value())
+            joystick_data = self._joystick.read(self.dofSpinBox.value(), 1)
 
             for index, value in enumerate(joystick_data):
                 if self.value_preview_check_boxes[index].isChecked():
