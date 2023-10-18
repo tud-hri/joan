@@ -162,15 +162,20 @@ class NPCVehicleProcess:
                 physics.drag_coefficient = 0.24
                 physics.gear_switch_time = 0.0
                 physics.use_gear_autobox = False
+
+                wheels = copy.copy(physics.wheels)
+                wheels[0].max_brake_torque = 1500.
+                wheels[1].max_brake_torque = 1500.
+                wheels[2].max_brake_torque = 1400.
+                wheels[3].max_brake_torque = 1400.
+                physics.wheels = wheels
+
                 self.spawned_vehicle.apply_physics_control(physics)
-                wheels = physics.wheels
                 self.shared_variables.max_steering_angle = np.radians(wheels[0].max_steer_angle)
 
                 rotation = self.spawned_vehicle.get_transform().rotation
                 rotation_matrix = self.get_rotation_matrix_from_carla(rotation.roll, rotation.pitch, rotation.yaw)
 
-                physics = self.spawned_vehicle.get_physics_control()
-                wheels = physics.wheels
                 rear_axle_in_world_frame = (((wheels[3].position - wheels[2].position) / 2) + wheels[2].position) / 100.
                 position_difference = rear_axle_in_world_frame - self.spawned_vehicle.get_transform().location
                 position_difference = np.array([position_difference.x, position_difference.y, position_difference.z])

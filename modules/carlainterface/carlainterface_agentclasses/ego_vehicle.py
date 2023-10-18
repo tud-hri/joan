@@ -1,5 +1,6 @@
 import random, os, math
 import numpy as np
+import copy
 
 import carla
 from trajectories.trajectories import Track
@@ -211,6 +212,14 @@ class EgoVehicleProcess:
                 physics.drag_coefficient = 0.24
                 physics.gear_switch_time = 0.0
                 physics.use_gear_autobox = False
+
+                wheels = copy.copy(physics.wheels)
+                wheels[0].max_brake_torque = 1500.
+                wheels[1].max_brake_torque = 1500.
+                wheels[2].max_brake_torque = 1400.
+                wheels[3].max_brake_torque = 1400.
+                physics.wheels = wheels
+
                 self.spawned_vehicle.apply_physics_control(physics)
                 self.max_steering_angle = physics.wheels[0].max_steer_angle
 
