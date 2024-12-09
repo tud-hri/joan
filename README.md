@@ -2,7 +2,7 @@
 
 [![Documentation](https://readthedocs.org/projects/joan/badge/?version=latest)](http://joan.readthedocs.io)
 
-# Introduction
+# Introduction 
 
 To design automated vehicles (AVs) that can be safely introduced in our mixed traffic, research into human-AV interaction is needed. Driving simulators are invaluable tools, however, existing driving simulators are expensive, implementing new functionalities (e.g., AV control algorithms) can be difficult, and setting up new experiments can be tedious. To address these issues, we present JOAN, a framework for human-AV interaction experiments. JOAN connects to the open-source AV-simulation program Carla and enables quick and easy implementation of human-in-the-loop driving experiments. It supports experiments in VR, a variety of human input devices, and haptic feedback. JOAN is easy to use, flexible, and enables researchers to design, store, and perform human-factors experiments without writing a single line of code.
 
