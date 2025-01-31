@@ -413,6 +413,7 @@ class ControllerPlotterDialog(ModuleDialog):
         """
         This function is called every module dialog update tick of this module implement your main calculations here
         """
+        data_from_haptic_controller_manager = None
         try:
             data_from_haptic_controller_manager = self.data[JOANModules.HAPTIC_CONTROLLER_MANAGER].haptic_controllers['Four Design Choices Architecture_1']
         except KeyError:
@@ -421,11 +422,13 @@ class ControllerPlotterDialog(ModuleDialog):
             except KeyError:
                 data_from_haptic_controller_manager = {}
 
+        data_from_hardware_manager = None
         try:
             data_from_hardware_manager = self.data[JOANModules.HARDWARE_MANAGER].inputs['SensoDrive_1']
         except KeyError:
             data_from_hardware_manage = {}
 
+        data_from_carla_interface = None
         try:
             data_from_carla_interface = self.data[JOANModules.CARLA_INTERFACE].agents['Ego Vehicle_1']
         except KeyError:
