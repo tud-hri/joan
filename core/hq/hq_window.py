@@ -169,7 +169,8 @@ class HQWindow(QtWidgets.QMainWindow):
             elif current_state is State.STOPPED:
                 widget.lbl_state.setStyleSheet("background: orange;")
         else:
-            widget.lbl_state.setText('-')
+            widget.lbl_state.setText('')
+            widget.label_2.setText('')
 
     def update_central_control_buttons_enabled(self):
         # disable all buttons first then activate the one you can press
